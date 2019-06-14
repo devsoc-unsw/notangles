@@ -1,11 +1,16 @@
 const express = require('express')
 const app = express();
-const port = 8000;
 
+/**
+ * Express configuration
+ */ 
+app.set("port", process.env.PORT || 3000);
+
+/**
+ * Express routes
+ */
 app.get('/', (req, res) => {
   res.send('Hello World!')
 });
 
-app.listen(port, () => {
-  console.log('Server listening on port ' + port)
-});
+export default app;
