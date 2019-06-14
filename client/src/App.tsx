@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
+import Select from 'react-select'
+import { ValueType } from 'react-select/lib/types'
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IOption {
+  value: string
+  label: string
 }
 
-export default App;
+const options: IOption[] = [
+  { value: 'comp1511', label: 'COMP1511' },
+  { value: 'comp2511', label: 'COMP2511' },
+  { value: 'comp2411', label: 'COMP2411' },
+]
+
+const App = () => {
+  const [value, setValue] = React.useState<IOption>()
+
+  // React.useEffect(() => {
+  //   setName(props.name)
+  //   const listener = () => console.log('hai')
+  //   window.addEventListener('click', listener)
+  //   return () => {
+  //     // unmount
+  //     window.removeEventListener('click', listener)
+  //   }
+  // }, [props.name])
+
+  const handleChange = (e: any) => {
+    setValue(e)
+  }
+
+  return (
+    <div>
+      <Select options={options} value={value} onChange={handleChange} />
+      Selected course: {value ? value.label : 'No course selected'}
+    </div>
+  )
+}
+
+export default App
