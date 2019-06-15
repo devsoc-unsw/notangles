@@ -1,16 +1,16 @@
-const express = require('express')
-const app = express();
+import express from 'express'
+import * as indexController from './controllers/index'
+
+const app = express()
 
 /**
  * Express configuration
- */ 
-app.set("port", process.env.PORT || 3000);
+ */
+app.set('port', process.env.PORT || 3000)
 
 /**
  * Express routes
  */
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-});
+app.get('/', indexController.index)
 
-export default app;
+export default app
