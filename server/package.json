@@ -5,6 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "ts-node app.ts",
+    "mongodb": "mongod --dbpath=./data",
+    "db": "ts-node db.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,6 +16,7 @@
     "mongodb": "^3.2.7"
   },
   "devDependencies": {
+    "@types/mongodb": "^3.1.28",
     "@types/node": "^12.0.8",
     "ts-node": "^8.2.0",
     "typescript": "^3.5.1"
