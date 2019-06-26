@@ -38,34 +38,24 @@ class Database {
     console.log(`${doc.id} inserted!`)
   }
 
-  // db_read: function(id) {
-  //   client.connect(function(err) {
-  //     const db = client.db(dbName)
-  //     const col = db.collection(colName)
-  //     var doc = col.findOne({ id: id })
-  //     client.close()
-  //     return doc
-  //   })
-  // },
+  db_read = async id => {
+    const db = await this.getDb()
+    const col = db.collection(colName)
+    console.log('reading')
+    var doc = await col.findOne({ id: id })
+    return doc
+  }
 
-  // db_update: function(id, doc) {
-  //   client.connect(function(err) {
-  //     const db = client.db(dbName)
-  //     const col = db.collection(colName)
-  //     client.close()
-  //   })
-  // },
+  //db_update = async id doc => {
+  //  const db = await this.getDb()
+  //  const col = db.collection(colName)
+  //}
 
-  // db_del = async (id: string) => {
-  //   const result = await this.client.connect()
-  //   await this.client.connect(function(err, result) {
-  //     const db = this.client.db(dbName)
-  //     const col = db.collection(colName)
-  //     col.deleteOne({ id: id })
-  //     console.log('Succesfully deleted')
-  //     this.client.close()
-  //   })
-  // }
+  db_del = async id => {
+    const db = await this.getDb()
+    const col = db.collection(colName)
+    await col.deleteOne({ id: id })
+  }
 }
 
 const db = new Database()
