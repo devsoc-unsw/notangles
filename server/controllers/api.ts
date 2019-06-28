@@ -5,7 +5,7 @@ interface IGetCourseParams {
 }
 
 /**
- * GET /api/course/:courseId/:cooursecontent
+ * GET /api/course/:courseId/
  */
 export const getCourse = (req: Request, res: Response) => {
   const params: IGetCourseParams = req.params
