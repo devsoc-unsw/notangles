@@ -5,7 +5,8 @@
 //const config = require('./config.ts').config
 
 // URL for database
-//const env = process.env.NODE_ENV || 'test'
+import { Env, config } from './config'
+const settings = config[process.env.NODE_ENV || Env.DEV]
 //const url = config[env].url
 
 // DB Name

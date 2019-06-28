@@ -1,9 +1,9 @@
 import { MongoClient, Db } from 'mongodb'
-import { config, Env } from './config'
+import { Env, config } from './config'
 
 // URL for database
-const env: Env = Env[process.env.NODE_ENV] || Env.development
-const url = config[env].url
+//const env: Env = Env[process.env.NODE_ENV] || Env.development
+const url = config[process.env.NODE_ENV || Env.DEV]
 
 // DB Name
 const dbName = 'Notangles'
