@@ -23,7 +23,7 @@ import Database from './db_api'
 
 const main = async () => {
   console.log('hai')
-  await Database.db_create({ id: 'COMP1591' })
+  await Database.db_create({ id: 'COMP1521' })
   console.log('bai')
 }
 

@@ -3,7 +3,7 @@ import { Env, config } from './config'
 
 // URL for database
 //const env: Env = Env[process.env.NODE_ENV] || Env.development
-const url = config[process.env.NODE_ENV || Env.DEV]
+const url = config[process.env.NODE_ENV || Env.DEV].database
 
 // DB Name
 const dbName = 'Notangles'
@@ -15,7 +15,9 @@ class Database {
 
   connect = async () => {
     const client = new MongoClient(url, { useNewUrlParser: true })
+    console.log(url)
     this.client = await client.connect()
+    console.log('\n\n\\n\n\n\n Hello\n')
   }
 
   disconnect = () => {
