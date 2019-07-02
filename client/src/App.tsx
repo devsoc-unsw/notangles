@@ -1,8 +1,7 @@
 import React from 'react'
 import './App.css'
 import Select from 'react-select'
-import { ValueType } from 'react-select/lib/types'
-import TimeTable from './components/timetable';
+import { TimeTable } from './components/timetable'
 
 interface IOption {
   value: string
@@ -13,10 +12,10 @@ const options: IOption[] = [
   { value: 'comp1511', label: 'COMP1511' },
   { value: 'comp2511', label: 'COMP2511' },
   { value: 'comp2411', label: 'COMP2411' },
-  { value: 'arts1234', label: 'ARTS1234'},
+  { value: 'arts1234', label: 'ARTS1234' },
 ]
 
-const App = () => {
+const App: React.FC = () => {
   const [value, setValue] = React.useState<IOption>()
 
   // React.useEffect(() => {
@@ -33,20 +32,16 @@ const App = () => {
     setValue(e)
   }
 
-  return ( 
-      <div>
+  return (
+    <div>
       <h2>Notangles</h2>
-      <p></p>
-      <Select  options={options} value={value} onChange={handleChange} />
-      
-      <p></p>
+      <p />
+      <Select options={options} value={value} onChange={handleChange} />
+      <p />
       Selected course: {value ? value.label : 'No course selected'}
-      
-      <p></p>
-      <TimeTable>
-      </TimeTable>
-      </div>
-      
+      <p />
+      <TimeTable />
+    </div>
   )
 }
 
