@@ -1,6 +1,6 @@
 import { Env, config } from './config'
 const settings = config[process.env.NODE_ENV || Env.DEV]
-import Database from './db_api'
+import Database from './dbApi'
 
 const test = async () => {
   console.log('hai')
