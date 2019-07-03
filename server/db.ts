@@ -1,48 +1,19 @@
-//Command to run datase: mongod --dbpath=./data
-
-//const MongoClient = require('mongodb').MongoClient
-//const assert = require('assert')
-//const config = require('./config.ts').config
-
-// URL for database
 import { Env, config } from './config'
 const settings = config[process.env.NODE_ENV || Env.DEV]
-//const url = config[env].url
-
-// DB Name
-//const dbName = 'Notangles'
-
-// Create a the MongoClient
-//const client = new MongoClient(url, { useNewUrlParser: true })
-
 import Database from './db_api'
 
-// const add = () => {
-
-// }
-
-const main = async () => {
+const test = async () => {
   console.log('hai')
-  await Database.db_create({ id: 'COMP1521' })
-  console.log('bai')
+  await Database.dbCreate({ id: 'COMP1521', vac: '0', gh: 8 })
+  var doc = await Database.dbRead('COMP1521')
+  console.log(doc)
+  await Database.dbUpdate('COMP1521', { vac: '5' })
+  doc = await Database.dbRead('COMP1521')
+  console.log(doc)
+  await Database.dbDel(`COMP1521`)
 }
 
-main().then(() => {
+test().then(() => {
   Database.disconnect()
   process.exit()
 })
-
-//dbm.db_del('1')
-// var doc = dbm.db_read({ id: 'COMP1511' })
-// console.log(doc)
-
-//Connecting to server
-/*client.connect(function(err) {
-  assert.equal(null, err)
-  console.log('Connected successfully to server')
-  //const db = client.db(dbName)
-  //const col = db.collection('Courses')
-  //col.insertOne({ id: 'COMP1511' })
-  //col.deleteOne({ id: 'COMP1511' })
-  client.close()
-})*/
