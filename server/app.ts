@@ -1,13 +1,18 @@
-import db from './db_api'
+import * as express from "express";
+import * as indexController from "./controllers/index";
+import * as apiController from "./controllers/api";
 
-import express from 'express'
-const app = express()
-const port = 8000
+const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+/**
+ * Express configuration
+ */
+app.set("port", process.env.PORT || 3000);
 
-app.listen(port, () => {
-  console.log('Server listening on port ' + port)
-})
+/**
+ * Express routes
+ */
+app.get("/", indexController.index);
+app.get("/api/courses/:courseId", apiController.getCourse);
+
+export default app;
