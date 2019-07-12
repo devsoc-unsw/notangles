@@ -17,21 +17,9 @@ const options: IOption[] = [
 
 const App: React.FC = () => {
   const [value, setValue] = React.useState<IOption>()
-
-  // React.useEffect(() => {
-  //   setName(props.name)
-  //   const listener = () => console.log('hai')
-  //   window.addEventListener('click', listener)
-  //   return () => {
-  //     // unmount
-  //     window.removeEventListener('click', listener)
-  //   }
-  // }, [props.name])
-
   const handleChange = (e: any) => {
     setValue(e)
   }
-
   return (
     <div>
       <h2>Notangles</h2>
