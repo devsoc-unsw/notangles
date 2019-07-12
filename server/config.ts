@@ -1,3 +1,4 @@
+//Create a secret.json file. Go to the slack channel for the code
 import * as secret from './secret.json'
 
 export enum Env {
@@ -10,7 +11,7 @@ interface IConfig {
   database: string
 }
 
-export const config: Record<Env, IConfig> = {
+export const allConfig: Record<Env, IConfig> = {
   [Env.DEV]: {
     database: secret.dev,
   },
@@ -23,3 +24,4 @@ export const config: Record<Env, IConfig> = {
     database: secret.prod,
   },
 }
+export const config: IConfig = allConfig[process.env.NODE_ENV || Env.DEV]

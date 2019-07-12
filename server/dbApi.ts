@@ -1,17 +1,12 @@
 import { MongoClient, Db } from 'mongodb'
-import { Env, config } from './config'
+import { config } from './config'
 
-const debug = true
-
-// URL for database
-//const env: Env = Env[process.env.NODE_ENV] || Env.development
-const url = config[process.env.NODE_ENV || Env.DEV].database
+const url = config.database
 
 // DB Name
 const dbName = 'Notangles'
 const colName = 'Courses'
 
-// Create a the MongoClient
 class Database {
   private client: MongoClient | undefined
 
@@ -32,37 +27,33 @@ class Database {
     return db
   }
 
-  dbCreate = async doc => {
+  dbAdd = async doc => {
     const db = await this.getDb()
     const col = db.collection(colName)
     await col.insertOne(doc)
-    if (debug) console.log('Created doc: ' + doc)
   }
 
-  dbRead = async id => {
+  dbRead = async (id: string) => {
     const db = await this.getDb()
     const col = db.collection(colName)
-    var doc = await col.findOne({ id: id })
-    if (debug) console.log('Reading doc: ' + doc)
+    const doc = await col.findOne({ id })
     return doc
   }
 
-  dbUpdate = async (id, doc) => {
+  dbUpdate = async (id: string, doc) => {
     const db = await this.getDb()
     const col = db.collection(colName)
     try {
-      await col.updateOne({ id: id }, { $set: doc })
-      if (debug) console.log('Updated id: ' + id)
+      await col.updateOne({ id }, { $set: doc })
     } catch (e) {
       console.log(e)
     }
   }
 
-  dbDel = async id => {
+  dbDel = async (id: string) => {
     const db = await this.getDb()
     const col = db.collection(colName)
-    await col.deleteOne({ id: id })
-    if (debug) console.log('Deleted doc id: ' + id)
+    await col.deleteOne({ id })
   }
 }
 
