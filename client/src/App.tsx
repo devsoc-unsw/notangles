@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
+import Select from 'react-select'
+import { TimeTable } from './components/timetable'
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface IOption {
+  value: string
+  label: string
 }
 
-export default App;
+const options: IOption[] = [
+  { value: 'comp1511', label: 'COMP1511' },
+  { value: 'comp2511', label: 'COMP2511' },
+  { value: 'comp2411', label: 'COMP2411' },
+  { value: 'arts1234', label: 'ARTS1234' },
+]
+
+const App: React.FC = () => {
+  const [value, setValue] = React.useState<IOption>()
+  const handleChange = (e: any) => {
+    setValue(e)
+  }
+  return (
+    <div>
+      <h2>Notangles</h2>
+      <p />
+      <Select options={options} value={value} onChange={handleChange} />
+      <p />
+      Selected course: {value ? value.label : 'No course selected'}
+      <p />
+      <TimeTable />
+    </div>
+  )
+}
+
+export default App
