@@ -1,4 +1,5 @@
 import { Response, Request } from 'express'
+import db from '../dbApi'
 
 interface IGetCourseParams {
   courseId: string
@@ -7,7 +8,8 @@ interface IGetCourseParams {
 /**
  * GET /api/course/:courseId/
  */
-export const getCourse = (req: Request, res: Response) => {
+export const getCourse = async (req: Request, res: Response) => {
   const params: IGetCourseParams = req.params
-  res.send(params.courseId)
+  const course = await db.dbRead(params.courseId)
+  res.send(course)
 }
