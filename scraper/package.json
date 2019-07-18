@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "prettier-init": "^1.1.0",
     "puppeteer": "^1.18.1"
   },
   "devDependencies": {
