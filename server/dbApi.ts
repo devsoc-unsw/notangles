@@ -5,7 +5,6 @@ const url = config.database
 
 // DB Name
 const dbName = 'Notangles'
-const colName = 'Courses'
 
 class Database {
   private client: MongoClient | undefined
@@ -27,22 +26,22 @@ class Database {
     return db
   }
 
-  dbAdd = async doc => {
+  dbAdd = async (termColName: string, doc) => {
     const db = await this.getDb()
-    const col = db.collection(colName)
+    const col = db.collection(termColName)
     await col.insertOne(doc)
   }
 
-  dbRead = async (id: string) => {
+  dbRead = async (termColName: string, id: string) => {
     const db = await this.getDb()
-    const col = db.collection(colName)
+    const col = db.collection(termColName)
     const doc = await col.findOne({ id })
     return doc
   }
 
-  dbUpdate = async (id: string, doc) => {
+  dbUpdate = async (termColName: string, id: string, doc) => {
     const db = await this.getDb()
-    const col = db.collection(colName)
+    const col = db.collection(termColName)
     try {
       await col.updateOne({ id }, { $set: doc })
     } catch (e) {
@@ -50,9 +49,9 @@ class Database {
     }
   }
 
-  dbDel = async (id: string) => {
+  dbDel = async (termColName: string, id: string) => {
     const db = await this.getDb()
-    const col = db.collection(colName)
+    const col = db.collection(termColName)
     await col.deleteOne({ id })
   }
 }
