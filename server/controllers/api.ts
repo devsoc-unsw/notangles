@@ -22,6 +22,6 @@ export const getCourse = async (req: Request, res: Response) => {
       'dbRead returned null course. params: ' +
         util.inspect(params, { showHidden: false, depth: null })
     )
-    res.status(400).send('Invalid courseId param')
+    res.status(400).send('Invalid termId/courseId param')
   }
 }
