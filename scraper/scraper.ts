@@ -16,6 +16,10 @@ const success = chalk.green;
       waitUntil: 'networkidle2'
     });
 
+    // scrape the page. (only these lines were added.)
+    let scraped = page.$$("table");
+    console.log(scraped);
+
     // Close the browser.
     await browser.close();
     console.log(success('Browser closed'));
