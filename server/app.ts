@@ -1,11 +1,18 @@
-const express = require('express')
-const app = express();
-const port = 8000;
+import * as express from 'express'
+import * as indexController from './controllers/index'
+import * as apiController from './controllers/api'
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-});
+const app = express()
 
-app.listen(port, () => {
-  console.log('Server listening on port ' + port)
-});
+/**
+ * Express configuration
+ */
+app.set('port', process.env.PORT || 3000)
+
+/**
+ * Express routes
+ */
+app.get('/', indexController.index)
+app.get('/api/terms/:termId/courses/:courseId', apiController.getCourse)
+
+export default app
