@@ -2,13 +2,14 @@ import React from 'react'
 import './App.css'
 import Select from 'react-select'
 import { TimeTable } from './components/timetable'
+import { DragDropContext } from 'react-beautiful-dnd'
 
-interface IOption {
+interface CourseOption {
   value: string
   label: string
 }
 
-const options: IOption[] = [
+const options: CourseOption[] = [
   { value: 'comp1511', label: 'COMP1511' },
   { value: 'comp2511', label: 'COMP2511' },
   { value: 'comp2411', label: 'COMP2411' },
@@ -16,7 +17,7 @@ const options: IOption[] = [
 ]
 
 const App: React.FC = () => {
-  const [value, setValue] = React.useState<IOption>()
+  const [value, setValue] = React.useState<CourseOption>()
   const handleChange = (e: any) => {
     setValue(e)
   }
