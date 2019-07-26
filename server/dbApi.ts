@@ -26,33 +26,34 @@ class Database {
     return db
   }
 
-  dbAdd = async (termColName: string, doc) => {
+  getCollection = async (termColName: string) => {
     const db = await this.getDb()
-    const col = db.collection(termColName)
+    return db.collection(termColName)
+  }
+
+  dbAdd = async (termColName: string, doc) => {
+    const col = await this.getCollection(termColName)
     await col.insertOne(doc)
   }
 
-  dbRead = async (termColName: string, id: string) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
-    const doc = await col.findOne({ id })
+  dbRead = async (termColName: string, courseCode: string) => {
+    const col = await this.getCollection(termColName)
+    const doc = await col.findOne({ courseCode })
     return doc
   }
 
-  dbUpdate = async (termColName: string, id: string, doc) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
+  dbUpdate = async (termColName: string, courseCode: string, doc) => {
+    const col = await this.getCollection(termColName)
     try {
-      await col.updateOne({ id }, { $set: doc })
+      await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {
       console.log(e)
     }
   }
 
-  dbDel = async (termColName: string, id: string) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
-    await col.deleteOne({ id })
+  dbDel = async (termColName: string, courseCode: string) => {
+    const col = await this.getCollection(termColName)
+    await col.deleteOne({ courseCode })
   }
 }
 
