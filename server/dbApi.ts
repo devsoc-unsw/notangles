@@ -32,27 +32,27 @@ class Database {
     await col.insertOne(doc)
   }
 
-  dbRead = async (termColName: string, id: string) => {
+  dbRead = async (termColName: string, courseCode: string) => {
     const db = await this.getDb()
     const col = db.collection(termColName)
-    const doc = await col.findOne({ id })
+    const doc = await col.findOne({ courseCode })
     return doc
   }
 
-  dbUpdate = async (termColName: string, id: string, doc) => {
+  dbUpdate = async (termColName: string, courseCode: string, doc) => {
     const db = await this.getDb()
     const col = db.collection(termColName)
     try {
-      await col.updateOne({ id }, { $set: doc })
+      await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {
       console.log(e)
     }
   }
 
-  dbDel = async (termColName: string, id: string) => {
+  dbDel = async (termColName: string, courseCode: string) => {
     const db = await this.getDb()
     const col = db.collection(termColName)
-    await col.deleteOne({ id })
+    await col.deleteOne({ courseCode })
   }
 }
 
