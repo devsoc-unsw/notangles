@@ -12,13 +12,44 @@ const success = chalk.green;
     let page = await browser.newPage();
 
     // Go to the timetable page
-    await page.goto('http://timetable.unsw.edu.au/2019/subjectSearch.html', {
+    await page.goto('http://timetable.unsw.edu.au/2019/', {
       waitUntil: 'networkidle2'
     });
 
     // scrape the page. (only these lines were added.)
-    let scraped = page.$$("table");
-    console.log(scraped);
+    // let scraped = await page.evaluate(() => {
+    //   return Promise.resolve(document.getElementsByClassName('data'));
+    //   //console.log(data[0]);
+    //   //console.log('i can log');
+    // });
+
+    // console.log(scraped);
+    // const jsHandle = await page.evaluateHandle(() => {
+    //   const element = document.getElementsByTagName('td');
+    //   return element;
+    // });
+    //console.log(jsHandle); // JSHandle
+
+    // const result = await page.evaluate(e => {
+    //   for(let i = 0; i < 10; i++)
+    //   {
+    //     console.log(e[0].innerHTML);
+    //   }
+    //   return e;
+    // }, jsHandle);
+
+    const jsHandle = await page.$$eval('.data', (e) => {
+      let inner = e.map(f => f.innerHTML)
+      inner.forEach(element => {
+                
+      });
+    });
+
+    console.log(jsHandle);
+    // for(let i = 0; i < 10; i++)
+    // {
+    //   console.log(jsHandle);
+    // }
 
     // Close the browser.
     await browser.close();
