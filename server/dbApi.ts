@@ -26,22 +26,24 @@ class Database {
     return db
   }
 
-  dbAdd = async (termColName: string, doc) => {
+  getCollection = async (termColName: string) => {
     const db = await this.getDb()
-    const col = db.collection(termColName)
+    return db.collection(termColName)
+  }
+
+  dbAdd = async (termColName: string, doc) => {
+    const col = await this.getCollection(termColName)
     await col.insertOne(doc)
   }
 
   dbRead = async (termColName: string, courseCode: string) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
+    const col = await this.getCollection(termColName)
     const doc = await col.findOne({ courseCode })
     return doc
   }
 
   dbUpdate = async (termColName: string, courseCode: string, doc) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
+    const col = await this.getCollection(termColName)
     try {
       await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {
@@ -50,8 +52,7 @@ class Database {
   }
 
   dbDel = async (termColName: string, courseCode: string) => {
-    const db = await this.getDb()
-    const col = db.collection(termColName)
+    const col = await this.getCollection(termColName)
     await col.deleteOne({ courseCode })
   }
 }
