@@ -5,7 +5,6 @@ const url = config.database
 
 // DB Name
 const dbName = 'Notangles'
-const colName = 'Courses'
 
 class Database {
   private client: MongoClient | undefined
@@ -27,33 +26,34 @@ class Database {
     return db
   }
 
-  dbAdd = async doc => {
+  getCollection = async (termColName: string) => {
     const db = await this.getDb()
-    const col = db.collection(colName)
+    return db.collection(termColName)
+  }
+
+  dbAdd = async (termColName: string, doc) => {
+    const col = await this.getCollection(termColName)
     await col.insertOne(doc)
   }
 
-  dbRead = async (id: string) => {
-    const db = await this.getDb()
-    const col = db.collection(colName)
-    const doc = await col.findOne({ id })
+  dbRead = async (termColName: string, courseCode: string) => {
+    const col = await this.getCollection(termColName)
+    const doc = await col.findOne({ courseCode })
     return doc
   }
 
-  dbUpdate = async (id: string, doc) => {
-    const db = await this.getDb()
-    const col = db.collection(colName)
+  dbUpdate = async (termColName: string, courseCode: string, doc) => {
+    const col = await this.getCollection(termColName)
     try {
-      await col.updateOne({ id }, { $set: doc })
+      await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {
       console.log(e)
     }
   }
 
-  dbDel = async (id: string) => {
-    const db = await this.getDb()
-    const col = db.collection(colName)
-    await col.deleteOne({ id })
+  dbDel = async (termColName: string, courseCode: string) => {
+    const col = await this.getCollection(termColName)
+    await col.deleteOne({ courseCode })
   }
 }
 

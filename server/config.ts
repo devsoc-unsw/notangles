@@ -1,4 +1,4 @@
-//Create a secret.json file. Go to the slack channel for the code
+// Create a secret.json file. Go to the slack channel for the code
 import * as secret from './secret.json'
 
 export enum Env {

@@ -13,6 +13,6 @@ app.set('port', process.env.PORT || 3000)
  * Express routes
  */
 app.get('/', indexController.index)
-app.get('/api/courses/:courseId', apiController.getCourse)
+app.get('/api/terms/:termId/courses/:courseId', apiController.getCourse)
 
 export default app
