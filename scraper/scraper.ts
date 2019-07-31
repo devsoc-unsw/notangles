@@ -1,20 +1,21 @@
-import * as puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer'
+import * as fs from 'fs'
 
 // import * as .. does not work for chalk, so require.
-const chalk = require('chalk');
+const chalk = require('chalk')
 
-const error = chalk.bold.red;
-const success = chalk.green;
-(async () => {
+const error = chalk.bold.red
+const success = chalk.green
+;(async () => {
   // Launch the browser. Headless mode = true by default
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch()
   try {
-    let page = await browser.newPage();
+    let page = await browser.newPage()
 
     // Go to the timetable page
     await page.goto('http://timetable.unsw.edu.au/2019/', {
-      waitUntil: 'networkidle2'
-    });
+      waitUntil: 'networkidle2',
+    })
 
     // scrape the page. (only these lines were added.)
     // let scraped = await page.evaluate(() => {
@@ -38,32 +39,42 @@ const success = chalk.green;
     //   return e;
     // }, jsHandle);
 
-    const jsHandle = await page.$$eval('.data', (e) => {
+    const jsHandle = await page.$$eval('.data', e => {
       let inner = e.map(f => f.innerHTML)
-      inner.forEach(element => {
-                
-      });
-    });
+      inner.forEach(element => {})
+      return inner
+    })
 
-    console.log(jsHandle);
+    // fs.writeFile('scraped', jsHandle, (err) => {
+    //   if (err)
+    //   {
+    //     console.log(error(err))
+    //   }
+    //   console.log(success('file written!'))
+    // })
+
+    console.log(jsHandle)
     // for(let i = 0; i < 10; i++)
     // {
     //   console.log(jsHandle);
     // }
 
+    // let grepped = jsHandle.forEach(e => {
+    //   e = e.
+    // })
+
     // Close the browser.
-    await browser.close();
-    console.log(success('Browser closed'));
+    await browser.close()
+    console.log(success('Browser closed'))
   } catch (err) {
     // log error and close browser.
-    console.log(error(err));
-    await browser.close();
-    console.log(error('Browser closed'));
+    console.log(error(err))
+    await browser.close()
+    console.log(error('Browser closed'))
   }
-})();
+})()
 
-
-// from previous deleted branch 
+// from previous deleted branch
 // import * as puppeteer from 'puppeteer';
 
 // // import * as .. does not work for chalk, so require.
