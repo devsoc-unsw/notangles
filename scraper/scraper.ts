@@ -6,94 +6,103 @@ const chalk = require('chalk')
 
 const error = chalk.bold.red
 const success = chalk.green
-;(async () => {
-  // Launch the browser. Headless mode = true by default
-  const browser = await puppeteer.launch()
-  try {
-    let page = await browser.newPage()
+  ; (async () => {
+    // Launch the browser. Headless mode = true by default
+    const browser = await puppeteer.launch()
+    try {
+      let page = await browser.newPage()
 
-    // Go to the timetable page
-    const tt = 'http://timetable.unsw.edu.au/2019/'
-    await page.goto(tt, {
-      waitUntil: 'networkidle2',
-    })
+      // Go to the timetable page
+      const tt = 'http://timetable.unsw.edu.au/2019/'
+      await page.goto(tt, {
+        waitUntil: 'networkidle2',
+      })
 
-    // scrape the page. (only these lines were added.)
-    // let scraped = await page.evaluate(() => {
-    //   return Promise.resolve(document.getElementsByClassName('data'));
-    //   //console.log(data[0]);
-    //   //console.log('i can log');
-    // });
+      // scrape the page. (only these lines were added.)
+      // let scraped = await page.evaluate(() => {
+      //   return Promise.resolve(document.getElementsByClassName('data'));
+      //   //console.log(data[0]);
+      //   //console.log('i can log');
+      // });
 
-    // console.log(scraped);
-    // const jsHandle = await page.evaluateHandle(() => {
-    //   const element = document.getElementsByTagName('td');
-    //   return element;
-    // });
-    //console.log(jsHandle); // JSHandle
+      // console.log(scraped);
+      // const jsHandle = await page.evaluateHandle(() => {
+      //   const element = document.getElementsByTagName('td');
+      //   return element;
+      // });
+      //console.log(jsHandle); // JSHandle
 
-    // const result = await page.evaluate(e => {
-    //   for(let i = 0; i < 10; i++)
-    //   {
-    //     console.log(e[0].innerHTML);
-    //   }
-    //   return e;
-    // }, jsHandle);
+      // const result = await page.evaluate(e => {
+      //   for(let i = 0; i < 10; i++)
+      //   {
+      //     console.log(e[0].innerHTML);
+      //   }
+      //   return e;
+      // }, jsHandle);
 
-    const jsHandle = await page.$$eval('.data', e => {
-      let inner = e.map(f => f.innerHTML)
-      inner.forEach(element => {})
-      return inner
-    })
+      const jsHandle = await page.$$eval('.data', e => {
+        let inner = e.map(f => f.innerHTML)
+        inner.forEach(element => { })
+        return inner
+      })
 
-    // fs.writeFile('scraped', jsHandle, (err) => {
-    //   if (err)
-    //   {
-    //     console.log(error(err))
-    //   }
-    //   console.log(success('file written!'))
-    // })
+      // fs.writeFile('scraped', jsHandle, (err) => {
+      //   if (err)
+      //   {
+      //     console.log(error(err))
+      //   }
+      //   console.log(success('file written!'))
+      // })
 
-    //console.log(jsHandle[0])
-    const urlSet = new Set([])
-    let count = 0
-    const myRe = /href="(.*)">/
-    jsHandle.forEach(element => {
-      const link = jsHandle[count].match(myRe)
-      count++
-      if (link !== null && link.length > 0) {
-        const html = /([A-Z]{8})\.html/
-        if (html.test(link[1])) {
-          const url = tt + link[1]
-          urlSet.add(url)
+      //console.log(jsHandle[0])
+      const urlSet = new Set([])
+      let count = 0
+      const myRe = /href="(.*)">/
+      jsHandle.forEach(element => {
+        const link = jsHandle[count].match(myRe)
+        count++
+        if (link !== null && link.length > 0) {
+          const html = /([A-Z]{8})\.html/
+          if (html.test(link[1])) {
+            const url = tt + link[1]
+            urlSet.add(url)
+          }
+        }
+      })
+
+      for (const url of urlSet) {
+        // Follow each link...
+        //const page2 = await browser.newPage();
+        try {
+          console.log("opening " + url);
+          await page.goto(url, {
+            waitUntil: 'networkidle2',
+          })
+          console.log(await page.title());
+          //setTimeout(() => { }, 1);
+        }
+        catch (err) {
+          console.log(err)
         }
       }
-    })
-    urlSet.forEach(url => {
-      console.log(url)
-    })
-    // for(let i = 0; i < 10; i++)
-    // {
-    //   console.log(jsHandle);
-    // }
 
-    // let grepped = jsHandle.forEach(e => {
-    //   e = e.
-    // })
 
-    // Close the browser.
-    await browser.close()
-    console.log(success('Browser closed'))
-  } catch (err) {
-    // log error and close browser.
-    console.log(error(err))
-    await browser.close()
-    console.log(error('Browser closed'))
-  }
-})()
+      // Close the browser.
+      await browser.close()
+      // Promise.all(courses).then(() => {
+      //   await browser.close()
+      // })
+      console.log(success('Browser closed'))
+    } catch (err) {
+      // log error and close browser.
+      console.log(error(err))
+      await browser.close()
+      console.log(error('Browser closed'))
+    }
+  })()
 
 // from previous deleted branch
-// import * as puppeteer from 'puppeteer';
+// import * as puppeteer from 'pupeteer';
 
 // // import * as .. does not work for chalk, so require.
 // const chalk = require('chalk');
