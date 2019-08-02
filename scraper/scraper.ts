@@ -13,7 +13,8 @@ const success = chalk.green
     let page = await browser.newPage()
 
     // Go to the timetable page
-    await page.goto('http://timetable.unsw.edu.au/2019/', {
+    const tt = 'http://timetable.unsw.edu.au/2019/'
+    await page.goto(tt, {
       waitUntil: 'networkidle2',
     })
 
@@ -54,12 +55,22 @@ const success = chalk.green
     // })
 
     //console.log(jsHandle[0])
+    const urlSet = new Set([])
     let count = 0
-    let myRe = /href="(.*)">/
+    const myRe = /href="(.*)">/
     jsHandle.forEach(element => {
       const link = jsHandle[count].match(myRe)
       count++
-      if (link !== null && link.length > 0) console.log(`${count} ${link[1]}`)
+      if (link !== null && link.length > 0) {
+        const html = /([A-Z]{8})\.html/
+        if (html.test(link[1])) {
+          const url = tt + link[1]
+          urlSet.add(url)
+        }
+      }
+    })
+    urlSet.forEach(url => {
+      console.log(url)
     })
     // for(let i = 0; i < 10; i++)
     // {
