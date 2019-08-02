@@ -53,7 +53,14 @@ const success = chalk.green
     //   console.log(success('file written!'))
     // })
 
-    console.log(jsHandle)
+    //console.log(jsHandle[0])
+    let count = 0
+    let myRe = /href="(.*)">/
+    jsHandle.forEach(element => {
+      const link = jsHandle[count].match(myRe)
+      count++
+      if (link !== null && link.length > 0) console.log(`${count} ${link[1]}`)
+    })
     // for(let i = 0; i < 10; i++)
     // {
     //   console.log(jsHandle);
