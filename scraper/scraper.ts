@@ -1,8 +1,112 @@
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
+import { threadId } from 'worker_threads';
+import { EROFS } from 'constants';
 
 // import * as .. does not work for chalk, so require.
 const chalk = require('chalk');
+
+// Gets all the class data
+const getClassData = async (data, rowStartIndex) => {
+  // Store data for each class
+  const classData = {};
+
+  // term number to append class to
+  let term = 0;
+
+  // First 4 are similar in format and are:
+  // class id, section id, term, activity(lecture/tutorial)
+  let fields = ['classID', 'section', 'term', 'activity'];
+  for (let field of fields) {
+    // Store the term number to later append to the correct term
+    if (field === 'term') {
+      term = parseInt(data[rowStartIndex].charAt(1));
+    }
+    if (
+      field === 'activity' &&
+      data[rowStartIndex].includes('Course Enrolment')
+    ) {
+      // Abort if you are looking at course enrolment
+      return [[], rowStartIndex + 9, -1];
+    }
+    classData[field] = data[rowStartIndex];
+    rowStartIndex++;
+  }
+
+  // Get the status of the class
+  let regex = />([^\<]+)</;
+  let result = regex.exec(data[rowStartIndex]);
+  classData['status'] = result[1];
+  rowStartIndex++;
+
+  //class enrollments.
+  const enrAndCap = data[rowStartIndex].split('/');
+  classData['courseEnrolment'] = {
+    enrolments: enrAndCap[0],
+    capacity: enrAndCap[1]
+  };
+  rowStartIndex++;
+
+  // Start and end dates, meeting dates, census date -> not needed
+  rowStartIndex += 3;
+
+  // Instruction mode:
+  classData['mode'] = data[rowStartIndex];
+  rowStartIndex++;
+
+  // Skip consent
+  rowStartIndex++;
+
+  // Dates and location!
+  const dateList = [];
+  while (data[rowStartIndex] && !data[rowStartIndex].includes('Back to top')) {
+    // Day
+    const dateData = {};
+    dateData['day'] = data[rowStartIndex];
+    rowStartIndex++;
+
+    // Start and end times
+    const times = data[rowStartIndex].split(' - ');
+    dateData['time'] = { start: times[0], end: times[1] };
+    rowStartIndex++;
+
+    // location
+    dateData['location'] = data[rowStartIndex];
+    rowStartIndex++;
+
+    // weeks
+    dateData['weeks'] = data[rowStartIndex];
+    rowStartIndex++;
+
+    // Extra newline
+    rowStartIndex++;
+
+    dateList.push(dateData);
+  }
+
+  classData['times'] = dateList;
+
+  // console.log(classData);
+  // console.log(data[rowStartIndex]);
+  // console.log(data[rowStartIndex + 1]);
+  // console.log(term);
+
+  // // Final field -> list of times.
+  // const datelist = (data[rowStartIndex].split(',')).map(element => element.trim());
+  // for (let date of datelist)
+  // {
+  //   const timeData = {};
+  //   const tokens = date.split(' ');
+  //   timeData['day'] = tokens[0];
+  //   timeData['time'] = { 'start': tokens[1], 'end': tokens[2] }
+  //   const weeks = tokens[3].split('(:)');
+  //   console.log(weeks);
+  //   timeData['weeks'] = weeks[2];     // Possibly split this.
+  //   timeData['location']
+  // }
+
+  return [classData, rowStartIndex + 1, term];
+};
 
 // Gets all the urls in the data class on page: page,
 // given regex: regex.
@@ -68,7 +172,6 @@ const scrapePage = async page => {
 
   // Getting the course enrolment. (What is this???)
   let rowStartIndex = 0;
-  let check = false;
   for (let i in data) {
     if (data[i].includes('Course Enrolment')) {
       rowStartIndex = parseInt(i);
@@ -78,8 +181,8 @@ const scrapePage = async page => {
   courseData['courseEnrolment'] = data[rowStartIndex + 5];
   // Go to the index where term 1 records start.
   rowStartIndex += 7;
-  console.log(data);
-  console.log(rowStartIndex, data[rowStartIndex]);
+  // console.log(data);
+  // console.log(rowStartIndex, data[rowStartIndex]);
 
   // Get class list
   const classList = [];
@@ -99,43 +202,51 @@ const scrapePage = async page => {
 
   // throw new Error();
 
-  // Splitting at 'TERM', find all the classes.
-  while (true) {
-    // Scrape until term 2 is found... (or term one which means end of table)
-    while (
-      data[rowStartIndex] &&
-      !data[rowStartIndex].includes('TERM TWO') &&
-      rowStartIndex < data.length
-    ) {
-      // Store data for each class
-      const classData = {};
+  // Skip till we reach 4 digit number on a line
+  // Which means we reached class info area.
+  while (!/^[0-9]{4}$/.test(data[rowStartIndex])) {
+    rowStartIndex++;
+  }
+  // for (let x = rowStartIndex; x < data.length; x++) {
+  //   console.log(data[x]);
+  // }
+  // throw new Error('testing...');
 
-      // The data is in groups of 7.
-      // First 5 are similar in format and are:
-      // activity(tut/lec), term number, class id, section id, status(open/full)
-      let fields = ['activity', 'term', 'classID', 'section', 'status'];
-      let regex = />([^\<]+)</;
+  // Scrape all the class data
+  while (data[rowStartIndex] && rowStartIndex < data.length - 1) {
+    const classData = await getClassData(data, rowStartIndex);
+    // console.log(classData);
 
-      // Execute the regex on each field
-      for (let field of fields) {
-        let result = regex.exec(data[rowStartIndex]);
-        classData[field] = result[1];
-        rowStartIndex++;
-      }
-
-      // The sixth field
-      // re
+    // Depending on the term, append to respective list.
+    // console.log('Term no --------------------> ', classData[2]);
+    if (classData[2] === 1) {
+      term1.push(classData[0]);
+    } else if (classData[2] === 2) {
+      term2.push(classData[0]);
+    } else if (classData[2] === 3) {
+      term3.push(classData[0]);
     }
-    break;
+
+    // Update the index to scrape from
+    rowStartIndex = classData[1];
+
+    // If this is at a term boundary, then move row index
+    if (data[rowStartIndex].includes('name="S')) {
+      rowStartIndex++;
+    }
   }
 
+  classList.push(term1);
+  classList.push(term2);
+  classList.push(term3);
+
+  courseData['classes'] = classList;
   // for (let i = data.length - 1; i >= data.length - 50; i--) {
   //   if (data[i]) {
   //     console.log(data[i]);
   //   }
   // }
-
-  console.log(courseData);
+  return courseData;
 };
 
 const error = chalk.bold.red;
@@ -179,7 +290,7 @@ const success = chalk.green;
       // Follow each link...
       //const page2 = await browser.newPage();
       try {
-        console.log('opening ' + url);
+        // console.log('opening ' + url);
         await page.goto(url, {
           waitUntil: 'networkidle2'
         });
@@ -193,17 +304,16 @@ const success = chalk.green;
             waitUntil: 'networkidle2'
           });
 
-          await scrapePage(page);
-          throw new Error('its my error boi');
-          i++;
+          const courseData = await scrapePage(page);
+          console.log(courseData);
+          // i++;
 
-          if (i == 2) {
-            break;
-          }
+          // if (i == 2) {
+          //   break;
+          // }
         }
       } catch (err) {
         console.log(err);
-        throw new Error('Double??');
       }
     }
 
