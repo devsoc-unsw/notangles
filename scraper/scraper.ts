@@ -37,7 +37,106 @@ const getDataUrls = async (page, base, regex) => {
   return urlSet;
 };
 
-const scrapePage = page => {};
+const scrapePage = async page => {
+  // Objects that stores all the data for a single course
+  const courseData = {};
+
+  // Get the course code and course name
+  const courseHead = await page.evaluate(() => {
+    let courseHeader = document.getElementsByClassName(
+      'classSearchMinorHeading'
+    )[0].innerHTML;
+    let regexp = /(^[A-Z]{4}[0-9]{4})(.*)/;
+    return regexp.exec(courseHeader);
+  });
+
+  courseData['courseCode'] = courseHead[1].trim();
+  courseData['name'] = courseHead[2].trim();
+
+  // Get all the data elements.
+  const data = await page.$$eval('.data', element =>
+    element.map(e => e.innerHTML)
+  );
+
+  // Getting the course type (undergrad/postgrad)
+  const careerIndex = 6; // I wonder if i should use a loop instead... (but the page is static...)
+  if (data[careerIndex].trim() === 'Undergraduate') {
+    courseData['isPostgrad'] = false;
+  } else {
+    courseData['isPostgrad'] = true;
+  }
+
+  // Getting the course enrolment. (What is this???)
+  let rowStartIndex = 0;
+  let check = false;
+  for (let i in data) {
+    if (data[i].includes('Course Enrolment')) {
+      rowStartIndex = parseInt(i);
+      break;
+    }
+  }
+  courseData['courseEnrolment'] = data[rowStartIndex + 5];
+  // Go to the index where term 1 records start.
+  rowStartIndex += 7;
+  console.log(data);
+  console.log(rowStartIndex, data[rowStartIndex]);
+
+  // Get class list
+  const classList = [];
+  const term1 = [];
+  const term2 = [];
+  const term3 = [];
+
+  // while (
+  //   // data[rowStartIndex] &&
+  //   // !data[rowStartIndex].includes('TERM ONE') &&
+  //   rowStartIndex <
+  //   data.length - 3000
+  // ) {
+  //   console.log(data[rowStartIndex]);
+  //   rowStartIndex++;
+  // }
+
+  // throw new Error();
+
+  // Splitting at 'TERM', find all the classes.
+  while (true) {
+    // Scrape until term 2 is found... (or term one which means end of table)
+    while (
+      data[rowStartIndex] &&
+      !data[rowStartIndex].includes('TERM TWO') &&
+      rowStartIndex < data.length
+    ) {
+      // Store data for each class
+      const classData = {};
+
+      // The data is in groups of 7.
+      // First 5 are similar in format and are:
+      // activity(tut/lec), term number, class id, section id, status(open/full)
+      let fields = ['activity', 'term', 'classID', 'section', 'status'];
+      let regex = />([^\<]+)</;
+
+      // Execute the regex on each field
+      for (let field of fields) {
+        let result = regex.exec(data[rowStartIndex]);
+        classData[field] = result[1];
+        rowStartIndex++;
+      }
+
+      // The sixth field
+      // re
+    }
+    break;
+  }
+
+  // for (let i = data.length - 1; i >= data.length - 50; i--) {
+  //   if (data[i]) {
+  //     console.log(data[i]);
+  //   }
+  // }
+
+  console.log(courseData);
+};
 
 const error = chalk.bold.red;
 const success = chalk.green;
@@ -47,8 +146,12 @@ const success = chalk.green;
   try {
     let page = await browser.newPage();
 
+    // If the scraper is automated, the year should be dynamically
+    // generated to access the respective timetable page
+    const year = new Date().getFullYear();
+
     // Base url to be used for all scraping
-    const base = 'http://timetable.unsw.edu.au/2019/';
+    const base = `http://timetable.unsw.edu.au/${year}/`;
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -90,16 +193,17 @@ const success = chalk.green;
             waitUntil: 'networkidle2'
           });
 
-          scrapePage(page);
-        }
+          await scrapePage(page);
+          throw new Error('its my error boi');
+          i++;
 
-        i++;
-
-        if (i == 5) {
-          break;
+          if (i == 2) {
+            break;
+          }
         }
       } catch (err) {
         console.log(err);
+        throw new Error('Double??');
       }
     }
 
