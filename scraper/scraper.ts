@@ -1,105 +1,119 @@
-import * as puppeteer from 'puppeteer'
-import * as fs from 'fs'
+import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
 
 // import * as .. does not work for chalk, so require.
-const chalk = require('chalk')
+const chalk = require('chalk');
 
-const error = chalk.bold.red
-const success = chalk.green
-  ; (async () => {
-    // Launch the browser. Headless mode = true by default
-    const browser = await puppeteer.launch()
-    try {
-      let page = await browser.newPage()
+// Gets all the urls in the data class on page: page,
+// given regex: regex.
+// Each url will have the prefix: base.
+const getDataUrls = async (page, base, regex) => {
+  // Get all the required urls...
+  const urls = await page.$$eval('.data', e => {
+    let inner = e.map(f => f.innerHTML);
 
-      // Go to the timetable page
-      const tt = 'http://timetable.unsw.edu.au/2019/'
-      await page.goto(tt, {
-        waitUntil: 'networkidle2',
-      })
+    // console.log(inner);
+    return inner;
+  });
 
-      // scrape the page. (only these lines were added.)
-      // let scraped = await page.evaluate(() => {
-      //   return Promise.resolve(document.getElementsByClassName('data'));
-      //   //console.log(data[0]);
-      //   //console.log('i can log');
-      // });
-
-      // console.log(scraped);
-      // const jsHandle = await page.evaluateHandle(() => {
-      //   const element = document.getElementsByTagName('td');
-      //   return element;
-      // });
-      //console.log(jsHandle); // JSHandle
-
-      // const result = await page.evaluate(e => {
-      //   for(let i = 0; i < 10; i++)
-      //   {
-      //     console.log(e[0].innerHTML);
-      //   }
-      //   return e;
-      // }, jsHandle);
-
-      const jsHandle = await page.$$eval('.data', e => {
-        let inner = e.map(f => f.innerHTML)
-        inner.forEach(element => { })
-        return inner
-      })
-
-      // fs.writeFile('scraped', jsHandle, (err) => {
-      //   if (err)
-      //   {
-      //     console.log(error(err))
-      //   }
-      //   console.log(success('file written!'))
-      // })
-
-      //console.log(jsHandle[0])
-      const urlSet = new Set([])
-      let count = 0
-      const myRe = /href="(.*)">/
-      jsHandle.forEach(element => {
-        const link = jsHandle[count].match(myRe)
-        count++
-        if (link !== null && link.length > 0) {
-          const html = /([A-Z]{8})\.html/
-          if (html.test(link[1])) {
-            const url = tt + link[1]
-            urlSet.add(url)
-          }
-        }
-      })
-
-      for (const url of urlSet) {
-        // Follow each link...
-        //const page2 = await browser.newPage();
-        try {
-          console.log("opening " + url);
-          await page.goto(url, {
-            waitUntil: 'networkidle2',
-          })
-          console.log(await page.title());
-          //setTimeout(() => { }, 1);
-        }
-        catch (err) {
-          console.log(err)
-        }
+  // Extract urls from html
+  // Remove duplicate urls using a set
+  const urlSet = new Set([]);
+  let count = 0;
+  const myRe = /href="(.*)">/;
+  // console.log(urls);
+  urls.forEach(element => {
+    const link = element.match(myRe);
+    count++;
+    if (link !== null && link.length > 0) {
+      // console.log(link[1]);
+      if (regex.test(link[1])) {
+        const url = base + link[1];
+        urlSet.add(url);
       }
-
-
-      // Close the browser.
-      await browser.close()
-      // Promise.all(courses).then(() => {
-      //   await browser.close()
-      // })
-      console.log(success('Browser closed'))
-    } catch (err) {
-      // log error and close browser.
-      console.log(error(err))
-      await browser.close()
-      console.log(error('Browser closed'))
     }
-  })()
+  });
+
+  return urlSet;
+};
+
+const scrapePage = page => {};
+
+const error = chalk.bold.red;
+const success = chalk.green;
+(async () => {
+  // Launch the browser. Headless mode = true by default
+  const browser = await puppeteer.launch();
+  try {
+    let page = await browser.newPage();
+
+    // Base url to be used for all scraping
+    const base = 'http://timetable.unsw.edu.au/2019/';
+
+    // Go to the page with list of subjects (Accounting, Computers etc)
+    await page.goto(base, {
+      waitUntil: 'networkidle2'
+    });
+
+    // Defining the regex for course scraping...
+    let regex = /([A-Z]{8})\.html/;
+
+    // Gets all the dataurls on the timetable page.
+    const urlSet = await getDataUrls(page, base, regex);
+
+    // Store all the urls of all the subjects on all the pages. (as set of sets)
+    // (possibly change this later so that only urls on a single page are stored)
+    let courses;
+
+    // Defining the regex for each of the subject codes...
+    regex = /([A-Z]{4}[0-9]{4})\.html/;
+
+    // Counter variable for debugging
+    let i = 0;
+
+    // Go to each page, and get all the subject urls
+    for (const url of urlSet) {
+      // Follow each link...
+      //const page2 = await browser.newPage();
+      try {
+        console.log('opening ' + url);
+        await page.goto(url, {
+          waitUntil: 'networkidle2'
+        });
+
+        // Then, get each data url on that page
+        courses = await getDataUrls(page, base, regex);
+
+        // Open each subject url and print data!!
+        for (const course of courses) {
+          await page.goto(course, {
+            waitUntil: 'networkidle2'
+          });
+
+          scrapePage(page);
+        }
+
+        i++;
+
+        if (i == 5) {
+          break;
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    // console.log(courses);
+    // Close the browser.
+    await browser.close();
+    console.log(success('Browser closed'));
+  } catch (err) {
+    // log error and close browser.
+    console.log(error(err));
+    await browser.close();
+    console.log(error('Browser closed'));
+  }
+})();
 
 // from previous deleted branch
 // import * as puppeteer from 'pupeteer';
