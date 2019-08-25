@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
-import * as fs from 'fs';
-import { threadId } from 'worker_threads';
-import { EROFS } from 'constants';
+
+// Temp import
+const fs = require('fs');
 
 // import * as .. does not work for chalk, so require.
 const chalk = require('chalk');
@@ -16,6 +16,8 @@ const getClassData = async (data, rowStartIndex) => {
 
   // First 4 are similar in format and are:
   // class id, section id, term, activity(lecture/tutorial)
+
+  // console.log(data[rowStartIndex]);
   let fields = ['classID', 'section', 'term', 'activity'];
   for (let field of fields) {
     // Store the term number to later append to the correct term
@@ -33,6 +35,7 @@ const getClassData = async (data, rowStartIndex) => {
     rowStartIndex++;
   }
 
+  // console.log(data[rowStartIndex]);
   // Get the status of the class
   let regex = />([^\<]+)</;
   let result = regex.exec(data[rowStartIndex]);
@@ -142,111 +145,147 @@ const getDataUrls = async (page, base, regex) => {
 };
 
 const scrapePage = async page => {
-  // Objects that stores all the data for a single course
-  const courseData = {};
-
-  // Get the course code and course name
-  const courseHead = await page.evaluate(() => {
-    let courseHeader = document.getElementsByClassName(
-      'classSearchMinorHeading'
-    )[0].innerHTML;
-    let regexp = /(^[A-Z]{4}[0-9]{4})(.*)/;
-    return regexp.exec(courseHeader);
-  });
-
-  courseData['courseCode'] = courseHead[1].trim();
-  courseData['name'] = courseHead[2].trim();
-
+  // Stores data for every course on a page.
+  const coursesData = [];
+  let rowStartIndex = 0;
   // Get all the data elements.
   const data = await page.$$eval('.data', element =>
     element.map(e => e.innerHTML)
   );
 
-  // Getting the course type (undergrad/postgrad)
-  const careerIndex = 6; // I wonder if i should use a loop instead... (but the page is static...)
-  if (data[careerIndex].trim() === 'Undergraduate') {
-    courseData['isPostgrad'] = false;
-  } else {
-    courseData['isPostgrad'] = true;
-  }
+  // Count of the number of courses on the page
+  let count = 0;
+  while (rowStartIndex < data.length) {
+    console.log(count);
+    // Objects that stores all the data for a single course
+    const courseData = {};
 
-  // Getting the course enrolment. (What is this???)
-  let rowStartIndex = 0;
-  for (let i in data) {
-    if (data[i].includes('Course Enrolment')) {
-      rowStartIndex = parseInt(i);
-      break;
-    }
-  }
-  courseData['courseEnrolment'] = data[rowStartIndex + 5];
-  // Go to the index where term 1 records start.
-  rowStartIndex += 7;
-  // console.log(data);
-  // console.log(rowStartIndex, data[rowStartIndex]);
+    // Get the course code and course name
+    const courseHead = await page.evaluate(count => {
+      // console.log(count);
+      let courseHeader = document.getElementsByClassName(
+        'classSearchMinorHeading'
+      )[0].innerHTML;
+      let regexp = /(^[A-Z]{4}[0-9]{4})(.*)/;
+      return regexp.exec(courseHeader);
+    });
 
-  // Get class list
-  const classList = [];
-  const term1 = [];
-  const term2 = [];
-  const term3 = [];
+    courseData['courseCode'] = courseHead[1].trim();
+    courseData['name'] = courseHead[2].trim();
 
-  // while (
-  //   // data[rowStartIndex] &&
-  //   // !data[rowStartIndex].includes('TERM ONE') &&
-  //   rowStartIndex <
-  //   data.length - 3000
-  // ) {
-  //   console.log(data[rowStartIndex]);
-  //   rowStartIndex++;
-  // }
-
-  // throw new Error();
-
-  // Skip till we reach 4 digit number on a line
-  // Which means we reached class info area.
-  while (!/^[0-9]{4}$/.test(data[rowStartIndex])) {
-    rowStartIndex++;
-  }
-  // for (let x = rowStartIndex; x < data.length; x++) {
-  //   console.log(data[x]);
-  // }
-  // throw new Error('testing...');
-
-  // Scrape all the class data
-  while (data[rowStartIndex] && rowStartIndex < data.length - 1) {
-    const classData = await getClassData(data, rowStartIndex);
-    // console.log(classData);
-
-    // Depending on the term, append to respective list.
-    // console.log('Term no --------------------> ', classData[2]);
-    if (classData[2] === 1) {
-      term1.push(classData[0]);
-    } else if (classData[2] === 2) {
-      term2.push(classData[0]);
-    } else if (classData[2] === 3) {
-      term3.push(classData[0]);
+    // Getting the course type (undergrad/postgrad)
+    const careerIndex = 6; // I wonder if i should use a loop instead... (but the page is static...)
+    if (data[careerIndex].trim() === 'Undergraduate') {
+      courseData['isPostgrad'] = false;
+    } else {
+      courseData['isPostgrad'] = true;
     }
 
-    // Update the index to scrape from
-    rowStartIndex = classData[1];
+    // Getting the course enrolment. (What is this???)
+    for (let i = rowStartIndex; i < data.length; i++) {
+      if (data[i].includes('Course Enrolment')) {
+        rowStartIndex = i;
+        break;
+      }
+    }
+    courseData['courseEnrolment'] = data[rowStartIndex + 5];
+    // Go to the index where term 1 records start.
+    rowStartIndex += 7;
+    // console.log(data);
+    // console.log(rowStartIndex, data[rowStartIndex]);
 
-    // If this is at a term boundary, then move row index
-    if (data[rowStartIndex].includes('name="S')) {
+    // Get class list
+    const classList = [];
+    const term1 = [];
+    const term2 = [];
+    const term3 = [];
+
+    // while (
+    //   // data[rowStartIndex] &&
+    //   // !data[rowStartIndex].includes('TERM ONE') &&
+    //   rowStartIndex <
+    //   data.length - 3000
+    // ) {
+    //   console.log(data[rowStartIndex]);
+    //   rowStartIndex++;
+    // }
+
+    // throw new Error();
+
+    // Skip till we reach 4 digit number on a line
+    // Which means we reached class info area.
+    while (!/^[0-9]{4}$/.test(data[rowStartIndex])) {
       rowStartIndex++;
     }
+    // for (let x = rowStartIndex; x < data.length; x++) {
+    //   console.log(data[x]);
+    // }
+    // throw new Error('testing...');
+
+    // Scrape all the class data
+    while (data[rowStartIndex] && rowStartIndex < data.length - 1) {
+      const classData = await getClassData(data, rowStartIndex);
+      // console.log(classData);
+
+      // Depending on the term, append to respective list.
+      // console.log('Term no --------------------> ', classData[2]);
+      if (classData[2] === 1) {
+        term1.push(classData[0]);
+      } else if (classData[2] === 2) {
+        term2.push(classData[0]);
+      } else if (classData[2] === 3) {
+        term3.push(classData[0]);
+      }
+
+      // Update the index to scrape from
+      rowStartIndex = classData[1];
+
+      // Special case -> no classes lead to end of page
+      if (!data[rowStartIndex]) {
+        // console.log(data[rowStartIndex - 1], rowStartIndex, data.length);
+        break;
+      }
+
+      // Special case -> end of data/page has both undergrad
+      // and postgrad details...
+      if (data[rowStartIndex].includes('Back to top')) {
+        break;
+      }
+
+      // If this is at a term boundary, then move row index
+      if (data[rowStartIndex].includes('name="S')) {
+        rowStartIndex++;
+      }
+    }
+
+    classList.push(term1);
+    classList.push(term2);
+    classList.push(term3);
+
+    courseData['classes'] = classList;
+
+    coursesData.push(courseData);
+    if (data[rowStartIndex + 1]) {
+      // console.log(rowStartIndex, data[rowStartIndex], data.length);
+      if (data[rowStartIndex].includes('Back to top')) {
+        rowStartIndex++;
+        // console.log(rowStartIndex, data[rowStartIndex], data.length);
+      } else {
+        break;
+      }
+    } else {
+      // console.log(rowStartIndex, data[rowStartIndex - 1], data.length);
+      break;
+    }
+    count++;
   }
-
-  classList.push(term1);
-  classList.push(term2);
-  classList.push(term3);
-
-  courseData['classes'] = classList;
   // for (let i = data.length - 1; i >= data.length - 50; i--) {
   //   if (data[i]) {
   //     console.log(data[i]);
   //   }
   // }
-  return courseData;
+  console.log(coursesData);
+  return coursesData;
 };
 
 const error = chalk.bold.red;
@@ -263,6 +302,9 @@ const success = chalk.green;
 
     // Base url to be used for all scraping
     const base = `http://timetable.unsw.edu.au/${year}/`;
+
+    // JSON Array to store the course data.
+    const scrapedData = [];
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -303,19 +345,28 @@ const success = chalk.green;
           await page.goto(course, {
             waitUntil: 'networkidle2'
           });
-
           const courseData = await scrapePage(page);
-          console.log(courseData);
-          // i++;
-
-          // if (i == 2) {
-          //   break;
-          // }
+          for (let c of courseData) {
+            scrapedData.push(c);
+          }
+          // console.log(courseData);
         }
       } catch (err) {
         console.log(err);
+        throw new Error('double');
       }
     }
+
+    console.log(scrapedData);
+
+    // const testData = [{ ok: 'cool' }];
+    // Write to file!
+    fs.writeFile('scraped.json', JSON.stringify(scrapedData), 'utf8', err => {
+      if (err) {
+        throw err;
+      }
+      console.log('Operation completed!!');
+    });
 
     // console.log(courses);
     // Close the browser.
