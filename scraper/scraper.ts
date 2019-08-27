@@ -10,7 +10,6 @@ const chalk = require('chalk');
 const getClassData = async (data, rowStartIndex) => {
   // Store data for each class
   const classData = {};
-
   // term number to append class to
   let term = 0;
 
@@ -22,13 +21,20 @@ const getClassData = async (data, rowStartIndex) => {
   for (let field of fields) {
     // Store the term number to later append to the correct term
     if (field === 'term') {
-      term = parseInt(data[rowStartIndex].charAt(1));
+      // console.log(data[rowStartIndex], rowStartIndex);
+      if (data[rowStartIndex].charAt(0) === 'U') {
+        term = 0;
+      } else {
+        term = parseInt(data[rowStartIndex].charAt(1));
+      }
     }
     if (
       field === 'activity' &&
       data[rowStartIndex].includes('Course Enrolment')
     ) {
       // Abort if you are looking at course enrolment
+      // console.log(data[rowStartIndex]);
+      // console.log('aborted');
       return [[], rowStartIndex + 9, -1];
     }
     classData[field] = data[rowStartIndex];
@@ -63,6 +69,7 @@ const getClassData = async (data, rowStartIndex) => {
   // Dates and location!
   const dateList = [];
   while (data[rowStartIndex] && !data[rowStartIndex].includes('Back to top')) {
+    // console.log(data[rowStartIndex]);
     // Day
     const dateData = {};
     dateData['day'] = data[rowStartIndex];
@@ -72,6 +79,16 @@ const getClassData = async (data, rowStartIndex) => {
     const times = data[rowStartIndex].split(' - ');
     dateData['time'] = { start: times[0], end: times[1] };
     rowStartIndex++;
+
+    // Checking the start and end times for errors
+    if (!(times[0] && times[1])) {
+      continue;
+    }
+
+    let checker = /^[0-9:]+$/;
+    if (!(checker.test(times[0]) && checker.test(times[1]))) {
+      continue;
+    }
 
     // location
     dateData['location'] = data[rowStartIndex];
@@ -85,6 +102,7 @@ const getClassData = async (data, rowStartIndex) => {
     rowStartIndex++;
 
     dateList.push(dateData);
+    // console.log(dateData);
   }
 
   classData['times'] = dateList;
@@ -108,6 +126,7 @@ const getClassData = async (data, rowStartIndex) => {
   //   timeData['location']
   // }
 
+  // console.log(classData);
   return [classData, rowStartIndex + 1, term];
 };
 
@@ -153,10 +172,17 @@ const scrapePage = async page => {
     element.map(e => e.innerHTML)
   );
 
+  // for (let x = rowStartIndex; x < data.length; x++) {
+  //   console.log(data[x]);
+  // }
+  // console.log(data[122], data[118], data[119]);
+  // throw new Error('testing...');
   // Count of the number of courses on the page
   let count = 0;
   while (rowStartIndex < data.length) {
-    console.log(count);
+    // console.log(count);
+    // console.log(rowStartIndex);
+    // console.log(data[rowStartIndex]);
     // Objects that stores all the data for a single course
     const courseData = {};
 
@@ -174,20 +200,38 @@ const scrapePage = async page => {
     courseData['name'] = courseHead[2].trim();
 
     // Getting the course type (undergrad/postgrad)
-    const careerIndex = 6; // I wonder if i should use a loop instead... (but the page is static...)
-    if (data[careerIndex].trim() === 'Undergraduate') {
-      courseData['isPostgrad'] = false;
-    } else {
-      courseData['isPostgrad'] = true;
+    while (
+      data[rowStartIndex] !== 'Undergraduate' &&
+      data[rowStartIndex] !== 'Postgraduate' &&
+      data[rowStartIndex] !== 'Research'
+    ) {
+      rowStartIndex++;
     }
 
+    if (data[rowStartIndex].trim() === 'Undergraduate') {
+      courseData['career'] = 0;
+    } else if (data[rowStartIndex].trim() === 'Postgraduate') {
+      courseData['career'] = 1;
+    } else {
+      courseData['career'] = 2;
+    }
+
+    const termlist = [];
     // Getting the course enrolment. (What is this???)
     for (let i = rowStartIndex; i < data.length; i++) {
+      // Getting all the terms that the course is offered in
+      // console.log(data[i]);
+      if (data[i].charAt(0) === 'U') {
+        termlist.push(data[i]);
+      } else if (/^T[1-3]$/.test(data[i])) {
+        termlist.push(data[i]);
+      }
       if (data[i].includes('Course Enrolment')) {
         rowStartIndex = i;
         break;
       }
     }
+    courseData['termsOffered'] = termlist;
     courseData['courseEnrolment'] = data[rowStartIndex + 5];
     // Go to the index where term 1 records start.
     rowStartIndex += 7;
@@ -196,6 +240,7 @@ const scrapePage = async page => {
 
     // Get class list
     const classList = [];
+    const summer = [];
     const term1 = [];
     const term2 = [];
     const term3 = [];
@@ -212,24 +257,41 @@ const scrapePage = async page => {
 
     // throw new Error();
 
-    // Skip till we reach 4 digit number on a line
+    // Skip till we reach 4 or 5 digit number on a line
     // Which means we reached class info area.
-    while (!/^[0-9]{4}$/.test(data[rowStartIndex])) {
+    while (!/^[0-9]{4,5}$/.test(data[rowStartIndex])) {
+      // If we reach the last line on the page, then the course
+      // has no classes.
+      if (data[rowStartIndex].includes('Back to top')) {
+        courseData['classes'] = [];
+        return [courseData]; // returned value is an array
+      }
       rowStartIndex++;
     }
-    // for (let x = rowStartIndex; x < data.length; x++) {
-    //   console.log(data[x]);
-    // }
-    // throw new Error('testing...');
 
     // Scrape all the class data
     while (data[rowStartIndex] && rowStartIndex < data.length - 1) {
+      // If this is at a term boundary, then move row index
+      // or any other alignment issues.
+      while (
+        rowStartIndex < data.length &&
+        !/^[0-9]{4,5}$/.test(data[rowStartIndex])
+      ) {
+        rowStartIndex++;
+      }
+
+      // If we have reached the end, skip!
+      if (rowStartIndex >= data.length) {
+        break;
+      }
+
       const classData = await getClassData(data, rowStartIndex);
-      // console.log(classData);
 
       // Depending on the term, append to respective list.
       // console.log('Term no --------------------> ', classData[2]);
-      if (classData[2] === 1) {
+      if (classData[2] === 0) {
+        summer.push(classData[0]);
+      } else if (classData[2] === 1) {
         term1.push(classData[0]);
       } else if (classData[2] === 2) {
         term2.push(classData[0]);
@@ -240,6 +302,7 @@ const scrapePage = async page => {
       // Update the index to scrape from
       rowStartIndex = classData[1];
 
+      // console.log('returned line ---> ', data[rowStartIndex]);
       // Special case -> no classes lead to end of page
       if (!data[rowStartIndex]) {
         // console.log(data[rowStartIndex - 1], rowStartIndex, data.length);
@@ -248,16 +311,24 @@ const scrapePage = async page => {
 
       // Special case -> end of data/page has both undergrad
       // and postgrad details...
+      // or page ended (two back to tops signal this.)
       if (data[rowStartIndex].includes('Back to top')) {
-        break;
-      }
+        if (
+          (data[rowStartIndex - 1] &&
+            data[rowStartIndex - 1].includes('Back to top')) ||
+          (data[rowStartIndex + 1] &&
+            data[rowStartIndex + 1].includes('Back to top'))
+        ) {
+          break;
+        }
 
-      // If this is at a term boundary, then move row index
-      if (data[rowStartIndex].includes('name="S')) {
-        rowStartIndex++;
+        if (rowStartIndex >= data.length - 3) {
+          break;
+        }
       }
     }
 
+    classList.push(summer);
     classList.push(term1);
     classList.push(term2);
     classList.push(term3);
@@ -342,10 +413,17 @@ const success = chalk.green;
 
         // Open each subject url and print data!!
         for (const course of courses) {
+          // console.log(course);
           await page.goto(course, {
             waitUntil: 'networkidle2'
           });
+
+          // await page.goto('http://timetable.unsw.edu.au/2019/MBAX9139.html', {
+          //   waitUntil: 'networkidle2'
+          // });
           const courseData = await scrapePage(page);
+          // console.log(courseData);
+          // throw new Error();
           for (let c of courseData) {
             scrapedData.push(c);
           }
