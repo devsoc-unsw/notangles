@@ -156,7 +156,7 @@ const getDataUrls = async (page, base, regex) => {
     }
   });
 
-  return urlSet;
+  return Array.from(urlSet);
 };
 
 const scrapePage = async page => {
@@ -313,14 +313,55 @@ const scrapePage = async page => {
     courseData['classes'] = classList;
     coursesData.push(courseData);
   }
+  // console.log(coursesData);
   return coursesData;
+};
+
+// Async wrapper to scrape multiple subjects at once
+// This scrapes one subject
+const scrapeSubject = async (page, course) => {
+  await page.goto(course, {
+    waitUntil: 'networkidle2'
+  });
+
+  // Get all relevant data for one page
+  return await scrapePage(page);
+};
+
+// Creates browser pages to then use to scrape
+const createPages = async (browser, batchsize) => {
+  // List of pages
+  const pages = [];
+  for (let pageno = 0; pageno < batchsize; pageno++) {
+    let singlepage = await browser.newPage();
+    // Block all js, css, fonts and images for speed
+    await singlepage.setRequestInterception(true);
+    singlepage.on('request', request => {
+      const type = request.resourceType();
+      if (
+        type === 'script' ||
+        type === 'stylesheet' ||
+        type === 'font' ||
+        type === 'image'
+      ) {
+        request.abort();
+      } else {
+        request.continue();
+      }
+    });
+    pages.push(singlepage);
+  }
+  return pages;
 };
 
 const timetableScraper = async () => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch();
   try {
-    let page = await browser.newPage();
+    const batchsize = 30;
+    // Create batchsize pages to scrape each course
+    const pages = await createPages(browser, batchsize);
+    let page = pages[0];
 
     // If the scraper is automated, the year should be dynamically
     // generated to access the respective timetable page
@@ -349,9 +390,6 @@ const timetableScraper = async () => {
     // Defining the regex for each of the subject codes...
     regex = /([A-Z]{4}[0-9]{4})\.html/;
 
-    // Counter variable for debugging
-    let i = 0;
-
     // Go to each page, and get all the subject urls
     for (const url of urlSet) {
       // Follow each link...
@@ -362,25 +400,38 @@ const timetableScraper = async () => {
 
         // Then, get each data url on that page
         courses = await getDataUrls(page, base, regex);
+        // console.log(courses.length);
+        let resolved;
 
         // Open each subject url and print data!!
-        for (const course of courses) {
-          await page.goto(course, {
-            waitUntil: 'networkidle2'
-          });
+        for (let i = 0; i < courses.length; i += batchsize) {
+          // console.log('each...');
+          let scraping = [];
+          // Scrape 10 courses
+          for (let j = 0; j < batchsize; j++) {
+            // console.log(courses[i]);
+            if (!courses[i + j]) {
+              continue;
+            }
+            let courseData = scrapeSubject(pages[j], courses[i + j]);
+            scraping.push(courseData);
+          }
+          // Wait for all the pages
+          resolved = await Promise.all(scraping);
 
-          // Get all relevant data for one page
-          const courseData = await scrapePage(page);
-
-          // Add all the courses on that page to the
-          for (let c of courseData) {
-            scrapedData.push(c);
+          // store all the courses on all pages
+          for (let rescourses of resolved) {
+            // rescourses is an array of courses on a single page
+            for (let c of rescourses) {
+              scrapedData.push(c);
+            }
           }
         }
       } catch (err) {
         throw new Error(err);
       }
     }
+    console.log(scrapedData, scrapedData.length);
     // Close the browser.
     await browser.close();
 
@@ -395,5 +446,17 @@ const timetableScraper = async () => {
     return [];
   }
 };
+
+(async () => {
+  console.time('scraper');
+  await timetableScraper();
+  console.timeEnd('scraper');
+  const used = process.memoryUsage();
+  for (let key in used) {
+    console.log(
+      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`
+    );
+  }
+})();
 
 export { timetableScraper };
