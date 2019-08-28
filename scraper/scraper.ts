@@ -343,8 +343,7 @@ const timetableScraper = async () => {
     // Gets all the dataurls on the timetable page.
     const urlSet = await getDataUrls(page, base, regex);
 
-    // Store all the urls of all the subjects on all the pages. (as set of sets)
-    // (possibly change this later so that only urls on a single page are stored)
+    // To store all the links on one page.
     let courses;
 
     // Defining the regex for each of the subject codes...
@@ -356,7 +355,6 @@ const timetableScraper = async () => {
     // Go to each page, and get all the subject urls
     for (const url of urlSet) {
       // Follow each link...
-      //const page2 = await browser.newPage();
       try {
         await page.goto(url, {
           waitUntil: 'networkidle2'
@@ -371,12 +369,7 @@ const timetableScraper = async () => {
             waitUntil: 'networkidle2'
           });
 
-          // await page.goto('http://timetable.unsw.edu.au/2019/GENL1022.html', {
-          //   waitUntil: 'networkidle2'
-          // });
-          // GENL1022
           const courseData = await scrapePage(page);
-          // throw new Error();
           for (let c of courseData) {
             scrapedData.push(c);
           }
