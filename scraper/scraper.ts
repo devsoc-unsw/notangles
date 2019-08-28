@@ -369,7 +369,10 @@ const timetableScraper = async () => {
             waitUntil: 'networkidle2'
           });
 
+          // Get all relevant data for one page
           const courseData = await scrapePage(page);
+
+          // Add all the courses on that page to the
           for (let c of courseData) {
             scrapedData.push(c);
           }
@@ -380,10 +383,16 @@ const timetableScraper = async () => {
     }
     // Close the browser.
     await browser.close();
+
+    // Return the data that was scraped
+    return scrapedData;
   } catch (err) {
     // log error and close browser.
     console.error(err);
     await browser.close();
+
+    // Since there was an error, return empty object
+    return [];
   }
 };
 
