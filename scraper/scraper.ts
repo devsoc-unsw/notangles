@@ -1,10 +1,27 @@
-import * as puppeteer from 'puppeteer';
+import * as puppeteer from "puppeteer";
 
 // Temp import
-const fs = require('fs');
+const fs = require("fs");
 
 // import * as .. does not work for chalk, so require.
-const chalk = require('chalk');
+const chalk = require("chalk");
+
+// Remove any html character entities from the given string
+// At this point, it only looks for 3 of them as more are not necessary
+const removeHtmlSpecials = string => {
+  // &amp --> and
+  let newstr = string.replace("&amp;", "and");
+
+  // &nbsp ---> nothing (as it appears in course enrolment when the course does not have one)
+  newstr = newstr.replace("&nbsp;", "");
+
+  // &lt --> < (less than), this could be changed to before??
+  newstr = newstr.replace("&lt;", "<");
+
+  // There was no greater than found, but if neccessary, can be added here
+
+  return newstr;
+};
 
 // Gets all the class data
 const getClassData = async (data, rowStartIndex) => {
@@ -17,20 +34,20 @@ const getClassData = async (data, rowStartIndex) => {
   // class id, section id, term, activity(lecture/tutorial)
 
   // console.log(data[rowStartIndex]);
-  let fields = ['classID', 'section', 'term', 'activity'];
+  let fields = ["classID", "section", "term", "activity"];
   for (let field of fields) {
     // Store the term number to later append to the correct term
-    if (field === 'term') {
+    if (field === "term") {
       // console.log(data[rowStartIndex], rowStartIndex);
-      if (data[rowStartIndex].charAt(0) === 'U') {
+      if (data[rowStartIndex].charAt(0) === "U") {
         term = 0;
       } else {
         term = parseInt(data[rowStartIndex].charAt(1));
       }
     }
     if (
-      field === 'activity' &&
-      data[rowStartIndex].includes('Course Enrolment')
+      field === "activity" &&
+      data[rowStartIndex].includes("Course Enrolment")
     ) {
       // Abort if you are looking at course enrolment
       // console.log(data[rowStartIndex]);
@@ -45,12 +62,12 @@ const getClassData = async (data, rowStartIndex) => {
   // Get the status of the class
   let regex = />([^\<]+)</;
   let result = regex.exec(data[rowStartIndex]);
-  classData['status'] = result[1];
+  classData["status"] = result[1];
   rowStartIndex++;
 
   //class enrollments.
-  const enrAndCap = data[rowStartIndex].split('/');
-  classData['courseEnrolment'] = {
+  const enrAndCap = data[rowStartIndex].split("/");
+  classData["courseEnrolment"] = {
     enrolments: enrAndCap[0],
     capacity: enrAndCap[1]
   };
@@ -60,7 +77,7 @@ const getClassData = async (data, rowStartIndex) => {
   rowStartIndex += 3;
 
   // Instruction mode:
-  classData['mode'] = data[rowStartIndex];
+  classData["mode"] = data[rowStartIndex];
   rowStartIndex++;
 
   // Skip consent
@@ -68,16 +85,16 @@ const getClassData = async (data, rowStartIndex) => {
 
   // Dates and location!
   const dateList = [];
-  while (data[rowStartIndex] && !data[rowStartIndex].includes('Back to top')) {
+  while (data[rowStartIndex] && !data[rowStartIndex].includes("Back to top")) {
     // console.log(data[rowStartIndex]);
     // Day
     const dateData = {};
-    dateData['day'] = data[rowStartIndex];
+    dateData["day"] = data[rowStartIndex];
     rowStartIndex++;
 
     // Start and end times
-    const times = data[rowStartIndex].split(' - ');
-    dateData['time'] = { start: times[0], end: times[1] };
+    const times = data[rowStartIndex].split(" - ");
+    dateData["time"] = { start: times[0], end: times[1] };
     rowStartIndex++;
 
     // Checking the start and end times for errors
@@ -91,11 +108,11 @@ const getClassData = async (data, rowStartIndex) => {
     }
 
     // location
-    dateData['location'] = data[rowStartIndex];
+    dateData["location"] = removeHtmlSpecials(data[rowStartIndex]);
     rowStartIndex++;
 
     // weeks
-    dateData['weeks'] = data[rowStartIndex];
+    dateData["weeks"] = data[rowStartIndex];
     rowStartIndex++;
 
     // Extra newline
@@ -105,7 +122,7 @@ const getClassData = async (data, rowStartIndex) => {
     // console.log(dateData);
   }
 
-  classData['times'] = dateList;
+  classData["times"] = dateList;
 
   // console.log(classData);
   // console.log(data[rowStartIndex]);
@@ -135,7 +152,7 @@ const getClassData = async (data, rowStartIndex) => {
 // Each url will have the prefix: base.
 const getDataUrls = async (page, base, regex) => {
   // Get all the required urls...
-  const urls = await page.$$eval('.data', e => {
+  const urls = await page.$$eval(".data", e => {
     let inner = e.map(f => f.innerHTML);
 
     // console.log(inner);
@@ -168,7 +185,7 @@ const scrapePage = async page => {
   const coursesData = [];
   let rowStartIndex = 0;
   // Get all the data elements.
-  const data = await page.$$eval('.data', element =>
+  const data = await page.$$eval(".data", element =>
     element.map(e => e.innerHTML)
   );
 
@@ -176,10 +193,10 @@ const scrapePage = async page => {
   //   console.log(data[x]);
   // }
   // console.log(data[122], data[118], data[119]);
-  // throw new Error('testing...');
+  // throw new Error("testing...");
   // Count of the number of courses on the page
   let count = 0;
-  while (rowStartIndex < data.length) {
+  while (rowStartIndex < data.length - 2) {
     // console.log(count);
     // console.log(rowStartIndex);
     // console.log(data[rowStartIndex]);
@@ -190,30 +207,37 @@ const scrapePage = async page => {
     const courseHead = await page.evaluate(count => {
       // console.log(count);
       let courseHeader = document.getElementsByClassName(
-        'classSearchMinorHeading'
+        "classSearchMinorHeading"
       )[0].innerHTML;
       let regexp = /(^[A-Z]{4}[0-9]{4})(.*)/;
       return regexp.exec(courseHeader);
     });
 
-    courseData['courseCode'] = courseHead[1].trim();
-    courseData['name'] = courseHead[2].trim();
+    courseData["courseCode"] = courseHead[1].trim();
+    courseData["name"] = removeHtmlSpecials(courseHead[2].trim());
+
+    // Get the school and faculty of the course (for SEESCHOOL times)
+    while (!/^\<a href=\"/.test(data[rowStartIndex])) {
+      rowStartIndex++;
+    }
+    courseData["faculty"] = removeHtmlSpecials(data[rowStartIndex - 2]);
+    courseData["scchool"] = removeHtmlSpecials(data[rowStartIndex - 1]);
 
     // Getting the course type (undergrad/postgrad)
     while (
-      data[rowStartIndex] !== 'Undergraduate' &&
-      data[rowStartIndex] !== 'Postgraduate' &&
-      data[rowStartIndex] !== 'Research'
+      data[rowStartIndex] !== "Undergraduate" &&
+      data[rowStartIndex] !== "Postgraduate" &&
+      data[rowStartIndex] !== "Research"
     ) {
       rowStartIndex++;
     }
 
-    if (data[rowStartIndex].trim() === 'Undergraduate') {
-      courseData['career'] = 0;
-    } else if (data[rowStartIndex].trim() === 'Postgraduate') {
-      courseData['career'] = 1;
+    if (data[rowStartIndex].trim() === "Undergraduate") {
+      courseData["career"] = 0;
+    } else if (data[rowStartIndex].trim() === "Postgraduate") {
+      courseData["career"] = 1;
     } else {
-      courseData['career'] = 2;
+      courseData["career"] = 2;
     }
 
     const termlist = [];
@@ -221,18 +245,18 @@ const scrapePage = async page => {
     for (let i = rowStartIndex; i < data.length; i++) {
       // Getting all the terms that the course is offered in
       // console.log(data[i]);
-      if (data[i].charAt(0) === 'U') {
+      if (/^U.{1,4}[ABC]?$/.test(data[i])) {
         termlist.push(data[i]);
       } else if (/^T[1-3]$/.test(data[i])) {
         termlist.push(data[i]);
       }
-      if (data[i].includes('Course Enrolment')) {
+      if (data[i].includes("Course Enrolment")) {
         rowStartIndex = i;
         break;
       }
     }
-    courseData['termsOffered'] = termlist;
-    courseData['courseEnrolment'] = data[rowStartIndex + 5];
+    courseData["termsOffered"] = termlist;
+    courseData["courseEnrolment"] = data[rowStartIndex + 5];
     // Go to the index where term 1 records start.
     rowStartIndex += 7;
     // console.log(data);
@@ -262,8 +286,8 @@ const scrapePage = async page => {
     while (!/^[0-9]{4,5}$/.test(data[rowStartIndex])) {
       // If we reach the last line on the page, then the course
       // has no classes.
-      if (data[rowStartIndex].includes('Back to top')) {
-        courseData['classes'] = [];
+      if (data[rowStartIndex].includes("Back to top")) {
+        courseData["classes"] = [];
         return [courseData]; // returned value is an array
       }
       rowStartIndex++;
@@ -271,6 +295,7 @@ const scrapePage = async page => {
 
     // Scrape all the class data
     while (data[rowStartIndex] && rowStartIndex < data.length - 1) {
+      // console.log(data[rowStartIndex]);
       // If this is at a term boundary, then move row index
       // or any other alignment issues.
       while (
@@ -312,17 +337,25 @@ const scrapePage = async page => {
       // Special case -> end of data/page has both undergrad
       // and postgrad details...
       // or page ended (two back to tops signal this.)
-      if (data[rowStartIndex].includes('Back to top')) {
+      if (data[rowStartIndex].includes("Back to top")) {
         if (
-          (data[rowStartIndex - 1] &&
-            data[rowStartIndex - 1].includes('Back to top')) ||
-          (data[rowStartIndex + 1] &&
-            data[rowStartIndex + 1].includes('Back to top'))
+          data[rowStartIndex - 1] &&
+          data[rowStartIndex - 1].includes("Back to top")
         ) {
           break;
         }
+        if (
+          data[rowStartIndex + 1] &&
+          data[rowStartIndex + 1].includes("Back to top")
+        ) {
+          // Alignment
+          rowStartIndex++;
+          break;
+        }
 
-        if (rowStartIndex >= data.length - 3) {
+        // Last two lines are back to top anyway...
+        if (rowStartIndex >= data.length - 2) {
+          rowStartIndex = data.length;
           break;
         }
       }
@@ -333,12 +366,12 @@ const scrapePage = async page => {
     classList.push(term2);
     classList.push(term3);
 
-    courseData['classes'] = classList;
+    courseData["classes"] = classList;
 
     coursesData.push(courseData);
     if (data[rowStartIndex + 1]) {
       // console.log(rowStartIndex, data[rowStartIndex], data.length);
-      if (data[rowStartIndex].includes('Back to top')) {
+      if (data[rowStartIndex].includes("Back to top")) {
         rowStartIndex++;
         // console.log(rowStartIndex, data[rowStartIndex], data.length);
       } else {
@@ -379,7 +412,7 @@ const success = chalk.green;
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
-      waitUntil: 'networkidle2'
+      waitUntil: "networkidle2"
     });
 
     // Defining the regex for course scraping...
@@ -405,7 +438,7 @@ const success = chalk.green;
       try {
         // console.log('opening ' + url);
         await page.goto(url, {
-          waitUntil: 'networkidle2'
+          waitUntil: "networkidle2"
         });
 
         // Then, get each data url on that page
@@ -415,15 +448,15 @@ const success = chalk.green;
         for (const course of courses) {
           // console.log(course);
           await page.goto(course, {
-            waitUntil: 'networkidle2'
+            waitUntil: "networkidle2"
           });
 
-          // await page.goto('http://timetable.unsw.edu.au/2019/MBAX9139.html', {
-          //   waitUntil: 'networkidle2'
-          // });
+          await page.goto("http://timetable.unsw.edu.au/2019/COMP2521.html", {
+            waitUntil: "networkidle2"
+          });
           const courseData = await scrapePage(page);
           // console.log(courseData);
-          // throw new Error();
+          throw new Error();
           for (let c of courseData) {
             scrapedData.push(c);
           }
@@ -431,7 +464,7 @@ const success = chalk.green;
         }
       } catch (err) {
         console.log(err);
-        throw new Error('double');
+        throw new Error("double");
       }
     }
 
@@ -439,22 +472,22 @@ const success = chalk.green;
 
     // const testData = [{ ok: 'cool' }];
     // Write to file!
-    fs.writeFile('scraped.json', JSON.stringify(scrapedData), 'utf8', err => {
+    fs.writeFile("scraped.json", JSON.stringify(scrapedData), "utf8", err => {
       if (err) {
         throw err;
       }
-      console.log('Operation completed!!');
+      console.log("Operation completed!!");
     });
 
     // console.log(courses);
     // Close the browser.
     await browser.close();
-    console.log(success('Browser closed'));
+    console.log(success("Browser closed"));
   } catch (err) {
     // log error and close browser.
     console.log(error(err));
     await browser.close();
-    console.log(error('Browser closed'));
+    console.log(error("Browser closed"));
   }
 })();
 
