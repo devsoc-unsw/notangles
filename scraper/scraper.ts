@@ -467,7 +467,7 @@ const timetableScraper = async () => {
     await browser.close();
 
     // Return the data that was scraped
-    return timetableData;
+    return JSON.stringify(timetableData);
   } catch (err) {
     // log error and close browser.
     console.error(err);
