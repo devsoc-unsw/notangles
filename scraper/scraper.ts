@@ -114,7 +114,6 @@ const getClassData = async (data, rowStartIndex) => {
       dateList.push(dateData);
     }
 
-    console.log(dateList[0]);
     classData['times'] = dateList;
 
     // Any notes
@@ -134,7 +133,6 @@ const getClassData = async (data, rowStartIndex) => {
 
     // Return the scraped class along with updated row index and the term to add
     // the class to.
-    console.log(classData);
     return [classData, rowStartIndex + 1, term];
   } catch (err) {
     throw new Error(err);
