@@ -19,117 +19,124 @@ const removeHtmlSpecials = string => {
 
 // Gets all the class data
 const getClassData = async (data, rowStartIndex) => {
-  // Store data for each class
-  const classData = {};
-  // term number to append class to
-  let term = 0;
+  try {
+    // Store data for each class
+    const classData = {};
+    // term number to append class to
+    let term = 0;
 
-  // First 4 are similar in format and are:
-  // class id, section id, term, activity(lecture/tutorial)
-  let fields = ['classID', 'section', 'term', 'activity'];
-  for (let field of fields) {
-    // Store the term number to later append to the correct term
-    if (field === 'term') {
-      if (data[rowStartIndex].charAt(0) === 'U') {
-        term = 0;
-      } else {
-        term = parseInt(data[rowStartIndex].charAt(1));
+    // First 4 are similar in format and are:
+    // class id, section id, term, activity(lecture/tutorial)
+    let fields = ['classID', 'section', 'term', 'activity'];
+    for (let field of fields) {
+      // Store the term number to later append to the correct term
+      if (field === 'term') {
+        if (data[rowStartIndex].charAt(0) === 'U') {
+          term = 0;
+        } else {
+          term = parseInt(data[rowStartIndex].charAt(1));
+        }
       }
+      if (
+        field === 'activity' &&
+        data[rowStartIndex].includes('Course Enrolment')
+      ) {
+        // Abort if you are looking at course enrolment
+        return [[], rowStartIndex + 9, -1];
+      }
+      classData[field] = data[rowStartIndex];
+      rowStartIndex++;
     }
-    if (
-      field === 'activity' &&
-      data[rowStartIndex].includes('Course Enrolment')
+
+    // Get the status of the class
+    let regex = />([^\<]+)</;
+    let result = regex.exec(data[rowStartIndex]);
+    classData['status'] = result[1];
+    rowStartIndex++;
+
+    //class enrollments.
+    const enrAndCap = data[rowStartIndex].split('/');
+    classData['courseEnrolment'] = {
+      enrolments: enrAndCap[0],
+      capacity: enrAndCap[1]
+    };
+    rowStartIndex++;
+
+    // Start and end dates, meeting dates, census date -> not needed
+    rowStartIndex += 3;
+
+    // Instruction mode:
+    classData['mode'] = data[rowStartIndex];
+    rowStartIndex++;
+
+    // Skip consent
+    rowStartIndex++;
+
+    // Dates and location!
+    const dateList = [];
+    while (
+      data[rowStartIndex] &&
+      !data[rowStartIndex].includes('Back to top')
     ) {
-      // Abort if you are looking at course enrolment
-      return [[], rowStartIndex + 9, -1];
-    }
-    classData[field] = data[rowStartIndex];
-    rowStartIndex++;
-  }
+      // Day
+      const dateData = {};
+      dateData['day'] = data[rowStartIndex];
+      rowStartIndex++;
 
-  // Get the status of the class
-  let regex = />([^\<]+)</;
-  let result = regex.exec(data[rowStartIndex]);
-  classData['status'] = result[1];
-  rowStartIndex++;
+      // Start and end times
+      const times = data[rowStartIndex].split(' - ');
+      dateData['time'] = { start: times[0], end: times[1] };
+      rowStartIndex++;
 
-  //class enrollments.
-  const enrAndCap = data[rowStartIndex].split('/');
-  classData['courseEnrolment'] = {
-    enrolments: enrAndCap[0],
-    capacity: enrAndCap[1]
-  };
-  rowStartIndex++;
+      // Checking the start and end times for errors
+      // Existence
+      if (!(times[0] && times[1])) {
+        continue;
+      }
 
-  // Start and end dates, meeting dates, census date -> not needed
-  rowStartIndex += 3;
+      // if there are formatting issues, then skip!
+      let checker = /^[0-9:]+$/;
+      if (!(checker.test(times[0]) && checker.test(times[1]))) {
+        continue;
+      }
 
-  // Instruction mode:
-  classData['mode'] = data[rowStartIndex];
-  rowStartIndex++;
+      // location
+      dateData['location'] = removeHtmlSpecials(data[rowStartIndex]);
+      rowStartIndex++;
 
-  // Skip consent
-  rowStartIndex++;
+      // weeks
+      dateData['weeks'] = data[rowStartIndex];
+      rowStartIndex++;
 
-  // Dates and location!
-  const dateList = [];
-  while (data[rowStartIndex] && !data[rowStartIndex].includes('Back to top')) {
-    // Day
-    const dateData = {};
-    dateData['day'] = data[rowStartIndex];
-    rowStartIndex++;
+      // Extra newline
+      rowStartIndex++;
 
-    // Start and end times
-    const times = data[rowStartIndex].split(' - ');
-    dateData['time'] = { start: times[0], end: times[1] };
-    rowStartIndex++;
-
-    // Checking the start and end times for errors
-    // Existence
-    if (!(times[0] && times[1])) {
-      continue;
+      dateList.push(dateData);
     }
 
-    // if there are formatting issues, then skip!
-    let checker = /^[0-9:]+$/;
-    if (!(checker.test(times[0]) && checker.test(times[1]))) {
-      continue;
+    classData['times'] = dateList;
+
+    // Any notes
+    // Find the index (cause the end is messed up)
+    // So go back till the data line starts with an html element (or <)
+    let notesIndex = rowStartIndex;
+    while (data[notesIndex - 1].charAt(0) === '<') {
+      notesIndex--;
     }
 
-    // location
-    dateData['location'] = removeHtmlSpecials(data[rowStartIndex]);
-    rowStartIndex++;
+    // If the found line matches the regex, add a notes field
+    let notesRegex = /^\<font *color *= *\"red\" *\>(.*)\<\/ *font *\>/;
+    if (data[notesIndex] !== '' && notesRegex.test(data[notesIndex])) {
+      const result = notesRegex.exec(data[notesIndex]);
+      classData['notes'] = result[1];
+    }
 
-    // weeks
-    dateData['weeks'] = data[rowStartIndex];
-    rowStartIndex++;
-
-    // Extra newline
-    rowStartIndex++;
-
-    dateList.push(dateData);
+    // Return the scraped class along with updated row index and the term to add
+    // the class to.
+    return [classData, rowStartIndex + 1, term];
+  } catch (err) {
+    throw new Error(err);
   }
-
-  classData['times'] = dateList;
-
-  // Any notes
-  // Find the index (cause the end is messed up)
-  // So go back till the data line starts with an html element (or <)
-  let notesIndex = rowStartIndex;
-  while (data[notesIndex - 1].charAt(0) === '<') {
-    notesIndex--;
-  }
-
-  // If the found line matches the regex, add a notes field
-  let notesRegex = /^\<font *color *= *\"red\" *\>(.*)\<\/ *font *\>/;
-  if (data[notesIndex] !== '' && notesRegex.test(data[notesIndex])) {
-    const result = notesRegex.exec(data[notesIndex]);
-    classData['notes'] = result[1];
-  }
-
-  // Return the scraped class along with updated row index and the term to add
-  // the class to.
-  return [classData, rowStartIndex + 1, term];
 };
 
 // Gets all the urls in the data class on page: page,
@@ -317,17 +324,6 @@ const scrapePage = async page => {
   return coursesData;
 };
 
-// Async wrapper to scrape multiple subjects at once
-// This scrapes one subject
-const scrapeSubject = async (page, course) => {
-  await page.goto(course, {
-    waitUntil: 'networkidle2'
-  });
-
-  // Get all relevant data for one page
-  return await scrapePage(page);
-};
-
 // Creates browser pages to then use to scrape
 const createPages = async (browser, batchsize) => {
   // List of pages
@@ -354,11 +350,41 @@ const createPages = async (browser, batchsize) => {
   return pages;
 };
 
+// Async wrapper to scrape multiple subjects at once
+// This scrapes one subject
+const scrapeSubject = async (page, course) => {
+  try {
+    await page.goto(course, {
+      waitUntil: 'networkidle2'
+    });
+
+    // Get all relevant data for one page
+    return await scrapePage(page);
+  } catch (err) {
+    // console.log(course);
+    throw new Error(err);
+  }
+};
+
+const getPageUrls = async (url, page, base, regex) => {
+  try {
+    await page.goto(url, {
+      waitUntil: 'networkidle2'
+    });
+
+    // Then, get each data url on that page
+    return await getDataUrls(page, base, regex);
+  } catch (err) {
+    // console.log(url);
+    throw new Error(err);
+  }
+};
+
 const timetableScraper = async () => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch();
   try {
-    const batchsize = 30;
+    const batchsize = 50;
     // Create batchsize pages to scrape each course
     const pages = await createPages(browser, batchsize);
     let page = pages[0];
@@ -371,7 +397,7 @@ const timetableScraper = async () => {
     const base = `http://timetable.unsw.edu.au/${year}/`;
 
     // JSON Array to store the course data.
-    const scrapedData = [];
+    const timetableData = [];
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -382,61 +408,66 @@ const timetableScraper = async () => {
     let regex = /([A-Z]{8})\.html/;
 
     // Gets all the dataurls on the timetable page.
-    const urlSet = await getDataUrls(page, base, regex);
-
-    // To store all the links on one page.
-    let courses;
+    const urlList = await getDataUrls(page, base, regex);
 
     // Defining the regex for each of the subject codes...
     regex = /([A-Z]{4}[0-9]{4})\.html/;
 
-    // Go to each page, and get all the subject urls
-    for (const url of urlSet) {
-      // Follow each link...
-      try {
-        await page.goto(url, {
-          waitUntil: 'networkidle2'
-        });
+    // List of promises that are being resolved
+    let promises = [];
 
-        // Then, get each data url on that page
-        courses = await getDataUrls(page, base, regex);
-        // console.log(courses.length);
-        let resolved;
+    // array of resolved promises from the promises array
+    let result = [];
 
-        // Open each subject url and print data!!
-        for (let i = 0; i < courses.length; i += batchsize) {
-          // console.log('each...');
-          let scraping = [];
-          // Scrape 10 courses
-          for (let j = 0; j < batchsize; j++) {
-            // console.log(courses[i]);
-            if (!courses[i + j]) {
-              continue;
-            }
-            let courseData = scrapeSubject(pages[j], courses[i + j]);
-            scraping.push(courseData);
-          }
-          // Wait for all the pages
-          resolved = await Promise.all(scraping);
+    // Jobs -> urls of each subject
+    let jobs = [];
 
-          // store all the courses on all pages
-          for (let rescourses of resolved) {
-            // rescourses is an array of courses on a single page
-            for (let c of rescourses) {
-              scrapedData.push(c);
-            }
-          }
-        }
-      } catch (err) {
-        throw new Error(err);
+    // Scrape all the urls from the subject pages (eg: COMPKENS, etc)
+    for (let url = 0; url < urlList.length; ) {
+      promises = [];
+      result = [];
+
+      // Open a different url on a different page
+      for (let i = 0; i < batchsize && url < urlList.length; i++) {
+        const urls = getPageUrls(urlList[url], pages[i], base, regex);
+        promises.push(urls);
+        url++;
+      }
+      // Wait for all the pages
+      result = await Promise.all(promises);
+
+      // Then add them to the jobs queue
+      for (let pageurls of result) {
+        jobs = jobs.concat(pageurls);
       }
     }
-    console.log(scrapedData, scrapedData.length);
+
+    // Now scrape each page in the jobs queue and then add it to the scraped
+    // array
+    for (let job = 0; job < jobs.length; ) {
+      promises = [];
+      result = [];
+      for (let i = 0; i < batchsize && job < jobs.length; i++) {
+        const data = scrapeSubject(pages[i], jobs[job]);
+        promises.push(data);
+        job++;
+      }
+      // Wait for all the pages
+      result = await Promise.all(promises);
+
+      for (let element of result) {
+        // Each element may contain multiple courses
+        for (let scrapedCourse of element) {
+          timetableData.push(scrapedCourse);
+        }
+      }
+    }
+
     // Close the browser.
     await browser.close();
 
     // Return the data that was scraped
-    return scrapedData;
+    return timetableData;
   } catch (err) {
     // log error and close browser.
     console.error(err);
