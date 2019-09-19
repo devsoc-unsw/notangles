@@ -115,14 +115,14 @@ const getChunks = async page => {
             courseDataElement['course_info'] = [
               ...chunk.querySelectorAll('.data'),
             ].map(element => element.innerText)
-          } 
+          }
           // Else -> other heading tables ---> skip!
         }
       }
       coursesDataElements.push(courseDataElement)
     }
     return coursesDataElements
-  })=
+  })
   return chunks
 }
 
