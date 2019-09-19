@@ -59,7 +59,7 @@ const getChunks = async page => {
   const chunks = await page.evaluate(() => {
     const chunkList = []
     const courseTables = document.querySelectorAll(
-      'body > table > tbody > tr > td > table > tbody > tr > td'
+      '[class="formBody"][colspan="3"]'
     )
     for (const course of courseTables) {
       // Get every td which has more than 1 table
@@ -379,17 +379,15 @@ const parseClassChunk = data => {
 const scrapePage = async page => {
   const coursesData = []
   const pageChunks = await getChunks(page)
-  // console.log(pageChunks.length)
   // For each course chunk...
   for (const course of pageChunks) {
-    // console.log('parsing course...')
     // Get course code and name, that is not a chunk
     const courseHeadData = await getCourseHeadData(page)
     let course_info
     const classes = []
     // There must be a course info array for any page
     if (!course['course_info']) {
-      throw new Error('Malformed page')
+      throw new Error('Malformed page: ' + page.url())
     } else {
       course_info = parseCourseInfoChunk(course['course_info'])
     }
