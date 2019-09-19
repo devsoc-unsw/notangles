@@ -168,6 +168,9 @@ const termFinder = (
   // For each of the census dates...add a term to the list
   const censusDates = formatCensusDates(course['censusDates'])
   const currentYear = new Date().getFullYear()
+
+  // Add the current year to the date and convert it to a date
+  // object so it can be easily parsed
   const refCensusDates = formatCensusDates(
     reference.map(element => {
       return element.census + '/' + currentYear
@@ -181,8 +184,8 @@ const termFinder = (
     let index = 0
     let term
     for (const refDate of refCensusDates) {
-      // console.log(refDate)
-
+      // Calculate the difference (in days) between the
+      // census date for the term and the reference census date
       const diff = Math.abs(
         Math.round(
           (censusDate.getMonth() - refDate.getMonth()) * 30 +
@@ -190,7 +193,6 @@ const termFinder = (
             refDate.getDate()
         )
       )
-      // console.log(diff, ' for census date: ', censusDate)
       if (diff < min || min === -1) {
         min = diff
         term = reference[index].term
@@ -350,18 +352,6 @@ const parseClassChunk = data => {
     dateData['time'] = { start: times[0], end: times[1] }
     index++
 
-    // // Checking the start and end times for errors
-    // // Existence
-    // if (!(times[0] && times[1])) {
-    //   continue
-    // }
-
-    // // if there are formatting issues, then skip!
-    // let checker = /^[0-9:]+$/
-    // if (!(checker.test(times[0]) && checker.test(times[1]))) {
-    //   continue
-    // }
-
     // location
     dateData['location'] = removeHtmlSpecials(data[index])
     index++
@@ -418,7 +408,6 @@ const scrapePage = async page => {
       Object.assign(courseHeadData, course_info, { classes: classes })
     )
   }
-  // console.log(coursesData)
   return coursesData
 }
 
@@ -578,7 +567,6 @@ const timetableScraper = async () => {
       for (const element of result) {
         // Each element may contain multiple courses
         for (const scrapedCourse of element) {
-          // console.log(scrapedCourse)
           if (!scrapedCourse) {
             console.log(element, '\n\n\nresult ---------------> ', result)
             throw new Error()
@@ -588,7 +576,6 @@ const timetableScraper = async () => {
             timetableData[term].push(Object.assign({}, scrapedCourse))
           }
         }
-        // console.log(resarray.length)
       }
     }
     // Close the browser.
