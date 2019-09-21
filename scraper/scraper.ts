@@ -1,10 +1,22 @@
 import * as puppeteer from 'puppeteer'
+import {
+  Course,
+  CourseHead,
+  CourseInfo,
+  Time,
+  Class,
+  Chunk,
+  PageData,
+  TimetableData,
+  TimetableUrl,
+  UrlList,
+} from './interfaces'
 /**
  * Remove any html character entities from the given string
  * At this point, it only looks for 3 of them as more are not necessary
  * @param string The string to remove html characters from
  */
-const removeHtmlSpecials = string => {
+const removeHtmlSpecials = (string: string) => {
   // &amp --> and
   let newstr = string.replace('&amp;', 'and')
 
@@ -27,7 +39,11 @@ const removeHtmlSpecials = string => {
  * @param base base each url has to be prefixed with
  * @param regex regex to check each url
  */
-const getDataUrls = async (page, base, regex) => {
+const getDataUrls = async (
+  page: puppeteer.Page,
+  base: string,
+  regex: RegExp
+) => {
   // Get all the required urls...
   const urls = await page.$$eval('.data', e => {
     let inner = e.map(f => f.innerHTML)
@@ -36,7 +52,7 @@ const getDataUrls = async (page, base, regex) => {
 
   // Extract urls from html
   // Remove duplicate urls using a set
-  const urlSet = new Set([])
+  const urlSet: Set<string> = new Set([])
   const myRe = /href="(.*)">/
   urls.forEach(element => {
     const link = element.match(myRe)
@@ -55,37 +71,38 @@ const getDataUrls = async (page, base, regex) => {
  * Breaks the page down into relevant chunks from which data can be extracted
  * @param page: page to be broken down into chunks
  */
-const getChunks = async page => {
-  const chunks = await page.evaluate(() => {
-    const chunkList = []
-    const courseTables = document.querySelectorAll(
+const getChunks = async (page: puppeteer.Page) => {
+  const chunks: PageData[] = await page.evaluate(() => {
+    const chunkList: HTMLElement[][] = []
+    const courseTables: NodeListOf<HTMLElement> = document.querySelectorAll(
       '[class="formBody"][colspan="3"]'
     )
     for (const course of courseTables) {
       // Get every td which has more than 1 table
       const parts = Array.from(course.children).filter(
-        element => element.tagName === 'TABLE'
-      )
+        (element: HTMLElement) => element.tagName === 'TABLE'
+      ) as HTMLElement[]
       if (parts.length > 1) {
         chunkList.push(parts)
       }
     }
 
     // Data to be returned ----> list of course objects
-    const coursesDataElements = []
+    const coursesDataElements: PageData[] = []
 
     // Deciding...
     for (const course of chunkList) {
-      const courseDataElement = {}
+      let course_info: Chunk
+      let classes: Chunk[]
       for (const chunk of course) {
         // If there are any data fields inside the chunk, then categorize it
-        const data = chunk.querySelector('.data')
+        const data: HTMLElement = chunk.querySelector('.data')
         if (data) {
           // console.log('has data elements')
-          const query = 'a[href="#top"]'
-          const classlist = chunk.querySelector(query)
-          const note = chunk.querySelector('.note')
-          const subtables = chunk.querySelectorAll(
+          const query: string = 'a[href="#top"]'
+          const classlist: HTMLElement = chunk.querySelector(query)
+          const note: HTMLElement = chunk.querySelector('.note')
+          const subtables: NodeListOf<HTMLElement> = chunk.querySelectorAll(
             ':scope > tbody > tr > td > table'
           )
 
@@ -93,33 +110,35 @@ const getChunks = async page => {
           if (classlist) {
             // The table represents a classlist!! -> the split chunks are then each element of subtables...
             // get all elements with class data from each table and then return that array.
-            const tablelist = []
+            const tablelist: Chunk[] = []
             for (const subtable of subtables) {
               tablelist.push(
-                [...subtable.querySelectorAll('.data')].map(
+                [...subtable.querySelectorAll<HTMLElement>('.data')].map(
                   element => element.innerText
                 )
               )
             }
-            if (!courseDataElement['classes']) {
-              courseDataElement['classes'] = tablelist
+            if (!classes) {
+              classes = tablelist
             } else {
-              courseDataElement['classes'] = courseDataElement[
-                'classes'
-              ].concat(tablelist)
+              classes = classes.concat(tablelist)
             }
           } else if (note) {
             // The table is the summary table ---> skip!
           } else if (subtables.length === 3) {
             // This should be the course info table. --> get data elements
-            courseDataElement['course_info'] = [
-              ...chunk.querySelectorAll('.data'),
-            ].map(element => element.innerText)
+            course_info = [...chunk.querySelectorAll<HTMLElement>('.data')].map(
+              element => element.innerText
+            )
           }
           // Else -> other heading tables ---> skip!
         }
       }
-      coursesDataElements.push(courseDataElement)
+      if (classes) {
+        coursesDataElements.push({ course_info: course_info, classes: classes })
+      } else {
+        coursesDataElements.push({ course_info: course_info })
+      }
     }
     return coursesDataElements
   })
@@ -130,7 +149,7 @@ const getChunks = async page => {
  * Converts dates into date objects
  * @param censusDateList: list of census dates to be formatted to utc time
  */
-const formatCensusDates = censusDateList => {
+const formatCensusDates = (censusDateList: string[]) => {
   return censusDateList.map(date => new Date(date + 'Z'))
 }
 
@@ -152,7 +171,7 @@ const formatCensusDates = censusDateList => {
  * The date format for reference census dates is month/day
  */
 const termFinder = (
-  course,
+  course: Course,
   reference = [
     { term: 'Summer', start: 11, length: 2, census: '1/8' },
     { term: 'T1', start: 2, length: 3, census: '3/17' },
@@ -162,7 +181,7 @@ const termFinder = (
     { term: 'S2', start: 7, length: 4, census: '8/18' },
   ]
 ) => {
-  if (!course['censusDates'] || course['censusDates'].length <= 0) {
+  if (!course.censusDates || course.censusDates.length <= 0) {
     throw new Error('no census dates for course: ' + course['courseCode'])
   }
   // For each of the census dates...add a term to the list
@@ -177,12 +196,12 @@ const termFinder = (
     })
   )
 
-  const termList = []
+  const termList: string[] = []
   for (const censusDate of censusDates) {
     // minimum difference with the reference census date means the course is in that term
     let min = -1
     let index = 0
-    let term
+    let term: string
     for (const refDate of refCensusDates) {
       // Calculate the difference (in days) between the
       // census date for the term and the reference census date
@@ -208,8 +227,8 @@ const termFinder = (
  * Gets the data from the title of the course (course code, name)
  * @param page: page which displays the data to scrape
  */
-const getCourseHeadData = async page => {
-  const courseData = {}
+const getCourseHeadData = async (page: puppeteer.Page) => {
+  const courseData = {} as CourseHead
   // Get the course code and course name
   const courseHead = await page.evaluate(() => {
     const courseHeader = document.getElementsByClassName(
@@ -218,8 +237,8 @@ const getCourseHeadData = async page => {
     const headerRegex = /(^[A-Z]{4}[0-9]{4})(.*)/
     return headerRegex.exec(courseHeader)
   })
-  courseData['courseCode'] = courseHead[1].trim()
-  courseData['name'] = removeHtmlSpecials(courseHead[2].trim())
+  courseData.courseCode = parseInt(courseHead[1].trim())
+  courseData.name = removeHtmlSpecials(courseHead[2].trim())
   return courseData
 }
 
@@ -228,26 +247,25 @@ const getCourseHeadData = async page => {
  * course information for one course
  * @param data: Data array that contains the course information
  */
-const parseCourseInfoChunk = data => {
-  const courseData = {}
+const parseCourseInfoChunk = (data: Chunk) => {
   let index = 0
 
   // Faculty not needed
   index++
 
   // School
-  courseData['school'] = data[index]
+  const school = data[index]
   index++
 
   // Skip online handbook record
   index++
 
   // campus location
-  courseData['campus'] = data[index]
+  const campus = data[index]
   index++
 
   // Career type
-  courseData['career'] = data[index]
+  const career = data[index]
   index++
 
   const termsOffered = []
@@ -267,8 +285,13 @@ const parseCourseInfoChunk = data => {
     }
     index++
   }
-  courseData['censusDates'] = censusDates
-  courseData['termsOffered'] = termsOffered
+  const courseData: CourseInfo = {
+    school: school,
+    campus: campus,
+    career: career,
+    termsOffered: termsOffered,
+    censusDates: censusDates,
+  }
   return courseData
 }
 
@@ -277,20 +300,19 @@ const parseCourseInfoChunk = data => {
  * @param data: array of text from elements with a data class
  * from a class chunk
  */
-const parseClassChunk = data => {
-  // console.log(data)
-  const classData = {}
+const parseClassChunk = (data: Chunk) => {
   let index = 0
 
-  classData['classID'] = data[index]
+  const classID = data[index]
   index++
 
-  classData['section'] = data[index]
+  const section = data[index]
   index++
 
+  let term: string
   const termFinderRegex = /^[A-Z][A-Z0-9][A-Z0-9]?$/
   if (termFinderRegex.test(data[index])) {
-    classData['term'] = termFinderRegex.exec(data[index])[1]
+    term = termFinderRegex.exec(data[index])[1]
   }
   index++
 
@@ -299,22 +321,22 @@ const parseClassChunk = data => {
     // Abort
     return false
   }
-  classData['activity'] = data[index]
+  const activity = data[index]
   index++
 
-  classData['status'] = data[index]
+  const status = data[index]
   index++
 
   const enrAndCap = data[index].split('/')
-  classData['courseEnrolment'] = {
-    enrolments: enrAndCap[0],
-    capacity: enrAndCap[1],
+  const courseEnrolment = {
+    enrolments: parseInt(enrAndCap[0]),
+    capacity: parseInt(enrAndCap[1]),
   }
   index++
 
   // Start and end dates can be used to classify each term code
   const runDates = data[index].split(' - ')
-  classData['termDates'] = {
+  const termDates = {
     start: runDates[0],
     end: runDates[1],
   }
@@ -324,49 +346,65 @@ const parseClassChunk = data => {
   index += 2
 
   // class mode
-  classData['mode'] = data[index]
+  const mode = data[index]
   index++
 
   // Skip consent
   index++
 
+  // Any notes for the class (found later with dates)
+  let notes: string
+
   // Dates
-  const dateList = []
+  const dateList: Time[] = []
   while (index < data.length) {
-    // Day
-    const dateData = {}
     // Check if there are any dates
     const dayCheckRegex = /^[a-zA-Z]{3}$/
     if (!dayCheckRegex.test(data[index])) {
       // Add data as notes field and end checking
-      classData['notes'] = data[index]
+      notes = data[index]
       break
     }
 
     // Otherwise parse the date data
-    dateData['day'] = data[index]
+    // Day
+    const day = data[index]
     index++
 
     // Start and end times
     const times = data[index].split(' - ')
-    dateData['time'] = { start: times[0], end: times[1] }
+    const time = { start: times[0], end: times[1] }
     index++
 
     // location
-    dateData['location'] = removeHtmlSpecials(data[index])
+    const location = removeHtmlSpecials(data[index])
     index++
 
     // weeks
-    dateData['weeks'] = data[index]
+    const weeks = data[index]
     index++
 
     // Extra newline
     index++
 
-    dateList.push(dateData)
+    dateList.push({ day: day, time: time, location: location, weeks: weeks })
   }
 
-  classData['times'] = dateList
+  const classData: Class = {
+    classID: classID,
+    section: section,
+    term: term,
+    activity: activity,
+    status: status,
+    courseEnrolment: courseEnrolment,
+    termDates: termDates,
+    mode: mode,
+    times: dateList,
+  }
+
+  if (notes) {
+    classData.notes = notes
+  }
 
   return classData
 }
@@ -376,25 +414,25 @@ const parseClassChunk = data => {
  * Returns an array of courses on the page
  * @param page Page to be scraped
  */
-const scrapePage = async page => {
-  const coursesData = []
-  const pageChunks = await getChunks(page)
+const scrapePage = async (page: puppeteer.Page) => {
+  const coursesData: Course[] = []
+  const pageChunks: PageData[] = await getChunks(page)
   // For each course chunk...
   for (const course of pageChunks) {
     // Get course code and name, that is not a chunk
     const courseHeadData = await getCourseHeadData(page)
-    let course_info
-    const classes = []
+    let course_info: CourseInfo
+    const classes: Class[] = []
     // There must be a course info array for any page
-    if (!course['course_info']) {
+    if (!course.course_info) {
       throw new Error('Malformed page: ' + page.url())
     } else {
-      course_info = parseCourseInfoChunk(course['course_info'])
+      course_info = parseCourseInfoChunk(course.course_info)
     }
 
     // There may or may not be a classlist
-    if (course['classes']) {
-      for (const courseClass of course['classes']) {
+    if (course.classes) {
+      for (const courseClass of course.classes) {
         const classData = parseClassChunk(courseClass)
         if (classData) {
           classes.push(classData)
@@ -414,9 +452,9 @@ const scrapePage = async page => {
  * @param browser: browser object (window) in which to create new pages
  * @param batchsize: Number of pages to be created
  */
-const createPages = async (browser, batchsize) => {
+const createPages = async (browser: puppeteer.Browser, batchsize: number) => {
   // List of pages
-  const pages = []
+  const pages: puppeteer.Page[] = []
   for (let pageno = 0; pageno < batchsize; pageno++) {
     const singlepage = await browser.newPage()
     // Block all js, css, fonts and images for speed
@@ -445,17 +483,13 @@ const createPages = async (browser, batchsize) => {
  * @param page Page to use to scrape the subject
  * @param course Url of the course to be scraped
  */
-const scrapeSubject = async (page, course) => {
-  try {
-    await page.goto(course, {
-      waitUntil: 'networkidle2',
-    })
+const scrapeSubject = async (page: puppeteer.Page, course: string) => {
+  await page.goto(course, {
+    waitUntil: 'networkidle2',
+  })
 
-    // Get all relevant data for one page
-    return await scrapePage(page)
-  } catch (err) {
-    throw new Error(err)
-  }
+  // Get all relevant data for one page
+  return await scrapePage(page)
 }
 
 /**
@@ -466,18 +500,18 @@ const scrapeSubject = async (page, course) => {
  * @param base prefix for each scraped url
  * @param regex regex to check each scraped url
  */
-const getPageUrls = async (url, page, base, regex) => {
-  try {
-    await page.goto(url, {
-      waitUntil: 'networkidle2',
-    })
+const getPageUrls = async (
+  url: string,
+  page: puppeteer.Page,
+  base: string,
+  regex: RegExp
+) => {
+  await page.goto(url, {
+    waitUntil: 'networkidle2',
+  })
 
-    // Then, get each data url on that page
-    return await getDataUrls(page, base, regex)
-  } catch (err) {
-    // console.log(url);
-    throw new Error(err)
-  }
+  // Then, get each data url on that page
+  return await getDataUrls(page, base, regex)
 }
 
 /**
@@ -500,7 +534,7 @@ const timetableScraper = async () => {
     const base = `http://timetable.unsw.edu.au/${year}/`
 
     // JSON Array to store the course data.
-    const timetableData = {
+    const timetableData: TimetableData = {
       Summer: [],
       T1: [],
       T2: [],
@@ -524,15 +558,14 @@ const timetableScraper = async () => {
     const subjectUrlRegex = /([A-Z]{4}[0-9]{4})\.html/
 
     // Jobs -> urls of each subject
-    let jobs = []
+    let jobs: UrlList = []
 
     // Scrape all the urls from the subject pages (eg: COMPKENS, etc)
-
     for (let url = 0; url < urlList.length; ) {
       // List of promises that are being resolved
-      const promises = []
+      const promises: Promise<string[]>[] = []
       // array of resolved promises from the promises array
-      let result = []
+      let result: UrlList[] = []
 
       // Open a different url on a different page
       for (let i = 0; i < batchsize && url < urlList.length; i++) {
@@ -552,8 +585,8 @@ const timetableScraper = async () => {
     // Now scrape each page in the jobs queue and then add it to the scraped
     // array
     for (let job = 0; job < jobs.length; ) {
-      const promises = []
-      let result = []
+      const promises: Promise<Course[]>[] = []
+      let result: Course[][]
       for (let i = 0; i < batchsize && job < jobs.length; i++) {
         const data = scrapeSubject(pages[i], jobs[job])
         promises.push(data)
@@ -566,7 +599,7 @@ const timetableScraper = async () => {
         // Each element may contain multiple courses
         for (const scrapedCourse of element) {
           if (!scrapedCourse) {
-            console.log(element, '\n\n\nresult ---------------> ', result)
+            console.log(element, 'Error in result: ', result)
             throw new Error()
           }
           const termlist = termFinder(scrapedCourse)
