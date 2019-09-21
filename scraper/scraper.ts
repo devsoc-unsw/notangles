@@ -52,7 +52,7 @@ const getDataUrls = async (
 
   // Extract urls from html
   // Remove duplicate urls using a set
-  const urlSet: Set<string> = new Set([])
+  const urlSet: Set<TimetableUrl> = new Set([])
   const myRe = /href="(.*)">/
   urls.forEach(element => {
     const link = element.match(myRe)
