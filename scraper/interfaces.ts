@@ -15,15 +15,6 @@ export enum Term {
 
 type TimetableData = Record<Term, Course[]>
 
-// interface TimetableData {
-//   Summer: Course[]
-//   T1: Course[]
-//   T2: Course[]
-//   T3: Course[]
-//   S1: Course[]
-//   S2: Course[]
-// }
-
 interface PageData {
   course_info: Chunk
   classes?: Chunk[]
