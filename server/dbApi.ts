@@ -3,11 +3,9 @@ import { config } from './config'
 
 const url = config.database
 
-// DB Name
-const dbName = 'Notangles'
-
 class Database {
   private client: MongoClient | undefined
+  private dbName = 'Notangles'
 
   connect = async () => {
     const client = new MongoClient(url, { useNewUrlParser: true })
@@ -52,6 +50,10 @@ class Database {
   dbDel = async (termColName: string, courseCode: string) => {
     const col = await this.getCollection(termColName)
     await col.deleteOne({ courseCode })
+  }
+
+  setDbname = (name: string) => {
+    this.dbName = name
   }
 }
 
