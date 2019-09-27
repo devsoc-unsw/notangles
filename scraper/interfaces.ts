@@ -4,14 +4,16 @@ type Chunk = string[]
 type TimetableUrl = string
 type UrlList = TimetableUrl[]
 
-interface TimetableData {
-  Summer: Course[]
-  T1: Course[]
-  T2: Course[]
-  T3: Course[]
-  S1: Course[]
-  S2: Course[]
+export enum Term {
+  Summer = 'Summer',
+  T1 = 'T1',
+  T2 = 'T2',
+  T3 = 'T3',
+  S1 = 'S1',
+  S2 = 'S2',
 }
+
+type TimetableData = Record<Term, Course[]>
 
 interface PageData {
   course_info: Chunk
@@ -20,7 +22,7 @@ interface PageData {
 
 interface Time {
   day: string
-  time: {
+  time?: {
     start: string
     end: string
   }
@@ -43,23 +45,16 @@ interface Class {
     end: string
   }
   mode: string
-  times: Time[]
+  times?: Time[]
   notes?: string
 }
 
-interface Course {
-  courseCode: number
-  name: string
-  school: string
-  campus: string
-  career: string
-  censusDates: string[]
-  termsOffered: string[]
+interface Course extends CourseHead, CourseInfo {
   classes: Class[]
 }
 
 interface CourseHead {
-  courseCode: number
+  courseCode: string
   name: string
 }
 

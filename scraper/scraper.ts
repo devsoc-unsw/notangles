@@ -11,6 +11,8 @@ import {
   TimetableUrl,
   UrlList,
 } from './interfaces'
+const fs = require('fs')
+
 /**
  * Remove any html character entities from the given string
  * At this point, it only looks for 3 of them as more are not necessary
@@ -237,7 +239,7 @@ const getCourseHeadData = async (page: puppeteer.Page) => {
     const headerRegex = /(^[A-Z]{4}[0-9]{4})(.*)/
     return headerRegex.exec(courseHeader)
   })
-  courseData.courseCode = parseInt(courseHead[1].trim())
+  courseData.courseCode = courseHead[1].trim()
   courseData.name = removeHtmlSpecials(courseHead[2].trim())
   return courseData
 }
@@ -440,9 +442,13 @@ const scrapePage = async (page: puppeteer.Page) => {
       }
     }
 
-    coursesData.push(
-      Object.assign(courseHeadData, course_info, { classes: classes })
-    )
+    const courseData: Course = {
+      ...courseHeadData,
+      ...course_info,
+      classes: classes,
+    }
+
+    coursesData.push(courseData)
   }
   return coursesData
 }
@@ -517,7 +523,7 @@ const getPageUrls = async (
 /**
  * The scraper that scrapes the timetable site
  */
-const timetableScraper = async () => {
+const timetableScraper = async (year: number) => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch()
   try {
@@ -525,10 +531,6 @@ const timetableScraper = async () => {
     // Create batchsize pages to scrape each course
     const pages = await createPages(browser, batchsize)
     let page = pages[0]
-
-    // If the scraper is automated, the year should be dynamically
-    // generated to access the respective timetable page
-    const year = new Date().getFullYear()
 
     // Base url to be used for all scraping
     const base = `http://timetable.unsw.edu.au/${year}/`
@@ -611,9 +613,7 @@ const timetableScraper = async () => {
     }
     // Close the browser.
     await browser.close()
-
-    // Return the data that was scraped
-    return JSON.stringify(timetableData)
+    return timetableData
   } catch (err) {
     // log error and close browser.
     console.error(err)
