@@ -618,9 +618,6 @@ const timetableScraper = async (year: number) => {
     // log error and close browser.
     console.error(err)
     await browser.close()
-
-    // Since there was an error, return empty object
-    return []
   }
 }
 
