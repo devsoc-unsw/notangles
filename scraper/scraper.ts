@@ -454,6 +454,7 @@ const timetableScraper = async () => {
       // Wait for all the pages
       result = await Promise.all(promises);
 
+      
       for (let element of result) {
         // Each element may contain multiple courses
         for (let scrapedCourse of element) {
@@ -466,7 +467,7 @@ const timetableScraper = async () => {
     await browser.close();
 
     // Return the data that was scraped
-    return JSON.stringify(timetableData);
+    return JSON.stringify(timetableData.splice(0,20));
   } catch (err) {
     // log error and close browser.
     console.error(err);
@@ -478,3 +479,6 @@ const timetableScraper = async () => {
 };
 
 export { timetableScraper };
+timetableScraper().then(function(data) {
+  console.log(data)
+})

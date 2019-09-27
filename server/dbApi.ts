@@ -46,9 +46,7 @@ class Database {
     const col = await this.getCollection(termColName)
     try {
       await col.updateOne({ courseCode }, { $set: doc })
-    } catch (e) {
-      console.log(e)
-    }
+    } catch (e) {}
   }
 
   dbDel = async (termColName: string, courseCode: string) => {
