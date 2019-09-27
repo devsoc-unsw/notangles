@@ -4,7 +4,7 @@ type Chunk = string[]
 type TimetableUrl = string
 type UrlList = TimetableUrl[]
 
-export enum Term {
+enum Term {
   Summer = 'Summer',
   T1 = 'T1',
   T2 = 'T2',
@@ -77,4 +77,5 @@ export {
   TimetableUrl,
   TimetableData,
   UrlList,
+  Term,
 }
