@@ -1,7 +1,8 @@
 import React from 'react'
-import './App.css'
 import Select from 'react-select'
-import { TimeTable } from './components/timetable'
+import TimeTable from './components/timetable'
+
+import './App.css'
 
 interface IOption {
   value: string
@@ -21,13 +22,10 @@ const App: React.FC = () => {
     setValue(e)
   }
   return (
-    <div>
+    <div className="App">
       <h2>Notangles</h2>
-      <p />
       <Select options={options} value={value} onChange={handleChange} />
-      <p />
       Selected course: {value ? value.label : 'No course selected'}
-      <p />
       <TimeTable />
     </div>
   )

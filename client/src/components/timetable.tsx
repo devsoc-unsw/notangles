@@ -1,29 +1,56 @@
 import React from 'react'
-import './timetable.css'
+import Cell from './cell'
+import styled from 'styled-components'
 
-function TimeTable() {
-  const timeframes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+const StyledTimetable = styled.div`
+  display: grid;
+  grid-template: repeat(20, 1fr) / repeat(6, 1fr);
+  border: 1px solid;
+  box-sizing: border-box;
+`
+
+const StyledHours = styled(Cell)<{ startPos: number }>`
+  grid-column-start: ${props => props.startPos};
+`
+
+const Timetable: React.FC = () => {
+  const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
   return (
-    <div className="timetable-canvas">
-      <div className="timetable">
-        <div className="cells-row">
-          <div className="timeframe" />
+    <StyledTimetable>
+      <Cell />
+      {days.map(day => (
+        <Cell>{day}</Cell>
+      ))}
+      {hours.map((hour, i) => (
+        <>
+          <StyledHours startPos={i}>{hour}</StyledHours>
           {days.map(day => (
-            <div className="cell">{day}</div>
+            <Cell></Cell>
           ))}
-        </div>
-        {timeframes.map(timeframe => (
-          <div className="cells-row">
-            <div className="timeframe">{timeframe}</div>
-            {days.map(day => (
-              <div className="cell">{}</div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
+        </>
+      ))}
+    </StyledTimetable>
+
+    // <div className="timetable-canvas">
+    //   <div className="timetable">
+    //     <div className="cells-row">
+    //       <div className="timeframe" />
+    //       {days.map(day => (
+    //         <div className="cell">{day}</div>
+    //       ))}
+    //     </div>
+    //     {timeframes.map(timeframe => (
+    //       <div className="cells-row">
+    //         <div className="timeframe">{timeframe}</div>
+    //         {days.map(day => (
+    //           <div className="cell">{}</div>
+    //         ))}
+    //       </div>
+    //     ))}
+    //   </div>
+    // </div>
   )
 }
-export { TimeTable }
+export default Timetable
