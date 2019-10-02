@@ -12,7 +12,6 @@ import {
   UrlList,
   Term,
   ClassesByTerm,
-  valueOf,
   ExtendedTerm,
   Status,
   Day,
