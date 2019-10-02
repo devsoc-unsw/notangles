@@ -13,7 +13,56 @@ enum Term {
   S2 = 'S2',
 }
 
-type TimetableData = Record<Term, Course[]>
+// All possible careers
+enum Career {
+  Undergraduate = 'Undergraduate',
+  Postgraduate = 'Postgraduate',
+  Research = 'Research',
+}
+
+// Possible Days
+enum Day {
+  Mon = 'Mon',
+  Tue = 'Tue',
+  Wed = 'Wed',
+  Thu = 'Thu',
+  Fri = 'Fri',
+  Sat = 'Sat',
+  Sun = 'Sun',
+}
+
+// Defines the status of a class
+enum Status {
+  Full = 'Full',
+  Open = 'Open',
+  On_Hold = 'On Hold',
+}
+
+enum ExtendedTerm {
+  Other = 'Other',
+}
+
+type valueOf<T extends {}> = T[keyof T]
+
+// To account for classes that do not run in any term or that
+// could not be classified (The latter case should be avoided)
+interface TimetableData extends Record<Term, Course[]> {
+  Other?: Course[]
+}
+type ClassesByTerm = Record<Term, Class[]>
+
+// Defines the interface for input not conforming to the strict requirements
+interface warning extends classWarnings {
+  courseCode: string
+  courseName: string
+}
+
+interface classWarnings {
+  classID: number
+  term: string
+  errKey: string
+  errValue: unknown
+}
 
 interface PageData {
   course_info: Chunk
@@ -21,21 +70,21 @@ interface PageData {
 }
 
 interface Time {
-  day: string
-  time?: {
+  day: Day
+  time: {
     start: string
     end: string
   }
-  location: string
+  location?: string
   weeks: string
 }
 
 interface Class {
-  classID: string
+  classID: number
   section: string
   term: string
   activity: string
-  status: string
+  status: Status
   courseEnrolment: {
     enrolments: number
     capacity: number
@@ -50,7 +99,8 @@ interface Class {
 }
 
 interface Course extends CourseHead, CourseInfo {
-  classes: Class[]
+  classes?: Class[]
+  notes?: string[]
 }
 
 interface CourseHead {
@@ -78,4 +128,12 @@ export {
   TimetableData,
   UrlList,
   Term,
+  ClassesByTerm,
+  valueOf,
+  ExtendedTerm,
+  Status,
+  Day,
+  Career,
+  warning,
+  classWarnings,
 }

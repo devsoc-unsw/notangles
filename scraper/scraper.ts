@@ -10,8 +10,17 @@ import {
   TimetableData,
   TimetableUrl,
   UrlList,
+  Term,
+  ClassesByTerm,
+  valueOf,
+  ExtendedTerm,
+  Status,
+  Day,
+  Career,
+  classWarnings,
+  warning,
 } from './interfaces'
-const fs = require('fs')
+import { cloneDeep } from 'lodash'
 
 /**
  * Remove any html character entities from the given string
@@ -45,7 +54,7 @@ const getDataUrls = async (
   page: puppeteer.Page,
   base: string,
   regex: RegExp
-) => {
+): Promise<string[]> => {
   // Get all the required urls...
   const urls = await page.$$eval('.data', e => {
     let inner = e.map(f => f.innerHTML)
@@ -73,7 +82,7 @@ const getDataUrls = async (
  * Breaks the page down into relevant chunks from which data can be extracted
  * @param page: page to be broken down into chunks
  */
-const getChunks = async (page: puppeteer.Page) => {
+const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
   const chunks: PageData[] = await page.evaluate(() => {
     const chunkList: HTMLElement[][] = []
     const courseTables: NodeListOf<HTMLElement> = document.querySelectorAll(
@@ -100,7 +109,6 @@ const getChunks = async (page: puppeteer.Page) => {
         // If there are any data fields inside the chunk, then categorize it
         const data: HTMLElement = chunk.querySelector('.data')
         if (data) {
-          // console.log('has data elements')
           const query: string = 'a[href="#top"]'
           const classlist: HTMLElement = chunk.querySelector(query)
           const note: HTMLElement = chunk.querySelector('.note')
@@ -149,10 +157,21 @@ const getChunks = async (page: puppeteer.Page) => {
 
 /**
  * Converts dates into date objects
- * @param censusDateList: list of census dates to be formatted to utc time
+ * @param dateList: list of census dates to be formatted to utc time
  */
-const formatCensusDates = (censusDateList: string[]) => {
-  return censusDateList.map(date => new Date(date + 'Z'))
+const formatDates = (dateList: string[]): Date[] => {
+  return dateList.map(date => new Date(date + 'Z'))
+}
+
+/**
+ * Reverses the day and month order of the date so that it can be
+ * robustly formated into a Date object using the formatDates() method
+ * @param date: Date whose day and month is to be reversed
+ * @param delimiter: delimiter separating date fiels
+ */
+const reverseDayAndMonth = (date: string, delimiter: string): string => {
+  const splitDate = date.split(delimiter)
+  return [splitDate[1], splitDate[0], splitDate[2]].join(delimiter)
 }
 
 /**
@@ -175,35 +194,35 @@ const formatCensusDates = (censusDateList: string[]) => {
 const termFinder = (
   course: Course,
   reference = [
-    { term: 'Summer', start: 11, length: 2, census: '1/8' },
-    { term: 'T1', start: 2, length: 3, census: '3/17' },
-    { term: 'T2', start: 6, length: 3, census: '6/30' },
-    { term: 'T3', start: 9, length: 3, census: '10/13' },
-    { term: 'S1', start: 2, length: 4, census: '3/31' },
-    { term: 'S2', start: 7, length: 4, census: '8/18' },
+    { term: Term.Summer, census: '1/8' },
+    { term: Term.T1, census: '3/17' },
+    { term: Term.T2, census: '6/30' },
+    { term: Term.T3, census: '10/13' },
+    { term: Term.S1, census: '3/31' },
+    { term: Term.S2, census: '8/18' },
   ]
-) => {
+): Term[] => {
   if (!course.censusDates || course.censusDates.length <= 0) {
-    throw new Error('no census dates for course: ' + course['courseCode'])
+    throw new Error('no census dates for course: ' + course.courseCode)
   }
   // For each of the census dates...add a term to the list
-  const censusDates = formatCensusDates(course['censusDates'])
+  const censusDates = formatDates(course.censusDates)
   const currentYear = new Date().getFullYear()
 
   // Add the current year to the date and convert it to a date
   // object so it can be easily parsed
-  const refCensusDates = formatCensusDates(
+  const refCensusDates = formatDates(
     reference.map(element => {
       return element.census + '/' + currentYear
     })
   )
 
-  const termList: string[] = []
+  const termList: Term[] = []
   for (const censusDate of censusDates) {
     // minimum difference with the reference census date means the course is in that term
     let min = -1
     let index = 0
-    let term: string
+    let term: Term
     for (const refDate of refCensusDates) {
       // Calculate the difference (in days) between the
       // census date for the term and the reference census date
@@ -226,11 +245,99 @@ const termFinder = (
 }
 
 /**
+ * Finds the Term for a class. Term is defined in interfaces.ts
+ * @param cls: Class to find the term for
+ * @param reference: Refernce dates to find the term.
+ * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
+ * start is an array of possible start dates and length is
+ */
+const classTermFinder = (
+  cls: Class,
+  reference = [
+    {
+      term: Term.Summer,
+      dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+    },
+    {
+      term: Term.T1,
+      dates: [
+        { start: 1, length: 2 },
+        { start: 1, length: 3 },
+        { start: 1, length: 4 },
+        { start: 2, length: 1 },
+        { start: 2, length: 3 },
+        { start: 3, length: 1 },
+      ],
+    },
+    {
+      term: Term.T2,
+      dates: [
+        { start: 3, length: 2 },
+        { start: 4, length: 2 },
+        { start: 4, length: 3 },
+        { start: 5, length: 1 },
+        { start: 5, length: 3 },
+        { start: 6, length: 1 },
+        { start: 6, length: 3 },
+        { start: 7, length: 1 },
+        { start: 7, length: 2 },
+        { start: 8, length: 1 },
+      ],
+    },
+    {
+      term: Term.T3,
+      dates: [
+        { start: 8, length: 2 },
+        { start: 8, length: 3 },
+        { start: 9, length: 1 },
+        { start: 9, length: 2 },
+        { start: 9, length: 3 },
+        { start: 10, length: 1 },
+        { start: 10, length: 2 },
+      ],
+    },
+    {
+      term: Term.S1,
+      dates: [{ start: 2, length: 4 }],
+    },
+    { term: Term.S2, dates: [{ start: 7, length: 4 }] },
+  ]
+): Term => {
+  // Error check
+  if (!(cls && cls.termDates)) {
+    throw new Error('no start and end dates for class: ' + cls)
+  }
+
+  const [start, end] = formatDates(
+    [cls.termDates.start, cls.termDates.end].map(date =>
+      reverseDayAndMonth(date, '/')
+    )
+  )
+
+  for (const termData of reference) {
+    // A term could have any number of start dates
+    for (const termDate of termData.dates) {
+      // If start date and length match, then term is found
+      if (
+        start.getMonth() + 1 === termDate.start &&
+        end.getMonth() -
+          start.getMonth() +
+          (end.getFullYear() - start.getFullYear()) * 12 ===
+          termDate.length
+      ) {
+        return termData.term
+      }
+    }
+  }
+
+  throw new Error('Could not find term for class: ' + cls)
+}
+
+/**
  * Gets the data from the title of the course (course code, name)
  * @param page: page which displays the data to scrape
  */
-const getCourseHeadData = async (page: puppeteer.Page) => {
-  const courseData = {} as CourseHead
+const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   // Get the course code and course name
   const courseHead = await page.evaluate(() => {
     const courseHeader = document.getElementsByClassName(
@@ -239,8 +346,14 @@ const getCourseHeadData = async (page: puppeteer.Page) => {
     const headerRegex = /(^[A-Z]{4}[0-9]{4})(.*)/
     return headerRegex.exec(courseHeader)
   })
-  courseData.courseCode = courseHead[1].trim()
-  courseData.name = removeHtmlSpecials(courseHead[2].trim())
+  // There must be at least 3 elements in courseHead
+  if (!courseHead && courseHead.length > 2) {
+    throw new Error('Malformed course header: ' + courseHead)
+  }
+  const courseData: CourseHead = {
+    courseCode: courseHead[1].trim(),
+    name: removeHtmlSpecials(courseHead[2].trim()),
+  }
   return courseData
 }
 
@@ -249,7 +362,9 @@ const getCourseHeadData = async (page: puppeteer.Page) => {
  * course information for one course
  * @param data: Data array that contains the course information
  */
-const parseCourseInfoChunk = (data: Chunk) => {
+const parseCourseInfoChunk = (
+  data: Chunk
+): { notes: string[]; courseInfo: CourseInfo } => {
   let index = 0
 
   // Faculty not needed
@@ -257,6 +372,10 @@ const parseCourseInfoChunk = (data: Chunk) => {
 
   // School
   const school = data[index]
+  // School is a string
+  if (!school || school === ' ') {
+    throw new Error('Invalid School: ' + school)
+  }
   index++
 
   // Skip online handbook record
@@ -264,14 +383,21 @@ const parseCourseInfoChunk = (data: Chunk) => {
 
   // campus location
   const campus = data[index]
+  if (!campus || campus === ' ') {
+    throw new Error('Invalid Campus: ' + campus)
+  }
   index++
 
   // Career type
-  const career = data[index]
+  const career: Career = <Career>data[index]
+  if (!(career && Object.values(Career).includes(career))) {
+    throw new Error('Invalid Career: ' + career)
+  }
   index++
 
-  const termsOffered = []
-  const censusDates = []
+  const termsOffered: string[] = []
+  const censusDates: string[] = []
+  let notes: string[] = []
   // Find all the terms the course runs in
   while (index < data.length) {
     // Term regex -> letter, letter or number, optional letter or number
@@ -284,9 +410,11 @@ const parseCourseInfoChunk = (data: Chunk) => {
     const censusDateFinder = /^[0-9]+-[A-Z]+-[0-9]+$/
     if (censusDateFinder.test(data[index])) {
       censusDates.push(data[index])
+      notes.push(data[index + 1])
     }
     index++
   }
+
   const courseData: CourseInfo = {
     school: school,
     campus: campus,
@@ -294,7 +422,8 @@ const parseCourseInfoChunk = (data: Chunk) => {
     termsOffered: termsOffered,
     censusDates: censusDates,
   }
-  return courseData
+
+  return { notes: notes, courseInfo: courseData }
 }
 
 /**
@@ -302,31 +431,53 @@ const parseCourseInfoChunk = (data: Chunk) => {
  * @param data: array of text from elements with a data class
  * from a class chunk
  */
-const parseClassChunk = (data: Chunk) => {
+const parseClassChunk = (
+  data: Chunk
+): { classData: Class; warnings: classWarnings[] } | false => {
   let index = 0
+  const warnings: classWarnings[] = []
 
-  const classID = data[index]
+  // ClassID is a 4 or 5 digit number
+  const classID = parseInt(data[index])
+  const classIDChecker = /^[0-9]{4,5}$/
+  if (!classIDChecker.test(data[index])) {
+    throw new Error('Invalid Class Id: ' + classID)
+  }
   index++
 
+  // Section is an 4 character alphanumeric code
   const section = data[index]
+  const sectionChecker = /^[A-Z0-9]{0,4}$/
+  if (!sectionChecker.test(section)) {
+    throw new Error('Invalid Section: ' + section)
+  }
   index++
 
   let term: string
-  const termFinderRegex = /^[A-Z][A-Z0-9][A-Z0-9]?$/
+  const termFinderRegex = /^([A-Z][A-Z0-9][A-Z0-9]?).*/
   if (termFinderRegex.test(data[index])) {
     term = termFinderRegex.exec(data[index])[1]
   }
   index++
 
+  // Check if the class is actually course enrolment
+  // which is not needed
   const courseEnrolmentChecker = /[Cc]ourse [Ee]nrolment/
   if (courseEnrolmentChecker.test(data[index])) {
     // Abort
     return false
   }
+
   const activity = data[index]
+  if (!activity) {
+    throw new Error('Unknown activity: ' + activity)
+  }
   index++
 
-  const status = data[index]
+  const status: Status = <Status>data[index]
+  if (!Object.values(Status).includes(status)) {
+    throw new Error('Invalid Status: ' + status)
+  }
   index++
 
   const enrAndCap = data[index].split('/')
@@ -334,13 +485,55 @@ const parseClassChunk = (data: Chunk) => {
     enrolments: parseInt(enrAndCap[0]),
     capacity: parseInt(enrAndCap[1]),
   }
+  // Enrolments and capacity are both numbers and enrolment less than capacity
+  // (Strict requirement)
+  if (
+    !courseEnrolment ||
+    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0) ||
+    courseEnrolment.enrolments > courseEnrolment.capacity
+  ) {
+    // Lax requirement
+    if (
+      !courseEnrolment ||
+      !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity >= 0)
+    ) {
+      throw new Error(
+        'Invalid Course Enrolment: ' +
+          courseEnrolment.enrolments +
+          ' ' +
+          courseEnrolment.capacity
+      )
+    } else {
+      // Add warning
+      const warning: classWarnings = {
+        classID: classID,
+        term: term,
+        errKey: 'courseEnrolment',
+        errValue: courseEnrolment,
+      }
+      warnings.push(warning)
+    }
+  }
   index++
 
   // Start and end dates can be used to classify each term code
   const runDates = data[index].split(' - ')
+  if (!runDates || runDates.length === 0) {
+    throw new Error('Could not find start and end dates in: ' + runDates)
+  }
   const termDates = {
     start: runDates[0],
     end: runDates[1],
+  }
+  // Checking the format of the dates
+  const dateCheckerRegex = /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/
+  if (
+    !(
+      dateCheckerRegex.test(termDates.start) &&
+      dateCheckerRegex.test(termDates.end)
+    )
+  ) {
+    throw new Error('Invalid Date(s): ' + termDates)
   }
   index++
 
@@ -349,6 +542,9 @@ const parseClassChunk = (data: Chunk) => {
 
   // class mode
   const mode = data[index]
+  if (!mode || mode === ' ') {
+    throw new Error('Invalid Mode: ' + mode)
+  }
   index++
 
   // Skip consent
@@ -356,12 +552,11 @@ const parseClassChunk = (data: Chunk) => {
 
   // Any notes for the class (found later with dates)
   let notes: string
-
   // Dates
   const dateList: Time[] = []
   while (index < data.length) {
     // Check if there are any dates
-    const dayCheckRegex = /^[a-zA-Z]{3}$/
+    const dayCheckRegex = /^[A-Z][a-z]{2}$/
     if (!dayCheckRegex.test(data[index])) {
       // Add data as notes field and end checking
       notes = data[index]
@@ -370,26 +565,77 @@ const parseClassChunk = (data: Chunk) => {
 
     // Otherwise parse the date data
     // Day
-    const day = data[index]
+    const day: Day = <Day>data[index]
+    if (!(day && Object.values(Day).includes(day))) {
+      throw new Error('Invalid day: ' + day)
+    }
     index++
 
     // Start and end times
     const times = data[index].split(' - ')
+    if (!times || times.length === 0) {
+      throw new Error('Could not find start and end times in: ' + times)
+    }
     const time = { start: times[0], end: times[1] }
+    // Checking the format of the dates
+    const timeCheckerRegex = /^[0-9]{2}:[0-9]{2}$/
+    if (
+      !(timeCheckerRegex.test(time.start) && timeCheckerRegex.test(time.end))
+    ) {
+      throw new Error('Invalid Time(s): ' + time)
+    }
     index++
 
     // location
-    const location = removeHtmlSpecials(data[index])
+    let location: string | false = removeHtmlSpecials(data[index])
+    // Check if location exists
+    const locationTesterRegex = /[A-Za-z]/
+    if (!(location && locationTesterRegex.test(location))) {
+      // Add to warnings
+      const warning: classWarnings = {
+        classID: classID,
+        term: term,
+        errKey: 'location',
+        errValue: location,
+      }
+
+      warnings.push(warning)
+
+      // Remove location.
+      location = false
+    }
     index++
 
     // weeks
     const weeks = data[index]
+    // Weeks is an alphanumeric string consisting of numbers, - and ,
+    // (Strict requirement)
+    let weeksTesterRegex = /^[0-9, <>-]+$/
+    if (!weeksTesterRegex.test(weeks)) {
+      weeksTesterRegex = /^[0-9A-Z, <>-]+$/
+      if (!weeksTesterRegex.test(weeks)) {
+        throw new Error('Invalid Weeks data: ' + weeks)
+      } else {
+        // Just warn.
+        const warning: classWarnings = {
+          classID: classID,
+          term: term,
+          errKey: 'weeks',
+          errValue: weeks,
+        }
+        warnings.push(warning)
+      }
+    }
     index++
 
     // Extra newline
     index++
 
-    dateList.push({ day: day, time: time, location: location, weeks: weeks })
+    const timeData: Time = { day: day, time: time, weeks: weeks }
+    if (location) {
+      timeData.location = location
+    }
+    dateList.push(timeData)
   }
 
   const classData: Class = {
@@ -408,7 +654,7 @@ const parseClassChunk = (data: Chunk) => {
     classData.notes = notes
   }
 
-  return classData
+  return { classData: classData, warnings: warnings }
 }
 
 /**
@@ -416,49 +662,123 @@ const parseClassChunk = (data: Chunk) => {
  * Returns an array of courses on the page
  * @param page Page to be scraped
  */
-const scrapePage = async (page: puppeteer.Page) => {
-  const coursesData: Course[] = []
+const scrapePage = async (
+  page: puppeteer.Page
+): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
+  const coursesData: TimetableData = {
+    Summer: [],
+    T1: [],
+    T2: [],
+    T3: [],
+    S1: [],
+    S2: [],
+    Other: [],
+  }
+  const warnings: warning[] = []
   const pageChunks: PageData[] = await getChunks(page)
   // For each course chunk...
   for (const course of pageChunks) {
     // Get course code and name, that is not a chunk
     const courseHeadData = await getCourseHeadData(page)
-    let course_info: CourseInfo
-    const classes: Class[] = []
-    // There must be a course info array for any page
-    if (!course.course_info) {
-      throw new Error('Malformed page: ' + page.url())
-    } else {
-      course_info = parseCourseInfoChunk(course.course_info)
-    }
-
-    // There may or may not be a classlist
-    if (course.classes) {
-      for (const courseClass of course.classes) {
-        const classData = parseClassChunk(courseClass)
-        if (classData) {
-          classes.push(classData)
-        }
+    try {
+      let course_info: CourseInfo
+      const classes: ClassesByTerm = {
+        Summer: [],
+        T1: [],
+        T2: [],
+        T3: [],
+        S1: [],
+        S2: [],
       }
-    }
+      let notes: string[]
+      let noteIndex: number = 0
+      let classWarns: classWarnings[] = []
+      // There must be a course info array for any page
+      if (!course.course_info) {
+        throw new Error('Malformed page: ' + page.url())
+      } else {
+        const parsedInfo = parseCourseInfoChunk(course.course_info)
+        notes = parsedInfo.notes
+        course_info = parsedInfo.courseInfo
+      }
 
-    const courseData: Course = {
-      ...courseHeadData,
-      ...course_info,
-      classes: classes,
-    }
+      // There may or may not be a classlist
+      if (course.classes) {
+        for (const courseClass of course.classes) {
+          const parsedClassChunk = parseClassChunk(courseClass)
+          if (parsedClassChunk) {
+            classes[classTermFinder(parsedClassChunk.classData)].push(
+              parsedClassChunk.classData
+            )
 
-    coursesData.push(courseData)
+            // Get the warnings
+            classWarns.push.apply(classWarns, parsedClassChunk.warnings)
+          }
+        }
+
+        for (const term of keysOf(classes)) {
+          if (!classes[term] || classes[term].length === 0) {
+            continue
+          }
+          const courseData: Course = {
+            ...courseHeadData,
+            ...course_info,
+            classes: classes[term],
+          }
+
+          if (notes[noteIndex] && notes[noteIndex] != ' ') {
+            courseData.notes = [notes[noteIndex]]
+            noteIndex++
+          } else {
+            delete courseData.notes
+          }
+
+          coursesData[term].push(courseData)
+        }
+      } else {
+        // In case there is no class list then dont include the parameter
+        const courseData: Course = {
+          ...courseHeadData,
+          ...course_info,
+          notes: notes,
+        }
+
+        coursesData.Other.push(courseData)
+      }
+
+      // Encapsulate the classWarnings into warnings for the course
+      for (const classWarn of classWarns) {
+        const courseWarning: warning = {
+          courseCode: courseHeadData.courseCode,
+          courseName: courseHeadData.name,
+          ...classWarn,
+        }
+        warnings.push(courseWarning)
+      }
+    } catch (err) {
+      console.log(courseHeadData.courseCode + ' ' + courseHeadData.name)
+      throw new Error(err)
+    }
   }
-  return coursesData
+  return { coursesData: coursesData, warnings: warnings }
 }
+
+/**
+ * Returns a list of keys for an object
+ * @param obj: Object to return a list of keys for
+ */
+const keysOf = <T extends {}>(obj: T): (keyof T)[] =>
+  Object.keys(obj) as (keyof T)[]
 
 /**
  * Creates browser pages to then use to scrape the website
  * @param browser: browser object (window) in which to create new pages
  * @param batchsize: Number of pages to be created
  */
-const createPages = async (browser: puppeteer.Browser, batchsize: number) => {
+const createPages = async (
+  browser: puppeteer.Browser,
+  batchsize: number
+): Promise<puppeteer.Page[]> => {
   // List of pages
   const pages: puppeteer.Page[] = []
   for (let pageno = 0; pageno < batchsize; pageno++) {
@@ -489,7 +809,10 @@ const createPages = async (browser: puppeteer.Browser, batchsize: number) => {
  * @param page Page to use to scrape the subject
  * @param course Url of the course to be scraped
  */
-const scrapeSubject = async (page: puppeteer.Page, course: string) => {
+const scrapeSubject = async (
+  page: puppeteer.Page,
+  course: string
+): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
   await page.goto(course, {
     waitUntil: 'networkidle2',
   })
@@ -511,7 +834,7 @@ const getPageUrls = async (
   page: puppeteer.Page,
   base: string,
   regex: RegExp
-) => {
+): Promise<string[]> => {
   await page.goto(url, {
     waitUntil: 'networkidle2',
   })
@@ -523,19 +846,21 @@ const getPageUrls = async (
 /**
  * The scraper that scrapes the timetable site
  */
-const timetableScraper = async (year: number) => {
+const timetableScraper = async (
+  year: number
+): Promise<{ timetableData: TimetableData; warnings: warning[] }> => {
   // Launch the browser. Headless mode = true by default
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({ headless: false })
   try {
     const batchsize = 50
     // Create batchsize pages to scrape each course
     const pages = await createPages(browser, batchsize)
     let page = pages[0]
-
     // Base url to be used for all scraping
     const base = `http://timetable.unsw.edu.au/${year}/`
 
     // JSON Array to store the course data.
+    // There are no cases which cannot be classified. (Yet)
     const timetableData: TimetableData = {
       Summer: [],
       T1: [],
@@ -544,6 +869,9 @@ const timetableScraper = async (year: number) => {
       S1: [],
       S2: [],
     }
+
+    // Warning array for any fields not aligning with the strict requirements
+    const warnings: warning[] = []
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -587,8 +915,11 @@ const timetableScraper = async (year: number) => {
     // Now scrape each page in the jobs queue and then add it to the scraped
     // array
     for (let job = 0; job < jobs.length; ) {
-      const promises: Promise<Course[]>[] = []
-      let result: Course[][]
+      const promises: Promise<{
+        coursesData: TimetableData
+        warnings: warning[]
+      }>[] = []
+      let result: { coursesData: TimetableData; warnings: warning[] }[]
       for (let i = 0; i < batchsize && job < jobs.length; i++) {
         const data = scrapeSubject(pages[i], jobs[job])
         promises.push(data)
@@ -598,22 +929,42 @@ const timetableScraper = async (year: number) => {
       result = await Promise.all(promises)
 
       for (const element of result) {
-        // Each element may contain multiple courses
-        for (const scrapedCourse of element) {
-          if (!scrapedCourse) {
-            console.log(element, 'Error in result: ', result)
-            throw new Error()
-          }
-          const termlist = termFinder(scrapedCourse)
-          for (const term of termlist) {
-            timetableData[term].push(Object.assign({}, scrapedCourse))
+        warnings.push.apply(warnings, element.warnings)
+        for (const scrapedTerm of keysOf(element.coursesData)) {
+          // Each termlist may contain multiple courses
+          for (const scrapedCourse of element.coursesData[scrapedTerm]) {
+            if (!scrapedCourse) {
+              console.log(element, 'Error in result: ', result)
+              throw new Error()
+            }
+            // If the term is in the other list, then it has no classes. Classify it!
+            if (scrapedTerm === ExtendedTerm.Other) {
+              const termlist = termFinder(scrapedCourse)
+              const notes = scrapedCourse.notes
+              let noteIndex = 0
+              for (const term of termlist) {
+                if (notes[noteIndex] && notes[noteIndex] != ' ') {
+                  scrapedCourse.notes = [notes[noteIndex]]
+                } else {
+                  delete scrapedCourse.notes
+                }
+
+                timetableData[term].push({
+                  ...cloneDeep(scrapedCourse),
+                })
+              }
+            } else {
+              // If the term is already assigned then just add it to the respective term.
+              timetableData[scrapedTerm].push(scrapedCourse)
+            }
           }
         }
       }
     }
+
     // Close the browser.
     await browser.close()
-    return timetableData
+    return { timetableData: timetableData, warnings: warnings }
   } catch (err) {
     // log error and close browser.
     console.error(err)
