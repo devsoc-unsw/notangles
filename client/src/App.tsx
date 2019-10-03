@@ -2,7 +2,7 @@ import React from 'react'
 import Select from 'react-select'
 import TimeTable from './components/timetable'
 
-import './App.css'
+import styled from 'styled-components'
 
 interface IOption {
   value: string
@@ -16,18 +16,29 @@ const options: IOption[] = [
   { value: 'arts1234', label: 'ARTS1234' },
 ]
 
+const StyledApp = styled.div`
+  height: 100vh;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* align-content: space-around; */
+`
+
 const App: React.FC = () => {
   const [value, setValue] = React.useState<IOption>()
   const handleChange = (e: any) => {
     setValue(e)
   }
   return (
-    <div className="App">
+    <StyledApp>
       <h2>Notangles</h2>
       <Select options={options} value={value} onChange={handleChange} />
       Selected course: {value ? value.label : 'No course selected'}
       <TimeTable />
-    </div>
+    </StyledApp>
   )
 }
 

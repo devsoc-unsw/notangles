@@ -32,25 +32,6 @@ const Timetable: React.FC = () => {
         </>
       ))}
     </StyledTimetable>
-
-    // <div className="timetable-canvas">
-    //   <div className="timetable">
-    //     <div className="cells-row">
-    //       <div className="timeframe" />
-    //       {days.map(day => (
-    //         <div className="cell">{day}</div>
-    //       ))}
-    //     </div>
-    //     {timeframes.map(timeframe => (
-    //       <div className="cells-row">
-    //         <div className="timeframe">{timeframe}</div>
-    //         {days.map(day => (
-    //           <div className="cell">{}</div>
-    //         ))}
-    //       </div>
-    //     ))}
-    //   </div>
-    // </div>
   )
 }
 export default Timetable
