@@ -1,6 +1,8 @@
 import React from 'react'
 import Select from 'react-select'
+
 import TimeTable from './components/timetable'
+import Navbar from './components/navbar'
 
 import styled from 'styled-components'
 
@@ -22,7 +24,9 @@ const StyledApp = styled.div`
 
   display: grid;
 
-  padding: 0px 20%;
+  padding: 10px 20%;
+
+  background-color: white;
 `
 
 const App: React.FC = () => {
@@ -31,12 +35,14 @@ const App: React.FC = () => {
     setValue(e)
   }
   return (
-    <StyledApp>
-      <h2>Notangles</h2>
-      <Select options={options} value={value} onChange={handleChange} />
-      Selected course: {value ? value.label : 'No course selected'}
-      <TimeTable />
-    </StyledApp>
+    <div className="App">
+      <Navbar />
+      <StyledApp>
+        <Select options={options} value={value} onChange={handleChange} />
+        Selected course: {value ? value.label : 'No course selected'}
+        <TimeTable />
+      </StyledApp>
+    </div>
   )
 }
 
