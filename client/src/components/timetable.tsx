@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 const StyledTimetable = styled.div`
   display: grid;
-  grid-template: repeat(15, 1fr) / repeat(6, 1fr);
+  grid-template: auto / repeat(6, 1fr);
 
   border: 3px solid;
   border-color: rgba(0, 0, 0, 0.2);
@@ -16,7 +16,18 @@ const StyledHours = styled(Cell)<{ startPos: number }>`
 `
 
 const Timetable: React.FC = () => {
-  const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+  const hours = [
+    '9:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+  ]
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
   return (

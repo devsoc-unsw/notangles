@@ -19,10 +19,11 @@ const options: IOption[] = [
 ]
 
 const StyledApp = styled.div`
-  height: 100vh;
+  height: 85vh;
   text-align: center;
 
   display: grid;
+  grid-template: 2fr 1fr 80% / auto;
 
   padding: 10px 20%;
 
