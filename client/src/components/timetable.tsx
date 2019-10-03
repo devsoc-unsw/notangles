@@ -5,7 +5,9 @@ import styled from 'styled-components'
 const StyledTimetable = styled.div`
   display: grid;
   grid-template: repeat(20, 1fr) / repeat(6, 1fr);
-  border: 1px solid;
+
+  border: 3px solid;
+  border-color: rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 `
 

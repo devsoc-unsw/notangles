@@ -20,11 +20,9 @@ const StyledApp = styled.div`
   height: 100vh;
   text-align: center;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* align-content: space-around; */
+  display: grid;
+
+  padding: 0px 20%;
 `
 
 const App: React.FC = () => {
