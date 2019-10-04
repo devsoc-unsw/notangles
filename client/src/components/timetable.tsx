@@ -1,6 +1,9 @@
 import React from 'react'
-import Cell from './cell'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'styled-components'
+
+import Cell from './cell'
 
 const StyledTimetable = styled.div`
   display: grid;
@@ -31,20 +34,22 @@ const Timetable: React.FC = () => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
   return (
-    <StyledTimetable>
-      <Cell />
-      {days.map(day => (
-        <Cell>{day}</Cell>
-      ))}
-      {hours.map((hour, i) => (
-        <>
-          <StyledHours startPos={i}>{hour}</StyledHours>
-          {days.map(day => (
-            <Cell></Cell>
-          ))}
-        </>
-      ))}
-    </StyledTimetable>
+    <DndProvider backend={HTML5Backend}>
+      <StyledTimetable>
+        <Cell />
+        {days.map(day => (
+          <Cell>{day}</Cell>
+        ))}
+        {hours.map((hour, i) => (
+          <>
+            <StyledHours startPos={i}>{hour}</StyledHours>
+            {days.map(day => (
+              <Cell></Cell>
+            ))}
+          </>
+        ))}
+      </StyledTimetable>
+    </DndProvider>
   )
 }
 export default Timetable

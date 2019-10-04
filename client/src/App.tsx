@@ -20,14 +20,22 @@ const options: IOption[] = [
 
 const StyledApp = styled.div`
   height: 85vh;
-  text-align: center;
+  padding: 10px 20%;
 
   display: grid;
   grid-template: 2fr 1fr 80% / auto;
 
-  padding: 10px 20%;
-
+  text-align: center;
   background-color: white;
+`
+
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+const StyledSelect = styled(Select)`
+  width: 100%;
 `
 
 const App: React.FC = () => {
@@ -39,7 +47,14 @@ const App: React.FC = () => {
     <div className="App">
       <Navbar />
       <StyledApp>
-        <Select options={options} value={value} onChange={handleChange} />
+        <SelectWrapper>
+          <span>Add a course</span>
+          <StyledSelect
+            options={options}
+            value={value}
+            onChange={handleChange}
+          />
+        </SelectWrapper>
         Selected course: {value ? value.label : 'No course selected'}
         <TimeTable />
       </StyledApp>
