@@ -1,5 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useDrop } from 'react-dnd'
+
+import { ItemTypes } from './constants'
 
 const StyledCell = styled.div`
   border: 0.2px solid;
@@ -11,6 +14,13 @@ const StyledCell = styled.div`
 `
 
 const Cell: React.FC = ({ children }) => {
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.COURSECLASS,
+    // drop: () => ;
+    collect: monitor => ({
+      isOver: !!monitor.isOver(),
+    }),
+  })
   return <StyledCell>{children}</StyledCell>
 }
 

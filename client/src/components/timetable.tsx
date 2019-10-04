@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'styled-components'
 
 import Cell from './cell'
+import CourseClass from './courseClass'
 
 const StyledTimetable = styled.div`
   display: grid;
@@ -14,7 +15,7 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const StyledHours = styled(Cell)<{ startPos: number }>`
+const StyledHour = styled(Cell)<{ startPos: number }>`
   grid-column-start: ${props => props.startPos};
 `
 
@@ -33,22 +34,28 @@ const Timetable: React.FC = () => {
   ]
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
+  const renderCell = (text?: string) => {
+    return <Cell>{text}</Cell>
+  }
+  const renderStyledHour = (text: string, gridColumnStart: number) => {
+    return <StyledHour startPos={gridColumnStart}>{text}</StyledHour>
+  }
+
+  /* Constructing the timetable grid of cells */
+  const cellsGrid: JSX.Element[][] = []
+  const daysRow: JSX.Element[] = [renderCell()]
+  days.forEach(day => daysRow.push(renderCell(day)))
+  cellsGrid.push(daysRow)
+  hours.forEach((hour, i) => {
+    const hoursRow: JSX.Element[] = []
+    hoursRow.push(renderStyledHour(hour, i))
+    days.forEach(_ => hoursRow.push(renderCell()))
+    cellsGrid.push(hoursRow)
+  })
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <StyledTimetable>
-        <Cell />
-        {days.map(day => (
-          <Cell>{day}</Cell>
-        ))}
-        {hours.map((hour, i) => (
-          <>
-            <StyledHours startPos={i}>{hour}</StyledHours>
-            {days.map(day => (
-              <Cell></Cell>
-            ))}
-          </>
-        ))}
-      </StyledTimetable>
+      <StyledTimetable>{cellsGrid}</StyledTimetable>
     </DndProvider>
   )
 }
