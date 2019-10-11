@@ -42,55 +42,7 @@ const StyledTimetable = styled.div`
 `
 
 const Timetable: React.FC = () => {
-  const StyledHour = styled(Cell)<{ startPos: number }>`
-    grid-column-start: ${props => props.startPos};
-  `
-
-  const renderCell = (course: Course, classTime: ClassTime, text?: string) => {
-    return (
-      <Cell
-        key={`${course}${classTime}`}
-        onDrop={() => handleDrop(classTime, course)}
-        course={course}
-        classTime={classTime}
-      >
-        {text}
-      </Cell>
-    )
-  }
-  const renderStyledHour = (
-    course: Course,
-    classTime: ClassTime,
-    gridColumnStart: number,
-    text: string
-  ) => {
-    return (
-      <StyledHour
-        key={`${course}${classTime}`}
-        onDrop={() => handleDrop(classTime, course)}
-        course={course}
-        classTime={classTime}
-        startPos={gridColumnStart}
-      >
-        {text}
-      </StyledHour>
-    )
-  }
-
-  const [courses] = useState<Course[]>(testCourses)
-
-  const [selectedCourses, setSelectedCourses] = useState<
-    Record<string, ClassTime>
-  >({})
-
-  const handleDrop = (classTime: ClassTime, course: Course) => {
-    setSelectedCourses({
-      ...selectedCourses,
-      [course.id]: classTime,
-    })
-  }
-
-  const hours = [
+  const hours: string[] = [
     '9:00',
     '10:00',
     '11:00',
@@ -102,7 +54,25 @@ const Timetable: React.FC = () => {
     '17:00',
     '18:00',
   ]
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+  const days: string[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ]
+
+  const [courses] = useState<Course[]>(testCourses)
+  const [selectedCourses, setSelectedCourses] = useState<
+    Record<string, ClassTime>
+  >({})
+
+  const handleDrop = (classTime: ClassTime, course: Course) => {
+    setSelectedCourses({
+      ...selectedCourses,
+      [course.id]: classTime,
+    })
+  }
 
   /* Constructing the timetable grid of cells */
   const cellsGrid: JSX.Element[][] = []
@@ -126,6 +96,7 @@ const Timetable: React.FC = () => {
     cellsGrid.push(hoursRow)
   })
 
+  /* Constructing the cells which are drop targets for all potential classes */
   const allCourseTimes = courses.map(course =>
     course.classes.map(classTime => (
       <Cell
@@ -153,4 +124,5 @@ const Timetable: React.FC = () => {
     </DndProvider>
   )
 }
+
 export default Timetable

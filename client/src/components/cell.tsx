@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
 
-import { ItemTypes } from './constants'
 import { Course, ClassTime } from './timetable'
 
 const StyledCell = styled.div<{ classTime: ClassTime; canDrop: boolean }>`
@@ -28,7 +27,7 @@ interface CellProps {
 }
 
 const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
-  const [{ canDrop, isOver }, drop] = useDrop({
+  const [{ canDrop }, drop] = useDrop({
     accept: course.id,
     drop: onDrop,
     collect: monitor => ({

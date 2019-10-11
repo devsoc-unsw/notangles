@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { ItemTypes } from './constants'
 import { Course, ClassTime } from './timetable'
 
 export interface CourseClassProps {
