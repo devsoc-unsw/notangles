@@ -13,8 +13,9 @@ const StyledCell = styled.div<{ classTime: ClassTime; canDrop: boolean }>`
   align-items: center;
   justify-content: center;
 
-  grid-column: ${props => props.classTime[0]};
-  grid-row: ${props => props.classTime[1]} / ${props => props.classTime[2]};
+  grid-column: ${props => props.classTime[0] + 1};
+  grid-row: ${props => props.classTime[1] + 1} /
+    ${props => props.classTime[2] + 1};
   border: 3px solid ${props => (props.canDrop ? 'green' : 'red')};
   background-color: white;
   ${props => !props.canDrop && 'display: none'};
@@ -29,7 +30,7 @@ interface CellProps {
 const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.COURSECLASS,
-    drop: () => onDrop,
+    drop: onDrop,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),

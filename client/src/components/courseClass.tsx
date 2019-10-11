@@ -3,14 +3,7 @@ import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
 import { ItemTypes } from './constants'
-
-export interface Course {
-  id: string
-  classes: ClassTime[]
-}
-
-// [day, from, to]
-export type ClassTime = [number, number, number]
+import { Course, ClassTime } from './timetable'
 
 export interface CourseClassProps {
   course: Course
@@ -35,8 +28,9 @@ const UnselectedCourseClass = styled.div`
 const StyledCourseClass = styled(UnselectedCourseClass)<{
   classTime: ClassTime
 }>`
-  grid-column: ${props => props.classTime[0]};
-  grid-row: ${props => props.classTime[1]} / ${props => props.classTime[2]};
+  grid-column: ${props => props.classTime[0] + 1};
+  grid-row: ${props => props.classTime[1] + 1} /
+    ${props => props.classTime[2] + 1};
 `
 
 const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
@@ -66,7 +60,7 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
     <UnselectedCourseClass
       ref={drag}
       isDragging={isDragging}
-      style={{ cursor: 'move' }}
+      style={{ cursor: 'move', opacity }}
     >
       {course.id}
     </UnselectedCourseClass>
