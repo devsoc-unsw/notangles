@@ -142,14 +142,14 @@ const Timetable: React.FC = () => {
       <StyledTimetable>
         {cellsGrid}
         {allCourseTimes}
+        {courses.map(course => (
+          <CourseClass
+            key={course.id}
+            course={course}
+            classTime={selectedCourses[course.id]}
+          />
+        ))}
       </StyledTimetable>
-      {courses.map(course => (
-        <CourseClass
-          key={course.id}
-          course={course}
-          classTime={selectedCourses[course.id]}
-        />
-      ))}
     </DndProvider>
   )
 }
