@@ -1,10 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
+
+export interface Course {
+  id: string
+  classes: ClassTime[]
+}
+
+// [day, from, to]
+export type ClassTime = [number, number, number]
+
+const testCourses: Course[] = [
+  { id: 'COMP1511', classes: [[1, 1, 2], [1, 4, 6]] },
+  { id: 'COMP1521', classes: [[1, 2, 3], [2, 2, 3]] },
+  { id: 'COMP1531', classes: [[3, 4, 7], [1, 1, 3]] },
+]
+
+const BaseCell = styled.div<{ x: number; y: number }>`
+  grid-column: ${props => props.x};
+  grid-row: ${props => props.y};
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0.2px solid;
+  border-color: rgba(0, 0, 0, 0.2);
+`
 
 const StyledTimetable = styled.div`
   display: grid;
@@ -15,11 +41,55 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const StyledHour = styled(Cell)<{ startPos: number }>`
-  grid-column-start: ${props => props.startPos};
-`
-
 const Timetable: React.FC = () => {
+  const StyledHour = styled(Cell)<{ startPos: number }>`
+    grid-column-start: ${props => props.startPos};
+  `
+
+  const renderCell = (course: Course, classTime: ClassTime, text?: string) => {
+    return (
+      <Cell
+        key={`${course}${classTime}`}
+        onDrop={() => handleDrop(classTime, course)}
+        course={course}
+        classTime={classTime}
+      >
+        {text}
+      </Cell>
+    )
+  }
+  const renderStyledHour = (
+    course: Course,
+    classTime: ClassTime,
+    gridColumnStart: number,
+    text: string
+  ) => {
+    return (
+      <StyledHour
+        key={`${course}${classTime}`}
+        onDrop={() => handleDrop(classTime, course)}
+        course={course}
+        classTime={classTime}
+        startPos={gridColumnStart}
+      >
+        {text}
+      </StyledHour>
+    )
+  }
+
+  const [courses] = useState<Course[]>(testCourses)
+
+  const [selectedCourses, setSelectedCourses] = useState<
+    Record<string, ClassTime>
+  >({})
+
+  const handleDrop = (classTime: ClassTime, course: Course) => {
+    setSelectedCourses({
+      ...selectedCourses,
+      [course.id]: classTime,
+    })
+  }
+
   const hours = [
     '9:00',
     '10:00',
@@ -34,28 +104,45 @@ const Timetable: React.FC = () => {
   ]
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
-  const renderCell = (text?: string) => {
-    return <Cell>{text}</Cell>
-  }
-  const renderStyledHour = (text: string, gridColumnStart: number) => {
-    return <StyledHour startPos={gridColumnStart}>{text}</StyledHour>
-  }
-
   /* Constructing the timetable grid of cells */
   const cellsGrid: JSX.Element[][] = []
-  const daysRow: JSX.Element[] = [renderCell()]
-  days.forEach(day => daysRow.push(renderCell(day)))
+  const daysRow: JSX.Element[] = [<BaseCell key={0} x={1} y={1} />]
+  days.forEach((day, x) =>
+    daysRow.push(
+      <BaseCell key={x + 2} x={x + 2} y={0}>
+        {day}
+      </BaseCell>
+    )
+  )
   cellsGrid.push(daysRow)
-  hours.forEach((hour, i) => {
+  hours.forEach((hour, y) => {
     const hoursRow: JSX.Element[] = []
-    hoursRow.push(renderStyledHour(hour, i))
-    days.forEach(_ => hoursRow.push(renderCell()))
+    hoursRow.push(
+      <BaseCell x={1} y={y + 2}>
+        {hour}
+      </BaseCell>
+    )
+    days.forEach((_, x) => hoursRow.push(<BaseCell x={x + 2} y={y + 2} />))
     cellsGrid.push(hoursRow)
   })
 
+  const allCourseTimes = courses.map(course =>
+    course.classes.map(classTime => (
+      <Cell
+        key={`${course}${classTime}`}
+        onDrop={() => handleDrop(classTime, course)}
+        course={course}
+        classTime={classTime}
+      />
+    ))
+  )
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <StyledTimetable>{cellsGrid}</StyledTimetable>
+      <StyledTimetable>
+        {cellsGrid}
+        {allCourseTimes}
+      </StyledTimetable>
     </DndProvider>
   )
 }
