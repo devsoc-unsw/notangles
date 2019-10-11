@@ -20,7 +20,7 @@ class Database {
 
   getDb = async (): Promise<Db> => {
     if (!this.client) await this.connect()
-    const db = this.client.db(dbName)
+    const db = this.client.db(this.dbName)
     return db
   }
 
