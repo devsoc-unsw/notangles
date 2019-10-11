@@ -29,7 +29,7 @@ interface CellProps {
 
 const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
-    accept: ItemTypes.COURSECLASS,
+    accept: course.id,
     drop: onDrop,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
