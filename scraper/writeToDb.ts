@@ -18,6 +18,7 @@ const main = async () => {
       }
     }
   }
+  Database.disconnect
 }
 
 main().then(() => process.exit())
