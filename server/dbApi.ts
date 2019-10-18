@@ -52,6 +52,18 @@ class Database {
     await col.deleteOne({ courseCode })
   }
 
+  dbFetchAll = async (termColName: string) => {
+    const col = await this.getCollection(termColName)
+    const fields = {
+      courseCode: true,
+      name: true,
+    }
+    const hash = await col.find(undefined, {
+      projection: fields,
+    })
+    return hash.toArray()
+  }
+
   setDbname = (name: string) => {
     this.dbName = name
   }

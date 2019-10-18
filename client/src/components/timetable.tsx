@@ -1,6 +1,6 @@
 import React from 'react'
 import './timetable.css'
-import {DragDropContext} from 'react-beautiful-dnd'
+import { DragDropContext } from 'react-beautiful-dnd'
 
 function TimeTable() {
   const timeframes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
@@ -12,7 +12,9 @@ function TimeTable() {
         <div className="cells-row">
           <div className="timeframe" />
           {days.map(day => (
-            <div className="cell">{day}</div>
+            <div className="cell" key={day}>
+              {day}
+            </div>
           ))}
         </div>
         {timeframes.map(timeframe => (

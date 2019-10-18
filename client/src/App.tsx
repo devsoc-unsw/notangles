@@ -23,20 +23,18 @@ const App: React.FC = () => {
   }
 
   React.useEffect(() => {
-     
-    fetch('http://localhost:3000/api/terms/T3-2019/courses/COMP1511/')
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(myJson) {
-      console.log(JSON.stringify(myJson));
-    }
-    ).catch(function(err) {
-      console.log('Fetch Error :-S', err);
-    });
+    fetch('http://localhost:3001/api/terms/2019-T1/courses/COMP1511/')
+      .then(function(response) {
+        return response.json()
+      })
+      .then(function(myJson) {
+        console.log(JSON.stringify(myJson))
+      })
+      .catch(function(err) {
+        console.log('Fetch Error :-S', err)
+      })
   }, [])
- 
-  
+
   return (
     <div>
       <h2>Notangles</h2>
