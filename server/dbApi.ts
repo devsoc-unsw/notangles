@@ -5,7 +5,6 @@ const url = config.database
 
 class Database {
   private client: MongoClient | undefined
-  private dbName = 'Notangles'
 
   connect = async () => {
     const client = new MongoClient(url, { useNewUrlParser: true })
@@ -18,42 +17,47 @@ class Database {
     }
   }
 
-  getDb = async (): Promise<Db> => {
+  getDb = async (dbName: string): Promise<Db> => {
     if (!this.client) await this.connect()
-    const db = this.client.db(this.dbName)
+    const db = this.client.db(dbName)
     return db
   }
 
-  getCollection = async (termColName: string) => {
-    const db = await this.getDb()
+  getCollection = async (dbName: string, termColName: string) => {
+    const db = await this.getDb(dbName)
     return db.collection(termColName)
   }
 
-  dbAdd = async (termColName: string, doc) => {
-    const col = await this.getCollection(termColName)
+  dbAdd = async (dbName: string, termColName: string, doc) => {
+    const col = await this.getCollection(dbName, termColName)
     await col.insertOne(doc)
   }
 
-  dbRead = async (termColName: string, courseCode: string) => {
-    const col = await this.getCollection(termColName)
+  dbRead = async (dbName: string, termColName: string, courseCode: string) => {
+    const col = await this.getCollection(dbName, termColName)
     const doc = await col.findOne({ courseCode })
     return doc
   }
 
-  dbUpdate = async (termColName: string, courseCode: string, doc) => {
-    const col = await this.getCollection(termColName)
+  dbUpdate = async (
+    dbName: string,
+    termColName: string,
+    courseCode: string,
+    doc
+  ) => {
+    const col = await this.getCollection(dbName, termColName)
     try {
       await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {}
   }
 
-  dbDel = async (termColName: string, courseCode: string) => {
-    const col = await this.getCollection(termColName)
+  dbDel = async (dbName: string, termColName: string, courseCode: string) => {
+    const col = await this.getCollection(dbName, termColName)
     await col.deleteOne({ courseCode })
   }
 
-  dbFetchAll = async (termColName: string) => {
-    const col = await this.getCollection(termColName)
+  dbFetchAll = async (dbName: string, termColName: string) => {
+    const col = await this.getCollection(dbName, termColName)
     const fields = {
       courseCode: true,
       name: true,
@@ -62,10 +66,6 @@ class Database {
       projection: fields,
     })
     return hash.toArray()
-  }
-
-  setDbname = (name: string) => {
-    this.dbName = name
   }
 }
 

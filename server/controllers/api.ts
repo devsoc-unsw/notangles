@@ -15,8 +15,7 @@ export const getCourse = async (req: Request, res: Response) => {
   //termId expected in yyyy-term format
   const params: IGetCourseParams = req.params
   const [year, term] = params.termId.split('-')
-  Database.setDbname(year)
-  const course = await Database.dbRead(term, params.courseId)
+  const course = await Database.dbRead(year, term, params.courseId)
   if (course) {
     res.send(JSON.stringify(course.classes))
   } else {
@@ -34,8 +33,7 @@ export const getCourseList = async (req: Request, res: Response) => {
     res.status(400).send('Invalid year and term: should be <year>-<term>')
     return
   }
-  Database.setDbname(year)
-  const list = await Database.dbFetchAll(term)
+  const list = await Database.dbFetchAll(year, term)
   if (list) {
     res.send(JSON.stringify(list))
   } else {
