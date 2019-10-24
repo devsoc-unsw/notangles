@@ -1,8 +1,10 @@
 import React from 'react'
-import './App.css'
 import Select from 'react-select'
-import { TimeTable } from './components/timetable'
-import { DragDropContext } from 'react-beautiful-dnd'
+
+import TimeTable from './components/timetable'
+import Navbar from './components/navbar'
+
+import styled from 'styled-components'
 
 interface CourseOption {
   value: string
@@ -15,6 +17,26 @@ const options: CourseOption[] = [
   { value: 'comp2411', label: 'COMP2411' },
   { value: 'arts1234', label: 'ARTS1234' },
 ]
+
+const StyledApp = styled.div`
+  height: 85vh;
+  padding: 10px 20%;
+
+  display: grid;
+  grid-template: 2fr 1fr 80% / auto;
+
+  text-align: center;
+  background-color: white;
+`
+
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+const StyledSelect = styled(Select)`
+  width: 100%;
+`
 
 const App: React.FC = () => {
   const [value, setValue] = React.useState<CourseOption>()
@@ -36,14 +58,20 @@ const App: React.FC = () => {
   }, [])
 
   return (
-    <div>
-      <h2>Notangles</h2>
-      <p />
-      <Select options={options} value={value} onChange={handleChange} />
-      <p />
-      Selected course: {value ? value.label : 'No course selected'}
-      <p />
-      <TimeTable />
+    <div className="App">
+      <Navbar />
+      <StyledApp>
+        <SelectWrapper>
+          <span>Add a course</span>
+          <StyledSelect
+            options={options}
+            value={value}
+            onChange={handleChange}
+          />
+        </SelectWrapper>
+        Selected course: {value ? value.label : 'No course selected'}
+        <TimeTable />
+      </StyledApp>
     </div>
   )
 }
