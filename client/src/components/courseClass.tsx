@@ -2,8 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { Course } from '../App'
-import { ClassTime } from './timetable'
+import { Course, ClassTime } from './timetable'
 
 export interface CourseClassProps {
   course: Course

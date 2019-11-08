@@ -2,17 +2,23 @@ import React, { useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'styled-components'
-import {Course} from '../App'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
 
-export interface TimetableProps {
-  testCourses: Course[]
+export interface Course {
+  id: string
+  classes: ClassTime[]
 }
 
 // [day, from, to]
 export type ClassTime = [number, number, number]
+
+const testCourses: Course[] = [
+  { id: 'COMP1511', classes: [[1, 1, 2], [1, 4, 6]] },
+  { id: 'COMP1521', classes: [[1, 2, 3], [2, 2, 3]] },
+  { id: 'COMP1531', classes: [[3, 4, 7], [1, 1, 3]] },
+]
 
 const BaseCell = styled.div<{ x: number; y: number }>`
   grid-column: ${props => props.x};
@@ -35,7 +41,7 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const Timetable: React.FC<TimetableProps> = ({ testCourses }) => {
+const Timetable: React.FC = () => {
   const hours: string[] = [
     '9:00',
     '10:00',
@@ -59,7 +65,7 @@ const Timetable: React.FC<TimetableProps> = ({ testCourses }) => {
   const [courses] = useState<Course[]>(testCourses)
   const [selectedCourses, setSelectedCourses] = useState<
     Record<string, ClassTime>
-  >({})
+    >({})
 
   const handleDrop = (classTime: ClassTime, course: Course) => {
     setSelectedCourses({

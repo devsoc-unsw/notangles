@@ -2,8 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
 
-import { ClassTime } from './timetable'
-import { Course } from '../App'
+import { Course, ClassTime } from './timetable'
 
 const StyledCell = styled.div<{ classTime: ClassTime; canDrop: boolean }>`
   border: 0.2px solid;
