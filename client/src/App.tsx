@@ -1,21 +1,35 @@
 import React from 'react'
 import Select from 'react-select'
 
-import TimeTable from './components/timetable'
+import TimeTable, { ClassTime } from './components/timetable'
 import Navbar from './components/navbar'
+import CourseInventory from './components/courseInventory'
 
 import styled from 'styled-components'
 
-interface IOption {
-  value: string
+// interface IOption {
+//   value: string
+//   label: string
+// }
+
+// const options: IOption[] = [
+//   { value: 'comp1511', label: 'COMP1511' },
+//   { value: 'comp2511', label: 'COMP2511' },
+//   { value: 'comp2411', label: 'COMP2411' },
+//   { value: 'arts1234', label: 'ARTS1234' },
+// ]
+
+export interface Course {
+  id: string
+  classes: ClassTime[]
   label: string
+  value: string
 }
 
-const options: IOption[] = [
-  { value: 'comp1511', label: 'COMP1511' },
-  { value: 'comp2511', label: 'COMP2511' },
-  { value: 'comp2411', label: 'COMP2411' },
-  { value: 'arts1234', label: 'ARTS1234' },
+const testCourses: Course[] = [
+  { id: 'COMP1511', classes: [[1, 1, 2], [1, 4, 6]], label: 'COMP1511', value: 'COMP1511' },
+  { id: 'COMP1521', classes: [[1, 2, 3], [2, 2, 3]], label: 'COMP1521', value: 'COMP1521' },
+  { id: 'COMP1531', classes: [[3, 4, 7], [1, 1, 3]], label: 'COMP1531', value: 'COMP1531' },
 ]
 
 const StyledApp = styled.div`
@@ -39,10 +53,15 @@ const StyledSelect = styled(Select)`
 `
 
 const App: React.FC = () => {
-  const [value, setValue] = React.useState<IOption>()
-  const handleChange = (e: any) => {
+
+  const [value, setValue] = React.useState<Course>()
+  const [addedCourses, setCourses] = React.useState<Course[]>([])
+
+  const handleChange = (e: Course) => {
     setValue(e)
+    setCourses([...addedCourses, e])
   }
+
   return (
     <div className="App">
       <Navbar />
@@ -50,13 +69,18 @@ const App: React.FC = () => {
         <SelectWrapper>
           <span>Add a course</span>
           <StyledSelect
-            options={options}
+            options={testCourses}
             value={value}
             onChange={handleChange}
           />
         </SelectWrapper>
-        Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable />
+        Selected course: {value ? value.id : 'No course selected'}
+        <CourseInventory
+          addedCourses={addedCourses}
+        />
+        <TimeTable
+          testCourses={testCourses}
+        />
       </StyledApp>
     </div>
   )

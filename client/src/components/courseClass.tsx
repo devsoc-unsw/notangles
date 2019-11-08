@@ -2,7 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { Course, ClassTime } from './timetable'
+import { Course } from '../App'
+import { ClassTime } from './timetable'
 
 export interface CourseClassProps {
   course: Course
@@ -19,7 +20,7 @@ const UnselectedCourseClass = styled.div`
 
   background-color: orange;
   opacity: ${(props: UnselectedCourseClassProps) =>
-    props.isDragging ? 0.5 : 1};
+  props.isDragging ? 0.5 : 1};
 
   cursor: move;
 `
