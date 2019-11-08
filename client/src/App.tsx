@@ -17,13 +17,6 @@ interface CourseOverview {
   id: string
 }
 
-const options: CourseOption[] = [
-  { value: 'comp1511', label: 'COMP1511' },
-  { value: 'comp2511', label: 'COMP2511' },
-  { value: 'comp2411', label: 'COMP2411' },
-  { value: 'arts1234', label: 'ARTS1234' },
-]
-
 const StyledApp = styled.div`
   height: 85vh;
   padding: 10px 20%;
@@ -38,10 +31,12 @@ const StyledApp = styled.div`
 const SelectWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  height: 30px;
 `
 
 const StyledSelect = styled(Select)`
   width: 100%;
+  text-align: left;
 `
 
 const App: React.FC = () => {
@@ -63,25 +58,21 @@ const App: React.FC = () => {
         console.log(result)
         setCoursesList(result)
       })
-    console.log(options)
-    // setOptions(options)
-  }, [])
+    // console.log(options)
+    setOptions(options)
+  }, [options])
 
   useEffect(() => {
     console.log('something')
     if (coursesList) {
       setOptions(
-        coursesList
-          .filter((value, index) => {
-            return index < 10
-          })
-          .map(course => {
-            const option: CourseOption = {
-              value: course.courseCode,
-              label: course.courseCode + ' - ' + course.name,
-            }
-            return option
-          })
+        coursesList.map(course => {
+          const option: CourseOption = {
+            value: course.courseCode,
+            label: course.courseCode + ' - ' + course.name,
+          }
+          return option
+        })
       )
     }
   }, [coursesList])
