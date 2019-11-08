@@ -5,6 +5,7 @@ import TimeTable from './components/timetable'
 import Navbar from './components/navbar'
 
 import styled from 'styled-components'
+import getCourseInfo from './components/getCourseInfo'
 
 interface CourseOption {
   value: string
@@ -55,6 +56,10 @@ const App: React.FC = () => {
       .catch(function(err) {
         console.log('Fetch Error :-S', err)
       })
+  }, [])
+
+  React.useEffect(() => {
+    getCourseInfo('2019', 'T1', 'COMP2521')
   }, [])
 
   return (
