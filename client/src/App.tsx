@@ -6,6 +6,7 @@ import Navbar from './components/navbar'
 
 import styled from 'styled-components'
 import getCourseInfo from './components/getCourseInfo'
+import { async } from 'q'
 
 interface CourseOption {
   value: string
@@ -45,7 +46,7 @@ const App: React.FC = () => {
     setValue(e)
   }
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     fetch('http://localhost:3001/api/terms/2019-T1/courses/COMP1511/')
       .then(function(response) {
         return response.json()
@@ -56,10 +57,16 @@ const App: React.FC = () => {
       .catch(function(err) {
         console.log('Fetch Error :-S', err)
       })
-  }, [])
+  }, [])*/
 
   React.useEffect(() => {
-    getCourseInfo('2019', 'T1', 'COMP2521')
+    console.log('Hi')
+    async function load() {
+      const comp2521 = await getCourseInfo('2019', 'T1', 'COMP2521')
+      console.log(comp2521)
+    }
+
+    load()
   }, [])
 
   return (

@@ -17,7 +17,7 @@ export const getCourse = async (req: Request, res: Response) => {
   const [year, term] = params.termId.split('-')
   const course = await Database.dbRead(year, term, params.courseId)
   if (course) {
-    res.send(JSON.stringify(course.classes))
+    res.send(JSON.stringify(course))
   } else {
     console.error(
       'dbRead returned null course. params: ' + util.inspect(params)
