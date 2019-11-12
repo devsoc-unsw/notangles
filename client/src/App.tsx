@@ -1,11 +1,35 @@
 import React, { useEffect } from 'react'
 import Select from 'react-select'
+import Axios, { AxiosResponse } from 'axios'
 
-import TimeTable, { Course } from './components/timetable'
+import TimeTable from './components/timetable'
 import Navbar from './components/navbar'
 
 import styled from 'styled-components'
 
+export interface CourseData {
+  courseCode: string
+  courseName: string
+  classes: ClassData[]
+}
+
+export interface ClassData {
+  activity: string
+  periods: Period[]
+}
+
+export interface Period {
+  time: ClassTime
+  location: string
+}
+
+export interface ClassTime {
+  day: string
+  start: string
+  end: string
+}
+
+// ------------------------------------
 interface CourseOption {
   value: string
   label: string
@@ -40,6 +64,8 @@ const StyledSelect = styled(Select)`
 `
 
 const App: React.FC = () => {
+  const [courseDataList, setCourseDataList] = React.useState<CourseData[]>()
+
   const [value, setValue] = React.useState<CourseOption>()
 
   // List of courses
@@ -50,19 +76,51 @@ const App: React.FC = () => {
     setValue(e)
   }
 
+  useEffect(() => {
+    console.log(courseDataList)
+  }, [courseDataList])
+
   // Once -> when the app is rendered
   useEffect(() => {
-    fetch('http://localhost:3001/api/terms/2019-T1/courses')
-      .then(response => response.json())
-      .then(result => {
-        console.log(result)
-        setCoursesList(result)
+    Axios.get('http://localhost:3001/api/terms/2019-T1/courses')
+      .then((res: AxiosResponse<CourseOverview[]>) => {
+        const courseOverviews: CourseOverview[] = res.data
+        setCoursesList(courseOverviews)
+
+        const courseList: CourseData[] = []
+
+        for (let courseOverview of courseOverviews) {
+
+          Axios.get(`http://localhost:3001/api/terms/2019-T1/courses/${courseOverview.courseCode}`)
+            .catch(e => console.log(e))
+            .then((res: any) => {
+              if ('data' in res && typeof res.data.map == 'function') {
+                const course: CourseData = {
+                  courseCode: courseOverview.courseCode,
+                  courseName: courseOverview.name,
+                  classes: res.data.map((classOverview: any) => ({
+                    activity: classOverview.activity,
+                    periods: classOverview.times.map((periodOverview: any) => ({
+                      location: periodOverview.location,
+                      time: {
+                        day: periodOverview.day,
+                        start: periodOverview.time.start,
+                        end: periodOverview.time.end,
+                      },
+                    })),
+                  })),
+                }
+                courseList.push(course)
+              } else {
+                console.log(res)
+              }
+            })
+        }
+        setCourseDataList(courseList)
       })
-    // console.log(options)
   }, [])
 
   useEffect(() => {
-    console.log('something')
     if (coursesList) {
       setOptions(
         coursesList.map(course => {
@@ -71,27 +129,14 @@ const App: React.FC = () => {
             label: course.courseCode + ' - ' + course.name,
           }
           return option
-        })
+        }),
       )
     }
   }, [coursesList])
 
-  // useEffect(() => {
-  //   fetch('http://localhost:3001/api/terms/2019-T1/courses/COMP1511/')
-  //     .then(function(response) {
-  //       return response.json()
-  //     })
-  //     .then(function(myJson) {
-  //       console.log(JSON.stringify(myJson))
-  //     })
-  //     .catch(function(err) {
-  //       console.log('Fetch Error :-S', err)
-  //     })
-  // }, [])
-
   return (
     <div className="App">
-      <Navbar />
+      <Navbar/>
       <StyledApp>
         <SelectWrapper>
           <span>Add a course</span>
