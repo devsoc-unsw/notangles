@@ -92,14 +92,14 @@ const App: React.FC = () => {
         })),
       })),
     }
-
+    console.log(selectedCourseData)
     setSelectedCourses([...selectedCourses, selectedCourseData])
   }
 
   // Once -> when the app is rendered
   useEffect(() => {
     (async () => {
-      const resJson = await fetch('http://localhost:3001/api/terms/2019-T1/courses')
+      const resJson = await fetch('http://localhost:3001/api/terms/2019-T3/courses')
       const res = await resJson.json()
       setCoursesList(res)
     })()

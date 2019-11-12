@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
 import { ClassData, CourseData, Period } from '../App'
-import { weekdayToXCoordinate } from './cell'
+import { timeToIndex, weekdayToXCoordinate } from './cell'
 
 export interface CourseClassProps {
   course: CourseData
@@ -30,15 +30,15 @@ const StyledCourseClass = styled(UnselectedCourseClass)<{
   classTime: Period
 }>`
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
-  grid-row: ${props => props.classTime.time.start + 1} /
-    ${props => props.classTime.time.end + 1};
+  grid-row: ${props => timeToIndex(props.classTime.time.start)} /
+    ${props => timeToIndex(props.classTime.time.end)};
 `
 
 const CourseClass: React.FC<CourseClassProps> = ({ course, classTime, classData }) => {
   const [{ isDragging, opacity }, drag] = useDrag({
     item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
       opacity: monitor.isDragging() ? 0.4 : 1,
     }),
   })

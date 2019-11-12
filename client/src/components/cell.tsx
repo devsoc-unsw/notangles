@@ -1,17 +1,21 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
-import { CourseData, Period } from '../App'
+import { ClassData, CourseData, Period } from '../App'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
-    'Mon': 0,
-    'Tue': 1,
-    'Wed': 2,
-    'Thu': 3,
-    'Fri': 4
+    'Mon': 1,
+    'Tue': 2,
+    'Wed': 3,
+    'Thu': 4,
+    'Fri': 5
   };
   return conversionTable[weekDay]
+}
+
+export const timeToIndex = (time: string) => {
+  return Number.parseInt(time.split(':')[0]) - 7
 }
 
 const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
@@ -23,8 +27,8 @@ const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
   justify-content: center;
 
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
-  grid-row: ${props => props.classTime.time.start + 1} /
-    ${props => props.classTime.time.end + 1};
+  grid-row: ${props => timeToIndex(props.classTime.time.start)} /
+    ${props => timeToIndex(props.classTime.time.end)};
   border: 3px solid ${props => (props.canDrop ? 'green' : 'red')};
   background-color: white;
   ${props => !props.canDrop && 'display: none'};
@@ -34,11 +38,12 @@ interface CellProps {
   course: CourseData
   classTime: Period
   onDrop: (item: any) => void
+  classData: ClassData
 }
 
-const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
+const Cell: React.FC<CellProps> = ({ course, classTime, onDrop, classData }) => {
   const [{ canDrop }, drop] = useDrop({
-    accept: course.courseCode,
+    accept: `${course.courseCode} ${classData.activity}`,
     drop: onDrop,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
@@ -47,7 +52,7 @@ const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
   })
   return (
     <StyledCell ref={drop} classTime={classTime} canDrop={canDrop}>
-      {course.courseCode}
+      {`${course.courseCode} ${classData.activity}`}
     </StyledCell>
   )
 }

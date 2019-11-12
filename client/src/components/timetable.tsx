@@ -103,10 +103,11 @@ const Timetable: React.FC<TimetableProps> = props => {
     course.classes.map(classData => (
       classData.periods.map(period => (
         <Cell
-          // key={`${course.courseCode}${classData.activity}`}
+          // key={`${course.courseCode} ${classData.activity}`}
           onDrop={() => handleDrop(classData, course)}
           course={course}
           classTime={period}
+          classData={classData}
         />
       ))
     )),
