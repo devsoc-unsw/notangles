@@ -1,10 +1,20 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
+import { CourseData, Period } from '../App'
 
-import { Course, ClassTime } from './timetable'
+export const weekdayToXCoordinate = (weekDay: string) => {
+  const conversionTable: Record<string, number> = {
+    'Mon': 0,
+    'Tue': 1,
+    'Wed': 2,
+    'Thu': 3,
+    'Fri': 4
+  };
+  return conversionTable[weekDay]
+}
 
-const StyledCell = styled.div<{ classTime: ClassTime; canDrop: boolean }>`
+const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
   border: 0.2px solid;
   border-color: rgba(0, 0, 0, 0.2);
 
@@ -12,23 +22,23 @@ const StyledCell = styled.div<{ classTime: ClassTime; canDrop: boolean }>`
   align-items: center;
   justify-content: center;
 
-  grid-column: ${props => props.classTime[0] + 1};
-  grid-row: ${props => props.classTime[1] + 1} /
-    ${props => props.classTime[2] + 1};
+  grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
+  grid-row: ${props => props.classTime.time.start + 1} /
+    ${props => props.classTime.time.end + 1};
   border: 3px solid ${props => (props.canDrop ? 'green' : 'red')};
   background-color: white;
   ${props => !props.canDrop && 'display: none'};
 `
 
 interface CellProps {
-  course: Course
-  classTime: ClassTime
+  course: CourseData
+  classTime: Period
   onDrop: (item: any) => void
 }
 
 const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
   const [{ canDrop }, drop] = useDrop({
-    accept: course.id,
+    accept: course.courseCode,
     drop: onDrop,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
@@ -37,7 +47,7 @@ const Cell: React.FC<CellProps> = ({ course, classTime, onDrop }) => {
   })
   return (
     <StyledCell ref={drop} classTime={classTime} canDrop={canDrop}>
-      {course.id}
+      {course.courseCode}
     </StyledCell>
   )
 }

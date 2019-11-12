@@ -5,6 +5,7 @@ import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
+import { ClassData, CourseData } from '../App'
 
 export interface Course {
   id: string
@@ -41,7 +42,11 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const Timetable: React.FC = () => {
+interface TimetableProps {
+  selectedCourses: CourseData[]
+}
+
+const Timetable: React.FC<TimetableProps> = props => {
   const hours: string[] = [
     '9:00',
     '10:00',
@@ -62,27 +67,24 @@ const Timetable: React.FC = () => {
     'Friday',
   ]
 
-  const [courses] = useState<Course[]>(testCourses)
-  const [selectedCourses, setSelectedCourses] = useState<
-    Record<string, ClassTime>
-    >({})
+  const [selectedCourses, setSelectedCourses] = useState<Record<string, ClassData>>({})
 
-  const handleDrop = (classTime: ClassTime, course: Course) => {
+  const handleDrop = (classTime: ClassData, course: CourseData) => {
     setSelectedCourses({
       ...selectedCourses,
-      [course.id]: classTime,
+      [course.courseCode]: classTime,
     })
   }
 
   /* Constructing the timetable grid of cells */
   const cellsGrid: JSX.Element[][] = []
-  const daysRow: JSX.Element[] = [<BaseCell key={0} x={1} y={1} />]
+  const daysRow: JSX.Element[] = [<BaseCell key={0} x={1} y={1}/>]
   days.forEach((day, x) =>
     daysRow.push(
       <BaseCell key={x + 2} x={x + 2} y={0}>
         {day}
-      </BaseCell>
-    )
+      </BaseCell>,
+    ),
   )
   cellsGrid.push(daysRow)
   hours.forEach((hour, y) => {
@@ -90,22 +92,24 @@ const Timetable: React.FC = () => {
     hoursRow.push(
       <BaseCell x={1} y={y + 2}>
         {hour}
-      </BaseCell>
+      </BaseCell>,
     )
-    days.forEach((_, x) => hoursRow.push(<BaseCell x={x + 2} y={y + 2} />))
+    days.forEach((_, x) => hoursRow.push(<BaseCell x={x + 2} y={y + 2}/>))
     cellsGrid.push(hoursRow)
   })
 
   /* Constructing the cells which are drop targets for all potential classes */
-  const allCourseTimes = courses.map(course =>
-    course.classes.map(classTime => (
-      <Cell
-        key={`${course}${classTime}`}
-        onDrop={() => handleDrop(classTime, course)}
-        course={course}
-        classTime={classTime}
-      />
-    ))
+  const allCourseTimes = props.selectedCourses.map(course =>
+    course.classes.map(classData => (
+      classData.periods.map(period => (
+        <Cell
+          // key={`${course.courseCode}${classData.activity}`}
+          onDrop={() => handleDrop(classData, course)}
+          course={course}
+          classTime={period}
+        />
+      ))
+    )),
   )
 
   return (
@@ -113,12 +117,15 @@ const Timetable: React.FC = () => {
       <StyledTimetable>
         {cellsGrid}
         {allCourseTimes}
-        {courses.map(course => (
-          <CourseClass
-            key={course.id}
-            course={course}
-            classTime={selectedCourses[course.id]}
-          />
+        {props.selectedCourses.map(course => (
+          course.classes.map(classData => (
+            <CourseClass
+              // key={course.courseCode}
+              course={course}
+              classTime={selectedCourses[course.courseCode]}
+              classData={classData}
+            />
+          ))
         ))}
       </StyledTimetable>
     </DndProvider>

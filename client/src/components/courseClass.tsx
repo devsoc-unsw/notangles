@@ -2,11 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { Course, ClassTime } from './timetable'
+import { ClassData, CourseData, Period } from '../App'
+import { weekdayToXCoordinate } from './cell'
 
 export interface CourseClassProps {
-  course: Course
-  classTime?: ClassTime
+  course: CourseData
+  classTime?: ClassData
+  classData: ClassData
 }
 
 interface UnselectedCourseClassProps {
@@ -25,16 +27,16 @@ const UnselectedCourseClass = styled.div`
 `
 
 const StyledCourseClass = styled(UnselectedCourseClass)<{
-  classTime: ClassTime
+  classTime: Period
 }>`
-  grid-column: ${props => props.classTime[0] + 1};
-  grid-row: ${props => props.classTime[1] + 1} /
-    ${props => props.classTime[2] + 1};
+  grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
+  grid-row: ${props => props.classTime.time.start + 1} /
+    ${props => props.classTime.time.end + 1};
 `
 
-const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
+const CourseClass: React.FC<CourseClassProps> = ({ course, classTime, classData }) => {
   const [{ isDragging, opacity }, drag] = useDrag({
-    item: { type: course.id },
+    item: { type: course.courseCode },
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
       opacity: monitor.isDragging() ? 0.4 : 1,
@@ -43,14 +45,18 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
 
   if (classTime) {
     return (
-      <StyledCourseClass
-        ref={drag}
-        isDragging={isDragging}
-        style={{ cursor: 'move' }}
-        classTime={classTime}
-      >
-        {course.id}
-      </StyledCourseClass>
+      <div>
+        {classTime.periods.map(period => (
+          <StyledCourseClass
+            ref={drag}
+            isDragging={isDragging}
+            style={{ cursor: 'move' }}
+            classTime={period}
+          >
+            {`${course.courseCode} ${classData.activity}`}
+          </StyledCourseClass>
+        ))}
+      </div>
     )
   }
 
@@ -61,7 +67,7 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
       isDragging={isDragging}
       style={{ cursor: 'move', opacity }}
     >
-      {course.id}
+      {`${course.courseCode} ${classData.activity}`}
     </UnselectedCourseClass>
   )
 }

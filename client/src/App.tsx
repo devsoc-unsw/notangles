@@ -118,7 +118,7 @@ const App: React.FC = () => {
       )
     }
   }, [coursesList])
-  
+
   return (
     <div className="App">
       <Navbar/>
@@ -132,7 +132,9 @@ const App: React.FC = () => {
           />
         </SelectWrapper>
         Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable/>
+        <TimeTable
+          selectedCourses={selectedCourses}
+        />
       </StyledApp>
     </div>
   )
