@@ -94,26 +94,23 @@ const App: React.FC = () => {
           Axios.get(`http://localhost:3001/api/terms/2019-T1/courses/${courseOverview.courseCode}`)
             .catch(e => console.log(e))
             .then((res: any) => {
-              if ('data' in res && typeof res.data.map == 'function') {
-                const course: CourseData = {
-                  courseCode: courseOverview.courseCode,
-                  courseName: courseOverview.name,
-                  classes: res.data.map((classOverview: any) => ({
-                    activity: classOverview.activity,
-                    periods: classOverview.times.map((periodOverview: any) => ({
-                      location: periodOverview.location,
-                      time: {
-                        day: periodOverview.day,
-                        start: periodOverview.time.start,
-                        end: periodOverview.time.end,
-                      },
-                    })),
+              const course: CourseData = {
+                courseCode: courseOverview.courseCode,
+                courseName: courseOverview.name,
+                classes: res.data.map((classOverview: any) => ({
+                  activity: classOverview.activity,
+                  periods: classOverview.times.map((periodOverview: any) => ({
+                    location: periodOverview.location,
+                    time: {
+                      day: periodOverview.day,
+                      start: periodOverview.time.start,
+                      end: periodOverview.time.end,
+                    },
                   })),
-                }
-                courseList.push(course)
-              } else {
-                console.log(res)
+                })),
               }
+              courseList.push(course)
+
             })
         }
         setCourseDataList(courseList)
