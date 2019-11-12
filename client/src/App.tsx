@@ -94,6 +94,8 @@ const App: React.FC = () => {
           Axios.get(`http://localhost:3001/api/terms/2019-T1/courses/${courseOverview.courseCode}`)
             .catch(e => console.log(e))
             .then((res: any) => {
+
+              // TODO: Fix the empty res.data issue that arises when the following if statement is removed
               if (res.data) {
                 const course: CourseData = {
                   courseCode: courseOverview.courseCode,
