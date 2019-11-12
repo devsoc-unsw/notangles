@@ -29,6 +29,7 @@ export interface ClassTime {
 }
 
 // ------------------------------------
+
 interface CourseOption {
   value: string
   label: string
@@ -117,7 +118,7 @@ const App: React.FC = () => {
       )
     }
   }, [coursesList])
-
+  
   return (
     <div className="App">
       <Navbar/>
