@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import Select from 'react-select'
-import Axios, { AxiosResponse } from 'axios'
 
 import TimeTable from './components/timetable'
 import Navbar from './components/navbar'
@@ -64,60 +63,45 @@ const StyledSelect = styled(Select)`
 `
 
 const App: React.FC = () => {
-  const [courseDataList, setCourseDataList] = React.useState<CourseData[]>()
+  const [selectedCourses, setSelectedCourses] = React.useState<CourseData[]>([])
 
   const [value, setValue] = React.useState<CourseOption>()
 
   // List of courses
   const [coursesList, setCoursesList] = React.useState<CourseOverview[]>()
   const [options, setOptions] = React.useState<CourseOption[]>()
-  const handleChange = (e: any) => {
-    console.log(e)
+  const handleChange = async (e: CourseOption) => {
     setValue(e)
-  }
 
-  useEffect(() => {
-    console.log(courseDataList)
-  }, [courseDataList])
+    const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T1/courses/${e.value}`)
+    const selectedCourseClasses = await selectedCourseClassesJson.json()
+
+    const selectedCourseData: CourseData = {
+      courseCode: e.value,
+      courseName: e.label,
+      classes: selectedCourseClasses.map((classOverview: any) => ({
+        activity: classOverview.activity,
+        periods: classOverview.times.map((periodOverview: any) => ({
+          location: periodOverview.location,
+          time: {
+            day: periodOverview.day,
+            start: periodOverview.time.start,
+            end: periodOverview.time.end,
+          },
+        })),
+      })),
+    }
+
+    setSelectedCourses([...selectedCourses, selectedCourseData])
+  }
 
   // Once -> when the app is rendered
   useEffect(() => {
-    Axios.get('http://localhost:3001/api/terms/2019-T1/courses')
-      .then((res: AxiosResponse<CourseOverview[]>) => {
-        const courseOverviews: CourseOverview[] = res.data
-        setCoursesList(courseOverviews)
-
-        const courseList: CourseData[] = []
-
-        for (let courseOverview of courseOverviews) {
-
-          Axios.get(`http://localhost:3001/api/terms/2019-T1/courses/${courseOverview.courseCode}`)
-            .catch(e => console.log(e))
-            .then((res: any) => {
-
-              // TODO: Fix the empty res.data issue that arises when the following if statement is removed
-              if (res.data) {
-                const course: CourseData = {
-                  courseCode: courseOverview.courseCode,
-                  courseName: courseOverview.name,
-                  classes: res.data.map((classOverview: any) => ({
-                    activity: classOverview.activity,
-                    periods: classOverview.times.map((periodOverview: any) => ({
-                      location: periodOverview.location,
-                      time: {
-                        day: periodOverview.day,
-                        start: periodOverview.time.start,
-                        end: periodOverview.time.end,
-                      },
-                    })),
-                  })),
-                }
-                courseList.push(course)
-              }
-            })
-        }
-        setCourseDataList(courseList)
-      })
+    (async () => {
+      const resJson = await fetch('http://localhost:3001/api/terms/2019-T1/courses')
+      const res = await resJson.json()
+      setCoursesList(res)
+    })()
   }, [])
 
   useEffect(() => {
