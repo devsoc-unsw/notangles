@@ -36,7 +36,7 @@ const StyledCourseClass = styled(UnselectedCourseClass)<{
 
 const CourseClass: React.FC<CourseClassProps> = ({ course, classTime, classData }) => {
   const [{ isDragging, opacity }, drag] = useDrag({
-    item: { type: course.courseCode },
+    item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
       opacity: monitor.isDragging() ? 0.4 : 1,
