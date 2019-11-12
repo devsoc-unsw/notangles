@@ -77,7 +77,7 @@ const Timetable: React.FC<TimetableProps> = props => {
   const handleDrop = (classTime: ClassData, course: CourseData, period: Period) => {
     setSelectedCourses({
       ...selectedCourses,
-      [`${course.courseCode} ${classTime.activity}`]: {classTime: classTime, period: period},
+      [`${course.courseCode} ${classTime.activity} ${JSON.stringify(classTime.periods)}`]: {classTime: classTime, period: period},
     })
   }
 
@@ -129,7 +129,7 @@ const Timetable: React.FC<TimetableProps> = props => {
               // key={course.courseCode}
               course={course}
               classData={classData}
-              selectedCourse={selectedCourses[`${course.courseCode} ${classData.activity}`]}
+              selectedCourse={selectedCourses[`${course.courseCode} ${classData.activity} ${JSON.stringify(classData.periods)}`]}
             />
           ))
         ))}
