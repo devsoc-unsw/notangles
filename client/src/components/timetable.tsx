@@ -5,11 +5,16 @@ import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
-import { ClassData, CourseData } from '../App'
+import { ClassData, CourseData, Period } from '../App'
 
 export interface Course {
   id: string
   classes: ClassTime[]
+}
+
+export interface SelectedCourseValue {
+  classTime: ClassData,
+  period: Period
 }
 
 // [day, from, to]
@@ -67,12 +72,12 @@ const Timetable: React.FC<TimetableProps> = props => {
     'Friday',
   ]
 
-  const [selectedCourses, setSelectedCourses] = useState<Record<string, ClassData>>({})
+  const [selectedCourses, setSelectedCourses] = useState<Record<string, SelectedCourseValue>>({})
 
-  const handleDrop = (classTime: ClassData, course: CourseData) => {
+  const handleDrop = (classTime: ClassData, course: CourseData, period: Period) => {
     setSelectedCourses({
       ...selectedCourses,
-      [course.courseCode]: classTime,
+      [`${course.courseCode} ${classTime.activity}`]: {classTime: classTime, period: period},
     })
   }
 
@@ -104,7 +109,7 @@ const Timetable: React.FC<TimetableProps> = props => {
       classData.periods.map(period => (
         <Cell
           // key={`${course.courseCode} ${classData.activity}`}
-          onDrop={() => handleDrop(classData, course)}
+          onDrop={() => handleDrop(classData, course, period)}
           course={course}
           classTime={period}
           classData={classData}
@@ -123,8 +128,8 @@ const Timetable: React.FC<TimetableProps> = props => {
             <CourseClass
               // key={course.courseCode}
               course={course}
-              classTime={selectedCourses[course.courseCode]}
               classData={classData}
+              selectedCourse={selectedCourses[`${course.courseCode} ${classData.activity}`]}
             />
           ))
         ))}

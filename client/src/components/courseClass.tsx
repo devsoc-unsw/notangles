@@ -4,11 +4,12 @@ import { useDrag } from 'react-dnd'
 
 import { ClassData, CourseData, Period } from '../App'
 import { timeToIndex, weekdayToXCoordinate } from './cell'
+import { SelectedCourseValue } from './timetable'
 
 export interface CourseClassProps {
   course: CourseData
-  classTime?: ClassData
   classData: ClassData
+  selectedCourse?: SelectedCourseValue
 }
 
 interface UnselectedCourseClassProps {
@@ -34,7 +35,7 @@ const StyledCourseClass = styled(UnselectedCourseClass)<{
     ${props => timeToIndex(props.classTime.time.end)};
 `
 
-const CourseClass: React.FC<CourseClassProps> = ({ course, classTime, classData }) => {
+const CourseClass: React.FC<CourseClassProps> = ({ course, classData, selectedCourse }) => {
   const [{ isDragging, opacity }, drag] = useDrag({
     item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
@@ -43,20 +44,16 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classTime, classData 
     }),
   })
 
-  if (classTime) {
+  if (selectedCourse) {
     return (
-      <div>
-        {classTime.periods.map(period => (
-          <StyledCourseClass
-            ref={drag}
-            isDragging={isDragging}
-            style={{ cursor: 'move' }}
-            classTime={period}
-          >
-            {`${course.courseCode} ${classData.activity}`}
-          </StyledCourseClass>
-        ))}
-      </div>
+      <StyledCourseClass
+        ref={drag}
+        isDragging={isDragging}
+        style={{ cursor: 'move' }}
+        classTime={selectedCourse.period}
+      >
+        {`${course.courseCode} ${classData.activity}`}
+      </StyledCourseClass>
     )
   }
 
