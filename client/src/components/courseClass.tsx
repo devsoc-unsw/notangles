@@ -44,6 +44,7 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classData, selectedCo
     }),
   })
 
+  // TODO: make this more accurate - don't rely on courseCode + activity since if one block gets dropped into a cell all of the other blocks of the same type will also move into that cell
   if (selectedCourse) {
     return (
       <StyledCourseClass
