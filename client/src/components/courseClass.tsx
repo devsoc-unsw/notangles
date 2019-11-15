@@ -43,6 +43,15 @@ const CourseClass: React.FC<CourseClassProps> = ({
   selectedCourse,
   colour,
 }) => {
+  const bgAndTextColorPairs: Record<string, string> = {
+    violet: 'white',
+    indigo: 'white',
+    green: 'white',
+    blue: 'white',
+    yellow: 'black',
+    orange: 'black',
+    red: 'black',
+  }
   const [{ isDragging, opacity }, drag] = useDrag({
     item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
@@ -51,25 +60,37 @@ const CourseClass: React.FC<CourseClassProps> = ({
     }),
   })
 
+  if (!colour) {
+    colour = 'orange'
+  }
+
   if (selectedCourse) {
     return (
       <StyledCourseClass
         ref={drag}
         isDragging={isDragging}
-        style={{ cursor: 'move', backgroundColor: colour }}
+        style={{
+          cursor: 'move',
+          backgroundColor: colour,
+          color: bgAndTextColorPairs[colour],
+        }}
         classTime={selectedCourse.period}
       >
         {`${course.courseCode} ${classData.activity}`}
       </StyledCourseClass>
     )
   }
-
   return (
     // TODO: Not sure why cursor='move' only works inline here vs defined in styled component
     <UnselectedCourseClass
       ref={drag}
       isDragging={isDragging}
-      style={{ cursor: 'move', opacity, backgroundColor: colour }}
+      style={{
+        cursor: 'move',
+        opacity,
+        backgroundColor: colour,
+        color: bgAndTextColorPairs[colour],
+      }}
     >
       {`${course.courseCode} ${classData.activity}`}
     </UnselectedCourseClass>
