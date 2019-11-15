@@ -1,26 +1,11 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useDrag } from 'react-dnd'
+import { DBCourse, dbCourseToCourseData } from '../interfaces/dbCourse'
+import { CourseData } from '../interfaces/courseData'
 
-import {
-  DBClass,
-  DBCourse,
-  DBTime,
-  DBTimes,
-  dbCourseToCourseData,
-} from '../interfaces/dbCourse'
-import {
-  CourseData,
-  ClassData,
-  Period,
-  ClassTime,
-} from '../interfaces/courseData'
-
-const getCourseInfo = async (
+export const getCourseInfo = async (
   year: string,
   term: string,
   courseCode: string
-) => {
+): Promise<CourseData | null> => {
   const ty = year + '-' + term
   try {
     const data = await fetch(
@@ -37,5 +22,3 @@ const getCourseInfo = async (
     return null
   }
 }
-
-export default getCourseInfo
