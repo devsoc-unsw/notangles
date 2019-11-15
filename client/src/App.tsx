@@ -1,10 +1,35 @@
 import React, { useEffect } from 'react'
 import Select from 'react-select'
 
-import TimeTable, { Course } from './components/timetable'
+import TimeTable from './components/timetable'
 import Navbar from './components/navbar'
 
 import styled from 'styled-components'
+import { getCourseInfo } from './api/getCourseInfo'
+
+export interface CourseData {
+  courseCode: string
+  courseName: string
+  classes: ClassData[]
+}
+
+export interface ClassData {
+  activity: string
+  periods: Period[]
+}
+
+export interface Period {
+  time: ClassTime
+  location: string
+}
+
+export interface ClassTime {
+  day: string
+  start: string
+  end: string
+}
+
+// ------------------------------------
 
 interface CourseOption {
   value: string
@@ -40,29 +65,51 @@ const StyledSelect = styled(Select)`
 `
 
 const App: React.FC = () => {
+  const [selectedCourses, setSelectedCourses] = React.useState<CourseData[]>([])
+
   const [value, setValue] = React.useState<CourseOption>()
 
   // List of courses
   const [coursesList, setCoursesList] = React.useState<CourseOverview[]>()
   const [options, setOptions] = React.useState<CourseOption[]>()
-  const handleChange = (e: any) => {
-    // console.log(e)
+  const handleChange = async (e: CourseOption) => {
     setValue(e)
+
+    // const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
+    const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
+
+    if (selectedCourseClasses && e) {
+      const selectedCourseData: CourseData = {
+        courseCode: e.value,
+        courseName: e.label,
+        classes: selectedCourseClasses.classes.map((classOverview: any) => ({
+          activity: classOverview.activity,
+          periods: classOverview.periods.map((periodOverview: any) => ({
+            location: periodOverview.location,
+            time: {
+              day: periodOverview.time.day,
+              start: periodOverview.time.start,
+              end: periodOverview.time.end,
+            },
+          })),
+        })),
+      }
+
+      setSelectedCourses([...selectedCourses, selectedCourseData])
+    }
   }
 
-  // Once -> when the app is rendered
-  useEffect(() => {
-    fetch('http://localhost:3001/api/terms/2019-T1/courses')
-      .then(response => response.json())
-      .then(result => {
-        console.log(result)
-        setCoursesList(result)
-      })
-    // console.log(options)
+  React.useEffect(() => {
+    ;(async () => {
+      const resJson = await fetch(
+        'http://localhost:3001/api/terms/2019-T3/courses'
+      )
+      const res = await resJson.json()
+      setCoursesList(res)
+    })()
   }, [])
 
   useEffect(() => {
-    console.log('something')
     if (coursesList) {
       setOptions(
         coursesList.map(course => {
@@ -75,19 +122,6 @@ const App: React.FC = () => {
       )
     }
   }, [coursesList])
-
-  // useEffect(() => {
-  //   fetch('http://localhost:3001/api/terms/2019-T1/courses/COMP1511/')
-  //     .then(function(response) {
-  //       return response.json()
-  //     })
-  //     .then(function(myJson) {
-  //       console.log(JSON.stringify(myJson))
-  //     })
-  //     .catch(function(err) {
-  //       console.log('Fetch Error :-S', err)
-  //     })
-  // }, [])
 
   return (
     <div className="App">
@@ -102,7 +136,7 @@ const App: React.FC = () => {
           />
         </SelectWrapper>
         Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable />
+        <TimeTable selectedCourses={selectedCourses} />
       </StyledApp>
     </div>
   )

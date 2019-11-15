@@ -5,10 +5,16 @@ import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
+import { ClassData, CourseData, Period } from '../App'
 
 export interface Course {
   id: string
   classes: ClassTime[]
+}
+
+export interface SelectedCourseValue {
+  classTime: ClassData
+  period: Period
 }
 
 // [day, from, to]
@@ -59,7 +65,11 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const Timetable: React.FC = () => {
+interface TimetableProps {
+  selectedCourses: CourseData[]
+}
+
+const Timetable: React.FC<TimetableProps> = props => {
   let colourIndex: number = 0
   const colours: string[] = [
     'violet',
@@ -91,15 +101,20 @@ const Timetable: React.FC = () => {
   ]
   const assigned: Record<string, string> = {}
 
-  const [courses] = useState<Course[]>(testCourses)
   const [selectedCourses, setSelectedCourses] = useState<
-    Record<string, ClassTime>
+    Record<string, SelectedCourseValue>
   >({})
 
-  const handleDrop = (classTime: ClassTime, course: Course) => {
+  const handleDrop = (
+    classTime: ClassData,
+    course: CourseData,
+    period: Period
+  ) => {
     setSelectedCourses({
       ...selectedCourses,
-      [course.id]: classTime,
+      [`${course.courseCode} ${classTime.activity} ${JSON.stringify(
+        classTime.periods
+      )}`]: { classTime: classTime, period: period },
     })
   }
 
@@ -126,15 +141,18 @@ const Timetable: React.FC = () => {
   })
 
   /* Constructing the cells which are drop targets for all potential classes */
-  const allCourseTimes = courses.map(course =>
-    course.classes.map(classTime => (
-      <Cell
-        key={`${course}${classTime}`}
-        onDrop={() => handleDrop(classTime, course)}
-        course={course}
-        classTime={classTime}
-      />
-    ))
+  const allCourseTimes = props.selectedCourses.map(course =>
+    course.classes.map(classData =>
+      classData.periods.map(period => (
+        <Cell
+          // key={`${course.courseCode} ${classData.activity}`}
+          onDrop={() => handleDrop(classData, course, period)}
+          course={course}
+          classTime={period}
+          classData={classData}
+        />
+      ))
+    )
   )
 
   const getStyle = (id: string): string => {
@@ -154,14 +172,23 @@ const Timetable: React.FC = () => {
       <StyledTimetable>
         {cellsGrid}
         {allCourseTimes}
-        {courses.map(course => (
-          <CourseClass
-            key={course.id}
-            course={course}
-            classTime={selectedCourses[course.id]}
-            colour={getStyle(course.id)}
-          />
-        ))}
+        {props.selectedCourses.map(course =>
+          course.classes.map(classData => (
+            <CourseClass
+              // key={course.courseCode}
+              course={course}
+              classData={classData}
+              selectedCourse={
+                selectedCourses[
+                  `${course.courseCode} ${classData.activity} ${JSON.stringify(
+                    classData.periods
+                  )}`
+                ]
+              }
+              colour={getStyle(course.courseCode)}
+            />
+          ))
+        )}
       </StyledTimetable>
     </DndProvider>
   )

@@ -2,11 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { Course, ClassTime } from './timetable'
+import { ClassData, CourseData, Period } from '../App'
+import { timeToIndex, weekdayToXCoordinate } from './cell'
+import { SelectedCourseValue } from './timetable'
 
 export interface CourseClassProps {
-  course: Course
-  classTime?: ClassTime
+  course: CourseData
+  classData: ClassData
+  selectedCourse?: SelectedCourseValue
   colour?: string
 }
 
@@ -27,35 +30,36 @@ const UnselectedCourseClass = styled.div`
 `
 
 const StyledCourseClass = styled(UnselectedCourseClass)<{
-  classTime: ClassTime
+  classTime: Period
 }>`
-  grid-column: ${props => props.classTime[0] + 1};
-  grid-row: ${props => props.classTime[1] + 1} /
-    ${props => props.classTime[2] + 1};
+  grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
+  grid-row: ${props => timeToIndex(props.classTime.time.start)} /
+    ${props => timeToIndex(props.classTime.time.end)};
 `
 
 const CourseClass: React.FC<CourseClassProps> = ({
   course,
-  classTime,
+  classData,
+  selectedCourse,
   colour,
 }) => {
   const [{ isDragging, opacity }, drag] = useDrag({
-    item: { type: course.id },
+    item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
       opacity: monitor.isDragging() ? 0.4 : 1,
     }),
   })
 
-  if (classTime) {
+  if (selectedCourse) {
     return (
       <StyledCourseClass
         ref={drag}
         isDragging={isDragging}
         style={{ cursor: 'move' }}
-        classTime={classTime}
+        classTime={selectedCourse.period}
       >
-        {course.id}
+        {`${course.courseCode} ${classData.activity}`}
       </StyledCourseClass>
     )
   }
@@ -67,7 +71,7 @@ const CourseClass: React.FC<CourseClassProps> = ({
       isDragging={isDragging}
       style={{ cursor: 'move', opacity, backgroundColor: colour }}
     >
-      {course.id}
+      {`${course.courseCode} ${classData.activity}`}
     </UnselectedCourseClass>
   )
 }
