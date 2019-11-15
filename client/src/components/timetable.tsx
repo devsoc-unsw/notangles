@@ -15,9 +15,27 @@ export interface Course {
 export type ClassTime = [number, number, number]
 
 const testCourses: Course[] = [
-  { id: 'COMP1511', classes: [[1, 1, 2], [1, 4, 6]] },
-  { id: 'COMP1521', classes: [[1, 2, 3], [2, 2, 3]] },
-  { id: 'COMP1531', classes: [[3, 4, 7], [1, 1, 3]] },
+  {
+    id: 'COMP1511',
+    classes: [
+      [1, 1, 2],
+      [1, 4, 6],
+    ],
+  },
+  {
+    id: 'COMP1521',
+    classes: [
+      [1, 2, 3],
+      [2, 2, 3],
+    ],
+  },
+  {
+    id: 'COMP1531',
+    classes: [
+      [3, 4, 7],
+      [1, 1, 3],
+    ],
+  },
 ]
 
 const BaseCell = styled.div<{ x: number; y: number }>`
@@ -42,6 +60,16 @@ const StyledTimetable = styled.div`
 `
 
 const Timetable: React.FC = () => {
+  let colourIndex: number = 0
+  const colours: string[] = [
+    'violet',
+    'indigo',
+    'blue',
+    'green',
+    'yellow',
+    'orange',
+    'red',
+  ]
   const hours: string[] = [
     '9:00',
     '10:00',
@@ -61,11 +89,12 @@ const Timetable: React.FC = () => {
     'Thursday',
     'Friday',
   ]
+  const assigned: Record<string, string> = {}
 
   const [courses] = useState<Course[]>(testCourses)
   const [selectedCourses, setSelectedCourses] = useState<
     Record<string, ClassTime>
-    >({})
+  >({})
 
   const handleDrop = (classTime: ClassTime, course: Course) => {
     setSelectedCourses({
@@ -108,6 +137,18 @@ const Timetable: React.FC = () => {
     ))
   )
 
+  const getStyle = (id: string): string => {
+    if (!(id in assigned)) {
+      if (colourIndex > colours.length) {
+        // Hardcoded value
+        return 'orange'
+      }
+      assigned[id] = colours[colourIndex]
+      colourIndex++
+    }
+    return assigned[id]
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <StyledTimetable>
@@ -118,6 +159,7 @@ const Timetable: React.FC = () => {
             key={course.id}
             course={course}
             classTime={selectedCourses[course.id]}
+            colour={getStyle(course.id)}
           />
         ))}
       </StyledTimetable>

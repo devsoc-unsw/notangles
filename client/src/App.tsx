@@ -46,7 +46,7 @@ const App: React.FC = () => {
   const [coursesList, setCoursesList] = React.useState<CourseOverview[]>()
   const [options, setOptions] = React.useState<CourseOption[]>()
   const handleChange = (e: any) => {
-    console.log(e)
+    // console.log(e)
     setValue(e)
   }
 
@@ -102,7 +102,7 @@ const App: React.FC = () => {
           />
         </SelectWrapper>
         Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable/>
+        <TimeTable />
       </StyledApp>
     </div>
   )

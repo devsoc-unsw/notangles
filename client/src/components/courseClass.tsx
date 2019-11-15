@@ -7,6 +7,7 @@ import { Course, ClassTime } from './timetable'
 export interface CourseClassProps {
   course: Course
   classTime?: ClassTime
+  colour?: string
 }
 
 interface UnselectedCourseClassProps {
@@ -16,10 +17,11 @@ interface UnselectedCourseClassProps {
 const UnselectedCourseClass = styled.div`
   height: 100%;
   width: 100%;
+  color: white;
 
   background-color: orange;
   opacity: ${(props: UnselectedCourseClassProps) =>
-  props.isDragging ? 0.5 : 1};
+    props.isDragging ? 0.5 : 1};
 
   cursor: move;
 `
@@ -32,7 +34,11 @@ const StyledCourseClass = styled(UnselectedCourseClass)<{
     ${props => props.classTime[2] + 1};
 `
 
-const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
+const CourseClass: React.FC<CourseClassProps> = ({
+  course,
+  classTime,
+  colour,
+}) => {
   const [{ isDragging, opacity }, drag] = useDrag({
     item: { type: course.id },
     collect: monitor => ({
@@ -59,7 +65,7 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
     <UnselectedCourseClass
       ref={drag}
       isDragging={isDragging}
-      style={{ cursor: 'move', opacity }}
+      style={{ cursor: 'move', opacity, backgroundColor: colour }}
     >
       {course.id}
     </UnselectedCourseClass>
