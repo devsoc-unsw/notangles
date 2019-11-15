@@ -74,7 +74,7 @@ const App: React.FC = () => {
   const handleChange = async (e: CourseOption) => {
     setValue(e)
 
-    const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T1/courses/${e.value}`)
+    const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
     const selectedCourseClasses = await selectedCourseClassesJson.json()
 
     const selectedCourseData: CourseData = {
