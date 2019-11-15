@@ -75,35 +75,37 @@ const App: React.FC = () => {
   const handleChange = async (e: CourseOption) => {
     setValue(e)
 
-    const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
-    const selectedCourseClasses = await selectedCourseClassesJson.json()
+    // const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
+    const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
 
-    const selectedCourseData: CourseData = {
-      courseCode: e.value,
-      courseName: e.label,
-      classes: selectedCourseClasses.map((classOverview: any) => ({
-        activity: classOverview.activity,
-        periods: classOverview.times.map((periodOverview: any) => ({
-          location: periodOverview.location,
-          time: {
-            day: periodOverview.day,
-            start: periodOverview.time.start,
-            end: periodOverview.time.end,
-          },
+    if (selectedCourseClasses && e) {
+      const selectedCourseData: CourseData = {
+        courseCode: e.value,
+        courseName: e.label,
+        classes: selectedCourseClasses.classes.map((classOverview: any) => ({
+          activity: classOverview.activity,
+          periods: classOverview.periods.map((periodOverview: any) => ({
+            location: periodOverview.location,
+            time: {
+              day: periodOverview.time.day,
+              start: periodOverview.time.start,
+              end: periodOverview.time.end,
+            },
+          })),
         })),
-      })),
+      }
+
+      setSelectedCourses([...selectedCourses, selectedCourseData])
     }
-    console.log(selectedCourseData)
-    setSelectedCourses([...selectedCourses, selectedCourseData])
   }
 
   React.useEffect(() => {
-    const load = async () => {
-      const comp2521 = await getCourseInfo('2019', 'T1', 'COMP2521')
-      console.log(comp2521)
-    }
+    (async () => {
+      const resJson = await fetch('http://localhost:3001/api/terms/2019-T3/courses')
+      const res = await resJson.json()
+      setCoursesList(res)
+    })()
 
-    load()
   }, [])
 
   useEffect(() => {
