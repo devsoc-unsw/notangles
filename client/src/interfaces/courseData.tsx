@@ -1,22 +1,20 @@
-import React from 'react'
-
-interface CourseData {
+export interface CourseData {
   courseCode: string
   courseName: string
   classes: ClassData[]
 }
 
-interface ClassData {
+export interface ClassData {
   activity: string
   periods: Period[]
 }
 
-interface Period {
+export interface Period {
   time: ClassTime
   location: string
 }
 
-interface ClassTime {
+export interface ClassTime {
   day: string
   start: string
   end: string

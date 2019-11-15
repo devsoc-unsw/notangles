@@ -60,7 +60,6 @@ const App: React.FC = () => {
   }, [])*/
 
   React.useEffect(() => {
-    console.log('Hi')
     async function load() {
       const comp2521 = await getCourseInfo('2019', 'T1', 'COMP2521')
       console.log(comp2521)
