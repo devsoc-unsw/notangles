@@ -37,10 +37,7 @@ const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
 }
 
 const dbClassToClassData = (dbClass: DBClass): ClassData => {
-  const periods: Period[] = []
-  for (const times of dbClass.times) {
-    periods.push(dbTimesToPeriod(times))
-  }
+  const periods = dbClass.times.map(t => dbTimesToPeriod(t))
   return {
     activity: dbClass.activity,
     periods: periods,
@@ -48,10 +45,7 @@ const dbClassToClassData = (dbClass: DBClass): ClassData => {
 }
 
 export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
-  const classes: ClassData[] = []
-  for (const c of dbCourse.classes) {
-    classes.push(dbClassToClassData(c))
-  }
+  const classes = dbCourse.classes.map(c => dbClassToClassData(c))
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,

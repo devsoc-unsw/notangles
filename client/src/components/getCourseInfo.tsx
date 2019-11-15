@@ -22,26 +22,20 @@ const getCourseInfo = async (
   courseCode: string
 ) => {
   const ty = year + '-' + term
-  const data = await fetch(
-    'http://localhost:3001/api/terms/' + ty + '/courses/' + courseCode + '/'
-  )
-    .then(function(response) {
-      return response.json()
-    })
-    .then(function(myJson: DBCourse) {
-      //console.log(JSON.stringify(myJson))
-      return myJson
-    })
-    .catch(function(err) {
-      console.log('Fetch Error :-S', err)
-      return
-    })
+  try {
+    const data = await fetch(
+      'http://localhost:3001/api/terms/' + ty + '/courses/' + courseCode + '/'
+    )
+    const json: DBCourse = await data.json()
+    if (json == null) {
+      throw Error('Fetch did not get results')
+    }
 
-  if (data == null) {
-    return
+    return dbCourseToCourseData(json)
+  } catch (error) {
+    console.error(error)
+    return null
   }
-
-  return dbCourseToCourseData(data)
 }
 
 export default getCourseInfo
