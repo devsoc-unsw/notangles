@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
-import { ClassData, CourseData, Period } from '../App'
+import { ClassData, CourseData, Period } from '../interfaces/courseData'
 
 export interface Course {
   id: string
@@ -77,7 +77,10 @@ const Timetable: React.FC<TimetableProps> = props => {
   const handleDrop = (classTime: ClassData, course: CourseData, period: Period) => {
     setSelectedCourses({
       ...selectedCourses,
-      [`${course.courseCode} ${classTime.activity} ${JSON.stringify(classTime.periods)}`]: {classTime: classTime, period: period},
+      [`${course.courseCode} ${classTime.activity} ${JSON.stringify(classTime.periods)}`]: {
+        classTime: classTime,
+        period: period,
+      },
     })
   }
 

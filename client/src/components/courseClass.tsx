@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { ClassData, CourseData, Period } from '../App'
+import { ClassData, CourseData, Period } from '../interfaces/courseData'
 import { timeToIndex, weekdayToXCoordinate } from './cell'
 import { SelectedCourseValue } from './timetable'
 

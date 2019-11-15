@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
-import { ClassData, CourseData, Period } from '../App'
+import { ClassData, CourseData, Period } from '../interfaces/courseData'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
@@ -9,8 +9,8 @@ export const weekdayToXCoordinate = (weekDay: string) => {
     'Tue': 2,
     'Wed': 3,
     'Thu': 4,
-    'Fri': 5
-  };
+    'Fri': 5,
+  }
   return conversionTable[weekDay]
 }
 
