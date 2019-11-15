@@ -56,7 +56,7 @@ const CourseClass: React.FC<CourseClassProps> = ({
       <StyledCourseClass
         ref={drag}
         isDragging={isDragging}
-        style={{ cursor: 'move' }}
+        style={{ cursor: 'move', backgroundColor: colour }}
         classTime={selectedCourse.period}
       >
         {`${course.courseCode} ${classData.activity}`}
