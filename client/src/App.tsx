@@ -5,6 +5,7 @@ import TimeTable from './components/timetable'
 import Navbar from './components/navbar'
 
 import styled from 'styled-components'
+import { getCourseInfo } from './api/getCourseInfo'
 
 export interface CourseData {
   courseCode: string
@@ -96,13 +97,13 @@ const App: React.FC = () => {
     setSelectedCourses([...selectedCourses, selectedCourseData])
   }
 
-  // Once -> when the app is rendered
-  useEffect(() => {
-    (async () => {
-      const resJson = await fetch('http://localhost:3001/api/terms/2019-T3/courses')
-      const res = await resJson.json()
-      setCoursesList(res)
-    })()
+  React.useEffect(() => {
+    const load = async () => {
+      const comp2521 = await getCourseInfo('2019', 'T1', 'COMP2521')
+      console.log(comp2521)
+    }
+
+    load()
   }, [])
 
   useEffect(() => {
