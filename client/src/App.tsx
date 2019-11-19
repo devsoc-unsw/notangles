@@ -78,7 +78,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <Navbar/>
+      <Navbar />
       <StyledApp>
         <SelectWrapper>
           <span>Add a course</span>

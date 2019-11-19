@@ -15,7 +15,7 @@ export const weekdayToXCoordinate = (weekDay: string) => {
 }
 
 export const timeToIndex = (time: string) => {
-  return Number.parseInt(time.split(':')[0]) - 7
+  return Number(time.split(':')[0]) - 7
 }
 
 const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
