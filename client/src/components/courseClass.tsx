@@ -10,6 +10,7 @@ export interface CourseClassProps {
   course: CourseData
   classData: ClassData
   selectedCourse?: SelectedCourseValue
+  colour?: string
 }
 
 interface UnselectedCourseClassProps {
@@ -19,10 +20,11 @@ interface UnselectedCourseClassProps {
 const UnselectedCourseClass = styled.div`
   height: 100%;
   width: 100%;
+  color: white;
 
   background-color: orange;
   opacity: ${(props: UnselectedCourseClassProps) =>
-  props.isDragging ? 0.5 : 1};
+    props.isDragging ? 0.5 : 1};
 
   cursor: move;
 `
@@ -35,7 +37,21 @@ const StyledCourseClass = styled(UnselectedCourseClass)<{
     ${props => timeToIndex(props.classTime.time.end)};
 `
 
-const CourseClass: React.FC<CourseClassProps> = ({ course, classData, selectedCourse }) => {
+const CourseClass: React.FC<CourseClassProps> = ({
+  course,
+  classData,
+  selectedCourse,
+  colour,
+}) => {
+  const bgAndTextColorPairs: Record<string, string> = {
+    violet: 'white',
+    indigo: 'white',
+    green: 'white',
+    blue: 'white',
+    yellow: 'black',
+    orange: 'black',
+    red: 'black',
+  }
   const [{ isDragging, opacity }, drag] = useDrag({
     item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
@@ -44,25 +60,37 @@ const CourseClass: React.FC<CourseClassProps> = ({ course, classData, selectedCo
     }),
   })
 
+  if (!colour) {
+    colour = 'orange'
+  }
+
   if (selectedCourse) {
     return (
       <StyledCourseClass
         ref={drag}
         isDragging={isDragging}
-        style={{ cursor: 'move' }}
+        style={{
+          cursor: 'move',
+          backgroundColor: colour,
+          color: bgAndTextColorPairs[colour],
+        }}
         classTime={selectedCourse.period}
       >
         {`${course.courseCode} ${classData.activity}`}
       </StyledCourseClass>
     )
   }
-
   return (
     // TODO: Not sure why cursor='move' only works inline here vs defined in styled component
     <UnselectedCourseClass
       ref={drag}
       isDragging={isDragging}
-      style={{ cursor: 'move', opacity }}
+      style={{
+        cursor: 'move',
+        opacity,
+        backgroundColor: colour,
+        color: bgAndTextColorPairs[colour],
+      }}
     >
       {`${course.courseCode} ${classData.activity}`}
     </UnselectedCourseClass>

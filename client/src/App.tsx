@@ -68,12 +68,13 @@ const App: React.FC = () => {
   }
 
   React.useEffect(() => {
-    (async () => {
-      const resJson = await fetch('http://localhost:3001/api/terms/2019-T3/courses')
+    ;(async () => {
+      const resJson = await fetch(
+        'http://localhost:3001/api/terms/2019-T3/courses'
+      )
       const res = await resJson.json()
       setCoursesList(res)
     })()
-
   }, [])
 
   return (
@@ -94,9 +95,7 @@ const App: React.FC = () => {
           />
         </SelectWrapper>
         Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable
-          selectedCourses={selectedCourses}
-        />
+        <TimeTable selectedCourses={selectedCourses} />
       </StyledApp>
     </div>
   )
