@@ -56,21 +56,11 @@ const App: React.FC = () => {
     // const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
     const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
 
-    if (selectedCourseClasses && e) {
+    if (selectedCourseClasses) {
       const selectedCourseData: CourseData = {
         courseCode: e.value,
         courseName: e.label,
-        classes: selectedCourseClasses.classes.map((classOverview: any) => ({
-          activity: classOverview.activity,
-          periods: classOverview.periods.map((periodOverview: any) => ({
-            location: periodOverview.location,
-            time: {
-              day: periodOverview.time.day,
-              start: periodOverview.time.start,
-              end: periodOverview.time.end,
-            },
-          })),
-        })),
+        classes: selectedCourseClasses.classes
       }
 
       setSelectedCourses([...selectedCourses, selectedCourseData])
