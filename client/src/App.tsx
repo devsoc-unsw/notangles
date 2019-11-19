@@ -49,8 +49,7 @@ const App: React.FC = () => {
   const [value, setValue] = React.useState<CourseOption>()
 
   // List of courses
-  const [coursesList, setCoursesList] = React.useState<CourseOverview[]>()
-  const [options, setOptions] = React.useState<CourseOption[]>()
+  const [coursesList, setCoursesList] = React.useState<CourseOverview[]>([])
   const handleChange = async (e: CourseOption) => {
     setValue(e)
 
@@ -87,20 +86,6 @@ const App: React.FC = () => {
 
   }, [])
 
-  useEffect(() => {
-    if (coursesList) {
-      setOptions(
-        coursesList.map(course => {
-          const option: CourseOption = {
-            value: course.courseCode,
-            label: course.courseCode + ' - ' + course.name,
-          }
-          return option
-        }),
-      )
-    }
-  }, [coursesList])
-
   return (
     <div className="App">
       <Navbar/>
@@ -108,7 +93,12 @@ const App: React.FC = () => {
         <SelectWrapper>
           <span>Add a course</span>
           <StyledSelect
-            options={options}
+            options={coursesList.map(course => (
+              {
+                value: course.courseCode,
+                label: `${course.courseCode} - ${course.name}`
+              }
+            ))}
             value={value}
             onChange={handleChange}
           />
