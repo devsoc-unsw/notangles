@@ -5,19 +5,43 @@ import styled from 'styled-components'
 
 import Cell from './cell'
 import CourseClass from './courseClass'
+import { ClassData, CourseData, Period } from '../interfaces/courseData'
 
 export interface Course {
   id: string
   classes: ClassTime[]
 }
 
+export interface SelectedCourseValue {
+  classTime: ClassData
+  period: Period
+}
+
 // [day, from, to]
 export type ClassTime = [number, number, number]
 
 const testCourses: Course[] = [
-  { id: 'COMP1511', classes: [[1, 1, 2], [1, 4, 6]] },
-  { id: 'COMP1521', classes: [[1, 2, 3], [2, 2, 3]] },
-  { id: 'COMP1531', classes: [[3, 4, 7], [1, 1, 3]] },
+  {
+    id: 'COMP1511',
+    classes: [
+      [1, 1, 2],
+      [1, 4, 6],
+    ],
+  },
+  {
+    id: 'COMP1521',
+    classes: [
+      [1, 2, 3],
+      [2, 2, 3],
+    ],
+  },
+  {
+    id: 'COMP1531',
+    classes: [
+      [3, 4, 7],
+      [1, 1, 3],
+    ],
+  },
 ]
 
 const BaseCell = styled.div<{ x: number; y: number }>`
@@ -41,7 +65,21 @@ const StyledTimetable = styled.div`
   box-sizing: border-box;
 `
 
-const Timetable: React.FC = () => {
+interface TimetableProps {
+  selectedCourses: CourseData[]
+}
+
+const Timetable: React.FC<TimetableProps> = props => {
+  let colourIndex: number = 0
+  const colours: string[] = [
+    'violet',
+    'indigo',
+    'blue',
+    'green',
+    'yellow',
+    'orange',
+    'red',
+  ]
   const hours: string[] = [
     '9:00',
     '10:00',
@@ -61,16 +99,22 @@ const Timetable: React.FC = () => {
     'Thursday',
     'Friday',
   ]
+  const assigned: Record<string, string> = {}
 
-  const [courses] = useState<Course[]>(testCourses)
   const [selectedCourses, setSelectedCourses] = useState<
-    Record<string, ClassTime>
+    Record<string, SelectedCourseValue>
   >({})
 
-  const handleDrop = (classTime: ClassTime, course: Course) => {
+  const handleDrop = (
+    classTime: ClassData,
+    course: CourseData,
+    period: Period
+  ) => {
     setSelectedCourses({
       ...selectedCourses,
-      [course.id]: classTime,
+      [`${course.courseCode} ${classTime.activity} ${JSON.stringify(
+        classTime.periods
+      )}`]: { classTime: classTime, period: period },
     })
   }
 
@@ -97,29 +141,54 @@ const Timetable: React.FC = () => {
   })
 
   /* Constructing the cells which are drop targets for all potential classes */
-  const allCourseTimes = courses.map(course =>
-    course.classes.map(classTime => (
-      <Cell
-        key={`${course}${classTime}`}
-        onDrop={() => handleDrop(classTime, course)}
-        course={course}
-        classTime={classTime}
-      />
-    ))
+  const allCourseTimes = props.selectedCourses.map(course =>
+    course.classes.map(classData =>
+      classData.periods.map(period => (
+        <Cell
+          // key={`${course.courseCode} ${classData.activity}`}
+          onDrop={() => handleDrop(classData, course, period)}
+          course={course}
+          classTime={period}
+          classData={classData}
+        />
+      ))
+    )
   )
+
+  const getStyle = (id: string): string => {
+    if (!(id in assigned)) {
+      if (colourIndex > colours.length) {
+        // Hardcoded value
+        return 'orange'
+      }
+      assigned[id] = colours[colourIndex]
+      colourIndex++
+    }
+    return assigned[id]
+  }
 
   return (
     <DndProvider backend={HTML5Backend}>
       <StyledTimetable>
         {cellsGrid}
         {allCourseTimes}
-        {courses.map(course => (
-          <CourseClass
-            key={course.id}
-            course={course}
-            classTime={selectedCourses[course.id]}
-          />
-        ))}
+        {props.selectedCourses.map(course =>
+          course.classes.map(classData => (
+            <CourseClass
+              // key={course.courseCode}
+              course={course}
+              classData={classData}
+              selectedCourse={
+                selectedCourses[
+                  `${course.courseCode} ${classData.activity} ${JSON.stringify(
+                    classData.periods
+                  )}`
+                ]
+              }
+              colour={getStyle(course.courseCode)}
+            />
+          ))
+        )}
       </StyledTimetable>
     </DndProvider>
   )

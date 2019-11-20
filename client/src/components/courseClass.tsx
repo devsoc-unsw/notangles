@@ -2,11 +2,15 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDrag } from 'react-dnd'
 
-import { Course, ClassTime } from './timetable'
+import { ClassData, CourseData, Period } from '../interfaces/courseData'
+import { timeToIndex, weekdayToXCoordinate } from './cell'
+import { SelectedCourseValue } from './timetable'
 
 export interface CourseClassProps {
-  course: Course
-  classTime?: ClassTime
+  course: CourseData
+  classData: ClassData
+  selectedCourse?: SelectedCourseValue
+  colour?: string
 }
 
 interface UnselectedCourseClassProps {
@@ -16,6 +20,7 @@ interface UnselectedCourseClassProps {
 const UnselectedCourseClass = styled.div`
   height: 100%;
   width: 100%;
+  color: white;
 
   background-color: orange;
   opacity: ${(props: UnselectedCourseClassProps) =>
@@ -25,43 +30,69 @@ const UnselectedCourseClass = styled.div`
 `
 
 const StyledCourseClass = styled(UnselectedCourseClass)<{
-  classTime: ClassTime
+  classTime: Period
 }>`
-  grid-column: ${props => props.classTime[0] + 1};
-  grid-row: ${props => props.classTime[1] + 1} /
-    ${props => props.classTime[2] + 1};
+  grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
+  grid-row: ${props => timeToIndex(props.classTime.time.start)} /
+    ${props => timeToIndex(props.classTime.time.end)};
 `
 
-const CourseClass: React.FC<CourseClassProps> = ({ course, classTime }) => {
+const CourseClass: React.FC<CourseClassProps> = ({
+  course,
+  classData,
+  selectedCourse,
+  colour,
+}) => {
+  const bgAndTextColorPairs: Record<string, string> = {
+    violet: 'white',
+    indigo: 'white',
+    green: 'white',
+    blue: 'white',
+    yellow: 'black',
+    orange: 'black',
+    red: 'black',
+  }
   const [{ isDragging, opacity }, drag] = useDrag({
-    item: { type: course.id },
+    item: { type: `${course.courseCode} ${classData.activity}` },
     collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
       opacity: monitor.isDragging() ? 0.4 : 1,
     }),
   })
 
-  if (classTime) {
+  if (!colour) {
+    colour = 'orange'
+  }
+
+  if (selectedCourse) {
     return (
       <StyledCourseClass
         ref={drag}
         isDragging={isDragging}
-        style={{ cursor: 'move' }}
-        classTime={classTime}
+        style={{
+          cursor: 'move',
+          backgroundColor: colour,
+          color: bgAndTextColorPairs[colour],
+        }}
+        classTime={selectedCourse.period}
       >
-        {course.id}
+        {`${course.courseCode} ${classData.activity}`}
       </StyledCourseClass>
     )
   }
-
   return (
     // TODO: Not sure why cursor='move' only works inline here vs defined in styled component
     <UnselectedCourseClass
       ref={drag}
       isDragging={isDragging}
-      style={{ cursor: 'move', opacity }}
+      style={{
+        cursor: 'move',
+        opacity,
+        backgroundColor: colour,
+        color: bgAndTextColorPairs[colour],
+      }}
     >
-      {course.id}
+      {`${course.courseCode} ${classData.activity}`}
     </UnselectedCourseClass>
   )
 }
