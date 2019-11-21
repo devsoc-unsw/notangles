@@ -8,8 +8,8 @@ import InventoryCourseClass from './InventoryCourseClass'
 export interface InventoryRowProps {
   course: CourseData
   color: string
-  removeCourse(courseCode: string): void
   selectedClassIds: string[]
+  removeCourse(courseCode: string): void
 }
 
 const StyledInventoryRow = styled.div`
@@ -27,7 +27,9 @@ const RowCourseDescriptor = styled.div`
   border-color: rgba(0, 0, 0, 0.2);
 `
 
-const RowItems = styled.div<{ canDrop: boolean }>``
+const RowItems = styled.div<{ canDrop: boolean }>`
+  ${props => props.canDrop && 'border: 2px solid red;'}
+`
 
 const InventoryRow: React.FC<InventoryRowProps> = ({
   course,
@@ -62,13 +64,12 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     for (let activity in course.classes) {
       res.push(...course.classes[activity].map(classData => classData.classId))
     }
-
     return res
   }
 
   const [{ canDrop }, drop] = useDrop({
     accept: getAllIds(),
-    drop: () => {},
+    drop: console.log,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),

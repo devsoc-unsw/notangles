@@ -23,7 +23,7 @@ interface DroppedClassProps {
   activity: string
   courseCode: string
   color: string
-  classTimes: Period[]
+  classTime: Period
 }
 
 const bgAndTextColorPairs: Record<string, string> = {
@@ -40,7 +40,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   activity,
   courseCode,
   color,
-  classTimes,
+  classTime,
 }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
@@ -49,7 +49,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     }),
   })
 
-  const classes = classTimes.map(classTime => (
+  return (
     <StyledCourseClass
       ref={drag}
       isDragging={isDragging}
@@ -59,9 +59,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     >
       {`${courseCode} ${activity}`}
     </StyledCourseClass>
-  ))
-
-  return <>{classes}</>
+  )
 }
 
 interface DroppedClassesProps {
@@ -80,14 +78,17 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     const allClasses = Object.values(course.classes).flatMap(x => x)
     for (const classData of allClasses) {
       if (selectedClassIds.includes(classData.classId)) {
-        droppedClasses.push(
-          <DroppedClass
-            activity={classData.activity}
-            courseCode={course.courseCode}
-            color={assignedColors[course.courseCode]}
-            classTimes={classData.periods}
-          />
-        )
+        for (const classTime of classData.periods) {
+          droppedClasses.push(
+            <DroppedClass
+              key={`${classData.classId}-${JSON.stringify(classTime)}`}
+              activity={classData.activity}
+              courseCode={course.courseCode}
+              color={assignedColors[course.courseCode]}
+              classTime={classTime}
+            />
+          )
+        }
       }
     }
   }

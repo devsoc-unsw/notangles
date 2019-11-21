@@ -64,10 +64,19 @@ const App: FunctionComponent = () => {
       course => course.courseCode !== courseCode
     )
     setSelectedCourses(newSelectedCourses)
+    setSelectedClassIds(
+      selectedClassIds.filter(id => id.split('-')[0] !== courseCode)
+    )
   }
 
-  const handleSelectClass = (classId: string) =>
-    setSelectedClassIds([...selectedClassIds, classId])
+  const handleSelectClass = (classId: string) => {
+    const [courseCode, activity] = classId.split('-')
+    const newSelectedClassIds = [...selectedClassIds].filter(
+      id => !id.startsWith(`${courseCode}-${activity}`)
+    )
+    newSelectedClassIds.push(classId)
+    setSelectedClassIds(newSelectedClassIds)
+  }
 
   const fetchClassesList = async () => {
     const coursesList = await getCoursesList('2019', 'T3')
