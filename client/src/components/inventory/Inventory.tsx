@@ -42,7 +42,7 @@ const Inventory: React.FC<InventoryProps> = ({
                 selectedClassIds={selectedClassIds}
               />
             ))
-          : 'aoneuth'}
+          : 'No courses have been selected'}
       </StyledInventory>
     </div>
   )
