@@ -1,4 +1,4 @@
-import { Period, ClassData, CourseData } from './courseData'
+import { Period, ClassData, CourseData } from './CourseData'
 
 // List of the interfaces and types that are used in the scraper
 
@@ -36,19 +36,23 @@ const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
   }
 }
 
-const dbClassToClassData = (dbClass: DBClass): ClassData => {
-  const periods = dbClass.times.map(t => dbTimesToPeriod(t))
-  return {
-    activity: dbClass.activity,
-    periods: periods,
-  }
-}
-
 export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
-  const classes = dbCourse.classes.map(c => dbClassToClassData(c))
+  const classes: Record<string, ClassData[]> = {}
+  dbCourse.classes.forEach((dbClass, index) => {
+    const classData: ClassData = {
+      classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
+      periods: dbClass.times.map(dbTimesToPeriod),
+      activity: dbClass.activity
+    }
+    if (!(dbClass.activity in classes)) {
+      classes[dbClass.activity] = []
+    }
+    classes[dbClass.activity].push(classData)
+  })
+
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
-    classes: classes,
+    classes,
   }
 }

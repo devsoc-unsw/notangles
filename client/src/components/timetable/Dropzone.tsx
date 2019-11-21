@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
-import { ClassData, CourseData, Period } from '../interfaces/courseData'
+import { ClassData, CourseData, Period } from '../../interfaces/CourseData'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
@@ -18,7 +18,7 @@ export const timeToIndex = (time: string) => {
   return Number(time.split(':')[0]) - 7
 }
 
-const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
+const StyledCell = styled.div<{ classTime: Period; canDrop: boolean; color: string }>`
   border: 0.2px solid;
   border-color: rgba(0, 0, 0, 0.2);
 
@@ -29,32 +29,34 @@ const StyledCell = styled.div<{ classTime: Period; canDrop: boolean }>`
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
-  border: 3px solid ${props => (props.canDrop ? 'green' : 'red')};
+  border: 3px solid ${props => props.color};
   background-color: white;
   ${props => !props.canDrop && 'display: none'};
 `
 
 interface CellProps {
-  course: CourseData
+  courseCode: string
+  activity: string
   classTime: Period
-  onDrop: (item: any) => void
-  classData: ClassData
+  color: string
+  onDrop: () => void
 }
 
-const Cell: React.FC<CellProps> = ({ course, classTime, onDrop, classData }) => {
+const Dropzone: React.FC<CellProps> = ({ courseCode, activity, classTime, color, onDrop }) => {
   const [{ canDrop }, drop] = useDrop({
-    accept: `${course.courseCode} ${classData.activity}`,
+    accept: `${courseCode}-${activity}`,
     drop: onDrop,
     collect: monitor => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
     }),
   })
+
   return (
-    <StyledCell ref={drop} classTime={classTime} canDrop={canDrop}>
-      {`${course.courseCode} ${classData.activity}`}
+    <StyledCell ref={drop} classTime={classTime} canDrop={canDrop} color={color}>
+      {`${courseCode} ${activity}`}
     </StyledCell>
   )
 }
 
-export default Cell
+export { Dropzone }

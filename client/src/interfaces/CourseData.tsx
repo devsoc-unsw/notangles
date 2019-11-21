@@ -1,10 +1,11 @@
 export interface CourseData {
   courseCode: string
   courseName: string
-  classes: ClassData[]
+  classes: Record<string, ClassData[]>
 }
 
 export interface ClassData {
+  classId: string
   activity: string
   periods: Period[]
 }

@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const Root: FunctionComponent = () => (
+  <DndProvider backend={HTML5Backend}>
+    <App />
+  </DndProvider>
+)
+
+ReactDOM.render(<Root />, document.getElementById('root'))
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
