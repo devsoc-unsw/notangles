@@ -1,15 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useDrop } from 'react-dnd'
-import { ClassData, CourseData, Period } from '../../interfaces/CourseData'
+import { Period } from '../../interfaces/CourseData'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
-    'Mon': 1,
-    'Tue': 2,
-    'Wed': 3,
-    'Thu': 4,
-    'Fri': 5,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
   }
   return conversionTable[weekDay]
 }
@@ -18,7 +18,11 @@ export const timeToIndex = (time: string) => {
   return Number(time.split(':')[0]) - 7
 }
 
-const StyledCell = styled.div<{ classTime: Period; canDrop: boolean; color: string }>`
+const StyledCell = styled.div<{
+  classTime: Period
+  canDrop: boolean
+  color: string
+}>`
   border: 0.2px solid;
   border-color: rgba(0, 0, 0, 0.2);
 
@@ -42,7 +46,13 @@ interface CellProps {
   onDrop: () => void
 }
 
-const Dropzone: React.FC<CellProps> = ({ courseCode, activity, classTime, color, onDrop }) => {
+const Dropzone: React.FC<CellProps> = ({
+  courseCode,
+  activity,
+  classTime,
+  color,
+  onDrop,
+}) => {
   const [{ canDrop }, drop] = useDrop({
     accept: `${courseCode}-${activity}`,
     drop: onDrop,
@@ -53,7 +63,12 @@ const Dropzone: React.FC<CellProps> = ({ courseCode, activity, classTime, color,
   })
 
   return (
-    <StyledCell ref={drop} classTime={classTime} canDrop={canDrop} color={color}>
+    <StyledCell
+      ref={drop}
+      classTime={classTime}
+      canDrop={canDrop}
+      color={color}
+    >
       {`${courseCode} ${activity}`}
     </StyledCell>
   )

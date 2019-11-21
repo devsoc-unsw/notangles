@@ -12,7 +12,10 @@ interface TimetableLayoutProps {
   hours: string[]
 }
 
-const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({ days, hours }) => {
+const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
+  days,
+  hours,
+}) => {
   const daysCells = days.map((day, i) => (
     <BaseCell key={day} x={i + 2} y={1}>
       {day}
@@ -25,11 +28,9 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({ days, hours 
     </BaseCell>
   ))
 
-  const otherCells = hours.map((_, y) => (
-    days.map((_, x) => (
-      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />
-    ))
-  ))
+  const otherCells = hours.map((_, y) =>
+    days.map((_, x) => <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
+  )
 
   return (
     <>

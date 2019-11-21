@@ -10,9 +10,7 @@ export const getCourseInfo = async (
 ): Promise<CourseData | null> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`
   try {
-    const data = await fetch(
-      `${baseURL}/courses/${courseCode}/`
-    )
+    const data = await fetch(`${baseURL}/courses/${courseCode}/`)
     const json: DBCourse = await data.json()
     if (!json) {
       throw Error('Fetch did not get results')

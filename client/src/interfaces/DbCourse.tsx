@@ -42,7 +42,7 @@ export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
       periods: dbClass.times.map(dbTimesToPeriod),
-      activity: dbClass.activity
+      activity: dbClass.activity,
     }
     if (!(dbClass.activity in classes)) {
       classes[dbClass.activity] = []

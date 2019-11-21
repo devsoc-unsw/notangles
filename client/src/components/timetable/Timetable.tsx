@@ -1,8 +1,5 @@
-import React, { useState, FunctionComponent, memo } from 'react'
-import { DndProvider } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
-import CourseClass from './CourseClass'
 import { CourseData } from '../../interfaces/CourseData'
 import { days, hours } from '../../constants/timetable'
 import { TimetableLayout } from './TimetableLayout'
@@ -25,14 +22,12 @@ interface TimetableProps {
   onSelectClass(classId: string): void
 }
 
-const Timetable: FunctionComponent<TimetableProps> = (
-  {
-    selectedCourses,
-    selectedClassIds,
-    assignedColors,
-    onSelectClass
-  }
-) => {
+const Timetable: FunctionComponent<TimetableProps> = ({
+  selectedCourses,
+  selectedClassIds,
+  assignedColors,
+  onSelectClass,
+}) => {
   return (
     <StyledTimetable>
       <TimetableLayout days={days} hours={hours} />

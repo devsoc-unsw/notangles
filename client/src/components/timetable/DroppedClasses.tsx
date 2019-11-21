@@ -15,7 +15,7 @@ const StyledCourseClass = styled.div<{
     ${props => timeToIndex(props.classTime.time.end)};
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor};
-  opacity: ${props => props.isDragging ? 0.5 : 1};
+  opacity: ${props => (props.isDragging ? 0.5 : 1)};
   cursor: move;
 `
 
@@ -36,7 +36,12 @@ const bgAndTextColorPairs: Record<string, string> = {
   red: 'black',
 }
 
-const DroppedClass: FunctionComponent<DroppedClassProps> = ({ activity, courseCode, color, classTimes }) => {
+const DroppedClass: FunctionComponent<DroppedClassProps> = ({
+  activity,
+  courseCode,
+  color,
+  classTimes,
+}) => {
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
     collect: monitor => ({
@@ -56,7 +61,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({ activity, courseCo
     </StyledCourseClass>
   ))
 
-    return <>{classes}</>
+  return <>{classes}</>
 }
 
 interface DroppedClassesProps {
@@ -65,7 +70,11 @@ interface DroppedClassesProps {
   assignedColors: Record<string, string>
 }
 
-const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({ selectedCourses, selectedClassIds, assignedColors }) => {
+const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
+  selectedCourses,
+  selectedClassIds,
+  assignedColors,
+}) => {
   const droppedClasses: JSX.Element[] = []
   for (const course of selectedCourses) {
     const allClasses = Object.values(course.classes).flatMap(x => x)

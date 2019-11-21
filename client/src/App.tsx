@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, FunctionComponent, useState } from 'react'
 import Select from 'react-select'
 import styled from 'styled-components'
 
 import { Timetable } from './components/timetable/Timetable'
 import Navbar from './components/Navbar'
 import Inventory from './components/inventory/Inventory'
-import InventoryRow from './components/inventory/InventoryRow'
-import {CourseData, ClassData, Period, ClassTime} from './interfaces/CourseData'
+import { CourseData } from './interfaces/CourseData'
 
 import { getCourseInfo } from './api/getCourseInfo'
 import { getCoursesList } from './api/getCoursesList'
@@ -40,21 +39,19 @@ const StyledSelect = styled(Select)`
   text-align: left;
 `
 
-const App: React.FC = () => {
-  const [coursesList, setCoursesList] = React.useState<CoursesList>([])
-  const [selectedCourses, setSelectedCourses] = React.useState<CourseData[]>([])
-  const [selectedClassIds, setSelectedClassIds] = React.useState<string[]>([])
-  const [value, setValue] = React.useState<CourseOption>()
-  const assignedColors = useColorMapper(selectedCourses.map(course => course.courseCode))
+const App: FunctionComponent = () => {
+  const [coursesList, setCoursesList] = useState<CoursesList>([])
+  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
+  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
+  const assignedColors = useColorMapper(
+    selectedCourses.map(course => course.courseCode)
+  )
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchClassesList()
   }, [])
 
-  console.log('rendered')
-
   const handleSelectCourse = async (e: CourseOption) => {
-    setValue(e)
     const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
 
     if (selectedCourseClasses) {
@@ -63,11 +60,14 @@ const App: React.FC = () => {
   }
 
   const handleRemoveCourse = (courseCode: string) => {
-    const newSelectedCourses = selectedCourses.filter(course => course.courseCode !== courseCode)
+    const newSelectedCourses = selectedCourses.filter(
+      course => course.courseCode !== courseCode
+    )
     setSelectedCourses(newSelectedCourses)
   }
 
-  const handleSelectClass = (classId: string) => setSelectedClassIds([...selectedClassIds, classId])
+  const handleSelectClass = (classId: string) =>
+    setSelectedClassIds([...selectedClassIds, classId])
 
   const fetchClassesList = async () => {
     const coursesList = await getCoursesList('2019', 'T3')
@@ -78,7 +78,7 @@ const App: React.FC = () => {
 
   const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
     value: course.courseCode,
-    label: `${course.courseCode} - ${course.name}`
+    label: `${course.courseCode} - ${course.name}`,
   }))
 
   return (

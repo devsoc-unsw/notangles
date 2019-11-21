@@ -1,12 +1,10 @@
-import { DBCourse, dbCourseToCourseData } from '../interfaces/DbCourse'
-import { CourseData } from '../interfaces/CourseData'
 import { CoursesList } from '../interfaces/CourseOverview'
 
 const API_URL = 'http://localhost:3001/api'
 
 export const getCoursesList = async (
   year: string,
-  term: string,
+  term: string
 ): Promise<CoursesList | null> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`
   try {
