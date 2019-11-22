@@ -69,9 +69,17 @@ const App: FunctionComponent = () => {
     )
   }
 
+  const handleRemoveClass = (activityId: string) => {
+    const newSelectedClassIds = selectedClassIds.filter(
+      id => !id.startsWith(activityId)
+    )
+    console.log(activityId)
+    setSelectedClassIds(newSelectedClassIds)
+  }
+
   const handleSelectClass = (classId: string) => {
     const [courseCode, activity] = classId.split('-')
-    const newSelectedClassIds = [...selectedClassIds].filter(
+    const newSelectedClassIds = selectedClassIds.filter(
       id => !id.startsWith(`${courseCode}-${activity}`)
     )
     newSelectedClassIds.push(classId)
@@ -107,6 +115,7 @@ const App: FunctionComponent = () => {
           selectedClassIds={selectedClassIds}
           assignedColors={assignedColors}
           removeCourse={handleRemoveCourse}
+          removeClass={handleRemoveClass}
         />
         <Timetable
           selectedCourses={selectedCourses}

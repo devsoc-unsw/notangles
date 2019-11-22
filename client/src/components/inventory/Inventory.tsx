@@ -8,6 +8,7 @@ interface InventoryProps {
   selectedClassIds: string[]
   assignedColors: Record<string, string>
   removeCourse(courseCode: string): void
+  removeClass(activityId: string): void
 }
 
 const StyledInventory = styled.div`
@@ -27,6 +28,7 @@ const Inventory: React.FC<InventoryProps> = ({
   selectedClassIds,
   assignedColors,
   removeCourse,
+  removeClass
 }) => {
   return (
     <div>
@@ -40,6 +42,7 @@ const Inventory: React.FC<InventoryProps> = ({
                 color={assignedColors[course.courseCode]}
                 removeCourse={removeCourse}
                 selectedClassIds={selectedClassIds}
+                removeClass={removeClass}
               />
             ))
           : 'No courses have been selected'}

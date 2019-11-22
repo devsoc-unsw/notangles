@@ -10,6 +10,7 @@ export interface InventoryRowProps {
   color: string
   selectedClassIds: string[]
   removeCourse(courseCode: string): void
+  removeClass(activityId: string): void
 }
 
 const StyledInventoryRow = styled.div`
@@ -36,6 +37,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
   removeCourse,
   selectedClassIds,
   color,
+  removeClass
 }) => {
   const getInventoryCourseClasses = (): React.ReactNode[] => {
     // return course classes for activities which don't currently have a selected class
@@ -58,18 +60,11 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     return res
   }
 
-  const getAllIds = (): string[] => {
-    const res: string[] = []
-
-    for (let activity in course.classes) {
-      res.push(...course.classes[activity].map(classData => classData.classId))
-    }
-    return res
-  }
+  const ids = Object.keys(course.classes).map(activity => `${course.courseCode}-${activity}`)
 
   const [{ canDrop }, drop] = useDrop({
-    accept: getAllIds(),
-    drop: console.log,
+    accept: ids,
+    drop: ({ type }) => removeClass(type.toString()),
     collect: monitor => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
