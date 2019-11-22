@@ -22,7 +22,8 @@ const StyledApp = styled.div`
   padding: 10px 20%;
 
   display: grid;
-  grid-template: 2fr 1fr 80% / auto;
+  grid-template-rows: 1fr 1fr 90% 
+  grid-template-columns: auto;
 
   text-align: center;
   background-color: white;

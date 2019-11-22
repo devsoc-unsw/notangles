@@ -9,6 +9,7 @@ const BaseCell = styled.div<{ x: number; y: number }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  
 `
 
 interface TimetableLayoutProps {

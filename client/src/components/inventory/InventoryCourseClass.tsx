@@ -62,7 +62,7 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
       backgroundColor={colour}
       color={bgAndTextColorPairs[colour]}
     >
-      {`${courseCode} ${activity}`}
+      {`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}
     </StyledInventoryCourseClass>
   )
 }

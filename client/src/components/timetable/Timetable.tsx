@@ -9,7 +9,7 @@ import { DroppedClasses } from './DroppedClasses'
 const StyledTimetable = styled.div`
   display: grid;
   grid-template: auto / repeat(6, 1fr);
-
+  
   border: 3px solid;
   border-color: rgba(0, 0, 0, 0.2);
   box-sizing: border-box;

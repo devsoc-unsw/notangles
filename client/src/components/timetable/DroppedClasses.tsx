@@ -18,10 +18,6 @@ const StyledCourseClass = styled.div<{
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
   cursor: move;
   font-size: 0.7rem;
-  
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 `
 
 interface DroppedClassProps {
@@ -62,7 +58,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
-      {`${courseCode} ${activity} ${classTime.location}`}
+      <p style={{textAlign: 'center', marginBottom: 0}}>{`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}</p>
+      <p style={{textAlign: 'center', marginTop: 0}}>{`${classTime.location}`}</p>
     </StyledCourseClass>
   )
 }
