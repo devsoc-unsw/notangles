@@ -16,7 +16,7 @@ export interface InventoryRowProps {
 const StyledInventoryRow = styled.div`
   display: flex;
   padding: 5px;
-  /* border: 1px solid;*/
+  border: 1px solid;
   border-color: rgba(0, 0, 0, 0.2);
 `
 
