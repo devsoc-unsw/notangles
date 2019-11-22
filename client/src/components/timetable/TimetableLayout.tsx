@@ -5,6 +5,7 @@ const BaseCell = styled.div<{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
   border: 0.2px solid rgba(0, 0, 0, 0.2);
+  
 `
 
 interface TimetableLayoutProps {

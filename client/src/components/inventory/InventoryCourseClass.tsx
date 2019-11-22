@@ -16,7 +16,7 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
   margin: 10px;
 
   font-size: 0.7rem;
-
+  
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor};
   opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};

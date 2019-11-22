@@ -14,8 +14,6 @@ interface InventoryProps {
 const StyledInventory = styled.div`
   display: flex;
   flex-direction: column;
-  /* 
-  height: 20%; */
 
   border: 3px solid;
   border-color: rgba(0, 0, 0, 0.2);

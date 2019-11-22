@@ -16,7 +16,7 @@ export interface InventoryRowProps {
 const StyledInventoryRow = styled.div`
   display: flex;
   padding: 5px;
-  border: 3px solid;
+  /* border: 1px solid;*/
   border-color: rgba(0, 0, 0, 0.2);
 `
 
@@ -28,7 +28,8 @@ const RowCourseDescriptor = styled.div`
   border-color: rgba(0, 0, 0, 0.2);
 `
 
-const RowItems = styled.div<{ canDrop: boolean }>`
+const RowItems = styled.div<{ canDrop: boolean, color: string }>`
+  /* ${props => props.canDrop && `border: 1px solid ${props.color}`} */
   width: 100%;
 `
 
@@ -83,7 +84,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
         </button>
         {`${course.courseCode}`}
       </RowCourseDescriptor>
-      <RowItems ref={drop} canDrop={canDrop}>
+      <RowItems ref={drop} canDrop={canDrop} color={color}>
         {getInventoryCourseClasses()}
       </RowItems>
     </StyledInventoryRow>

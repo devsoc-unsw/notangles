@@ -58,7 +58,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
-      {`${courseCode} ${activity}`}
+      {`${courseCode} ${activity} ${classTime.location}`}
     </StyledCourseClass>
   )
 }
