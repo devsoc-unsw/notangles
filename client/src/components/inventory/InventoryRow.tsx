@@ -29,7 +29,7 @@ const RowCourseDescriptor = styled.div`
 `
 
 const RowItems = styled.div<{ canDrop: boolean }>`
-  ${props => props.canDrop && 'border: 2px solid red;'}
+  width: 100%;
 `
 
 const InventoryRow: React.FC<InventoryRowProps> = ({

@@ -17,6 +17,7 @@ const StyledCourseClass = styled.div<{
   background-color: ${props => props.backgroundColor};
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
   cursor: move;
+  font-size: 0.7rem;
 `
 
 interface DroppedClassProps {

@@ -35,6 +35,9 @@ const StyledCell = styled.div<{
     ${props => timeToIndex(props.classTime.time.end)};
   border: 3px solid ${props => props.color};
   background-color: white;
+  
+  font-size: 0.7rem;
+  
   ${props => !props.canDrop && 'display: none'};
 `
 

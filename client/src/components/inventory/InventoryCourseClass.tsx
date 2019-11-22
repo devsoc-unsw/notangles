@@ -15,7 +15,7 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
   float: left;
   margin: 10px;
 
-  font-size: 1rem;
+  font-size: 0.7rem;
 
   color: ${props => props.color};
   background-color: ${props => props.backgroundColor};
