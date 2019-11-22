@@ -30,7 +30,6 @@ const Inventory: React.FC<InventoryProps> = ({
 }) => {
   return (
     <div>
-      <h1>Select a course at the top</h1>
       <StyledInventory>
         {selectedCourses.length
           ? selectedCourses.map(course => (
