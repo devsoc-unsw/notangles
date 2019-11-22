@@ -14,6 +14,10 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
 
   float: left;
   margin: 10px;
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   font-size: 0.7rem;
   

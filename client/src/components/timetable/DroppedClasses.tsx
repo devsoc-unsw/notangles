@@ -18,6 +18,10 @@ const StyledCourseClass = styled.div<{
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
   cursor: move;
   font-size: 0.7rem;
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `
 
 interface DroppedClassProps {
