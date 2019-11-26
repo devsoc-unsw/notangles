@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "start": "ts-node writeToDb.ts",
+    "scraper": "ts-node scraper.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
