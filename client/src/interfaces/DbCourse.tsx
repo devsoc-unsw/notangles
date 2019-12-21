@@ -25,6 +25,15 @@ export interface DBTime {
   end: string
 }
 
+/**
+ * An adapter that formats a DBTimes object to a Period object
+ * 
+ * @param dbTimes A DBTimes object
+ * @return A Period object which is converted from the DBTimes object
+ * 
+ * @example
+ * const periods = dbClass.times.map(dbTimesToPeriod)
+ */
 const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
   return {
     location: dbTimes.location,
@@ -36,6 +45,10 @@ const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
   }
 }
 
+/**
+ * 
+ * @param dbCourse 
+ */
 export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
   const classes: Record<string, ClassData[]> = {}
   dbCourse.classes.forEach((dbClass, index) => {
