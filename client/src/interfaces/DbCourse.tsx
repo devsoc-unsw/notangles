@@ -46,8 +46,15 @@ const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
 }
 
 /**
+ * An adapter that formats a DBCourse object to a CourseData object 
  * 
- * @param dbCourse 
+ * @param dbCourse A DBCourse object
+ * @return A CourseData object
+ * 
+ * @example
+ * const data = await fetch(`${baseURL}/courses/${courseCode}/`)
+ * const json: DBCourse = await data.json()
+ * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
   const classes: Record<string, ClassData[]> = {}
