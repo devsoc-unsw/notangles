@@ -1,15 +1,21 @@
 # CSESOC Projects - Notangles - Client
 
-## Getting started
+## Summary
 
-Use the commands below to run the Notangles client locally.
+The Notangles client allows users to interactively plan out their timetables with the latest course information using a simple drag-and-drop system. 
 
-```
-npm install
-npm start
-```
+## Installation
 
-The client will be hosted on http://localhost:3000.
+The client has been verified to work with 
+
+* NPM v6.12.1
+* Node.js v12.13.1
+
+Run `npm install` in the root client directory `notangles/client` to install all the NPM dependencies. 
+
+## Deployment 
+
+Use `npm start` to host the Notangles client locally. The client will be hosted on http://localhost:3000.
 
 ## Tech stack
 
@@ -18,6 +24,7 @@ The Notangles client uses
 * [React](https://reactjs.org/)
 * [TypeScript](https://www.typescriptlang.org/)
 * [React DND](https://react-dnd.github.io/react-dnd/)
+* [Styled Components](https://www.styled-components.com/) 
 
 ## Logic
 
