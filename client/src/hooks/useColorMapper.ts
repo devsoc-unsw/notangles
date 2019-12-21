@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react'
 import { colours } from '../constants/timetable'
 
+/**
+ * Skeleton
+ * 
+ * @param year 
+ * @param term 
+ * @param courseCode 
+ * @return 
+ * 
+ * @example
+ * some example
+ */
 export const useColorMapper = (arr: string[]): Record<string, string> => {
   const [assignedColours, setAssignedColours] = useState<
     Record<string, string>

@@ -3,6 +3,17 @@ import { CourseData } from '../interfaces/CourseData'
 
 const API_URL = 'http://localhost:3001/api'
 
+/**
+ * Skeleton
+ * 
+ * @param year 
+ * @param term 
+ * @param courseCode 
+ * @return 
+ * 
+ * @example
+ * some example
+ */
 export const getCourseInfo = async (
   year: string,
   term: string,

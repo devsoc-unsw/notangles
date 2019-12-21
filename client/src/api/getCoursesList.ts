@@ -2,6 +2,17 @@ import { CoursesList } from '../interfaces/CourseOverview'
 
 const API_URL = 'http://localhost:3001/api'
 
+/**
+ * Fetches a list of course objects, where each course object contains 
+ * the course id, the course code, and course name
+ * 
+ * @param year The year that the courses are offered in
+ * @param term The term that the courses are offered in
+ * @return A promise containing the list of course objects
+ * 
+ * @example
+ * getCourseList()
+ */
 export const getCoursesList = async (
   year: string,
   term: string
