@@ -12,7 +12,7 @@ const API_URL = 'http://localhost:3001/api'
  * @return A promise containing the information of the course that is offered in the specified year and term
  * 
  * @example
- * const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
+ * const selectedCourseClasses = await getCourseInfo('2019', 'T3', 'COMP1511')
  */
 export const getCourseInfo = async (
   year: string,
