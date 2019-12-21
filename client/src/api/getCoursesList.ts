@@ -8,7 +8,7 @@ const API_URL = 'http://localhost:3001/api'
  * 
  * @param year The year that the courses are offered in
  * @param term The term that the courses are offered in
- * @return A promise containing the list of course objects
+ * @return A promise containing the list of course objects offered in the specified year and term
  * 
  * @example
  * const coursesList = await getCoursesList('2019', 'T3')

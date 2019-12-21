@@ -4,15 +4,15 @@ import { CourseData } from '../interfaces/CourseData'
 const API_URL = 'http://localhost:3001/api'
 
 /**
- * Skeleton
+ * Fetches the information of a specified course
  * 
- * @param year 
- * @param term 
- * @param courseCode 
- * @return 
+ * @param year The year that the course is offered in
+ * @param term The term that the course is offered in
+ * @param courseCode The code of the course to fetch
+ * @return A promise containing the information of the course that is offered in the specified year and term
  * 
  * @example
- * some example
+ * const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
  */
 export const getCourseInfo = async (
   year: string,
