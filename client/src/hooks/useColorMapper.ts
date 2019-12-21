@@ -2,15 +2,13 @@ import { useState, useEffect } from 'react'
 import { colours } from '../constants/timetable'
 
 /**
- * Skeleton
+ * Assigns a unique color, chosen from a set of fixed colors, to each course code
  * 
- * @param year 
- * @param term 
- * @param courseCode 
- * @return 
+ * @param arr An array containing course codes
+ * @return An object that maps a color to each course code
  * 
  * @example
- * some example
+ * const assignedColors = useColorMapper(selectedCourses.map(course => course.courseCode))
  */
 export const useColorMapper = (arr: string[]): Record<string, string> => {
   const [assignedColours, setAssignedColours] = useState<
