@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:3001/api'
  * @return A promise containing the list of course objects
  * 
  * @example
- * getCourseList()
+ * const coursesList = await getCoursesList('2019', 'T3')
  */
 export const getCoursesList = async (
   year: string,
