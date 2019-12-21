@@ -24,7 +24,7 @@ Tests are not currently implemented.
 
 ## API endpoints
 
-### GET /api/terms/:termId/courses/:courseId/
+### `GET /api/terms/:termId/courses/:courseId/`
 
 termId: is expected to be in yyyy-term format
 
@@ -32,7 +32,7 @@ term format is a capital letter followed by a number ie:- T3 or S1
 
 Returns information about the specific course as a javascript object
 
-### GET /api/terms/:termId/courses
+### `GET /api/terms/:termId/courses`
 
 termId: is expected to be in yyyy-term format
 
