@@ -1,4 +1,10 @@
-This project allows for communicatio with the mongoDB database.
+## Server
+
+This project allows for communication with the mongoDB database.
+
+## Installation
+
+To install the neccessary dependencies, run `npm install`
 
 ## Available Scripts
 
@@ -16,9 +22,23 @@ See secret.json below for more information.
 Launches the JEST tests.
 Tests are not currently implemented.
 
-## Installation
+## API endpoints
 
-To install the neccessary dependencies, run npm install
+### GET /api/terms/:termId/courses/:courseId/
+
+termId: is expected to be in yyyy-term format
+
+term format is a capital letter followed by a number ie:- T3 or S1
+
+Returns information about the specific course as a javascript object
+
+### GET /api/terms/:termId/courses
+
+termId: is expected to be in yyyy-term format
+
+term format is a capital letter followed by a number ie:- T3 or S1
+
+Returns a list of all courses that are running in the specified term and year as javascript objects where each element in the list represents a course
 
 ## Secret.json
 

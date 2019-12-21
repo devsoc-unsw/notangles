@@ -1,6 +1,6 @@
 import * as express from 'express'
-import * as indexController from './controllers/index'
-import * as apiController from './controllers/api'
+import * as indexController from './index'
+import * as apiController from './api'
 
 const app = express()
 
