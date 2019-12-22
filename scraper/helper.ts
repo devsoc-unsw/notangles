@@ -1,4 +1,5 @@
 import { Browser, Page } from 'puppeteer'
+import { WarningTag, ClassWarnings } from './interfaces'
 
 /**
  * Remove any html character entities from the given string
@@ -99,4 +100,25 @@ const createPages = async (
   return pages
 }
 
-export { removeHtmlSpecials, formatDates, reverseDayAndMonth, keysOf, createPages }
+
+const makeClassWarning = (
+  classID: number,
+  term: string,
+  errorKey: string,
+  errorValue: unknown,
+  tag: WarningTag = WarningTag.Other
+): ClassWarnings => {
+  const warn: ClassWarnings = {
+    tag: tag,
+    classID: classID,
+    term: term,
+    error: {
+      key: errorKey,
+      value: errorValue,
+    },
+  }
+  return warn
+}
+
+
+export { removeHtmlSpecials, formatDates, reverseDayAndMonth, keysOf, createPages, makeClassWarning }

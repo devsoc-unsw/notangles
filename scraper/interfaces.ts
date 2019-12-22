@@ -65,7 +65,7 @@ type ClassesByTerm = Record<Term, Class[]>
 /**
  * Defines the interface for input not conforming to the strict requirements
  */
-interface warning extends classWarnings {
+interface Warning extends ClassWarnings {
   courseCode: string
   courseName: string
 }
@@ -73,11 +73,21 @@ interface warning extends classWarnings {
 /**
  * 
  */
-interface classWarnings {
+enum WarningTag {
+  Other = 'Other',
+  ZeroEnrolmentCapacity = 'Zero Enrolment Capacity',
+  UnknownLocation = 'Unknown Location',
+  UnknownDate_Weeks = 'Unknown Date - Weeks',
+}
+
+interface ClassWarnings {
+  tag: WarningTag
   classID: number
   term: string
-  errKey: string
-  errValue: unknown
+  error: {
+    key: string
+    value: unknown
+  }
 }
 
 interface PageData {
@@ -163,6 +173,7 @@ export {
   Status,
   Day,
   Career,
-  warning,
-  classWarnings,
+  Warning,
+  ClassWarnings,
+  WarningTag
 }

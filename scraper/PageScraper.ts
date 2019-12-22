@@ -5,8 +5,8 @@ import {
   PageData,
   Term,
   Course,
-  warning,
-  classWarnings,
+  Warning,
+  ClassWarnings,
   ClassesByTerm,
   TimetableData,
   CourseInfo,
@@ -211,7 +211,7 @@ const termFinder = (
  */
 const scrapePage = async (
   page: puppeteer.Page
-): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
+): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
   const coursesData: TimetableData = {
     Summer: [],
     T1: [],
@@ -221,7 +221,7 @@ const scrapePage = async (
     S2: [],
     Other: [],
   }
-  const warnings: warning[] = []
+  const warnings: Warning[] = []
   const pageChunks: PageData[] = await getChunks(page)
   // For each course chunk...
   for (const course of pageChunks) {
@@ -239,7 +239,7 @@ const scrapePage = async (
       }
       let notes: string[]
       let noteIndex: number = 0
-      let classWarns: classWarnings[] = []
+      let classWarns: ClassWarnings[] = []
       // There must be a course info array for any page
       if (!course.course_info) {
         throw new Error('Malformed page: ' + page.url())
@@ -295,7 +295,7 @@ const scrapePage = async (
 
       // Encapsulate the classWarnings into warnings for the course
       for (const classWarn of classWarns) {
-        const courseWarning: warning = {
+        const courseWarning: Warning = {
           courseCode: courseHeadData.courseCode,
           courseName: courseHeadData.name,
           ...classWarn,

@@ -1,13 +1,14 @@
-import { reverseDayAndMonth, formatDates, removeHtmlSpecials } from './helper'
+import { reverseDayAndMonth, formatDates, removeHtmlSpecials, makeClassWarning } from './helper'
 import {
   Term,
   Class,
   Status,
-  classWarnings,
+  ClassWarnings,
   Chunk,
   Time,
   Day,
-  TermFinderReference
+  TermFinderReference,
+  WarningTag
 } from './interfaces'
 
 // TODO: Split parseClassChunk into parts, find a better name for it, perhaps create a link in ChunkScraper
@@ -114,14 +115,14 @@ const classTermFinder = (
  * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
  * 
- * @returns {Promise<{ classData: Class, warnings: classWarnings[] }}: The data that has been scraped, formatted as a class object
+ * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
  * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
 const parseClassChunk = (
   data: Chunk
-): { classData: Class; warnings: classWarnings[] } | false => {
+): { classData: Class; warnings: ClassWarnings[] } | false => {
   let index = 0
-  const warnings: classWarnings[] = []
+  const warnings: ClassWarnings[] = []
 
   // ClassID is a 4 or 5 digit number
   const classID = parseInt(data[index])
@@ -175,8 +176,7 @@ const parseClassChunk = (
   // (Strict requirement)
   if (
     !courseEnrolment ||
-    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0) ||
-    courseEnrolment.enrolments > courseEnrolment.capacity
+    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0)
   ) {
     // Lax requirement
     if (
@@ -189,15 +189,22 @@ const parseClassChunk = (
           ' ' +
           courseEnrolment.capacity
       )
-    } else {
-      // Add warning
-      const warning: classWarnings = {
-        classID: classID,
-        term: term,
-        errKey: 'courseEnrolment',
-        errValue: courseEnrolment,
-      }
-      warnings.push(warning)
+    } else if (courseEnrolment.capacity === 0) {
+      // Zero capacity!!
+      warnings.push(
+        makeClassWarning(
+          classID,
+          term,
+          'courseEnrolment',
+          courseEnrolment,
+          WarningTag.ZeroEnrolmentCapacity
+        )
+      )
+    } // Other error
+    else {
+      warnings.push(
+        makeClassWarning(classID, term, 'courseEnrolment', courseEnrolment)
+      )
     }
   }
   index++
@@ -277,15 +284,16 @@ const parseClassChunk = (
     // Check if location exists
     const locationTesterRegex = /[A-Za-z]/
     if (!(location && locationTesterRegex.test(location))) {
-      // Add to warnings
-      const warning: classWarnings = {
-        classID: classID,
-        term: term,
-        errKey: 'location',
-        errValue: location,
-      }
-
-      warnings.push(warning)
+      // Warning: Unknown location!!
+      warnings.push(
+        makeClassWarning(
+          classID,
+          term,
+          'location',
+          location,
+          WarningTag.UnknownLocation
+        )
+      )
 
       // Remove location.
       location = false
@@ -302,14 +310,16 @@ const parseClassChunk = (
       if (!weeksTesterRegex.test(weeks)) {
         throw new Error('Invalid Weeks data: ' + weeks)
       } else {
-        // Just warn.
-        const warning: classWarnings = {
-          classID: classID,
-          term: term,
-          errKey: 'weeks',
-          errValue: weeks,
-        }
-        warnings.push(warning)
+        // Just warn -> Invalid/unknown weeks data.
+        warnings.push(
+          makeClassWarning(
+            classID,
+            term,
+            'weeks',
+            weeks,
+            WarningTag.UnknownDate_Weeks
+          )
+        )
       }
     }
     index++

@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer'
-import { TimetableData, UrlList, ExtendedTerm, warning } from './interfaces'
+import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
 
 import { getDataUrls, scrapePage, termFinder } from './PageScraper'
 import { keysOf, createPages } from './helper'
@@ -12,7 +12,7 @@ import { cloneDeep } from 'lodash'
  * @param { puppeteer.Page } page Page to use to scrape the subject
  * @param { string } course Url of the course to be scraped
  * 
- * @returns {Promise<{ courseData: TimetableData; warnings: warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * 
  * @example
  * 
@@ -22,7 +22,7 @@ import { cloneDeep } from 'lodash'
 const scrapeSubject = async (
   page: puppeteer.Page,
   course: string
-): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
+): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
   await page.goto(course, {
     waitUntil: 'networkidle2',
   })
@@ -64,7 +64,7 @@ const getPageUrls = async (
  * The scraper that scrapes the timetable site
  * @param {number} year: The year for which the information is to be scraped
  * 
- * @returns {Promise<{ timetableData: TimetableData; warnings: warning[] }}: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns {Promise<{ timetableData: TimetableData; warnings: Warning[] }}: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @returns {false}: Scraping failed due to some error. Error printed to console.error
  * 
  * @example
@@ -79,7 +79,7 @@ const getPageUrls = async (
  */
 const timetableScraper = async (
   year: number
-): Promise<{ timetableData: TimetableData; warnings: warning[] } | false> => {
+): Promise<{ timetableData: TimetableData; warnings: Warning[] } | false> => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch({ headless: false })
   try {
@@ -102,7 +102,7 @@ const timetableScraper = async (
     }
 
     // Warning array for any fields not aligning with the strict requirements
-    const warnings: warning[] = []
+    const warnings: Warning[] = []
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -148,9 +148,9 @@ const timetableScraper = async (
     for (let job = 0; job < jobs.length; ) {
       const promises: Promise<{
         coursesData: TimetableData
-        warnings: warning[]
+        warnings: Warning[]
       }>[] = []
-      let result: { coursesData: TimetableData; warnings: warning[] }[]
+      let result: { coursesData: TimetableData; warnings: Warning[] }[]
       for (let i = 0; i < batchsize && job < jobs.length; i++) {
         const data = scrapeSubject(pages[i], jobs[job])
         promises.push(data)
