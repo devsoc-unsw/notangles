@@ -7,17 +7,14 @@ import {
   Chunk,
   Time,
   Day,
-  TermFinderReference,
+  ClassTermFinderReference,
   WarningTag
 } from './interfaces'
 
-// TODO: Split parseClassChunk into parts, find a better name for it, perhaps create a link in ChunkScraper
-// TODO: Perhaps extract the regexes out
-
 /**
- * @constant { TermFinderReference }: Default reference to follow
+ * @constant { ClassTermFinderReference }: Default reference to follow
  */
-const defaultReferenceDates : TermFinderReference = [
+const defaultReferenceDates : ClassTermFinderReference = [
   {
     term: Term.Summer,
     dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
@@ -69,8 +66,8 @@ const defaultReferenceDates : TermFinderReference = [
 
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
- * @param cls: Class to find the term for
- * @param reference: Refernce dates to find the term.
+ * @param { Class } cls: Class to find the term for
+ * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
  * start is an array of possible start dates and length is the number of months the term might run for
  * 
@@ -78,7 +75,7 @@ const defaultReferenceDates : TermFinderReference = [
  */
 const classTermFinder = (
   cls: Class,
-  reference: TermFinderReference = defaultReferenceDates
+  reference: ClassTermFinderReference = defaultReferenceDates
 ): Term => {
   // Error check
   if (!(cls && cls.termDates)) {

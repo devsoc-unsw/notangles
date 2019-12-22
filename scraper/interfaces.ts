@@ -71,7 +71,7 @@ interface Warning extends ClassWarnings {
 }
 
 /**
- * 
+ * Gives information about th error that has ocurred
  */
 enum WarningTag {
   Other = 'Other',
@@ -80,6 +80,9 @@ enum WarningTag {
   UnknownDate_Weeks = 'Unknown Date - Weeks',
 }
 
+/**
+ * Defines the details about the warning a class might provide
+ */
 interface ClassWarnings {
   tag: WarningTag
   classID: number
@@ -90,11 +93,17 @@ interface ClassWarnings {
   }
 }
 
+/**
+ * Defines the structure of a subsection of a page in Chunks
+ */
 interface PageData {
   course_info: Chunk
   classes?: Chunk[]
 }
 
+/**
+ * Structure of each time object inside a class
+ */
 interface Time {
   day: Day
   time: {
@@ -105,6 +114,9 @@ interface Time {
   weeks: string
 }
 
+/**
+ * Structure of a scraped class
+ */
 interface Class {
   classID: number
   section: string
@@ -124,16 +136,25 @@ interface Class {
   notes?: string
 }
 
+/**
+ * Structure of a scraped course
+ */
 interface Course extends CourseHead, CourseInfo {
   classes?: Class[]
   notes?: string[]
 }
 
+/**
+ * Data about the title of the car
+ */
 interface CourseHead {
   courseCode: string
   name: string
 }
 
+/**
+ * Data about the course that is scraped, without the classes
+ */
 interface CourseInfo {
   school: string
   campus: string
@@ -142,20 +163,37 @@ interface CourseInfo {
   termsOffered: string[]
 }
 
-interface TermFinderDates {
+/**
+ * Structure of a date inside a reference object provided to the classTermFinder method
+ */
+interface ClassTermFinderDates {
   start: number;
   length: number;
 }
 
-interface TermFinderReferenceElement {
+/**
+ * Structure of a reference object provided to the classTermFinder method
+ */
+interface ClassTermFinderReferenceElement {
   term: Term;
-  dates: TermFinderDates[];
+  dates: ClassTermFinderDates[];
+}
+
+type ClassTermFinderReference = ClassTermFinderReferenceElement[]
+
+/**
+ * Structure of a reference object provided to the termFinder method
+ */
+interface TermFinderReferenceElement {
+  term: Term, 
+  census: string
 }
 
 type TermFinderReference = TermFinderReferenceElement[]
 
 export {
   TermFinderReference,
+  ClassTermFinderReference,
   Time,
   Class,
   Course,
