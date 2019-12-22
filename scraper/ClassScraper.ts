@@ -7,69 +7,77 @@ import {
   Chunk,
   Time,
   Day,
+  TermFinderReference
 } from './interfaces'
 
 // TODO: Split parseClassChunk into parts, find a better name for it, perhaps create a link in ChunkScraper
 // TODO: Perhaps extract the regexes out
 
 /**
+ * @constant { TermFinderReference }: Default reference to follow
+ */
+const defaultReferenceDates : TermFinderReference = [
+  {
+    term: Term.Summer,
+    dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+  },
+  {
+    term: Term.T1,
+    dates: [
+      { start: 1, length: 2 },
+      { start: 1, length: 3 },
+      { start: 1, length: 4 },
+      { start: 2, length: 1 },
+      { start: 2, length: 3 },
+      { start: 3, length: 1 },
+    ],
+  },
+  {
+    term: Term.T2,
+    dates: [
+      { start: 3, length: 2 },
+      { start: 4, length: 2 },
+      { start: 4, length: 3 },
+      { start: 5, length: 1 },
+      { start: 5, length: 3 },
+      { start: 6, length: 1 },
+      { start: 6, length: 3 },
+      { start: 7, length: 1 },
+      { start: 7, length: 2 },
+      { start: 8, length: 1 },
+    ],
+  },
+  {
+    term: Term.T3,
+    dates: [
+      { start: 8, length: 2 },
+      { start: 8, length: 3 },
+      { start: 9, length: 1 },
+      { start: 9, length: 2 },
+      { start: 9, length: 3 },
+      { start: 10, length: 1 },
+      { start: 10, length: 2 },
+    ],
+  },
+  {
+    term: Term.S1,
+    dates: [{ start: 2, length: 4 }],
+  },
+  { term: Term.S2, dates: [{ start: 7, length: 4 }] },
+]
+
+/**
  * Finds the Term for a class. Term is defined in interfaces.ts
  * @param cls: Class to find the term for
  * @param reference: Refernce dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
- * start is an array of possible start dates and length is
+ * start is an array of possible start dates and length is the number of months the term might run for
+ * 
+ * @returns { Term }: Term which the class is from
  */
 const classTermFinder = (
   cls: Class,
-  reference = [
-    {
-      term: Term.Summer,
-      dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
-    },
-    {
-      term: Term.T1,
-      dates: [
-        { start: 1, length: 2 },
-        { start: 1, length: 3 },
-        { start: 1, length: 4 },
-        { start: 2, length: 1 },
-        { start: 2, length: 3 },
-        { start: 3, length: 1 },
-      ],
-    },
-    {
-      term: Term.T2,
-      dates: [
-        { start: 3, length: 2 },
-        { start: 4, length: 2 },
-        { start: 4, length: 3 },
-        { start: 5, length: 1 },
-        { start: 5, length: 3 },
-        { start: 6, length: 1 },
-        { start: 6, length: 3 },
-        { start: 7, length: 1 },
-        { start: 7, length: 2 },
-        { start: 8, length: 1 },
-      ],
-    },
-    {
-      term: Term.T3,
-      dates: [
-        { start: 8, length: 2 },
-        { start: 8, length: 3 },
-        { start: 9, length: 1 },
-        { start: 9, length: 2 },
-        { start: 9, length: 3 },
-        { start: 10, length: 1 },
-        { start: 10, length: 2 },
-      ],
-    },
-    {
-      term: Term.S1,
-      dates: [{ start: 2, length: 4 }],
-    },
-    { term: Term.S2, dates: [{ start: 7, length: 4 }] },
-  ]
+  reference: TermFinderReference = defaultReferenceDates
 ): Term => {
   // Error check
   if (!(cls && cls.termDates)) {
@@ -103,8 +111,11 @@ const classTermFinder = (
 
 /**
  * Parses data from the data array into a class object
- * @param data: array of text from elements with a data class
+ * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
+ * 
+ * @returns {Promise<{ classData: Class, warnings: classWarnings[] }}: The data that has been scraped, formatted as a class object
+ * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
 const parseClassChunk = (
   data: Chunk
