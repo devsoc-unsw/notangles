@@ -8,9 +8,9 @@ This project contains a script that gathers class times and offerings of all cou
 
 This project has been verified to work with the following versions of node:
 *   node: 
-    1. 12.14.0
+    * 12.14.0
 *   npm:
-    1. 6.13.4
+    * 6.13.4
 
 
 While in the project directory ```notangles/scraper```, run:
