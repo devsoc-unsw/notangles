@@ -13,14 +13,18 @@ enum Term {
   S2 = 'S2',
 }
 
-// All possible careers
+/**
+ * All possible careers
+ */
 enum Career {
   Undergraduate = 'Undergraduate',
   Postgraduate = 'Postgraduate',
   Research = 'Research',
 }
 
-// Possible Days
+/**
+ * Possible Days
+ */
 enum Day {
   Mon = 'Mon',
   Tue = 'Tue',
@@ -31,32 +35,44 @@ enum Day {
   Sun = 'Sun',
 }
 
-// Defines the status of a class
+/**
+ * Defines the status of a class
+ */
 enum Status {
   Full = 'Full',
   Open = 'Open',
   On_Hold = 'On Hold',
 }
 
+/**
+ * Term is not Other under normal circumstances
+ */
 enum ExtendedTerm {
   Other = 'Other',
 }
 
 type valueOf<T extends {}> = T[keyof T]
 
-// To account for classes that do not run in any term or that
-// could not be classified (The latter case should be avoided)
+/**
+ * To account for classes that do not run in any term or that
+ * could not be classified (The latter case should be avoided)
+ */
 interface TimetableData extends Record<Term, Course[]> {
   Other?: Course[]
 }
 type ClassesByTerm = Record<Term, Class[]>
 
-// Defines the interface for input not conforming to the strict requirements
+/**
+ * Defines the interface for input not conforming to the strict requirements
+ */
 interface warning extends classWarnings {
   courseCode: string
   courseName: string
 }
 
+/**
+ * 
+ */
 interface classWarnings {
   classID: number
   term: string
@@ -116,7 +132,20 @@ interface CourseInfo {
   termsOffered: string[]
 }
 
+interface TermFinderDates {
+  start: number;
+  length: number;
+}
+
+interface TermFinderReferenceElement {
+  term: Term;
+  dates: TermFinderDates[];
+}
+
+type TermFinderReference = TermFinderReferenceElement[]
+
 export {
+  TermFinderReference,
   Time,
   Class,
   Course,

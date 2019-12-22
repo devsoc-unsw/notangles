@@ -2,47 +2,22 @@ import * as puppeteer from 'puppeteer'
 import { TimetableData, UrlList, ExtendedTerm, warning } from './interfaces'
 
 import { getDataUrls, scrapePage, termFinder } from './PageScraper'
-import { keysOf } from './helper'
+import { keysOf, createPages } from './helper'
 import { cloneDeep } from 'lodash'
 
-/**
- * Creates browser pages to then use to scrape the website
- * @param browser: browser object (window) in which to create new pages
- * @param batchsize: Number of pages to be created
- */
-const createPages = async (
-  browser: puppeteer.Browser,
-  batchsize: number
-): Promise<puppeteer.Page[]> => {
-  // List of pages
-  const pages: puppeteer.Page[] = []
-  for (let pageno = 0; pageno < batchsize; pageno++) {
-    const singlepage = await browser.newPage()
-    // Block all js, css, fonts and images for speed
-    await singlepage.setRequestInterception(true)
-    singlepage.on('request', request => {
-      const type = request.resourceType()
-      if (
-        type === 'script' ||
-        type === 'stylesheet' ||
-        type === 'font' ||
-        type === 'image'
-      ) {
-        request.abort()
-      } else {
-        request.continue()
-      }
-    })
-    pages.push(singlepage)
-  }
-  return pages
-}
 
 /**
  * Async wrapper to scrape multiple subjects at once
  * This scrapes one subject
- * @param page Page to use to scrape the subject
- * @param course Url of the course to be scraped
+ * @param { puppeteer.Page } page Page to use to scrape the subject
+ * @param { string } course Url of the course to be scraped
+ * 
+ * @returns {Promise<{ courseData: TimetableData; warnings: warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * 
+ * @example
+ * 
+ *    const browser = await puppeteer.launch()
+ *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
  */
 const scrapeSubject = async (
   page: puppeteer.Page,
@@ -63,6 +38,13 @@ const scrapeSubject = async (
  * @param page page to be used for scraping
  * @param base prefix for each scraped url
  * @param regex regex to check each scraped url
+ * 
+ * @returns { Promise<string[]> } List of all urls on @param page . Each url is prefixed by @param base
+ * 
+ * @example 
+ * 
+ *    const browser = await puppeteer.launch()
+ *    const urls = getPageUrls('http://timetable.unsw.edu.au/2019/COMP1511.html', await browser.newPage(), 'http://timetable.unsw.edu.au/2019/', /html$/)
  */
 const getPageUrls = async (
   url: string,
@@ -80,10 +62,24 @@ const getPageUrls = async (
 
 /**
  * The scraper that scrapes the timetable site
+ * @param {number} year: The year for which the information is to be scraped
+ * 
+ * @returns {Promise<{ timetableData: TimetableData; warnings: warning[] }}: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns {false}: Scraping failed due to some error. Error printed to console.error
+ * 
+ * @example
+ * 
+ * 1.
+ *    const data = await timetableScraper(2020)
+ *    console.log(data.timetableData.T1) // Expect list of T1 courses in 2020
+ * 
+ * 2.
+ *    const data = await timetableScraper(40100)
+ *    console.log(data) // false
  */
 const timetableScraper = async (
   year: number
-): Promise<{ timetableData: TimetableData; warnings: warning[] }> => {
+): Promise<{ timetableData: TimetableData; warnings: warning[] } | false> => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch({ headless: false })
   try {
@@ -204,12 +200,29 @@ const timetableScraper = async (
     // log error and close browser.
     console.error(err)
     await browser.close()
+    return false
   }
 }
+
 ;(async () => {
   console.time('cscraper')
   try {
-    await timetableScraper(2019)
+    const data = await timetableScraper(2019)
+    // const browser = await puppeteer.launch({ headless: false })
+    // const singlepage = await browser.newPage()
+    // const data = await scrapeSubject(singlepage, 'http://timetable.unsw.edu.au/2019/COMP1511.html')
+
+    if (data === false) {
+      return
+    }
+
+    const fs = require('fs')    
+    fs.writeFile('T1.json', JSON.stringify(data.timetableData.T1), 'utf-8', (err: unknown) => {
+      if (err) {
+        console.error(err)
+      }
+    })
+
   } catch (err) {
     console.log('something went wrong')
   }
