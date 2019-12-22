@@ -6,7 +6,7 @@ This project contains a script that gathers class times and offerings of all cou
 
 ## Installation
 
-This project has been verified to work with the following versions of node:
+This project has been verified to work with the following versions:
 *   node: 
     * 12.14.0
 *   npm:
