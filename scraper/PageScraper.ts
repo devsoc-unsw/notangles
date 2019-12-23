@@ -16,20 +16,27 @@ import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
 import { parseClassChunk, classTermFinder } from './ClassScraper'
 
+interface getDataUrlsParams {
+  page: puppeteer.Page,
+  base: string,
+  regex: RegExp
+}
+
 /**
  * Gets all the urls in the data class on page: page,
  * given regex: regex.
  * Each url will have the prefix: base.
- * @param {puppeteer.Page} page Page to scrape urls from
+ * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
  * @param { RegExp } regex regex to check each url
  * 
  * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
  */
-const getDataUrls = async (
-  page: puppeteer.Page,
-  base: string,
-  regex: RegExp
+const getDataUrls = async ({
+  page,
+  base,
+  regex
+} : getDataUrlsParams
 ): Promise<string[]> => {
   // Get all the required urls...
   const urls = await page.$$eval('.data', e => {
@@ -156,6 +163,11 @@ const defaultReference: TermFinderReference = [
   { term: Term.S2, census: '8/18' },
 ]
 
+interface TermFinderParams {
+  course: Course,
+  reference?: TermFinderReference 
+}
+
 /**
  * Given some reference dates for the term,
  * the function returns one of the 6 terms that
@@ -175,10 +187,10 @@ const defaultReference: TermFinderReference = [
  * 
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
-const termFinder = (
-  course: Course,
-  reference: TermFinderReference = defaultReference
-): Term[] => {
+const termFinder = ({
+  course,
+  reference = defaultReference
+} : TermFinderParams): Term[] => {
   if (!course.censusDates || course.censusDates.length <= 0) {
     throw new Error('no census dates for course: ' + course.courseCode)
   }
@@ -329,4 +341,4 @@ const scrapePage = async (
   return { coursesData: coursesData, warnings: warnings }
 }
 
-export { getDataUrls, scrapePage, termFinder, getChunks }
+export { getDataUrls, getDataUrlsParams, scrapePage, termFinder, getChunks }
