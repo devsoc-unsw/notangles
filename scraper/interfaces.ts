@@ -13,14 +13,18 @@ enum Term {
   S2 = 'S2',
 }
 
-// All possible careers
+/**
+ * All possible careers
+ */
 enum Career {
   Undergraduate = 'Undergraduate',
   Postgraduate = 'Postgraduate',
   Research = 'Research',
 }
 
-// Possible Days
+/**
+ * Possible Days
+ */
 enum Day {
   Mon = 'Mon',
   Tue = 'Tue',
@@ -31,44 +35,75 @@ enum Day {
   Sun = 'Sun',
 }
 
-// Defines the status of a class
+/**
+ * Defines the status of a class
+ */
 enum Status {
   Full = 'Full',
   Open = 'Open',
   On_Hold = 'On Hold',
 }
 
+/**
+ * Term is not Other under normal circumstances
+ */
 enum ExtendedTerm {
   Other = 'Other',
 }
 
 type valueOf<T extends {}> = T[keyof T]
 
-// To account for classes that do not run in any term or that
-// could not be classified (The latter case should be avoided)
+/**
+ * To account for classes that do not run in any term or that
+ * could not be classified (The latter case should be avoided)
+ */
 interface TimetableData extends Record<Term, Course[]> {
   Other?: Course[]
 }
 type ClassesByTerm = Record<Term, Class[]>
 
-// Defines the interface for input not conforming to the strict requirements
-interface warning extends classWarnings {
+/**
+ * Defines the interface for input not conforming to the strict requirements
+ */
+interface Warning extends ClassWarnings {
   courseCode: string
   courseName: string
 }
 
-interface classWarnings {
-  classID: number
-  term: string
-  errKey: string
-  errValue: unknown
+/**
+ * Gives information about th error that has ocurred
+ */
+enum WarningTag {
+  Other = 'Other',
+  ZeroEnrolmentCapacity = 'Zero Enrolment Capacity',
+  UnknownLocation = 'Unknown Location',
+  UnknownDate_Weeks = 'Unknown Date - Weeks',
 }
 
+/**
+ * Defines the details about the warning a class might provide
+ */
+interface ClassWarnings {
+  tag: WarningTag
+  classID: number
+  term: string
+  error: {
+    key: string
+    value: unknown
+  }
+}
+
+/**
+ * Defines the structure of a subsection of a page in Chunks
+ */
 interface PageData {
   course_info: Chunk
   classes?: Chunk[]
 }
 
+/**
+ * Structure of each time object inside a class
+ */
 interface Time {
   day: Day
   time: {
@@ -79,6 +114,9 @@ interface Time {
   weeks: string
 }
 
+/**
+ * Structure of a scraped class
+ */
 interface Class {
   classID: number
   section: string
@@ -98,16 +136,25 @@ interface Class {
   notes?: string
 }
 
+/**
+ * Structure of a scraped course
+ */
 interface Course extends CourseHead, CourseInfo {
   classes?: Class[]
   notes?: string[]
 }
 
+/**
+ * Data about the title of the car
+ */
 interface CourseHead {
   courseCode: string
   name: string
 }
 
+/**
+ * Data about the course that is scraped, without the classes
+ */
 interface CourseInfo {
   school: string
   campus: string
@@ -116,7 +163,37 @@ interface CourseInfo {
   termsOffered: string[]
 }
 
+/**
+ * Structure of a date inside a reference object provided to the classTermFinder method
+ */
+interface ClassTermFinderDates {
+  start: number;
+  length: number;
+}
+
+/**
+ * Structure of a reference object provided to the classTermFinder method
+ */
+interface ClassTermFinderReferenceElement {
+  term: Term;
+  dates: ClassTermFinderDates[];
+}
+
+type ClassTermFinderReference = ClassTermFinderReferenceElement[]
+
+/**
+ * Structure of a reference object provided to the termFinder method
+ */
+interface TermFinderReferenceElement {
+  term: Term, 
+  census: string
+}
+
+type TermFinderReference = TermFinderReferenceElement[]
+
 export {
+  TermFinderReference,
+  ClassTermFinderReference,
   Time,
   Class,
   Course,
@@ -134,6 +211,7 @@ export {
   Status,
   Day,
   Career,
-  warning,
-  classWarnings,
+  Warning,
+  ClassWarnings,
+  WarningTag
 }

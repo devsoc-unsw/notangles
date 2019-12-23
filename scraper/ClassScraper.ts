@@ -1,76 +1,87 @@
-import { reverseDayAndMonth, formatDates, removeHtmlSpecials } from './helper'
+import { reverseDayAndMonth, formatDates, removeHtmlSpecials, makeClassWarning } from './helper'
 import {
   Term,
   Class,
   Status,
-  classWarnings,
+  ClassWarnings,
   Chunk,
   Time,
   Day,
+  ClassTermFinderReference,
+  WarningTag
 } from './interfaces'
 
-// TODO: Split parseClassChunk into parts, find a better name for it, perhaps create a link in ChunkScraper
-// TODO: Perhaps extract the regexes out
+interface ClassTermFinderParams {
+  cls: Class,
+  reference: ClassTermFinderReference
+}
+
+/**
+ * @constant { ClassTermFinderReference }: Default reference to follow
+ */
+const defaultReferenceDates : ClassTermFinderReference = [
+  {
+    term: Term.Summer,
+    dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+  },
+  {
+    term: Term.T1,
+    dates: [
+      { start: 1, length: 2 },
+      { start: 1, length: 3 },
+      { start: 1, length: 4 },
+      { start: 2, length: 1 },
+      { start: 2, length: 3 },
+      { start: 3, length: 1 },
+    ],
+  },
+  {
+    term: Term.T2,
+    dates: [
+      { start: 3, length: 2 },
+      { start: 4, length: 2 },
+      { start: 4, length: 3 },
+      { start: 5, length: 1 },
+      { start: 5, length: 3 },
+      { start: 6, length: 1 },
+      { start: 6, length: 3 },
+      { start: 7, length: 1 },
+      { start: 7, length: 2 },
+      { start: 8, length: 1 },
+    ],
+  },
+  {
+    term: Term.T3,
+    dates: [
+      { start: 8, length: 2 },
+      { start: 8, length: 3 },
+      { start: 9, length: 1 },
+      { start: 9, length: 2 },
+      { start: 9, length: 3 },
+      { start: 10, length: 1 },
+      { start: 10, length: 2 },
+    ],
+  },
+  {
+    term: Term.S1,
+    dates: [{ start: 2, length: 4 }],
+  },
+  { term: Term.S2, dates: [{ start: 7, length: 4 }] },
+]
 
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
- * @param cls: Class to find the term for
- * @param reference: Refernce dates to find the term.
+ * @param { Class } cls: Class to find the term for
+ * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
- * start is an array of possible start dates and length is
+ * start is an array of possible start dates and length is the number of months the term might run for
+ * 
+ * @returns { Term }: Term which the class is from
  */
-const classTermFinder = (
-  cls: Class,
-  reference = [
-    {
-      term: Term.Summer,
-      dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
-    },
-    {
-      term: Term.T1,
-      dates: [
-        { start: 1, length: 2 },
-        { start: 1, length: 3 },
-        { start: 1, length: 4 },
-        { start: 2, length: 1 },
-        { start: 2, length: 3 },
-        { start: 3, length: 1 },
-      ],
-    },
-    {
-      term: Term.T2,
-      dates: [
-        { start: 3, length: 2 },
-        { start: 4, length: 2 },
-        { start: 4, length: 3 },
-        { start: 5, length: 1 },
-        { start: 5, length: 3 },
-        { start: 6, length: 1 },
-        { start: 6, length: 3 },
-        { start: 7, length: 1 },
-        { start: 7, length: 2 },
-        { start: 8, length: 1 },
-      ],
-    },
-    {
-      term: Term.T3,
-      dates: [
-        { start: 8, length: 2 },
-        { start: 8, length: 3 },
-        { start: 9, length: 1 },
-        { start: 9, length: 2 },
-        { start: 9, length: 3 },
-        { start: 10, length: 1 },
-        { start: 10, length: 2 },
-      ],
-    },
-    {
-      term: Term.S1,
-      dates: [{ start: 2, length: 4 }],
-    },
-    { term: Term.S2, dates: [{ start: 7, length: 4 }] },
-  ]
-): Term => {
+const classTermFinder = ({
+  cls,
+  reference = defaultReferenceDates
+}: ClassTermFinderParams): Term => {
   // Error check
   if (!(cls && cls.termDates)) {
     throw new Error('no start and end dates for class: ' + cls)
@@ -78,7 +89,7 @@ const classTermFinder = (
 
   const [start, end] = formatDates(
     [cls.termDates.start, cls.termDates.end].map(date =>
-      reverseDayAndMonth(date, '/')
+      reverseDayAndMonth({date: date, delimiter: '/'})
     )
   )
 
@@ -103,14 +114,17 @@ const classTermFinder = (
 
 /**
  * Parses data from the data array into a class object
- * @param data: array of text from elements with a data class
+ * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
+ * 
+ * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
+ * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
 const parseClassChunk = (
   data: Chunk
-): { classData: Class; warnings: classWarnings[] } | false => {
+): { classData: Class; warnings: ClassWarnings[] } | false => {
   let index = 0
-  const warnings: classWarnings[] = []
+  const warnings: ClassWarnings[] = []
 
   // ClassID is a 4 or 5 digit number
   const classID = parseInt(data[index])
@@ -164,8 +178,7 @@ const parseClassChunk = (
   // (Strict requirement)
   if (
     !courseEnrolment ||
-    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0) ||
-    courseEnrolment.enrolments > courseEnrolment.capacity
+    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0)
   ) {
     // Lax requirement
     if (
@@ -178,15 +191,25 @@ const parseClassChunk = (
           ' ' +
           courseEnrolment.capacity
       )
-    } else {
-      // Add warning
-      const warning: classWarnings = {
-        classID: classID,
-        term: term,
-        errKey: 'courseEnrolment',
-        errValue: courseEnrolment,
-      }
-      warnings.push(warning)
+    } else if (courseEnrolment.capacity === 0) {
+      // Zero capacity!!
+      warnings.push(
+        makeClassWarning({
+          classID: classID,
+          term: term,
+          errorKey: 'courseEnrolment',
+          errorValue: courseEnrolment,
+          tag: WarningTag.ZeroEnrolmentCapacity
+        }
+        )
+      )
+    } // Other error
+    else {
+      warnings.push(
+        makeClassWarning({
+          classID: classID, term: term, errorKey: 'courseEnrolment', errorValue: courseEnrolment
+        })
+      )
     }
   }
   index++
@@ -266,15 +289,17 @@ const parseClassChunk = (
     // Check if location exists
     const locationTesterRegex = /[A-Za-z]/
     if (!(location && locationTesterRegex.test(location))) {
-      // Add to warnings
-      const warning: classWarnings = {
-        classID: classID,
-        term: term,
-        errKey: 'location',
-        errValue: location,
-      }
-
-      warnings.push(warning)
+      // Warning: Unknown location!!
+      warnings.push(
+        makeClassWarning({
+          classID: classID,
+          term: term,
+          errorKey: 'location',
+          errorValue: location,
+          tag: WarningTag.UnknownLocation
+        }
+        )
+      )
 
       // Remove location.
       location = false
@@ -291,14 +316,16 @@ const parseClassChunk = (
       if (!weeksTesterRegex.test(weeks)) {
         throw new Error('Invalid Weeks data: ' + weeks)
       } else {
-        // Just warn.
-        const warning: classWarnings = {
-          classID: classID,
-          term: term,
-          errKey: 'weeks',
-          errValue: weeks,
-        }
-        warnings.push(warning)
+        // Just warn -> Invalid/unknown weeks data.
+        warnings.push(
+          makeClassWarning({
+            classID: classID,
+            term: term,
+            errorKey: 'weeks',
+            errorValue: weeks,
+            tag: WarningTag.UnknownDate_Weeks
+          })
+        )
       }
     }
     index++

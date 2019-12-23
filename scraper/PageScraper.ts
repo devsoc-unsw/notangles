@@ -5,31 +5,38 @@ import {
   PageData,
   Term,
   Course,
-  warning,
-  classWarnings,
+  Warning,
+  ClassWarnings,
   ClassesByTerm,
   TimetableData,
   CourseInfo,
+  TermFinderReference,
 } from './interfaces'
 import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
 import { parseClassChunk, classTermFinder } from './ClassScraper'
 
-// TODO: Extract all the strings from the functions and make it private
-// TODO: Split getChunks function into parts
+interface getDataUrlsParams {
+  page: puppeteer.Page,
+  base: string,
+  regex: RegExp
+}
 
 /**
  * Gets all the urls in the data class on page: page,
  * given regex: regex.
  * Each url will have the prefix: base.
- * @param page Page to scrape urls from
- * @param base string each url has to be prefixed with
- * @param regex regex to check each url
+ * @param { puppeteer.Page } page Page to scrape urls from
+ * @param { string } base string each url has to be prefixed with
+ * @param { RegExp } regex regex to check each url
+ * 
+ * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
  */
-const getDataUrls = async (
-  page: puppeteer.Page,
-  base: string,
-  regex: RegExp
+const getDataUrls = async ({
+  page,
+  base,
+  regex
+} : getDataUrlsParams
 ): Promise<string[]> => {
   // Get all the required urls...
   const urls = await page.$$eval('.data', e => {
@@ -56,18 +63,24 @@ const getDataUrls = async (
 
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
- * @param page: page to be broken down into chunks
+ * @param { puppeteer.Page } page: page to be broken down into chunks
+ * 
+ * @returns { Promise<PageData[]> }: Extracted data as a course info chunk and list of class chunks to be parsed
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
   const chunks: PageData[] = await page.evaluate(() => {
     const chunkList: HTMLElement[][] = []
+
+    const tableSelector: string = '[class="formBody"][colspan="3"]'
+    const tableTagName: string = 'TABLE'
+
     const courseTables: NodeListOf<HTMLElement> = document.querySelectorAll(
-      '[class="formBody"][colspan="3"]'
+      tableSelector
     )
     for (const course of courseTables) {
       // Get every td which has more than 1 table
       const parts = Array.from(course.children).filter(
-        (element: HTMLElement) => element.tagName === 'TABLE'
+        (element: HTMLElement) => element.tagName === tableTagName
       ) as HTMLElement[]
       if (parts.length > 1) {
         chunkList.push(parts)
@@ -77,19 +90,23 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
     // Data to be returned ----> list of course objects
     const coursesDataElements: PageData[] = []
 
+    const dataClassSelector: string = '.data'
     // Deciding...
     for (const course of chunkList) {
       let course_info: Chunk
       let classes: Chunk[]
       for (const chunk of course) {
         // If there are any data fields inside the chunk, then categorize it
-        const data: HTMLElement = chunk.querySelector('.data')
+        const data: HTMLElement = chunk.querySelector(dataClassSelector)
         if (data) {
-          const query: string = 'a[href="#top"]'
-          const classlist: HTMLElement = chunk.querySelector(query)
-          const note: HTMLElement = chunk.querySelector('.note')
+          const classQuery: string = 'a[href="#top"]'
+          const noteClassSelector: string = '.note'
+          const pathToInnerTable: string = ':scope > tbody > tr > td > table'
+
+          const classlist: HTMLElement = chunk.querySelector(classQuery)
+          const note: HTMLElement = chunk.querySelector(noteClassSelector)
           const subtables: NodeListOf<HTMLElement> = chunk.querySelectorAll(
-            ':scope > tbody > tr > td > table'
+            pathToInnerTable
           )
 
           // If the table has any element with id top, then it is the classes table.
@@ -99,7 +116,7 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
             const tablelist: Chunk[] = []
             for (const subtable of subtables) {
               tablelist.push(
-                [...subtable.querySelectorAll<HTMLElement>('.data')].map(
+                [...subtable.querySelectorAll<HTMLElement>(dataClassSelector)].map(
                   element => element.innerText
                 )
               )
@@ -113,7 +130,7 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
             // The table is the summary table ---> skip!
           } else if (subtables.length === 3) {
             // This should be the course info table. --> get data elements
-            course_info = [...chunk.querySelectorAll<HTMLElement>('.data')].map(
+            course_info = [...chunk.querySelectorAll<HTMLElement>(dataClassSelector)].map(
               element => element.innerText
             )
           }
@@ -135,12 +152,29 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
 }
 
 /**
+ * @constant { TermFinderReference }: Default reference to follow to find the correct term
+ */
+const defaultReference: TermFinderReference = [
+  { term: Term.Summer, census: '1/8' },
+  { term: Term.T1, census: '3/17' },
+  { term: Term.T2, census: '6/30' },
+  { term: Term.T3, census: '10/13' },
+  { term: Term.S1, census: '3/31' },
+  { term: Term.S2, census: '8/18' },
+]
+
+interface TermFinderParams {
+  course: Course,
+  reference?: TermFinderReference 
+}
+
+/**
  * Given some reference dates for the term,
  * the function returns one of the 6 terms that
  * the course can be a part of
  * [ Summer, T1, T2, T3, S1, S2 ]
- * @param course: course the term is required for
- * @param reference The reference is optional. The default is:
+ * @param { Course } course: course the term is required for
+ * @param { TermFinderReference } reference The reference is optional. The default is:
  * (Convert the dates into start (month of starting)
  * and length (number of months the course runs))
  * Summer: 26/11 ---> 10/02
@@ -150,18 +184,13 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
  * S1: 25/02 ---> 30/06
  * S2: 15/07 ---> 10/11
  * The date format for reference census dates is month/day
+ * 
+ * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
-const termFinder = (
-  course: Course,
-  reference = [
-    { term: Term.Summer, census: '1/8' },
-    { term: Term.T1, census: '3/17' },
-    { term: Term.T2, census: '6/30' },
-    { term: Term.T3, census: '10/13' },
-    { term: Term.S1, census: '3/31' },
-    { term: Term.S2, census: '8/18' },
-  ]
-): Term[] => {
+const termFinder = ({
+  course,
+  reference = defaultReference
+} : TermFinderParams): Term[] => {
   if (!course.censusDates || course.censusDates.length <= 0) {
     throw new Error('no census dates for course: ' + course.courseCode)
   }
@@ -207,11 +236,13 @@ const termFinder = (
 /**
  * Function scrapes all the course data on the given page
  * Returns an array of courses on the page
- * @param page Page to be scraped
+ * @param { puppeteer.Page } page Page to be scraped
+ * 
+ * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
  */
 const scrapePage = async (
   page: puppeteer.Page
-): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
+): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
   const coursesData: TimetableData = {
     Summer: [],
     T1: [],
@@ -221,7 +252,7 @@ const scrapePage = async (
     S2: [],
     Other: [],
   }
-  const warnings: warning[] = []
+  const warnings: Warning[] = []
   const pageChunks: PageData[] = await getChunks(page)
   // For each course chunk...
   for (const course of pageChunks) {
@@ -239,7 +270,7 @@ const scrapePage = async (
       }
       let notes: string[]
       let noteIndex: number = 0
-      let classWarns: classWarnings[] = []
+      let classWarns: ClassWarnings[] = []
       // There must be a course info array for any page
       if (!course.course_info) {
         throw new Error('Malformed page: ' + page.url())
@@ -295,7 +326,7 @@ const scrapePage = async (
 
       // Encapsulate the classWarnings into warnings for the course
       for (const classWarn of classWarns) {
-        const courseWarning: warning = {
+        const courseWarning: Warning = {
           courseCode: courseHeadData.courseCode,
           courseName: courseHeadData.name,
           ...classWarn,
@@ -310,4 +341,4 @@ const scrapePage = async (
   return { coursesData: coursesData, warnings: warnings }
 }
 
-export { getDataUrls, scrapePage, termFinder, getChunks }
+export { getDataUrls, getDataUrlsParams, scrapePage, termFinder, getChunks }

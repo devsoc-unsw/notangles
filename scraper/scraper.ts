@@ -1,53 +1,32 @@
 import * as puppeteer from 'puppeteer'
-import { TimetableData, UrlList, ExtendedTerm, warning } from './interfaces'
+import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
 
-import { getDataUrls, scrapePage, termFinder } from './PageScraper'
-import { keysOf } from './helper'
+import { getDataUrls, getDataUrlsParams, scrapePage, termFinder } from './PageScraper'
+import { keysOf, createPages } from './helper'
 import { cloneDeep } from 'lodash'
 
-/**
- * Creates browser pages to then use to scrape the website
- * @param browser: browser object (window) in which to create new pages
- * @param batchsize: Number of pages to be created
- */
-const createPages = async (
-  browser: puppeteer.Browser,
-  batchsize: number
-): Promise<puppeteer.Page[]> => {
-  // List of pages
-  const pages: puppeteer.Page[] = []
-  for (let pageno = 0; pageno < batchsize; pageno++) {
-    const singlepage = await browser.newPage()
-    // Block all js, css, fonts and images for speed
-    await singlepage.setRequestInterception(true)
-    singlepage.on('request', request => {
-      const type = request.resourceType()
-      if (
-        type === 'script' ||
-        type === 'stylesheet' ||
-        type === 'font' ||
-        type === 'image'
-      ) {
-        request.abort()
-      } else {
-        request.continue()
-      }
-    })
-    pages.push(singlepage)
-  }
-  return pages
+interface ScrapeSubjectParams {
+  page: puppeteer.Page,
+  course: string
 }
 
 /**
  * Async wrapper to scrape multiple subjects at once
  * This scrapes one subject
- * @param page Page to use to scrape the subject
- * @param course Url of the course to be scraped
+ * @param { puppeteer.Page } page Page to use to scrape the subject
+ * @param { string } course Url of the course to be scraped
+ * 
+ * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * 
+ * @example
+ * 
+ *    const browser = await puppeteer.launch()
+ *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
  */
-const scrapeSubject = async (
-  page: puppeteer.Page,
-  course: string
-): Promise<{ coursesData: TimetableData; warnings: warning[] }> => {
+const scrapeSubject = async ({
+  page,
+  course
+} : ScrapeSubjectParams): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
   await page.goto(course, {
     waitUntil: 'networkidle2',
   })
@@ -56,40 +35,71 @@ const scrapeSubject = async (
   return await scrapePage(page)
 }
 
+
+interface getPageUrlsParams extends getDataUrlsParams {
+  url: string
+}
+
 /**
  * Gets all the urls on the current page matching the given regex
  * (This function is only an async puppeteer wrapper)
- * @param url Url of the page to scrape
- * @param page page to be used for scraping
- * @param base prefix for each scraped url
- * @param regex regex to check each scraped url
+ * @param { string } url Url of the page to scrape
+ * @param { puppeteer.Page } page page to be used for scraping
+ * @param { string } base prefix for each scraped url
+ * @param { RegExp } regex regex to check each scraped url
+ * 
+ * @returns { Promise<string[]> } List of all urls on @param page . Each url is prefixed by @param base
+ * 
+ * @example 
+ * 
+ *    const browser = await puppeteer.launch()
+ *    const urls = getPageUrls('http://timetable.unsw.edu.au/2019/COMP1511.html', await browser.newPage(), 'http://timetable.unsw.edu.au/2019/', /html$/)
  */
-const getPageUrls = async (
-  url: string,
-  page: puppeteer.Page,
-  base: string,
-  regex: RegExp
-): Promise<string[]> => {
+const getPageUrls = async ({
+  url,
+  page,
+  base,
+  regex
+} : getPageUrlsParams): Promise<string[]> => {
   await page.goto(url, {
     waitUntil: 'networkidle2',
   })
 
   // Then, get each data url on that page
-  return await getDataUrls(page, base, regex)
+  const getDataUrlsParams: getDataUrlsParams = {
+    page: page, base: base, regex: regex
+  }
+  return await getDataUrls(getDataUrlsParams)
 }
 
 /**
  * The scraper that scrapes the timetable site
+ * @param { number } year: The year for which the information is to be scraped
+ * 
+ * @returns { Promise<{ timetableData: TimetableData; warnings: Warning[] } }: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns { false }: Scraping failed due to some error. Error printed to console.error
+ * 
+ * @example
+ * 
+ * 1.
+ *    const data = await timetableScraper(2020)
+ *    console.log(data.timetableData.T1) // Expect list of T1 courses in 2020
+ * 
+ * 2.
+ *    const data = await timetableScraper(40100)
+ *    console.log(data) // false
  */
 const timetableScraper = async (
   year: number
-): Promise<{ timetableData: TimetableData; warnings: warning[] }> => {
+): Promise<{ timetableData: TimetableData; warnings: Warning[] } | false> => {
   // Launch the browser. Headless mode = true by default
   const browser = await puppeteer.launch({ headless: false })
   try {
     const batchsize = 50
     // Create batchsize pages to scrape each course
-    const pages = await createPages(browser, batchsize)
+    const pages = await createPages({
+      browser: browser, batchsize:batchsize
+    })
     let page = pages[0]
     // Base url to be used for all scraping
     const base = `http://timetable.unsw.edu.au/${year}/`
@@ -106,7 +116,7 @@ const timetableScraper = async (
     }
 
     // Warning array for any fields not aligning with the strict requirements
-    const warnings: warning[] = []
+    const warnings: Warning[] = []
 
     // Go to the page with list of subjects (Accounting, Computers etc)
     await page.goto(base, {
@@ -117,7 +127,10 @@ const timetableScraper = async (
     const courseUrlRegex = /([A-Z]{8})\.html/
 
     // Gets all the dataurls on the timetable page.
-    const urlList = await getDataUrls(page, base, courseUrlRegex)
+    const urlList = await getDataUrls({
+      page: page, base:base, regex: courseUrlRegex
+    }
+      )
 
     // Defining the regex for each of the subject codes...
     const subjectUrlRegex = /([A-Z]{4}[0-9]{4})\.html/
@@ -134,7 +147,9 @@ const timetableScraper = async (
 
       // Open a different url on a different page
       for (let i = 0; i < batchsize && url < urlList.length; i++) {
-        const urls = getPageUrls(urlList[url], pages[i], base, subjectUrlRegex)
+        const urls = getPageUrls({
+          url: urlList[url], page: pages[i], base: base, regex: subjectUrlRegex
+        })
         promises.push(urls)
         url++
       }
@@ -152,11 +167,13 @@ const timetableScraper = async (
     for (let job = 0; job < jobs.length; ) {
       const promises: Promise<{
         coursesData: TimetableData
-        warnings: warning[]
+        warnings: Warning[]
       }>[] = []
-      let result: { coursesData: TimetableData; warnings: warning[] }[]
+      let result: { coursesData: TimetableData; warnings: Warning[] }[]
       for (let i = 0; i < batchsize && job < jobs.length; i++) {
-        const data = scrapeSubject(pages[i], jobs[job])
+        const data = scrapeSubject({
+          page: pages[i], course: jobs[job]
+        })
         promises.push(data)
         job++
       }
@@ -174,7 +191,7 @@ const timetableScraper = async (
             }
             // If the term is in the other list, then it has no classes. Classify it!
             if (scrapedTerm === ExtendedTerm.Other) {
-              const termlist = termFinder(scrapedCourse)
+              const termlist = termFinder({ course: scrapedCourse })
               const notes = scrapedCourse.notes
               let noteIndex = 0
               for (const term of termlist) {
@@ -204,12 +221,29 @@ const timetableScraper = async (
     // log error and close browser.
     console.error(err)
     await browser.close()
+    return false
   }
 }
+
 ;(async () => {
   console.time('cscraper')
   try {
-    await timetableScraper(2019)
+    const data = await timetableScraper(2019)
+    // const browser = await puppeteer.launch({ headless: false })
+    // const singlepage = await browser.newPage()
+    // const data = await scrapeSubject(singlepage, 'http://timetable.unsw.edu.au/2019/COMP1511.html')
+
+    if (data === false) {
+      return
+    }
+
+    const fs = require('fs')    
+    fs.writeFile('T1.json', JSON.stringify(data.timetableData.T1), 'utf-8', (err: unknown) => {
+      if (err) {
+        console.error(err)
+      }
+    })
+
   } catch (err) {
     console.log('something went wrong')
   }

@@ -6,6 +6,12 @@ const main = async () => {
   let date = new Date();
   const year = date.getFullYear().toString(10);
   const terms = await timetableScraper(date.getFullYear());
+
+  // Error
+  if (!terms) {
+    return false
+  }
+
   for (const [termName, term] of Object.entries(terms.timetableData)) {
     for (const course of term) {
       const ret = await Database.dbRead(year, termName, course.courseCode);
