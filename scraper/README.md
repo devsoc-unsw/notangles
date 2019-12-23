@@ -1,16 +1,16 @@
 # CSESoc Projects - Notangles - Scraper
 
-CSESoc Projects Notables Course Scraper
+CSESoc Projects Notangles Course Scraper
 
 This project contains a script that gathers class times and offerings of all courses offered at UNSW, in a specified study period. This information is retrieved from http://timetable.unsw.edu.au. The information collected is then written to a database. 
 
 ## Installation
 
-This project has been verified to work with the following versions of node:
--   node: 
-    1. 12.14.0
--   npm:
-    1. 6.13.4
+This project has been verified to work with the following versions:
+*   node: 
+    * 12.14.0
+*   npm:
+    * 6.13.4
 
 
 While in the project directory ```notangles/scraper```, run:
@@ -119,7 +119,7 @@ The web-scraper has two parts:
     It opens each page on the website in a separate tab. To improve speed, it opens 50 tabs at once.
     
     * Once it finishes scraping the site, it then groups the courses into 6 terms:
-    ```Summer, T1, T2, T3, S1 and S2```
+    ```Summer, T1, T2, T3, S1 and S2``` based on the dates that the course classes run.
 
     * The scraper also checks the data for any errors. If it finds data that is not in the expected format, it makes a copy of the data that it thinks is erroneous and adds it to a list of warnings. This list of warnings is then returned to the caller. Each warning is tagged with a warning tag and a simple warning message.
 
