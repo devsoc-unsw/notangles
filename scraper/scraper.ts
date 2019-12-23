@@ -1,10 +1,14 @@
 import * as puppeteer from 'puppeteer'
 import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
 
-import { getDataUrls, scrapePage, termFinder } from './PageScraper'
+import { getDataUrls, getDataUrlsParams, scrapePage, termFinder } from './PageScraper'
 import { keysOf, createPages } from './helper'
 import { cloneDeep } from 'lodash'
 
+interface ScrapeSubjectParams {
+  page: puppeteer.Page,
+  course: string
+}
 
 /**
  * Async wrapper to scrape multiple subjects at once
@@ -19,16 +23,21 @@ import { cloneDeep } from 'lodash'
  *    const browser = await puppeteer.launch()
  *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
  */
-const scrapeSubject = async (
-  page: puppeteer.Page,
-  course: string
-): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
+const scrapeSubject = async ({
+  page,
+  course
+} : ScrapeSubjectParams): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
   await page.goto(course, {
     waitUntil: 'networkidle2',
   })
 
   // Get all relevant data for one page
   return await scrapePage(page)
+}
+
+
+interface getPageUrlsParams extends getDataUrlsParams {
+  url: string
 }
 
 /**
@@ -46,18 +55,21 @@ const scrapeSubject = async (
  *    const browser = await puppeteer.launch()
  *    const urls = getPageUrls('http://timetable.unsw.edu.au/2019/COMP1511.html', await browser.newPage(), 'http://timetable.unsw.edu.au/2019/', /html$/)
  */
-const getPageUrls = async (
-  url: string,
-  page: puppeteer.Page,
-  base: string,
-  regex: RegExp
-): Promise<string[]> => {
+const getPageUrls = async ({
+  url,
+  page,
+  base,
+  regex
+} : getPageUrlsParams): Promise<string[]> => {
   await page.goto(url, {
     waitUntil: 'networkidle2',
   })
 
   // Then, get each data url on that page
-  return await getDataUrls(page, base, regex)
+  const getDataUrlsParams: getDataUrlsParams = {
+    page: page, base: base, regex: regex
+  }
+  return await getDataUrls(getDataUrlsParams)
 }
 
 /**
@@ -85,7 +97,9 @@ const timetableScraper = async (
   try {
     const batchsize = 50
     // Create batchsize pages to scrape each course
-    const pages = await createPages(browser, batchsize)
+    const pages = await createPages({
+      browser: browser, batchsize:batchsize
+    })
     let page = pages[0]
     // Base url to be used for all scraping
     const base = `http://timetable.unsw.edu.au/${year}/`
@@ -113,7 +127,10 @@ const timetableScraper = async (
     const courseUrlRegex = /([A-Z]{8})\.html/
 
     // Gets all the dataurls on the timetable page.
-    const urlList = await getDataUrls(page, base, courseUrlRegex)
+    const urlList = await getDataUrls({
+      page: page, base:base, regex: courseUrlRegex
+    }
+      )
 
     // Defining the regex for each of the subject codes...
     const subjectUrlRegex = /([A-Z]{4}[0-9]{4})\.html/
@@ -130,7 +147,9 @@ const timetableScraper = async (
 
       // Open a different url on a different page
       for (let i = 0; i < batchsize && url < urlList.length; i++) {
-        const urls = getPageUrls(urlList[url], pages[i], base, subjectUrlRegex)
+        const urls = getPageUrls({
+          url: urlList[url], page: pages[i], base: base, regex: subjectUrlRegex
+        })
         promises.push(urls)
         url++
       }
@@ -152,7 +171,9 @@ const timetableScraper = async (
       }>[] = []
       let result: { coursesData: TimetableData; warnings: Warning[] }[]
       for (let i = 0; i < batchsize && job < jobs.length; i++) {
-        const data = scrapeSubject(pages[i], jobs[job])
+        const data = scrapeSubject({
+          page: pages[i], course: jobs[job]
+        })
         promises.push(data)
         job++
       }
@@ -170,7 +191,7 @@ const timetableScraper = async (
             }
             // If the term is in the other list, then it has no classes. Classify it!
             if (scrapedTerm === ExtendedTerm.Other) {
-              const termlist = termFinder(scrapedCourse)
+              const termlist = termFinder({ course: scrapedCourse })
               const notes = scrapedCourse.notes
               let noteIndex = 0
               for (const term of termlist) {

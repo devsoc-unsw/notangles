@@ -41,6 +41,10 @@ const formatDates = (dateList: string[]): Date[] => {
   return dateList.map(date => new Date(date + 'Z'))
 }
 
+interface reverseDayAndMonthParams {
+  date: string, delimiter: string
+}
+
 /**
  * Reverses the day and month order of the date so that it can be
  * robustly formated into a Date object using the formatDates() method
@@ -49,9 +53,9 @@ const formatDates = (dateList: string[]): Date[] => {
  * 
  * @returns { string }: Date with day and month reversed
  * @example 
- *    const rev = reverseDayAndMonth('27/01/2020', '/') // '01/27/2020'
+ *    const rev = reverseDayAndMonth({date: '27/01/2020', delimiter: '/'}) // '01/27/2020'
  */
-const reverseDayAndMonth = (date: string, delimiter: string): string => {
+const reverseDayAndMonth = ({date, delimiter} : reverseDayAndMonthParams): string => {
   const splitDate = date.split(delimiter)
   return [splitDate[1], splitDate[0], splitDate[2]].join(delimiter)
 }
@@ -68,6 +72,11 @@ const keysOf = <T extends {}>(obj: T): (keyof T)[] =>
   Object.keys(obj) as (keyof T)[]
 
 
+interface createPagesParams {
+  browser: Browser,
+  batchsize: number
+}
+
 /**
  * Creates browser pages to then use to scrape the website
  * @param { Browser } browser: browser object (window) in which to create new pages
@@ -75,9 +84,10 @@ const keysOf = <T extends {}>(obj: T): (keyof T)[] =>
  * 
  * @returns { Promise<Page[]> }: List of pages created
  */
-const createPages = async (
-  browser: Browser,
-  batchsize: number
+const createPages = async ({
+  browser,
+  batchsize
+} : createPagesParams
 ): Promise<Page[]> => {
   // List of pages
   const pages: Page[] = []
@@ -100,6 +110,14 @@ const createPages = async (
   return pages
 }
 
+interface makeClassWarningParams {
+  classID: number,
+  term: string,
+  errorKey: string,
+  errorValue: unknown,
+  tag?: WarningTag
+}
+
 /**
  * Takes in details about an errer and creates a classWarnings object for it
  * @param { number } classID ID of erroneous class
@@ -110,12 +128,13 @@ const createPages = async (
  * 
  * @returns { ClassWarnings }: Created ClassWarnings object
  */
-const makeClassWarning = (
-  classID: number,
-  term: string,
-  errorKey: string,
-  errorValue: unknown,
-  tag: WarningTag = WarningTag.Other
+const makeClassWarning = ({
+  classID,
+  term,
+  errorKey,
+  errorValue,
+  tag = WarningTag.Other
+}: makeClassWarningParams
 ): ClassWarnings => {
   const warn: ClassWarnings = {
     tag: tag,

@@ -11,6 +11,11 @@ import {
   WarningTag
 } from './interfaces'
 
+interface ClassTermFinderParams {
+  cls: Class,
+  reference: ClassTermFinderReference
+}
+
 /**
  * @constant { ClassTermFinderReference }: Default reference to follow
  */
@@ -73,10 +78,10 @@ const defaultReferenceDates : ClassTermFinderReference = [
  * 
  * @returns { Term }: Term which the class is from
  */
-const classTermFinder = (
-  cls: Class,
-  reference: ClassTermFinderReference = defaultReferenceDates
-): Term => {
+const classTermFinder = ({
+  cls,
+  reference = defaultReferenceDates
+}: ClassTermFinderParams): Term => {
   // Error check
   if (!(cls && cls.termDates)) {
     throw new Error('no start and end dates for class: ' + cls)
@@ -84,7 +89,7 @@ const classTermFinder = (
 
   const [start, end] = formatDates(
     [cls.termDates.start, cls.termDates.end].map(date =>
-      reverseDayAndMonth(date, '/')
+      reverseDayAndMonth({date: date, delimiter: '/'})
     )
   )
 
@@ -189,18 +194,21 @@ const parseClassChunk = (
     } else if (courseEnrolment.capacity === 0) {
       // Zero capacity!!
       warnings.push(
-        makeClassWarning(
-          classID,
-          term,
-          'courseEnrolment',
-          courseEnrolment,
-          WarningTag.ZeroEnrolmentCapacity
+        makeClassWarning({
+          classID: classID,
+          term: term,
+          errorKey: 'courseEnrolment',
+          errorValue: courseEnrolment,
+          tag: WarningTag.ZeroEnrolmentCapacity
+        }
         )
       )
     } // Other error
     else {
       warnings.push(
-        makeClassWarning(classID, term, 'courseEnrolment', courseEnrolment)
+        makeClassWarning({
+          classID: classID, term: term, errorKey: 'courseEnrolment', errorValue: courseEnrolment
+        })
       )
     }
   }
@@ -283,12 +291,13 @@ const parseClassChunk = (
     if (!(location && locationTesterRegex.test(location))) {
       // Warning: Unknown location!!
       warnings.push(
-        makeClassWarning(
-          classID,
-          term,
-          'location',
-          location,
-          WarningTag.UnknownLocation
+        makeClassWarning({
+          classID: classID,
+          term: term,
+          errorKey: 'location',
+          errorValue: location,
+          tag: WarningTag.UnknownLocation
+        }
         )
       )
 
@@ -309,13 +318,13 @@ const parseClassChunk = (
       } else {
         // Just warn -> Invalid/unknown weeks data.
         warnings.push(
-          makeClassWarning(
-            classID,
-            term,
-            'weeks',
-            weeks,
-            WarningTag.UnknownDate_Weeks
-          )
+          makeClassWarning({
+            classID: classID,
+            term: term,
+            errorKey: 'weeks',
+            errorValue: weeks,
+            tag: WarningTag.UnknownDate_Weeks
+          })
         )
       }
     }
