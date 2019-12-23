@@ -285,7 +285,9 @@ const scrapePage = async (
         for (const courseClass of course.classes) {
           const parsedClassChunk = parseClassChunk(courseClass)
           if (parsedClassChunk) {
-            classes[classTermFinder(parsedClassChunk.classData)].push(
+            classes[classTermFinder({
+              cls: parsedClassChunk.classData
+            })].push(
               parsedClassChunk.classData
             )
 

@@ -13,7 +13,7 @@ import {
 
 interface ClassTermFinderParams {
   cls: Class,
-  reference: ClassTermFinderReference
+  reference?: ClassTermFinderReference
 }
 
 /**
