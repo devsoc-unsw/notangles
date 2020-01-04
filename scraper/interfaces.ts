@@ -190,6 +190,7 @@ type TermFinderReference = TermFinderReferenceElement[]
 export {
   TermFinderReference,
   ClassTermFinderReference,
+  ClassTermFinderDates,
   Time,
   Class,
   Course,

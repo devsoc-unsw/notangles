@@ -1,4 +1,9 @@
-import { reverseDayAndMonth, formatDates, removeHtmlSpecials, makeClassWarning } from './helper'
+import {
+  reverseDayAndMonth,
+  formatDates,
+  removeHtmlSpecials,
+  makeClassWarning,
+} from './helper'
 import {
   Term,
   Class,
@@ -8,18 +13,19 @@ import {
   Time,
   Day,
   ClassTermFinderReference,
-  WarningTag
+  ClassTermFinderDates,
+  WarningTag,
 } from './interfaces'
 
 interface ClassTermFinderParams {
-  cls: Class,
+  cls: Class
   reference?: ClassTermFinderReference
 }
 
 /**
  * @constant { ClassTermFinderReference }: Default reference to follow
  */
-const defaultReferenceDates : ClassTermFinderReference = [
+const defaultReferenceDates: ClassTermFinderReference = [
   {
     term: Term.Summer,
     dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
@@ -69,18 +75,45 @@ const defaultReferenceDates : ClassTermFinderReference = [
   { term: Term.S2, dates: [{ start: 7, length: 4 }] },
 ]
 
+interface ClassTermFinderCheckerParams {
+  start: Date
+  end: Date
+  refDate: ClassTermFinderDates
+}
+
+/**
+ * Classifies a class according to the given reference date. Checks if the class matches the
+ * the given reference dates
+ * @param {Date} start: start date of the class
+ * @param {Date} end: end date of the class
+ * @param {ClassTermFinderDates} refDate: reference dates to match the start and end dates to
+ */
+const classTermFinderChecker = ({
+  start,
+  end,
+  refDate,
+}: ClassTermFinderCheckerParams): Boolean => {
+  return (
+    start.getMonth() + 1 === refDate.start &&
+    end.getMonth() -
+      start.getMonth() +
+      (end.getFullYear() - start.getFullYear()) * 12 ===
+      refDate.length
+  )
+}
+
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
  * @param { Class } cls: Class to find the term for
  * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
  * start is an array of possible start dates and length is the number of months the term might run for
- * 
+ *
  * @returns { Term }: Term which the class is from
  */
 const classTermFinder = ({
   cls,
-  reference = defaultReferenceDates
+  reference = defaultReferenceDates,
 }: ClassTermFinderParams): Term => {
   // Error check
   if (!(cls && cls.termDates)) {
@@ -89,21 +122,15 @@ const classTermFinder = ({
 
   const [start, end] = formatDates(
     [cls.termDates.start, cls.termDates.end].map(date =>
-      reverseDayAndMonth({date: date, delimiter: '/'})
+      reverseDayAndMonth({ date: date, delimiter: '/' })
     )
   )
 
   for (const termData of reference) {
     // A term could have any number of start dates
-    for (const termDate of termData.dates) {
+    for (const refDate of termData.dates) {
       // If start date and length match, then term is found
-      if (
-        start.getMonth() + 1 === termDate.start &&
-        end.getMonth() -
-          start.getMonth() +
-          (end.getFullYear() - start.getFullYear()) * 12 ===
-          termDate.length
-      ) {
+      if (classTermFinderChecker({ start, end, refDate })) {
         return termData.term
       }
     }
@@ -116,7 +143,7 @@ const classTermFinder = ({
  * Parses data from the data array into a class object
  * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
- * 
+ *
  * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
  * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
@@ -176,15 +203,9 @@ const parseClassChunk = (
   }
   // Enrolments and capacity are both numbers and enrolment less than capacity
   // (Strict requirement)
-  if (
-    !courseEnrolment ||
-    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0)
-  ) {
+  if (courseEnrolment.capacity > 0) {
     // Lax requirement
-    if (
-      !courseEnrolment ||
-      !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity >= 0)
-    ) {
+    if (courseEnrolment.capacity >= 0) {
       throw new Error(
         'Invalid Course Enrolment: ' +
           courseEnrolment.enrolments +
@@ -199,15 +220,17 @@ const parseClassChunk = (
           term: term,
           errorKey: 'courseEnrolment',
           errorValue: courseEnrolment,
-          tag: WarningTag.ZeroEnrolmentCapacity
-        }
-        )
+          tag: WarningTag.ZeroEnrolmentCapacity,
+        })
       )
     } // Other error
     else {
       warnings.push(
         makeClassWarning({
-          classID: classID, term: term, errorKey: 'courseEnrolment', errorValue: courseEnrolment
+          classID: classID,
+          term: term,
+          errorKey: 'courseEnrolment',
+          errorValue: courseEnrolment,
         })
       )
     }
@@ -296,9 +319,8 @@ const parseClassChunk = (
           term: term,
           errorKey: 'location',
           errorValue: location,
-          tag: WarningTag.UnknownLocation
-        }
-        )
+          tag: WarningTag.UnknownLocation,
+        })
       )
 
       // Remove location.
@@ -323,7 +345,7 @@ const parseClassChunk = (
             term: term,
             errorKey: 'weeks',
             errorValue: weeks,
-            tag: WarningTag.UnknownDate_Weeks
+            tag: WarningTag.UnknownDate_Weeks,
           })
         )
       }

@@ -45,7 +45,7 @@ const getDataUrls = async ({
 
   // Extract urls from html
   // Remove duplicate urls using a set
-  const urlSet: Set<TimetableUrl> = new Set([])
+  const urlSet = new Set<TimetableUrl>()
   const regexHrefLink = /href="(.*)">/
   urls.forEach(element => {
     const link = element.match(regexHrefLink)
@@ -134,7 +134,7 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
           // Else -> other heading tables ---> skip!
         }
       }
-      if (classes) {
+      if (classes.length > 0) {
         coursesDataElements.push({
           course_info: course_info,
           classes: classes,
