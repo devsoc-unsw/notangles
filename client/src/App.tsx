@@ -1,24 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, FunctionComponent, useState } from 'react'
 import Select from 'react-select'
-
-import TimeTable from './components/timetable'
-import Navbar from './components/navbar'
-import {CourseData, ClassData, Period, ClassTime} from './interfaces/courseData'
-
 import styled from 'styled-components'
-import { getCourseInfo } from './api/getCourseInfo'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
-// ------------------------------------
+import { Timetable } from './components/timetable/Timetable'
+import Navbar from './components/Navbar'
+import Inventory from './components/inventory/Inventory'
+import { CourseData } from './interfaces/CourseData'
+
+import { getCourseInfo } from './api/getCourseInfo'
+import { getCoursesList } from './api/getCoursesList'
+import { CoursesList } from './interfaces/CourseOverview'
+import { useColorMapper } from './hooks/useColorMapper'
 
 interface CourseOption {
   value: string
   label: string
-}
-
-interface CourseOverview {
-  courseCode: string
-  name: string
-  id: string
 }
 
 const StyledApp = styled.div`
@@ -26,7 +24,8 @@ const StyledApp = styled.div`
   padding: 10px 20%;
 
   display: grid;
-  grid-template: 2fr 1fr 80% / auto;
+  grid-template-rows: 1fr 1fr 90% 
+  grid-template-columns: auto;
 
   text-align: center;
   background-color: white;
@@ -43,59 +42,92 @@ const StyledSelect = styled(Select)`
   text-align: left;
 `
 
-const App: React.FC = () => {
-  const [selectedCourses, setSelectedCourses] = React.useState<CourseData[]>([])
+const App: FunctionComponent = () => {
+  const [coursesList, setCoursesList] = useState<CoursesList>([])
+  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
+  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
+  const assignedColors = useColorMapper(
+    selectedCourses.map(course => course.courseCode)
+  )
 
-  const [value, setValue] = React.useState<CourseOption>()
+  useEffect(() => {
+    fetchClassesList()
+  }, [])
 
-  // List of courses
-  const [coursesList, setCoursesList] = React.useState<CourseOverview[]>([])
-  const handleChange = async (e: CourseOption) => {
-    setValue(e)
-
-    // const selectedCourseClassesJson = await fetch(`http://localhost:3001/api/terms/2019-T3/courses/${e.value}`)
+  const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2019', 'T3', e.value)
 
     if (selectedCourseClasses) {
-      const selectedCourseData: CourseData = {
-        courseCode: e.value,
-        courseName: e.label,
-        classes: selectedCourseClasses.classes
-      }
-
-      setSelectedCourses([...selectedCourses, selectedCourseData])
+      setSelectedCourses([...selectedCourses, selectedCourseClasses])
     }
   }
 
-  React.useEffect(() => {
-    ;(async () => {
-      const resJson = await fetch(
-        'http://localhost:3001/api/terms/2019-T3/courses'
-      )
-      const res = await resJson.json()
-      setCoursesList(res)
-    })()
-  }, [])
+  const handleRemoveCourse = (courseCode: string) => {
+    const newSelectedCourses = selectedCourses.filter(
+      course => course.courseCode !== courseCode
+    )
+    setSelectedCourses(newSelectedCourses)
+    setSelectedClassIds(
+      selectedClassIds.filter(id => id.split('-')[0] !== courseCode)
+    )
+  }
+
+  const handleRemoveClass = (activityId: string) => {
+    const newSelectedClassIds = selectedClassIds.filter(
+      id => !id.startsWith(activityId)
+    )
+    console.log(activityId)
+    setSelectedClassIds(newSelectedClassIds)
+  }
+
+  const handleSelectClass = (classId: string) => {
+    const [courseCode, activity] = classId.split('-')
+    const newSelectedClassIds = selectedClassIds.filter(
+      id => !id.startsWith(`${courseCode}-${activity}`)
+    )
+    newSelectedClassIds.push(classId)
+    setSelectedClassIds(newSelectedClassIds)
+  }
+
+  const fetchClassesList = async () => {
+    const coursesList = await getCoursesList('2019', 'T3')
+    if (coursesList) {
+      setCoursesList(coursesList)
+    }
+  }
+
+  const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
+    value: course.courseCode,
+    label: `${course.courseCode} - ${course.name}`,
+  }))
 
   return (
     <div className="App">
       <Navbar />
       <StyledApp>
         <SelectWrapper>
-          <span>Add a course</span>
           <StyledSelect
-            options={coursesList.map(course => (
-              {
-                value: course.courseCode,
-                label: `${course.courseCode} - ${course.name}`
-              }
-            ))}
-            value={value}
-            onChange={handleChange}
+            options={courseSelectOptions}
+            value={null}
+            onChange={handleSelectCourse}
+            placeholder="Select a Course"
           />
         </SelectWrapper>
-        Selected course: {value ? value.label : 'No course selected'}
-        <TimeTable selectedCourses={selectedCourses} />
+        <DndProvider backend={HTML5Backend}>
+          <Inventory
+            selectedCourses={selectedCourses}
+            selectedClassIds={selectedClassIds}
+            assignedColors={assignedColors}
+            removeCourse={handleRemoveCourse}
+            removeClass={handleRemoveClass}
+          />
+          <Timetable
+            selectedCourses={selectedCourses}
+            selectedClassIds={selectedClassIds}
+            assignedColors={assignedColors}
+            onSelectClass={handleSelectClass}
+          />
+        </DndProvider>
       </StyledApp>
     </div>
   )
