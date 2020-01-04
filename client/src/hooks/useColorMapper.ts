@@ -4,13 +4,13 @@ import { colours } from '../constants/timetable'
 /**
  * Assigns a unique color, chosen from a set of fixed colors, to each course code
  * 
- * @param arr An array containing course codes
+ * @param courseCodes An array containing course codes
  * @return An object that maps a color to each course code
  * 
  * @example
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.courseCode))
  */
-export const useColorMapper = (arr: string[]): Record<string, string> => {
+export const useColorMapper = (courseCodes: string[]): Record<string, string> => {
   const [assignedColours, setAssignedColours] = useState<
     Record<string, string>
   >({})
@@ -18,7 +18,7 @@ export const useColorMapper = (arr: string[]): Record<string, string> => {
   useEffect(() => {
     const takenColors = new Set<string>()
     const newAssignedColours: Record<string, string> = {}
-    for (const item of arr) {
+    for (const item of courseCodes) {
       const color =
         item in assignedColours
           ? assignedColours[item]
@@ -34,7 +34,7 @@ export const useColorMapper = (arr: string[]): Record<string, string> => {
     ) {
       setAssignedColours(newAssignedColours)
     }
-  }, [arr])
+  }, [courseCodes])
 
   return assignedColours
 }
