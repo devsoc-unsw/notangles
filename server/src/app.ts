@@ -1,7 +1,6 @@
 import * as express from 'express'
 import * as indexController from './index'
-import { getCourse } from './controllers/getCourse'
-import { getCourseList } from './controllers/getCourseList'
+import { getCourse, getCourseList } from './controllers/index'
 
 const app = express()
 

@@ -47,7 +47,7 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @returns a mongodb collection
    */
-  getCollection = async ({dbName, termColName} : getCollectionParams) => {
+  getCollection = async ({dbName, termColName}: getCollectionParams) => {
     const db = await this.getDb(dbName)
     return db.collection(termColName)
   }
@@ -59,7 +59,7 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @param doc A javascript object that contains course data
    */
-  dbAdd = async ({dbName, termColName, doc} : dbAddParams) => {
+  dbAdd = async ({dbName, termColName, doc}: dbAddParams) => {
     const col = await this.getCollection({dbName, termColName})
     await col.insertOne(doc)
   }
@@ -72,7 +72,7 @@ class Database {
    * @param {string} courseCode The code of the desired course
    * @returns A javascript object containing information about the course. The object will be empty if the course cannot be found
    */
-  dbRead = async ({dbName, termColName, courseCode} : dbReadParams) => {
+  dbRead = async ({dbName, termColName, courseCode}: dbReadParams) => {
     const col = await this.getCollection({dbName, termColName})
     const doc = await col.findOne({ courseCode })
     return doc
@@ -90,7 +90,7 @@ class Database {
     { dbName,
     termColName,
     courseCode,
-    doc } : dbUpdateParams
+    doc }: dbUpdateParams
   ) => {
     const col = await this.getCollection({dbName, termColName})
     try {
@@ -105,7 +105,7 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @param {string} courseCode The code of the desired course
    */
-  dbDel = async ({dbName, termColName, courseCode} : dbDelParams) => {
+  dbDel = async ({dbName, termColName, courseCode}: dbDelParams) => {
     const col = await this.getCollection({dbName, termColName})
     await col.deleteOne({ courseCode })
   }
@@ -117,7 +117,7 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @returns an array containing all the courses in a specific term
    */
-  dbFetchAll = async ({dbName, termColName} : dbFetchAllParams) => {
+  dbFetchAll = async ({dbName, termColName}: dbFetchAllParams) => {
     const col = await this.getCollection({dbName, termColName})
     const fields = {
       courseCode: true,
