@@ -58,8 +58,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
-      <p style={{textAlign: 'center', marginBottom: 0}}>{`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}</p>
-      <p style={{textAlign: 'center', marginTop: 0}}>{`${classTime.location}`}</p>
+      <p style={{ textAlign: 'center', marginBottom: 0 }}>{`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}</p>
+      <p style={{ textAlign: 'center', marginTop: 0 }}>{`${classTime.location}`}</p>
     </StyledCourseClass>
   )
 }
@@ -76,24 +76,24 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = []
-  for (const course of selectedCourses) {
+
+  selectedCourses.forEach(course => {
     const allClasses = Object.values(course.classes).flatMap(x => x)
-    for (const classData of allClasses) {
-      if (selectedClassIds.includes(classData.classId)) {
-        for (const classTime of classData.periods) {
-          droppedClasses.push(
-            <DroppedClass
-              key={`${classData.classId}-${JSON.stringify(classTime)}`}
-              activity={classData.activity}
-              courseCode={course.courseCode}
-              color={assignedColors[course.courseCode]}
-              classTime={classTime}
-            />
-          )
-        }
-      }
-    }
-  }
+    allClasses.filter(classData => selectedClassIds.includes(classData.classId)).forEach(classData => {
+      classData.periods.forEach(classTime => {
+        droppedClasses.push(
+          <DroppedClass
+            key={`${classData.classId}-${JSON.stringify(classTime)}`}
+            activity={classData.activity}
+            courseCode={course.courseCode}
+            color={assignedColors[course.courseCode]}
+            classTime={classTime}
+          />
+        )
+      })
+    })
+  })
+
   return <>{droppedClasses}</>
 }
 
