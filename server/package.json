@@ -4,8 +4,6 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "mongodb": "mongod --dbpath=./data",
-    "db": "ts-node db.ts",
     "start": "ts-node server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
