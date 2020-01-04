@@ -38,26 +38,26 @@ const getDataUrls = async ({
   regex,
 }: getDataUrlsParams): Promise<string[]> => {
   // Get all the required urls...
-  const urls = await page.$$eval('.data', e => {
-    let inner = e.map(f => f.innerHTML)
-    return inner
-  })
-
   // Extract urls from html
   // Remove duplicate urls using a set
-  const urlSet = new Set<TimetableUrl>()
-  const regexHrefLink = /href="(.*)">/
-  urls.forEach(element => {
-    const link = element.match(regexHrefLink)
-    if (link !== null && link.length > 0) {
-      if (regex.test(link[1])) {
-        const url = base + link[1]
-        urlSet.add(url)
-      }
-    }
-  })
+  return await page.$$eval('.data', (elements: Element[]) => {
+    const urls = elements
+      .filter((ele): ele is HTMLAnchorElement => 'href' in ele)
+      .map(a => {
+        const link = a.href
+        if (regex.test(link)) {
+          return base + link
+        } else {
+          // Default
+          return ''
+        }
+      })
+    const cleanUrls = new Set<TimetableUrl>(urls)
 
-  return Array.from(urlSet)
+    // Remove needless value
+    cleanUrls.delete('')
+    return [...cleanUrls]
+  })
 }
 
 /**
