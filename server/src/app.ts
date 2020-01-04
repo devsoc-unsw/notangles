@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as indexController from './index'
-import * as apiController from './api'
+import { getCourse } from './controllers/getCourse'
+import { getCourseList } from './controllers/getCourseList'
 
 const app = express()
 
@@ -22,7 +23,7 @@ app.use((req, res, next) => {
  * Express routes
  */
 app.get('/', indexController.index)
-app.get('/api/terms/:termId/courses/:courseId', apiController.getCourse)
-app.get('/api/terms/:termId/courses', apiController.getCourseList)
+app.get('/api/terms/:termId/courses/:courseId', getCourse)
+app.get('/api/terms/:termId/courses', getCourseList)
 
 export default app
