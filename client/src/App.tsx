@@ -1,6 +1,8 @@
 import React, { useEffect, FunctionComponent, useState } from 'react'
 import Select from 'react-select'
 import styled from 'styled-components'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 import { Timetable } from './components/timetable/Timetable'
 import Navbar from './components/Navbar'
@@ -111,19 +113,21 @@ const App: FunctionComponent = () => {
             placeholder="Select a Course"
           />
         </SelectWrapper>
-        <Inventory
-          selectedCourses={selectedCourses}
-          selectedClassIds={selectedClassIds}
-          assignedColors={assignedColors}
-          removeCourse={handleRemoveCourse}
-          removeClass={handleRemoveClass}
-        />
-        <Timetable
-          selectedCourses={selectedCourses}
-          selectedClassIds={selectedClassIds}
-          assignedColors={assignedColors}
-          onSelectClass={handleSelectClass}
-        />
+        <DndProvider backend={HTML5Backend}>
+          <Inventory
+            selectedCourses={selectedCourses}
+            selectedClassIds={selectedClassIds}
+            assignedColors={assignedColors}
+            removeCourse={handleRemoveCourse}
+            removeClass={handleRemoveClass}
+          />
+          <Timetable
+            selectedCourses={selectedCourses}
+            selectedClassIds={selectedClassIds}
+            assignedColors={assignedColors}
+            onSelectClass={handleSelectClass}
+          />
+        </DndProvider>
       </StyledApp>
     </div>
   )
