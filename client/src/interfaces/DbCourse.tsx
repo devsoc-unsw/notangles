@@ -2,25 +2,25 @@ import { Period, ClassData, CourseData } from './CourseData'
 
 // List of the interfaces and types that are used in the scraper
 
-export interface DBCourse {
+export interface DbCourse {
   courseCode: string
   name: string
-  classes: DBClass[]
+  classes: DbClass[]
 }
 
-export interface DBClass {
+export interface DbClass {
   activity: string
-  times: DBTimes[]
+  times: DbTimes[]
 }
 
-export interface DBTimes {
-  time: DBTime
+export interface DbTimes {
+  time: DbTime
   day: string
   location: string
   weeks: string
 }
 
-export interface DBTime {
+export interface DbTime {
   start: string
   end: string
 }
@@ -34,7 +34,7 @@ export interface DBTime {
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
+const dbTimesToPeriod = (dbTimes: DbTimes): Period => {
   return {
     location: dbTimes.location,
     time: {
@@ -56,7 +56,7 @@ const dbTimesToPeriod = (dbTimes: DBTimes): Period => {
  * const json: DBCourse = await data.json()
  * const courseInfo = dbCourseToCourseData(json)
  */
-export const dbCourseToCourseData = (dbCourse: DBCourse): CourseData => {
+export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   const classes: Record<string, ClassData[]> = {}
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
