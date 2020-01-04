@@ -103,10 +103,10 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
       classData.periods.forEach(classTime => {
         droppedClasses.push(
           buildDroppedClass({
-            classData: classData,
-            classTime: classTime,
-            course: course,
-            assignedColors: assignedColors
+            classData,
+            classTime,
+            course,
+            assignedColors
           })
         )
       })
