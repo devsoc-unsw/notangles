@@ -18,7 +18,6 @@ import { parseClassChunk, classTermFinder } from './ClassScraper'
 
 interface getDataUrlsParams {
   page: puppeteer.Page
-  base: string
   regex: RegExp
 }
 
@@ -34,30 +33,33 @@ interface getDataUrlsParams {
  */
 const getDataUrls = async ({
   page,
-  base,
   regex,
 }: getDataUrlsParams): Promise<string[]> => {
   // Get all the required urls...
   // Extract urls from html
   // Remove duplicate urls using a set
-  return await page.$$eval('.data', (elements: Element[]) => {
+
+  const handleEval = (elements: Element[], regex: string) => {
     const urls = elements
       .filter((ele): ele is HTMLAnchorElement => 'href' in ele)
       .map(a => {
         const link = a.href
-        if (regex.test(link)) {
-          return base + link
+        if (new RegExp(regex).test(link)) {
+          return link
         } else {
           // Default
           return ''
         }
       })
+
     const cleanUrls = new Set<TimetableUrl>(urls)
 
     // Remove needless value
     cleanUrls.delete('')
     return [...cleanUrls]
-  })
+  }
+
+  return await page.$$eval('.data a', handleEval, regex.source)
 }
 
 /**

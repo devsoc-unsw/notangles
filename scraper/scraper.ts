@@ -65,7 +65,6 @@ interface getPageUrlsParams extends getDataUrlsParams {
 const getPageUrls = async ({
   url,
   page,
-  base,
   regex,
 }: getPageUrlsParams): Promise<string[]> => {
   await page.goto(url, {
@@ -75,7 +74,6 @@ const getPageUrls = async ({
   // Then, get each data url on that page
   const getDataUrlsParams: getDataUrlsParams = {
     page: page,
-    base: base,
     regex: regex,
   }
   return await getDataUrls(getDataUrlsParams)
@@ -139,7 +137,6 @@ const timetableScraper = async (
       // Gets all the dataurls on the timetable page.
       const urlList = await getDataUrls({
         page: page,
-        base: base,
         regex: courseUrlRegex,
       })
 
@@ -161,7 +158,6 @@ const timetableScraper = async (
           const urls = getPageUrls({
             url: urlList[url],
             page: pages[i],
-            base: base,
             regex: subjectUrlRegex,
           })
           promises.push(urls)

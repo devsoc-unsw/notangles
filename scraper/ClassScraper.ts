@@ -203,9 +203,15 @@ const parseClassChunk = (
   }
   // Enrolments and capacity are both numbers and enrolment less than capacity
   // (Strict requirement)
-  if (courseEnrolment.capacity > 0) {
+  if (
+    !courseEnrolment ||
+    !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity > 0)
+  ) {
     // Lax requirement
-    if (courseEnrolment.capacity >= 0) {
+    if (
+      !courseEnrolment ||
+      !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity >= 0)
+    ) {
       throw new Error(
         'Invalid Course Enrolment: ' +
           courseEnrolment.enrolments +
