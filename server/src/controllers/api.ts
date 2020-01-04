@@ -1,7 +1,8 @@
 import { Response, Request } from 'express'
 import * as util from 'util'
 
-import Database from '../dbApi'
+import Database from '../database'
+import { dbReadParams, dbFetchAllParams } from '../../interfaces/params'
 
 interface IGetCourseParams {
   termId: string
@@ -10,12 +11,17 @@ interface IGetCourseParams {
 
 /**
  * GET /api/terms/:termId/courses/:courseId/
+ * termId expected in yyyy-term format
  */
 export const getCourse = async (req: Request, res: Response) => {
-  //termId expected in yyyy-term format
   const params: IGetCourseParams = req.params
   const [year, term] = params.termId.split('-')
-  const course = await Database.dbRead(year, term, params.courseId)
+  const args : dbReadParams = {
+    dbName : year,
+    termColName : term,
+    courseCode : params.courseId
+  }
+  const course = await Database.dbRead(args)
   if (course) {
     res.send(JSON.stringify(course))
   } else {
@@ -26,6 +32,10 @@ export const getCourse = async (req: Request, res: Response) => {
   }
 }
 
+/**
+ * GET /api/terms/:termId/courses
+ * termId expected in yyyy-term format
+ */
 export const getCourseList = async (req: Request, res: Response) => {
   const params: IGetCourseParams = req.params
   const [year, term] = params.termId.split('-')
@@ -33,7 +43,11 @@ export const getCourseList = async (req: Request, res: Response) => {
     res.status(400).send('Invalid year and term: should be <year>-<term>')
     return
   }
-  const list = await Database.dbFetchAll(year, term)
+  const args : dbFetchAllParams = {
+    dbName : year,
+    termColName : term
+  }
+  const list = await Database.dbFetchAll(args)
   if (list) {
     res.send(JSON.stringify(list))
   } else {
