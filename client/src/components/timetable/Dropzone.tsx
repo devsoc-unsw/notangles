@@ -46,7 +46,7 @@ interface CellProps {
   activity: string
   classTime: Period
   color: string
-  onDrop: () => void
+  onDrop(): void
 }
 
 const Dropzone: React.FC<CellProps> = ({
