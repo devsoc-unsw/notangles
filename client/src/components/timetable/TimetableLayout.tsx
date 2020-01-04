@@ -34,7 +34,8 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   ))
 
   const otherCells = hours.map((_, y) =>
-    days.map((_, x) => <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
+    days.map((_, x) => 
+      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
   )
 
   return (
