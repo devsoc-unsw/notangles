@@ -18,7 +18,8 @@ export const useColorMapper = (courseCodes: string[]): Record<string, string> =>
   useEffect(() => {
     const takenColors = new Set<string>()
     const newAssignedColours: Record<string, string> = {}
-    for (const item of courseCodes) {
+    
+    courseCodes.forEach(item => {
       const color =
         item in assignedColours
           ? assignedColours[item]
@@ -27,7 +28,7 @@ export const useColorMapper = (courseCodes: string[]): Record<string, string> =>
       if (color) {
         takenColors.add(color)
       }
-    }
+    })
 
     if (
       JSON.stringify(assignedColours) !== JSON.stringify(newAssignedColours)
