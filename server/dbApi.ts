@@ -1,5 +1,6 @@
 import { MongoClient, Db } from 'mongodb'
 import { config } from './config'
+import { dbAddParams, dbDelParams, dbReadParams, dbUpdateParams, dbFetchAllParams, getCollectionParams } from './interfaces/params'
 
 const url = config.database
 
@@ -23,41 +24,41 @@ class Database {
     return db
   }
 
-  getCollection = async (dbName: string, termColName: string) => {
+  getCollection = async ({dbName, termColName} : getCollectionParams) => {
     const db = await this.getDb(dbName)
     return db.collection(termColName)
   }
 
-  dbAdd = async (dbName: string, termColName: string, doc) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbAdd = async ({dbName, termColName, doc} : dbAddParams) => {
+    const col = await this.getCollection({dbName, termColName})
     await col.insertOne(doc)
   }
 
-  dbRead = async (dbName: string, termColName: string, courseCode: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbRead = async ({dbName, termColName, courseCode} : dbReadParams) => {
+    const col = await this.getCollection({dbName, termColName})
     const doc = await col.findOne({ courseCode })
     return doc
   }
 
   dbUpdate = async (
-    dbName: string,
-    termColName: string,
-    courseCode: string,
-    doc
+    { dbName,
+    termColName,
+    courseCode,
+    doc } : dbUpdateParams
   ) => {
-    const col = await this.getCollection(dbName, termColName)
+    const col = await this.getCollection({dbName, termColName})
     try {
       await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {}
   }
 
-  dbDel = async (dbName: string, termColName: string, courseCode: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbDel = async ({dbName, termColName, courseCode} : dbDelParams) => {
+    const col = await this.getCollection({dbName, termColName})
     await col.deleteOne({ courseCode })
   }
 
-  dbFetchAll = async (dbName: string, termColName: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbFetchAll = async ({dbName, termColName} : dbFetchAllParams) => {
+    const col = await this.getCollection({dbName, termColName})
     const fields = {
       courseCode: true,
       name: true,
