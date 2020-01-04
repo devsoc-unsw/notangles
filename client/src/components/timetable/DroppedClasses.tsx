@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { useDrag } from 'react-dnd'
 import styled from 'styled-components'
-import { CourseData, Period } from '../../interfaces/CourseData'
+import { CourseData, Period, ClassData, ClassTime } from '../../interfaces/CourseData'
 import { weekdayToXCoordinate, timeToIndex } from './Dropzone'
 
 const StyledCourseClass = styled.div<{
@@ -70,6 +70,26 @@ interface DroppedClassesProps {
   assignedColors: Record<string, string>
 }
 
+const buildDroppedClass = ({
+  classData,
+  classTime,
+  course,
+  assignedColors
+}: {
+  classData: ClassData,
+  classTime: Period,
+  course: CourseData,
+  assignedColors: Record<string, string>
+}): JSX.Element => (
+    <DroppedClass
+      key={`${classData.classId}-${JSON.stringify(classTime)}`}
+      activity={classData.activity}
+      courseCode={course.courseCode}
+      color={assignedColors[course.courseCode]}
+      classTime={classTime}
+    />
+  )
+
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
   selectedClassIds,
@@ -82,13 +102,12 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     allClasses.filter(classData => selectedClassIds.includes(classData.classId)).forEach(classData => {
       classData.periods.forEach(classTime => {
         droppedClasses.push(
-          <DroppedClass
-            key={`${classData.classId}-${JSON.stringify(classTime)}`}
-            activity={classData.activity}
-            courseCode={course.courseCode}
-            color={assignedColors[course.courseCode]}
-            classTime={classTime}
-          />
+          buildDroppedClass({
+            classData: classData,
+            classTime: classTime,
+            course: course,
+            assignedColors: assignedColors
+          })
         )
       })
     })
