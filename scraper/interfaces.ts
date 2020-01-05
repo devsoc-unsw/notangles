@@ -41,7 +41,7 @@ enum Day {
 enum Status {
   Full = 'Full',
   Open = 'Open',
-  On_Hold = 'On Hold',
+  OnHold = 'On Hold',
 }
 
 /**
@@ -51,13 +51,9 @@ enum ExtendedTerm {
   Other = 'Other',
 }
 
-type valueOf<T extends {}> = T[keyof T]
-
-/**
- * To account for classes that do not run in any term or that
- * could not be classified (The latter case should be avoided)
- */
 interface TimetableData extends Record<Term, Course[]> {
+  // To account for classes that do not run in any term or that
+  // could not be classified (The latter case should be avoided)
   Other?: Course[]
 }
 type ClassesByTerm = Record<Term, Class[]>
@@ -167,16 +163,16 @@ interface CourseInfo {
  * Structure of a date inside a reference object provided to the classTermFinder method
  */
 interface ClassTermFinderDates {
-  start: number;
-  length: number;
+  start: number
+  length: number
 }
 
 /**
  * Structure of a reference object provided to the classTermFinder method
  */
 interface ClassTermFinderReferenceElement {
-  term: Term;
-  dates: ClassTermFinderDates[];
+  term: Term
+  dates: ClassTermFinderDates[]
 }
 
 type ClassTermFinderReference = ClassTermFinderReferenceElement[]
@@ -185,7 +181,7 @@ type ClassTermFinderReference = ClassTermFinderReferenceElement[]
  * Structure of a reference object provided to the termFinder method
  */
 interface TermFinderReferenceElement {
-  term: Term, 
+  term: Term
   census: string
 }
 
@@ -206,12 +202,11 @@ export {
   UrlList,
   Term,
   ClassesByTerm,
-  valueOf,
   ExtendedTerm,
   Status,
   Day,
   Career,
   Warning,
   ClassWarnings,
-  WarningTag
+  WarningTag,
 }

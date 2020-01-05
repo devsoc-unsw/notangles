@@ -17,8 +17,8 @@ import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
 import { parseClassChunk, classTermFinder } from './ClassScraper'
 
 interface getDataUrlsParams {
-  page: puppeteer.Page,
-  base: string,
+  page: puppeteer.Page
+  base: string
   regex: RegExp
 }
 
@@ -29,15 +29,14 @@ interface getDataUrlsParams {
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
  * @param { RegExp } regex regex to check each url
- * 
+ *
  * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
  */
 const getDataUrls = async ({
   page,
   base,
-  regex
-} : getDataUrlsParams
-): Promise<string[]> => {
+  regex,
+}: getDataUrlsParams): Promise<string[]> => {
   // Get all the required urls...
   const urls = await page.$$eval('.data', e => {
     let inner = e.map(f => f.innerHTML)
@@ -47,9 +46,9 @@ const getDataUrls = async ({
   // Extract urls from html
   // Remove duplicate urls using a set
   const urlSet: Set<TimetableUrl> = new Set([])
-  const myRe = /href="(.*)">/
+  const regexHrefLink = /href="(.*)">/
   urls.forEach(element => {
-    const link = element.match(myRe)
+    const link = element.match(regexHrefLink)
     if (link !== null && link.length > 0) {
       if (regex.test(link[1])) {
         const url = base + link[1]
@@ -64,7 +63,7 @@ const getDataUrls = async ({
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
  * @param { puppeteer.Page } page: page to be broken down into chunks
- * 
+ *
  * @returns { Promise<PageData[]> }: Extracted data as a course info chunk and list of class chunks to be parsed
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
@@ -91,10 +90,12 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
     const coursesDataElements: PageData[] = []
 
     const dataClassSelector: string = '.data'
-    // Deciding...
+    // Classifying each chunk of the chunklist into
+    //    1. Course info chunk
+    //    2. Class Chunk
     for (const course of chunkList) {
       let course_info: Chunk
-      let classes: Chunk[]
+      let classes: Chunk[] = []
       for (const chunk of course) {
         // If there are any data fields inside the chunk, then categorize it
         const data: HTMLElement = chunk.querySelector(dataClassSelector)
@@ -116,23 +117,19 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
             const tablelist: Chunk[] = []
             for (const subtable of subtables) {
               tablelist.push(
-                [...subtable.querySelectorAll<HTMLElement>(dataClassSelector)].map(
-                  element => element.innerText
-                )
+                [
+                  ...subtable.querySelectorAll<HTMLElement>(dataClassSelector),
+                ].map(element => element.innerText)
               )
             }
-            if (!classes) {
-              classes = tablelist
-            } else {
-              classes = classes.concat(tablelist)
-            }
+            classes = classes.concat(tablelist)
           } else if (note) {
             // The table is the summary table ---> skip!
           } else if (subtables.length === 3) {
             // This should be the course info table. --> get data elements
-            course_info = [...chunk.querySelectorAll<HTMLElement>(dataClassSelector)].map(
-              element => element.innerText
-            )
+            course_info = [
+              ...chunk.querySelectorAll<HTMLElement>(dataClassSelector),
+            ].map(element => element.innerText)
           }
           // Else -> other heading tables ---> skip!
         }
@@ -164,8 +161,8 @@ const defaultReference: TermFinderReference = [
 ]
 
 interface TermFinderParams {
-  course: Course,
-  reference?: TermFinderReference 
+  course: Course
+  reference?: TermFinderReference
 }
 
 /**
@@ -184,13 +181,13 @@ interface TermFinderParams {
  * S1: 25/02 ---> 30/06
  * S2: 15/07 ---> 10/11
  * The date format for reference census dates is month/day
- * 
+ *
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
 const termFinder = ({
   course,
-  reference = defaultReference
-} : TermFinderParams): Term[] => {
+  reference = defaultReference,
+}: TermFinderParams): Term[] => {
   if (!course.censusDates || course.censusDates.length <= 0) {
     throw new Error('no census dates for course: ' + course.courseCode)
   }
@@ -237,7 +234,7 @@ const termFinder = ({
  * Function scrapes all the course data on the given page
  * Returns an array of courses on the page
  * @param { puppeteer.Page } page Page to be scraped
- * 
+ *
  * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
  */
 const scrapePage = async (
@@ -285,11 +282,11 @@ const scrapePage = async (
         for (const courseClass of course.classes) {
           const parsedClassChunk = parseClassChunk(courseClass)
           if (parsedClassChunk) {
-            classes[classTermFinder({
-              cls: parsedClassChunk.classData
-            })].push(
-              parsedClassChunk.classData
-            )
+            classes[
+              classTermFinder({
+                cls: parsedClassChunk.classData,
+              })
+            ].push(parsedClassChunk.classData)
 
             // Get the warnings
             classWarns.push.apply(classWarns, parsedClassChunk.warnings)
