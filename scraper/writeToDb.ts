@@ -7,7 +7,7 @@ const main = async () => {
   const year = date.getFullYear().toString(10)
   const terms = await timetableScraper(date.getFullYear())
 
-  // Error
+  // Error occured in scraper. Could not scrape data
   if (!terms) {
     return false
   }
