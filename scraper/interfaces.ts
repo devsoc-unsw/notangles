@@ -101,13 +101,14 @@ interface PageData {
  * Structure of each time object inside a class
  */
 interface Time {
-  days: Day[]
+  day: Day
   time: {
     start: string
     end: string
   }
   location?: string
   weeks: string
+  instructor?: string
 }
 
 /**
