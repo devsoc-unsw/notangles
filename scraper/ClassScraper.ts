@@ -139,64 +139,80 @@ const classTermFinder = ({
   throw new Error('Could not find term for class: ' + cls)
 }
 
-/**
- * Parses data from the data array into a class object
- * @param { Chunk } data: array of text from elements with a data class
- * from a class chunk
- *
- * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
- * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
- */
-const parseClassChunk = (
-  data: Chunk
-): { classData: Class; warnings: ClassWarnings[] } | false => {
-  let index = 0
-  const warnings: ClassWarnings[] = []
-
-  // ClassID is a 4 or 5 digit number
-  const classID = parseInt(data[index])
+const getClassId = (data: string): number => {
+  const classID = parseInt(data)
   const classIDChecker = /^[0-9]{4,5}$/
-  if (!classIDChecker.test(data[index])) {
+  if (!classIDChecker.test(data)) {
     throw new Error('Invalid Class Id: ' + classID)
   }
-  index++
 
-  // Section is an 4 character alphanumeric code
-  const section = data[index]
+  return classID
+}
+
+const getSection = (data: string): string => {
+  const section = data
   const sectionChecker = /^[A-Z0-9]{0,4}$/
   if (!sectionChecker.test(section)) {
     throw new Error('Invalid Section: ' + section)
   }
-  index++
 
+  return section
+}
+
+const getTerm = (data: string): string => {
   let term: string
   const termFinderRegex = /^([A-Z][A-Z0-9][A-Z0-9]?).*/
-  if (termFinderRegex.test(data[index])) {
-    term = termFinderRegex.exec(data[index])[1]
+  if (termFinderRegex.test(data)) {
+    term = termFinderRegex.exec(data)[1]
   }
-  index++
 
-  // Check if the class is actually course enrolment
-  // which is not needed
+  return term
+}
+
+const isCourseEnrolment = (data: string): boolean => {
   const courseEnrolmentChecker = /[Cc]ourse [Ee]nrolment/
-  if (courseEnrolmentChecker.test(data[index])) {
-    // Abort
-    return false
-  }
+  return courseEnrolmentChecker.test(data)
+}
 
-  const activity = data[index]
+const getActivity = (data: string): string => {
+  const activity = data
   if (!activity) {
     throw new Error('Unknown activity: ' + activity)
   }
-  index++
 
-  const status: Status = <Status>data[index]
+  return activity
+}
+
+const getStatus = (data: string): Status => {
+  const status = <Status>data
   if (!Object.values(Status).includes(status)) {
     throw new Error('Invalid Status: ' + status)
   }
-  index++
 
-  const enrAndCap = data[index].split('/')
+  return status
+}
+
+interface getCourseEnrolmentParams {
+  data: string
+  classID: number
+  term: string
+}
+
+interface getCourseEnrolmentReturn {
+  courseEnrolment: {
+    enrolments: number
+    capacity: number
+  }
+  enrolmentWarnings: ClassWarnings[]
+}
+
+const getCourseEnrolment = ({
+  data,
+  classID,
+  term,
+}: getCourseEnrolmentParams): getCourseEnrolmentReturn => {
+  const enrolmentWarnings: ClassWarnings[] = []
+  const enrAndCap = data.split('/')
   const courseEnrolment = {
     enrolments: parseInt(enrAndCap[0]),
     capacity: parseInt(enrAndCap[1]),
@@ -220,7 +236,7 @@ const parseClassChunk = (
       )
     } else if (courseEnrolment.capacity === 0) {
       // Zero capacity!!
-      warnings.push(
+      enrolmentWarnings.push(
         makeClassWarning({
           classID: classID,
           term: term,
@@ -231,7 +247,7 @@ const parseClassChunk = (
       )
     } // Other error
     else {
-      warnings.push(
+      enrolmentWarnings.push(
         makeClassWarning({
           classID: classID,
           term: term,
@@ -241,10 +257,17 @@ const parseClassChunk = (
       )
     }
   }
-  index++
 
-  // Start and end dates can be used to classify each term code
-  const runDates = data[index].split(' - ')
+  return { courseEnrolment, enrolmentWarnings }
+}
+
+interface getTermDatesReturn {
+  start: string
+  end: string
+}
+
+const getTermDates = (data: string): getTermDatesReturn => {
+  const runDates = data.split(' - ')
   if (!runDates || runDates.length === 0) {
     throw new Error('Could not find start and end dates in: ' + runDates)
   }
@@ -262,110 +285,288 @@ const parseClassChunk = (
   ) {
     throw new Error('Invalid Date(s): ' + termDates)
   }
+
+  return termDates
+}
+
+const getMode = (mode: string): string => {
+  if (!mode || mode === ' ') {
+    throw new Error('Invalid Mode: ' + mode)
+  }
+
+  return mode
+}
+
+const getNeedsConsent = (data: string): boolean => {
+  const consentRegex = /[Nn]ot/
+  return !consentRegex.test(data)
+}
+
+const getDays = (data: string): Day[] => {
+  const possibleDays = <Day[]>data.split(', ')
+  const days: Day[] = []
+  for (const day of possibleDays) {
+    if (!(day && Object.values(Day).includes(day))) {
+      // throw new Error('Invalid day: ' + day)
+      days.push(day)
+    }
+  }
+
+  return days
+}
+
+interface getTimeReturn {
+  start: string
+  end: string
+}
+
+const getTime = (data: string): getTimeReturn => {
+  const times = data.split(' - ')
+  if (!times || times.length === 0) {
+    throw new Error('Could not find start and end times in: ' + times)
+  }
+  const time = { start: times[0], end: times[1] }
+  // Checking the format of the dates
+  const timeCheckerRegex = /^[0-9]{2}:[0-9]{2}$/
+  if (!(timeCheckerRegex.test(time.start) && timeCheckerRegex.test(time.end))) {
+    throw new Error('Invalid Time(s): ' + time)
+  }
+
+  return time
+}
+
+interface getLocationParams {
+  data: string
+  classID: number
+  term: string
+}
+
+interface getLocationReturn {
+  location: string | false
+  locationWarnings: ClassWarnings[]
+}
+
+const getLocation = ({
+  data,
+  classID,
+  term,
+}: getLocationParams): getLocationReturn => {
+  let location: string | false = removeHtmlSpecials(data)
+  const locationWarnings: ClassWarnings[] = []
+  // Check if location exists
+  const locationTesterRegex = /[A-Za-z]/
+  if (!(location && locationTesterRegex.test(location))) {
+    // Warning: Unknown location!!
+    locationWarnings.push(
+      makeClassWarning({
+        classID: classID,
+        term: term,
+        errorKey: 'location',
+        errorValue: location,
+        tag: WarningTag.UnknownLocation,
+      })
+    )
+
+    // Remove location.
+    location = false
+  }
+
+  return { location, locationWarnings }
+}
+
+interface getWeeksParams {
+  data: string
+  classID: number
+  term: string
+}
+
+interface getWeeksReturn {
+  weeks: string
+  weeksWarnings: ClassWarnings[]
+}
+
+const getWeeks = ({ data, classID, term }: getWeeksParams): getWeeksReturn => {
+  const weeks = data
+  const weeksWarnings: ClassWarnings[] = []
+  // Weeks is an alphanumeric string consisting of numbers, - and ,
+  // (Strict requirement)
+  let weeksTesterRegex = /^[0-9, <>-]+$/
+  if (!weeksTesterRegex.test(weeks)) {
+    weeksTesterRegex = /^[0-9A-Z, <>-]+$/
+    if (!weeksTesterRegex.test(weeks)) {
+      throw new Error('Invalid Weeks data: ' + weeks)
+    } else {
+      // Just warn -> Invalid/unknown weeks data.
+      weeksWarnings.push(
+        makeClassWarning({
+          classID: classID,
+          term: term,
+          errorKey: 'weeks',
+          errorValue: weeks,
+          tag: WarningTag.UnknownDate_Weeks,
+        })
+      )
+    }
+  }
+
+  return { weeks, weeksWarnings }
+}
+
+interface getTimeDataParams {
+  data: string[]
+  index: number
+  classID: number
+  term: string
+}
+
+interface getTimeDataReturn {
+  dateList: Time[]
+  timeDataWarnings: ClassWarnings[]
+}
+
+const getTimeData = ({
+  data,
+  index,
+  classID,
+  term,
+}: getTimeDataParams): getTimeDataReturn => {
+  const timeDataWarnings: ClassWarnings[] = []
+
+  // Any notes for the class (found later with dates)
+  // Dates
+  const dateList: Time[] = []
+  while (index < data.length) {
+    // Parse the date data
+    // Days: There can be multiple days for a single time/class
+    const days = getDays(data[index])
+    index++
+
+    // Start and end times
+    const time = getTime(data[index])
+    index++
+
+    // location
+    const { location, locationWarnings } = getLocation({
+      data: data[index],
+      classID,
+      term,
+    })
+    timeDataWarnings.concat(locationWarnings)
+    index++
+
+    // weeks
+    const { weeks, weeksWarnings } = getWeeks({
+      data: data[index],
+      classID,
+      term,
+    })
+    timeDataWarnings.concat(weeksWarnings)
+    index++
+
+    // Extra newline
+    index++
+
+    const timeData: Time = { days: days, time: time, weeks: weeks }
+    if (location) {
+      timeData.location = location
+    }
+    dateList.push(timeData)
+  }
+
+  return { dateList, timeDataWarnings }
+}
+
+interface getNoteParams {
+  data: string[]
+  index: number
+}
+
+/**
+ *
+ * @param data:
+ */
+const getNote = ({ data, index }: getNoteParams): string[] | false => {
+  // anything after times is in the notes category
+  const noteCount = (data.length - index) % 5
+  if (noteCount > 0) {
+    return data.slice(data.length - noteCount)
+  }
+  return false
+}
+
+/**
+ * Parses data from the data array into a class object
+ * @param { Chunk } data: array of text from elements with a data class
+ * from a class chunk
+ *
+ * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
+ * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
+ */
+const parseClassChunk = (
+  data: Chunk
+): { classData: Class; warnings: ClassWarnings[] } | false => {
+  let index = 0
+  const warnings: ClassWarnings[] = []
+
+  // ClassID is a 4 or 5 digit number
+  const classID = getClassId(data[index])
+  index++
+
+  // Section is an 4 character alphanumeric code
+  const section = getSection(data[index])
+  index++
+
+  const term = getTerm(data[index])
+  index++
+
+  // Check if the class is actually course enrolment
+  // which is not needed
+  // It is simply a special activity so incrementing the index is not required
+  if (isCourseEnrolment(data[index])) {
+    // Abort
+    return false
+  }
+
+  const activity = getActivity(data[index])
+  index++
+
+  const status: Status = getStatus(data[index])
+  index++
+
+  const { courseEnrolment, enrolmentWarnings } = getCourseEnrolment({
+    data: data[index],
+    classID,
+    term,
+  })
+  warnings.concat(enrolmentWarnings)
+  index++
+
+  // Start and end dates can be used to classify each term code
+  const termDates = getTermDates(data[index])
   index++
 
   // Skip meeting and census dates
   index += 2
 
   // class mode
-  const mode = data[index]
-  if (!mode || mode === ' ') {
-    throw new Error('Invalid Mode: ' + mode)
-  }
+  const mode = getMode(data[index])
   index++
 
-  // Skip consent
+  // School consent?
+  const consent = getNeedsConsent(data[index])
   index++
 
-  // Any notes for the class (found later with dates)
-  let notes: string
-  // Dates
-  const dateList: Time[] = []
-  while (index < data.length) {
-    // Check if there are any dates
-    const dayCheckRegex = /^[A-Z][a-z]{2}$/
-    if (!dayCheckRegex.test(data[index])) {
-      // Add data as notes field and end checking
-      notes = data[index]
-      break
-    }
+  const { dateList, timeDataWarnings } = getTimeData({
+    data,
+    index,
+    classID,
+    term,
+  })
+  warnings.concat(timeDataWarnings)
 
-    // Otherwise parse the date data
-    // Day
-    const day: Day = <Day>data[index]
-    if (!(day && Object.values(Day).includes(day))) {
-      throw new Error('Invalid day: ' + day)
-    }
-    index++
-
-    // Start and end times
-    const times = data[index].split(' - ')
-    if (!times || times.length === 0) {
-      throw new Error('Could not find start and end times in: ' + times)
-    }
-    const time = { start: times[0], end: times[1] }
-    // Checking the format of the dates
-    const timeCheckerRegex = /^[0-9]{2}:[0-9]{2}$/
-    if (
-      !(timeCheckerRegex.test(time.start) && timeCheckerRegex.test(time.end))
-    ) {
-      throw new Error('Invalid Time(s): ' + time)
-    }
-    index++
-
-    // location
-    let location: string | false = removeHtmlSpecials(data[index])
-    // Check if location exists
-    const locationTesterRegex = /[A-Za-z]/
-    if (!(location && locationTesterRegex.test(location))) {
-      // Warning: Unknown location!!
-      warnings.push(
-        makeClassWarning({
-          classID: classID,
-          term: term,
-          errorKey: 'location',
-          errorValue: location,
-          tag: WarningTag.UnknownLocation,
-        })
-      )
-
-      // Remove location.
-      location = false
-    }
-    index++
-
-    // weeks
-    const weeks = data[index]
-    // Weeks is an alphanumeric string consisting of numbers, - and ,
-    // (Strict requirement)
-    let weeksTesterRegex = /^[0-9, <>-]+$/
-    if (!weeksTesterRegex.test(weeks)) {
-      weeksTesterRegex = /^[0-9A-Z, <>-]+$/
-      if (!weeksTesterRegex.test(weeks)) {
-        throw new Error('Invalid Weeks data: ' + weeks)
-      } else {
-        // Just warn -> Invalid/unknown weeks data.
-        warnings.push(
-          makeClassWarning({
-            classID: classID,
-            term: term,
-            errorKey: 'weeks',
-            errorValue: weeks,
-            tag: WarningTag.UnknownDate_Weeks,
-          })
-        )
-      }
-    }
-    index++
-
-    // Extra newline
-    index++
-
-    const timeData: Time = { day: day, time: time, weeks: weeks }
-    if (location) {
-      timeData.location = location
-    }
-    dateList.push(timeData)
+  const notes = getNote({ data, index })
+  if (notes) {
+    console.log('\n\nNote Found\n\n')
   }
 
   const classData: Class = {
@@ -376,6 +577,7 @@ const parseClassChunk = (
     status: status,
     courseEnrolment: courseEnrolment,
     termDates: termDates,
+    needsConsent: consent,
     mode: mode,
     times: dateList,
   }

@@ -101,7 +101,7 @@ interface PageData {
  * Structure of each time object inside a class
  */
 interface Time {
-  day: Day
+  days: Day[]
   time: {
     start: string
     end: string
@@ -127,9 +127,10 @@ interface Class {
     start: string
     end: string
   }
+  needsConsent: boolean
   mode: string
   times?: Time[]
-  notes?: string
+  notes?: string[]
 }
 
 /**
