@@ -3,6 +3,41 @@ import { config } from './config'
 
 const url = config.database
 
+export interface getCollectionParams {
+  dbName: string,
+  termColName: string
+}
+
+export interface dbAddParams {
+  dbName: string,
+  termColName: string,
+  doc
+}
+
+export interface dbReadParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbUpdateParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string,
+  doc
+}
+
+export interface dbDelParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbFetchAllParams {
+  dbName: string,
+  termColName: string
+}
+
 class Database {
   private client: MongoClient | undefined
 
@@ -45,7 +80,7 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @returns a mongodb collection
    */
-  getCollection = async (dbName: string, termColName: string) => {
+  getCollection = async ({dbName, termColName}: getCollectionParams) => {
     const db = await this.getDb(dbName)
     return db.collection(termColName)
   }
@@ -57,8 +92,8 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @param doc A javascript object that contains course data
    */
-  dbAdd = async (dbName: string, termColName: string, doc) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbAdd = async ({dbName, termColName, doc}: dbAddParams) => {
+    const col = await this.getCollection({dbName, termColName})
     await col.insertOne(doc)
   }
 
@@ -70,8 +105,8 @@ class Database {
    * @param {string} courseCode The code of the desired course
    * @returns A javascript object containing information about the course. The object will be empty if the course cannot be found
    */
-  dbRead = async (dbName: string, termColName: string, courseCode: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbRead = async ({dbName, termColName, courseCode}: dbReadParams) => {
+    const col = await this.getCollection({dbName, termColName})
     const doc = await col.findOne({ courseCode })
     return doc
   }
@@ -85,12 +120,12 @@ class Database {
    * @param doc A javascript object containing the updates to the desired course
    */
   dbUpdate = async (
-    dbName: string,
-    termColName: string,
-    courseCode: string,
-    doc
+    { dbName,
+    termColName,
+    courseCode,
+    doc }: dbUpdateParams
   ) => {
-    const col = await this.getCollection(dbName, termColName)
+    const col = await this.getCollection({dbName, termColName})
     try {
       await col.updateOne({ courseCode }, { $set: doc })
     } catch (e) {}
@@ -103,8 +138,8 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @param {string} courseCode The code of the desired course
    */
-  dbDel = async (dbName: string, termColName: string, courseCode: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbDel = async ({dbName, termColName, courseCode}: dbDelParams) => {
+    const col = await this.getCollection({dbName, termColName})
     await col.deleteOne({ courseCode })
   }
 
@@ -115,8 +150,8 @@ class Database {
    * @param {string} termColName The desired term to search for couses in
    * @returns an array containing all the courses in a specific term
    */
-  dbFetchAll = async (dbName: string, termColName: string) => {
-    const col = await this.getCollection(dbName, termColName)
+  dbFetchAll = async ({dbName, termColName}: dbFetchAllParams) => {
+    const col = await this.getCollection({dbName, termColName})
     const fields = {
       courseCode: true,
       name: true,
