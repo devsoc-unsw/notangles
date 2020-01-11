@@ -2,7 +2,7 @@ import { Response, Request } from 'express'
 import * as util from 'util'
 
 import Database from '../database'
-import { dbFetchAllParams } from '../../interfaces/params'
+import { dbFetchAllParams } from '../database'
 import { GetCourseParams } from '../../interfaces/GetCourseParams'
 
 /**

@@ -1,7 +1,5 @@
 import { MongoClient, Db } from 'mongodb'
 import { config } from './config'
-import { dbAddParams, dbDelParams, dbReadParams, dbUpdateParams, dbFetchAllParams, getCollectionParams } from '../interfaces/params'
-
 
 const url = config.database
 
@@ -132,3 +130,39 @@ class Database {
 
 const db = new Database()
 export default db
+
+
+export interface getCollectionParams {
+  dbName: string,
+  termColName: string
+}
+
+export interface dbAddParams {
+  dbName: string,
+  termColName: string,
+  doc
+}
+
+export interface dbReadParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbUpdateParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string,
+  doc
+}
+
+export interface dbDelParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbFetchAllParams {
+  dbName: string,
+  termColName: string
+}

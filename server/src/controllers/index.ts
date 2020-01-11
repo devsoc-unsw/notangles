@@ -1,2 +1,2 @@
-export * from './getCourse'
-export * from './getCourseList'
+export { getCourse } from './getCourse'
+export { getCourseList } from './getCourseList'
