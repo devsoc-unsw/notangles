@@ -179,22 +179,22 @@ interface CourseInfo {
 }
 
 /**
- * @interface ClassTermFinderDates Structure of a date inside a reference object provided to the classTermFinder method
+ * @interface GetTermFromClassDates Structure of a date inside a reference object provided to the classTermFinder method
  */
-interface ClassTermFinderDates {
+interface GetTermFromClassDates {
   start: number
   length: number
 }
 
 /**
- * @interface ClassTermFinderReferenceElement: Structure of a reference object provided to the classTermFinder method
+ * @interface GetTermFromClassReferenceElement: Structure of a reference object provided to the classTermFinder method
  */
-interface ClassTermFinderReferenceElement {
+interface GetTermFromClassReferenceElement {
   term: Term
-  dates: ClassTermFinderDates[]
+  dates: GetTermFromClassDates[]
 }
 
-type ClassTermFinderReference = ClassTermFinderReferenceElement[]
+type GetTermFromClassReference = GetTermFromClassReferenceElement[]
 
 /**
  * @interface TermFinderReferenceElement: Structure of a reference object provided to the termFinder method
@@ -211,8 +211,8 @@ type TermFinderReference = TermFinderReferenceElement[]
 
 export {
   TermFinderReference,
-  ClassTermFinderReference,
-  ClassTermFinderDates,
+  GetTermFromClassReference,
+  GetTermFromClassDates,
   Time,
   Class,
   Course,

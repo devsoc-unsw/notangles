@@ -243,7 +243,10 @@ const timetableScraper = async (
     const data = await timetableScraper(2019)
     // const browser = await puppeteer.launch({ headless: false })
     // const singlepage = await browser.newPage()
-    // const data = await scrapeSubject(singlepage, 'http://timetable.unsw.edu.au/2019/COMP1511.html')
+    // const data = await scrapeSubject({
+    //   page: singlepage,
+    //   course: 'http://timetable.unsw.edu.au/2019/COMP1511.html',
+    // })
 
     if (data === false) {
       return
@@ -261,7 +264,7 @@ const timetableScraper = async (
       }
     )
   } catch (err) {
-    console.log('something went wrong')
+    console.log(err)
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()

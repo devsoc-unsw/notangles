@@ -273,7 +273,7 @@ const scrapePage = async (
       if (!course.course_info) {
         throw new Error('Malformed page: ' + page.url())
       } else {
-        const parsedInfo = parseCourseInfoChunk(course.course_info)
+        const parsedInfo = parseCourseInfoChunk({ data: course.course_info })
         notes = parsedInfo.notes
         course_info = parsedInfo.courseInfo
       }
@@ -281,7 +281,7 @@ const scrapePage = async (
       // There may or may not be a classlist
       if (course.classes) {
         for (const courseClass of course.classes) {
-          const parsedClassChunk = parseClassChunk(courseClass)
+          const parsedClassChunk = parseClassChunk({ data: courseClass })
           if (parsedClassChunk) {
             classes[
               getTermFromClass({
@@ -338,7 +338,7 @@ const scrapePage = async (
       throw new Error(err)
     }
   }
-  return { coursesData: coursesData, warnings: warnings }
+  return { coursesData, warnings }
 }
 
 export { getDataUrls, getDataUrlsParams, scrapePage, termFinder, getChunks }
