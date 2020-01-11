@@ -241,6 +241,7 @@ const timetableScraper = async (
   console.time('cscraper')
   try {
     const data = await timetableScraper(2019)
+
     // const browser = await puppeteer.launch({ headless: false })
     // const singlepage = await browser.newPage()
     // const data = await scrapeSubject({
