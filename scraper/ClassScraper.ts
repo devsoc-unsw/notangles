@@ -17,11 +17,6 @@ import {
   WarningTag,
 } from './interfaces'
 
-interface ClassTermFinderParams {
-  cls: Class
-  reference?: ClassTermFinderReference
-}
-
 /**
  * @constant { ClassTermFinderReference }: Default reference to follow
  */
@@ -84,9 +79,10 @@ interface ClassTermFinderCheckerParams {
 /**
  * Classifies a class according to the given reference date. Checks if the class matches the
  * the given reference dates
- * @param {Date} start: start date of the class
- * @param {Date} end: end date of the class
- * @param {ClassTermFinderDates} refDate: reference dates to match the start and end dates to
+ * @param { Date } start: start date of the class
+ * @param { Date } end: end date of the class
+ * @param { ClassTermFinderDates } refDate: reference dates to match the start and end dates to
+ * @returns { boolean } : true if the class dates match the refDate, false otherwise
  */
 const classTermFinderChecker = ({
   start,
@@ -102,6 +98,11 @@ const classTermFinderChecker = ({
   )
 }
 
+interface getTermFromClassParams {
+  cls: Class
+  reference?: ClassTermFinderReference
+}
+
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
  * @param { Class } cls: Class to find the term for
@@ -111,10 +112,10 @@ const classTermFinderChecker = ({
  *
  * @returns { Term }: Term which the class is from
  */
-const classTermFinder = ({
+const getTermFromClass = ({
   cls,
   reference = defaultReferenceDates,
-}: ClassTermFinderParams): Term => {
+}: getTermFromClassParams): Term => {
   // Error check
   if (!(cls && cls.termDates)) {
     throw new Error('no start and end dates for class: ' + cls)
@@ -142,7 +143,7 @@ const classTermFinder = ({
 /**
  * Extracts classID (numeric) from the line.
  * Then checks that it is either a 4 or 5 digit number
- * @param {string} data: Line that contains the classId
+ * @param { string } data: Line that contains the classId
  */
 const getClassId = (data: string): number => {
   const classID = parseInt(data)
@@ -156,7 +157,7 @@ const getClassId = (data: string): number => {
 
 /**
  * Extracts and checks data about the section of the class
- * @param {string} data: Line that contains data about the section of the class
+ * @param { string } data: Line that contains data about the section of the class
  */
 const getSection = (data: string): string => {
   const section = data
@@ -170,7 +171,7 @@ const getSection = (data: string): string => {
 
 /**
  * Extracts term field and checks that the format is a capital letter, followed by one or two capital letters or numbers
- * @param {string} data: Line that contains the term field
+ * @param { string } data: Line that contains the term field
  */
 const getTerm = (data: string): string => {
   let term: string
@@ -184,7 +185,7 @@ const getTerm = (data: string): string => {
 
 /**
  * Checks if the class activity is simply course enrolment
- * @param {string} data: Line which contains the activity field
+ * @param { string } data: Line which contains the activity field
  */
 const isCourseEnrolment = (data: string): boolean => {
   const courseEnrolmentChecker = /[Cc]ourse [Ee]nrolment/
@@ -193,7 +194,7 @@ const isCourseEnrolment = (data: string): boolean => {
 
 /**
  * Extracts the activity field, makes sure that it exists
- * @param {string} data:  Line which contains the activity field
+ * @param { string } data:  Line which contains the activity field
  */
 const getActivity = (data: string): string => {
   const activity = data
@@ -206,7 +207,7 @@ const getActivity = (data: string): string => {
 
 /**
  * Extracts the status field, makes sure that it exists and is one of the fields described in the enum Status interfaces.ts
- * @param {string} data: Line which contains the status field
+ * @param { string } data: Line which contains the status field
  */
 const getStatus = (data: string): Status => {
   const status = <Status>data
@@ -233,9 +234,9 @@ interface getCourseEnrolmentReturn {
 
 /**
  * Extracts the course field, and checks that it is valid
- * @param {string} data: Line which contains the course enrolment field
- * @param {number} classID: The class id of the current class being parsed
- * @param {string} term: The term in which the class runs
+ * @param { string } data: Line which contains the course enrolment field
+ * @param { number } classID: The class id of the current class being parsed
+ * @param { string } term: The term in which the class runs
  */
 const getCourseEnrolment = ({
   data,
@@ -299,7 +300,7 @@ interface getTermDatesReturn {
 
 /**
  * Gets the dates the class starts and ends. Also checks that the dates are in proper format
- * @param {string} data: Line which contains the dates during which the class runs
+ * @param { string } data: Line which contains the dates during which the class runs
  */
 const getTermDates = (data: string): getTermDatesReturn => {
   const runDates = data.split(' - ')
@@ -326,7 +327,7 @@ const getTermDates = (data: string): getTermDatesReturn => {
 
 /**
  * Extracts the mode of class delivery
- * @param mode: Line which contains the mode field
+ * @param { string } mode: Line which contains the mode field
  */
 const getMode = (mode: string): string => {
   if (!mode || mode === ' ') {
@@ -338,7 +339,7 @@ const getMode = (mode: string): string => {
 
 /**
  * Checks if the course needs permission of the school to enrol into the class/course
- * @param data: Line which contains data about the consent field
+ * @param { string } data: Line which contains data about the consent field
  */
 const getNeedsConsent = (data: string): boolean => {
   const consentRegex = /[Nn]ot/
@@ -347,7 +348,7 @@ const getNeedsConsent = (data: string): boolean => {
 
 /**
  * Extracts all days the class runs on.
- * @param data: Line which contains the data about the days on which the current class runs
+ * @param { string } data: Line which contains the data about the days on which the current class runs
  */
 const getDays = (data: string): Day[] => {
   const possibleDays = <Day[]>data.split(', ')
@@ -369,7 +370,7 @@ interface getTimeReturn {
 
 /**
  * Extracts the start and end times of a class
- * @param data: Line which contains data about the class timings
+ * @param { string } data: Line which contains data about the class timings
  */
 const getTime = (data: string): getTimeReturn => {
   const times = data.split(' - ')
@@ -399,9 +400,9 @@ interface getLocationReturn {
 
 /**
  * Extracts the location of a class
- * @param data: Line which contains data about the location of the class
- * @param classID: Class id of the class being parsed
- * @param term: The term the current class runs in
+ * @param { string } data: Line which contains data about the location of the class
+ * @param { number } classID: Class id of the class being parsed
+ * @param { string } term: The term the current class runs in
  */
 const getLocation = ({
   data,
@@ -444,9 +445,9 @@ interface getWeeksReturn {
 
 /**
  * Extracts data about the weeks in which the class runs
- * @param data: Line which contains data about the weeks the class runs in
- * @param classID: Class id of the class being parsed
- * @param term: The term the current class runs in
+ * @param { string } data: Line which contains data about the weeks the class runs in
+ * @param { number } classID: Class id of the class being parsed
+ * @param { string } term: The term the current class runs in
  */
 const getWeeks = ({ data, classID, term }: getWeeksParams): getWeeksReturn => {
   const weeks = data
@@ -477,7 +478,7 @@ const getWeeks = ({ data, classID, term }: getWeeksParams): getWeeksReturn => {
 
 /**
  * Extracts the name of the instructor (if listed)
- * @param data: Line to be parsed
+ * @param { string } data: Line to be parsed
  */
 const getInstructor = (data: string): string | false => {
   if (data && data !== '') {
@@ -487,7 +488,7 @@ const getInstructor = (data: string): string | false => {
 }
 
 interface getTimeDataParams {
-  data: string[]
+  data: Chunk
   index: number
   classID: number
   term: string
@@ -500,10 +501,10 @@ interface getTimeDataReturn {
 
 /**
  * Extracts all the times a class is offered through the term
- * @param data: The chunk that contains data about the class
- * @param index: The index marking the start of the time data
- * @param classID: Class id of the class being parsed
- * @param term: The term the current class runs in
+ * @param { Chunk } data: The chunk that contains data about the class
+ * @param { number } index: The index marking the start of the time data
+ * @param { number } classID: Class id of the class being parsed
+ * @param { string } term: The term the current class runs in
  */
 const getTimeData = ({
   data,
@@ -548,6 +549,7 @@ const getTimeData = ({
     const instructor = getInstructor(data[index])
     index++
 
+    // Make copies for each day the class runs
     for (const day of days) {
       const timeData: Time = { day: day, time: time, weeks: weeks }
       if (location) {
@@ -564,14 +566,14 @@ const getTimeData = ({
 }
 
 interface getNoteParams {
-  data: string[]
+  data: Chunk
   index: number
 }
 
 /**
  * Extract any notes that might be in the class chunk
- * @param data: The chunk that contains data about the class
- * @param index: The index marking the start of the time data
+ * @param { Chunk } data: The chunk that contains data about the class
+ * @param { number } index: The index marking the start of the time data
  */
 const getNote = ({ data, index }: getNoteParams): string[] | false => {
   // anything after times is in the notes category
@@ -583,13 +585,28 @@ const getNote = ({ data, index }: getNoteParams): string[] | false => {
   return false
 }
 
+interface ClassChunkIndices {
+  classID: number
+  section: number
+  term: number
+  activity: number
+  status: number
+  courseEnrolment: number
+  termDates: number
+  mode: number
+  consent: number
+  timesStartIndex: number
+}
+
+// const referenceClassChunkIndexe
+
 /**
  * Parses data from the data array into a class object
  * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
  *
- * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
- * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
+ * @returns { Promise<{ classData: Class, warnings: ClassWarnings[] } }: The data that has been scraped, formatted as a class object
+ * @returns { false }: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
 const parseClassChunk = (
   data: Chunk
@@ -680,4 +697,4 @@ const parseClassChunk = (
   return { classData: classData, warnings: warnings }
 }
 
-export { parseClassChunk, classTermFinder }
+export { parseClassChunk, getTermFromClass }

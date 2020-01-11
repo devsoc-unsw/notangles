@@ -1,9 +1,23 @@
 // List of the interfaces and types that are used in the scraper
 
+/**
+ * @type: Data extracted from a page
+ */
 type Chunk = string[]
+
+/**
+ * @type: url that represents pages of the site
+ */
 type TimetableUrl = string
+
+/**
+ * @type: List of timetableUrls
+ */
 type UrlList = TimetableUrl[]
 
+/**
+ * @enum: List of possible terms
+ */
 enum Term {
   Summer = 'Summer',
   T1 = 'T1',
@@ -14,7 +28,7 @@ enum Term {
 }
 
 /**
- * All possible careers
+ * @enum: All possible careers
  */
 enum Career {
   Undergraduate = 'Undergraduate',
@@ -23,7 +37,7 @@ enum Career {
 }
 
 /**
- * Possible Days
+ * @enum: Possible Days
  */
 enum Day {
   Mon = 'Mon',
@@ -36,7 +50,7 @@ enum Day {
 }
 
 /**
- * Defines the status of a class
+ * @enum: Defines the status of a class
  */
 enum Status {
   Full = 'Full',
@@ -45,12 +59,15 @@ enum Status {
 }
 
 /**
- * Term is not Other under normal circumstances
+ * @interface ExtendedTerm: Term is not Other under normal circumstances
  */
 enum ExtendedTerm {
   Other = 'Other',
 }
 
+/**
+ * @interface TimetableData: Maps term to list of all courses that run in that term
+ */
 interface TimetableData extends Record<Term, Course[]> {
   // To account for classes that do not run in any term or that
   // could not be classified (The latter case should be avoided)
@@ -59,7 +76,7 @@ interface TimetableData extends Record<Term, Course[]> {
 type ClassesByTerm = Record<Term, Class[]>
 
 /**
- * Defines the interface for input not conforming to the strict requirements
+ * @interface Warning: Defines the interface for input not conforming to the strict requirements
  */
 interface Warning extends ClassWarnings {
   courseCode: string
@@ -67,7 +84,7 @@ interface Warning extends ClassWarnings {
 }
 
 /**
- * Gives information about th error that has ocurred
+ * @enum: Gives information about th error that has ocurred
  */
 enum WarningTag {
   Other = 'Other',
@@ -77,7 +94,7 @@ enum WarningTag {
 }
 
 /**
- * Defines the details about the warning a class might provide
+ * @interface ClassWarnings: Defines the details about the warning a class might provide
  */
 interface ClassWarnings {
   tag: WarningTag
@@ -90,7 +107,7 @@ interface ClassWarnings {
 }
 
 /**
- * Defines the structure of a subsection of a page in Chunks
+ * @interface PageData: Defines the structure of a subsection of a page in Chunks
  */
 interface PageData {
   course_info: Chunk
@@ -98,7 +115,7 @@ interface PageData {
 }
 
 /**
- * Structure of each time object inside a class
+ * @interface Time: Structure of each time object inside a class
  */
 interface Time {
   day: Day
@@ -112,7 +129,7 @@ interface Time {
 }
 
 /**
- * Structure of a scraped class
+ * @interface Class: Structure of a scraped class
  */
 interface Class {
   classID: number
@@ -135,7 +152,7 @@ interface Class {
 }
 
 /**
- * Structure of a scraped course
+ * @interface Course Structure of a scraped course
  */
 interface Course extends CourseHead, CourseInfo {
   classes?: Class[]
@@ -143,7 +160,7 @@ interface Course extends CourseHead, CourseInfo {
 }
 
 /**
- * Data about the title of the car
+ * @interface CourseHead: Data about the title of the car
  */
 interface CourseHead {
   courseCode: string
@@ -151,7 +168,7 @@ interface CourseHead {
 }
 
 /**
- * Data about the course that is scraped, without the classes
+ * @interface CourseInfo: Data about the course that is scraped, without the classes
  */
 interface CourseInfo {
   school: string
@@ -162,7 +179,7 @@ interface CourseInfo {
 }
 
 /**
- * Structure of a date inside a reference object provided to the classTermFinder method
+ * @interface ClassTermFinderDates Structure of a date inside a reference object provided to the classTermFinder method
  */
 interface ClassTermFinderDates {
   start: number
@@ -170,7 +187,7 @@ interface ClassTermFinderDates {
 }
 
 /**
- * Structure of a reference object provided to the classTermFinder method
+ * @interface ClassTermFinderReferenceElement: Structure of a reference object provided to the classTermFinder method
  */
 interface ClassTermFinderReferenceElement {
   term: Term
@@ -180,13 +197,16 @@ interface ClassTermFinderReferenceElement {
 type ClassTermFinderReference = ClassTermFinderReferenceElement[]
 
 /**
- * Structure of a reference object provided to the termFinder method
+ * @interface TermFinderReferenceElement: Structure of a reference object provided to the termFinder method
  */
 interface TermFinderReferenceElement {
   term: Term
   census: string
 }
 
+/**
+ * @type: The reference list that the term finder function needs
+ */
 type TermFinderReference = TermFinderReferenceElement[]
 
 export {

@@ -14,7 +14,7 @@ import {
 } from './interfaces'
 import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
-import { parseClassChunk, classTermFinder } from './ClassScraper'
+import { parseClassChunk, getTermFromClass } from './ClassScraper'
 
 interface getDataUrlsParams {
   page: puppeteer.Page
@@ -38,7 +38,6 @@ const getDataUrls = async ({
   // Get all the required urls...
   // Extract urls from html
   // Remove duplicate urls using a set
-
   const handleEval = (elements: Element[], regex: string) => {
     const urls = elements
       .filter((ele): ele is HTMLAnchorElement => 'href' in ele)
@@ -285,7 +284,7 @@ const scrapePage = async (
           const parsedClassChunk = parseClassChunk(courseClass)
           if (parsedClassChunk) {
             classes[
-              classTermFinder({
+              getTermFromClass({
                 cls: parsedClassChunk.classData,
               })
             ].push(parsedClassChunk.classData)
