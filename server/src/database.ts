@@ -3,6 +3,41 @@ import { config } from './config'
 
 const url = config.database
 
+export interface getCollectionParams {
+  dbName: string,
+  termColName: string
+}
+
+export interface dbAddParams {
+  dbName: string,
+  termColName: string,
+  doc
+}
+
+export interface dbReadParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbUpdateParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string,
+  doc
+}
+
+export interface dbDelParams {
+  dbName: string,
+  termColName: string,
+  courseCode: string
+}
+
+export interface dbFetchAllParams {
+  dbName: string,
+  termColName: string
+}
+
 class Database {
   private client: MongoClient | undefined
 
@@ -130,39 +165,3 @@ class Database {
 
 const db = new Database()
 export default db
-
-
-export interface getCollectionParams {
-  dbName: string,
-  termColName: string
-}
-
-export interface dbAddParams {
-  dbName: string,
-  termColName: string,
-  doc
-}
-
-export interface dbReadParams {
-  dbName: string,
-  termColName: string,
-  courseCode: string
-}
-
-export interface dbUpdateParams {
-  dbName: string,
-  termColName: string,
-  courseCode: string,
-  doc
-}
-
-export interface dbDelParams {
-  dbName: string,
-  termColName: string,
-  courseCode: string
-}
-
-export interface dbFetchAllParams {
-  dbName: string,
-  termColName: string
-}

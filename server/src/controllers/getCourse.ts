@@ -3,7 +3,11 @@ import * as util from 'util'
 
 import Database from '../database'
 import { dbReadParams } from '../database'
-import { GetCourseParams } from '../../interfaces/GetCourseParams'
+
+export interface GetCourseParams {
+  termId: string
+  courseId: string
+}
 
 /**
  * GET /api/terms/:termId/courses/:courseId/

@@ -3,14 +3,17 @@ import * as util from 'util'
 
 import Database from '../database'
 import { dbFetchAllParams } from '../database'
-import { GetCourseParams } from '../../interfaces/GetCourseParams'
+
+export interface GetCourseListParams {
+  termId: string
+}
 
 /**
  * GET /api/terms/:termId/courses
  * termId expected in yyyy-term format
  */
 export const getCourseList = async (req: Request, res: Response) => {
-    const params: GetCourseParams = req.params
+    const params: GetCourseListParams = req.params
     const [year, term] = params.termId.split('-')
     if (!(year && term)) {
       res.status(400).send('Invalid year and term: should be <year>-<term>')
