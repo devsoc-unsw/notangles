@@ -7,11 +7,11 @@ export enum Env {
   PROD = 'PROD',
 }
 
-interface IConfig {
+interface Config {
   database: string
 }
 
-export const allConfig: Record<Env, IConfig> = {
+export const allConfig: Record<Env, Config> = {
   [Env.DEV]: {
     database: secret.dev,
   },
@@ -24,4 +24,4 @@ export const allConfig: Record<Env, IConfig> = {
     database: secret.prod,
   },
 }
-export const config: IConfig = allConfig[process.env.NODE_ENV || Env.DEV]
+export const config: Config = allConfig[process.env.NODE_ENV || Env.DEV]
