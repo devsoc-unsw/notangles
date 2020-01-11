@@ -1,4 +1,4 @@
-import app from './controllers/app'
+import app from './src/app'
 
 const server = app.listen(app.get('port'), () => {
   console.log(
