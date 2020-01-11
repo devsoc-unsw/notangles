@@ -90,11 +90,21 @@ interface ClassTermFinderCheckerParams {
 }
 
 /**
- * Classifies a class according to the given reference date. Checks if the class matches the
+ * Classifies a class into a term according to the given reference date. Checks if the class matches the
  * the given reference dates
  * @param {Date} start: start date of the class
  * @param {Date} end: end date of the class
  * @param {ClassTermFinderDates} refDate: reference dates to match the start and end dates to
+ * @example
+ *        Given class is starting in november (month 11) and running for 3 months, and the refDate is: { start: 11, length: 3 }, it compares the class dates to the refDate:
+ * 
+ * classTermFinderChecker({
+ *  start: Date(12/11/2019),
+ *  end: Date(12/2/2020),
+ *  refDate: { start: 11, length: 3 }
+ * })
+ * 
+ * expect true 
  */
 const classTermFinderChecker = ({
   start,
@@ -102,7 +112,9 @@ const classTermFinderChecker = ({
   refDate,
 }: ClassTermFinderCheckerParams): Boolean => {
   return (
+    // Compare start date
     start.getMonth() + 1 === refDate.start &&
+    // Compare length in months
     end.getMonth() -
       start.getMonth() +
       (end.getFullYear() - start.getFullYear()) * 12 ===
@@ -123,7 +135,7 @@ const classTermFinder = ({
   reference = defaultReferenceDates,
 }: ClassTermFinderParams): Term => {
   // Error check
-  if (!(cls && cls.termDates)) {
+  if (!cls?.termDates) {
     throw new Error('no start and end dates for class: ' + cls)
   }
 

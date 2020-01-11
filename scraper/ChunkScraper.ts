@@ -21,11 +21,11 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   if (!(data && data.length > 2)) {
     throw new Error('Malformed course header: ' + data)
   }
-  const courseData: CourseHead = {
+  const courseHead: CourseHead = {
     courseCode: data[1].trim(),
     name: removeHtmlSpecials(data[2].trim()),
   }
-  return courseData
+  return courseHead
 }
 
 /**
@@ -87,7 +87,7 @@ const parseCourseInfoChunk = (
     index++
   }
 
-  const courseData: CourseInfo = {
+  const courseInfo: CourseInfo = {
     school: school,
     campus: campus,
     career: career,
@@ -95,7 +95,7 @@ const parseCourseInfoChunk = (
     censusDates: censusDates,
   }
 
-  return { notes: notes, courseInfo: courseData }
+  return { notes: notes, courseInfo }
 }
 
 export { getCourseHeadData, parseCourseInfoChunk }
