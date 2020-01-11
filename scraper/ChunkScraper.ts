@@ -115,7 +115,7 @@ interface CourseInfoIndices {
 
 interface parseCourseInfoChunkParams {
   data: Chunk
-  parseIndices: CourseInfoIndices
+  parseIndices?: CourseInfoIndices
 }
 
 interface parseCourseInfoChunkReturn {
