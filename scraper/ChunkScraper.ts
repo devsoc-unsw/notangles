@@ -1,16 +1,16 @@
 import * as puppeteer from 'puppeteer'
+
 import { removeHtmlSpecials } from './helper'
 import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
 
 /**
  * Gets the data from the title of the course (course code, name)
  * @param { puppeteer.Page } page: page which displays the data to scrape
- *
  * @returns { Promise<CourseHead> }: Data about the title of the course: The course code and the course name
  */
 const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   // Get the course code and course name
-  const courseHead = await page.evaluate(() => {
+  const data = await page.evaluate(() => {
     const courseHeader = document.getElementsByClassName(
       'classSearchMinorHeading'
     )[0].innerHTML
@@ -18,12 +18,12 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
     return headerRegex.exec(courseHeader)
   })
   // There must be at least 3 elements in courseHead
-  if (!courseHead && courseHead.length > 2) {
-    throw new Error('Malformed course header: ' + courseHead)
+  if (!(data && data.length > 2)) {
+    throw new Error('Malformed course header: ' + data)
   }
   const courseData: CourseHead = {
-    courseCode: courseHead[1].trim(),
-    name: removeHtmlSpecials(courseHead[2].trim()),
+    courseCode: data[1].trim(),
+    name: removeHtmlSpecials(data[2].trim()),
   }
   return courseData
 }
@@ -32,7 +32,6 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
  * Scrapes all information, given a data array from a chunk that contains
  * course information for one course
  * @param { Chunk } data: Data array that contains the course information
- *
  * @returns { { notes: string[]; courseInfo: CourseInfo } }: A CourseInfo object containing data about the course and a list of notes on the page, if any.
  */
 const parseCourseInfoChunk = (

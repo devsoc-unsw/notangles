@@ -23,7 +23,15 @@ interface ClassTermFinderParams {
 }
 
 /**
- * @constant { ClassTermFinderReference }: Default reference to follow
+ * @constant { ClassTermFinderReference }: Default reference that the classTermFinder function uses to classify classes into terms
+ * @example 
+ *      a class might start in november and run for 3 months, into the next year, in this case the function finds that the class runs in the summer term, looking at the object:
+ *      {
+          term: Term.Summer,
+          dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+        }
+        as the class that starts in month 11 and runs for 3 months is listed as a date for the term Summer
+          { start: 11, length: 3 }
  */
 const defaultReferenceDates: ClassTermFinderReference = [
   {
@@ -108,7 +116,6 @@ const classTermFinderChecker = ({
  * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
  * start is an array of possible start dates and length is the number of months the term might run for
- *
  * @returns { Term }: Term which the class is from
  */
 const classTermFinder = ({
@@ -143,7 +150,6 @@ const classTermFinder = ({
  * Parses data from the data array into a class object
  * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
- *
  * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
  * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
