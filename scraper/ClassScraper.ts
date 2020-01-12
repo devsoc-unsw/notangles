@@ -18,7 +18,15 @@ import {
 } from './interfaces'
 
 /**
- * @constant { GetTermFromClassReference }: Default reference to follow
+ * @constant { GetTermFromClassReference }: Default reference that the classTermFinder function uses to classify classes into terms
+ * @example 
+ *      a class might start in november and run for 3 months, into the next year, in this case the function finds that the class runs in the summer term, looking at the object:
+ *      {
+          term: Term.Summer,
+          dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+        }
+        as the class that starts in month 11 and runs for 3 months is listed as a date for the term Summer
+          { start: 11, length: 3 }
  */
 const defaultReferenceDates: GetTermFromClassReference = [
   {
@@ -80,12 +88,21 @@ interface CompareClassAndRefDatesParams {
 }
 
 /**
- * Classifies a class according to the given reference date. Checks if the class matches the
+ * Classifies a class into a term according to the given reference date. Checks if the class matches the
  * the given reference dates
- * @param { Date } start: start date of the class
- * @param { Date } end: end date of the class
- * @param { ClassTermFinderDates } refDate: reference dates to match the start and end dates to
- * @returns { boolean } : true if the class dates match the refDate, false otherwise
+ * @param {Date} start: start date of the class
+ * @param {Date} end: end date of the class
+ * @param {GetTermFromClassDates} refDate: reference dates to match the start and end dates to
+ * @example
+ *        Given class is starting in november (month 11) and running for 3 months, and the refDate is: { start: 11, length: 3 }, it compares the class dates to the refDate:
+ *
+ * classTermFinderChecker({
+ *  start: Date(12/11/2019),
+ *  end: Date(12/2/2020),
+ *  refDate: { start: 11, length: 3 }
+ * })
+ *
+ * expect true
  */
 const compareClassAndRefDates = ({
   start,
@@ -93,7 +110,9 @@ const compareClassAndRefDates = ({
   refDate,
 }: CompareClassAndRefDatesParams): Boolean => {
   return (
+    // Compare start date
     start.getMonth() + 1 === refDate.start &&
+    // Compare length in months
     end.getMonth() -
       start.getMonth() +
       (end.getFullYear() - start.getFullYear()) * 12 ===
@@ -118,6 +137,7 @@ const getTermFromClass = ({
   cls,
   reference = defaultReferenceDates,
 }: GetTermFromClassParams): Term => {
+  // Error check
   if (!cls?.termDates) {
     throw new Error('no start and end dates for class: ' + JSON.stringify(cls))
   }

@@ -27,16 +27,16 @@ const extractCourseHeadFromPage = async (
  * @returns { Promise<CourseHead> }: Data about the title of the course: The course code and the course name
  */
 const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
-  const courseHead = await extractCourseHeadFromPage(page)
+  const data = await extractCourseHeadFromPage(page)
   // There must be at least 3 elements in courseHead
-  if (!(courseHead && courseHead.length > 2)) {
-    throw new Error('Malformed course header: ' + courseHead)
+  if (!(data && data.length > 2)) {
+    throw new Error('Malformed course header: ' + data)
   }
-  const courseData: CourseHead = {
-    courseCode: courseHead[1].trim(),
-    name: removeHtmlSpecials(courseHead[2].trim()),
+  const courseHead: CourseHead = {
+    courseCode: data[1].trim(),
+    name: removeHtmlSpecials(data[2].trim()),
   }
-  return courseData
+  return courseHead
 }
 
 /**
