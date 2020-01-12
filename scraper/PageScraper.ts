@@ -1,4 +1,5 @@
 import * as puppeteer from 'puppeteer'
+
 import {
   TimetableUrl,
   Chunk,
@@ -28,7 +29,6 @@ interface getDataUrlsParams {
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
  * @param { RegExp } regex regex to check each url
- *
  * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
  */
 const getDataUrls = async ({
@@ -64,7 +64,6 @@ const getDataUrls = async ({
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
  * @param { puppeteer.Page } page: page to be broken down into chunks
- *
  * @returns { Promise<PageData[]> }: Extracted data as a course info chunk and list of class chunks to be parsed
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
@@ -182,7 +181,6 @@ interface TermFinderParams {
  * S1: 25/02 ---> 30/06
  * S2: 15/07 ---> 10/11
  * The date format for reference census dates is month/day
- *
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
 const termFinder = ({
@@ -235,7 +233,6 @@ const termFinder = ({
  * Function scrapes all the course data on the given page
  * Returns an array of courses on the page
  * @param { puppeteer.Page } page Page to be scraped
- *
  * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
  */
 const scrapePage = async (

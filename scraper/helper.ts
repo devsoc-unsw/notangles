@@ -1,4 +1,5 @@
 import { Browser, Page } from 'puppeteer'
+
 import { WarningTag, ClassWarnings } from './interfaces'
 
 /**

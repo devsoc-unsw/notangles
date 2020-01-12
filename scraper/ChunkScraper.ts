@@ -1,4 +1,5 @@
 import * as puppeteer from 'puppeteer'
+
 import { removeHtmlSpecials } from './helper'
 import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
 
