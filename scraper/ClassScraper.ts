@@ -298,8 +298,8 @@ const getCourseEnrolment = ({
       // Zero capacity!!
       enrolmentWarnings.push(
         makeClassWarning({
-          classID: classID,
-          term: term,
+          classID,
+          term,
           errorKey: 'courseEnrolment',
           errorValue: courseEnrolment,
           tag: WarningTag.ZeroEnrolmentCapacity,
@@ -309,8 +309,8 @@ const getCourseEnrolment = ({
     else {
       enrolmentWarnings.push(
         makeClassWarning({
-          classID: classID,
-          term: term,
+          classID,
+          term,
           errorKey: 'courseEnrolment',
           errorValue: courseEnrolment,
         })
@@ -568,7 +568,7 @@ const getTimeData = ({
 }: GetTimeDataParams): GetTimeDataReturn => {
   const noteCount = getNoteCount({ data, index })
   // There are no classes if the number of lines left to parse < noteCount + index or data does not exist
-  const exists = data && data[index] && data[index + noteCount]
+  const exists = data?.[index] && data[index + noteCount]
   if (!exists) {
     return {
       dateList: [],
