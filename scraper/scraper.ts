@@ -1,14 +1,9 @@
 import * as puppeteer from 'puppeteer'
-import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
-
-import {
-  getDataUrls,
-  getDataUrlsParams,
-  scrapePage,
-  termFinder,
-} from './PageScraper'
-import { keysOf, createPages } from './helper'
 import { cloneDeep } from 'lodash'
+
+import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
+import { getUrls, getUrlsParams, scrapePage, termFinder } from './PageScraper'
+import { keysOf, createPages } from './helper'
 
 interface ScrapeSubjectParams {
   page: puppeteer.Page
@@ -40,7 +35,7 @@ const scrapeSubject = async ({
   return await scrapePage(page)
 }
 
-interface getPageUrlsParams extends getDataUrlsParams {
+interface getPageUrlsParams extends getUrlsParams {
   url: string
 }
 
@@ -55,6 +50,7 @@ interface getPageUrlsParams extends getDataUrlsParams {
  * @example
  *    const browser = await puppeteer.launch()
  *    const urls = getPageUrls('http://timetable.unsw.edu.au/2019/COMP1511.html', await browser.newPage(), 'http://timetable.unsw.edu.au/2019/', /html$/)
+ * Expect: [ '.*html' ]*
  */
 const getPageUrls = async ({
   url,
@@ -66,11 +62,11 @@ const getPageUrls = async ({
   })
 
   // Then, get each data url on that page
-  const getDataUrlsParams: getDataUrlsParams = {
+  const getDataUrlsParams: getUrlsParams = {
     page: page,
     regex: regex,
   }
-  return await getDataUrls(getDataUrlsParams)
+  return await getUrls(getDataUrlsParams)
 }
 
 /**
@@ -125,7 +121,7 @@ const timetableScraper = async (
       const courseUrlRegex = /([A-Z]{8})\.html/
 
       // Gets all the dataurls on the timetable page.
-      const urlList = await getDataUrls({
+      const urlList = await getUrls({
         page: page,
         regex: courseUrlRegex,
       })
@@ -230,23 +226,35 @@ const timetableScraper = async (
 ;(async () => {
   console.time('cscraper')
   try {
-    const data = await timetableScraper(2019)
+    // const data = await timetableScraper(2019)
 
-    // const browser = await puppeteer.launch({ headless: false })
-    // const singlepage = await browser.newPage()
-    // const data = await scrapeSubject({
-    //   page: singlepage,
-    //   course: 'http://timetable.unsw.edu.au/2019/COMP1511.html',
-    // })
+    // if (data === false) {
+    //   return
+    // }
 
-    if (data === false) {
-      return
-    }
+    // const fs = require('fs')
+    // fs.writeFile(
+    //   'T1.json',
+    //   JSON.stringify(data.timetableData.T1),
+    //   'utf-8',
+    //   (err: unknown) => {
+    //     if (err) {
+    //       console.error(err)
+    //     }
+    //   }
+    // )
+
+    const browser = await puppeteer.launch({ headless: false })
+    const singlepage = await browser.newPage()
+    const data = await scrapeSubject({
+      page: singlepage,
+      course: 'http://timetable.unsw.edu.au/2019/COMP1511.html',
+    })
 
     const fs = require('fs')
     fs.writeFile(
       'T1.json',
-      JSON.stringify(data.timetableData.T1),
+      JSON.stringify(data.coursesData.T1),
       'utf-8',
       (err: unknown) => {
         if (err) {
@@ -254,6 +262,8 @@ const timetableScraper = async (
         }
       }
     )
+
+    // await browser.close()
   } catch (err) {
     console.log(err)
   }
