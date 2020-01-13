@@ -17,7 +17,35 @@ import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
 import { parseClassChunk, getTermFromClass } from './ClassScraper'
 
-interface getDataUrlsParams {
+/**
+ * Extracts the elements hrefs that contain urls from the html element array
+ * @param { Element[] } elements: Elements on the page
+ * @returns { string[] }: Hrefs of all 'a' tags in the elements list
+ */
+const extractHrefsFromPage = (elements: Element[]): string[] => {
+  return elements
+    .filter((ele): ele is HTMLAnchorElement => 'href' in ele)
+    .map(element => element.href)
+}
+
+interface FilterUrlsParams {
+  elements: string[]
+  regex: RegExp
+}
+
+/**
+ * Filters the urls from list of hrefs of 'a' tags using the regex
+ * @param elements: Array of hrefs of 'a' tags that contain urls to extract
+ * @param regex: Regexp to find the urls
+ * @returns { TimetableUrl[] }: List of urls of urls matching the regex
+ */
+const filterUrls = ({ elements, regex }: FilterUrlsParams): TimetableUrl[] => {
+  const urls: TimetableUrl[] = elements.filter(url => regex.test(url))
+  const cleanUrls = new Set<TimetableUrl>(urls)
+  return [...cleanUrls]
+}
+
+interface getUrlsParams {
   page: puppeteer.Page
   regex: RegExp
 }
@@ -29,36 +57,206 @@ interface getDataUrlsParams {
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
  * @param { RegExp } regex regex to check each url
- * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
+ * @returns { Promise<TimetableUrl[]> }: The list of urls on the page, prefixed with @param base
  */
-const getDataUrls = async ({
+const getUrls = async ({
   page,
   regex,
-}: getDataUrlsParams): Promise<string[]> => {
-  // Get all the required urls...
-  // Extract urls from html
-  // Remove duplicate urls using a set
-  const handleEval = (elements: Element[], regex: string) => {
-    const urls = elements
-      .filter((ele): ele is HTMLAnchorElement => 'href' in ele)
-      .map(a => {
-        const link = a.href
-        if (new RegExp(regex).test(link)) {
-          return link
-        } else {
-          // Default
-          return ''
-        }
-      })
+}: getUrlsParams): Promise<TimetableUrl[]> => {
+  const elements = await page.$$eval('.data a', extractHrefsFromPage)
+  return filterUrls({ elements, regex })
+}
 
-    const cleanUrls = new Set<TimetableUrl>(urls)
+/**
+ * Parses the tables on the page, extracts the courses on the page as chunks
+ * @param { HTMLElement[] } elements: List of table elements on the page that need to be parsed
+ * @returns { PageData[] }: List of course chunks, classified as a pageData object
+ */
+const parsePage = (elements: HTMLElement[]): PageData[] => {
+  /**
+   * Extracts the tables on the page containing course data
+   * @param { HTMLElement[] } courseTables: List of all the tables on the page
+   * @returns { HTMLElement[][] }: List of elements that contain data about a course, group together so each list only contains chunks relevant to one course
+   */
+  const getCourseElements = (courseTables: HTMLElement[]): HTMLElement[][] => {
+    const elementList: HTMLElement[][] = []
+    const tableTagName: string = 'TABLE'
 
-    // Remove needless value
-    cleanUrls.delete('')
-    return [...cleanUrls]
+    for (const course of courseTables) {
+      // Get every td which has more than 1 table
+      const subtables = [...course.children].filter(
+        (element: HTMLElement): element is HTMLElement =>
+          element.tagName === tableTagName
+      )
+      if (subtables.length > 1) {
+        elementList.push(subtables)
+      }
+    }
+
+    return elementList
   }
 
-  return await page.$$eval('.data a', handleEval, regex.source)
+  interface GetClassTablesParams {
+    subtables: NodeListOf<HTMLElement>
+    dataClassSelector: string
+  }
+
+  /**
+   * Extracts all the classChunks from the page
+   * @param { NodeListOf<HTMLElement> } subtables: List of table elements that contain one class chunk each
+   * @param { string } dataClassSelector: selector to extract elements with the data class
+   * @returns { Chunk[] }: List of class chunks that were extracted
+   */
+  const getClassTables = ({
+    subtables,
+    dataClassSelector,
+  }: GetClassTablesParams): Chunk[] => {
+    // The table represents a classlist!! -> the split chunks are then each element of subtables...
+    // get all elements with class data from each table and then return that array.
+    const tablelist: Chunk[] = []
+    for (const subtable of subtables) {
+      tablelist.push(
+        [...subtable.querySelectorAll<HTMLElement>(dataClassSelector)].map(
+          (element: HTMLElement) => element.innerText
+        )
+      )
+    }
+    return tablelist
+  }
+
+  interface GetCourseInfoChunkParams {
+    courseInfoElement: HTMLElement
+    dataClassSelector: string
+  }
+
+  /**
+   * Extracts course info chunk from the page
+   * @param { HTMLElement } courseInfoElement: The dom element that contains the courseInfo chunk
+   * @param { string } dataClassSelector: selector to extract dom elements with the data class
+   * @returns { Chunk }: Extracted courseInfo chunk
+   */
+  const getCourseInfoChunk = ({
+    courseInfoElement,
+    dataClassSelector,
+  }: GetCourseInfoChunkParams): Chunk => {
+    // This should be the course info table. --> get data elements
+    return [
+      ...courseInfoElement.querySelectorAll<HTMLElement>(dataClassSelector),
+    ].map(element => element.innerText)
+  }
+
+  /**
+   * Checks if the element contains a class chunk or not
+   * @param { HTMLElement } element: Chunk to be checked
+   * @returns { boolean }: true, if the element contains a class chunk, otherwise false
+   */
+  const hasClassChunk = (element: HTMLElement): boolean => {
+    // If the table has any element with id top, then it is the classes table.
+    const classQuery: string = 'a[href="#top"]'
+    const classlist: HTMLElement = element.querySelector(classQuery)
+    return classlist !== null
+  }
+
+  /**
+   * Checks if the element has a note and no useful data
+   * @param { HTMLElement } element: The dom element to be checked
+   * @returns { boolean }: true, if the element has a note dom element, false otherwise
+   */
+  const isNoteElement = (element: HTMLElement): boolean => {
+    const noteClassSelector: string = '.note'
+    const note: HTMLElement = element.querySelector(noteClassSelector)
+    return note !== null
+  }
+
+  /**
+   * Checks if the subtables indicate that the parent might contain a course info chunk
+   * @param { NodeListOf<HTMLElement> } subtables: The subtables that might be part of the table element that contains a courseInfoChunk
+   * @returns { boolean }: true, if the parent contains a course info chunk, false otherwise
+   */
+  const hasCourseInfoChunk = (subtables: NodeListOf<HTMLElement>): boolean => {
+    return subtables.length === 3
+  }
+
+  interface ExtractChunksReturn {
+    courseInfoChunk?: Chunk
+    classChunks?: Chunk[]
+  }
+
+  /**
+   * Extracts the course info and class chunks (if present) from the element
+   * @param { HTMLElement } element: Dom element to extract chunks from
+   * @returns { ExtractChunksReturn }: The extracted course info and class chunks, if found
+   */
+  const extractChunks = (element: HTMLElement): ExtractChunksReturn => {
+    const dataClassSelector: string = '.data'
+    const pathToInnerTable: string = ':scope > tbody > tr > td > table'
+    const subtables: NodeListOf<HTMLElement> = element.querySelectorAll(
+      pathToInnerTable
+    )
+
+    if (hasClassChunk(element)) {
+      return { classChunks: getClassTables({ subtables, dataClassSelector }) }
+    } else if (isNoteElement(element)) {
+      // The table is the summary table ---> skip!
+    } else if (hasCourseInfoChunk(subtables)) {
+      return {
+        courseInfoChunk: getCourseInfoChunk({
+          courseInfoElement: element,
+          dataClassSelector,
+        }),
+      }
+    }
+    // Else -> other heading tables ---> skip!
+
+    // Default
+    return {}
+  }
+
+  /**
+   * Extracts chunks from list of elements relating to a single course
+   * @param { HTMLElement[]} elements: list of elements relating to a single course
+   * @returns { PageData }: extracted courseInfo and courseClasses chunks, formatted as a PageData object
+   */
+  const parseCourse = (elements: HTMLElement[]): PageData => {
+    const dataClassSelector: string = '.data'
+
+    const courseClasses: Chunk[] = []
+    let courseInfo: Chunk
+    for (const element of elements) {
+      // If there are any data fields inside the chunk, then categorize it
+      const data: HTMLElement = element.querySelector(dataClassSelector)
+      if (data) {
+        const { classChunks, courseInfoChunk } = extractChunks(element)
+
+        if (courseInfoChunk) {
+          courseInfo = courseInfoChunk
+        }
+
+        if (classChunks?.length > 0) {
+          courseClasses.push(...classChunks)
+        }
+      }
+    }
+
+    return { courseInfo, courseClasses }
+  }
+
+  const courseElements = getCourseElements(elements)
+  const pageChunks: PageData[] = []
+
+  for (const element of courseElements) {
+    const { courseInfo, courseClasses } = parseCourse(element)
+
+    if (courseClasses.length > 0) {
+      pageChunks.push({
+        courseInfo,
+        courseClasses,
+      })
+    } else {
+      pageChunks.push({ courseInfo })
+    }
+  }
+  return pageChunks
 }
 
 /**
@@ -67,85 +265,8 @@ const getDataUrls = async ({
  * @returns { Promise<PageData[]> }: Extracted data as a course info chunk and list of class chunks to be parsed
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
-  const chunks: PageData[] = await page.evaluate(() => {
-    const chunkList: HTMLElement[][] = []
-
-    const tableSelector: string = '[class="formBody"][colspan="3"]'
-    const tableTagName: string = 'TABLE'
-
-    const courseTables: NodeListOf<HTMLElement> = document.querySelectorAll(
-      tableSelector
-    )
-    for (const course of courseTables) {
-      // Get every td which has more than 1 table
-      const parts = Array.from(course.children).filter(
-        (element: HTMLElement) => element.tagName === tableTagName
-      ) as HTMLElement[]
-      if (parts.length > 1) {
-        chunkList.push(parts)
-      }
-    }
-
-    // Data to be returned ----> list of course objects
-    const coursesDataElements: PageData[] = []
-
-    const dataClassSelector: string = '.data'
-    // Classifying each chunk of the chunklist into
-    //    1. Course info chunk
-    //    2. Class Chunk
-    for (const course of chunkList) {
-      let course_info: Chunk
-      let classes: Chunk[] = []
-      for (const chunk of course) {
-        // If there are any data fields inside the chunk, then categorize it
-        const data: HTMLElement = chunk.querySelector(dataClassSelector)
-        if (data) {
-          const classQuery: string = 'a[href="#top"]'
-          const noteClassSelector: string = '.note'
-          const pathToInnerTable: string = ':scope > tbody > tr > td > table'
-
-          const classlist: HTMLElement = chunk.querySelector(classQuery)
-          const note: HTMLElement = chunk.querySelector(noteClassSelector)
-          const subtables: NodeListOf<HTMLElement> = chunk.querySelectorAll(
-            pathToInnerTable
-          )
-
-          // If the table has any element with id top, then it is the classes table.
-          if (classlist) {
-            // The table represents a classlist!! -> the split chunks are then each element of subtables...
-            // get all elements with class data from each table and then return that array.
-            const tablelist: Chunk[] = []
-            for (const subtable of subtables) {
-              tablelist.push(
-                [
-                  ...subtable.querySelectorAll<HTMLElement>(dataClassSelector),
-                ].map(element => element.innerText)
-              )
-            }
-            classes = classes.concat(tablelist)
-          } else if (note) {
-            // The table is the summary table ---> skip!
-          } else if (subtables.length === 3) {
-            // This should be the course info table. --> get data elements
-            course_info = [
-              ...chunk.querySelectorAll<HTMLElement>(dataClassSelector),
-            ].map(element => element.innerText)
-          }
-          // Else -> other heading tables ---> skip!
-        }
-      }
-      if (classes.length > 0) {
-        coursesDataElements.push({
-          course_info: course_info,
-          classes: classes,
-        })
-      } else {
-        coursesDataElements.push({ course_info: course_info })
-      }
-    }
-    return coursesDataElements
-  })
-  return chunks
+  const tableSelector: string = '[class="formBody"][colspan="3"]'
+  return await page.$$eval(tableSelector, parsePage)
 }
 
 /**
@@ -197,9 +318,7 @@ const termFinder = ({
   // Add the current year to the date and convert it to a date
   // object so it can be easily parsed
   const refCensusDates = formatDates(
-    reference.map(element => {
-      return element.census + '/' + currentYear
-    })
+    reference.map(element => element.census + '/' + currentYear)
   )
 
   const termList: Term[] = []
@@ -267,18 +386,20 @@ const scrapePage = async (
       let noteIndex: number = 0
       let classWarns: ClassWarnings[] = []
       // There must be a course info array for any page
-      if (!course.course_info) {
+      if (!course.courseInfo) {
         throw new Error('Malformed page: ' + page.url())
       } else {
-        const parsedInfo = parseCourseInfoChunk({ data: course.course_info })
+        const parsedInfo = parseCourseInfoChunk({ data: course.courseInfo })
         notes = parsedInfo.notes
         course_info = parsedInfo.courseInfo
       }
 
       // There may or may not be a classlist
-      if (course.classes) {
-        for (const courseClass of course.classes) {
-          const parsedClassChunk = parseClassChunk({ data: courseClass })
+      if (course.courseClasses) {
+        for (const courseClass of course.courseClasses) {
+          const parsedClassChunk = parseClassChunk({
+            data: courseClass,
+          })
           if (parsedClassChunk) {
             classes[
               getTermFromClass({
@@ -338,4 +459,4 @@ const scrapePage = async (
   return { coursesData, warnings }
 }
 
-export { getDataUrls, getDataUrlsParams, scrapePage, termFinder, getChunks }
+export { getUrls, getUrlsParams, scrapePage, termFinder, getChunks }

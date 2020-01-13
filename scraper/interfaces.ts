@@ -110,8 +110,8 @@ interface ClassWarnings {
  * @interface PageData: Defines the structure of a subsection of a page in Chunks
  */
 interface PageData {
-  course_info: Chunk
-  classes?: Chunk[]
+  courseInfo: Chunk
+  courseClasses?: Chunk[]
 }
 
 /**
