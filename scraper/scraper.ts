@@ -1,8 +1,18 @@
 import * as puppeteer from 'puppeteer'
 import { cloneDeep } from 'lodash'
 
-import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
-import { getUrls, getUrlsParams, scrapePage, termFinder } from './PageScraper'
+import {
+  TimetableData,
+  UrlList,
+  ExtendedTerm,
+  CourseWarning,
+} from './interfaces'
+import {
+  getUrls,
+  getUrlsParams,
+  scrapePage,
+  getTermFromCourse,
+} from './PageScraper'
 import { keysOf, createPages } from './helper'
 
 interface ScrapeSubjectParams {
@@ -15,7 +25,7 @@ interface ScrapeSubjectParams {
  * This scrapes one subject
  * @param { puppeteer.Page } page Page to use to scrape the subject
  * @param { string } course Url of the course to be scraped
- * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns {Promise<{ courseData: TimetableData; courseWarnings: CourseWarning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @example
  *    const browser = await puppeteer.launch()
  *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
@@ -25,7 +35,7 @@ const scrapeSubject = async ({
   course,
 }: ScrapeSubjectParams): Promise<{
   coursesData: TimetableData
-  warnings: Warning[]
+  courseWarnings: CourseWarning[]
 }> => {
   await page.goto(course, {
     waitUntil: 'networkidle2',
@@ -72,7 +82,7 @@ const getPageUrls = async ({
 /**
  * The scraper that scrapes the timetable site
  * @param { number } year: The year for which the information is to be scraped
- * @returns { Promise<{ timetableData: TimetableData; warnings: Warning[] } }: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns { Promise<{ timetableData: TimetableData; courseWarnings: CourseWarning[] } }: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @returns { false }: Scraping failed due to some error. Error printed to console.error
  * @example
  * 1.
@@ -84,7 +94,9 @@ const getPageUrls = async ({
  */
 const timetableScraper = async (
     year: number
-  ): Promise<{ timetableData: TimetableData; warnings: Warning[] } | false> => {
+  ): Promise<
+    { timetableData: TimetableData; courseWarnings: CourseWarning[] } | false
+  > => {
     // Launch the browser. Headless mode = true by default
     const browser = await puppeteer.launch({ headless: false })
     try {
@@ -109,8 +121,8 @@ const timetableScraper = async (
         S2: [],
       }
 
-      // Warning array for any fields not aligning with the strict requirements
-      const warnings: Warning[] = []
+      // CourseWarning array for any fields not aligning with the strict requirements
+      const courseWarnings: CourseWarning[] = []
 
       // Go to the page with list of subjects (Accounting, Computers etc)
       await page.goto(base, {
@@ -163,9 +175,12 @@ const timetableScraper = async (
       for (let job = 0; job < jobs.length; ) {
         const promises: Promise<{
           coursesData: TimetableData
-          warnings: Warning[]
+          courseWarnings: CourseWarning[]
         }>[] = []
-        let result: { coursesData: TimetableData; warnings: Warning[] }[]
+        let result: {
+          coursesData: TimetableData
+          courseWarnings: CourseWarning[]
+        }[]
         for (let i = 0; i < batchsize && job < jobs.length; i++) {
           const data = scrapeSubject({
             page: pages[i],
@@ -178,7 +193,7 @@ const timetableScraper = async (
         result = await Promise.all(promises)
 
         for (const element of result) {
-          warnings.push.apply(warnings, element.warnings)
+          courseWarnings.push(...element.courseWarnings)
           for (const scrapedTerm of keysOf(element.coursesData)) {
             // Each termlist may contain multiple courses
             for (const scrapedCourse of element.coursesData[scrapedTerm]) {
@@ -188,7 +203,7 @@ const timetableScraper = async (
               }
               // If the term is in the other list, then it has no classes. Classify it!
               if (scrapedTerm === ExtendedTerm.Other) {
-                const termlist = termFinder({ course: scrapedCourse })
+                const termlist = getTermFromCourse({ course: scrapedCourse })
                 const notes = scrapedCourse.notes
                 let noteIndex = 0
                 for (const term of termlist) {
@@ -213,7 +228,7 @@ const timetableScraper = async (
 
       // Close the browser.
       await browser.close()
-      return { timetableData: timetableData, warnings: warnings }
+      return { timetableData: timetableData, courseWarnings: courseWarnings }
     } catch (err) {
       // log error and close browser.
       console.error(err)

@@ -76,9 +76,9 @@ interface TimetableData extends Record<Term, Course[]> {
 type ClassesByTerm = Record<Term, Class[]>
 
 /**
- * @interface Warning: Defines the interface for input not conforming to the strict requirements
+ * @interface CourseWarning: Defines the interface for input not conforming to the strict requirements
  */
-interface Warning extends ClassWarnings {
+interface CourseWarning extends ClassWarnings {
   courseCode: string
   courseName: string
 }
@@ -152,7 +152,7 @@ interface Class {
 }
 
 /**
- * @interface Course Structure of a scraped course
+ * @interface Course: Structure of a scraped course
  */
 interface Course extends CourseHead, CourseInfo {
   classes?: Class[]
@@ -179,7 +179,7 @@ interface CourseInfo {
 }
 
 /**
- * @interface GetTermFromClassDates Structure of a date inside a reference object provided to the classTermFinder method
+ * @interface GetTermFromClassDates Structure of a date inside a reference object provided to the getTermFromClass method
  */
 interface GetTermFromClassDates {
   start: number
@@ -187,7 +187,7 @@ interface GetTermFromClassDates {
 }
 
 /**
- * @interface GetTermFromClassReferenceElement: Structure of a reference object provided to the classTermFinder method
+ * @interface GetTermFromClassReferenceElement: Structure of a reference object provided to the getTermFromClass method
  */
 interface GetTermFromClassReferenceElement {
   term: Term
@@ -197,9 +197,9 @@ interface GetTermFromClassReferenceElement {
 type GetTermFromClassReference = GetTermFromClassReferenceElement[]
 
 /**
- * @interface TermFinderReferenceElement: Structure of a reference object provided to the termFinder method
+ * @interface GetTermFromCourseElement: Structure of a reference object provided to the getTermFromCourse method
  */
-interface TermFinderReferenceElement {
+interface GetTermFromCourseRefElement {
   term: Term
   census: string
 }
@@ -207,10 +207,10 @@ interface TermFinderReferenceElement {
 /**
  * @type: The reference list that the term finder function needs
  */
-type TermFinderReference = TermFinderReferenceElement[]
+type GetTermFromCourseReference = GetTermFromCourseRefElement[]
 
 export {
-  TermFinderReference,
+  GetTermFromCourseReference,
   GetTermFromClassReference,
   GetTermFromClassDates,
   Time,
@@ -229,7 +229,7 @@ export {
   Status,
   Day,
   Career,
-  Warning,
+  CourseWarning,
   ClassWarnings,
   WarningTag,
 }

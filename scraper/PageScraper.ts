@@ -6,12 +6,13 @@ import {
   PageData,
   Term,
   Course,
-  Warning,
+  CourseWarning,
   ClassWarnings,
   ClassesByTerm,
   TimetableData,
   CourseInfo,
-  TermFinderReference,
+  GetTermFromCourseReference,
+  CourseHead,
 } from './interfaces'
 import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
@@ -112,7 +113,6 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     dataClassSelector,
   }: GetClassTablesParams): Chunk[] => {
     // The table represents a classlist!! -> the split chunks are then each element of subtables...
-    // get all elements with class data from each table and then return that array.
     const tablelist: Chunk[] = []
     for (const subtable of subtables) {
       tablelist.push(
@@ -270,9 +270,9 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
 }
 
 /**
- * @constant { TermFinderReference }: Default reference to follow to find the correct term
+ * @constant { GetTermFromCourseReference }: Default reference to follow to find the correct term. Each object contains a term and its census date to classify a course.
  */
-const defaultReference: TermFinderReference = [
+const defaultReference: GetTermFromCourseReference = [
   { term: Term.Summer, census: '1/8' },
   { term: Term.T1, census: '3/17' },
   { term: Term.T2, census: '6/30' },
@@ -281,9 +281,33 @@ const defaultReference: TermFinderReference = [
   { term: Term.S2, census: '8/18' },
 ]
 
-interface TermFinderParams {
+interface GetDifferenceBetweenDatesParams {
+  censusDate: Date
+  refDate: Date
+}
+
+/**
+ * Finds difference between the census date and given reference date (in days)
+ * @param { Date } censusDate: Census date for course
+ * @param { Date } refDate: Reference date to be compared with
+ * @returns { number }: Absolute value of the difference between two dates
+ */
+const getDifferenceBetweenDates = ({
+  censusDate,
+  refDate,
+}: GetDifferenceBetweenDatesParams): number => {
+  return Math.abs(
+    Math.round(
+      (censusDate.getMonth() - refDate.getMonth()) * 30 +
+        censusDate.getDate() -
+        refDate.getDate()
+    )
+  )
+}
+
+interface GetTermFromCourseParams {
   course: Course
-  reference?: TermFinderReference
+  reference?: GetTermFromCourseReference
 }
 
 /**
@@ -292,7 +316,7 @@ interface TermFinderParams {
  * the course can be a part of
  * [ Summer, T1, T2, T3, S1, S2 ]
  * @param { Course } course: course the term is required for
- * @param { TermFinderReference } reference The reference is optional. The default is:
+ * @param { GetTermFromCourseReference } reference The reference is optional. The default is:
  * (Convert the dates into start (month of starting)
  * and length (number of months the course runs))
  * Summer: 26/11 ---> 10/02
@@ -304,14 +328,13 @@ interface TermFinderParams {
  * The date format for reference census dates is month/day
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
-const termFinder = ({
+const getTermFromCourse = ({
   course,
   reference = defaultReference,
-}: TermFinderParams): Term[] => {
+}: GetTermFromCourseParams): Term[] => {
   if (!course.censusDates || course.censusDates.length <= 0) {
     throw new Error('no census dates for course: ' + course.courseCode)
   }
-  // For each of the census dates...add a term to the list
   const censusDates = formatDates(course.censusDates)
   const currentYear = new Date().getFullYear()
 
@@ -321,6 +344,7 @@ const termFinder = ({
     reference.map(element => element.census + '/' + currentYear)
   )
 
+  // For each of the census dates...add a term to the list
   const termList: Term[] = []
   for (const censusDate of censusDates) {
     // minimum difference with the reference census date means the course is in that term
@@ -328,15 +352,7 @@ const termFinder = ({
     let index = 0
     let term: Term
     for (const refDate of refCensusDates) {
-      // Calculate the difference (in days) between the
-      // census date for the term and the reference census date
-      const diff = Math.abs(
-        Math.round(
-          (censusDate.getMonth() - refDate.getMonth()) * 30 +
-            censusDate.getDate() -
-            refDate.getDate()
-        )
-      )
+      const diff = getDifferenceBetweenDates({ censusDate, refDate })
       if (diff < min || min === -1) {
         min = diff
         term = reference[index].term
@@ -348,15 +364,133 @@ const termFinder = ({
   return termList
 }
 
+interface GetCourseInfoAndNotesParams {
+  courseInfo: Chunk
+  url: string
+}
+
+interface GetCourseInfoAndNotesReturn {
+  courseInfo: CourseInfo
+  notes: string[]
+}
+
+/**
+ * Wrapper to check course info chunk before parsing it
+ * @param { CourseInfo } courseInfo: CourseInfo chunk to be checked
+ * @param { string } url: Url of the page the courseInfo chunk is on
+ * @returns { GetCourseInfoAndNotesReturn }: The parsed courseInfo object and the extracted notes array
+ */
+const getCourseInfoAndNotes = ({
+  courseInfo,
+  url,
+}: GetCourseInfoAndNotesParams): GetCourseInfoAndNotesReturn => {
+  if (!courseInfo) {
+    throw new Error('Malformed page: ' + url)
+  }
+  return parseCourseInfoChunk({ data: courseInfo })
+}
+
+/**
+ * Check each extracted note
+ * @param { string[] } notes: Raw notes array
+ * @returns { string [] }: All the valid notes found on the page
+ */
+const getNotes = (notes: string[]): string[] => {
+  const cleanNotes: string[] = []
+  for (const note of notes) {
+    if (note) {
+      cleanNotes.push(note)
+    }
+  }
+  return cleanNotes
+}
+
+interface GetClassesByTermReturn {
+  classes: ClassesByTerm
+  classWarnings: ClassWarnings[]
+}
+
+/**
+ * Convert class chunks into class objects and classify them into terms
+ * @param { Chunk[] } courseClasses: List of raw class chunks
+ * @returns { GetClassesByTermReturn }: Parsed class objects, along with any warnings that occured during parsing
+ */
+const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
+  const classes: ClassesByTerm = {
+    Summer: [],
+    T1: [],
+    T2: [],
+    T3: [],
+    S1: [],
+    S2: [],
+  }
+  const classWarnings: ClassWarnings[] = []
+  for (const courseClass of courseClasses) {
+    const parsedClassChunk = parseClassChunk({
+      data: courseClass,
+    })
+    if (parsedClassChunk) {
+      classes[
+        getTermFromClass({
+          cls: parsedClassChunk.classData,
+        })
+      ].push(parsedClassChunk.classData)
+
+      classWarnings.push(...parsedClassChunk.warnings)
+    }
+  }
+
+  return { classes, classWarnings }
+}
+
+interface GetCourseWarningsFromClassWarnings {
+  classWarnings: ClassWarnings[]
+  courseHead: CourseHead
+}
+
+/**
+ * Converts class warnings to course warnings to give more information for debugging
+ * @param { CourseHead } courseHead: The course name and course code required for the conversion as a course head object
+ * @param { ClassWarnings } classWarnings: The classwarnings to be converted
+ * @returns { CourseWarning[] }: Converted course warnings
+ */
+const getCourseWarningsFromClassWarnings = ({
+  classWarnings,
+  courseHead,
+}: GetCourseWarningsFromClassWarnings): CourseWarning[] => {
+  if (!courseHead) {
+    throw new Error('Invalid course code and name')
+  }
+
+  // Encapsulate the classWarnings into courseWarnings for the course
+  // by adding
+  const courseWarnings: CourseWarning[] = []
+  for (const classWarn of classWarnings) {
+    const courseWarning: CourseWarning = {
+      courseCode: courseHead.courseCode,
+      courseName: courseHead.name,
+      ...classWarn,
+    }
+    courseWarnings.push(courseWarning)
+  }
+
+  return courseWarnings
+}
+
+interface ScrapePageReturnSync {
+  coursesData: TimetableData
+  courseWarnings: CourseWarning[]
+}
+
+type ScrapePageReturn = Promise<ScrapePageReturnSync>
+
 /**
  * Function scrapes all the course data on the given page
  * Returns an array of courses on the page
  * @param { puppeteer.Page } page Page to be scraped
- * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
+ * @returns { ScrapePageReturn }: All the data on the current page, along with all the courseWarnings found on that page
  */
-const scrapePage = async (
-  page: puppeteer.Page
-): Promise<{ coursesData: TimetableData; warnings: Warning[] }> => {
+const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
   const coursesData: TimetableData = {
     Summer: [],
     T1: [],
@@ -366,97 +500,67 @@ const scrapePage = async (
     S2: [],
     Other: [],
   }
-  const warnings: Warning[] = []
+  const courseWarnings: CourseWarning[] = []
   const pageChunks: PageData[] = await getChunks(page)
-  // For each course chunk...
+
   for (const course of pageChunks) {
-    // Get course code and name, that is not a chunk
-    const courseHeadData = await getCourseHeadData(page)
+    if (!course) {
+      continue
+    }
+
+    let courseHead: CourseHead
     try {
-      let course_info: CourseInfo
-      const classes: ClassesByTerm = {
-        Summer: [],
-        T1: [],
-        T2: [],
-        T3: [],
-        S1: [],
-        S2: [],
-      }
-      let notes: string[]
-      let noteIndex: number = 0
-      let classWarns: ClassWarnings[] = []
-      // There must be a course info array for any page
-      if (!course.courseInfo) {
-        throw new Error('Malformed page: ' + page.url())
-      } else {
-        const parsedInfo = parseCourseInfoChunk({ data: course.courseInfo })
-        notes = parsedInfo.notes
-        course_info = parsedInfo.courseInfo
-      }
+      // Get course code and name, that is not a chunk
+      courseHead = await getCourseHeadData(page)
+      const parsedData = getCourseInfoAndNotes({
+        courseInfo: course.courseInfo,
+        url: page.url(),
+      })
+      const courseInfo = parsedData.courseInfo
+      const notes = getNotes(parsedData.notes)
+      const { classes, classWarnings } = getClassesByTerm(course.courseClasses)
 
       // There may or may not be a classlist
       if (course.courseClasses) {
-        for (const courseClass of course.courseClasses) {
-          const parsedClassChunk = parseClassChunk({
-            data: courseClass,
-          })
-          if (parsedClassChunk) {
-            classes[
-              getTermFromClass({
-                cls: parsedClassChunk.classData,
-              })
-            ].push(parsedClassChunk.classData)
-
-            // Get the warnings
-            classWarns.push.apply(classWarns, parsedClassChunk.warnings)
-          }
-        }
-
         for (const term of keysOf(classes)) {
           if (!classes[term] || classes[term].length === 0) {
             continue
           }
           const courseData: Course = {
-            ...courseHeadData,
-            ...course_info,
+            ...courseHead,
+            ...courseInfo,
             classes: classes[term],
           }
 
-          if (notes[noteIndex] && notes[noteIndex] != ' ') {
-            courseData.notes = [notes[noteIndex]]
-            noteIndex++
-          } else {
-            delete courseData.notes
+          if (notes) {
+            courseData.notes = notes
           }
 
           coursesData[term].push(courseData)
         }
       } else {
-        // In case there is no class list then dont include the parameter
         const courseData: Course = {
-          ...courseHeadData,
-          ...course_info,
-          notes: notes,
+          ...courseHead,
+          ...courseInfo,
+        }
+
+        if (notes) {
+          courseData.notes = notes
         }
 
         coursesData.Other.push(courseData)
       }
 
-      // Encapsulate the classWarnings into warnings for the course
-      for (const classWarn of classWarns) {
-        const courseWarning: Warning = {
-          courseCode: courseHeadData.courseCode,
-          courseName: courseHeadData.name,
-          ...classWarn,
-        }
-        warnings.push(courseWarning)
-      }
+      courseWarnings.push(
+        ...getCourseWarningsFromClassWarnings({ classWarnings, courseHead })
+      )
     } catch (err) {
-      console.log(courseHeadData.courseCode + ' ' + courseHeadData.name)
+      // Adding the course name and code before deferring to parent
+      console.log(courseHead.courseCode + ' ' + courseHead.name)
       throw new Error(err)
     }
   }
-  return { coursesData, warnings }
+  return { coursesData, courseWarnings }
 }
 
-export { getUrls, getUrlsParams, scrapePage, termFinder, getChunks }
+export { getUrls, getUrlsParams, scrapePage, getTermFromCourse, getChunks }
