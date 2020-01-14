@@ -125,7 +125,8 @@ interface parseCourseInfoChunkReturn {
 }
 
 /**
- * @constant { CourseInfoIndices }: Default indices which represent which index to grab data from
+ * @constant { CourseInfoIndices }: Default indices which represent which index to grab data from.
+ * The schoolIndex is not 0 because there is a column for an &nbsp in the table
  */
 const defaultParseIndices: CourseInfoIndices = {
   schoolIndex: 1,
