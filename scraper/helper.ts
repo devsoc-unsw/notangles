@@ -116,7 +116,7 @@ interface makeClassWarningParams {
  * @param { string } errorKey Key that is not conforming
  * @param { unknown } errorValue The invalid value of the key
  * @param { WarningTag } tag Warning tag to indicate details of the error
- * @returns { ClassWarnings }: Created ClassWarnings object
+ * @returns { ClassWarnings }
  */
 const makeClassWarning = ({
   classID,
