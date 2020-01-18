@@ -1,6 +1,6 @@
 import * as puppeteer from 'puppeteer'
 
-import { removeHtmlSpecials } from './helper'
+import { transformHtmlSpecials } from './helper'
 import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
 
 /**
@@ -23,7 +23,7 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   }
   const courseHead: CourseHead = {
     courseCode: data[1].trim(),
-    name: removeHtmlSpecials(data[2].trim()),
+    name: transformHtmlSpecials(data[2].trim()),
   }
   return courseHead
 }

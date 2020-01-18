@@ -63,7 +63,7 @@ const getDataUrls = async ({
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
  * @param { puppeteer.Page } page: page to be broken down into chunks
- * @returns { Promise<PageData[]> }: Extracted data as a course info chunk and list of class chunks to be parsed
+ * @returns { Promise<PageData[]> }
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
   const chunks: PageData[] = await page.evaluate(() => {
@@ -170,16 +170,7 @@ interface TermFinderParams {
  * the course can be a part of
  * [ Summer, T1, T2, T3, S1, S2 ]
  * @param { Course } course: course the term is required for
- * @param { TermFinderReference } reference The reference is optional. The default is:
- * (Convert the dates into start (month of starting)
- * and length (number of months the course runs))
- * Summer: 26/11 ---> 10/02
- * T1: 18/02 ---> 19/05
- * T2: 03/06 ---> 01/09
- * T3: 16/09 ---> 15/12
- * S1: 25/02 ---> 30/06
- * S2: 15/07 ---> 10/11
- * The date format for reference census dates is month/day
+ * @param { TermFinderReference } reference: Dates to compare the course dates against
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
 const termFinder = ({
@@ -232,7 +223,7 @@ const termFinder = ({
  * Scrapes all the course data on the given page
  * Returns an array of courses on the page
  * @param { puppeteer.Page } page Page to be scraped
- * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
+ * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }
  */
 const scrapePage = async (
   page: puppeteer.Page

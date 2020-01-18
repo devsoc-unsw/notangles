@@ -1,7 +1,7 @@
 import {
   reverseDayAndMonth,
   formatDates,
-  removeHtmlSpecials,
+  transformHtmlSpecials,
   makeClassWarning,
 } from './helper'
 import {
@@ -36,7 +36,10 @@ interface ClassTermFinderParams {
 const defaultReferenceDates: ClassTermFinderReference = [
   {
     term: Term.Summer,
-    dates: [{ start: 11, length: 3 }, { start: 12, length: 2 }],
+    dates: [
+      { start: 11, length: 3 },
+      { start: 12, length: 2 },
+    ],
   },
   {
     term: Term.T1,
@@ -84,40 +87,40 @@ const defaultReferenceDates: ClassTermFinderReference = [
 ]
 
 interface ClassTermFinderCheckerParams {
-  start: Date
-  end: Date
+  startDate: Date
+  endDate: Date
   refDate: ClassTermFinderDates
 }
 
 /**
  * Classifies a class into a term according to the given reference date. Checks if the class matches the
  * the given reference dates
- * @param {Date} start: start date of the class
- * @param {Date} end: end date of the class
+ * @param {Date} startDate
+ * @param {Date} endDate
  * @param {ClassTermFinderDates} refDate: reference dates to match the start and end dates to
  * @example
  *        Given class is starting in november (month 11) and running for 3 months, and the refDate is: { start: 11, length: 3 }, it compares the class dates to the refDate:
- * 
+ *
  * classTermFinderChecker({
  *  start: Date(12/11/2019),
  *  end: Date(12/2/2020),
  *  refDate: { start: 11, length: 3 }
  * })
- * 
- * expect true 
+ *
+ * expect true
  */
 const classTermFinderChecker = ({
-  start,
-  end,
+  startDate,
+  endDate,
   refDate,
 }: ClassTermFinderCheckerParams): Boolean => {
   return (
     // Compare start date
-    start.getMonth() + 1 === refDate.start &&
+    startDate.getMonth() + 1 === refDate.start &&
     // Compare length in months
-    end.getMonth() -
-      start.getMonth() +
-      (end.getFullYear() - start.getFullYear()) * 12 ===
+    endDate.getMonth() -
+      startDate.getMonth() +
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 ===
       refDate.length
   )
 }
@@ -139,7 +142,7 @@ const classTermFinder = ({
     throw new Error('no start and end dates for class: ' + cls)
   }
 
-  const [start, end] = formatDates(
+  const [startDate, endDate] = formatDates(
     [cls.termDates.start, cls.termDates.end].map(date =>
       reverseDayAndMonth({ date: date, delimiter: '/' })
     )
@@ -149,7 +152,7 @@ const classTermFinder = ({
     // A term could have any number of start dates
     for (const refDate of termData.dates) {
       // If start date and length match, then term is found
-      if (classTermFinderChecker({ start, end, refDate })) {
+      if (classTermFinderChecker({ startDate, endDate, refDate })) {
         return termData.term
       }
     }
@@ -332,7 +335,7 @@ const parseClassChunk = (
     index++
 
     // location
-    let location: string | false = removeHtmlSpecials(data[index])
+    let location: string | false = transformHtmlSpecials(data[index])
     // Check if location exists
     const locationTesterRegex = /[A-Za-z]/
     if (!(location && locationTesterRegex.test(location))) {
