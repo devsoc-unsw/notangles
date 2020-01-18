@@ -110,7 +110,7 @@ interface makeClassWarningParams {
 }
 
 /**
- * Takes in details about an errer and creates a classWarnings object for it
+ * Takes in error details and returns its corresponding ClassWarnings
  * @param { number } classID ID of erroneous class
  * @param { string } term Term in which the erroneous class is
  * @param { string } errorKey Key that is not conforming
