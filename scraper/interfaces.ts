@@ -67,7 +67,7 @@ interface Warning extends ClassWarnings {
 }
 
 /**
- * Gives information about th error that has ocurred
+ * Gives information about the error that has ocurred
  */
 enum WarningTag {
   Other = 'Other',
