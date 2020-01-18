@@ -25,7 +25,7 @@ const transformHtmlSpecials = (str: string) => {
 }
 
 /**
- * Converts dates into date objects
+ * Converts date strings into date objects
  * @param { string[] } dates: list of census dates to be formatted to utc time
  * @returns { Date[] }
  * @example
