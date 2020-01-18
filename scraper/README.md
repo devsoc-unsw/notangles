@@ -150,7 +150,7 @@ Note: The data is an array of JSON objects as there may be details about more th
 
 ### Database Integration
 
-There is a script provided in the file writeToDb.ts which uses the Database api from `notangles/server` to write to the MongoDB database
+The writeToDb.ts script uses the Database api from `notangles/server` to write to the MongoDB database.
 
 ## What next?
 
