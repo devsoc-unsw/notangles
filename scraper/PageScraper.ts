@@ -229,7 +229,7 @@ const termFinder = ({
 }
 
 /**
- * Function scrapes all the course data on the given page
+ * Scrapes all the course data on the given page
  * Returns an array of courses on the page
  * @param { puppeteer.Page } page Page to be scraped
  * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: All the data on the current page, along with all the warnings found on that page
