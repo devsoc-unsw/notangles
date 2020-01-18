@@ -63,14 +63,15 @@ The scraper has two parts:
    - The scraper also checks the data for any errors. If it finds data that is not in the expected format, it makes a copy of the data that it thinks is erroneous and adds it to a list of warnings. This list of warnings is then returned to the caller. Each warning is tagged with a warning tag and a simple warning message. For example:
    ```
    {
-    "courseCode": "ATSI0002",
-    "courseName": "Enabling Skills 2",
-    "tag": "Unknown Location",
-    "classID": 10723,
-    "term": "T2",
-    "error": {
-      "key": "location",
-      "value": "( )"
+        "courseCode": "ATSI0002",
+        "courseName": "Enabling Skills 2",
+        "tag": "Unknown Location",
+        "classID": 10723,
+        "term": "T2",
+        "error": {
+            "key": "location",
+            "value": "( )"
+        }
     }
 
 
@@ -159,8 +160,6 @@ Here's a list of possible improvements:
 
 2. Performance Boost: Since the pages of the browser work in batches, the tabs that were opened first have to wait for every tab in the batch to finish scraping before moving onto the next url. Find a way to minimize/remove this wait.
 
-3. Writing to db must be done by the backend and not the scraper, making the need for writeToDb.ts file something to be moved to somewhere more appropriate.
+3. Automation script: that runs the scraper at set times and provides data regularly to the backend. This can also be implemented in the backend itself.
 
-4. Automation script: that runs the scraper at set times and provides data regularly to the backend. This can also be implemented in the backend itself.
-
-5. Flexibility: The data structure might be changed. With that in mind, perhaps the user could supply a page/data structure and validation rules to make the process more robust.
+4. Flexibility: The data structure might be changed. With that in mind, perhaps the user could supply a page/data structure and validation rules to make the process more robust.
