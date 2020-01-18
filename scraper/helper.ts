@@ -9,7 +9,7 @@ import { WarningTag, ClassWarnings } from './interfaces'
  * @example
  *    const clean = removeHtmlSpecials('&amp;') // 'and'
  */
-const removeHtmlSpecials = (str: string) => {
+const transformHtmlSpecials = (str: string) => {
   // &amp --> and
   let newstr = str.replace('&amp;', 'and')
 
