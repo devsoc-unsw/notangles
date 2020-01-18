@@ -26,13 +26,13 @@ const removeHtmlSpecials = (str: string) => {
 
 /**
  * Converts dates into date objects
- * @param { string[] } dateList: list of census dates to be formatted to utc time
+ * @param { string[] } dates: list of census dates to be formatted to utc time
  * @returns { Date[] }: List of dates converted to Date objects
  * @example
  *    const formatted = formatDates(['01/27/2020']) // Date('01/27/2020')
  */
-const formatDates = (dateList: string[]): Date[] => {
-  return dateList.map(date => new Date(date + 'Z'))
+const formatDates = (dates: string[]): Date[] => {
+  return dates.map(date => new Date(date + 'Z'))
 }
 
 interface reverseDayAndMonthParams {
