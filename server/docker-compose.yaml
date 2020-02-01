@@ -12,7 +12,7 @@ services:
       - database
   database:
     container_name: notangles_database
-    restart: always
+    # restart: always
     image: mongo:latest
     volumes:
       - /data/db:/data/db
