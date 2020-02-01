@@ -93,7 +93,6 @@ class Database {
    * @param doc A javascript object that contains course data
    */
   dbAdd = async ({dbName, termColName, doc}: dbAddParams) => {
-    console.log("Add")
     const col = await this.getCollection({dbName, termColName})
     await col.insertOne(doc)
   }
@@ -107,7 +106,6 @@ class Database {
    * @returns A javascript object containing information about the course. The object will be empty if the course cannot be found
    */
   dbRead = async ({dbName, termColName, courseCode}: dbReadParams) => {
-    console.log("read")
     const col = await this.getCollection({dbName, termColName})
     const doc = await col.findOne({ courseCode })
     return doc
@@ -127,7 +125,6 @@ class Database {
     courseCode,
     doc }: dbUpdateParams
   ) => {
-    console.log("Update")
     const col = await this.getCollection({dbName, termColName})
     try {
       await col.updateOne({ courseCode }, { $set: doc })

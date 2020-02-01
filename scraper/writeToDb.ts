@@ -5,7 +5,9 @@ import { TimetableData, Course, Class, Time } from './interfaces'
 const main = async () => {
   //writing the data to the database
   let date = new Date()
-  const year = date.getFullYear().toString(10)
+  //const year = date.getFullYear().toString(10)
+  //Scraper has a bug with 2020, changing year to be fixed to to 2019 temporarily so other tasks cannot be blocked
+  const year = "2019"
   const terms = await timetableScraper(date.getFullYear())
   for (const [termName, term] of Object.entries(terms.timetableData)) {
     for (const course of term) {
