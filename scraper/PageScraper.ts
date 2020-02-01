@@ -24,6 +24,7 @@ interface getDataUrlsParams {
 /**
  * Gets all the urls in the data class on page: page matching regex
  * Each url will have the prefix: base.
+ *
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
  * @param { RegExp } regex regex to check each url
@@ -61,6 +62,7 @@ const getDataUrls = async ({
 
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
+ *
  * @param { puppeteer.Page } page: page to be broken down into chunks
  * @returns { Promise<PageData[]> }
  */
@@ -147,7 +149,7 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
 }
 
 /**
- * @constant { TermFinderReference }: Default reference to follow to find the correct term
+ * @constant { TermFinderReference }: Default reference to follow to find the correct term. Each object contains a term and its census date to classify a course.
  */
 const defaultReference: TermFinderReference = [
   { term: Term.Summer, census: '1/8' },
@@ -168,6 +170,7 @@ interface TermFinderParams {
  * the function returns one of the 6 terms that
  * the course can be a part of
  * [ Summer, T1, T2, T3, S1, S2 ]
+ *
  * @param { Course } course: course the term is required for
  * @param { TermFinderReference } reference: Dates to compare the course dates against
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
@@ -220,9 +223,9 @@ const termFinder = ({
 
 /**
  * Scrapes all the course data on the given page
- * Returns an array of courses on the page
+ *
  * @param { puppeteer.Page } page Page to be scraped
- * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }
+ * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: all the courses on the page
  */
 const scrapePage = async (
   page: puppeteer.Page

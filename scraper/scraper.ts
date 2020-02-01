@@ -18,6 +18,7 @@ interface ScrapeSubjectParams {
 /**
  * Async wrapper to scrape multiple subjects at once
  * This scrapes one subject
+ *
  * @param { puppeteer.Page } page Page to use to scrape the subject
  * @param { string } course Url of the course to be scraped
  * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
@@ -47,6 +48,7 @@ interface getPageUrlsParams extends getDataUrlsParams {
 /**
  * Gets all the urls on the current page matching the given regex
  * (This function is only an async puppeteer wrapper)
+ *
  * @param { string } url Url of the page to scrape
  * @param { puppeteer.Page } page page to be used for scraping
  * @param { string } base prefix for each scraped url
@@ -76,6 +78,7 @@ const getPageUrls = async ({
 
 /**
  * The scraper that scrapes the timetable site
+ *
  * @param { number } year: The year for which the information is to be scraped
  * @returns { Promise<{ timetableData: TimetableData; warnings: Warning[] } }: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @returns { false }: Scraping failed due to some error. Error printed to console.error

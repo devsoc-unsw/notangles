@@ -93,8 +93,8 @@ interface ClassTermFinderCheckerParams {
 }
 
 /**
- * Classifies a class into a term according to the given reference date. Checks if the class matches the
- * the given reference dates
+ * Classifies a class into a term according to the given reference date. Checks if the class matches the given reference dates
+ * 
  * @param {Date} startDate
  * @param {Date} endDate
  * @param {ClassTermFinderDates} refDate: reference dates to match the start and end dates to
@@ -127,10 +127,9 @@ const classTermFinderChecker = ({
 
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
+ * 
  * @param { Class } cls: Class to find the term for
  * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
- * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
- * start is an array of possible start dates and length is the number of months the term might run for
  * @returns { Term }: Term which the class is from
  */
 const classTermFinder = ({
@@ -163,6 +162,7 @@ const classTermFinder = ({
 
 /**
  * Parses data from the data array into a class object
+ * 
  * @param { Chunk } data: array of text from elements with a data class
  * from a class chunk
  * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
