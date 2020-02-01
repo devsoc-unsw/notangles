@@ -970,5 +970,34 @@ const timetableScraper = async (
     await browser.close()
   }
 }
+;(async () => {
+  console.time('cscraper')
+  try {
+    const data = await timetableScraper(2019)
+
+    const fs = require('fs')
+    fs.writeFile(
+      'T1.json',
+      JSON.stringify(data.timetableData.T1),
+      'utf-8',
+      (err: unknown) => {
+        if (err) {
+          console.error(err)
+        }
+      }
+    )
+
+    // browser.close()
+  } catch (err) {
+    console.log(err)
+  }
+  console.timeEnd('cscraper')
+  const used = process.memoryUsage()
+  for (let key in used) {
+    console.log(
+      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`
+    )
+  }
+})()
 
 export { timetableScraper }
