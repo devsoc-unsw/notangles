@@ -2,8 +2,8 @@ import { Browser, Page } from 'puppeteer'
 import { WarningTag, ClassWarnings } from './interfaces'
 
 /**
- * Remove any html character entities from the given string
- * At this point, it only looks for 3 of them as more are not necessary
+ * Remove any html character entities (&nbsp, &amp etc) from the given string
+ * At this point, it replaces 3 of them: &amp, &nbsp, &lt
  * @param { string } string The string to remove html characters from
  * @returns { string }: string with html special characters replaced with english versions of said symbols
  * @example
