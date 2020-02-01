@@ -22,8 +22,7 @@ interface getDataUrlsParams {
 }
 
 /**
- * Gets all the urls in the data class on page: page,
- * Gets all the urls in the data class on page matching regex
+ * Gets all the urls in the data class on page: page matching regex
  * Each url will have the prefix: base.
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
