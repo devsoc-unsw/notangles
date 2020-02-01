@@ -31,8 +31,8 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
 /**
  * Scrapes all information, given a data array from a chunk that contains course information for one course
  *
- * @param {Chunk} data: Data array that contains the course information
- * @returns {{ notes: string[]; courseInfo: CourseInfo }}: A CourseInfo object containing data about the course and a list of notes on the page, if any.
+ * @param {Chunk} data - Data array that contains the course information
+ * @returns {{ notes: string[]; courseInfo: CourseInfo }} A CourseInfo object containing data about the course and a list of notes on the page, if any.
  */
 const parseCourseInfoChunk = (
   data: Chunk

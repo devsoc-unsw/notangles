@@ -19,9 +19,9 @@ interface ScrapeSubjectParams {
  * Async wrapper to scrape multiple subjects at once
  * This scrapes one subject
  *
- * @param {puppeteer.Page} page Page to use to scrape the subject
- * @param {string} course Url of the course to be scraped
- * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @param {puppeteer.Page} page - Page to use to scrape the subject
+ * @param {string} course - Url of the course to be scraped
+ * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }} The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @example
  *    const browser = await puppeteer.launch()
  *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
@@ -49,10 +49,10 @@ interface getPageUrlsParams extends getDataUrlsParams {
  * Gets all the urls on the current page matching the given regex
  * (This function is only an async puppeteer wrapper)
  *
- * @param { string } url Url of the page to scrape
- * @param { puppeteer.Page } page page to be used for scraping
- * @param { string } base prefix for each scraped url
- * @param { RegExp } regex regex to check each scraped url
+ * @param { string } url - Url of the page to scrape
+ * @param { puppeteer.Page } page - page to be used for scraping
+ * @param { string } base - prefix for each scraped url
+ * @param { RegExp } regex - regex to check each scraped url
  * @returns { Promise<string[]> } List of all urls on @param page . Each url is prefixed by @param base
  * @example
  *
@@ -79,8 +79,8 @@ const getPageUrls = async ({
 /**
  * The scraper that scrapes the timetable site
  *
- * @param {number} year: The year for which the information is to be scraped
- * @returns {Promise<{ timetableData: TimetableData; warnings: Warning[] }}: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @param {number} year - The year for which the information is to be scraped
+ * @returns {Promise<{ timetableData: TimetableData; warnings: Warning[] }} The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @returns {false}: Scraping failed due to some error. Error printed to console.error
  * @example
  * 1.
