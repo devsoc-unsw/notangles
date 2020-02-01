@@ -23,7 +23,7 @@ interface ClassTermFinderParams {
 }
 
 /**
- * @constant { ClassTermFinderReference }: Default reference that the classTermFinder function uses to classify classes into terms
+ * @constant {ClassTermFinderReference}: Default reference that the classTermFinder function uses to classify classes into terms
  * @example 
  *      a class might start in november and run for 3 months, into the next year, in this case the function finds that the class runs in the summer term, looking at the object:
  *      {
@@ -128,9 +128,9 @@ const classTermFinderChecker = ({
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
  * 
- * @param { Class } cls: Class to find the term for
- * @param { ClassTermFinderReference } reference: Refernce dates to find the term.
- * @returns { Term }: Term which the class is from
+ * @param {Class} cls: Class to find the term for
+ * @param {ClassTermFinderReference} reference: Refernce dates to find the term.
+ * @returns {Term}: Term which the class is from
  */
 const classTermFinder = ({
   cls,
@@ -163,7 +163,7 @@ const classTermFinder = ({
 /**
  * Parses data from the data array into a class object
  * 
- * @param { Chunk } data: array of text from elements with a data class
+ * @param {Chunk} data: array of text from elements with a data class
  * from a class chunk
  * @returns {Promise<{ classData: Class, warnings: ClassWarnings[] }}: The data that has been scraped, formatted as a class object
  * @returns {false}: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)

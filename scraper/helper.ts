@@ -5,8 +5,8 @@ import { WarningTag, ClassWarnings } from './interfaces'
  * Remove any html character entities (&nbsp, &amp etc) from the given string
  * At this point, it replaces 3 of them: &amp, &nbsp, &lt
  *
- * @param { string } string The string to remove html characters from
- * @returns { string }: string with html special characters replaced with english versions of said symbols
+ * @param {string} string The string to remove html characters from
+ * @returns {string}: string with html special characters replaced with english versions of said symbols
  * @example
  *    const clean = transformHtmlSpecials('&amp;') // 'and'
  */
@@ -28,8 +28,8 @@ const transformHtmlSpecials = (str: string) => {
 /**
  * Converts date strings into date objects
  *
- * @param { string[] } dates: list of census dates to be formatted to utc time
- * @returns { Date[] }
+ * @param {string[]} dates: list of census dates to be formatted to utc time
+ * @returns {Date[]}
  * @example
  *    const formatted = formatDates(['01/27/2020']) // Date('01/27/2020')
  */
@@ -46,9 +46,9 @@ interface reverseDayAndMonthParams {
  * Reverses the day and month order of the date so that it can be
  * robustly formated into a Date object using the formatDates() method
  *
- * @param { string } date: Date whose day and month is to be reversed
- * @param { string } delimiter: delimiter separating date fields
- * @returns { string }
+ * @param {string} date: Date whose day and month is to be reversed
+ * @param {string} delimiter: delimiter separating date fields
+ * @returns {string}
  * @example
  *    const rev = reverseDayAndMonth({date: '27/01/2020', delimiter: '/'}) // '01/27/2020'
  */
@@ -63,8 +63,8 @@ const reverseDayAndMonth = ({
 /**
  * Returns a list of keys for an object
  *
- * @param { T } obj: Object to return a list of keys for
- * @returns { (keyof T)[] }
+ * @param {T} obj: Object to return a list of keys for
+ * @returns {(keyof T)[]}
  * @example
  *    const keys = keysOf({'foo', 'bar'}) // ['foo']
  */
@@ -79,9 +79,9 @@ interface createPagesParams {
 /**
  * Creates browser pages to then use to scrape the website
  *
- * @param { Browser } browser: browser object (window) in which to create new pages
- * @param { number } batchsize: Number of pages to be created
- * @returns { Promise<Page[]> }
+ * @param {Browser} browser: browser object (window) in which to create new pages
+ * @param {number} batchsize: Number of pages to be created
+ * @returns {Promise<Page[]>}
  */
 const createPages = async ({
   browser,
@@ -117,11 +117,11 @@ interface makeClassWarningParams {
 /**
  * Takes in error details and returns its corresponding ClassWarnings
  *
- * @param { number } classID: ID of erroneous class
- * @param { string } term: Term in which the erroneous class is
- * @param { string } errorKey
- * @param { unknown } errorValue
- * @param { WarningTag } tag: A Warning tag for easier classification of the error
+ * @param {number} classID: ID of erroneous class
+ * @param {string} term: Term in which the erroneous class is
+ * @param {string} errorKey
+ * @param {unknown} errorValue
+ * @param {WarningTag} tag: A Warning tag for easier classification of the error
  * @returns { ClassWarnings }
  */
 const makeClassWarning = ({

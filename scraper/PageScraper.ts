@@ -25,10 +25,10 @@ interface getDataUrlsParams {
  * Gets all the urls in the data class on page: page matching regex
  * Each url will have the prefix: base.
  *
- * @param { puppeteer.Page } page Page to scrape urls from
- * @param { string } base string each url has to be prefixed with
- * @param { RegExp } regex regex to check each url
- * @returns { Promise<string[]> }: The list of urls on the page, prefixed with @param base
+ * @param {puppeteer.Page} page Page to scrape urls from
+ * @param {string} base string each url has to be prefixed with
+ * @param {RegExp} regex regex to check each url
+ * @returns {Promise<string[]>}: The list of urls on the page, prefixed with @param base
  */
 const getDataUrls = async ({
   page,
@@ -63,8 +63,8 @@ const getDataUrls = async ({
 /**
  * Breaks the page down into relevant chunks from which data can be extracted
  *
- * @param { puppeteer.Page } page: page to be broken down into chunks
- * @returns { Promise<PageData[]> }
+ * @param {puppeteer.Page} page: page to be broken down into chunks
+ * @returns {Promise<PageData[]>}
  */
 const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
   const chunks: PageData[] = await page.evaluate(() => {
@@ -149,7 +149,7 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
 }
 
 /**
- * @constant { TermFinderReference }: Default reference to follow to find the correct term. Each object contains a term and its census date to classify a course.
+ * @constant {TermFinderReference}: Default reference to follow to find the correct term. Each object contains a term and its census date to classify a course.
  */
 const defaultReference: TermFinderReference = [
   { term: Term.Summer, census: '1/8' },
@@ -224,8 +224,8 @@ const termFinder = ({
 /**
  * Scrapes all the course data on the given page
  *
- * @param { puppeteer.Page } page Page to be scraped
- * @returns { Promise<{ coursesData: TimetableData; warnings: Warning[] }> }: all the courses on the page
+ * @param {puppeteer.Page} page Page to be scraped
+ * @returns {Promise<{ coursesData: TimetableData; warnings: Warning[] }>}: all the courses on the page
  */
 const scrapePage = async (
   page: puppeteer.Page

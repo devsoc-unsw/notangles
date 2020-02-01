@@ -6,8 +6,8 @@ import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
 /**
  * Gets the data from the title of the course (course code, name)
  *
- * @param { puppeteer.Page } page: page which displays the data to scrape
- * @returns { Promise<CourseHead> }: Data about the title of the course: The course code and the course name
+ * @param {puppeteer.Page} page - page which displays the data to scrape
+ * @returns {Promise<CourseHead>} - Data about the title of the course: The course code and the course name
  */
 const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   const data = await page.evaluate(() => {
@@ -31,8 +31,8 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
 /**
  * Scrapes all information, given a data array from a chunk that contains course information for one course
  *
- * @param { Chunk } data: Data array that contains the course information
- * @returns { { notes: string[]; courseInfo: CourseInfo } }: A CourseInfo object containing data about the course and a list of notes on the page, if any.
+ * @param {Chunk} data: Data array that contains the course information
+ * @returns {{ notes: string[]; courseInfo: CourseInfo }}: A CourseInfo object containing data about the course and a list of notes on the page, if any.
  */
 const parseCourseInfoChunk = (
   data: Chunk
