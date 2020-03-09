@@ -240,6 +240,7 @@ const timetableScraper = async (
   // This function is for devlopment purposes only. Use npm run scraper to test the scraper
 ;(async () => {
   console.time('cscraper')
+  const browser = await puppeteer.launch({ headless: false })
   try {
     // const data = await timetableScraper(2019)
 
@@ -259,11 +260,10 @@ const timetableScraper = async (
     //   }
     // )
 
-    const browser = await puppeteer.launch({ headless: false })
     const singlepage = await browser.newPage()
     const data = await scrapeSubject({
       page: singlepage,
-      course: 'http://timetable.unsw.edu.au/2019/COMP1511.html',
+      course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
     })
 
     const fs = require('fs')
@@ -277,10 +277,20 @@ const timetableScraper = async (
         }
       }
     )
-
-    // await browser.close()
+    fs.writeFile(
+      'T1Warn.json',
+      JSON.stringify(data.courseWarnings),
+      'utf-8',
+      (err: unknown) => {
+        if (err) {
+          console.error(err)
+        }
+      }
+    )
   } catch (err) {
     console.log(err)
+  } finally {
+    await browser.close()
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()

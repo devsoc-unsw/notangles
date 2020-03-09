@@ -316,16 +316,7 @@ interface GetTermFromCourseParams {
  * the course can be a part of
  * [ Summer, T1, T2, T3, S1, S2 ]
  * @param { Course } course: course the term is required for
- * @param { GetTermFromCourseReference } reference The reference is optional. The default is:
- * (Convert the dates into start (month of starting)
- * and length (number of months the course runs))
- * Summer: 26/11 ---> 10/02
- * T1: 18/02 ---> 19/05
- * T2: 03/06 ---> 01/09
- * T3: 16/09 ---> 15/12
- * S1: 25/02 ---> 30/06
- * S2: 15/07 ---> 10/11
- * The date format for reference census dates is month/day
+ * @param { GetTermFromCourseReference } reference: Dates to compare the course dates against
  * @returns { Term[] }: List of all the terms the course runs in based on the census dates provided
  */
 const getTermFromCourse = ({
@@ -425,6 +416,7 @@ const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
     S2: [],
   }
   const classWarnings: ClassWarnings[] = []
+  console.log(courseClasses)
   for (const courseClass of courseClasses) {
     const parsedClassChunk = parseClassChunk({
       data: courseClass,
@@ -452,7 +444,7 @@ interface GetCourseWarningsFromClassWarnings {
  * Converts class warnings to course warnings to give more information for debugging
  * @param { CourseHead } courseHead: The course name and course code required for the conversion as a course head object
  * @param { ClassWarnings } classWarnings: The classwarnings to be converted
- * @returns { CourseWarning[] }: Converted course warnings
+ * @returns { CourseWarning[] }
  */
 const getCourseWarningsFromClassWarnings = ({
   classWarnings,
@@ -508,6 +500,8 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
       continue
     }
 
+    console.log(course)
+
     let courseHead: CourseHead
     try {
       // Get course code and name, that is not a chunk
@@ -538,7 +532,9 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
 
           coursesData[term].push(courseData)
         }
-      } else {
+      }
+      // Hopefully the control never has to enter this else
+      else {
         const courseData: Course = {
           ...courseHead,
           ...courseInfo,
@@ -555,7 +551,7 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
         ...getCourseWarningsFromClassWarnings({ classWarnings, courseHead })
       )
     } catch (err) {
-      // Adding the course name and code before deferring to parent
+      // Display the course name and code before deferring to parent
       console.log(courseHead.courseCode + ' ' + courseHead.name)
       throw new Error(err)
     }
