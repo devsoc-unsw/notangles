@@ -14,7 +14,7 @@ interface Config {
 export const allConfig: Record<Env, Config> = {
   [Env.DEV]: {
     // database: secret.dev,
-    database: 'mongodb://notangles:notangles@localhost:27017/2019'
+    database: 'mongodb://notangles_database:27017/'
   },
 
   [Env.STAGING]: {

@@ -1,24 +1,17 @@
 version: "3.7"
 services:
-  server:
+  notangles_server:
     container_name: notangles_server
-    # restart: always
+    restart: always
     build: .
     ports:
-      - "3001:3001"
-    depends_on:
-      - database
+      - "80:3001"
     links:
-      - database
-  database:
+      - notangles_database
+  notangles_database:
     container_name: notangles_database
-    # restart: always
+    restart: always
     image: mongo:latest
-    volumes:
-      - /data/db:/data/db
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: notangles
-      MONGO_INITDB_ROOT_PASSWORD: notangles
-      MONGO_INITDB_DATABASE: 2019
+    
