@@ -152,10 +152,10 @@ const getChunks = async (page: puppeteer.Page): Promise<PageData[]> => {
  * @constant {TermFinderReference} - Default reference to follow to find the correct term. Each object contains a term and its census date to classify a course.
  */
 const defaultReference: TermFinderReference = [
-  { term: Term.Summer, census: '1/8' },
-  { term: Term.T1, census: '3/17' },
+  { term: Term.Summer, census: '1/19' },
+  { term: Term.T1, census: '3/15' },
   { term: Term.T2, census: '6/30' },
-  { term: Term.T3, census: '10/13' },
+  { term: Term.T3, census: '10/11' },
   { term: Term.S1, census: '3/31' },
   { term: Term.S2, census: '8/18' },
 ]
@@ -184,6 +184,7 @@ const termFinder = ({
   }
   // For each of the census dates...add a term to the list
   const censusDates = formatDates(course.censusDates)
+  console.log(censusDates)
   const currentYear = new Date().getFullYear()
 
   // Add the current year to the date and convert it to a date
@@ -254,6 +255,7 @@ const scrapePage = async (
         T3: [],
         S1: [],
         S2: [],
+        Other: [],
       }
       let notes: string[]
       let noteIndex: number = 0
@@ -324,6 +326,7 @@ const scrapePage = async (
       }
     } catch (err) {
       console.log(courseHeadData.courseCode + ' ' + courseHeadData.name)
+      console.log(err, '\n\n\n\n')
       throw new Error(err)
     }
   }

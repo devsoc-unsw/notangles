@@ -63,7 +63,16 @@ const parseCourseInfoChunk = (
   // Career type
   const career: Career = <Career>data[index]
   if (!(career && Object.values(Career).includes(career))) {
-    throw new Error('Invalid Career: ' + career)
+    const career2: Career = <Career>data[index].split(' ')[0]
+    if (!(career2 && Object.values(Career).includes(career2))) {
+      throw new Error('Invalid Career: ' + career)
+    } else {
+      console.log(
+        'Warning: Career: "' +
+          career +
+          '" is not in the list of legitimate careers'
+      )
+    }
   }
   index++
 

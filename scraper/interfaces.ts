@@ -47,16 +47,18 @@ enum Status {
 /**
  * Term is not Other under normal circumstances
  */
-enum ExtendedTerm {
+enum OtherTerms {
   Other = 'Other',
 }
+
+type ExtendedTerm = Term | OtherTerms
 
 interface TimetableData extends Record<Term, Course[]> {
   // To account for classes that do not run in any term or that
   // could not be classified (The latter case should be avoided)
   Other?: Course[]
 }
-type ClassesByTerm = Record<Term, Class[]>
+type ClassesByTerm = Record<ExtendedTerm, Class[]>
 
 /**
  * Defines the interface for input not conforming to the strict requirements
@@ -171,7 +173,7 @@ interface ClassTermFinderDates {
  * Structure of a reference object provided to the classTermFinder method
  */
 interface ClassTermFinderReferenceElement {
-  term: Term
+  term: ExtendedTerm
   dates: ClassTermFinderDates[]
 }
 
@@ -188,6 +190,7 @@ interface TermFinderReferenceElement {
 type TermFinderReference = TermFinderReferenceElement[]
 
 export {
+  OtherTerms,
   TermFinderReference,
   ClassTermFinderReference,
   ClassTermFinderDates,

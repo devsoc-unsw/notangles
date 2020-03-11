@@ -1,5 +1,11 @@
 import * as puppeteer from 'puppeteer'
-import { TimetableData, UrlList, ExtendedTerm, Warning } from './interfaces'
+import {
+  TimetableData,
+  UrlList,
+  ExtendedTerm,
+  Warning,
+  OtherTerms,
+} from './interfaces'
 
 import {
   getDataUrls,
@@ -115,6 +121,7 @@ const timetableScraper = async (
         T3: [],
         S1: [],
         S2: [],
+        Other: [],
       }
 
       // Warning array for any fields not aligning with the strict requirements
@@ -195,12 +202,17 @@ const timetableScraper = async (
                 throw new Error()
               }
               // If the term is in the other list, then it has no classes. Classify it!
-              if (scrapedTerm === ExtendedTerm.Other) {
-                const termlist = termFinder({ course: scrapedCourse })
+              if (scrapedTerm === OtherTerms.Other) {
+                const termlist: ExtendedTerm[] = termFinder({
+                  course: scrapedCourse,
+                })
+                if (termlist == []) {
+                  termlist.push(OtherTerms.Other)
+                }
                 const notes = scrapedCourse.notes
                 let noteIndex = 0
                 for (const term of termlist) {
-                  if (notes[noteIndex] && notes[noteIndex] != ' ') {
+                  if (notes?.[noteIndex] && notes[noteIndex] != ' ') {
                     scrapedCourse.notes = [notes[noteIndex]]
                   } else {
                     delete scrapedCourse.notes
@@ -233,11 +245,26 @@ const timetableScraper = async (
   // This function is for devlopment purposes only. Use npm run scraper to test the scraper
 ;(async () => {
   console.time('cscraper')
+  const browser = await puppeteer.launch({ headless: false })
   try {
-    const data = await timetableScraper(2019)
-    // const browser = await puppeteer.launch({ headless: false })
     // const singlepage = await browser.newPage()
-    // const data = await scrapeSubject(singlepage, 'http://timetable.unsw.edu.au/2019/COMP1511.html')
+    // const data2 = await scrapeSubject({
+    //   page: singlepage,
+    //   course: 'http://timetable.unsw.edu.au/2020/ACCT2507.html',
+    // })
+
+    // const fs2 = require('fs')
+    // fs2.writeFile(
+    //   'T1.json',
+    //   JSON.stringify(data2.coursesData.Other),
+    //   'utf-8',
+    //   (err: unknown) => {
+    //     if (err) {
+    //       console.error(err)
+    //     }
+    //   }
+    // )
+    const data = await timetableScraper(2020)
 
     if (data === false) {
       return
@@ -245,8 +272,8 @@ const timetableScraper = async (
 
     const fs = require('fs')
     fs.writeFile(
-      'T1.json',
-      JSON.stringify(data.timetableData.T1),
+      'T1t.json',
+      JSON.stringify(data.timetableData.Other),
       'utf-8',
       (err: unknown) => {
         if (err) {
@@ -255,7 +282,9 @@ const timetableScraper = async (
       }
     )
   } catch (err) {
-    console.log('something went wrong')
+    console.log(err)
+  } finally {
+    browser.close()
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()

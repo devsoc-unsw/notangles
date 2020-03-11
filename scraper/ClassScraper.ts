@@ -15,6 +15,8 @@ import {
   ClassTermFinderReference,
   ClassTermFinderDates,
   WarningTag,
+  ExtendedTerm,
+  OtherTerms,
 } from './interfaces'
 
 interface ClassTermFinderParams {
@@ -39,6 +41,7 @@ const defaultReferenceDates: ClassTermFinderReference = [
     dates: [
       { start: 11, length: 3 },
       { start: 12, length: 2 },
+      { start: 1, length: 1 }
     ],
   },
   {
@@ -61,6 +64,7 @@ const defaultReferenceDates: ClassTermFinderReference = [
       { start: 5, length: 1 },
       { start: 5, length: 3 },
       { start: 6, length: 1 },
+      { start: 6, length: 2 },
       { start: 6, length: 3 },
       { start: 7, length: 1 },
       { start: 7, length: 2 },
@@ -135,7 +139,7 @@ const classTermFinderChecker = ({
 const classTermFinder = ({
   cls,
   reference = defaultReferenceDates,
-}: ClassTermFinderParams): Term => {
+}: ClassTermFinderParams): ExtendedTerm => {
   // Error check
   if (!cls?.termDates) {
     throw new Error('no start and end dates for class: ' + cls)
@@ -157,7 +161,8 @@ const classTermFinder = ({
     }
   }
 
-  throw new Error('Could not find term for class: ' + cls)
+  // Could not find a term for the class. Put it in "Other"
+  return OtherTerms.Other
 }
 
 /**
