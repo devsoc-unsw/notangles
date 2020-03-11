@@ -5,7 +5,7 @@ services:
     restart: always
     build: .
     ports:
-      - "80:3001"
+      - "3001:3001"
     links:
       - notangles_database
   notangles_database:
