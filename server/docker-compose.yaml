@@ -1,8 +1,21 @@
 version: "3.7"
 services:
-  server:
+  notangles_server:
     container_name: notangles_server
-    # restart: always
+    restart: always
     build: .
+    depends_on: 
+      - notangles_database
     ports:
       - "3001:3001"
+    links:
+      - notangles_database
+  notangles_database:
+    container_name: notangles_database
+    restart: always
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes: 
+      - ~/var/lib/notangles/data:/data/db
+    
