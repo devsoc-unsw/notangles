@@ -4,6 +4,8 @@ services:
     container_name: notangles_server
     restart: always
     build: .
+    depends_on: 
+      - notangles_database
     ports:
       - "3001:3001"
     links:
