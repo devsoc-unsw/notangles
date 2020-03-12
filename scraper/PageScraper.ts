@@ -326,7 +326,6 @@ const getTermFromCourse = ({
     throw new Error('no census dates for course: ' + course.courseCode)
   }
   const censusDates = formatDates(course.censusDates)
-  console.log(censusDates)
   const currentYear = new Date().getFullYear()
 
   // Add the current year to the date and convert it to a date
@@ -417,7 +416,6 @@ const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
     Other: [],
   }
   const classWarnings: ClassWarnings[] = []
-  console.log(courseClasses)
   for (const courseClass of courseClasses) {
     const parsedClassChunk = parseClassChunk({
       data: courseClass,
@@ -501,8 +499,6 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
       continue
     }
 
-    console.log(course)
-
     let courseHead: CourseHead
     try {
       // Get course code and name, that is not a chunk
@@ -513,10 +509,12 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
       })
       const courseInfo = parsedData.courseInfo
       const notes = getNotes(parsedData.notes)
-      const { classes, classWarnings } = getClassesByTerm(course.courseClasses)
 
       // There may or may not be a classlist
       if (course.courseClasses) {
+        const { classes, classWarnings } = getClassesByTerm(
+          course.courseClasses
+        )
         for (const term of keysOf(classes)) {
           if (!classes[term] || classes[term].length === 0) {
             continue
@@ -533,9 +531,10 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
 
           coursesData[term].push(courseData)
         }
-      }
-      // Hopefully the control never has to enter this else
-      else {
+        courseWarnings.push(
+          ...getCourseWarningsFromClassWarnings({ classWarnings, courseHead })
+        )
+      } else {
         const courseData: Course = {
           ...courseHead,
           ...courseInfo,
@@ -547,10 +546,6 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
 
         coursesData.Other.push(courseData)
       }
-
-      courseWarnings.push(
-        ...getCourseWarningsFromClassWarnings({ classWarnings, courseHead })
-      )
     } catch (err) {
       // Display the course name and code before deferring to parent
       console.log(courseHead.courseCode + ' ' + courseHead.name)
