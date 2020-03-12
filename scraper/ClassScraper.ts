@@ -1,7 +1,7 @@
 import {
   reverseDayAndMonth,
   formatDates,
-  removeHtmlSpecials,
+  transformHtmlSpecials,
   makeClassWarning,
 } from './helper'
 import {
@@ -15,6 +15,8 @@ import {
   GetTermFromClassReference,
   GetTermFromClassDates,
   WarningTag,
+  ExtendedTerm,
+  OtherTerms,
 } from './interfaces'
 
 /**
@@ -34,6 +36,7 @@ const defaultReferenceDates: GetTermFromClassReference = [
     dates: [
       { start: 11, length: 3 },
       { start: 12, length: 2 },
+      { start: 1, length: 1 },
     ],
   },
   {
@@ -56,6 +59,7 @@ const defaultReferenceDates: GetTermFromClassReference = [
       { start: 5, length: 1 },
       { start: 5, length: 3 },
       { start: 6, length: 1 },
+      { start: 6, length: 2 },
       { start: 6, length: 3 },
       { start: 7, length: 1 },
       { start: 7, length: 2 },
@@ -82,8 +86,8 @@ const defaultReferenceDates: GetTermFromClassReference = [
 ]
 
 interface CompareClassAndRefDatesParams {
-  start: Date
-  end: Date
+  startDate: Date
+  endDate: Date
   refDate: GetTermFromClassDates
 }
 
@@ -105,17 +109,17 @@ interface CompareClassAndRefDatesParams {
  * expect true
  */
 const compareClassAndRefDates = ({
-  start,
-  end,
+  startDate,
+  endDate,
   refDate,
 }: CompareClassAndRefDatesParams): Boolean => {
   return (
     // Compare start date
-    start.getMonth() + 1 === refDate.start &&
+    startDate.getMonth() + 1 === refDate.start &&
     // Compare length in months
-    end.getMonth() -
-      start.getMonth() +
-      (end.getFullYear() - start.getFullYear()) * 12 ===
+    endDate.getMonth() -
+      startDate.getMonth() +
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 ===
       refDate.length
   )
 }
@@ -128,7 +132,7 @@ interface GetTermFromClassParams {
 /**
  * Finds the Term for a class. Term is defined in interfaces.ts
  * @param { Class } cls: Class to find the term for
- * @param { GetTermFromClassReference } reference: Refernce dates to find the term.
+ * @param { GetTermFromClassReference } reference: Reference dates to find the term.
  * Format of each element: { term: Term, dates: { start: number[], length: number[] } }
  * start is an array of possible start dates and length is the number of months the term might run for
  * @returns { Term }: Term which the class is from
@@ -136,13 +140,13 @@ interface GetTermFromClassParams {
 const getTermFromClass = ({
   cls,
   reference = defaultReferenceDates,
-}: GetTermFromClassParams): Term => {
+}: GetTermFromClassParams): ExtendedTerm => {
   // Error check
   if (!cls?.termDates) {
     throw new Error('no start and end dates for class: ' + JSON.stringify(cls))
   }
 
-  const [start, end] = formatDates(
+  const [startDate, endDate] = formatDates(
     [cls.termDates.start, cls.termDates.end].map(date =>
       reverseDayAndMonth({ date: date, delimiter: '/' })
     )
@@ -152,13 +156,14 @@ const getTermFromClass = ({
     // A term could have any number of start dates
     for (const refDate of termData.dates) {
       // If start date and length match, then term is found
-      if (compareClassAndRefDates({ start, end, refDate })) {
+      if (compareClassAndRefDates({ startDate, endDate, refDate })) {
         return termData.term
       }
     }
   }
 
-  throw new Error('Could not find term for class: ' + cls)
+  // Could not find a term for the class. Put it in "Other"
+  return OtherTerms.Other
 }
 
 /**
@@ -450,7 +455,7 @@ const getLocation = ({
   classID,
   term,
 }: GetLocationParams): GetLocationReturn => {
-  let location: string | false = removeHtmlSpecials(data)
+  let location: string | false = transformHtmlSpecials(data)
   const locationWarnings: ClassWarnings[] = []
   // Check if location exists
   const locationTesterRegex = /[A-Za-z]/

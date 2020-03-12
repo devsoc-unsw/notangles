@@ -61,9 +61,10 @@ enum Status {
 /**
  * @interface ExtendedTerm: Term is not Other under normal circumstances
  */
-enum ExtendedTerm {
+enum OtherTerms {
   Other = 'Other',
 }
+type ExtendedTerm = Term | OtherTerms
 
 /**
  * @interface TimetableData: Maps term to list of all courses that run in that term
@@ -73,7 +74,7 @@ interface TimetableData extends Record<Term, Course[]> {
   // could not be classified (The latter case should be avoided)
   Other?: Course[]
 }
-type ClassesByTerm = Record<Term, Class[]>
+type ClassesByTerm = Record<ExtendedTerm, Class[]>
 
 /**
  * @interface CourseWarning: Defines the interface for input not conforming to the strict requirements
@@ -213,6 +214,7 @@ export {
   GetTermFromCourseReference,
   GetTermFromClassReference,
   GetTermFromClassDates,
+  OtherTerms,
   Time,
   Class,
   Course,

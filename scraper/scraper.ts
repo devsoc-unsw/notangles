@@ -6,6 +6,7 @@ import {
   UrlList,
   ExtendedTerm,
   CourseWarning,
+  OtherTerms,
 } from './interfaces'
 import {
   getUrls,
@@ -23,9 +24,10 @@ interface ScrapeSubjectParams {
 /**
  * Async wrapper to scrape multiple subjects at once
  * This scrapes one subject
- * @param { puppeteer.Page } page Page to use to scrape the subject
- * @param { string } course Url of the course to be scraped
- * @returns {Promise<{ courseData: TimetableData; courseWarnings: CourseWarning[] }}: The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ *
+ * @param {puppeteer.Page} page - Page to use to scrape the subject
+ * @param {string} course - Url of the course to be scraped
+ * @returns {Promise<{ courseData: TimetableData; warnings: Warning[] }} The data that has been scraped, classified into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
  * @example
  *    const browser = await puppeteer.launch()
  *    const data = scrapeSubject(await browser.newPage(), 'http://timetable.unsw.edu.au/2019/COMP1511.html')
@@ -52,10 +54,11 @@ interface getPageUrlsParams extends getUrlsParams {
 /**
  * Gets all the urls on the current page matching the given regex
  * (This function is only an async puppeteer wrapper)
- * @param { string } url Url of the page to scrape
- * @param { puppeteer.Page } page page to be used for scraping
- * @param { string } base prefix for each scraped url
- * @param { RegExp } regex regex to check each scraped url
+ *
+ * @param { string } url - Url of the page to scrape
+ * @param { puppeteer.Page } page - page to be used for scraping
+ * @param { string } base - prefix for each scraped url
+ * @param { RegExp } regex - regex to check each scraped url
  * @returns { Promise<string[]> } List of all urls on @param page . Each url is prefixed by @param base
  * @example
  *    const browser = await puppeteer.launch()
@@ -81,9 +84,10 @@ const getPageUrls = async ({
 
 /**
  * The scraper that scrapes the timetable site
- * @param { number } year: The year for which the information is to be scraped
- * @returns { Promise<{ timetableData: TimetableData; courseWarnings: CourseWarning[] } }: The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
- * @returns { false }: Scraping failed due to some error. Error printed to console.error
+ *
+ * @param {number} year - The year for which the information is to be scraped
+ * @returns {Promise<{ timetableData: TimetableData; warnings: Warning[] }} The data that has been scraped, grouped into one of 6 terms. If the scraper is unable to classify courses, then it will group them under 'Other'
+ * @returns {false}: Scraping failed due to some error. Error printed to console.error
  * @example
  * 1.
  *    const data = await timetableScraper(2020)
@@ -119,6 +123,7 @@ const timetableScraper = async (
         T3: [],
         S1: [],
         S2: [],
+        Other: [],
       }
 
       // CourseWarning array for any fields not aligning with the strict requirements
@@ -202,12 +207,17 @@ const timetableScraper = async (
                 throw new Error()
               }
               // If the term is in the other list, then it has no classes. Classify it!
-              if (scrapedTerm === ExtendedTerm.Other) {
-                const termlist = getTermFromCourse({ course: scrapedCourse })
+              if (scrapedTerm === OtherTerms.Other) {
+                const termlist: ExtendedTerm[] = getTermFromCourse({
+                  course: scrapedCourse,
+                })
+                if (termlist == []) {
+                  termlist.push(OtherTerms.Other)
+                }
                 const notes = scrapedCourse.notes
                 let noteIndex = 0
                 for (const term of termlist) {
-                  if (notes[noteIndex] && notes[noteIndex] != ' ') {
+                  if (notes?.[noteIndex] && notes[noteIndex] != ' ') {
                     scrapedCourse.notes = [notes[noteIndex]]
                   } else {
                     delete scrapedCourse.notes
@@ -240,18 +250,36 @@ const timetableScraper = async (
   // This function is for devlopment purposes only. Use npm run scraper to test the scraper
 ;(async () => {
   console.time('cscraper')
-  const browser = await puppeteer.launch({ headless: false })
+  // const browser = await puppeteer.launch({ headless: false })
   try {
-    // const data = await timetableScraper(2019)
+    const data = await timetableScraper(2019)
 
-    // if (data === false) {
-    //   return
-    // }
+    if (data === false) {
+      return
+    }
+
+    const fs = require('fs')
+    fs.writeFile(
+      'Other.json',
+      JSON.stringify(data.timetableData.Other),
+      'utf-8',
+      (err: unknown) => {
+        if (err) {
+          console.error(err)
+        }
+      }
+    )
+
+    // const singlepage = await browser.newPage()
+    // const data = await scrapeSubject({
+    //   page: singlepage,
+    //   course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
+    // })
 
     // const fs = require('fs')
     // fs.writeFile(
     //   'T1.json',
-    //   JSON.stringify(data.timetableData.T1),
+    //   JSON.stringify(data.coursesData.T1),
     //   'utf-8',
     //   (err: unknown) => {
     //     if (err) {
@@ -259,38 +287,20 @@ const timetableScraper = async (
     //     }
     //   }
     // )
-
-    const singlepage = await browser.newPage()
-    const data = await scrapeSubject({
-      page: singlepage,
-      course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
-    })
-
-    const fs = require('fs')
-    fs.writeFile(
-      'T1.json',
-      JSON.stringify(data.coursesData.T1),
-      'utf-8',
-      (err: unknown) => {
-        if (err) {
-          console.error(err)
-        }
-      }
-    )
-    fs.writeFile(
-      'T1Warn.json',
-      JSON.stringify(data.courseWarnings),
-      'utf-8',
-      (err: unknown) => {
-        if (err) {
-          console.error(err)
-        }
-      }
-    )
+    // fs.writeFile(
+    //   'T1Warn.json',
+    //   JSON.stringify(data.courseWarnings),
+    //   'utf-8',
+    //   (err: unknown) => {
+    //     if (err) {
+    //       console.error(err)
+    //     }
+    //   }
+    // )
   } catch (err) {
     console.log(err)
   } finally {
-    await browser.close()
+    // await browser.close()
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()

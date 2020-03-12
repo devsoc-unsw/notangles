@@ -52,8 +52,7 @@ interface getUrlsParams {
 }
 
 /**
- * Gets all the urls in the data class on page: page,
- * given regex: regex.
+ * Gets all the urls in the data class on page: page matching regex
  * Each url will have the prefix: base.
  * @param { puppeteer.Page } page Page to scrape urls from
  * @param { string } base string each url has to be prefixed with
@@ -276,7 +275,7 @@ const defaultReference: GetTermFromCourseReference = [
   { term: Term.Summer, census: '1/8' },
   { term: Term.T1, census: '3/17' },
   { term: Term.T2, census: '6/30' },
-  { term: Term.T3, census: '10/13' },
+  { term: Term.T3, census: '10/11' },
   { term: Term.S1, census: '3/31' },
   { term: Term.S2, census: '8/18' },
 ]
@@ -327,6 +326,7 @@ const getTermFromCourse = ({
     throw new Error('no census dates for course: ' + course.courseCode)
   }
   const censusDates = formatDates(course.censusDates)
+  console.log(censusDates)
   const currentYear = new Date().getFullYear()
 
   // Add the current year to the date and convert it to a date
@@ -414,6 +414,7 @@ const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
     T3: [],
     S1: [],
     S2: [],
+    Other: [],
   }
   const classWarnings: ClassWarnings[] = []
   console.log(courseClasses)

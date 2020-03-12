@@ -1,6 +1,6 @@
 import * as puppeteer from 'puppeteer'
 
-import { removeHtmlSpecials } from './helper'
+import { transformHtmlSpecials } from './helper'
 import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
 
 /**
@@ -34,7 +34,7 @@ const getCourseHeadData = async (page: puppeteer.Page): Promise<CourseHead> => {
   }
   const courseHead: CourseHead = {
     courseCode: data[1].trim(),
-    name: removeHtmlSpecials(data[2].trim()),
+    name: transformHtmlSpecials(data[2].trim()),
   }
   return courseHead
 }
@@ -74,7 +74,16 @@ const getCampusLocation = (campus: string): string => {
 const getCareer = (data: string): Career => {
   const career = <Career>data
   if (!(career && Object.values(Career).includes(career))) {
-    throw new Error('Invalid Career: ' + career)
+    const career2: Career = <Career>data.split(' ')[0]
+    if (!(career2 && Object.values(Career).includes(career2))) {
+      throw new Error('Invalid Career: ' + career)
+    } else {
+      console.log(
+        'Warning: Career: "' +
+          career +
+          '" is not in the list of legitimate careers'
+      )
+    }
   }
 
   return career
