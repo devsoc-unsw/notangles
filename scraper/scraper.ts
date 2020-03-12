@@ -237,31 +237,60 @@ const timetableScraper = async (
       }
 
       // Close the browser.
-      await browser.close()
       return { timetableData: timetableData, courseWarnings: courseWarnings }
     } catch (err) {
       // log error and close browser.
       console.error(err)
-      await browser.close()
       return false
+    } finally {
+      await browser.close()
     }
   }
 
   // This function is for devlopment purposes only. Use npm run scraper to test the scraper
 ;(async () => {
   console.time('cscraper')
-  const browser = await puppeteer.launch({ headless: false })
+  // const browser = await puppeteer.launch({ headless: false })
   try {
-    // const data = await timetableScraper(2019)
+    const data = await timetableScraper(2020)
 
-    // if (data === false) {
-    //   return
-    // }
+    if (data === false) {
+      return
+    }
+
+    const fs = require('fs')
+    fs.writeFile(
+      'Other.json',
+      JSON.stringify(data.timetableData.Other),
+      'utf-8',
+      (err: unknown) => {
+        if (err) {
+          console.error(err)
+        }
+      }
+    )
+
+    fs.writeFile(
+      'T1.json',
+      JSON.stringify(data.timetableData.T1),
+      'utf-8',
+      (err: unknown) => {
+        if (err) {
+          console.error(err)
+        }
+      }
+    )
+
+    // const singlepage = await browser.newPage()
+    // const data = await scrapeSubject({
+    //   page: singlepage,
+    //   course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
+    // })
 
     // const fs = require('fs')
     // fs.writeFile(
-    //   'Other.json',
-    //   JSON.stringify(data.timetableData.Other),
+    //   'T1.json',
+    //   JSON.stringify(data.coursesData.T1),
     //   'utf-8',
     //   (err: unknown) => {
     //     if (err) {
@@ -269,38 +298,20 @@ const timetableScraper = async (
     //     }
     //   }
     // )
-
-    const singlepage = await browser.newPage()
-    const data = await scrapeSubject({
-      page: singlepage,
-      course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
-    })
-
-    const fs = require('fs')
-    fs.writeFile(
-      'T1.json',
-      JSON.stringify(data.coursesData.T1),
-      'utf-8',
-      (err: unknown) => {
-        if (err) {
-          console.error(err)
-        }
-      }
-    )
-    fs.writeFile(
-      'T1Warn.json',
-      JSON.stringify(data.courseWarnings),
-      'utf-8',
-      (err: unknown) => {
-        if (err) {
-          console.error(err)
-        }
-      }
-    )
+    // fs.writeFile(
+    //   'T1Warn.json',
+    //   JSON.stringify(data.courseWarnings),
+    //   'utf-8',
+    //   (err: unknown) => {
+    //     if (err) {
+    //       console.error(err)
+    //     }
+    //   }
+    // )
   } catch (err) {
     console.log(err)
   } finally {
-    await browser.close()
+    // await browser.close()
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()
