@@ -4,20 +4,21 @@
   "description": "",
   "scripts": {
     "start": "ts-node writeToDb.ts",
+    "scraper": "ts-node scraper.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^1.18.1"
+    "lodash": "^4.17.15",
+    "puppeteer": "^1.20.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.141",
-    "@types/puppeteer": "^1.12.4",
+    "@types/lodash": "^4.14.149",
+    "@types/puppeteer": "^1.20.3",
     "chalk": "^2.4.2",
-    "lodash": "^4.17.15",
-    "prettier": "1.18.2",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.3"
+    "prettier": "^1.19.1",
+    "ts-node": "^8.6.1",
+    "typescript": "^3.7.4"
   }
 }
