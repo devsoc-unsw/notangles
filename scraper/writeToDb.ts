@@ -1,5 +1,5 @@
 import { timetableScraper } from './scraper'
-import Database from '../server/dbApi'
+import Database from '../server/src/database'
 
 const main = async () => {
   //writing the data to the database
