@@ -1,24 +1,45 @@
 import { timetableScraper } from './scraper'
-import Database from '../server/dbApi'
-import * as data2 from './data.json'
-import { TimetableData, Course, Class, Time } from './interfaces'
+import Database from './database'
+import { dbReadParams, dbUpdateParams, dbAddParams } from './database'
 
 const main = async () => {
   //writing the data to the database
-  let date = new Date()
+  const date = new Date()
   const year = date.getFullYear().toString(10)
   const terms = await timetableScraper(date.getFullYear())
+
+  // Error occured in scraper. Could not scrape data
+  if (!terms) {
+    return false
+  }
+
   for (const [termName, term] of Object.entries(terms.timetableData)) {
     for (const course of term) {
-      const ret = await Database.dbRead(year, termName, course.courseCode)
+      const readArgs : dbReadParams = {
+        dbName : year,
+        termColName : termName,
+        courseCode : course.courseCode
+      }
+      const ret = await Database.dbRead(readArgs)
       if (ret === null) {
-        await Database.dbAdd(year, termName, course)
+        const addArgs : dbAddParams = {
+          dbName: year,
+          termColName: termName,
+          doc : course
+        }
+        await Database.dbAdd(addArgs)
       } else {
-        await Database.dbUpdate(year, termName, course.courseCode, course)
+        const updateArgs : dbUpdateParams = {
+          dbName: year,
+          termColName: termName,
+          courseCode: course.courseCode,
+          doc: course
+        }
+        await Database.dbUpdate(updateArgs)
       }
     }
   }
-  Database.disconnect
+  Database.disconnect()
 }
 
 main().then(() => process.exit())
