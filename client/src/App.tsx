@@ -92,6 +92,7 @@ const App: FunctionComponent = () => {
   const fetchClassesList = async () => {
     const coursesList = await getCoursesList('2020', 'T1')
     if (coursesList) {
+      console.log(coursesList)
       setCoursesList(coursesList)
     }
   }
