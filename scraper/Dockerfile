@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 # Run the server
-CMD ["npm", "start:production"]
+CMD ["npm", "run", "start:production"]
