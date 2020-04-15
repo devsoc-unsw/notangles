@@ -1,6 +1,19 @@
 import { MongoClient, Db } from 'mongodb'
 
-const url = 'mongodb://localhost:27017'
+export enum Env {
+  DEV = 'DEV',
+  STAGING = 'STAGING',
+  PROD = 'PROD',
+}
+
+
+const connectionConfig = {
+  [Env.DEV]: 'mongodb://localhost:27017',
+  [Env.STAGING]: 'mongodb://database.notangles-db:27017',
+  [Env.PROD]: 'mongodb://database.notangles-db:27017'
+}
+
+const url = connectionConfig[process.env.NODE_ENV || Env.DEV]
 
 export interface getCollectionParams {
   dbName: string,
