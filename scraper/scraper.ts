@@ -102,7 +102,7 @@ const timetableScraper = async (
   { timetableData: TimetableData; courseWarnings: CourseWarning[] } | false
 > => {
   // Launch the browser. Headless mode = true by default
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({ headless: process.env.NODE_ENV === 'DEV' ? false : true })
   try {
     const batchsize = 50
     // Create batchsize pages to scrape each course
