@@ -1,10 +1,9 @@
 import * as puppeteer from 'puppeteer'
 import { scrapeSubject } from './scraper'
-
 // Devlopment only
 ;(async () => {
   console.time('cscraper')
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({ headless: process.env.NODE_ENV === 'DEV' ? false : true })
   try {
     const singlepage = await browser.newPage()
     const data = await scrapeSubject({
