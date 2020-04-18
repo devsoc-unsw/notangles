@@ -4,15 +4,19 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MailIcon from "@material-ui/icons/Mail";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 
+import CSESocLogo from '../assets/logo.png'
+import styled from 'styled-components'
+const LogoImg = styled.img`
+  width: 40px;
+  height:40px;
+  margin-right: 20px;
+`
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    marginBottom: 30
+
   },
   menuButton: {
     marginRight: theme.spacing(2)
@@ -27,27 +31,15 @@ export default function Navbar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar style={{ background: 'rgb(54,119,245)' }} position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
+          <LogoImg src={CSESocLogo} />
           <Typography variant="h6" className={classes.title}>
-            News
+            CSESoc Notangles
           </Typography>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <NotificationsIcon />
-          </IconButton>
+          <Button color="inherit">Login</Button>
+          <Button color="inherit">Sign Up</Button>
+          <Button color="inherit">About</Button>
         </Toolbar>
       </AppBar>
     </div>
