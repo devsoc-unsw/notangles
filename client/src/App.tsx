@@ -108,8 +108,8 @@ const App: FunctionComponent = () => {
       this.state = {options: courseSelectOptions.slice(0,10)}
     }
 
-    handleChange = (inputValue: any, actionMeta: any) => {
-      this.setState({options: courseSelectOptions.filter(x => x.value.includes(inputValue)).slice(0,10)})
+    handleChange = (inputValue: string, actionMeta: any) => {
+      this.setState({options: courseSelectOptions.filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,10)})
     }
 
     render (){
