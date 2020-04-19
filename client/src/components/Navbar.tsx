@@ -19,7 +19,9 @@ const LogoImg = styled.img`
 `
 const DarkModeButton = styled(ToggleButton)`
     border: none;
+    border-radius:40px;
     margin-right: 20px;
+    width:40px;
     height: 40px
 `
 const DarkModeIcon = styled(Brightness2Icon)`
@@ -57,7 +59,7 @@ export default function Navbar() {
         <Toolbar>
           <LogoImg src={CSESocLogo} />
           <Typography variant="h6" className={classes.title}>
-            CSESoc Notangles
+            Notangles
           </Typography>
           <DarkModeButton
             value="check"
