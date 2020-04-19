@@ -101,17 +101,37 @@ const App: FunctionComponent = () => {
     label: `${course.courseCode} - ${course.name}`,
   }))
 
+  class CourseSelect extends React.Component<{}, {options: Array<CourseOption>}>{
+
+    constructor(props: any){
+      super(props)
+      this.state = {options: courseSelectOptions.slice(0,10)}
+    }
+
+    handleChange = (inputValue: any, actionMeta: any) => {
+      this.setState({options: courseSelectOptions.filter(x => x.value.includes(inputValue)).slice(0,10)})
+    }
+
+    render (){
+      return (
+        <StyledSelect
+            options={this.state.options}
+            value={null}
+            onInputChange={this.handleChange}
+            onChange={handleSelectCourse}
+            placeholder="Select a Course"
+          />
+      )
+    }
+
+  }
+
   return (
     <div className="App">
       <Navbar />
       <StyledApp>
         <SelectWrapper>
-          <StyledSelect
-            options={courseSelectOptions}
-            value={null}
-            onChange={handleSelectCourse}
-            placeholder="Select a Course"
-          />
+          <CourseSelect/>
         </SelectWrapper>
         <DndProvider backend={HTML5Backend}>
           <Inventory
