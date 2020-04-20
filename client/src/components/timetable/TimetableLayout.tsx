@@ -23,25 +23,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   hoursRange,
   twelveHourMode,
 }) => {
-  // fill an array with numbers as specified by hoursRange
-  const [min, max] = hoursRange
-  const hourNumbers: number[] = Array(max - min + 1).fill(0).map((_, i) => i + min)
-  const hours: string[] = hourNumbers.map(n => {
-    if (twelveHourMode) {
-      let period: string = "AM"
-      if (n > 12) {
-        n -= 12
-        period = "PM"
-      }
-      return n + " " + period
-    } else {
-      let hour: string = String(n)
-      if (hour.length == 1) {
-        hour = "0" + hour
-      }
-      return hour + ":00"
-    }
-  })
+  const hours: string[] = hourStrings(hoursRange, twelveHourMode)
 
   const daysCells = days.map((day, i) => (
     <BaseCell key={day} x={i + 2} y={1}>
@@ -68,6 +50,30 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
       {otherCells}
     </>
   )
+}
+
+function hourStrings(range: number[], twelveHourMode: boolean): string[] {
+  const [min, max] = range
+
+  // fill an array with numbers according to the range
+  const hourNumbers: number[] = Array(max - min + 1).fill(0).map((_, i) => i + min)
+
+  return hourNumbers.map(n => {
+    if (twelveHourMode) {
+      let period: string = "AM"
+      if (n > 12) {
+        n -= 12
+        period = "PM"
+      }
+      return n + " " + period
+    } else {
+      let hour: string = String(n)
+      if (hour.length == 1) {
+        hour = "0" + hour
+      }
+      return hour + ":00"
+    }
+  })
 }
 
 export { TimetableLayout }
