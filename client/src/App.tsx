@@ -24,7 +24,7 @@ const StyledApp = styled.div`
   padding: 10px 20%;
 
   display: grid;
-  grid-template-rows: 1fr 1fr 90% 
+  grid-template-rows: 1fr 1fr 90%
   grid-template-columns: auto;
 
   text-align: center;
@@ -46,13 +46,16 @@ const App: FunctionComponent = () => {
   const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
+  const [twelveHourMode, setTwelveHourMode] = useState<boolean>(true)
+
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
   )
 
   useEffect(() => {
     fetchClassesList()
-  }, [])
+    window.onkeyup = () => setTwelveHourMode(!twelveHourMode)
+  }, [twelveHourMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -126,6 +129,7 @@ const App: FunctionComponent = () => {
             selectedClassIds={selectedClassIds}
             assignedColors={assignedColors}
             onSelectClass={handleSelectClass}
+            twelveHourMode={twelveHourMode}
           />
         </DndProvider>
       </StyledApp>
