@@ -20,8 +20,8 @@ interface TimetableProps {
   selectedClassIds: string[]
   assignedColors: Record<string, string>
   onSelectClass(classId: string): void
-  twelveHourMode: boolean
-  setTwelveHourMode(value: boolean): void
+  is12HourMode: boolean
+  setIs12HourMode(value: boolean): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
@@ -29,16 +29,16 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   selectedClassIds,
   assignedColors,
   onSelectClass,
-  twelveHourMode,
-  setTwelveHourMode
+  is12HourMode,
+  setIs12HourMode
 }) => {
   return (
     <StyledTimetable>
       <TimetableLayout
         days={days}
         hoursRange={hoursRange}
-        twelveHourMode={twelveHourMode}
-        setTwelveHourMode={setTwelveHourMode}
+        is12HourMode={is12HourMode}
+        setIs12HourMode={setIs12HourMode}
       />
       <ClassDropzones
         selectedCourses={selectedCourses}

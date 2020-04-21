@@ -11,7 +11,7 @@ const BaseCell = styled.div<{ x: number; y: number }>`
   justify-content: center;
 `
 
-const TwelveHourModeToggle = styled.span`
+const Is12HourModeToggle = styled.span`
   color: #3a76f8;
   font-weight: bold;
   cursor: pointer;
@@ -26,17 +26,17 @@ const TwelveHourModeToggle = styled.span`
 interface TimetableLayoutProps {
   days: string[]
   hoursRange: number[]
-  twelveHourMode: boolean
-  setTwelveHourMode(value: boolean): void
+  is12HourMode: boolean
+  setIs12HourMode(value: boolean): void
 }
 
 const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   days,
   hoursRange,
-  twelveHourMode,
-  setTwelveHourMode
+  is12HourMode,
+  setIs12HourMode
 }) => {
-  const hours: string[] = hourStrings(hoursRange, twelveHourMode)
+  const hours: string[] = hourStrings(hoursRange, is12HourMode)
 
   const daysCells = days.map((day, i) => (
     <BaseCell key={day} x={i + 2} y={1}>
@@ -58,9 +58,9 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   return (
     <>
       <BaseCell key={0} x={1} y={1}>
-        <TwelveHourModeToggle onClick={() => setTwelveHourMode(!twelveHourMode)}>
-          {(twelveHourMode ? '12' : '24') + ' h'}
-        </TwelveHourModeToggle>
+        <Is12HourModeToggle onClick={() => setIs12HourMode(!is12HourMode)}>
+          {`${is12HourMode ? '12' : '24'} h`}
+        </Is12HourModeToggle>
       </BaseCell>
       {daysCells}
       {hoursCells}
@@ -69,26 +69,19 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   )
 }
 
-const hourStrings = (range: number[], twelveHourMode: boolean): string[] => {
+const hourStrings = (range: number[], is12HourMode: boolean): string[] => {
   const [min, max] = range
 
   // fill an array with numbers according to the range
   const hourNumbers: number[] = Array(max - min + 1).fill(0).map((_, i) => i + min)
 
   return hourNumbers.map(n => {
-    if (twelveHourMode) {
-      let period = 'AM'
-      if (n > 12) {
-        n -= 12
-        period = 'PM'
-      }
-      return n + ' ' + period
+    if (is12HourMode) {
+      const period = n < 12 ? 'AM' : 'PM'
+      if (n > 12) n -= 12
+      return `${n} ${period}`
     } else {
-      let hour = String(n)
-      if (hour.length == 1) {
-        hour = '0' + hour
-      }
-      return hour + ':00'
+      return `${String(n).padStart(2, '0')}:00`
     }
   })
 }

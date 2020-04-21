@@ -1,3 +1,3 @@
 export default {
-	twelveHourMode: false
+	is12HourMode: false
 }

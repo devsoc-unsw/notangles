@@ -1,39 +1,43 @@
 import defaults from '../constants/defaults'
 
-const storageKey = 'data'
-
-interface Data {
-	[key: string]: any
-}
+const STORAGE_KEY = 'data'
 
 const storage = new class {
-	defaults: Data = defaults
-	data: Data = {}
+	defaults: Record<string, any> = defaults
 
 	get(key: string): any {
-		if (key in this.data) {
-			return this.data[key]
+		const data: Record<string, any> = this.load()
+
+		if (key in data) {
+			return data[key]
 		} else if (key in this.defaults) {
 			this.set(key, this.defaults[key])
 			return this.defaults[key]
 		}
+
+		return null
 	}
 
 	set(key: string, value: any) {
-		this.data[key] = value
-		this.save()
+		let data: Record<string, any> = this.load()
+		data[key] = value
+		this.save(data)
 	}
 
-	load() {
-		if (localStorage[storageKey]) {
-			this.data = JSON.parse(localStorage[storageKey])
+	load(): Record<string, any> {
+		let data: Record<string, any> = {}
+
+		if (localStorage[STORAGE_KEY]) {
+			data = JSON.parse(localStorage[STORAGE_KEY])
 		} else {
-			this.save()
+			this.save(data)
 		}
+
+		return data
 	}
 
-	save() {
-		localStorage[storageKey] = JSON.stringify(this.data)
+	save(data: Record<string, any>) {
+		localStorage[STORAGE_KEY] = JSON.stringify(data)
 	}
 }
 

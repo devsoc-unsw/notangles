@@ -48,7 +48,7 @@ const App: FunctionComponent = () => {
   const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
-  const [twelveHourMode, setTwelveHourMode] = useState<boolean>(storage.get('twelveHourMode'))
+  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'))
 
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
@@ -59,8 +59,8 @@ const App: FunctionComponent = () => {
   }, [])
 
   useEffect(() => {
-    storage.set('twelveHourMode', twelveHourMode)
-  }, [twelveHourMode])
+    storage.set('is12HourMode', is12HourMode)
+  }, [is12HourMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -134,8 +134,8 @@ const App: FunctionComponent = () => {
             selectedClassIds={selectedClassIds}
             assignedColors={assignedColors}
             onSelectClass={handleSelectClass}
-            twelveHourMode={twelveHourMode}
-            setTwelveHourMode={setTwelveHourMode}
+            is12HourMode={is12HourMode}
+            setIs12HourMode={setIs12HourMode}
           />
         </DndProvider>
       </StyledApp>
