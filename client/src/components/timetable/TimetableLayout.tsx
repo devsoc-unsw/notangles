@@ -59,7 +59,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
     <>
       <BaseCell key={0} x={1} y={1}>
         <TwelveHourModeToggle onClick={() => setTwelveHourMode(!twelveHourMode)}>
-          {(twelveHourMode ? "12" : "24") + " h"}
+          {(twelveHourMode ? '12' : '24') + ' h'}
         </TwelveHourModeToggle>
       </BaseCell>
       {daysCells}
@@ -69,7 +69,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   )
 }
 
-function hourStrings(range: number[], twelveHourMode: boolean): string[] {
+const hourStrings = (range: number[], twelveHourMode: boolean): string[] => {
   const [min, max] = range
 
   // fill an array with numbers according to the range
@@ -77,18 +77,18 @@ function hourStrings(range: number[], twelveHourMode: boolean): string[] {
 
   return hourNumbers.map(n => {
     if (twelveHourMode) {
-      let period: string = "AM"
+      let period: string = 'AM'
       if (n > 12) {
         n -= 12
-        period = "PM"
+        period = 'PM'
       }
-      return n + " " + period
+      return n + ' ' + period
     } else {
       let hour: string = String(n)
       if (hour.length == 1) {
-        hour = "0" + hour
+        hour = '0' + hour
       }
-      return hour + ":00"
+      return hour + ':00'
     }
   })
 }

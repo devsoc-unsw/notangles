@@ -8,8 +8,6 @@ export const colours: string[] = [
   'red',
 ]
 
-export const hoursRange: number[] = [9, 18]
-
 export const days: string[] = [
   'Monday',
   'Tuesday',
@@ -17,3 +15,5 @@ export const days: string[] = [
   'Thursday',
   'Friday',
 ]
+
+export const hoursRange: number[] = [9, 18]

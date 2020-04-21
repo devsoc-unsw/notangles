@@ -14,6 +14,8 @@ import { getCoursesList } from './api/getCoursesList'
 import { CoursesList } from './interfaces/CourseOverview'
 import { useColorMapper } from './hooks/useColorMapper'
 
+import storage from './utils/storage'
+
 interface CourseOption {
   value: string
   label: string
@@ -46,7 +48,7 @@ const App: FunctionComponent = () => {
   const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
-  const [twelveHourMode, setTwelveHourMode] = useState<boolean>(true)
+  const [twelveHourMode, setTwelveHourMode] = useState<boolean>(storage.get('twelveHourMode'))
 
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
@@ -55,6 +57,10 @@ const App: FunctionComponent = () => {
   useEffect(() => {
     fetchClassesList()
   }, [])
+
+  useEffect(() => {
+    storage.set('twelveHourMode', twelveHourMode)
+  }, [twelveHourMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
