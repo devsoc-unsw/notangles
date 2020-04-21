@@ -54,8 +54,7 @@ const App: FunctionComponent = () => {
 
   useEffect(() => {
     fetchClassesList()
-    window.onkeyup = () => setTwelveHourMode(!twelveHourMode)
-  }, [twelveHourMode])
+  }, [])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -130,6 +129,7 @@ const App: FunctionComponent = () => {
             assignedColors={assignedColors}
             onSelectClass={handleSelectClass}
             twelveHourMode={twelveHourMode}
+            setTwelveHourMode={setTwelveHourMode}
           />
         </DndProvider>
       </StyledApp>

@@ -9,19 +9,26 @@ const BaseCell = styled.div<{ x: number; y: number }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+`
 
+const TwelveHourModeToggle = styled.span`
+  color: #3a76f8;
+  cursor: pointer;
+  user-select: none;
 `
 
 interface TimetableLayoutProps {
   days: string[]
   hoursRange: number[]
   twelveHourMode: boolean
+  setTwelveHourMode(value: boolean): void
 }
 
 const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   days,
   hoursRange,
   twelveHourMode,
+  setTwelveHourMode
 }) => {
   const hours: string[] = hourStrings(hoursRange, twelveHourMode)
 
@@ -44,7 +51,11 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
 
   return (
     <>
-      <BaseCell key={0} x={1} y={1} />
+      <BaseCell key={0} x={1} y={1}>
+        <TwelveHourModeToggle onClick={() => setTwelveHourMode(!twelveHourMode)}>
+          {(twelveHourMode ? "12" : "24") + " h"}
+        </TwelveHourModeToggle>
+      </BaseCell>
       {daysCells}
       {hoursCells}
       {otherCells}
