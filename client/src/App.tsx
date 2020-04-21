@@ -133,9 +133,9 @@ const App: FunctionComponent = () => {
             selectedCourses={selectedCourses}
             selectedClassIds={selectedClassIds}
             assignedColors={assignedColors}
-            onSelectClass={handleSelectClass}
             is12HourMode={is12HourMode}
             setIs12HourMode={setIs12HourMode}
+            onSelectClass={handleSelectClass}
           />
         </DndProvider>
       </StyledApp>

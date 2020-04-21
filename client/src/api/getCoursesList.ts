@@ -1,6 +1,7 @@
 import { CoursesList } from '../interfaces/CourseOverview'
 
-const API_URL = 'http://localhost:3001/api'
+// const API_URL = 'http://localhost:3001/api'
+const API_URL = 'https://notangles-server.csesoc.unsw.edu.au/api'
 
 /**
  * Fetches a list of course objects, where each course object contains
