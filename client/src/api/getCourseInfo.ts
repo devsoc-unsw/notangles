@@ -1,7 +1,7 @@
 import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse'
 import { CourseData } from '../interfaces/CourseData'
 
-const API_URL = 'http://localhost:3001/api'
+const API_URL = process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost:3001/api' : 'https://notangles-server.csesoc.unsw.edu.au/api'
 
 /**
  * Fetches the information of a specified course
