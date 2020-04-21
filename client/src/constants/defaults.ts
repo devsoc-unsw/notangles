@@ -1,3 +1,5 @@
-export default {
-	is12HourMode: false
+const defaults: Record<string, any> = {
+    is12HourMode: false
 }
+
+export default defaults
