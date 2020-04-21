@@ -17,52 +17,50 @@ const LogoImg = styled.img`
   height:40px;
   margin-right: 20px;
 `
-const DarkModeButton = styled(ToggleButton)`
-    border: none;
-    border-radius:40px;
-    margin-right: 20px;
-    width:40px;
-    height: 40px
-`
-const DarkModeIcon = styled(Brightness2Icon)`
-    transform: rotate(180deg);
-    color: #bde0ff
-`
-const NavButton = styled(Button)`
-    margin-right: 20px;
+
+const NavbarBox = styled.div`
+  flex-grow: 1;
 `
 const StyledNavBar = styled(AppBar)`
-    background: rgb(54,119,245);
-    margin-bottom:30px;
+  background: rgb(54,119,245);
+  margin-bottom:30px;
+  position: static;
+`
+const NavbarTitle = styled(Typography)`
+  flex-grow: 1;
+`
+const DarkModeButton = styled(ToggleButton)`
+  border: none;
+  border-radius:40px;
+  margin-right: 20px;
+  width:40px;
+  height: 40px
+`
+const DarkModeIcon = styled(Brightness2Icon)`
+  transform: rotate(180deg);
+  color: #bde0ff
+`
+const NavButton = styled(Button)`
+  margin-right: 20px;
 `
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  title: {
-    flexGrow: 1
-  }
-}));
-
 export default function Navbar() {
-  const classes = useStyles();
 
   // for dark mode toggle
   const [selected, setSelected] = React.useState(false);
 
   return (
-    <div className={classes.root}>
     <StylesProvider injectFirst>
-
-      <StyledNavBar position="static">
+    <NavbarBox>
+      <StyledNavBar>
         <Toolbar>
-          <LogoImg src={CSESocLogo} />
-          <Typography variant="h6" className={classes.title}>
+
+          <LogoImg src={CSESocLogo}/>
+          <NavbarTitle variant="h6">
             Notangles
-          </Typography>
+          </NavbarTitle>
+
           <DarkModeButton
-            value="check"
             selected={selected}
             onChange={() => {
               setSelected(!selected);
@@ -70,13 +68,14 @@ export default function Navbar() {
           >
             <DarkModeIcon fontSize="small"/>
           </DarkModeButton>
+
           <NavButton color="inherit">Login</NavButton>
           <NavButton color="inherit">Sign Up</NavButton>
           <NavButton color="inherit">About</NavButton>
-        </Toolbar>
-      </StyledNavBar>
 
+          </Toolbar>
+        </StyledNavBar>
+      </NavbarBox>
       </StylesProvider>
-    </div>
   );
 }
