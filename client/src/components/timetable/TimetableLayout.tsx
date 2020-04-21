@@ -77,14 +77,14 @@ const hourStrings = (range: number[], twelveHourMode: boolean): string[] => {
 
   return hourNumbers.map(n => {
     if (twelveHourMode) {
-      let period: string = 'AM'
+      let period = 'AM'
       if (n > 12) {
         n -= 12
         period = 'PM'
       }
       return n + ' ' + period
     } else {
-      let hour: string = String(n)
+      let hour = String(n)
       if (hour.length == 1) {
         hour = '0' + hour
       }
