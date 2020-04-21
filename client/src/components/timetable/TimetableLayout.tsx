@@ -13,8 +13,14 @@ const BaseCell = styled.div<{ x: number; y: number }>`
 
 const TwelveHourModeToggle = styled.span`
   color: #3a76f8;
+  font-weight: bold;
   cursor: pointer;
   user-select: none;
+  transition: color 100ms;
+
+  &:hover {
+    color: #084cdd;
+  }
 `
 
 interface TimetableLayoutProps {
