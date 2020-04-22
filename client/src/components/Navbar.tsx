@@ -48,7 +48,7 @@ const NavButton = styled(Button)`
 export default function Navbar() {
 
   // for dark mode toggle
-  const [isDarkMode, setDarkMode] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
 
   return (
     <StylesProvider injectFirst>
@@ -64,7 +64,7 @@ export default function Navbar() {
           <DarkModeButton
             selected={isDarkMode}
             onChange={() => {
-              setDarkMode(!isDarkMode);
+              setIsDarkMode(!isDarkMode);
             }}
           >
             <DarkModeIcon fontSize="small"/>
