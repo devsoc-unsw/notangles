@@ -14,6 +14,8 @@ import { getCoursesList } from './api/getCoursesList'
 import { CoursesList } from './interfaces/CourseOverview'
 import { useColorMapper } from './hooks/useColorMapper'
 
+import storage from './utils/storage'
+
 interface CourseOption {
   value: string
   label: string
@@ -24,7 +26,7 @@ const StyledApp = styled.div`
   padding: 10px 20%;
 
   display: grid;
-  grid-template-rows: 1fr 1fr 90% 
+  grid-template-rows: 1fr 1fr 90%
   grid-template-columns: auto;
 
   text-align: center;
@@ -46,6 +48,8 @@ const App: FunctionComponent = () => {
   const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
+  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'))
+
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
   )
@@ -53,6 +57,10 @@ const App: FunctionComponent = () => {
   useEffect(() => {
     fetchClassesList()
   }, [])
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode)
+  }, [is12HourMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -125,6 +133,8 @@ const App: FunctionComponent = () => {
             selectedCourses={selectedCourses}
             selectedClassIds={selectedClassIds}
             assignedColors={assignedColors}
+            is12HourMode={is12HourMode}
+            setIs12HourMode={setIs12HourMode}
             onSelectClass={handleSelectClass}
           />
         </DndProvider>
