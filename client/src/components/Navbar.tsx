@@ -48,7 +48,7 @@ const NavButton = styled(Button)`
 export default function Navbar() {
 
   // for dark mode toggle
-  const [isDarkMode, setSelected] = React.useState(false);
+  const [isDarkMode, setDarkMode] = React.useState(false);
 
   return (
     <StylesProvider injectFirst>
@@ -64,7 +64,7 @@ export default function Navbar() {
           <DarkModeButton
             selected={isDarkMode}
             onChange={() => {
-              setSelected(!isDarkMode);
+              setDarkMode(!isDarkMode);
             }}
           >
             <DarkModeIcon fontSize="small"/>
@@ -76,7 +76,7 @@ export default function Navbar() {
                 <NavButton color="inherit"  disabled>Sign Up</NavButton>
             </div>
           </Tooltip>
-          
+
           <NavButton color="inherit" >About</NavButton>
 
           </Toolbar>
