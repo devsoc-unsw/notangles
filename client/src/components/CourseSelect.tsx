@@ -36,7 +36,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
         const coursesList = await getCoursesList('2020', 'T1')
         if (coursesList) {
           setCoursesList(coursesList)
-          setOptions(courseSelectOptions.slice(1,10))
+          if (options.length == 0) {
+            setOptions(courseSelectOptions.slice(1,10))
+          }
         }
     }
 
