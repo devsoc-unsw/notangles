@@ -97,11 +97,11 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     return elementList
   }
 
-  interface GetClassTablesParams {
-    subtables: NodeListOf<HTMLElement>
-    dataClassSelector: string
-  }
-
+  /**
+   * Finds and extracts notes from the class chunk
+   * Relies on the fact that notes follow "Class Notes" header
+   * @param subtable: Table tag equivalent to a class chunk
+   */
   const getClassNotes = (subtable: HTMLElement): string[] => {
     const notes = [
       ...subtable.querySelectorAll<HTMLElement>(
@@ -119,7 +119,10 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     return classNotes
   }
 
-  //{ chunks: Chunk[]; classNotes: string[][] }
+  interface GetClassTablesParams {
+    subtables: NodeListOf<HTMLElement>
+    dataClassSelector: string
+  }
 
   /**
    * Extracts all the classChunks from the page

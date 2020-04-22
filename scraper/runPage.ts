@@ -18,7 +18,7 @@ import { scrapeSubject } from './scraper'
     const fs = require('fs')
     fs.writeFile(
       'T1.json',
-      JSON.stringify(data.coursesData.T2),
+      JSON.stringify(data.coursesData.T1),
       'utf-8',
       (err: unknown) => {
         if (err) {

@@ -536,17 +536,6 @@ const getInstructor = (data: string): string | false => {
   return false
 }
 
-/**
- * Finds number of notes associated with a class
- * @param data: Class chunk that is being parsed
- * @param index: index of the line that might contain a note
- * @returns { number }: number of notes associated with a class
- */
-const getNoteCount = (chunk: ClassChunk): number => {
-  return chunk.notes.length
-  // return (10 - index) % 5
-}
-
 interface GetTimeDataParams {
   data: string[]
   index: number
@@ -624,27 +613,6 @@ const getTimeData = ({
   }
 
   return { dateList, timeDataWarnings }
-}
-
-interface GetNoteParams {
-  data: ClassChunk
-  index: number
-}
-
-/**
- * Extract any notes that might be in the class chunk
- * @param { ClassChunk } data: The chunk that contains data about the class
- * @param { number } index: The index marking the start of the time data
- * @returns { string[] }: Array of notes that might exist in the class
- */
-const getNote = ({ data, index }: GetNoteParams): string[] | false => {
-  // anything after times is in the notes category
-  // Times are in groups of 5 lines
-  const noteCount = getNoteCount(data)
-  if (noteCount > 0) {
-    return [] //data.slice(data.length - noteCount)
-  }
-  return false
 }
 
 /**
