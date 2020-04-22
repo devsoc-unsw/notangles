@@ -10,14 +10,15 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import Brightness2Icon from "@material-ui/icons/Brightness2";
+import Tooltip from '@material-ui/core/Tooltip';
 
 import CSESocLogo from "../assets/logo.png"
+
 const LogoImg = styled.img`
   width: 40px;
   height:40px;
   margin-right: 20px;
 `
-
 const NavbarBox = styled.div`
   flex-grow: 1;
 `
@@ -47,7 +48,7 @@ const NavButton = styled(Button)`
 export default function Navbar() {
 
   // for dark mode toggle
-  const [selected, setSelected] = React.useState(false);
+  const [isDarkMode, setSelected] = React.useState(false);
 
   return (
     <StylesProvider injectFirst>
@@ -61,17 +62,22 @@ export default function Navbar() {
           </NavbarTitle>
 
           <DarkModeButton
-            selected={selected}
+            selected={isDarkMode}
             onChange={() => {
-              setSelected(!selected);
+              setSelected(!isDarkMode);
             }}
           >
             <DarkModeIcon fontSize="small"/>
           </DarkModeButton>
 
-          <NavButton color="inherit">Login</NavButton>
-          <NavButton color="inherit">Sign Up</NavButton>
-          <NavButton color="inherit">About</NavButton>
+          <Tooltip title="Coming Soon" placement="bottom">
+            <div>
+                <NavButton color="inherit" disabled >Login</NavButton>
+                <NavButton color="inherit"  disabled>Sign Up</NavButton>
+            </div>
+          </Tooltip>
+          
+          <NavButton color="inherit" >About</NavButton>
 
           </Toolbar>
         </StyledNavBar>
