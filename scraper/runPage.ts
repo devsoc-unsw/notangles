@@ -39,7 +39,7 @@ import { scrapeSubject } from './scraper'
   } catch (err) {
     console.log(err)
   } finally {
-    // await browser.close()
+    await browser.close()
   }
   console.timeEnd('cscraper')
   const used = process.memoryUsage()
