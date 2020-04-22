@@ -21,7 +21,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
 
     React.useEffect(() => {
         fetchClassesList()
-      }, [])
+      }, [coursesList])
 
     const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
         value: course.courseCode,
