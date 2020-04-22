@@ -1,5 +1,4 @@
 import React, { useEffect, FunctionComponent, useState } from 'react'
-import Select from 'react-select'
 import styled from 'styled-components'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
@@ -8,13 +7,13 @@ import { Timetable } from './components/timetable/Timetable'
 import Navbar from './components/Navbar'
 import Inventory from './components/inventory/Inventory'
 import { CourseData } from './interfaces/CourseData'
+import CourseSelect from './components/CourseSelect'
 
 import { getCourseInfo } from './api/getCourseInfo'
-import { getCoursesList } from './api/getCoursesList'
 import { CoursesList } from './interfaces/CourseOverview'
 import { useColorMapper } from './hooks/useColorMapper'
 
-interface CourseOption {
+export interface CourseOption {
   value: string
   label: string
 }
@@ -37,11 +36,6 @@ const SelectWrapper = styled.div`
   height: 30px;
 `
 
-const StyledSelect = styled(Select)`
-  width: 100%;
-  text-align: left;
-`
-
 const App: FunctionComponent = () => {
   const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
@@ -49,10 +43,6 @@ const App: FunctionComponent = () => {
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
   )
-
-  useEffect(() => {
-    fetchClassesList()
-  }, [])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -89,49 +79,14 @@ const App: FunctionComponent = () => {
     setSelectedClassIds(newSelectedClassIds)
   }
 
-  const fetchClassesList = async () => {
-    const coursesList = await getCoursesList('2020', 'T1')
-    if (coursesList) {
-      setCoursesList(coursesList)
-    }
-  }
-
-  const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
-    value: course.courseCode,
-    label: `${course.courseCode} - ${course.name}`,
-  }))
-
-  class CourseSelect extends React.Component<{}, {options: Array<CourseOption>}>{
-
-    constructor(props: any){
-      super(props)
-      this.state = {options: courseSelectOptions.slice(0,10)}
-    }
-
-    handleChange = (inputValue: string, actionMeta: any) => {
-      this.setState({options: courseSelectOptions.filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,10)})
-    }
-
-    render (){
-      return (
-        <StyledSelect
-            options={this.state.options}
-            value={null}
-            onInputChange={this.handleChange}
-            onChange={handleSelectCourse}
-            placeholder="Select a Course"
-          />
-      )
-    }
-
-  }
-
   return (
     <div className="App">
       <Navbar />
       <StyledApp>
         <SelectWrapper>
-          <CourseSelect/>
+          <CourseSelect
+            onChange={handleSelectCourse}
+          />
         </SelectWrapper>
         <DndProvider backend={HTML5Backend}>
           <Inventory
