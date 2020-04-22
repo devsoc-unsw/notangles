@@ -1,17 +1,17 @@
 import React from "react";
 
-import styled from 'styled-components'
+import styled from "styled-components"
 import { makeStyles } from "@material-ui/core/styles";
-import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
+import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButton from "@material-ui/lab/ToggleButton";
 import Brightness2Icon from "@material-ui/icons/Brightness2";
 
-import CSESocLogo from '../assets/logo.png'
+import CSESocLogo from "../assets/logo.png"
 const LogoImg = styled.img`
   width: 40px;
   height:40px;
@@ -34,11 +34,11 @@ const DarkModeButton = styled(ToggleButton)`
   border-radius:40px;
   margin-right: 20px;
   width:40px;
-  height: 40px
+  height: 40px;
 `
 const DarkModeIcon = styled(Brightness2Icon)`
   transform: rotate(180deg);
-  color: #bde0ff
+  color: #bde0ff;
 `
 const NavButton = styled(Button)`
   margin-right: 20px;
