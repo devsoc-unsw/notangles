@@ -21,7 +21,9 @@ services:
       - ~/var/lib/notangles/data:/data/db
   client:
     container_name: notangles-client
+    restart: always
     image: notangles-client
+    build: ../client
     ports:
       - "3000:3000"
   
