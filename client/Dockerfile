@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the server
-CMD ["npm","run","start:mock"]
+CMD ["npm","run","start"]
