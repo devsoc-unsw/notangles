@@ -4,6 +4,8 @@ import styled from "styled-components"
 import { makeStyles } from "@material-ui/core/styles";
 import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 
+import { About } from "./About"
+
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -78,7 +80,7 @@ export default function Navbar() {
           </Tooltip>
 
           <NavButton color="inherit" >About</NavButton>
-
+          <About/>
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
