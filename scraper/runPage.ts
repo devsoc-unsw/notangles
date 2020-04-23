@@ -3,13 +3,17 @@ import { scrapeSubject } from './scraper'
 // Devlopment only
 ;(async () => {
   console.time('cscraper')
-  const browser = await puppeteer.launch({ headless: process.env.NODE_ENV === 'DEV' ? false : true })
+  const browser = await puppeteer.launch({
+    headless: process.env.NODE_ENV === 'DEV' ? false : true,
+  })
   try {
     const singlepage = await browser.newPage()
     const data = await scrapeSubject({
       page: singlepage,
-      course: 'http://timetable.unsw.edu.au/2019/ACCT5914.html',
+      course: 'http://timetable.unsw.edu.au/2020/LAWS1141.html',
     })
+
+    console.log(JSON.stringify(data))
 
     const fs = require('fs')
     fs.writeFile(

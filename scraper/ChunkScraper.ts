@@ -124,7 +124,7 @@ interface CourseInfoIndices {
 }
 
 interface parseCourseInfoChunkParams {
-  data: Chunk
+  chunk: Chunk
   parseIndices?: CourseInfoIndices
 }
 
@@ -147,13 +147,14 @@ const defaultParseIndices: CourseInfoIndices = {
 /**
  * Scrapes all information, given a data array from a chunk that contains
  * course information for one course
- * @param { Chunk } data: Data array that contains the course information
+ * @param { Chunk } chunk: Data array that contains the course information
  * @returns { { notes: string[]; courseInfo: CourseInfo } }: A CourseInfo object containing data about the course and a list of notes on the page, if any.
  */
 const parseCourseInfoChunk = ({
-  data,
+  chunk,
   parseIndices = defaultParseIndices,
 }: parseCourseInfoChunkParams): parseCourseInfoChunkReturn => {
+  const data = chunk.data
   const school = getSchool(data[parseIndices.schoolIndex])
   const campus = getCampusLocation(data[parseIndices.campusIndex])
   const career = getCareer(data[parseIndices.careerIndex])
