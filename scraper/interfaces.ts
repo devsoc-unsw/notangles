@@ -1,9 +1,18 @@
 // List of the interfaces and types that are used in the scraper
 
 /**
- * @type: Data extracted from a page
+ * @interface: Data extracted from a page
  */
-type Chunk = string[]
+interface Chunk {
+  data: string[]
+}
+
+/**
+ * @interface: Data related to a class extracted from a page
+ */
+interface ClassChunk extends Chunk {
+  notes: string[]
+}
 
 /**
  * @type: url that represents pages of the site
@@ -112,7 +121,7 @@ interface ClassWarnings {
  */
 interface PageData {
   courseInfo: Chunk
-  courseClasses?: Chunk[]
+  courseClasses?: ClassChunk[]
 }
 
 /**
@@ -221,6 +230,7 @@ export {
   CourseHead,
   CourseInfo,
   Chunk,
+  ClassChunk,
   PageData,
   TimetableUrl,
   TimetableData,
