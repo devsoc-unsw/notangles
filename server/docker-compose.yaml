@@ -19,4 +19,9 @@ services:
       - "27017:27017"
     volumes:
       - ~/var/lib/notangles/data:/data/db
+  client:
+    container_name: notangles-client
+    image: notangles-client
+    ports:
+      - "3000:3000"
   
