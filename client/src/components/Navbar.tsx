@@ -79,7 +79,6 @@ export default function Navbar() {
             </div>
           </Tooltip>
 
-          <NavButton color="inherit" >About</NavButton>
           <About/>
           </Toolbar>
         </StyledNavBar>
