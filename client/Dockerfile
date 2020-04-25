@@ -13,8 +13,9 @@ RUN npm install
 # Copy the entire project into the container
 COPY . .
 
-# Expose the port to the outside world
-EXPOSE 3000
+# Build server and install npm serve
+RUN npm run build
+RUN npm install -g serve
 
 # Run the server
-CMD ["npm","run","start"]
+CMD ["serve","-s","build","-l","3000"]
