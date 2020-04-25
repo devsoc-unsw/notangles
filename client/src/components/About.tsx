@@ -6,10 +6,10 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
+import Link from '@material-ui/core/Link';
 
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
@@ -22,27 +22,6 @@ const CloseButton = styled(IconButton)`
     top: 10px;
     color: rgb(54,119,245);
 `
-function DialogTitle(props:any) {
-  const { children, classes, onClose, ...other } = props;
-  return (
-      <StylesProvider injectFirst>
-
-    <StyledDialogTitle disableTypography {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <CloseButton
-          aria-label="close"
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </CloseButton>
-      ) : null}
-    </StyledDialogTitle>
-    </StylesProvider>
-
-  );
-}
-
 const DialogContent = styled(MuiDialogContent)`
     padding:20px;
 `
@@ -72,10 +51,22 @@ export function About() {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        fullWidth
+        maxWidth="sm"
       >
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Notangles: No more timetable Tangles 🧶
-        </DialogTitle>
+
+        <StyledDialogTitle disableTypography>
+          <Typography variant="h6">Notangles: No more timetable Tangles 🧶</Typography>
+          {handleClose ? (
+            <CloseButton
+              aria-label="close"
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </CloseButton>
+          ) : null}
+        </StyledDialogTitle>
+
         <DialogContent dividers>
           <Typography gutterBottom>
             nice blurb!!
@@ -84,7 +75,10 @@ export function About() {
             How to use:
           </Typography>
           <Typography gutterBottom>
-            credits: github linku
+            Made by >_ CSESoc UNSW &nbsp; | &nbsp;
+            <Link target="_blank" href="https://github.com/csesoc/notangles">
+               GitHub
+            </Link>
           </Typography>
         </DialogContent>
       </Dialog>
