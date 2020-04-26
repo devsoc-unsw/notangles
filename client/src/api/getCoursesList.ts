@@ -1,6 +1,5 @@
 import { CoursesList } from '../interfaces/CourseOverview'
-
-const API_URL = process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost:3001/api' : 'https://notangles-server.csesoc.unsw.edu.au/api'
+import { API_URL } from './config'
 
 /**
  * Fetches a list of course objects, where each course object contains
