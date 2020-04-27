@@ -1,23 +1,28 @@
 import React, { FunctionComponent } from 'react'
 import { useDrag } from 'react-dnd'
 import styled from 'styled-components'
+import Card from '@material-ui/core/Card'
 import { CourseData, Period, ClassData, ClassTime } from '../../interfaces/CourseData'
 import { weekdayToXCoordinate, timeToIndex } from './Dropzone'
 
-const StyledCourseClass = styled.div<{
+const StyledCourseClass = styled(Card)<{
   isDragging: boolean
   classTime: Period
   backgroundColor: string
-  color: string
 }>`
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
-  color: ${props => props.color};
   background-color: ${props => props.backgroundColor};
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
+  color: white;
   cursor: move;
   font-size: 0.7rem;
+  border-radius: 6px;
+  padding: 6px;
+  margin: 3px;
+  position: relative;
+  bottom: 1px;
 `
 
 interface DroppedClassProps {
@@ -25,16 +30,6 @@ interface DroppedClassProps {
   courseCode: string
   color: string
   classTime: Period
-}
-
-const bgAndTextColorPairs: Record<string, string> = {
-  violet: 'white',
-  indigo: 'white',
-  green: 'white',
-  blue: 'white',
-  yellow: 'black',
-  orange: 'black',
-  red: 'black',
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
@@ -55,7 +50,6 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       ref={drag}
       isDragging={isDragging}
       backgroundColor={color}
-      color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
       <p style={{ textAlign: 'center', marginBottom: 0 }}>

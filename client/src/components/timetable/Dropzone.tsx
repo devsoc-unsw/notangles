@@ -1,7 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
+import Card from '@material-ui/core/Card'
 import { useDrop } from 'react-dnd'
 import { Period } from '../../interfaces/CourseData'
+import CardContent from '@material-ui/core/CardContent'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
@@ -18,14 +20,11 @@ export const timeToIndex = (time: string) => {
   return Number(time.split(':')[0]) - 7
 }
 
-const StyledCell = styled.div<{
+const StyledCell = styled(Card)<{
   classTime: Period
   canDrop: boolean
   color: string
 }>`
-  border: 0.2px solid;
-  border-color: rgba(0, 0, 0, 0.2);
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -33,11 +32,16 @@ const StyledCell = styled.div<{
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
-  border: 3px solid ${props => props.color};
-  background-color: white;
-  
+  background-color: ${props => props.color};
+  opacity: 0.5;
+
   font-size: 0.7rem;
-  
+  border-radius: 6px;
+  padding: 6px;
+  margin: 3px;
+  position: relative;
+  bottom: 1px;
+
   ${props => !props.canDrop && 'display: none'};
 `
 
@@ -71,9 +75,7 @@ const Dropzone: React.FC<CellProps> = ({
       classTime={classTime}
       canDrop={canDrop}
       color={color}
-    >
-      {`${courseCode} ${activity}`}
-    </StyledCell>
+    />
   )
 }
 

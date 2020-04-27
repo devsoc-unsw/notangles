@@ -5,15 +5,25 @@ import { days, hoursRange } from '../../constants/timetable'
 import { TimetableLayout } from './TimetableLayout'
 import { ClassDropzones } from './ClassDropzones'
 import { DroppedClasses } from './DroppedClasses'
+import * as theme from '../../constants/theme'
 
 const rows: number = hoursRange[1] - hoursRange[0] + 2
 
 const StyledTimetable = styled.div`
   display: grid;
+  box-sizing: content-box;
+  grid-gap: ${1 / devicePixelRatio}px;
   grid-template: repeat(${rows}, calc(100% / ${rows})) / auto repeat(${days.length}, 1fr);
-  border: 3px solid;
-  border-color: rgba(0, 0, 0, 0.2);
-  box-sizing: border-box;
+  border: 1px solid ${theme.border};
+  border-radius: 6px;
+  overflow: hidden;
+`
+
+const BorderTable = styled.table`
+  border: 1px solid red;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 `
 
 interface TimetableProps {

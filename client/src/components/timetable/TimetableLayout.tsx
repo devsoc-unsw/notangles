@@ -1,10 +1,12 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
+import * as theme from '../../constants/theme'
 
 const BaseCell = styled.div<{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
-  border: 0.2px solid rgba(0, 0, 0, 0.2);
+  // border: 1px solid red;
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${theme.border};
 
   display: inline-flex;
   align-items: center;
@@ -23,14 +25,14 @@ const HourCell = styled(BaseCell)`
 `
 
 const Is12HourModeToggle = styled.span`
-  color: #3a76f8;
+  color: ${theme.primary};
   font-weight: bold;
   cursor: pointer;
   user-select: none;
   transition: color 100ms;
 
   &:hover {
-    color: #084cdd;
+    color: ${theme.primaryDark};
   }
 `
 

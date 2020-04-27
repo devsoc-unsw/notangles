@@ -4,7 +4,6 @@ import { useDrag } from 'react-dnd'
 
 interface StyledInventoryCourseClassProps {
   isDragging: boolean
-  color: string
   backgroundColor: string
 }
 
@@ -14,14 +13,14 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
 
   float: left;
   margin: 10px;
-  
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   font-size: 0.7rem;
-  
-  color: ${props => props.color};
+
+  color: white;
   background-color: ${props => props.backgroundColor};
   opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};
   cursor: move;
@@ -30,24 +29,14 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
 export interface InventoryCourseClassProps {
   courseCode: string
   activity: string
-  colour: string
+  color: string
 }
 
 const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
   courseCode,
   activity,
-  colour,
+  color,
 }) => {
-  const bgAndTextColorPairs: Record<string, string> = {
-    violet: 'white',
-    indigo: 'white',
-    green: 'white',
-    blue: 'white',
-    yellow: 'black',
-    orange: 'black',
-    red: 'black',
-  }
-
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
     collect: monitor => ({
@@ -59,8 +48,7 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
     <StyledInventoryCourseClass
       ref={drag}
       isDragging={isDragging}
-      backgroundColor={colour}
-      color={bgAndTextColorPairs[colour]}
+      backgroundColor={color}
     >
       {`${courseCode}`}
         <br/>
