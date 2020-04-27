@@ -1,7 +1,6 @@
 import React from "react";
 
 import styled from "styled-components"
-import { makeStyles } from "@material-ui/core/styles";
 import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 
 import AppBar from "@material-ui/core/AppBar";
@@ -62,6 +61,7 @@ export default function Navbar() {
           </NavbarTitle>
 
           <DarkModeButton
+
             selected={isDarkMode}
             onChange={() => {
               setIsDarkMode(!isDarkMode);
