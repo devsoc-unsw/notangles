@@ -17,7 +17,7 @@ const StyledCourseClass = styled(Card)<{
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
   color: white;
   cursor: move;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   border-radius: 6px;
   padding: 6px;
   margin: 3px;
@@ -53,9 +53,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       classTime={classTime}
     >
       <p style={{ textAlign: 'center', marginBottom: 0 }}>
-      {`${courseCode}`}
-        <br/>
-      {`${activity}`}
+      <b>{courseCode} {activity}</b>
       </p>
       <p style={{ textAlign: 'center', marginTop: 0 }}>{`${classTime.location}`}</p>
     </StyledCourseClass>

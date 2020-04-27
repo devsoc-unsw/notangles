@@ -23,7 +23,7 @@ export interface CourseOption {
 
 const StyledApp = styled.div`
   height: 85vh;
-  padding: 10px 20%;
+  padding: 10px 15%;
 
   display: grid;
   grid-template-rows: 1fr 1fr 90%
@@ -48,7 +48,7 @@ const App: FunctionComponent = () => {
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
   )
-  
+
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode)
   }, [is12HourMode])

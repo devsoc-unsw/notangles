@@ -24,6 +24,7 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
   background-color: ${props => props.backgroundColor};
   opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};
   cursor: move;
+  border-radius: 6px;
 `
 
 export interface InventoryCourseClassProps {

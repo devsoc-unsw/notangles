@@ -19,13 +19,6 @@ const StyledTimetable = styled.div`
   overflow: hidden;
 `
 
-const BorderTable = styled.table`
-  border: 1px solid red;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-`
-
 interface TimetableProps {
   selectedCourses: CourseData[]
   selectedClassIds: string[]
