@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import Card from '@material-ui/core/Card'
 import { useDrop } from 'react-dnd'
 import { Period } from '../../interfaces/CourseData'
-import CardContent from '@material-ui/core/CardContent'
 
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
