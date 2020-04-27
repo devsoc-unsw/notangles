@@ -33,7 +33,7 @@ const StyledCell = styled(Card)<{
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
   background-color: ${props => props.color};
-  opacity: 0.5;
+  opacity: 0.3;
 
   font-size: 0.7rem;
   border-radius: 6px;
