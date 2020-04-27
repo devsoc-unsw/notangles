@@ -13,6 +13,7 @@ import {
   CourseInfo,
   GetTermFromCourseReference,
   CourseHead,
+  ClassChunk,
 } from './interfaces'
 import { formatDates, keysOf } from './helper'
 import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
@@ -96,6 +97,28 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     return elementList
   }
 
+  /**
+   * Finds and extracts notes from the class chunk
+   * Relies on the fact that notes follow "Class Notes" header
+   * @param subtable: Table tag equivalent to a class chunk
+   */
+  const getClassNotes = (subtable: HTMLElement): string[] => {
+    const notes = [
+      ...subtable.querySelectorAll<HTMLElement>(
+        'td.label[colspan="5"], font[color="red"]'
+      ),
+    ].map(note => note.innerText)
+    const noteStartIndex = notes.indexOf('Class Notes')
+    let noteCount = 0
+    let classNotes: string[] = []
+    if (noteStartIndex > -1) {
+      noteCount = noteStartIndex > -1 ? notes.length - 1 - noteStartIndex : 0
+      classNotes = noteCount > 0 ? notes.splice(noteStartIndex + 1) : []
+    }
+
+    return classNotes
+  }
+
   interface GetClassTablesParams {
     subtables: NodeListOf<HTMLElement>
     dataClassSelector: string
@@ -105,20 +128,26 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
    * Extracts all the classChunks from the page
    * @param { NodeListOf<HTMLElement> } subtables: List of table elements that contain one class chunk each
    * @param { string } dataClassSelector: selector to extract elements with the data class
-   * @returns { Chunk[] }: List of class chunks that were extracted
+   * @returns { ClassChunk[] }: List of class chunks that were extracted
    */
   const getClassTables = ({
     subtables,
     dataClassSelector,
-  }: GetClassTablesParams): Chunk[] => {
+  }: GetClassTablesParams): ClassChunk[] => {
     // The table represents a classlist!! -> the split chunks are then each element of subtables...
-    const tablelist: Chunk[] = []
+
+    // const notes = getClassesNotes(subtables)
+    const tablelist: ClassChunk[] = []
     for (const subtable of subtables) {
-      tablelist.push(
-        [...subtable.querySelectorAll<HTMLElement>(dataClassSelector)].map(
-          (element: HTMLElement) => element.innerText
-        )
-      )
+      // classNotes.push(getClassNotes(subtable))
+      const data = [
+        ...subtable.querySelectorAll<HTMLElement>(dataClassSelector),
+      ].map((element: HTMLElement) => element.innerText)
+      const notes = getClassNotes(subtable)
+      tablelist.push({
+        data: data.slice(0, data.length - notes.length),
+        notes,
+      })
     }
     return tablelist
   }
@@ -139,9 +168,11 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     dataClassSelector,
   }: GetCourseInfoChunkParams): Chunk => {
     // This should be the course info table. --> get data elements
-    return [
-      ...courseInfoElement.querySelectorAll<HTMLElement>(dataClassSelector),
-    ].map(element => element.innerText)
+    return {
+      data: [
+        ...courseInfoElement.querySelectorAll<HTMLElement>(dataClassSelector),
+      ].map(element => element.innerText),
+    }
   }
 
   /**
@@ -178,7 +209,7 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
 
   interface ExtractChunksReturn {
     courseInfoChunk?: Chunk
-    classChunks?: Chunk[]
+    classChunks?: ClassChunk[]
   }
 
   /**
@@ -194,7 +225,9 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
     )
 
     if (hasClassChunk(element)) {
-      return { classChunks: getClassTables({ subtables, dataClassSelector }) }
+      return {
+        classChunks: getClassTables({ subtables, dataClassSelector }),
+      }
     } else if (isNoteElement(element)) {
       // The table is the summary table ---> skip!
     } else if (hasCourseInfoChunk(subtables)) {
@@ -219,7 +252,7 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
   const parseCourse = (elements: HTMLElement[]): PageData => {
     const dataClassSelector: string = '.data'
 
-    const courseClasses: Chunk[] = []
+    let courseClasses: ClassChunk[] = []
     let courseInfo: Chunk
     for (const element of elements) {
       // If there are any data fields inside the chunk, then categorize it
@@ -246,7 +279,7 @@ const parsePage = (elements: HTMLElement[]): PageData[] => {
   for (const element of courseElements) {
     const { courseInfo, courseClasses } = parseCourse(element)
 
-    if (courseClasses.length > 0) {
+    if (courseClasses?.length > 0) {
       pageChunks.push({
         courseInfo,
         courseClasses,
@@ -377,7 +410,7 @@ const getCourseInfoAndNotes = ({
   if (!courseInfo) {
     throw new Error('Malformed page: ' + url)
   }
-  return parseCourseInfoChunk({ data: courseInfo })
+  return parseCourseInfoChunk({ chunk: courseInfo })
 }
 
 /**
@@ -405,7 +438,9 @@ interface GetClassesByTermReturn {
  * @param { Chunk[] } courseClasses: List of raw class chunks
  * @returns { GetClassesByTermReturn }: Parsed class objects, along with any warnings that occured during parsing
  */
-const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
+const getClassesByTerm = (
+  courseClasses: ClassChunk[]
+): GetClassesByTermReturn => {
   const classes: ClassesByTerm = {
     Summer: [],
     T1: [],
@@ -418,7 +453,7 @@ const getClassesByTerm = (courseClasses: Chunk[]): GetClassesByTermReturn => {
   const classWarnings: ClassWarnings[] = []
   for (const courseClass of courseClasses) {
     const parsedClassChunk = parseClassChunk({
-      data: courseClass,
+      chunk: courseClass,
     })
     if (parsedClassChunk) {
       classes[
@@ -548,6 +583,7 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
       }
     } catch (err) {
       // Display the course name and code before deferring to parent
+      console.log(err)
       console.log(courseHead.courseCode + ' ' + courseHead.name)
       throw new Error(err)
     }
