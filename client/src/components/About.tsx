@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components"
-import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
