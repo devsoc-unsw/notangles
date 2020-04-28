@@ -1,6 +1,6 @@
-import { timetableScraper } from './scraper'
-import Database from './database'
-import { dbReadParams, dbUpdateParams, dbAddParams } from './database'
+import { timetableScraper } from '../src/scraper'
+import Database from '../src/database'
+import { dbReadParams, dbUpdateParams, dbAddParams } from '../src/database'
 
 const main = async () => {
   //writing the data to the database
@@ -15,25 +15,25 @@ const main = async () => {
 
   for (const [termName, term] of Object.entries(terms.timetableData)) {
     for (const course of term) {
-      const readArgs : dbReadParams = {
-        dbName : year,
-        termColName : termName,
-        courseCode : course.courseCode
+      const readArgs: dbReadParams = {
+        dbName: year,
+        termColName: termName,
+        courseCode: course.courseCode,
       }
       const ret = await Database.dbRead(readArgs)
       if (ret === null) {
-        const addArgs : dbAddParams = {
+        const addArgs: dbAddParams = {
           dbName: year,
           termColName: termName,
-          doc : course
+          doc: course,
         }
         await Database.dbAdd(addArgs)
       } else {
-        const updateArgs : dbUpdateParams = {
+        const updateArgs: dbUpdateParams = {
           dbName: year,
           termColName: termName,
           courseCode: course.courseCode,
-          doc: course
+          doc: course,
         }
         await Database.dbUpdate(updateArgs)
       }

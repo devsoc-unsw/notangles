@@ -14,10 +14,16 @@ import {
   GetTermFromCourseReference,
   CourseHead,
   ClassChunk,
-} from './interfaces'
-import { formatDates, keysOf } from './helper'
-import { parseCourseInfoChunk, getCourseHeadData } from './ChunkScraper'
-import { parseClassChunk, getTermFromClass } from './ClassScraper'
+} from '../interfaces'
+import { formatDates, keysOf } from '../helper'
+import {
+  parseCourseInfoChunk,
+  getCourseHeadData,
+} from './ChunkScraper/ChunkScraper'
+import {
+  parseClassChunk,
+  getTermFromClass,
+} from './ChunkScraper/ClassScraper/ClassScraper'
 
 /**
  * Extracts the elements hrefs that contain urls from the html element array

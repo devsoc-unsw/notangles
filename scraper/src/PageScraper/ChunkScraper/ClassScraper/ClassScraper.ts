@@ -3,7 +3,7 @@ import {
   formatDates,
   transformHtmlSpecials,
   makeClassWarning,
-} from './helper'
+} from '../../../helper'
 import {
   Term,
   Class,
@@ -18,7 +18,7 @@ import {
   ExtendedTerm,
   OtherTerms,
   ClassChunk,
-} from './interfaces'
+} from '../../../interfaces'
 
 /**
  * @constant { GetTermFromClassReference }: Default reference that the classTermFinder function uses to classify classes into terms

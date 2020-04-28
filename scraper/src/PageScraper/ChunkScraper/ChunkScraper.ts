@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer'
 
-import { transformHtmlSpecials } from './helper'
-import { Chunk, CourseHead, CourseInfo, Career } from './interfaces'
+import { transformHtmlSpecials } from '../../helper'
+import { Chunk, CourseHead, CourseInfo, Career } from '../../interfaces'
 
 /**
  * Extracts the course header information, and splits it into the course code and name
