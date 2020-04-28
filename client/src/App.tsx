@@ -41,14 +41,14 @@ const SelectWrapper = styled.div`
 
 const lightTheme = {
   border: 'rgba(0, 0, 0, 0.2)',
-  fg: 'black',
+  fg: '#202020',
   bg: 'white'
 }
 
 const darkTheme = {
   border: 'rgba(255, 255, 255, 0.2)',
   fg: 'white',
-  bg: 'black'
+  bg: '#202020'
 }
 
 const App: FunctionComponent = () => {
