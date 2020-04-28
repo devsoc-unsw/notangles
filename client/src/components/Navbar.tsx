@@ -12,7 +12,6 @@ import Brightness2Icon from "@material-ui/icons/Brightness2";
 import Tooltip from '@material-ui/core/Tooltip';
 
 import CSESocLogo from "../assets/logo.png"
-import storage from "../utils/storage"
 
 const LogoImg = styled.img`
   width: 40px;
@@ -29,6 +28,7 @@ const StyledNavBar = styled(AppBar)`
 `
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
+  color: white;
 `
 const DarkModeButton = styled(ToggleButton)`
   border: none;
@@ -43,6 +43,7 @@ const DarkModeIcon = styled(Brightness2Icon)`
 `
 const NavButton = styled(Button)`
   margin-right: 20px;
+  color: white;
 `
 
 interface NavBarProps {
