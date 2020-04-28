@@ -63,6 +63,7 @@ export default function Navbar() {
           </NavbarTitle>
 
           <DarkModeButton
+            value={isDarkMode}
             selected={isDarkMode}
             onChange={() => {
               setIsDarkMode(!isDarkMode);

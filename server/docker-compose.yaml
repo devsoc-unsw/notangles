@@ -18,5 +18,4 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ~/var/lib/notangles/data:/data/db
-  
+      - ~/var/lib/notangles/data:/data/db  
