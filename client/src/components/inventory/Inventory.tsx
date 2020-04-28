@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import InventoryRow from './InventoryRow'
 import { CourseData } from '../../interfaces/CourseData'
+import { Box } from '@material-ui/core'
 
 interface InventoryProps {
   selectedCourses: CourseData[]
@@ -11,12 +12,11 @@ interface InventoryProps {
   removeClass(activityId: string): void
 }
 
-const StyledInventory = styled.div`
+const StyledInventory = styled(Box)`
   display: flex;
   flex-direction: column;
 
   border: 3px solid;
-  border-color: ${props => props.theme.border};;
   box-sizing: border-box;
   margin: 30px 0px;
 `
@@ -30,7 +30,7 @@ const Inventory: React.FC<InventoryProps> = ({
 }) => {
   return (
     <div>
-      <StyledInventory>
+      <StyledInventory borderColor = 'secondary.main'>
         {selectedCourses.length
           ? selectedCourses.map(course => (
               <InventoryRow

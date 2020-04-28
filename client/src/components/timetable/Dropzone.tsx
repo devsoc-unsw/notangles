@@ -24,7 +24,6 @@ const StyledCell = styled.div<{
   color: string
 }>`
   border: 0.2px solid;
-  border-color: ${props => props.theme.border};
 
   display: inline-flex;
   align-items: center;
@@ -34,7 +33,6 @@ const StyledCell = styled.div<{
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
   border: 3px solid ${props => props.color};
-  background-color: ${props => props.theme.bg};
   
   font-size: 0.7rem;
   

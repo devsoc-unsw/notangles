@@ -1,6 +1,5 @@
 import React, { useEffect, FunctionComponent, useState } from 'react'
 import styled from 'styled-components'
-import { ThemeProvider } from 'styled-components'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
@@ -15,13 +14,15 @@ import { useColorMapper } from './hooks/useColorMapper'
 import { Helmet } from 'react-helmet'
 
 import storage from './utils/storage'
+import Box from '@material-ui/core/Box'
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core'
 
 export interface CourseOption {
   value: string
   label: string
 }
 
-const StyledApp = styled.div`
+const StyledApp = styled(Box)`
   height: 85vh;
   padding: 10px 20%;
 
@@ -30,26 +31,30 @@ const StyledApp = styled.div`
   grid-template-columns: auto;
 
   text-align: center;
-  color: ${ props => props.theme.fg };
 `
 
-const SelectWrapper = styled.div`
+const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
   height: 30px;
 `
 
-const lightTheme = {
-  border: 'rgba(0, 0, 0, 0.2)',
-  fg: '#202020',
-  bg: 'white'
-}
+const darkTheme = createMuiTheme ({
+  palette: {
+    type: 'dark',
+    secondary: {
+      main: "rgba(255, 255, 255, 0.2)"
+    }
+  },
+})
 
-const darkTheme = {
-  border: 'rgba(255, 255, 255, 0.2)',
-  fg: 'white',
-  bg: '#202020'
-}
+const lightTheme = createMuiTheme ({
+  palette: {
+    secondary: {
+      main: "rgba(0, 0, 0, 0.2)"
+    }
+  }
+})
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
@@ -102,7 +107,7 @@ const App: FunctionComponent = () => {
   }
 
   return (
-    <ThemeProvider theme = { isDarkMode ? darkTheme : lightTheme }>
+    <MuiThemeProvider theme = { isDarkMode ? darkTheme : lightTheme }>
       <div className="App">
         <Helmet>
           <style>
@@ -113,7 +118,7 @@ const App: FunctionComponent = () => {
           setIsDarkMode={setIsDarkMode}
           isDarkMode={isDarkMode}
         />
-        <StyledApp>
+        <StyledApp color="text.primary">
           <SelectWrapper>
             <CourseSelect
               onChange={handleSelectCourse}
@@ -139,7 +144,7 @@ const App: FunctionComponent = () => {
           </DndProvider>
         </StyledApp>
       </div>
-    </ThemeProvider>
+    </MuiThemeProvider>
   )
 }
 

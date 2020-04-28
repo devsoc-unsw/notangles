@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
+import Box from '@material-ui/core/Box'
 
-const BaseCell = styled.div<{ x: number; y: number }>`
+const BaseCell = styled(Box)<{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
   border: 0.2px solid;
-  border-color: ${props => props.theme.border};
 
   display: inline-flex;
   align-items: center;
@@ -72,25 +72,25 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   const hours: string[] = generateHours(hoursRange, is12HourMode)
 
   const dayCells = days.map((day, i) => (
-    <BaseCell key={day} x={i + 2} y={1}>
+    <BaseCell key={day} x={i + 2} y={1} borderColor = 'secondary.main'>
       {day}
     </BaseCell>
   ))
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} style={{justifyContent: is12HourMode ? 'end' : 'center'}}>
+    <HourCell key={hour} x={1} y={i + 2} style={{justifyContent: is12HourMode ? 'end' : 'center'}} borderColor = 'secondary.main'>
       {hour}
     </HourCell>
   ))
 
   const otherCells = hours.map((_, y) =>
     days.map((_, x) =>
-      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
+      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} borderColor = 'secondary.main'/>)
   )
 
   return (
     <>
-      <HourCell key={0} x={1} y={1} style={{justifyContent: 'center'}}>
+      <HourCell key={0} x={1} y={1} style={{justifyContent: 'center'}} borderColor = 'secondary.main'>
         <Is12HourModeToggle onClick={() => setIs12HourMode(!is12HourMode)}>
           {`${is12HourMode ? '12' : '24'} h`}
         </Is12HourModeToggle>

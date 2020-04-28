@@ -4,6 +4,7 @@ import { useDrop } from 'react-dnd'
 import { CourseData } from '../../interfaces/CourseData'
 
 import InventoryCourseClass from './InventoryCourseClass'
+import { Box } from '@material-ui/core'
 
 export interface InventoryRowProps {
   course: CourseData
@@ -13,19 +14,17 @@ export interface InventoryRowProps {
   removeClass(activityId: string): void
 }
 
-const StyledInventoryRow = styled.div`
+const StyledInventoryRow = styled(Box)`
   display: flex;
   padding: 5px;
   border: 2px solid;
-  border-color: ${props => props.theme.border};
 `
 
-const RowCourseDescriptor = styled.div`
+const RowCourseDescriptor = styled(Box)`
   width: 100px;
   /* margin-top: 20px; */
   padding: 10px;
   border-right: 3px solid;
-  border-color: ${props => props.theme.border};
 `
 
 const RowItems = styled.div<{ canDrop: boolean, color: string }>`
@@ -73,8 +72,8 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
   })
 
   return (
-    <StyledInventoryRow>
-      <RowCourseDescriptor>
+    <StyledInventoryRow borderColor = 'secondary.main'>
+      <RowCourseDescriptor borderColor = 'secondary.main'>
         <button
           onClick={() => {
             removeCourse(course.courseCode)

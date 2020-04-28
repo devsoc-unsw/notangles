@@ -5,14 +5,14 @@ import { days, hoursRange } from '../../constants/timetable'
 import { TimetableLayout } from './TimetableLayout'
 import { ClassDropzones } from './ClassDropzones'
 import { DroppedClasses } from './DroppedClasses'
+import { Box } from '@material-ui/core'
 
 const rows: number = hoursRange[1] - hoursRange[0] + 2
 
-const StyledTimetable = styled.div`
+const StyledTimetable = styled(Box)`
   display: grid;
   grid-template: repeat(${rows}, calc(100% / ${rows})) / auto repeat(${days.length}, 1fr);
   border: 3px solid;
-  border-color: ${props => props.theme.border};
   box-sizing: border-box;
 `
 
@@ -34,7 +34,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   onSelectClass
 }) => {
   return (
-    <StyledTimetable>
+    <StyledTimetable borderColor = 'secondary.main'>
       <TimetableLayout
         days={days}
         hoursRange={hoursRange}
