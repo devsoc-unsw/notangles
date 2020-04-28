@@ -12,7 +12,7 @@ const StyledTimetable = styled.div`
   display: grid;
   grid-template: repeat(${rows}, calc(100% / ${rows})) / auto repeat(${days.length}, 1fr);
   border: 3px solid;
-  border-color: rgba(0, 0, 0, 0.2);
+  border-color: ${props => props.theme.border};
   box-sizing: border-box;
 `
 

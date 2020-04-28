@@ -1,5 +1,6 @@
 import React, { useEffect, FunctionComponent, useState } from 'react'
 import styled from 'styled-components'
+import { ThemeProvider } from 'styled-components'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
@@ -10,9 +11,8 @@ import { CourseData } from './interfaces/CourseData'
 import CourseSelect from './components/CourseSelect'
 
 import { getCourseInfo } from './api/getCourseInfo'
-import { CoursesList } from './interfaces/CourseOverview'
 import { useColorMapper } from './hooks/useColorMapper'
-
+import { Helmet } from 'react-helmet'
 
 import storage from './utils/storage'
 
@@ -30,7 +30,7 @@ const StyledApp = styled.div`
   grid-template-columns: auto;
 
   text-align: center;
-  background-color: white;
+  color: ${ props => props.theme.fg };
 `
 
 const SelectWrapper = styled.div`
@@ -39,11 +39,23 @@ const SelectWrapper = styled.div`
   height: 30px;
 `
 
+const lightTheme = {
+  border: 'rgba(0, 0, 0, 0.2)',
+  fg: 'black',
+  bg: 'white'
+}
+
+const darkTheme = {
+  border: 'rgba(255, 255, 255, 0.2)',
+  fg: 'white',
+  bg: 'black'
+}
+
 const App: FunctionComponent = () => {
-  const [coursesList, setCoursesList] = useState<CoursesList>([])
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'))
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'))
 
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
@@ -51,7 +63,8 @@ const App: FunctionComponent = () => {
   
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode)
-  }, [is12HourMode])
+    storage.set('isDarkMode', isDarkMode)
+  }, [is12HourMode, isDarkMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -89,33 +102,44 @@ const App: FunctionComponent = () => {
   }
 
   return (
-    <div className="App">
-      <Navbar />
-      <StyledApp>
-        <SelectWrapper>
-          <CourseSelect
-            onChange={handleSelectCourse}
-          />
-        </SelectWrapper>
-        <DndProvider backend={HTML5Backend}>
-          <Inventory
-            selectedCourses={selectedCourses}
-            selectedClassIds={selectedClassIds}
-            assignedColors={assignedColors}
-            removeCourse={handleRemoveCourse}
-            removeClass={handleRemoveClass}
-          />
-          <Timetable
-            selectedCourses={selectedCourses}
-            selectedClassIds={selectedClassIds}
-            assignedColors={assignedColors}
-            is12HourMode={is12HourMode}
-            setIs12HourMode={setIs12HourMode}
-            onSelectClass={handleSelectClass}
-          />
-        </DndProvider>
-      </StyledApp>
-    </div>
+    <ThemeProvider theme = { isDarkMode ? darkTheme : lightTheme }>
+      <div className="App">
+        <Helmet>
+          <style>
+            {isDarkMode ? 'body { background-color: #202020; }': 'body { background-color: white; }'}
+          </style>
+        </Helmet>
+        <Navbar
+          setIsDarkMode={setIsDarkMode}
+          isDarkMode={isDarkMode}
+        />
+        <StyledApp>
+          <SelectWrapper>
+            <CourseSelect
+              onChange={handleSelectCourse}
+              isDarkMode={isDarkMode}
+            />
+          </SelectWrapper>
+          <DndProvider backend={HTML5Backend}>
+            <Inventory
+              selectedCourses={selectedCourses}
+              selectedClassIds={selectedClassIds}
+              assignedColors={assignedColors}
+              removeCourse={handleRemoveCourse}
+              removeClass={handleRemoveClass}
+            />
+            <Timetable
+              selectedCourses={selectedCourses}
+              selectedClassIds={selectedClassIds}
+              assignedColors={assignedColors}
+              is12HourMode={is12HourMode}
+              setIs12HourMode={setIs12HourMode}
+              onSelectClass={handleSelectClass}
+            />
+          </DndProvider>
+        </StyledApp>
+      </div>
+    </ThemeProvider>
   )
 }
 

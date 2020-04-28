@@ -13,9 +13,10 @@ const NUM_COURSE_OPTIONS = 10
 
 interface CourseSelectProps {
     onChange(course: CourseOption) : void
+    isDarkMode : boolean
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
+const CourseSelect: React.FC<CourseSelectProps> = ({onChange, isDarkMode}) => {
     const [coursesList, setCoursesList] = React.useState<CoursesList>([])
     const[options, setOptions] = React.useState<CourseOption[]>([])
 
@@ -49,6 +50,17 @@ const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
             onInputChange={handleChange}
             onChange={onChange}
             placeholder="Select a Course"
+            
+            theme={(theme: any) => ({
+              ...theme,
+              borderRadius: 0,
+              colors: {
+              ...theme.colors,
+                primary25: isDarkMode ? '#2684FF' : '#DEEBFF',
+                neutral0: isDarkMode ? "#202020" : 'white',
+                primary: isDarkMode ? "white" : '#2684FF'
+              },
+            })}
         />
     )
 

@@ -17,7 +17,7 @@ const StyledInventoryRow = styled.div`
   display: flex;
   padding: 5px;
   border: 2px solid;
-  border-color: rgba(0, 0, 0, 0.2);
+  border-color: ${props => props.theme.border};
 `
 
 const RowCourseDescriptor = styled.div`
@@ -25,7 +25,7 @@ const RowCourseDescriptor = styled.div`
   /* margin-top: 20px; */
   padding: 10px;
   border-right: 3px solid;
-  border-color: rgba(0, 0, 0, 0.2);
+  border-color: ${props => props.theme.border};
 `
 
 const RowItems = styled.div<{ canDrop: boolean, color: string }>`

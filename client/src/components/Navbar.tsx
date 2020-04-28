@@ -13,6 +13,7 @@ import Brightness2Icon from "@material-ui/icons/Brightness2";
 import Tooltip from '@material-ui/core/Tooltip';
 
 import CSESocLogo from "../assets/logo.png"
+import storage from "../utils/storage"
 
 const LogoImg = styled.img`
   width: 40px;
@@ -45,10 +46,12 @@ const NavButton = styled(Button)`
   margin-right: 20px;
 `
 
-export default function Navbar() {
+interface NavBarProps {
+  setIsDarkMode(mode: boolean) : void,
+  isDarkMode : boolean
+}
 
-  // for dark mode toggle
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => {
 
   return (
     <StylesProvider injectFirst>
@@ -85,3 +88,5 @@ export default function Navbar() {
       </StylesProvider>
   );
 }
+
+export default Navbar
