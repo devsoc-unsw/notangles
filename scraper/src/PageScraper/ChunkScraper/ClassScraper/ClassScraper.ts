@@ -9,7 +9,6 @@ import {
   Class,
   Status,
   ClassWarnings,
-  Chunk,
   Time,
   Day,
   GetTermFromClassReference,
