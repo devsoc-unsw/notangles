@@ -1,7 +1,6 @@
 import React from "react";
 
 import styled from "styled-components"
-import { makeStyles } from "@material-ui/core/styles";
 import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 
 import AppBar from "@material-ui/core/AppBar";
@@ -65,6 +64,7 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => {
           </NavbarTitle>
 
           <DarkModeButton
+            value={isDarkMode}
             selected={isDarkMode}
             onChange={() => {
               setIsDarkMode(!isDarkMode);
