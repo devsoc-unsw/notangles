@@ -2,10 +2,11 @@ import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
 import * as theme from '../../constants/theme'
 
+const headerPadding: number = 15
+
 const BaseCell = styled.div<{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
-  // border: 1px solid red;
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${theme.border};
 
   display: inline-flex;
@@ -13,8 +14,12 @@ const BaseCell = styled.div<{ x: number; y: number }>`
   justify-content: center;
 `
 
+const DayCell = styled(BaseCell)`
+  padding: ${headerPadding}px 0;
+`
+
 const HourCell = styled(BaseCell)`
-  padding: 0 25px 0 25px;
+  padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: end;
 
@@ -73,9 +78,9 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   const hours: string[] = generateHours(hoursRange, is12HourMode)
 
   const dayCells = days.map((day, i) => (
-    <BaseCell key={day} x={i + 2} y={1}>
+    <DayCell key={day} x={i + 2} y={1}>
       {day}
-    </BaseCell>
+    </DayCell>
   ))
 
   const hourCells = hours.map((hour, i) => (

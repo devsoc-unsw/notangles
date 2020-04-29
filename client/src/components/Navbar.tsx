@@ -24,8 +24,7 @@ const NavbarBox = styled.div`
 `
 const StyledNavBar = styled(AppBar)`
   background: rgb(54,119,245);
-  margin-bottom:30px;
-  position: static;
+  position: fixed;
 `
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;

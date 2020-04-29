@@ -7,13 +7,15 @@ import { ClassDropzones } from './ClassDropzones'
 import { DroppedClasses } from './DroppedClasses'
 import * as theme from '../../constants/theme'
 
-const rows: number = hoursRange[1] - hoursRange[0] + 2
+const rows: number = hoursRange[1] - hoursRange[0] + 1
 
 const StyledTimetable = styled.div`
   display: grid;
+  min-height: 400px;
+  max-height: 800px;
   box-sizing: content-box;
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: repeat(${rows}, calc(100% / ${rows})) / auto repeat(${days.length}, 1fr);
+  grid-template: auto repeat(${rows}, 1fr) / auto repeat(${days.length}, 1fr);
   border: 1px solid ${theme.border};
   border-radius: 6px;
   overflow: hidden;

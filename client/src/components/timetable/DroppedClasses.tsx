@@ -5,24 +5,37 @@ import Card from '@material-ui/core/Card'
 import { CourseData, Period, ClassData, ClassTime } from '../../interfaces/CourseData'
 import { weekdayToXCoordinate, timeToIndex } from './Dropzone'
 
-const StyledCourseClass = styled(Card)<{
+const StyledCourseClass = styled(Card).withConfig({
+  shouldForwardProp: prop => ["children"].includes(prop)
+})<{
   isDragging: boolean
   classTime: Period
   backgroundColor: string
 }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
-    ${props => timeToIndex(props.classTime.time.end)};
+            ${props => timeToIndex(props.classTime.time.end)};
+
   background-color: ${props => props.backgroundColor};
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
   color: white;
   cursor: move;
   font-size: 0.9rem;
   border-radius: 6px;
+
   padding: 6px;
-  margin: 3px;
+  margin: 2px;
   position: relative;
-  bottom: 1px;
+  bottom: 0.5px;
+
+  p {
+    margin: 2px 0;
+  }
 `
 
 interface DroppedClassProps {
@@ -52,10 +65,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       backgroundColor={color}
       classTime={classTime}
     >
-      <p style={{ textAlign: 'center', marginBottom: 0 }}>
-      <b>{courseCode} {activity}</b>
-      </p>
-      <p style={{ textAlign: 'center', marginTop: 0 }}>{`${classTime.location}`}</p>
+      <p><b>{courseCode} {activity}</b></p>
+      <p>{`${classTime.locationShort}`}</p>
     </StyledCourseClass>
   )
 }
@@ -78,7 +89,7 @@ const buildDroppedClass = ({
   assignedColors: Record<string, string>
 }): JSX.Element => (
     <DroppedClass
-      key={`${classData.classId}-${JSON.stringify(classTime)}`}
+      key={`${classData.classId}-${JSON.stringify(classTime)}-${Math.random()}`} // Math.random() is a temporary patch
       activity={classData.activity}
       courseCode={course.courseCode}
       color={assignedColors[course.courseCode]}

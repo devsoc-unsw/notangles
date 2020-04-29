@@ -19,7 +19,7 @@ export const timeToIndex = (time: string) => {
   return Number(time.split(':')[0]) - 7
 }
 
-const StyledCell = styled(Card)<{
+const StyledCell = styled.div<{
   classTime: Period
   canDrop: boolean
   color: string
@@ -32,16 +32,9 @@ const StyledCell = styled(Card)<{
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
     ${props => timeToIndex(props.classTime.time.end)};
   background-color: ${props => props.color};
-  opacity: 0.3;
 
-  font-size: 0.7rem;
-  border-radius: 6px;
-  padding: 6px;
-  margin: 3px;
-  position: relative;
-  bottom: 1px;
-
-  ${props => !props.canDrop && 'display: none'};
+  transition: opacity 200ms;
+  opacity: ${props => props.canDrop ? 0.3 : 0};
 `
 
 interface CellProps {
