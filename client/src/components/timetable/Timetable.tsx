@@ -11,8 +11,8 @@ const rows: number = hoursRange[1] - hoursRange[0] + 1
 
 const StyledTimetable = styled.div`
   display: grid;
-  min-height: 400px;
-  max-height: 800px;
+  min-height: 700px;
+  max-height: 900px;
   box-sizing: content-box;
   grid-gap: ${1 / devicePixelRatio}px;
   grid-template: auto repeat(${rows}, 1fr) / auto repeat(${days.length}, 1fr);
