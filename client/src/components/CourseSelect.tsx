@@ -22,25 +22,27 @@ const CourseSelect: React.FC<CourseSelectProps> = ({onChange, isDarkMode}) => {
 
     React.useEffect(() => {
         fetchClassesList()
-      }, [coursesList])
+      }, [])
 
-    const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
+
+    const courseSelectOptions = (coursesList : CoursesList) => {
+      return coursesList.map(course => ({
         value: course.courseCode,
         label: `${course.courseCode} - ${course.name}`,
     }))
+    }
 
     const handleChange = (inputValue: string) => {
-        setOptions(x => courseSelectOptions.filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,NUM_COURSE_OPTIONS))
+        setOptions(x => courseSelectOptions(coursesList).filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,NUM_COURSE_OPTIONS))
     }
 
     const fetchClassesList = async () => {
-        const coursesList = await getCoursesList('2020', 'T1')
-        if (coursesList) {
-          setCoursesList(coursesList)
-          if (options.length == 0) {
-            setOptions(courseSelectOptions.slice(1,10))
-          }
-        }
+
+      const coursesList = await getCoursesList('2020', 'T1')
+      if(coursesList) {
+        setCoursesList(coursesList)
+        setOptions(courseSelectOptions(coursesList.slice(1,10)))
+      }
     }
 
     return (
