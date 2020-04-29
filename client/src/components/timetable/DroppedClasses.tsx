@@ -28,13 +28,17 @@ const StyledCourseClass = styled(Card).withConfig({
   font-size: 0.9rem;
   border-radius: 6px;
 
-  padding: 6px;
+  padding: 10px;
   margin: 2px;
   position: relative;
   bottom: 0.5px;
 
   p {
-    margin: 2px 0;
+    margin: 0 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `
 
