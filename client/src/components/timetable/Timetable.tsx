@@ -13,6 +13,7 @@ const StyledTimetable = styled.div`
   display: grid;
   min-height: 700px;
   max-height: 900px;
+  margin-bottom: 20px;
   box-sizing: content-box;
   grid-gap: ${1 / devicePixelRatio}px;
   grid-template: auto repeat(${rows}, 1fr) / auto repeat(${days.length}, 1fr);

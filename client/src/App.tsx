@@ -24,7 +24,6 @@ export interface CourseOption {
 const ContentWrapper = styled.div`
   text-align: center;
   padding-top: calc(64px + 30px);
-  padding-bottom: 30px;
   padding-left: 30px;
   padding-right: 30px;
   height: 100vh;
