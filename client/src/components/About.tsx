@@ -12,16 +12,16 @@ import Link from "@material-ui/core/Link";
 
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
-    margin: 0;
-    padding: 20px;
+  margin: 0;
+  padding: 20px;
 `
 const CloseButton = styled(IconButton)`
-    position: absolute;
-    right: 10px;
-    top: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 `
 const DialogContent = styled(MuiDialogContent)`
-    padding: 20px;
+  padding: 20px;
 `
 
 export function About() {
@@ -67,7 +67,6 @@ export function About() {
             Select courses from the dropdown and drag to see class options.
           </Typography>
           <Typography gutterBottom>
-            Features:
             <ul>
               <li> Automatically generate optimal timetables </li>
               <li> Select dark mode &#x1F60E; and 12/24 hour time </li>
