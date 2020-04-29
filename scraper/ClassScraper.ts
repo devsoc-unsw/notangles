@@ -17,6 +17,7 @@ import {
   WarningTag,
   ExtendedTerm,
   OtherTerms,
+  ClassChunk,
 } from './interfaces'
 
 /**
@@ -535,18 +536,8 @@ const getInstructor = (data: string): string | false => {
   return false
 }
 
-/**
- * Finds number of notes associated with a class
- * @param data: Class chunk that is being parsed
- * @param index: index of the line that might contain a note
- * @returns { number }: number of notes associated with a class
- */
-const getNoteCount = ({ data, index }: GetNoteParams): number => {
-  return (data.length - index) % 5
-}
-
 interface GetTimeDataParams {
-  data: Chunk
+  data: string[]
   index: number
   classID: number
   term: string
@@ -559,7 +550,7 @@ interface GetTimeDataReturn {
 
 /**
  * Extracts all the times a class is offered through the term
- * @param { Chunk } data: The chunk that contains data about the class
+ * @param { string[] } data: The ClassChunk that contains data about the class
  * @param { number } index: The index marking the start of the time data
  * @param { number } classID: Class id of the class being parsed
  * @param { string } term: The term the current class runs in
@@ -571,22 +562,12 @@ const getTimeData = ({
   classID,
   term,
 }: GetTimeDataParams): GetTimeDataReturn => {
-  const noteCount = getNoteCount({ data, index })
-  // There are no classes if the number of lines left to parse < noteCount + index or data does not exist
-  const exists = data?.[index] && data[index + noteCount]
-  if (!exists) {
-    return {
-      dateList: [],
-      timeDataWarnings: [],
-    }
-  }
-
   const timeDataWarnings: ClassWarnings[] = []
 
   // Any notes for the class (found later with dates)
   // Dates
   const dateList: Time[] = []
-  while (index < data.length - noteCount) {
+  while (index < data.length) {
     // Parse the date data
     // Days: There can be multiple days for a single time/class
     const days = getDays(data[index])
@@ -634,27 +615,6 @@ const getTimeData = ({
   return { dateList, timeDataWarnings }
 }
 
-interface GetNoteParams {
-  data: Chunk
-  index: number
-}
-
-/**
- * Extract any notes that might be in the class chunk
- * @param { Chunk } data: The chunk that contains data about the class
- * @param { number } index: The index marking the start of the time data
- * @returns { string[] }: Array of notes that might exist in the class
- */
-const getNote = ({ data, index }: GetNoteParams): string[] | false => {
-  // anything after times is in the notes category
-  // Times are in groups of 5 lines
-  const noteCount = getNoteCount({ data, index })
-  if (noteCount > 0) {
-    return data.slice(data.length - noteCount)
-  }
-  return false
-}
-
 /**
  * @interface: Indices of all the data that can be extracted from a class chunk
  */
@@ -690,7 +650,7 @@ const defaultParseIndices: ClassChunkIndices = {
 }
 
 interface parseClassChunkParams {
-  data: Chunk
+  chunk: ClassChunk
   parseIndices?: ClassChunkIndices
 }
 
@@ -703,15 +663,16 @@ type parseClassChunkReturn = parseClassChunkSuccess | false
 
 /**
  * Parses data from the data array into a class object
- * @param { Chunk } data: array of text from elements with a data class
+ * @param { ClassChunk } data: array of text from elements with a data class
  * from a class chunk
  * @returns { classData: Class, warnings: ClassWarnings[] }: The data that has been scraped, formatted as a class object
  * @returns { false }: Scraping aborted as data chunk does not contain relevant class data (as it is a course enrolment chunk)
  */
 const parseClassChunk = ({
-  data,
+  chunk,
   parseIndices = defaultParseIndices,
 }: parseClassChunkParams): parseClassChunkReturn => {
+  const data = chunk.data
   const warnings: ClassWarnings[] = []
 
   const classID = getClassId(data[parseIndices.classID])
@@ -747,8 +708,6 @@ const parseClassChunk = ({
   })
   warnings.concat(timeDataWarnings)
 
-  const notes = getNote({ data, index: parseIndices.timesStartIndex })
-
   const classData: Class = {
     classID,
     section,
@@ -760,10 +719,7 @@ const parseClassChunk = ({
     needsConsent,
     mode,
     times: dateList,
-  }
-
-  if (notes) {
-    classData.notes = notes
+    notes: chunk.notes,
   }
 
   return { classData, warnings }

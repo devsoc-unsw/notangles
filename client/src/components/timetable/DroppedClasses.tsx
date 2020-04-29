@@ -58,7 +58,11 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
-      <p style={{ textAlign: 'center', marginBottom: 0 }}>{`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}</p>
+      <p style={{ textAlign: 'center', marginBottom: 0 }}>
+      {`${courseCode}`}
+        <br/>
+      {`${activity}`}
+      </p>
       <p style={{ textAlign: 'center', marginTop: 0 }}>{`${classTime.location}`}</p>
     </StyledCourseClass>
   )

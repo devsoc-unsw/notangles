@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.50",
     "@types/jest": "24.0.13",
     "@types/node": "12.0.8",
     "@types/react": "16.8.19",
@@ -22,7 +25,7 @@
   "scripts": {
     "start": "REACT_APP_ENVIRONMENT=development react-scripts start",
     "start:mock": "REACT_APP_ENVIRONMENT=mock react-scripts start",
-    "build": "react-scripts build",
+    "build": "REACT_APP_ENVIRONMENT=production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

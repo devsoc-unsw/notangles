@@ -5,8 +5,8 @@
   "scripts": {
     "start": "NODE_ENV=DEV ts-node writeToDb.ts",
     "start:production": "NODE_ENV=PROD ts-node writeToDb.ts",
-    "scraper": "ts-node runScraper.ts",
-    "page": "ts-node runPage.ts",
+    "scraper": "NODE_ENV=DEV ts-node runScraper.ts",
+    "page": "NODE_ENV=DEV ts-node runPage.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
