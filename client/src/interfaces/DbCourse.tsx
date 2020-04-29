@@ -27,30 +27,31 @@ export interface DbTime {
 
 /**
  * An adapter that formats a DBTimes object to a Period object
- * 
+ *
  * @param dbTimes A DBTimes object
  * @return A Period object which is converted from the DBTimes object
- * 
+ *
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
 const dbTimesToPeriod = (dbTimes: DbTimes): Period => {
   return {
     location: dbTimes.location,
+    locationShort: locationShorten(dbTimes.location),
     time: {
       day: dbTimes.day,
       start: dbTimes.time.start,
       end: dbTimes.time.end,
-    },
+    }
   }
 }
 
 /**
- * An adapter that formats a DBCourse object to a CourseData object 
- * 
+ * An adapter that formats a DBCourse object to a CourseData object
+ *
  * @param dbCourse A DBCourse object
  * @return A CourseData object
- * 
+ *
  * @example
  * const data = await fetch(`${baseURL}/courses/${courseCode}/`)
  * const json: DBCourse = await data.json()
@@ -62,7 +63,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
       periods: dbClass.times.map(dbTimesToPeriod),
-      activity: dbClass.activity,
+      activity: dbClass.activity
     }
     if (!(dbClass.activity in classes)) {
       classes[dbClass.activity] = []
@@ -76,3 +77,5 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classes,
   }
 }
+
+const locationShorten = (location: string): string => location.split(" (")[0]

@@ -5,52 +5,55 @@ import { getCoursesList } from '../api/getCoursesList'
 import Select from 'react-select'
 import styled from 'styled-components'
 
+const NUM_COURSE_OPTIONS = 10
+
 const StyledSelect = styled(Select)`
   width: 100%;
   text-align: left;
 `
-const NUM_COURSE_OPTIONS = 10
 
 interface CourseSelectProps {
-    onChange(course: CourseOption) : void
+  onChange(course: CourseOption): void
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
-    const [coursesList, setCoursesList] = React.useState<CoursesList>([])
-    const[options, setOptions] = React.useState<CourseOption[]>([])
+const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
+  const [coursesList, setCoursesList] = React.useState<CoursesList>([])
+  const [options, setOptions] = React.useState<CourseOption[]>([])
 
-    React.useEffect(() => {
-        fetchClassesList()
-      }, [coursesList])
+  React.useEffect(() => {
+    fetchClassesList()
+  }, [])
 
-    const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
-        value: course.courseCode,
-        label: `${course.courseCode} - ${course.name}`,
-    }))
+  React.useEffect(() => {
+    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS))
+  }, [coursesList])
 
-    const handleChange = (inputValue: string) => {
-        setOptions(x => courseSelectOptions.filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,NUM_COURSE_OPTIONS))
+  const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
+    value: course.courseCode,
+    label: `${course.courseCode} - ${course.name}`,
+  }))
+
+  const handleChange = (inputValue: string) => {
+    setOptions(x => courseSelectOptions.filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0, NUM_COURSE_OPTIONS))
+  }
+
+  const fetchClassesList = async () => {
+
+    const coursesList = await getCoursesList('2020', 'T1')
+    if (coursesList) {
+      setCoursesList(coursesList)
     }
+  }
 
-    const fetchClassesList = async () => {
-        const coursesList = await getCoursesList('2020', 'T1')
-        if (coursesList) {
-          setCoursesList(coursesList)
-          if (options.length == 0) {
-            setOptions(courseSelectOptions.slice(1,10))
-          }
-        }
-    }
-
-    return (
-        <StyledSelect
-            options={options}
-            value={null}
-            onInputChange={handleChange}
-            onChange={onChange}
-            placeholder="Select a Course"
-        />
-    )
+  return (
+    <StyledSelect
+      options={options}
+      value={null}
+      onInputChange={handleChange}
+      onChange={onChange}
+      placeholder="Select a Course"
+    />
+  )
 
 }
 
