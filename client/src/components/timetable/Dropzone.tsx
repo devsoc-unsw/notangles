@@ -35,6 +35,7 @@ const StyledCell = styled.div<{
 
   transition: opacity 200ms;
   opacity: ${props => props.canDrop ? 0.3 : 0};
+  pointer-events: ${props => props.canDrop ? "auto" : "none"};
 `
 
 interface CellProps {

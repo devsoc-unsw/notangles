@@ -93,7 +93,7 @@ const buildDroppedClass = ({
   assignedColors: Record<string, string>
 }): JSX.Element => (
     <DroppedClass
-      key={`${classData.classId}-${JSON.stringify(classTime)}-${Math.random()}`} // Math.random() is a temporary patch
+      key={`${classData.classId}-${JSON.stringify(classTime)}`}
       activity={classData.activity}
       courseCode={course.courseCode}
       color={assignedColors[course.courseCode]}
