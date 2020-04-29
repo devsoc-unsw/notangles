@@ -16,10 +16,11 @@ const StyledInventory = styled(Box)`
   display: flex;
   flex-direction: column;
 
-  border: 3px solid;
+  border: 1px solid;
   box-sizing: border-box;
   margin-top: 60px;
   margin-bottom: 30px;
+  border-color: ${props => props.theme.palette.secondary.main};
 `
 
 const Inventory: React.FC<InventoryProps> = ({
@@ -31,7 +32,7 @@ const Inventory: React.FC<InventoryProps> = ({
 }) => {
   return (
     <div>
-      <StyledInventory borderColor = 'secondary.main'>
+      <StyledInventory>
         {selectedCourses.length
           ? selectedCourses.map(course => (
               <InventoryRow

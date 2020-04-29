@@ -1,6 +1,7 @@
 import React, { useEffect, FunctionComponent, useState } from 'react'
-import styled from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components'
 import { DndProvider } from 'react-dnd'
+import { StylesProvider } from "@material-ui/styles"; // make styled components styling have priority
 import HTML5Backend from 'react-dnd-html5-backend'
 
 import { Timetable } from './components/timetable/Timetable'
@@ -17,7 +18,7 @@ import storage from './utils/storage'
 import Box from '@material-ui/core/Box'
 import { MuiThemeProvider } from '@material-ui/core'
 
-import { darkTheme, lightTheme} from './utils/themes'
+import { darkTheme, lightTheme } from './utils/themes'
 
 export interface CourseOption {
   value: string
@@ -105,46 +106,49 @@ const App: FunctionComponent = () => {
   }
 
   return (
-    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <div className="App">
-        <Helmet>
-          <style>
-            {isDarkMode ? 'body { background-color: #202020; }' : 'body { background-color: white; }'}
-          </style>
-        </Helmet>
-        <Navbar
-          setIsDarkMode={setIsDarkMode}
-          isDarkMode={isDarkMode}
-        />
-          <ContentWrapper color = "text.primary">
-          <Content>
-          <SelectWrapper>
-            <CourseSelect
-              onChange={handleSelectCourse}
+    <StylesProvider injectFirst>
+      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+          <div className="App">
+            <Helmet>
+              <style>
+                {isDarkMode ? 'body { background-color: #202020; }' : 'body { background-color: white; }'}
+              </style>
+            </Helmet>
+            <Navbar
+              setIsDarkMode={setIsDarkMode}
               isDarkMode={isDarkMode}
             />
-          </SelectWrapper>
-          <DndProvider backend={HTML5Backend}>
-            <Inventory
-              selectedCourses={selectedCourses}
-              selectedClassIds={selectedClassIds}
-              assignedColors={assignedColors}
-              removeCourse={handleRemoveCourse}
-              removeClass={handleRemoveClass}
-            />
-            <Timetable
-              selectedCourses={selectedCourses}
-              selectedClassIds={selectedClassIds}
-              assignedColors={assignedColors}
-              is12HourMode={is12HourMode}
-              setIs12HourMode={setIs12HourMode}
-              onSelectClass={handleSelectClass}
-            />
-          </DndProvider>
-        </Content>
-      </ContentWrapper>
-    </div>
-    </MuiThemeProvider>
+            <ContentWrapper color="text.primary">
+              <Content>
+                <SelectWrapper>
+                  <CourseSelect
+                    onChange={handleSelectCourse}
+                  />
+                </SelectWrapper>
+                <DndProvider backend={HTML5Backend}>
+                  <Inventory
+                    selectedCourses={selectedCourses}
+                    selectedClassIds={selectedClassIds}
+                    assignedColors={assignedColors}
+                    removeCourse={handleRemoveCourse}
+                    removeClass={handleRemoveClass}
+                  />
+                  <Timetable
+                    selectedCourses={selectedCourses}
+                    selectedClassIds={selectedClassIds}
+                    assignedColors={assignedColors}
+                    is12HourMode={is12HourMode}
+                    setIs12HourMode={setIs12HourMode}
+                    onSelectClass={handleSelectClass}
+                  />
+                </DndProvider>
+              </Content>
+            </ContentWrapper>
+          </div>
+        </ThemeProvider>
+      </MuiThemeProvider>
+    </StylesProvider>
   )
 }
 

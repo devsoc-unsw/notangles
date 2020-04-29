@@ -15,10 +15,9 @@ const StyledSelect = styled(Box)`
 
 interface CourseSelectProps {
   onChange(value: CourseOption): void
-  isDarkMode: boolean
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({ onChange, isDarkMode }) => {
+const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   const [coursesList, setCoursesList] = React.useState<CoursesList>([])
   const [options, setOptions] = React.useState<CourseOption[]>([])
   const [inputValue, setInputValue] = React.useState<string>("")
@@ -72,7 +71,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange, isDarkMode }) => 
             }}
             {...params}
             label="Select a Course"
-            variant="filled"
+            variant="outlined"
           />}
       />
     </StyledSelect>

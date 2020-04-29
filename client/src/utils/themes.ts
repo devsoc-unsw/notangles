@@ -4,10 +4,10 @@ export const darkTheme = createMuiTheme({
     palette: {
       type: 'dark',
       secondary: {
-        main: "rgba(255, 255, 255, 0.2)"
+        main: "#777" // borders
       },
       primary: {
-        main: "#202020"
+        main: "#3a76f8" // Course Select underline and NavBar
       },
       action: {
         disabled: "rgba(255, 255, 255, 0.5)"
@@ -18,10 +18,10 @@ export const darkTheme = createMuiTheme({
 export const lightTheme = createMuiTheme({
     palette: {
       secondary: {
-        main: "rgba(0, 0, 0, 0.2)"
+        main: "#bbb" // borders
       },
       primary: {
-        main: "#FFF"
+        main: "#3a76f8" // Course Select underline and NavBar
       },
       action: {
         disabled: "rgba(255, 255, 255, 0.5)"

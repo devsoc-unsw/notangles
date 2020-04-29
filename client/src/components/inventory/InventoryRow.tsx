@@ -4,7 +4,7 @@ import { useDrop } from 'react-dnd'
 import { CourseData } from '../../interfaces/CourseData'
 
 import InventoryCourseClass from './InventoryCourseClass'
-import { Box } from '@material-ui/core'
+import { Box, Button } from '@material-ui/core'
 
 export interface InventoryRowProps {
   course: CourseData
@@ -17,14 +17,16 @@ export interface InventoryRowProps {
 const StyledInventoryRow = styled(Box)`
   display: flex;
   padding: 5px;
-  border: 2px solid;
+  border: 1px solid;
+  border-color: ${props => props.theme.palette.secondary.main}
 `
 
 const RowCourseDescriptor = styled(Box)`
   width: 100px;
   /* margin-top: 20px; */
   padding: 10px;
-  border-right: 3px solid;
+  border-right: 1px solid;
+  border-color: ${props => props.theme.palette.secondary.main}
 `
 
 const RowItems = styled.div<{ canDrop: boolean, color: string }>`
@@ -72,15 +74,16 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
   })
 
   return (
-    <StyledInventoryRow borderColor = 'secondary.main'>
-      <RowCourseDescriptor borderColor = 'secondary.main'>
-        <button
+    <StyledInventoryRow>
+      <RowCourseDescriptor>
+        <Button
           onClick={() => {
             removeCourse(course.courseCode)
           }}
+          color = "secondary"
         >
           X
-        </button>
+        </Button>
         {`${course.courseCode}`}
       </RowCourseDescriptor>
       <RowItems ref={drop} canDrop={canDrop} color={color}>
