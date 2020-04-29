@@ -83,7 +83,7 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode)
   }, [is12HourMode, isDarkMode])
 
-  const handleSelectCourse = async (e: CourseOption) => {
+  const handleSelectCourse = async (event: object, e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
 
     if (selectedCourseClasses) {
