@@ -18,6 +18,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange, isDarkMode }) => 
 
   React.useEffect(() => {
     fetchClassesList()
+  }, [])
+
+  React.useEffect(() => {
+    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS))
   }, [coursesList])
 
   const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
@@ -30,12 +34,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange, isDarkMode }) => 
   }
 
   const fetchClassesList = async () => {
+
     const coursesList = await getCoursesList('2020', 'T1')
     if (coursesList) {
       setCoursesList(coursesList)
-      if (options.length == 0) {
-        setOptions(courseSelectOptions.slice(1, 10))
-      }
     }
   }
 
