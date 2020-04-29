@@ -12,47 +12,47 @@ const StyledSelect = styled(Select)`
 const NUM_COURSE_OPTIONS = 10
 
 interface CourseSelectProps {
-    onChange(course: CourseOption) : void
+  onChange(course: CourseOption): void
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({onChange}) => {
-    const [coursesList, setCoursesList] = React.useState<CoursesList>([])
-    const[options, setOptions] = React.useState<CourseOption[]>([])
+const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
+  const [coursesList, setCoursesList] = React.useState<CoursesList>([])
+  const [options, setOptions] = React.useState<CourseOption[]>([])
 
-    React.useEffect(() => {
-        fetchClassesList()
-      }, [])
+  React.useEffect(() => {
+    fetchClassesList()
+  }, [])
 
 
-    const courseSelectOptions = (coursesList : CoursesList) => {
-      return coursesList.map(course => ({
-        value: course.courseCode,
-        label: `${course.courseCode} - ${course.name}`,
+  const courseSelectOptions = (coursesList: CoursesList) => {
+    return coursesList.map(course => ({
+      value: course.courseCode,
+      label: `${course.courseCode} - ${course.name}`,
     }))
+  }
+
+  const handleChange = (inputValue: string) => {
+    setOptions(x => courseSelectOptions(coursesList).filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0, NUM_COURSE_OPTIONS))
+  }
+
+  const fetchClassesList = async () => {
+
+    const coursesList = await getCoursesList('2020', 'T1')
+    if (coursesList) {
+      setCoursesList(coursesList)
+      setOptions(courseSelectOptions(coursesList.slice(1, 10)))
     }
+  }
 
-    const handleChange = (inputValue: string) => {
-        setOptions(x => courseSelectOptions(coursesList).filter(x => x.label.toLowerCase().includes(inputValue.toLocaleLowerCase())).slice(0,NUM_COURSE_OPTIONS))
-    }
-
-    const fetchClassesList = async () => {
-
-      const coursesList = await getCoursesList('2020', 'T1')
-      if(coursesList) {
-        setCoursesList(coursesList)
-        setOptions(courseSelectOptions(coursesList.slice(1,10)))
-      }
-    }
-
-    return (
-        <StyledSelect
-            options={options}
-            value={null}
-            onInputChange={handleChange}
-            onChange={onChange}
-            placeholder="Select a Course"
-        />
-    )
+  return (
+    <StyledSelect
+      options={options}
+      value={null}
+      onInputChange={handleChange}
+      onChange={onChange}
+      placeholder="Select a Course"
+    />
+  )
 
 }
 
