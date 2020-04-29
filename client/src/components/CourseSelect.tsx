@@ -5,11 +5,12 @@ import { getCoursesList } from '../api/getCoursesList'
 import Select from 'react-select'
 import styled from 'styled-components'
 
+const NUM_COURSE_OPTIONS = 10
+
 const StyledSelect = styled(Select)`
   width: 100%;
   text-align: left;
 `
-const NUM_COURSE_OPTIONS = 10
 
 interface CourseSelectProps {
   onChange(course: CourseOption): void
@@ -24,7 +25,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   }, [])
 
   React.useEffect(() => {
-    setOptions(courseSelectOptions.slice(1, 10))
+    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS))
   }, [coursesList])
 
   const courseSelectOptions: CourseOption[] = coursesList.map(course => ({
