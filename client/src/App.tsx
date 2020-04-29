@@ -24,12 +24,25 @@ export interface CourseOption {
   label: string
 }
 
-const StyledApp = styled(Box)`
-  height: 85vh;
-  padding: 10px 20%;
+const ContentWrapper = styled(Box)`
+  text-align: center;
+  margin-top: 64px;
+  padding-top: 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  height: 100vh;
+  box-sizing: border-box;
+`
+
+const Content = styled(Box)`
+  width: 1200px;
+  min-width: 600px;
+  max-width: 100%;
+  height: 100%;
+  margin: auto;
 
   display: grid;
-  grid-template-rows: 1fr 1fr 90%
+  grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
 
   text-align: center;
@@ -103,7 +116,8 @@ const App: FunctionComponent = () => {
           setIsDarkMode={setIsDarkMode}
           isDarkMode={isDarkMode}
         />
-        <StyledApp color="text.primary">
+          <ContentWrapper color = "text.primary">
+          <Content>
           <SelectWrapper>
             <CourseSelect
               onChange={handleSelectCourse}
@@ -127,8 +141,9 @@ const App: FunctionComponent = () => {
               onSelectClass={handleSelectClass}
             />
           </DndProvider>
-        </StyledApp>
-      </div>
+        </Content>
+      </ContentWrapper>
+    </div>
     </MuiThemeProvider>
   )
 }

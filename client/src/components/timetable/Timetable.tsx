@@ -6,14 +6,21 @@ import { TimetableLayout } from './TimetableLayout'
 import { ClassDropzones } from './ClassDropzones'
 import { DroppedClasses } from './DroppedClasses'
 import { Box } from '@material-ui/core'
+import * as theme from '../../constants/theme'
 
-const rows: number = hoursRange[1] - hoursRange[0] + 2
+const rows: number = hoursRange[1] - hoursRange[0] + 1
 
 const StyledTimetable = styled(Box)`
   display: grid;
-  grid-template: repeat(${rows}, calc(100% / ${rows})) / auto repeat(${days.length}, 1fr);
-  border: 3px solid;
-  box-sizing: border-box;
+  min-height: 700px;
+  max-height: 900px;
+  margin-bottom: 20px;
+  box-sizing: content-box;
+  grid-gap: ${1 / devicePixelRatio}px;
+  grid-template: auto repeat(${rows}, 1fr) / auto repeat(${days.length}, 1fr);
+  border: 1px solid ${theme.border};
+  border-radius: 6px;
+  overflow: hidden;
 `
 
 interface TimetableProps {
@@ -34,7 +41,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   onSelectClass
 }) => {
   return (
-    <StyledTimetable borderColor = 'secondary.main'>
+    <StyledTimetable>
       <TimetableLayout
         days={days}
         hoursRange={hoursRange}

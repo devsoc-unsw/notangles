@@ -53,7 +53,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
           key={`${course.courseCode}-${activity}`}
           courseCode={course.courseCode}
           activity={activity}
-          colour={color}
+          color={color}
         />
       ))
 

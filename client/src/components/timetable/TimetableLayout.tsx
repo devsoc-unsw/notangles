@@ -1,19 +1,26 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
 import Box from '@material-ui/core/Box'
+import * as theme from '../../constants/theme'
+
+const headerPadding: number = 15
 
 const BaseCell = styled(Box)<{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
-  border: 0.2px solid;
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${theme.border};
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 `
 
+const DayCell = styled(BaseCell)`
+  padding: ${headerPadding}px 0;
+`
+
 const HourCell = styled(BaseCell)`
-  padding: 0 25px 0 25px;
+  padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: end;
 
@@ -24,14 +31,14 @@ const HourCell = styled(BaseCell)`
 `
 
 const Is12HourModeToggle = styled.span`
-  color: #3a76f8;
+  color: ${theme.primary};
   font-weight: bold;
   cursor: pointer;
   user-select: none;
   transition: color 100ms;
 
   &:hover {
-    color: #084cdd;
+    color: ${theme.primaryDark};
   }
 `
 
@@ -72,25 +79,25 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   const hours: string[] = generateHours(hoursRange, is12HourMode)
 
   const dayCells = days.map((day, i) => (
-    <BaseCell key={day} x={i + 2} y={1} borderColor = 'secondary.main'>
+    <DayCell key={day} x={i + 2} y={1}>
       {day}
-    </BaseCell>
+    </DayCell>
   ))
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} style={{justifyContent: is12HourMode ? 'end' : 'center'}} borderColor = 'secondary.main'>
+    <HourCell key={hour} x={1} y={i + 2} style={{justifyContent: is12HourMode ? 'end' : 'center'}}>
       {hour}
     </HourCell>
   ))
 
   const otherCells = hours.map((_, y) =>
     days.map((_, x) =>
-      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} borderColor = 'secondary.main'/>)
+      <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2}/>)
   )
 
   return (
     <>
-      <HourCell key={0} x={1} y={1} style={{justifyContent: 'center'}} borderColor = 'secondary.main'>
+      <HourCell key={0} x={1} y={1} style={{justifyContent: 'center'}}>
         <Is12HourModeToggle onClick={() => setIs12HourMode(!is12HourMode)}>
           {`${is12HourMode ? '12' : '24'} h`}
         </Is12HourModeToggle>

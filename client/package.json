@@ -23,7 +23,7 @@
     "react-helmet": "^6.0.0",
     "react-scripts": "3.0.1",
     "react-select": "^3.0.4",
-    "styled-components": "^4.4.0",
+    "styled-components": "^5.1.0",
     "typescript": "3.5.1"
   },
   "scripts": {
@@ -49,6 +49,6 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^4.1.19"
+    "@types/styled-components": "^5.1.0"
   }
 }

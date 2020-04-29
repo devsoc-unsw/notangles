@@ -1,23 +1,45 @@
 import React, { FunctionComponent } from 'react'
 import { useDrag } from 'react-dnd'
 import styled from 'styled-components'
+import Card from '@material-ui/core/Card'
 import { CourseData, Period, ClassData, ClassTime } from '../../interfaces/CourseData'
 import { weekdayToXCoordinate, timeToIndex } from './Dropzone'
 
-const StyledCourseClass = styled.div<{
+const StyledCourseClass = styled(Card).withConfig({
+  shouldForwardProp: prop => ["children"].includes(prop)
+})<{
   isDragging: boolean
   classTime: Period
   backgroundColor: string
-  color: string
 }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
   grid-column: ${props => weekdayToXCoordinate(props.classTime.time.day) + 1};
   grid-row: ${props => timeToIndex(props.classTime.time.start)} /
-    ${props => timeToIndex(props.classTime.time.end)};
-  color: ${props => props.color};
+            ${props => timeToIndex(props.classTime.time.end)};
+
   background-color: ${props => props.backgroundColor};
   opacity: ${props => (props.isDragging ? 0.5 : 1)};
+  color: white;
   cursor: move;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+
+  padding: 10px;
+  margin: 2px;
+  position: relative;
+  bottom: 0.5px;
+
+  p {
+    margin: 0 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `
 
 interface DroppedClassProps {
@@ -25,16 +47,6 @@ interface DroppedClassProps {
   courseCode: string
   color: string
   classTime: Period
-}
-
-const bgAndTextColorPairs: Record<string, string> = {
-  violet: 'white',
-  indigo: 'white',
-  green: 'white',
-  blue: 'white',
-  yellow: 'black',
-  orange: 'black',
-  red: 'black',
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
@@ -55,15 +67,10 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       ref={drag}
       isDragging={isDragging}
       backgroundColor={color}
-      color={bgAndTextColorPairs[color]}
       classTime={classTime}
     >
-      <p style={{ textAlign: 'center', marginBottom: 0 }}>
-      {`${courseCode}`}
-        <br/>
-      {`${activity}`}
-      </p>
-      <p style={{ textAlign: 'center', marginTop: 0 }}>{`${classTime.location}`}</p>
+      <p><b>{courseCode} {activity}</b></p>
+      <p>{`${classTime.locationShort}`}</p>
     </StyledCourseClass>
   )
 }

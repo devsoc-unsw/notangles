@@ -13,6 +13,7 @@ export interface ClassData {
 export interface Period {
   time: ClassTime
   location: string
+  locationShort: string
 }
 
 export interface ClassTime {
