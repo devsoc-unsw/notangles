@@ -18,7 +18,8 @@ const StyledInventory = styled(Box)`
 
   border: 3px solid;
   box-sizing: border-box;
-  margin: 30px 0px;
+  margin-top: 60px;
+  margin-bottom: 30px;
 `
 
 const Inventory: React.FC<InventoryProps> = ({

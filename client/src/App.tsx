@@ -15,7 +15,9 @@ import { Helmet } from 'react-helmet'
 
 import storage from './utils/storage'
 import Box from '@material-ui/core/Box'
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core'
+import { MuiThemeProvider } from '@material-ui/core'
+
+import { darkTheme, lightTheme} from './utils/themes'
 
 export interface CourseOption {
   value: string
@@ -39,35 +41,6 @@ const SelectWrapper = styled(Box)`
   height: 30px;
 `
 
-const darkTheme = createMuiTheme ({
-  palette: {
-    type: 'dark',
-    secondary: {
-      main: "rgba(255, 255, 255, 0.2)"
-    },
-    primary: {
-      main: "#202020"
-    },
-    action: {
-      disabled: "rgba(255, 255, 255, 0.5)"
-    }
-  },
-})
-
-const lightTheme = createMuiTheme ({
-  palette: {
-    secondary: {
-      main: "rgba(0, 0, 0, 0.2)"
-    },
-    primary: {
-      main: "#FFF"
-    },
-    action: {
-      disabled: "rgba(255, 255, 255, 0.5)"
-    }
-  }
-})
-
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([])
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([])
@@ -77,13 +50,13 @@ const App: FunctionComponent = () => {
   const assignedColors = useColorMapper(
     selectedCourses.map(course => course.courseCode)
   )
-  
+
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode)
     storage.set('isDarkMode', isDarkMode)
   }, [is12HourMode, isDarkMode])
 
-  const handleSelectCourse = async (event: object, e: CourseOption) => {
+  const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
 
     if (selectedCourseClasses) {
@@ -119,11 +92,11 @@ const App: FunctionComponent = () => {
   }
 
   return (
-    <MuiThemeProvider theme = { isDarkMode ? darkTheme : lightTheme }>
+    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <div className="App">
         <Helmet>
           <style>
-            {isDarkMode ? 'body { background-color: #202020; }': 'body { background-color: white; }'}
+            {isDarkMode ? 'body { background-color: #202020; }' : 'body { background-color: white; }'}
           </style>
         </Helmet>
         <Navbar
