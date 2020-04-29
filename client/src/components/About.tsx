@@ -41,6 +41,7 @@ export function About() {
         About
       </Button>
       <Dialog
+        disableScrollLock
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
