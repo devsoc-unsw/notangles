@@ -25,12 +25,6 @@ const DialogContent = styled(MuiDialogContent)`
     padding:20px;
 `
 
-// const DialogActions = styled(MuiDialogContent)`
-//     margin:0;
-//     /*padding:25px;*/
-// `
-
-
 export function About() {
   const [open, setOpen] = React.useState(false);
 
@@ -68,17 +62,22 @@ export function About() {
 
         <DialogContent dividers>
           <Typography gutterBottom>
-            nice blurb!!
+            Select courses from the dropdown and drag to see class options.
           </Typography>
           <Typography gutterBottom>
-            How to use:
+            Features:
+            <ul>
+            <li> Automatically generate optimal timetables </li>
+            <li> Select dark mode 😎 & 12/24 hour time </li>
+            </ul>
           </Typography>
           <Typography gutterBottom>
-            Made by >_ CSESoc UNSW &nbsp; | &nbsp;
-            <Link target="_blank" href="https://github.com/csesoc/notangles">
-               GitHub
-            </Link>
+          Made by >_ CSESoc &nbsp; | &nbsp;
+          <Link target="_blank" href="https://github.com/csesoc/notangles">
+          GitHub
+          </Link>
           </Typography>
+
         </DialogContent>
       </Dialog>
     </div>
