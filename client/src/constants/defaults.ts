@@ -1,6 +1,6 @@
 const defaults: Record<string, any> = {
     is12HourMode: false,
-    isNightMode: false
+    isDarkMode: false
 }
 
 export default defaults

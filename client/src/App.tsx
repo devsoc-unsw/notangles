@@ -12,13 +12,11 @@ import CourseSelect from './components/CourseSelect'
 
 import { getCourseInfo } from './api/getCourseInfo'
 import { useColorMapper } from './hooks/useColorMapper'
-import { Helmet } from 'react-helmet'
 
 import storage from './utils/storage'
-import Box from '@material-ui/core/Box'
-import { MuiThemeProvider } from '@material-ui/core'
+import { MuiThemeProvider, Box } from '@material-ui/core'
 
-import { darkTheme, lightTheme } from './utils/themes'
+import { darkTheme, lightTheme } from './constants/theme'
 
 export interface CourseOption {
   value: string
@@ -31,8 +29,9 @@ const ContentWrapper = styled(Box)`
   padding-top: 30px;
   padding-left: 30px;
   padding-right: 30px;
-  height: 100vh;
   box-sizing: border-box;
+  transition: 0.25s;
+  background-color: ${props => props.theme.palette.secondary.dark};
 `
 
 const Content = styled(Box)`
@@ -67,8 +66,11 @@ const App: FunctionComponent = () => {
 
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode)
+  }, [is12HourMode])
+
+  useEffect(() => {
     storage.set('isDarkMode', isDarkMode)
-  }, [is12HourMode, isDarkMode])
+  }, [isDarkMode])
 
   const handleSelectCourse = async (e: CourseOption) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
@@ -110,11 +112,6 @@ const App: FunctionComponent = () => {
       <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
           <div className="App">
-            <Helmet>
-              <style>
-                {isDarkMode ? 'body { background-color: #202020; }' : 'body { background-color: white; }'}
-              </style>
-            </Helmet>
             <Navbar
               setIsDarkMode={setIsDarkMode}
               isDarkMode={isDarkMode}

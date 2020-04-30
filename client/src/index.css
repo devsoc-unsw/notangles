@@ -1,6 +1,5 @@
 body {
   margin: 0;
-  transition: all 0.25s linear;
   font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

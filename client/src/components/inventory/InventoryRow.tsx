@@ -80,7 +80,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
           onClick={() => {
             removeCourse(course.courseCode)
           }}
-          color = "secondary"
+          color="secondary"
         >
           X
         </Button>
