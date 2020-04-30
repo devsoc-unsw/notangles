@@ -29,7 +29,8 @@
     "start:mock": "REACT_APP_ENVIRONMENT=mock react-scripts start",
     "build": "REACT_APP_ENVIRONMENT=production react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
     "extends": "react-app"
