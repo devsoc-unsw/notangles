@@ -1,27 +1,53 @@
-import React, { FunctionComponent } from 'react';
-import styled from 'styled-components';
-import { Box } from '@material-ui/core';
+import React, { FunctionComponent } from 'react'
+import styled, { css } from 'styled-components'
+import { Box } from '@material-ui/core'
 
-const headerPadding: number = 15;
+const headerPadding = 15
 
-const BaseCell = styled(Box) <{ x: number; y: number }>`
-  grid-column: ${(props) => props.x};
-  grid-row: ${(props) => props.y};
-  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
+const BaseCell = styled.div<{
+  x: number
+  y: number
+}>`
+  grid-column: ${props => props.x};
+  grid-row: ${props => props.y};
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${props => props.theme.palette.secondary.main};
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 `;
 
+const DoubleCell = styled(BaseCell)<{
+  y: number
+}>`
+  grid-row: ${
+    props => {
+      props.y = props.y * 2 - 2
+      return `${props.y} / ${props.y + 2}`
+    }
+  };
+`
+
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const HourCell = styled(BaseCell)`
+const paddingStyle = css`
   padding: 0 ${headerPadding}px;
+`
+
+const HourCell = styled(DoubleCell)<{
+  is12HourMode: boolean
+}>`
+  ${paddingStyle}
   display: grid;
-  justify-content: end;
+  justify-content: ${props => props.is12HourMode ? 'end' : 'center'};
+`
+
+const ToggleCell = styled(BaseCell)`
+  ${paddingStyle}
+  display: grid;
+  justify-content: center;
 
   & span {
     grid-column: 1;
@@ -83,20 +109,19 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   ));
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} style={{ justifyContent: is12HourMode ? 'end' : 'center' }}>
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>
       {hour}
     </HourCell>
   ));
 
-  const otherCells = hours.map(
-    (_, y) => days.map(
-      (_, x) => <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />,
-    ),
-  );
+  const otherCells = hours.map((_, y) =>
+    days.map((_, x) =>
+      <DoubleCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
+  )
 
   return (
     <>
-      <HourCell key={0} x={1} y={1} style={{ justifyContent: 'center' }}>
+      <ToggleCell key={0} x={1} y={1}>
         <Is12HourModeToggle component="span" onClick={() => setIs12HourMode(!is12HourMode)}>
           {`${is12HourMode ? '12' : '24'} h`}
         </Is12HourModeToggle>
@@ -106,7 +131,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
           // Content is something like '10 AM'.
         }
         <ColumnWidthGuide>{generateHour(10, true)}</ColumnWidthGuide>
-      </HourCell>
+      </ToggleCell>
       {dayCells}
       {hourCells}
       {otherCells}

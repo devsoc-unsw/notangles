@@ -1,4 +1,5 @@
 export const colors: string[] = [
+  '#3a76f8', // temporary
   '#00796b', // green
   '#aa00ff', // purple
   '#3f51b5', // blue

@@ -15,12 +15,13 @@ const StyledTimetable = styled(Box)`
   max-height: 900px;
   margin-bottom: 20px;
   box-sizing: content-box;
-  grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${rows}, 1fr) / auto repeat(${days.length}, 1fr);
-  border: 1px solid ${(props) => props.theme.palette.secondary.main};
   border-radius: 6px;
   overflow: hidden;
-`;
+
+  grid-gap: ${1 / devicePixelRatio}px;
+  grid-template: auto repeat(${rows * 2}, 1fr) / auto repeat(${days.length}, 1fr);
+  border: 1px solid ${props => props.theme.palette.secondary.main};
+`
 
 interface TimetableProps {
   selectedCourses: CourseData[]
