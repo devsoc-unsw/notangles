@@ -1,13 +1,13 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
-import * as theme from '../../constants/theme'
+import { Box } from '@material-ui/core'
 
 const headerPadding: number = 15
 
-const BaseCell = styled.div<{ x: number; y: number }>`
+const BaseCell = styled(Box) <{ x: number; y: number }>`
   grid-column: ${props => props.x};
   grid-row: ${props => props.y};
-  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${theme.border};
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${props => props.theme.palette.secondary.main};
 
   display: inline-flex;
   align-items: center;
@@ -29,15 +29,15 @@ const HourCell = styled(BaseCell)`
   }
 `
 
-const Is12HourModeToggle = styled.span`
-  color: ${theme.primary};
+const Is12HourModeToggle = styled(Box)`
   font-weight: bold;
   cursor: pointer;
   user-select: none;
   transition: color 100ms;
+  color: ${props => props.theme.palette.primary.main};
 
   &:hover {
-    color: ${theme.primaryDark};
+    color: ${props => props.theme.palette.primary.dark};
   }
 `
 
@@ -84,7 +84,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   ))
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} style={{justifyContent: is12HourMode ? 'end' : 'center'}}>
+    <HourCell key={hour} x={1} y={i + 2} style={{ justifyContent: is12HourMode ? 'end' : 'center' }}>
       {hour}
     </HourCell>
   ))
@@ -96,8 +96,8 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
 
   return (
     <>
-      <HourCell key={0} x={1} y={1} style={{justifyContent: 'center'}}>
-        <Is12HourModeToggle onClick={() => setIs12HourMode(!is12HourMode)}>
+      <HourCell key={0} x={1} y={1} style={{ justifyContent: 'center' }}>
+        <Is12HourModeToggle component="span" onClick={() => setIs12HourMode(!is12HourMode)}>
           {`${is12HourMode ? '12' : '24'} h`}
         </Is12HourModeToggle>
         {
