@@ -3,7 +3,7 @@ import { Autocomplete } from '@material-ui/lab';
 import { TextField, Box } from '@material-ui/core';
 import styled from 'styled-components';
 import { CoursesList } from '../interfaces/CourseOverview';
-import { getCoursesList } from '../api/getCoursesList';
+import getCoursesList from '../api/getCoursesList';
 
 const NUM_COURSE_OPTIONS = 10;
 
