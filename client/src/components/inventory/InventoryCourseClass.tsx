@@ -1,6 +1,6 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useDrag } from 'react-dnd'
+import React from 'react';
+import styled from 'styled-components';
+import { useDrag } from 'react-dnd';
 
 interface StyledInventoryCourseClassProps {
   isDragging: boolean
@@ -21,11 +21,11 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
   font-size: 0.7rem;
 
   color: white;
-  background-color: ${props => props.backgroundColor};
+  background-color: ${(props) => props.backgroundColor};
   opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};
   cursor: move;
   border-radius: 6px;
-`
+`;
 
 export interface InventoryCourseClassProps {
   courseCode: string
@@ -40,10 +40,10 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
 }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
-    collect: monitor => ({
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  })
+  });
 
   return (
     <StyledInventoryCourseClass
@@ -52,10 +52,10 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
       backgroundColor={color}
     >
       {`${courseCode}`}
-        <br/>
+      <br />
       {`${activity}`}
     </StyledInventoryCourseClass>
-  )
-}
+  );
+};
 
-export default InventoryCourseClass
+export default InventoryCourseClass;
