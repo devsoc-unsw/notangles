@@ -73,7 +73,7 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectCourse = async (e: CourseOption) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value);
+    const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
 
     if (selectedCourseClasses) {
       setSelectedCourses([...selectedCourses, selectedCourseClasses]);
