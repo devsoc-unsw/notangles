@@ -2,7 +2,7 @@
 node_modules
 
 # Don't lint build output
-dist
+build
 
 # Don't lint nyc coverage output
 coverage
