@@ -25,6 +25,8 @@ export interface DbTime {
   end: string
 }
 
+const locationShorten = (location: string): string => location.split(' (')[0];
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -75,5 +77,3 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classes,
   };
 };
-
-const locationShorten = (location: string): string => location.split(' (')[0];
