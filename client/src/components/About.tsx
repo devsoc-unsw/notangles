@@ -1,30 +1,30 @@
-import React from "react";
-import styled from "styled-components"
+import React from 'react';
+import styled from 'styled-components';
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
-import Link from "@material-ui/core/Link";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
-`
+`;
 const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
   top: 10px;
-`
+`;
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
-`
+`;
 
-export function About() {
+const About: React.FC = () => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -73,7 +73,7 @@ export function About() {
             </ul>
           </Typography>
           <Typography gutterBottom>
-            Made by >_ CSESoc &nbsp; | &nbsp;
+            Made by &gt;_ CSESoc &nbsp; | &nbsp;
             <Link target="_blank" href="https://github.com/csesoc/notangles">
               GitHub
             </Link>
@@ -83,4 +83,6 @@ export function About() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default About;
