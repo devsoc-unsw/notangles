@@ -2,11 +2,15 @@ import React from 'react';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Box } from '@material-ui/core';
 import styled from 'styled-components';
-import { CourseOption } from '../App';
 import { CoursesList } from '../interfaces/CourseOverview';
 import { getCoursesList } from '../api/getCoursesList';
 
 const NUM_COURSE_OPTIONS = 10;
+
+export interface CourseOption {
+  value: string
+  label: string
+}
 
 const StyledSelect = styled(Box)`
   width: 100%;

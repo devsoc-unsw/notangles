@@ -9,7 +9,7 @@ import { Timetable } from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
-import CourseSelect from './components/CourseSelect';
+import CourseSelect, { CourseOption } from './components/CourseSelect';
 
 import { getCourseInfo } from './api/getCourseInfo';
 import { useColorMapper } from './hooks/useColorMapper';
@@ -17,11 +17,6 @@ import { useColorMapper } from './hooks/useColorMapper';
 import storage from './utils/storage';
 
 import { darkTheme, lightTheme } from './constants/theme';
-
-export interface CourseOption {
-  value: string
-  label: string
-}
 
 const ContentWrapper = styled(Box)`
   text-align: center;
@@ -95,7 +90,6 @@ const App: FunctionComponent = () => {
     const newSelectedClassIds = selectedClassIds.filter(
       (id) => !id.startsWith(activityId),
     );
-    console.log(activityId);
     setSelectedClassIds(newSelectedClassIds);
   };
 
