@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/CourseData';
 import { days, hoursRange } from '../../constants/timetable';
-import { TimetableLayout } from './TimetableLayout';
+import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 

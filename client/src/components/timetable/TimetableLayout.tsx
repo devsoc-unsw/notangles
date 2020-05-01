@@ -46,12 +46,6 @@ const ColumnWidthGuide = styled.span`
   pointer-events: none;
 `;
 
-const generateHours = (range: number[], is12HourMode: boolean): string[] => {
-  const [min, max] = range;
-  // Fill an array with hour strings according to the range
-  return Array(max - min + 1).fill(0).map((_, i) => generateHour(i + min, is12HourMode));
-};
-
 const generateHour = (n: number, is12HourMode: boolean): string => {
   if (is12HourMode) {
     const period = n < 12 ? 'AM' : 'PM';
@@ -59,6 +53,12 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
     return `${n} ${period}`;
   }
   return `${String(n).padStart(2, '0')}:00`;
+};
+
+const generateHours = (range: number[], is12HourMode: boolean): string[] => {
+  const [min, max] = range;
+  // Fill an array with hour strings according to the range
+  return Array(max - min + 1).fill(0).map((_, i) => generateHour(i + min, is12HourMode));
 };
 
 interface TimetableLayoutProps {
@@ -88,7 +88,11 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
     </HourCell>
   ));
 
-  const otherCells = hours.map((_, y) => days.map((_, x) => <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />));
+  const otherCells = hours.map(
+    (_, y) => days.map(
+      (_, x) => <BaseCell key={x * 1000 + y} x={x + 2} y={y + 2} />,
+    ),
+  );
 
   return (
     <>
@@ -110,4 +114,4 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   );
 };
 
-export { TimetableLayout };
+export default TimetableLayout;
