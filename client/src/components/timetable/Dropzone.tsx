@@ -16,7 +16,8 @@ export const weekdayToXCoordinate = (weekDay: string) => {
 }
 
 export const timeToIndex = (time: string) => {
-  return Number(time.split(':')[0]) - 7
+  const [hour, minute] = time.split(':').map((part: string): number => Number(part))
+  return (hour - 7) * 2 + (minute == 30 ? 1 : 0) - 2
 }
 
 const StyledCell = styled.div<{
