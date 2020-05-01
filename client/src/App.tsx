@@ -32,8 +32,8 @@ const ContentWrapper = styled(Box)`
   padding-top: 94px; // 64px for nav bar + 30px padding
   padding-left: 30px;
   padding-right: 30px;
-  transition: 0.25s;
-  min-height: 100%;
+  transition: background-color 0.25s, color 0.25s;
+  min-height: 100vh;
   box-sizing: border-box;
 
   background-color: ${props => props.theme.palette.secondary.dark};
