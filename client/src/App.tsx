@@ -20,7 +20,7 @@ import { darkTheme, lightTheme } from './constants/theme';
 
 const StyledApp = styled(Box)`
   height: 100%;
-`
+`;
 
 const ContentWrapper = styled(Box)`
   text-align: center;
@@ -31,9 +31,9 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${props => props.theme.palette.secondary.dark};
-  color: ${props => props.theme.palette.text.primary};
-`
+  background-color: ${(props) => props.theme.palette.secondary.dark};
+  color: ${(props) => props.theme.palette.text.primary};
+`;
 
 const Content = styled(Box)`
   width: 1200px;
