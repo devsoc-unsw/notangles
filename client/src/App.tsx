@@ -5,7 +5,7 @@ import { StylesProvider } from '@material-ui/styles'; // make styled components 
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
-import { Timetable } from './components/timetable/Timetable';
+import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';

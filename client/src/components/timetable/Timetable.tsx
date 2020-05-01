@@ -59,4 +59,4 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   </StyledTimetable>
 );
 
-export { Timetable };
+export default Timetable;
