@@ -29,13 +29,12 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  margin-top: 64px;
-  padding-top: 30px;
+  padding-top: 94px; // 64px for nav bar + 30px padding
   padding-left: 30px;
   padding-right: 30px;
-  box-sizing: border-box;
   transition: 0.25s;
   min-height: 100%;
+  box-sizing: border-box;
 
   background-color: ${props => props.theme.palette.secondary.dark};
   color: ${props => props.theme.palette.text.primary};
