@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Card from '@material-ui/core/Card';
 import { useDrop } from 'react-dnd';
 import { Period } from '../../interfaces/CourseData';
 
