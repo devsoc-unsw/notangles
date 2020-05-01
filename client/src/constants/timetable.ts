@@ -3,7 +3,7 @@ export const colors: string[] = [
   '#aa00ff', // purple
   '#3f51b5', // blue
   '#bc5100', // red
-]
+];
 
 export const days: string[] = [
   'Monday',
@@ -11,6 +11,6 @@ export const days: string[] = [
   'Wednesday',
   'Thursday',
   'Friday',
-]
+];
 
-export const hoursRange: number[] = [9, 18]
+export const hoursRange: number[] = [9, 18];

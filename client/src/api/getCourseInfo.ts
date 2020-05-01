@@ -1,6 +1,6 @@
-import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse'
-import { CourseData } from '../interfaces/CourseData'
-import { API_URL } from './config'
+import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
+import { CourseData } from '../interfaces/CourseData';
+import { API_URL } from './config';
 
 /**
  * Fetches the information of a specified course
@@ -16,19 +16,19 @@ import { API_URL } from './config'
 export const getCourseInfo = async (
   year: string,
   term: string,
-  courseCode: string
+  courseCode: string,
 ): Promise<CourseData | null> => {
-  const baseURL = `${API_URL}/terms/${year}-${term}`
+  const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const data = await fetch(`${baseURL}/courses/${courseCode}/`)
-    const json: DbCourse = await data.json()
+    const data = await fetch(`${baseURL}/courses/${courseCode}/`);
+    const json: DbCourse = await data.json();
     if (!json) {
-      throw Error('Fetch did not get results')
+      throw Error('Fetch did not get results');
     }
 
-    return dbCourseToCourseData(json)
+    return dbCourseToCourseData(json);
   } catch (error) {
-    console.error(error)
-    return null
+    console.error(error);
+    return null;
   }
-}
+};

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { colors } from '../constants/timetable'
+import { useState, useEffect } from 'react';
+import { colors } from '../constants/timetable';
 
-const defaultColor = colors[colors.length - 1]
+const defaultColor = colors[colors.length - 1];
 
 /**
  * Assigns a unique color, chosen from a set of fixed colors, to each course code
@@ -14,30 +14,29 @@ const defaultColor = colors[colors.length - 1]
  */
 export const useColorMapper = (courseCodes: string[]): Record<string, string> => {
   const [assignedColors, setAssignedColors] = useState<
-    Record<string, string>
-  >({})
+  Record<string, string>
+  >({});
 
   useEffect(() => {
-    const takenColors = new Set<string>()
-    const newAssignedColors: Record<string, string> = {}
+    const takenColors = new Set<string>();
+    const newAssignedColors: Record<string, string> = {};
 
-    courseCodes.forEach(item => {
-      const color =
-        item in assignedColors
-          ? assignedColors[item]
-          : colors.find(c => !takenColors.has(c))
-      newAssignedColors[item] = color || defaultColor
+    courseCodes.forEach((item) => {
+      const color = item in assignedColors
+        ? assignedColors[item]
+        : colors.find((c) => !takenColors.has(c));
+      newAssignedColors[item] = color || defaultColor;
       if (color) {
-        takenColors.add(color)
+        takenColors.add(color);
       }
-    })
+    });
 
     if (
       JSON.stringify(assignedColors) !== JSON.stringify(newAssignedColors)
     ) {
-      setAssignedColors(newAssignedColors)
+      setAssignedColors(newAssignedColors);
     }
-  }, [courseCodes])
+  }, [courseCodes]);
 
-  return assignedColors
-}
+  return assignedColors;
+};

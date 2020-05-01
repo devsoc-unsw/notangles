@@ -1,5 +1,5 @@
-import { CoursesList } from '../interfaces/CourseOverview'
-import { API_URL } from './config'
+import { CoursesList } from '../interfaces/CourseOverview';
+import { API_URL } from './config';
 
 /**
  * Fetches a list of course objects, where each course object contains
@@ -14,14 +14,14 @@ import { API_URL } from './config'
  */
 export const getCoursesList = async (
   year: string,
-  term: string
+  term: string,
 ): Promise<CoursesList | null> => {
-  const baseURL = `${API_URL}/terms/${year}-${term}`
+  const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const data = await fetch(`${baseURL}/courses/`)
-    return data.json()
+    const data = await fetch(`${baseURL}/courses/`);
+    return data.json();
   } catch (error) {
-    console.error(error)
-    return null
+    console.error(error);
+    return null;
   }
-}
+};
