@@ -1,10 +1,10 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useDrop } from 'react-dnd'
-import { CourseData } from '../../interfaces/CourseData'
+import React from 'react';
+import styled from 'styled-components';
+import { useDrop } from 'react-dnd';
+import { Box, Button } from '@material-ui/core';
+import { CourseData } from '../../interfaces/CourseData';
 
-import InventoryCourseClass from './InventoryCourseClass'
-import { Box, Button } from '@material-ui/core'
+import InventoryCourseClass from './InventoryCourseClass';
 
 export interface InventoryRowProps {
   course: CourseData
@@ -18,37 +18,38 @@ const StyledInventoryRow = styled(Box)`
   display: flex;
   padding: 5px;
   border: 1px solid;
-  border-color: ${props => props.theme.palette.secondary.main}
-`
+  border-color: ${(props) => props.theme.palette.secondary.main}
+`;
 
 const RowCourseDescriptor = styled(Box)`
   width: 100px;
   /* margin-top: 20px; */
   padding: 10px;
   border-right: 1px solid;
-  border-color: ${props => props.theme.palette.secondary.main}
-`
+  border-color: ${(props) => props.theme.palette.secondary.main}
+`;
 
 const RowItems = styled.div<{ canDrop: boolean, color: string }>`
-  /* ${props => props.canDrop && `border: 1px solid ${props.color}`} */
+  /* ${(props) => props.canDrop && `border: 1px solid ${props.color}`} */
   width: 100%;
-`
+`;
 
 const InventoryRow: React.FC<InventoryRowProps> = ({
   course,
   removeCourse,
   selectedClassIds,
   color,
-  removeClass
+  removeClass,
 }) => {
   const getInventoryCourseClasses = (): React.ReactNode[] => {
     // return course classes for activities which don't currently have a selected class
     const res = Object.entries(course.classes)
       .filter(
-        ([_, activityClasses]) =>
-          !activityClasses.some(classData =>
-            selectedClassIds.includes(classData.classId)
+        ([_, activityClasses]) => (
+          !activityClasses.some(
+            (classData) => selectedClassIds.includes(classData.classId),
           )
+        ),
       )
       .map(([activity]) => (
         <InventoryCourseClass
@@ -57,28 +58,28 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
           activity={activity}
           color={color}
         />
-      ))
+      ));
 
-    return res
-  }
+    return res;
+  };
 
-  const ids = Object.keys(course.classes).map(activity => `${course.courseCode}-${activity}`)
+  const ids = Object.keys(course.classes).map((activity) => `${course.courseCode}-${activity}`);
 
   const [{ canDrop }, drop] = useDrop({
     accept: ids,
     drop: ({ type }) => removeClass(type.toString()),
-    collect: monitor => ({
+    collect: (monitor) => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
     }),
-  })
+  });
 
   return (
     <StyledInventoryRow>
       <RowCourseDescriptor>
         <Button
           onClick={() => {
-            removeCourse(course.courseCode)
+            removeCourse(course.courseCode);
           }}
           color="secondary"
         >
@@ -90,7 +91,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
         {getInventoryCourseClasses()}
       </RowItems>
     </StyledInventoryRow>
-  )
-}
+  );
+};
 
-export default InventoryRow
+export default InventoryRow;
