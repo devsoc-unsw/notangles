@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from 'react'
-import styled, { css } from 'styled-components'
-import { Box } from '@material-ui/core'
+import React, { FunctionComponent } from 'react';
+import styled, { css } from 'styled-components';
+import { Box } from '@material-ui/core';
 
-const headerPadding = 15
+const headerPadding = 15;
 
 const BaseCell = styled.div<{
   x: number
   y: number
 }>`
-  grid-column: ${props => props.x};
-  grid-row: ${props => props.y};
-  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${props => props.theme.palette.secondary.main};
+  grid-column: ${(props) => props.x};
+  grid-row: ${(props) => props.y};
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
 
   display: inline-flex;
   align-items: center;
@@ -21,12 +21,12 @@ const DoubleCell = styled(BaseCell)<{
   y: number
 }>`
   grid-row: ${
-    props => {
-      props.y = props.y * 2 - 2
-      return `${props.y} / ${props.y + 2}`
-    }
-  };
-`
+  (props) => {
+    props.y = props.y * 2 - 2;
+    return `${props.y} / ${props.y + 2}`;
+  }
+};
+`;
 
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
@@ -34,15 +34,15 @@ const DayCell = styled(BaseCell)`
 
 const paddingStyle = css`
   padding: 0 ${headerPadding}px;
-`
+`;
 
 const HourCell = styled(DoubleCell)<{
   is12HourMode: boolean
 }>`
   ${paddingStyle}
   display: grid;
-  justify-content: ${props => props.is12HourMode ? 'end' : 'center'};
-`
+  justify-content: ${(props) => (props.is12HourMode ? 'end' : 'center')};
+`;
 
 const ToggleCell = styled(BaseCell)`
   ${paddingStyle}
@@ -114,10 +114,11 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
     </HourCell>
   ));
 
-  const otherCells = hours.map((_, y) =>
-    days.map((_, x) =>
-      <DoubleCell key={x * 1000 + y} x={x + 2} y={y + 2} />)
-  )
+  const otherCells = hours.map(
+    (_, y) => days.map(
+      (_, x) => <DoubleCell key={x * 1000 + y} x={x + 2} y={y + 2} />,
+    ),
+  );
 
   return (
     <>

@@ -20,8 +20,8 @@ const StyledTimetable = styled(Box)`
 
   grid-gap: ${1 / devicePixelRatio}px;
   grid-template: auto repeat(${rows * 2}, 1fr) / auto repeat(${days.length}, 1fr);
-  border: 1px solid ${props => props.theme.palette.secondary.main};
-`
+  border: 1px solid ${(props) => props.theme.palette.secondary.main};
+`;
 
 interface TimetableProps {
   selectedCourses: CourseData[]
