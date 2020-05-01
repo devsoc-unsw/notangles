@@ -45,7 +45,11 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     // return course classes for activities which don't currently have a selected class
     const res = Object.entries(course.classes)
       .filter(
-        ([_, activityClasses]) => !activityClasses.some((classData) => selectedClassIds.includes(classData.classId)),
+        ([_, activityClasses]) => (
+          !activityClasses.some(
+            (classData) => selectedClassIds.includes(classData.classId),
+          )
+        ),
       )
       .map(([activity]) => (
         <InventoryCourseClass
