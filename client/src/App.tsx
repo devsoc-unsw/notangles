@@ -73,10 +73,11 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectCourse = async (e: CourseOption) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
-
-    if (selectedCourseClasses) {
-      setSelectedCourses([...selectedCourses, selectedCourseClasses]);
+    if (selectedCourses.filter(course => course.courseCode == e.value).length == 0) {
+      const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
+      if (selectedCourseClasses) {
+        setSelectedCourses([...selectedCourses, selectedCourseClasses]);
+      }
     }
   };
 
