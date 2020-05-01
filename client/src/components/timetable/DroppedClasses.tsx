@@ -3,13 +3,13 @@ import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import {
-  CourseData, Period, ClassData, ClassTime,
+  CourseData, Period, ClassData,
 } from '../../interfaces/CourseData';
 import { weekdayToXCoordinate, timeToIndex } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
-})<{
+}) <{
   isDragging: boolean
   classTime: Period
   backgroundColor: string
@@ -118,7 +118,9 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
 
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.classes).flatMap((x) => x);
-    allClasses.filter((classData) => selectedClassIds.includes(classData.classId)).forEach((classData) => {
+    allClasses.filter(
+      (classData) => selectedClassIds.includes(classData.classId),
+    ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(
           buildDroppedClass({
@@ -135,4 +137,4 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   return <>{droppedClasses}</>;
 };
 
-export { DroppedClasses };
+export default DroppedClasses;
