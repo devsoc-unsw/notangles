@@ -8,12 +8,13 @@ import { API_URL } from './config';
  * @param year The year that the course is offered in
  * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
- * @return A promise containing the information of the course that is offered in the specified year and term
+ * @return A promise containing the information of the course that is offered in the
+ * specified year and term
  *
  * @example
  * const selectedCourseClasses = await getCourseInfo('2019', 'T3', 'COMP1511')
  */
-export const getCourseInfo = async (
+export default async (
   year: string,
   term: string,
   courseCode: string,

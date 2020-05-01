@@ -11,7 +11,7 @@ import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect, { CourseOption } from './components/CourseSelect';
 
-import { getCourseInfo } from './api/getCourseInfo';
+import getCourseInfo from './api/getCourseInfo';
 import { useColorMapper } from './hooks/useColorMapper';
 
 import storage from './utils/storage';
