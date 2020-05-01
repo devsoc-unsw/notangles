@@ -1,7 +1,4 @@
-import * as theme from './theme'
-
 export const colors: string[] = [
-  theme.primary,
   '#00796b', // green
   '#aa00ff', // purple
   '#3f51b5', // blue

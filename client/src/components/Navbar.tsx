@@ -24,7 +24,6 @@ const NavbarBox = styled.div`
   flex-grow: 1;
 `
 const StyledNavBar = styled(AppBar)`
-  background: rgb(54,119,245);
   position: fixed;
 `
 const NavbarTitle = styled(Typography)`
@@ -45,43 +44,47 @@ const NavButton = styled(Button)`
   margin-right: 20px;
 `
 
-export default function Navbar() {
+interface NavBarProps {
+  setIsDarkMode(mode: boolean): void,
+  isDarkMode: boolean
+}
 
-  // for dark mode toggle
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => {
 
   return (
     <StylesProvider injectFirst>
-    <NavbarBox>
-      <StyledNavBar>
-        <Toolbar>
+      <NavbarBox>
+        <StyledNavBar>
+          <Toolbar>
 
-          <LogoImg src={CSESocLogo}/>
-          <NavbarTitle variant="h6">
-            Notangles
+            <LogoImg src={CSESocLogo} />
+            <NavbarTitle variant="h6">
+              Notangles
           </NavbarTitle>
 
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small"/>
-          </DarkModeButton>
+            <DarkModeButton
+              value={isDarkMode}
+              selected={isDarkMode}
+              onChange={() => {
+                setIsDarkMode(!isDarkMode);
+              }}
+            >
+              <DarkModeIcon fontSize="small" />
+            </DarkModeButton>
 
-          <Tooltip title="Coming Soon" placement="bottom">
-            <div>
+            <Tooltip title="Coming Soon" placement="bottom">
+              <div>
                 <NavButton color="inherit" disabled >Login</NavButton>
-                <NavButton color="inherit"  disabled>Sign Up</NavButton>
-            </div>
-          </Tooltip>
+                <NavButton color="inherit" disabled>Sign Up</NavButton>
+              </div>
+            </Tooltip>
 
           <About/>
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
-      </StylesProvider>
+    </StylesProvider>
   );
 }
+
+export default Navbar
