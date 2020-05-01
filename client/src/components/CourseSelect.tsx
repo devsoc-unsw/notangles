@@ -26,21 +26,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   const [options, setOptions] = React.useState<CourseOption[]>([]);
   const [inputValue, setInputValue] = React.useState<string>('');
 
-  React.useEffect(() => {
-    fetchClassesList();
-  }, []);
-
-  React.useEffect(() => {
-    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS));
-  }, [coursesList]);
-
   const courseSelectOptions: CourseOption[] = coursesList.map((course) => ({
     value: course.courseCode,
     label: `${course.courseCode} - ${course.name}`,
   }));
 
+  React.useEffect(() => {
+    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS));
+  }, [coursesList]);
+
   const handleInputChange = (value: string) => {
-    setOptions((x) => courseSelectOptions.filter((x) => x.label.toLowerCase().includes(value.toLocaleLowerCase())).slice(0, NUM_COURSE_OPTIONS));
+    setOptions(() => courseSelectOptions.filter(
+      (x) => x.label.toLowerCase().includes(value.toLocaleLowerCase()),
+    ).slice(0, NUM_COURSE_OPTIONS));
   };
 
   const handleChange = (event: object, value: CourseOption | null) => {
@@ -51,12 +49,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
     setInputValue('');
   };
 
-  const fetchClassesList = async () => {
-    const coursesList = await getCoursesList('2020', 'T1');
-    if (coursesList) {
-      setCoursesList(coursesList);
+  const fetchCoursesList = async () => {
+    const fetchedCoursesList = await getCoursesList('2020', 'T1');
+    if (fetchedCoursesList) {
+      setCoursesList(fetchedCoursesList);
     }
   };
+
+  React.useEffect(() => {
+    fetchCoursesList();
+  }, []);
 
   return (
     <StyledSelect>
