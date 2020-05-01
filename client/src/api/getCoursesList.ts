@@ -12,7 +12,7 @@ import { API_URL } from './config';
  * @example
  * const coursesList = await getCoursesList('2020', 'T1')
  */
-export default async (
+const getCoursesList = async (
   year: string,
   term: string,
 ): Promise<CoursesList | null> => {
@@ -25,3 +25,5 @@ export default async (
     return null;
   }
 };
+
+export default getCoursesList;

@@ -14,7 +14,7 @@ import { API_URL } from './config';
  * @example
  * const selectedCourseClasses = await getCourseInfo('2019', 'T3', 'COMP1511')
  */
-export default async (
+const getCourseInfo = async (
   year: string,
   term: string,
   courseCode: string,
@@ -33,3 +33,5 @@ export default async (
     return null;
   }
 };
+
+export default getCourseInfo;
