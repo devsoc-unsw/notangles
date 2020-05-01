@@ -13,16 +13,22 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
   color,
   onSelectClass,
 }) => {
-  const dropzones = Object.values(course.classes).map((classDatas) => classDatas.map((classData) => classData.periods.map((period, i) => (
-    <Dropzone
-      key={`${classData.classId}-${i}`}
-      courseCode={course.courseCode}
-      activity={classData.activity}
-      classTime={period}
-      color={color}
-      onDrop={() => onSelectClass(classData.classId)}
-    />
-  ))));
+  const dropzones = Object.values(course.classes).map(
+    (classDatas) => classDatas.map(
+      (classData) => classData.periods.map(
+        (period, i) => (
+          <Dropzone
+            key={`${classData.classId}-${i}`}
+            courseCode={course.courseCode}
+            activity={classData.activity}
+            classTime={period}
+            color={color}
+            onDrop={() => onSelectClass(classData.classId)}
+          />
+        ),
+      ),
+    ),
+  );
   return <>{dropzones}</>;
 };
 
@@ -48,4 +54,4 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
   return <>{dropzones}</>;
 };
 
-export { ClassDropzones };
+export default ClassDropzones;

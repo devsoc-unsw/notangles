@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/CourseData';
 import { days, hoursRange } from '../../constants/timetable';
 import { TimetableLayout } from './TimetableLayout';
-import { ClassDropzones } from './ClassDropzones';
+import ClassDropzones from './ClassDropzones';
 import { DroppedClasses } from './DroppedClasses';
 
 const rows: number = hoursRange[1] - hoursRange[0] + 1;
