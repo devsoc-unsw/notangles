@@ -18,23 +18,27 @@ import storage from './utils/storage';
 
 import { darkTheme, lightTheme } from './constants/theme';
 
+const StyledApp = styled(Box)`
+  height: 100%;
+`
+
 const ContentWrapper = styled(Box)`
   text-align: center;
-  margin-top: 64px;
-  padding-top: 30px;
+  padding-top: 94px; // 64px for nav bar + 30px padding
   padding-left: 30px;
   padding-right: 30px;
+  transition: background-color 0.25s, color 0.25s;
+  min-height: 100vh;
   box-sizing: border-box;
-  transition: 0.25s;
-  background-color: ${(props) => props.theme.palette.secondary.dark};
-  color: ${(props) => props.theme.palette.text.primary};
-`;
+
+  background-color: ${props => props.theme.palette.secondary.dark};
+  color: ${props => props.theme.palette.text.primary};
+`
 
 const Content = styled(Box)`
   width: 1200px;
   min-width: 600px;
   max-width: 100%;
-  height: 100%;
   margin: auto;
 
   display: grid;
@@ -106,7 +110,7 @@ const App: FunctionComponent = () => {
     <StylesProvider injectFirst>
       <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <div className="App">
+          <StyledApp>
             <Navbar
               setIsDarkMode={setIsDarkMode}
               isDarkMode={isDarkMode}
@@ -137,7 +141,7 @@ const App: FunctionComponent = () => {
                 </DndProvider>
               </Content>
             </ContentWrapper>
-          </div>
+          </StyledApp>
         </ThemeProvider>
       </MuiThemeProvider>
     </StylesProvider>
