@@ -32,6 +32,7 @@ const ContentWrapper = styled(Box)`
   box-sizing: border-box;
   transition: 0.25s;
   background-color: ${props => props.theme.palette.secondary.dark};
+  color: ${props => props.theme.palette.text.primary};
 `
 
 const Content = styled(Box)`
@@ -116,7 +117,7 @@ const App: FunctionComponent = () => {
               setIsDarkMode={setIsDarkMode}
               isDarkMode={isDarkMode}
             />
-            <ContentWrapper color="text.primary">
+            <ContentWrapper>
               <Content>
                 <SelectWrapper>
                   <CourseSelect

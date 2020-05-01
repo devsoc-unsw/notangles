@@ -26,7 +26,6 @@ const StyledNavBar = styled(AppBar)`
 `
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
-  color: white;
 `
 const DarkModeButton = styled(ToggleButton)`
   border: none;
@@ -41,50 +40,49 @@ const DarkModeIcon = styled(Brightness2Icon)`
 `
 const NavButton = styled(Button)`
   margin-right: 20px;
-  color: white;
 `
 
 interface NavBarProps {
-  setIsDarkMode(mode: boolean) : void,
-  isDarkMode : boolean
+  setIsDarkMode(mode: boolean): void,
+  isDarkMode: boolean
 }
 
 const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => {
 
   return (
     <StylesProvider injectFirst>
-    <NavbarBox>
-      <StyledNavBar>
-        <Toolbar>
+      <NavbarBox>
+        <StyledNavBar>
+          <Toolbar>
 
-          <LogoImg src={CSESocLogo}/>
-          <NavbarTitle variant="h6">
-            Notangles
+            <LogoImg src={CSESocLogo} />
+            <NavbarTitle variant="h6">
+              Notangles
           </NavbarTitle>
 
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small"/>
-          </DarkModeButton>
+            <DarkModeButton
+              value={isDarkMode}
+              selected={isDarkMode}
+              onChange={() => {
+                setIsDarkMode(!isDarkMode);
+              }}
+            >
+              <DarkModeIcon fontSize="small" />
+            </DarkModeButton>
 
-          <Tooltip title="Coming Soon" placement="bottom">
-            <div>
+            <Tooltip title="Coming Soon" placement="bottom">
+              <div>
                 <NavButton color="inherit" disabled >Login</NavButton>
-                <NavButton color="inherit"  disabled>Sign Up</NavButton>
-            </div>
-          </Tooltip>
+                <NavButton color="inherit" disabled>Sign Up</NavButton>
+              </div>
+            </Tooltip>
 
-          <NavButton color="inherit" >About</NavButton>
+            <NavButton color="inherit" >About</NavButton>
 
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
-      </StylesProvider>
+    </StylesProvider>
   );
 }
 

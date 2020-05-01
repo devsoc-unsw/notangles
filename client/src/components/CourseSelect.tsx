@@ -62,6 +62,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
         getOptionLabel={(option) => option.label}
         onChange={handleChange}
         inputValue={inputValue}
+        blurOnSelect
         disableClearable
         renderInput={(params) =>
           <TextField

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
-import Box from '@material-ui/core/Box'
+import { Box } from '@material-ui/core'
 
 const headerPadding: number = 15
 
