@@ -12,7 +12,7 @@ const defaultColor = colors[colors.length - 1];
  * @example
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.courseCode))
  */
-export const useColorMapper = (courseCodes: string[]): Record<string, string> => {
+const useColorMapper = (courseCodes: string[]): Record<string, string> => {
   const [assignedColors, setAssignedColors] = useState<
   Record<string, string>
   >({});
@@ -40,3 +40,5 @@ export const useColorMapper = (courseCodes: string[]): Record<string, string> =>
 
   return assignedColors;
 };
+
+export default useColorMapper;
