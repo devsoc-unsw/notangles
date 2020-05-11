@@ -50,7 +50,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T1');
+    const fetchedCoursesList = await getCoursesList('2020', 'T2');
     if (fetchedCoursesList) {
       setCoursesList(fetchedCoursesList);
     }

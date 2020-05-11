@@ -5,12 +5,12 @@ import { StylesProvider } from '@material-ui/styles'; // make styled components 
 
 import About from "./About"
 
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import Brightness2Icon from "@material-ui/icons/Brightness2";
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import Brightness2Icon from '@material-ui/icons/Brightness2';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import CSESocLogo from '../assets/logo.png';
