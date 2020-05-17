@@ -20,10 +20,8 @@ import {
   parseCourseInfoChunk,
   getCourseHeadData,
 } from './ChunkScraper/ChunkScraper'
-import {
-  parseClassChunk,
-  getTermFromClass,
-} from './ChunkScraper/ClassScraper/ClassScraper'
+import { parseClassChunk } from './ChunkScraper/ClassScraper/ClassScraper'
+import { getTermFromClass } from './getTermFromClass'
 
 /**
  * Extracts the elements hrefs that contain urls from the html element array
