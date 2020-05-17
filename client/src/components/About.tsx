@@ -73,10 +73,17 @@ const About: React.FC = () => {
             </ul>
           </Typography>
           <Typography gutterBottom>
+            Data last updated at:
+            DISCLAIMER:
+          </Typography>
+          <Typography gutterBottom>
             Made by &gt;_ CSESoc &nbsp; | &nbsp;
             <Link target="_blank" href="https://github.com/csesoc/notangles">
               GitHub
             </Link>
+          </Typography>
+          <Typography gutterBottom>
+            Inspired by
           </Typography>
         </DialogContent>
 
