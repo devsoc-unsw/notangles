@@ -1,4 +1,4 @@
-import { makeClassWarning } from '../../../../helper'
+import { makeClassWarning } from './MakeClassWarning'
 import { ClassWarnings, WarningTag } from '../../../../interfaces'
 
 interface GetCourseEnrolmentParams {

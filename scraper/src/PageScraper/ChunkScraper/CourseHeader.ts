@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer'
 
 import { CourseHead } from '../../interfaces'
-import { transformHtmlSpecials } from '../../helper'
+import { transformHtmlSpecials } from './ClassScraper/ClassHelpers/TransformHtmlSpecials'
 
 /**
  * Extracts the course header information, and splits it into the course code and name

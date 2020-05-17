@@ -5,9 +5,10 @@ import {
   Class,
   GetTermFromClassDates,
   GetTermFromClassReference,
-} from '../interfaces'
+} from '../../interfaces'
 
-import { formatDates, reverseDayAndMonth } from '../helper'
+import { formatDates } from '../../ScraperHelpers/FormatDates'
+import { reverseDayAndMonth } from './ReverseDayAndMonth'
 
 /**
  * @constant { GetTermFromClassReference }: Default reference that the classTermFinder function uses to classify classes into terms

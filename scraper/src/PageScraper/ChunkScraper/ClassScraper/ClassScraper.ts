@@ -1,14 +1,14 @@
 import { Class, ClassWarnings, ClassChunk } from '../../../interfaces'
 
-import { getClassId } from './ClassData/GetClassId'
-import { getSection } from './ClassData/GetSection'
-import { getTerm } from './ClassData/GetTerm'
-import { getActivity } from './ClassData/GetActivity'
-import { getStatus } from './ClassData/GetStatus'
-import { getCourseEnrolment } from './ClassData/GetCourseEnrolment'
-import { getTermDates } from './ClassData/GetTermDates'
-import { getMode } from './ClassData/GetMode'
-import { getNeedsConsent } from './ClassData/GetNeedsConsent'
+import { getClassId } from './ClassHelpers/GetClassId'
+import { getSection } from './ClassHelpers/GetSection'
+import { getTerm } from './ClassHelpers/GetTerm'
+import { getActivity } from './ClassHelpers/GetActivity'
+import { getStatus } from './ClassHelpers/GetStatus'
+import { getCourseEnrolment } from './ClassHelpers/GetCourseEnrolment'
+import { getTermDates } from './ClassHelpers/GetTermDates'
+import { getMode } from './ClassHelpers/GetMode'
+import { getNeedsConsent } from './ClassHelpers/GetNeedsConsent'
 import { getTimeData } from './TimeData'
 
 /**

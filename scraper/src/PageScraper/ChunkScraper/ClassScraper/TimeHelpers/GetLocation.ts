@@ -1,5 +1,6 @@
 import { ClassWarnings, WarningTag } from '../../../../interfaces'
-import { makeClassWarning, transformHtmlSpecials } from '../../../../helper'
+import { makeClassWarning } from '../ClassHelpers/MakeClassWarning'
+import { transformHtmlSpecials } from '../ClassHelpers/TransformHtmlSpecials'
 
 interface GetLocationParams {
   data: string

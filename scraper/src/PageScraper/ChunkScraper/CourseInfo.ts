@@ -1,9 +1,10 @@
 import { Chunk, CourseInfo } from '../../interfaces'
-import { isTerm, isCensusDate } from './ChunkHelper'
 
-import { getSchool } from './ChunkData/GetSchool'
-import { getCampusLocation } from './ChunkData/GetCampusLocation'
-import { getCareer } from './ChunkData/GetCareer'
+import { isCensusDate } from './ChunkHelpers/IsCensusDate'
+import { isTerm } from './ChunkHelpers/IsTerm'
+import { getSchool } from './ChunkHelpers/GetSchool'
+import { getCampusLocation } from './ChunkHelpers/GetCampusLocation'
+import { getCareer } from './ChunkHelpers/GetCareer'
 
 /**
  * @interface: Indices of all the data that can be extracted from the courseInfo chunk

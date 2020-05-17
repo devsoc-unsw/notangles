@@ -1,9 +1,9 @@
 import { ClassWarnings, Time } from '../../../interfaces'
-import { getDays } from './TimeData/GetDays'
-import { getTime } from './TimeData/GetTime'
-import { getLocation } from './TimeData/GetLocation'
-import { getWeeks } from './TimeData/GetWeeks'
-import { getInstructor } from './TimeData/GetInstructor'
+import { getDays } from './TimeHelpers/GetDays'
+import { getTime } from './TimeHelpers/GetTime'
+import { getLocation } from './TimeHelpers/GetLocation'
+import { getWeeks } from './TimeHelpers/GetWeeks'
+import { getInstructor } from './TimeHelpers/GetInstructor'
 
 interface GetTimeDataParams {
   data: string[]

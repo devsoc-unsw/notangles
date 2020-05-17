@@ -1,5 +1,5 @@
 import { ClassWarnings, WarningTag } from '../../../../interfaces'
-import { makeClassWarning } from '../../../../helper'
+import { makeClassWarning } from '../ClassHelpers/MakeClassWarning'
 
 interface GetWeeksParams {
   data: string
