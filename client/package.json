@@ -3,28 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.9.11",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.50",
+    "@material-ui/styles": "^4.9.10",
     "@types/jest": "24.0.13",
     "@types/node": "12.0.8",
     "@types/react": "16.8.19",
     "@types/react-beautiful-dnd": "^11.0.2",
     "@types/react-dom": "16.8.4",
-    "@types/react-select": "^2.0.19",
+    "@typescript-eslint/parser": "^2.30.0",
+    "husky": "^4.2.5",
     "react": "^16.8.6",
     "react-beautiful-dnd": "^11.0.4",
     "react-dnd": "^9.4.0",
     "react-dnd-html5-backend": "^9.4.0",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
-    "react-select": "^3.0.4",
-    "styled-components": "^4.4.0",
-    "typescript": "3.5.1"
+    "react-scripts": "^3.4.1",
+    "styled-components": "^5.1.0",
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "REACT_APP_ENVIRONMENT=development react-scripts start",
     "start:mock": "REACT_APP_ENVIRONMENT=mock react-scripts start",
-    "build": "react-scripts build",
+    "build": "REACT_APP_ENVIRONMENT=production react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,6 +48,17 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^4.1.19"
+    "@types/styled-components": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "eslint-config-airbnb-typescript": "^7.2.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^2.5.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }

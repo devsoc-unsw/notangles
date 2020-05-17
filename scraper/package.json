@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "NODE_ENV=DEV ts-node scripts/writeToDb.ts",
-    "start:production": "NODE_ENV=PROD ts-node scripts/writeToDb.ts",
-    "scraper": "NODE_ENV=DEV ts-node scripts/runScraper.ts",
-    "page": "NODE_ENV=DEV ts-node scripts/runPage.ts",
+    "start": "NODE_ENV=DEV ts-node writeToDb.ts",
+    "start:production": "NODE_ENV=PROD ts-node writeToDb.ts",
+    "scraper": "NODE_ENV=DEV ts-node runScraper.ts",
+    "page": "NODE_ENV=DEV ts-node runPage.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
