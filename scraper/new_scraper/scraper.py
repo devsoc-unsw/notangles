@@ -14,7 +14,8 @@ def remove_html_specials(text):
 
     return newstr
 
-def get_campus_and_subject_areas(soup):
+def scrape_table(soup, url, fields):
+
     # Initialisation
     campuses = []
     refined_data = {}
@@ -52,15 +53,28 @@ def get_campus_and_subject_areas(soup):
                 continue
 
             # Store data in relevant locations
-            row_data['code'] = cells[0].get_text()
-            row_data['subjectArea'] = cells[1].get_text()
-            row_data['school'] = cells[2].get_text()
-
+            for i in range(len(fields)):
+                row_data[fields[i]] = cells[i].get_text()
             row_data['link'] = BASE_URL + cells[0].find('a')['href']
 
             # Add row data to collected data
             refined_data[campus_title].append(row_data)
 
+    return refined_data
+
+def get_campus_and_subject_areas(soup):
+    return scrape_table(soup, BASE_URL, ["code", "subjectArea", "school"])
+
+def scrape_faculty(soup, refined_data):
+    key_list = refined_data.keys()
+    for campus in key_list:
+        for faculty_index in range(len(refined_data[campus])):
+            faculty = refined_data[campus][faculty_index]
+            faculty_data = requests.get(faculty['link'])
+            faculty_soup = BeautifulSoup(faculty_data.text, 'html.parser')
+            scraped_faculty = scrape_table(soup, faculty['link'], ["code", "name", "uoc"])
+            for field in scraped_faculty.keys():
+                refined_data[campus][faculty_index][field] = scraped_faculty[field]
     return refined_data
 
 
@@ -69,4 +83,4 @@ data = data.text
 
 soup = BeautifulSoup(data, 'html.parser')
 
-print(get_campus_and_subject_areas(soup))
+print(scrape_faculty(soup, get_campus_and_subject_areas(soup)))
