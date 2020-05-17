@@ -16,10 +16,8 @@ import {
   ClassChunk,
 } from '../interfaces'
 import { formatDates, keysOf } from '../helper'
-import {
-  parseCourseInfoChunk,
-  getCourseHeadData,
-} from './ChunkScraper/ChunkScraper'
+import { getCourseHeadChunk } from './ChunkScraper/CourseHeader'
+import { parseCourseInfoChunk } from './ChunkScraper/CourseInfo'
 import { parseClassChunk } from './ChunkScraper/ClassScraper/ClassScraper'
 import { getTermFromClass } from './getTermFromClass'
 
@@ -541,7 +539,7 @@ const scrapePage = async (page: puppeteer.Page): ScrapePageReturn => {
     let courseHead: CourseHead
     try {
       // Get course code and name, that is not a chunk
-      courseHead = await getCourseHeadData(page)
+      courseHead = await getCourseHeadChunk(page)
       const parsedData = getCourseInfoAndNotes({
         courseInfo: course.courseInfo,
         url: page.url(),
