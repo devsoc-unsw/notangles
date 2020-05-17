@@ -1,10 +1,10 @@
 import {
-  GetTermFromClassReference,
   Term,
   ExtendedTerm,
   OtherTerms,
   Class,
   GetTermFromClassDates,
+  GetTermFromClassReference,
 } from '../interfaces'
 
 import { formatDates, reverseDayAndMonth } from '../helper'
