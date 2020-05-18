@@ -25,25 +25,22 @@ const DialogContent = styled(MuiDialogContent)`
 `;
 
 const About: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
+  const toggleIsOpen = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
     <div>
-      <Button color="inherit" onClick={handleClickOpen}>
+      <Button color="inherit" onClick={toggleIsOpen}>
         About
       </Button>
       <Dialog
         disableScrollLock
-        onClose={handleClose}
+        onClose={toggleIsOpen}
         aria-labelledby="customized-dialog-title"
-        open={open}
+        open={isOpen}
         fullWidth
         maxWidth="sm"
       >
@@ -52,14 +49,12 @@ const About: React.FC = () => {
           <Typography variant="h6">
             Notangles: No more timetable Tangles
           </Typography>
-          {handleClose ? (
             <CloseButton
               aria-label="close"
-              onClick={handleClose}
+              onClick={toggleIsOpen}
             >
               <CloseIcon />
             </CloseButton>
-          ) : null}
         </StyledDialogTitle>
 
         <DialogContent dividers>
