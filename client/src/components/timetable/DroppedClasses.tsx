@@ -79,6 +79,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
         </b>
       </p>
       <p>{`${classTime.locationShort}`}</p>
+      <p>
+        {`${((classTime.time.weeks.includes(",") || classTime.time.weeks.includes("-")) ? "Weeks " : "Week ") + classTime.time.weeks}`}
+      </p>
     </StyledCourseClass>
   );
 };
