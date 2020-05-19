@@ -1,6 +1,6 @@
 import React from 'react';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, Box } from '@material-ui/core';
+import { TextField, Box, Chip } from '@material-ui/core';
 import styled from 'styled-components';
 import { CoursesList } from '../interfaces/CourseOverview';
 import getCoursesList from '../api/getCoursesList';
@@ -28,7 +28,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
 
   const courseSelectOptions: CourseOption[] = coursesList.map((course) => ({
     value: course.courseCode,
-    label: `${course.courseCode} - ${course.name}`,
+    label: `${course.courseCode} - ${course.name}`
   }));
 
   React.useEffect(() => {
@@ -41,9 +41,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
     ).slice(0, NUM_COURSE_OPTIONS));
   };
 
-  const handleChange = (event: object, value: CourseOption | null) => {
+  const handleChange = (event: object, value: any) => {
     if (value) {
-      onChange(value);
+      onChange(value[0]);
     }
     setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS));
     setInputValue('');
@@ -63,7 +63,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   return (
     <StyledSelect>
       <Autocomplete
-        id="combo-box-demo"
+        multiple
+        id="course-select"
         options={options}
         getOptionLabel={(option) => option.label}
         onChange={handleChange}
@@ -81,6 +82,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
             variant="outlined"
           />
         )}
+        renderTags={(value: CourseOption[], getTagProps) =>
+          value.map((option: CourseOption, index: number) => (
+            <Chip variant="outlined" label={option.value} {...getTagProps({ index })} />
+          ))
+        }
       />
     </StyledSelect>
   );

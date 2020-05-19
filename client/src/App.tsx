@@ -72,9 +72,9 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSelectCourse = async (e: CourseOption) => {
-    if (selectedCourses.find(course => course.courseCode === e.value) === undefined) {
-      const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
+  const handleSelectCourse = async (option: CourseOption) => {
+    if (selectedCourses.find(course => course.courseCode === option.value) === undefined) {
+      const selectedCourseClasses = await getCourseInfo('2020', 'T2', option.value);
       if (selectedCourseClasses) {
         setSelectedCourses([...selectedCourses, selectedCourseClasses]);
       }
