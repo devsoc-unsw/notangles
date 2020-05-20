@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+import grequests
 from bs4 import BeautifulSoup
 import re
 import requests
 import json
-import grequests
 
 BASE_URL = "http://timetable.unsw.edu.au/2020/"
 
