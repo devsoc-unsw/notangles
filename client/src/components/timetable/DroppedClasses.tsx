@@ -64,6 +64,12 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     }),
   });
 
+  const { weeks } = classTime.time;
+
+  const isMultipleWeeks = (wks: string) => (
+    wks.includes(',') || wks.includes('-')
+  );
+
   return (
     <StyledCourseClass
       ref={drag}
@@ -79,6 +85,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
         </b>
       </p>
       <p>{`${classTime.locationShort}`}</p>
+      <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
     </StyledCourseClass>
   );
 };

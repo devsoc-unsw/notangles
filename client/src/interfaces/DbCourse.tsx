@@ -43,6 +43,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
     day: dbTimes.day,
     start: dbTimes.time.start,
     end: dbTimes.time.end,
+    weeks: dbTimes.weeks,
   },
 });
 
