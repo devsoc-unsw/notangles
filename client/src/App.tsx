@@ -9,7 +9,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
-import CourseSelect, { CourseOption } from './components/CourseSelect';
+import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -72,18 +72,16 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSelectCourse = async (option: CourseOption) => {
-    if (selectedCourses.find(course => course.courseCode === option.value) === undefined) {
-      const selectedCourseClasses = await getCourseInfo('2020', 'T2', option.value);
-      if (selectedCourseClasses) {
-        setSelectedCourses([...selectedCourses, selectedCourseClasses]);
-      }
+  const handleSelectCourse = async (courseCode: string) => {
+    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
+    if (selectedCourseClasses) {
+      setSelectedCourses([...selectedCourses, selectedCourseClasses]);
     }
   };
 
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
-      (course) => course.courseCode !== courseCode,
+      (course) => course.courseCode !== courseCode
     );
     setSelectedCourses(newSelectedCourses);
     setSelectedClassIds(
@@ -120,7 +118,9 @@ const App: FunctionComponent = () => {
               <Content>
                 <SelectWrapper>
                   <CourseSelect
-                    onChange={handleSelectCourse}
+                    selectedCourses={selectedCourses}
+                    handleSelect={handleSelectCourse}
+                    handleRemove={handleRemoveCourse}
                   />
                 </SelectWrapper>
                 <DndProvider backend={HTML5Backend}>

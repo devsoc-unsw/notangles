@@ -1,16 +1,25 @@
 import React from 'react';
+import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Box, Chip } from '@material-ui/core';
+import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
+import { CourseData } from '../interfaces/CourseData';
 import styled from 'styled-components';
-import { CoursesList } from '../interfaces/CourseOverview';
 import getCoursesList from '../api/getCoursesList';
 
-const NUM_COURSE_OPTIONS = 10;
-
-export interface CourseOption {
-  value: string
-  label: string
+interface SearchOptions {
+  limit: number,
+  threshold: number,
+  keys: string[]
 }
+
+const searchOptions: SearchOptions = {
+  limit: 10,
+  threshold: 0.5,
+  keys: ["courseCode", "name"]
+}
+
+let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions)
 
 const StyledSelect = styled(Box)`
   width: 100%;
@@ -18,34 +27,42 @@ const StyledSelect = styled(Box)`
 `;
 
 interface CourseSelectProps {
-  onChange(value: CourseOption): void
+  selectedCourses: CourseData[]
+  handleSelect(courseCode: string): void
+  handleRemove(courseCode: string): void
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
+const CourseSelect: React.FC<CourseSelectProps> = ({
+  selectedCourses,
+  handleSelect,
+  handleRemove,
+}) => {
   const [coursesList, setCoursesList] = React.useState<CoursesList>([]);
-  const [options, setOptions] = React.useState<CourseOption[]>([]);
+  const [options, setOptions] = React.useState<CoursesList>([]);
   const [inputValue, setInputValue] = React.useState<string>('');
+  const [selectedValue, setSelectedValue] = React.useState<CoursesList>([])
 
-  const courseSelectOptions: CourseOption[] = coursesList.map((course) => ({
-    value: course.courseCode,
-    label: `${course.courseCode} - ${course.name}`
-  }));
+  const defaultOptions = coursesList.slice(0, searchOptions.limit)
 
-  React.useEffect(() => {
-    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS));
-  }, [coursesList]);
+  const onChange = (event: any, value: any) => {
+    // diff added courses
+    value.forEach((courseOverview: CourseOverview) => {
+      const courseCode = courseOverview.courseCode
+      if (selectedCourses.find((course: CourseData) => course.courseCode === courseCode) === undefined) {
+        handleSelect(courseCode)
+      }
+    })
 
-  const handleInputChange = (value: string) => {
-    setOptions(() => courseSelectOptions.filter(
-      (x) => x.label.toLowerCase().includes(value.toLocaleLowerCase()),
-    ).slice(0, NUM_COURSE_OPTIONS));
-  };
+    // diff removed courses
+    selectedCourses.forEach((courseData: CourseData) => {
+      const courseCode = courseData.courseCode
+      if (value.find((course: CourseOverview) => course.courseCode === courseCode) === undefined) {
+        handleRemove(courseCode)
+      }
+    })
 
-  const handleChange = (event: object, value: any) => {
-    if (value) {
-      onChange(value[0]);
-    }
-    setOptions(courseSelectOptions.slice(0, NUM_COURSE_OPTIONS));
+    setOptions(defaultOptions);
+    setSelectedValue(value)
     setInputValue('');
   };
 
@@ -53,6 +70,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
     const fetchedCoursesList = await getCoursesList('2020', 'T2');
     if (fetchedCoursesList) {
       setCoursesList(fetchedCoursesList);
+      fuzzy = new Fuse(fetchedCoursesList, searchOptions)
     }
   };
 
@@ -60,31 +78,50 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
     fetchCoursesList();
   }, []);
 
+  React.useEffect(() => {
+    setOptions(defaultOptions);
+  }, [coursesList]);
+
   return (
     <StyledSelect>
       <Autocomplete
-        multiple
         id="course-select"
+        multiple
+        autoHighlight
+        noOptionsText="No Results"
         options={options}
-        getOptionLabel={(option) => option.label}
-        onChange={handleChange}
+        getOptionLabel={(option) => `${option.courseCode} – ${option.name}`}
+        onChange={onChange}
         inputValue={inputValue}
-        blurOnSelect
-        disableClearable
+        filterOptions={(options, state) => {
+          let value = state.inputValue
+          if (value.length === 0) {
+            return defaultOptions
+          } else {
+            return fuzzy.search(
+              value
+            ).map(
+              (result) => result.item
+            ).slice(
+              0, searchOptions.limit
+            )
+          }
+        }}
         renderInput={(params) => (
           <TextField
-            onChange={(event) => {
-              handleInputChange(event.target.value);
-              setInputValue(event.target.value);
-            }}
             {...params}
-            label="Select a Course"
+            onChange={(event) => {
+              setInputValue(event.target.value)
+              event.stopPropagation()
+            }}
+            placeholder={selectedValue.length ? "Add More Courses" : "Select Your Courses"}
             variant="outlined"
+            autoFocus
           />
         )}
-        renderTags={(value: CourseOption[], getTagProps) =>
-          value.map((option: CourseOption, index: number) => (
-            <Chip variant="outlined" label={option.value} {...getTagProps({ index })} />
+        renderTags={(value: CoursesList, getTagProps) =>
+          value.map((option: CourseOverview, index: number) => (
+            <Chip label={option.courseCode} variant="outlined" {...getTagProps({ index })} />
           ))
         }
       />
