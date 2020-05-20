@@ -10,6 +10,8 @@ import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect, { CourseOption } from './components/CourseSelect';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -54,6 +56,12 @@ const SelectWrapper = styled(Box)`
   height: 30px;
 `;
 
+const Footer = styled(Box)`
+  text-align: center;
+  font-size: 12px;
+  margin: 40px;
+`;
+
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
@@ -73,7 +81,7 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectCourse = async (e: CourseOption) => {
-    if (selectedCourses.find((course) => course.courseCode === e.value) === undefined) {
+    if (selectedCourses.find(course => course.courseCode === e.value) === undefined) {
       const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
       if (selectedCourseClasses) {
         setSelectedCourses([...selectedCourses, selectedCourseClasses]);
@@ -140,6 +148,20 @@ const App: FunctionComponent = () => {
                     onSelectClass={handleSelectClass}
                   />
                 </DndProvider>
+                <Footer>
+                    DISCLAIMER: Notangles is not an official part of the UNSW
+                    enrolment system, and it does not guarantee data accuracy
+                    & optimality.
+                    <br/><br/>
+                    Made by >_ CSESoc&nbsp;&nbsp;•&nbsp;&nbsp;
+                    <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                      Feedback
+                    </Link>
+                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                    <Link target="_blank" href="https://github.com/csesoc/notangles">
+                      GitHub
+                    </Link>
+                </Footer>
               </Content>
             </ContentWrapper>
           </StyledApp>
