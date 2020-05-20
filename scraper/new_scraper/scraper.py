@@ -3,6 +3,8 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import json
+import grequests
 
 BASE_URL = "http://timetable.unsw.edu.au/2020/"
 
@@ -68,13 +70,16 @@ def get_campus_and_subject_areas(soup):
 def scrape_faculty(soup, refined_data):
     key_list = refined_data.keys()
     for campus in key_list:
+        faculty_reqs = [grequests.get(faculty['link']) for faculty in refined_data[campus]]
+        faculty_res = grequests.map(faculty_reqs)
+        faculty_res = [res._content.decode() for res in faculty_res]
         for faculty_index in range(len(refined_data[campus])):
             faculty = refined_data[campus][faculty_index]
-            faculty_data = requests.get(faculty['link'])
-            faculty_soup = BeautifulSoup(faculty_data.text, 'html.parser')
-            scraped_faculty = scrape_table(soup, faculty['link'], ["code", "name", "uoc"])
+            faculty_data = faculty_res[faculty_index]
+            faculty_soup = BeautifulSoup(faculty_data, 'html.parser')
+            scraped_faculty = scrape_table(faculty_soup, faculty['link'], ["code", "name", "uoc"])
             for field in scraped_faculty.keys():
-                refined_data[campus][faculty_index][field] = scraped_faculty[field]
+                refined_data[campus][faculty_index][field.lower()] = scraped_faculty[field]
     return refined_data
 
 
@@ -83,4 +88,5 @@ data = data.text
 
 soup = BeautifulSoup(data, 'html.parser')
 
-print(scrape_faculty(soup, get_campus_and_subject_areas(soup)))
+#print(scrape_faculty(soup, get_campus_and_subject_areas(soup)))
+print(json.dumps(scrape_faculty(soup, get_campus_and_subject_areas(soup))))
