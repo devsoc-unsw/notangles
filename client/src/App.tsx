@@ -148,9 +148,9 @@ const App: FunctionComponent = () => {
                   />
                 </DndProvider>
                 <Footer>
-                    DISCLAIMER: Notangles is not an official part of the UNSW
-                    enrolment system, and it does not guarantee data accuracy
-                    & optimality.
+                    DISCLAIMER: While we try our best, Notangles is not an
+                    official UNSW site, and cannot guarantee data accuracy or
+                    reliability. 
                     <br/><br/>
                     Made by >_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
                     <Link target="_blank" href="mailto:projects@csesoc.org.au">
