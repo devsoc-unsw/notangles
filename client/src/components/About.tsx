@@ -10,7 +10,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 
-
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
@@ -23,6 +22,11 @@ const CloseButton = styled(IconButton)`
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
+
+const FeatList = styled.ul`
+    margin-top: 4px;
+    margin-bottom: 6px;
+`
 
 const About: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -46,7 +50,7 @@ const About: React.FC = () => {
       >
 
         <StyledDialogTitle disableTypography>
-          <Typography variant="h6">
+          <Typography variant="h5">
             Notangles: No more timetable Tangles
           </Typography>
             <CloseButton
@@ -58,27 +62,72 @@ const About: React.FC = () => {
         </StyledDialogTitle>
 
         <DialogContent dividers>
-          <Typography gutterBottom>
-            Select courses from the dropdown and drag to see class options.
+          <Typography gutterBottom variant="body2">
+            Notangles is a tool helping UNSW students build the perfect timetable,
+            with an intuitive drag and drop interface. We have many features on
+            the way, including auto-timetabling, and syncing your timetable with friends.
           </Typography>
-          <Typography gutterBottom>
-            <ul>
-              <li> Automatically generate optimal timetables </li>
-              <li> Select dark mode &#x1F60E; and 12/24 hour time </li>
-            </ul>
-          </Typography>
-          <Typography gutterBottom>
-            Data last updated at:
-            DISCLAIMER:
-          </Typography>
-          <Typography gutterBottom>
-            Made by &gt;_ CSESoc &nbsp; | &nbsp;
-            <Link target="_blank" href="https://github.com/csesoc/notangles">
-              GitHub
+          <Typography gutterBottom variant="body2">
+            Inspired by&nbsp;
+            <Link href="https://crossangles.app/" target="_blank">
+                Crossangles
             </Link>
+            &nbsp;and&nbsp;
+            <Link href="https://tdransfield.net/projects/bojangles/" target="_blank">
+                Bojangles
+            </Link>
+            , it was created by&nbsp;
+            <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
+                CSESoc Projects
+            </Link>
+            &nbsp;- a place for student-led projects where you can learn
+            something new and make some friends along the way.
+            Notangles is free and open-source.
           </Typography>
-          <Typography gutterBottom>
-            Inspired by
+          <Typography variant="h6">
+            How it works
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            Use the course dropdown to search for and select your courses.
+            Drag and drop classes to view timetabling options.
+            <br/>Notangles does not enroll in your classes. It’s a tool for
+            planning your timetable, but you’ll still need to officially enroll on&nbsp;
+            <Link href="https://my.unsw.edu.au/" target="_blank">
+                myUNSW
+            </Link>
+            .
+          </Typography>
+          <Typography variant="h6">
+            Features
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            <FeatList>
+              <li> Drag-and-drop interface </li>
+              <li> Move clutter to the class inventory </li>
+              <li> Dark mode &#x1F60E; </li>
+              <li> Select 12 or 24 hour time </li>
+            </FeatList>
+          </Typography>
+          <Typography variant="h6">
+            Future developments [
+            <Link href="https://compclub.atlassian.net/wiki/x/JoBzM" target="_blank">
+                Roadmap
+            </Link>]
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            <FeatList>
+              <li> Auto-timetabling to suit your needs </li>
+              <li> Optional login to sync your timetable across devices </li>
+              <li> Social-timetabling to coordinate classes with friends </li>
+              <li> A mobile app so you can plan on the go </li>
+            </FeatList>
+          </Typography>
+          <br/>
+          <Typography gutterBottom variant="body2">
+            <b> DISCLAIMER </b>&nbsp;While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            If you find an issue or have a suggestion, please contact us.
           </Typography>
         </DialogContent>
 
