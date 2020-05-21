@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect, { CourseOption } from './components/CourseSelect';
+import Link from '@material-ui/core/Link';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -52,6 +53,12 @@ const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
   height: 30px;
+`;
+
+const Footer = styled(Box)`
+  text-align: center;
+  font-size: 12px;
+  margin: 40px;
 `;
 
 const App: FunctionComponent = () => {
@@ -140,6 +147,20 @@ const App: FunctionComponent = () => {
                     onSelectClass={handleSelectClass}
                   />
                 </DndProvider>
+                <Footer>
+                    DISCLAIMER: While we try our best, Notangles is not an
+                    official UNSW site, and cannot guarantee data accuracy or
+                    reliability. 
+                    <br/><br/>
+                    Made by >_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                    <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                      Feedback
+                    </Link>
+                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                    <Link target="_blank" href="https://github.com/csesoc/notangles">
+                      GitHub
+                    </Link>
+                </Footer>
               </Content>
             </ContentWrapper>
           </StyledApp>
