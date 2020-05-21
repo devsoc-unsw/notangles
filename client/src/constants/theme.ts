@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core';
 
+export const borderRadius = 10
+
 export const darkTheme = createMuiTheme({
   palette: {
     type: 'dark',

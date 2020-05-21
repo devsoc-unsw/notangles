@@ -2,8 +2,10 @@ import React from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Box, Chip } from '@material-ui/core';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
+import { borderRadius } from '../constants/theme'
 import styled from 'styled-components';
 import getCoursesList from '../api/getCoursesList';
 
@@ -14,7 +16,7 @@ interface SearchOptions {
 }
 
 const searchOptions: SearchOptions = {
-  limit: 10,
+  limit: 6,
   threshold: 0.5,
   keys: ["courseCode", "name"]
 }
@@ -25,6 +27,24 @@ const StyledSelect = styled(Box)`
   width: 100%;
   text-align: left;
 `;
+
+const StyledTextField = styled(TextField)`
+  fieldset {
+    border-radius: ${borderRadius}px;
+  }
+`
+
+const StyledOption = styled.span`
+  color: hsl(0, 0%, 60%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  & b {
+    color: black;
+    font-weight: normal;
+  }
+`
 
 interface CourseSelectProps {
   selectedCourses: CourseData[]
@@ -42,7 +62,17 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const [inputValue, setInputValue] = React.useState<string>('');
   const [selectedValue, setSelectedValue] = React.useState<CoursesList>([])
 
-  const defaultOptions = coursesList.slice(0, searchOptions.limit)
+  let defaultOptions = coursesList
+
+  // show relevant default options based of selected courses
+  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4)
+  const courseAreas = selectedValue.map((course) => getCourseArea(course.courseCode))
+  if (selectedValue.length) {
+    defaultOptions = defaultOptions.filter((course) => (
+      courseAreas.includes(getCourseArea(course.courseCode))
+    ))
+  }
+  defaultOptions = defaultOptions.slice(0, searchOptions.limit)
 
   const onChange = (event: any, value: any) => {
     // diff added courses
@@ -85,12 +115,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   return (
     <StyledSelect>
       <Autocomplete
-        id="course-select"
         multiple
         autoHighlight
+        disableClearable
+        filterSelectedOptions
         noOptionsText="No Results"
+        selectOnFocus={false}
         options={options}
-        getOptionLabel={(option) => `${option.courseCode} – ${option.name}`}
+        renderOption={(option) => (
+          <StyledOption>
+            <b>{option.courseCode}</b> {option.name}
+          </StyledOption>
+        )}
         onChange={onChange}
         inputValue={inputValue}
         filterOptions={(options, state) => {
@@ -108,20 +144,29 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
           }
         }}
         renderInput={(params) => (
-          <TextField
-            {...params}
-            onChange={(event) => {
-              setInputValue(event.target.value)
-              event.stopPropagation()
-            }}
-            placeholder={selectedValue.length ? "Add More Courses" : "Select Your Courses"}
-            variant="outlined"
+          <StyledTextField
             autoFocus
+            variant="outlined"
+            placeholder={selectedCourses.length ? "Add more courses" : "Select your courses"}
+            onKeyDown={(event) => {
+              if (event.key === "Backspace") {
+                event.stopPropagation()
+              }
+            }}
+            onChange={(event) => setInputValue(event.target.value)}
+            {...params}
           />
         )}
         renderTags={(value: CoursesList, getTagProps) =>
           value.map((option: CourseOverview, index: number) => (
-            <Chip label={option.courseCode} variant="outlined" {...getTagProps({ index })} />
+            <Chip
+              label={option.courseCode}
+              variant="outlined"
+              // color="primary"
+              // style={{color: "#00796b"}}
+              deleteIcon={<CloseRoundedIcon />}
+              {...getTagProps({ index })}
+            />
           ))
         }
       />
