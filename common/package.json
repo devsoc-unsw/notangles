@@ -2,10 +2,11 @@
   "name": "notangles-common",
   "version": "1.0.1",
   "scripts": {
-    "test": "yarn jest --detectOpenHandles",
-    "typecheck": "yarn tsc --project ./tsconfig-typecheck.json",
+    "test": "jest --detectOpenHandles",
+    "typecheck": "tsc --project ./tsconfig-typecheck.json",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "lint:fix": "prettier --write 'src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
     "build": "./scripts/build.sh",
     "prepublish": "npm run build"
   },
@@ -30,11 +31,17 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-typescript": "^0.14.0",
+    "husky": "^4.2.5",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
     "ts-jest": "^26.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.3",
     "typescript-eslint-parser": "^22.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:fix"
+    }
   }
 }

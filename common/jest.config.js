@@ -51,7 +51,7 @@ module.exports = {
       diagnostics: false,
 
       // Makes jest test run much faster, BUT, without type checking.
-      // Type checking in CI is done with `tsc --noEmit` or `yarn typecheck` command.
+      // Type checking in CI is done with `tsc --noEmit` or `npm run typecheck` command.
       // https://huafu.github.io/ts-jest/user/config/isolatedModules
       isolatedModules: true,
     },
