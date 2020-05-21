@@ -1,6 +1,6 @@
 {
   "name": "notangles-common",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
