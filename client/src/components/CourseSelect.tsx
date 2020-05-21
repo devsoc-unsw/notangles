@@ -36,19 +36,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ onChange }) => {
   }, [coursesList]);
 
   const handleInputChange = (value: string) => {
-    const mainOptions = courseSelectOptions.filter(
+    const searchResults = courseSelectOptions.filter(
       (x) => x.value.toLowerCase().includes(value.toLocaleLowerCase()),
     ).slice(0, NUM_COURSE_OPTIONS);
 
-    if (mainOptions.length < NUM_COURSE_OPTIONS) {
-      const moreOptions = courseSelectOptions.filter(
+    if (searchResults.length < NUM_COURSE_OPTIONS) {
+      searchResults.push(...courseSelectOptions.filter(
         (x) => x.label.toLowerCase().includes(value.toLocaleLowerCase())
-        && !mainOptions.includes(x),
-      ).slice(0, NUM_COURSE_OPTIONS - mainOptions.length);
-      setOptions([...mainOptions, ...moreOptions]);
-    } else {
-      setOptions(mainOptions);
+        && !searchResults.includes(x),
+      ).slice(0, NUM_COURSE_OPTIONS - searchResults.length));
     }
+
+    setOptions(searchResults);
   };
 
   const handleChange = (event: object, value: CourseOption | null) => {

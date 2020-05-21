@@ -1,0 +1,12 @@
+{
+  "parser": "typescript",
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "printWidth": 120,
+  "overrides": [
+    {
+      "files": [".*", "*.json"],
+      "options": { "parser": "json" }
+    }
+  ]
+}
