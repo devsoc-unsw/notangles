@@ -75,14 +75,14 @@ const App: FunctionComponent = () => {
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
-      selectedCourses = [...selectedCourses, selectedCourseClasses]
+      selectedCourses = [...selectedCourses, selectedCourseClasses];
       setSelectedCourses(selectedCourses);
     }
   };
 
   const handleRemoveCourse = (courseCode: string) => {
     selectedCourses = selectedCourses.filter(
-      (course) => course.courseCode !== courseCode
+      (course) => course.courseCode !== courseCode,
     );
     setSelectedCourses(selectedCourses);
     setSelectedClassIds(
@@ -120,6 +120,7 @@ const App: FunctionComponent = () => {
                 <SelectWrapper>
                   <CourseSelect
                     selectedCourses={selectedCourses}
+                    assignedColors={assignedColors}
                     handleSelect={handleSelectCourse}
                     handleRemove={handleRemoveCourse}
                   />
