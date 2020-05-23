@@ -19,7 +19,7 @@ import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
 
-const searchDelay = 200
+const searchDelay = 300
 
 interface SearchOptions {
   limit: number
