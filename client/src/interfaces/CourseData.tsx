@@ -20,4 +20,5 @@ export interface ClassTime {
   day: string
   start: string
   end: string
+  weeks: string
 }
