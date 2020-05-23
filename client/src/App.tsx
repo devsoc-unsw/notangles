@@ -55,7 +55,7 @@ const SelectWrapper = styled(Box)`
 `;
 
 const App: FunctionComponent = () => {
-  let [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
@@ -75,16 +75,16 @@ const App: FunctionComponent = () => {
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
-      selectedCourses = [...selectedCourses, selectedCourseClasses];
-      setSelectedCourses(selectedCourses);
+      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      setSelectedCourses(newSelectedCourses);
     }
   };
 
   const handleRemoveCourse = (courseCode: string) => {
-    selectedCourses = selectedCourses.filter(
+    const newSelectedCourses = selectedCourses.filter(
       (course) => course.courseCode !== courseCode,
     );
-    setSelectedCourses(selectedCourses);
+    setSelectedCourses(newSelectedCourses);
     setSelectedClassIds(
       selectedClassIds.filter((id) => id.split('-')[0] !== courseCode),
     );

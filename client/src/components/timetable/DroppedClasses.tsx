@@ -9,7 +9,7 @@ import { weekdayToXCoordinate, timeToIndex } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
-}) <{
+})<{
   isDragging: boolean
   classTime: Period
   backgroundColor: string

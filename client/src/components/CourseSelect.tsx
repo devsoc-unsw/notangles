@@ -4,7 +4,6 @@ import { Autocomplete } from '@material-ui/lab';
 import {
   TextField,
   InputAdornment,
-  Avatar,
   Box,
   Chip,
 } from '@material-ui/core';
@@ -14,22 +13,34 @@ import {
   AddRounded,
   CheckRounded,
 } from '@material-ui/icons';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { borderRadius } from '../constants/theme';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
-import { borderRadius } from '../constants/theme';
 import getCoursesList from '../api/getCoursesList';
 
 interface SearchOptions {
-  limit: number,
-  threshold: number,
-  keys: string[]
+  limit: number
+  threshold: number
+  keys: {
+    name: string
+    weight: number
+  }[]
 }
 
 const searchOptions: SearchOptions = {
   limit: 6,
   threshold: 0.4,
-  keys: ['courseCode', 'name'],
+  keys: [
+    {
+      name: 'courseCode',
+      weight: 0.9,
+    },
+    {
+      name: 'name',
+      weight: 0.1,
+    },
+  ],
 };
 
 let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
@@ -49,7 +60,20 @@ const StyledTextField = styled(TextField)`
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
   color: ${(props) => props.theme.palette.secondary.main};
-`
+`;
+
+const StyledChip = styled(Chip).withConfig({
+  shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
+})<{
+  backgroundColor: string
+}>`
+  transition: none;
+  background-color: ${(props) => (
+    props.backgroundColor
+      ? props.backgroundColor
+      : props.theme.palette.secondary.main
+  )}
+`;
 
 const StyledOption = styled.span`
   white-space: nowrap;
@@ -59,19 +83,21 @@ const StyledOption = styled.span`
   align-items: center;
 `;
 
-const weakOpacity = 0.6
+const weakStyle = css`
+  opacity: 0.6
+`;
 
 const StyledIcon = styled.span`
   position: relative;
   top: 3px;
   margin-right: 12px;
-  opacity: ${weakOpacity};
-`
+  ${weakStyle}
+`;
 
 const Weak = styled.span`
   margin-left: 7px;
-  opacity: ${weakOpacity};
-`
+  ${weakStyle}
+`;
 
 interface CourseSelectProps {
   selectedCourses: CourseData[]
@@ -104,32 +130,32 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   }
   defaultOptions = defaultOptions.slice(0, searchOptions.limit);
 
-  const onChange = (event: any, value: any) => {
-    const before = getCourseCodes<CourseData>(selectedCourses)
-    const after  = getCourseCodes<CourseOverview>(value)
-    diffCourseCodes(before, after, handleSelect)
-    diffCourseCodes(after, before, handleRemove)
-
-    setOptions(defaultOptions);
-    setSelectedValue(value);
-    setInputValue('');
-  };
-
   // maps a list of courses to a list of course codes
   const getCourseCodes = <Course extends {
     courseCode: string
   }>(courses: Course[]): string[] => (
-    courses.map((course: Course) => course.courseCode)
-  )
+      courses.map((course: Course) => course.courseCode)
+    );
 
   // calls the callback for every course code in `b` that is not in `a`
   const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
     b.filter((courseCode: string) => (
       !a.includes(courseCode)
     )).forEach((courseCode: string) => {
-      callback(courseCode)
-    })
-  }
+      callback(courseCode);
+    });
+  };
+
+  const onChange = (event: any, value: any) => {
+    const before = getCourseCodes<CourseData>(selectedCourses);
+    const after = getCourseCodes<CourseOverview>(value);
+    diffCourseCodes(before, after, handleSelect);
+    diffCourseCodes(after, before, handleRemove);
+
+    setOptions(defaultOptions);
+    setSelectedValue(value);
+    setInputValue('');
+  };
 
   const fetchCoursesList = async () => {
     const fetchedCoursesList = await getCoursesList('2020', 'T2');
@@ -157,12 +183,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         noOptionsText="No Results"
         selectOnFocus={false}
         options={options}
+        onChange={onChange}
+        inputValue={inputValue}
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>
               {
                 selectedValue.find((course: CourseOverview) => (
-                  course.courseCode == option.courseCode
+                  course.courseCode === option.courseCode
                 )) ? <CheckRounded /> : <AddRounded />
               }
             </StyledIcon>
@@ -170,9 +198,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
-        onChange={onChange}
-        inputValue={inputValue}
-        filterOptions={(options, state) => {
+        filterOptions={(_, state) => {
           const value = state.inputValue;
           if (value.length === 0) {
             return defaultOptions;
@@ -187,7 +213,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         }}
         renderInput={(params) => (
           <StyledTextField
-          {...params}
+            {...params}
             autoFocus
             variant="outlined"
             placeholder={selectedValue.length ? 'Add more courses' : 'Select your courses'}
@@ -206,33 +232,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
                   </StyledInputAdornment>
                   {params.InputProps.startAdornment}
                 </>
-              )
+              ),
             }}
           />
         )}
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
-            <Chip
+            <StyledChip
               label={option.courseCode}
-              variant="outlined"
-              avatar={
-                <Avatar style={{
-                  backgroundColor: option.courseCode in assignedColors ? assignedColors[option.courseCode] : ""
-                }}> </Avatar>
-              }
+              color="primary"
+              backgroundColor={assignedColors[option.courseCode]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
             />
           ))
-          // value.map((option: CourseOverview, index: number) => (
-          //   <Chip
-          //     label={option.courseCode}
-          //     color="primary"
-          //     style={{backgroundColor: option.courseCode in assignedColors ? assignedColors[option.courseCode] : ""}}
-          //     deleteIcon={<CloseRounded />}
-          //     {...getTagProps({ index })}
-          //   />
-          // ))
         )}
       />
     </StyledSelect>

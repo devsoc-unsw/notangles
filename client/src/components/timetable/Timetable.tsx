@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/CourseData';
 import { days, hoursRange } from '../../constants/timetable';
-import { borderRadius } from '../../constants/theme';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
@@ -16,7 +15,7 @@ const StyledTimetable = styled(Box)`
   max-height: 900px;
   margin-bottom: 20px;
   box-sizing: content-box;
-  border-radius: ${borderRadius}px;
+  border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;

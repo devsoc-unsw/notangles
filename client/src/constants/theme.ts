@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core';
 
+const primary = '#3a76f8';
+const disabled = 'rgba(255, 255, 255, 0.5)';
 export const borderRadius = 10;
 
 export const darkTheme = createMuiTheme({
@@ -10,11 +12,14 @@ export const darkTheme = createMuiTheme({
       dark: '#202020', // background
     },
     primary: {
-      main: '#3a76f8', // Course Select underline and NavBar
+      main: primary,
     },
     action: {
-      disabled: 'rgba(255, 255, 255, 0.5)',
+      disabled,
     },
+  },
+  shape: {
+    borderRadius,
   },
 });
 
@@ -25,10 +30,13 @@ export const lightTheme = createMuiTheme({
       dark: '#fff', // background
     },
     primary: {
-      main: '#3a76f8', // Course Select underline and NavBar
+      main: primary,
     },
     action: {
-      disabled: 'rgba(255, 255, 255, 0.5)',
+      disabled,
     },
+  },
+  shape: {
+    borderRadius,
   },
 });
