@@ -300,7 +300,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             autoFocus
             variant="outlined"
             label="Select your courses"
-            // placeholder={selectedValue.length ? 'Add more courses' : null}
+            placeholder={selectedValue.length ? 'Add more courses' : undefined}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
               if (event.key === 'Backspace') {
