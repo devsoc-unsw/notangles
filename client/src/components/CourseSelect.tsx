@@ -20,7 +20,7 @@ import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
 
-const searchDelay = 300
+const searchDelay = 300;
 
 interface SearchOptions {
   limit: number
@@ -120,7 +120,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const [inputValue, setInputValue] = React.useState<string>('');
   const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
   const searchTimer = React.useRef<number | undefined>(undefined);
-  const theme = useTheme()
+  const theme = useTheme();
 
   let defaultOptions = coursesList;
 
@@ -144,14 +144,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
   // calls the callback for every course code in `b` that is not in `a`
   const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
-    let didCall = false
+    let didCall = false;
     b.filter((courseCode: string) => (
       !a.includes(courseCode)
     )).forEach((courseCode: string) => {
       callback(courseCode);
-      didCall = true
+      didCall = true;
     });
-    return didCall
+    return didCall;
   };
 
   const search = (query: string) => {
@@ -161,35 +161,35 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       (result) => result.item,
     ).slice(
       0, searchOptions.limit,
-    )
-    setOptions(newOptions)
-    return newOptions
-  }
+    );
+    setOptions(newOptions);
+    return newOptions;
+  };
 
   const onChange = (event: any, value: any) => {
     const before = getCourseCodes<CourseData>(selectedCourses);
     const after = getCourseCodes<CourseOverview>(value);
 
     if (searchTimer.current) {
-      // cancel whatever was added because new search results are due
+      // cancel whatever was added because new search results are pending
 
-      // run a search now and cancel the timer
-      const newOptions = search(inputValue)
-      clearInterval(searchTimer.current)
-      searchTimer.current = undefined
+      // run a search now and cancel the current search timer
+      const newOptions = search(inputValue);
+      clearInterval(searchTimer.current);
+      searchTimer.current = undefined;
 
       // we need to add something, and our best guess is the top
       // result of the new search
-      const newSelectedOption = newOptions[0]
+      const newSelectedOption = newOptions[0];
 
-      // find what was added in the update
-      let added: string[] = []
-      let removed: string[] = []
+      // find what was added/removed in the update
+      const added: string[] = [];
+      const removed: string[] = [];
       diffCourseCodes(before, after, (courseCode: string) => {
-        added.push(courseCode)
+        added.push(courseCode);
       });
       diffCourseCodes(after, before, (courseCode: string) => {
-        removed.push(courseCode)
+        removed.push(courseCode);
       });
 
       // only interfere if something was removed
@@ -197,24 +197,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         // revert back to the original value by removing what was added
         const originalValue = value.filter((course: CourseOverview) => (
           !added.includes(course.courseCode)
-        ))
+        ));
 
         // check if the new option is a duplicate
         if (selectedValue.includes(newSelectedOption)) {
           // just revert it back without adding anything
-          setSelectedValue(originalValue)
+          setSelectedValue(originalValue);
           // return before the input value and options are reset
-          return
-        } else {
-          // otherwise, add then new option and call the handler
-          setSelectedValue([...originalValue, newSelectedOption])
-          handleSelect(newSelectedOption.courseCode)
+          return;
         }
+        // otherwise, add the new option and call the handler
+        setSelectedValue([...originalValue, newSelectedOption]);
+        handleSelect(newSelectedOption.courseCode);
       } else {
-        setSelectedValue(value)
-        removed.forEach((courseCode: string) => handleRemove(courseCode))
+        setSelectedValue(value);
+        removed.forEach((courseCode: string) => handleRemove(courseCode));
         // return before the input value and options are reset
-        return
+        return;
       }
     } else {
       diffCourseCodes(before, after, handleSelect);
@@ -224,7 +223,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
       if (didRemove) {
         // return before the input value and options are reset
-        return
+        return;
       }
     }
 
@@ -252,18 +251,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     const value = inputValue.trim();
 
     if (value.length === 0) {
-      setOptions(defaultOptions)
-      return
+      setOptions(defaultOptions);
+      return;
     }
 
-    clearTimeout(searchTimer.current)
+    clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => {
-      search(value)
-      searchTimer.current = undefined
-    }, searchDelay)
-  }, [inputValue])
+      search(value);
+      searchTimer.current = undefined;
+    }, searchDelay);
+  }, [inputValue]);
 
-  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0
+  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
   return (
     <StyledSelect>
@@ -278,7 +277,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
-        filterOptions={(options) => options}
+        // prevent built-in option filtering
+        filterOptions={(o) => o}
 
         renderOption={(option) => (
           <StyledOption>
@@ -313,8 +313,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
               style: {
                 color: theme.palette.secondary.main,
                 marginLeft: shrinkLabel ? 2 : 38,
-                transition: "200ms"
-              }
+                transition: '200ms',
+              },
             }}
             InputProps={{
               ...params.InputProps,
