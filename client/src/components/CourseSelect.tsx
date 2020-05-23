@@ -19,6 +19,8 @@ import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
 
+const searchDelay = 200
+
 interface SearchOptions {
   limit: number
   threshold: number
@@ -30,7 +32,7 @@ interface SearchOptions {
 
 const searchOptions: SearchOptions = {
   limit: 6,
-  threshold: 0.3,
+  threshold: 0.4,
   keys: [
     {
       name: 'courseCode',
@@ -116,6 +118,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const [options, setOptions] = React.useState<CoursesList>([]);
   const [inputValue, setInputValue] = React.useState<string>('');
   const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
+  const [searchTimer, setSearchTimer] = React.useState<number | undefined>(undefined);
 
   let defaultOptions = coursesList;
 
@@ -173,6 +176,26 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     setOptions(defaultOptions);
   }, [coursesList]);
 
+  React.useEffect(() => {
+    const value = inputValue.trim();
+
+    if (value.length === 0) {
+      setOptions(defaultOptions)
+      return
+    }
+
+    clearTimeout(searchTimer)
+    setSearchTimer(setTimeout(() => {
+      setOptions(fuzzy.search(
+        value,
+      ).map(
+        (result) => result.item,
+      ).slice(
+        0, searchOptions.limit,
+      ));
+    }, searchDelay))
+  }, [inputValue])
+
   return (
     <StyledSelect>
       <Autocomplete
@@ -185,6 +208,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         options={options}
         onChange={onChange}
         inputValue={inputValue}
+        filterOptions={(options) => options}
+
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>
@@ -198,19 +223,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
-        filterOptions={(_, state) => {
-          const value = state.inputValue;
-          if (value.length === 0) {
-            return defaultOptions;
-          }
-          return fuzzy.search(
-            value,
-          ).map(
-            (result) => result.item,
-          ).slice(
-            0, searchOptions.limit,
-          );
-        }}
+
         renderInput={(params) => (
           <StyledTextField
             {...params}
@@ -236,6 +249,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             }}
           />
         )}
+
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
             <StyledChip
