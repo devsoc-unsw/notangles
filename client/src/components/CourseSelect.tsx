@@ -6,6 +6,7 @@ import {
   InputAdornment,
   Box,
   Chip,
+  useTheme,
 } from '@material-ui/core';
 import {
   CloseRounded,
@@ -118,7 +119,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const [options, setOptions] = React.useState<CoursesList>([]);
   const [inputValue, setInputValue] = React.useState<string>('');
   const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
-  const [searchTimer, setSearchTimer] = React.useState<number | undefined>(undefined);
+  const searchTimer = React.useRef<number | undefined>(undefined);
+  const theme = useTheme()
 
   let defaultOptions = coursesList;
 
@@ -142,21 +144,91 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
   // calls the callback for every course code in `b` that is not in `a`
   const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
+    let didCall = false
     b.filter((courseCode: string) => (
       !a.includes(courseCode)
     )).forEach((courseCode: string) => {
       callback(courseCode);
+      didCall = true
     });
+    return didCall
   };
+
+  const search = (query: string) => {
+    const newOptions = fuzzy.search(
+      query,
+    ).map(
+      (result) => result.item,
+    ).slice(
+      0, searchOptions.limit,
+    )
+    setOptions(newOptions)
+    return newOptions
+  }
 
   const onChange = (event: any, value: any) => {
     const before = getCourseCodes<CourseData>(selectedCourses);
     const after = getCourseCodes<CourseOverview>(value);
-    diffCourseCodes(before, after, handleSelect);
-    diffCourseCodes(after, before, handleRemove);
+
+    if (searchTimer.current) {
+      // cancel whatever was added because new search results are due
+
+      // run a search now and cancel the timer
+      const newOptions = search(inputValue)
+      clearInterval(searchTimer.current)
+      searchTimer.current = undefined
+
+      // we need to add something, and our best guess is the top
+      // result of the new search
+      const newSelectedOption = newOptions[0]
+
+      // find what was added in the update
+      let added: string[] = []
+      let removed: string[] = []
+      diffCourseCodes(before, after, (courseCode: string) => {
+        added.push(courseCode)
+      });
+      diffCourseCodes(after, before, (courseCode: string) => {
+        removed.push(courseCode)
+      });
+
+      // only interfere if something was removed
+      if (removed.length === 0) {
+        // revert back to the original value by removing what was added
+        const originalValue = value.filter((course: CourseOverview) => (
+          !added.includes(course.courseCode)
+        ))
+
+        // check if the new option is a duplicate
+        if (selectedValue.includes(newSelectedOption)) {
+          // just revert it back without adding anything
+          setSelectedValue(originalValue)
+          // return before the input value and options are reset
+          return
+        } else {
+          // otherwise, add then new option and call the handler
+          setSelectedValue([...originalValue, newSelectedOption])
+          handleSelect(newSelectedOption.courseCode)
+        }
+      } else {
+        setSelectedValue(value)
+        removed.forEach((courseCode: string) => handleRemove(courseCode))
+        // return before the input value and options are reset
+        return
+      }
+    } else {
+      diffCourseCodes(before, after, handleSelect);
+      const didRemove = diffCourseCodes(after, before, handleRemove);
+
+      setSelectedValue(value);
+
+      if (didRemove) {
+        // return before the input value and options are reset
+        return
+      }
+    }
 
     setOptions(defaultOptions);
-    setSelectedValue(value);
     setInputValue('');
   };
 
@@ -184,17 +256,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       return
     }
 
-    clearTimeout(searchTimer)
-    setSearchTimer(setTimeout(() => {
-      setOptions(fuzzy.search(
-        value,
-      ).map(
-        (result) => result.item,
-      ).slice(
-        0, searchOptions.limit,
-      ));
-    }, searchDelay))
+    clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => {
+      search(value)
+      searchTimer.current = undefined
+    }, searchDelay)
   }, [inputValue])
+
+  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0
 
   return (
     <StyledSelect>
@@ -206,6 +275,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         noOptionsText="No Results"
         selectOnFocus={false}
         options={options}
+        value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
         filterOptions={(options) => options}
@@ -229,11 +299,21 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             {...params}
             autoFocus
             variant="outlined"
-            placeholder={selectedValue.length ? 'Add more courses' : 'Select your courses'}
+            label="Select your courses"
+            // placeholder={selectedValue.length ? 'Add more courses' : null}
             onChange={(event) => setInputValue(event.target.value)}
-            onKeyDown={(event) => {
+            onKeyDown={(event: any) => {
               if (event.key === 'Backspace') {
                 event.stopPropagation();
+              }
+            }}
+            InputLabelProps={{
+              ...params.InputLabelProps,
+              shrink: shrinkLabel,
+              style: {
+                color: theme.palette.secondary.main,
+                marginLeft: shrinkLabel ? 2 : 38,
+                transition: "200ms"
               }
             }}
             InputProps={{
