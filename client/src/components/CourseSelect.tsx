@@ -30,7 +30,7 @@ interface SearchOptions {
 
 const searchOptions: SearchOptions = {
   limit: 6,
-  threshold: 0.4,
+  threshold: 0.3,
   keys: [
     {
       name: 'courseCode',
