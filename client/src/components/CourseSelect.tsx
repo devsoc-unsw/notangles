@@ -270,7 +270,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         multiple
         autoHighlight
         disableClearable
-        filterSelectedOptions
         noOptionsText="No Results"
         selectOnFocus={false}
         options={options}
