@@ -26,7 +26,7 @@ const DialogContent = styled(MuiDialogContent)`
 const FeatList = styled.ul`
     margin-top: 4px;
     margin-bottom: 6px;
-`
+`;
 
 const About: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -53,12 +53,12 @@ const About: React.FC = () => {
           <Typography variant="h5">
             Notangles: No more timetable Tangles
           </Typography>
-            <CloseButton
-              aria-label="close"
-              onClick={toggleIsOpen}
-            >
-              <CloseIcon />
-            </CloseButton>
+          <CloseButton
+            aria-label="close"
+            onClick={toggleIsOpen}
+          >
+            <CloseIcon />
+          </CloseButton>
         </StyledDialogTitle>
 
         <DialogContent dividers>
@@ -70,15 +70,15 @@ const About: React.FC = () => {
           <Typography gutterBottom variant="body2">
             Inspired by&nbsp;
             <Link href="https://crossangles.app/" target="_blank">
-                Crossangles
+              Crossangles
             </Link>
             &nbsp;and&nbsp;
             <Link href="https://tdransfield.net/projects/bojangles/" target="_blank">
-                Bojangles
+              Bojangles
             </Link>
             , it was created by&nbsp;
             <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
-                CSESoc Projects
+              CSESoc Projects
             </Link>
             &nbsp;- a place for student-led projects where you can learn
             something new and make some friends along the way.
@@ -90,10 +90,11 @@ const About: React.FC = () => {
           <Typography gutterBottom variant="body2">
             Use the course dropdown to search for and select your courses.
             Drag and drop classes to view timetabling options.
-            <br/>Notangles does not enroll in your classes. It’s a tool for
+            <br />
+            Notangles does not enroll in your classes. It’s a tool for
             planning your timetable, but you’ll still need to officially enroll on&nbsp;
             <Link href="https://my.unsw.edu.au/" target="_blank">
-                myUNSW
+              myUNSW
             </Link>
             .
           </Typography>
@@ -111,8 +112,9 @@ const About: React.FC = () => {
           <Typography variant="h6">
             Future developments [
             <Link href="https://compclub.atlassian.net/wiki/x/JoBzM" target="_blank">
-                Roadmap
-            </Link>]
+              Roadmap
+            </Link>
+            ]
           </Typography>
           <Typography gutterBottom variant="body2">
             <FeatList>
@@ -122,9 +124,10 @@ const About: React.FC = () => {
               <li> A mobile app so you can plan on the go </li>
             </FeatList>
           </Typography>
-          <br/>
+          <br />
           <Typography gutterBottom variant="body2">
-            <b> DISCLAIMER </b>&nbsp;While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+            &nbsp;While we try our best, Notangles is not an official UNSW site,
+            and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
             If you find an issue or have a suggestion, please contact us.

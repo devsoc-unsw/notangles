@@ -5,12 +5,13 @@ import { StylesProvider } from '@material-ui/styles'; // make styled components 
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect, { CourseOption } from './components/CourseSelect';
-import Link from '@material-ui/core/Link';
+import Autotimetabler from './components/Autotimetabler';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -130,6 +131,7 @@ const App: FunctionComponent = () => {
                     onChange={handleSelectCourse}
                   />
                 </SelectWrapper>
+                <Autotimetabler />
                 <DndProvider backend={HTML5Backend}>
                   <Inventory
                     selectedCourses={selectedCourses}
@@ -148,18 +150,19 @@ const App: FunctionComponent = () => {
                   />
                 </DndProvider>
                 <Footer>
-                    DISCLAIMER: While we try our best, Notangles is not an
-                    official UNSW site, and cannot guarantee data accuracy or
-                    reliability. 
-                    <br/><br/>
-                    Made by >_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                    <Link target="_blank" href="mailto:projects@csesoc.org.au">
-                      Feedback
-                    </Link>
-                    &nbsp;&nbsp;•&nbsp;&nbsp;
-                    <Link target="_blank" href="https://github.com/csesoc/notangles">
-                      GitHub
-                    </Link>
+                  DISCLAIMER: While we try our best, Notangles is not an
+                  official UNSW site, and cannot guarantee data accuracy or
+                  reliability.
+                  <br />
+                  <br />
+                  Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                  <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                    Feedback
+                  </Link>
+                  &nbsp;&nbsp;•&nbsp;&nbsp;
+                  <Link target="_blank" href="https://github.com/csesoc/notangles">
+                    GitHub
+                  </Link>
                 </Footer>
               </Content>
             </ContentWrapper>
