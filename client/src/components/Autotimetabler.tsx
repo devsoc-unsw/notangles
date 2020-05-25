@@ -33,10 +33,21 @@ interface DropdownOptionProps {
   optionName: string
   isChecked: boolean
   setIsChecked(value: boolean): void
+  opposite?: boolean
+  setOpposite?(value: boolean): void
 }
-const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, isChecked, setIsChecked }) => {
+const DropdownOption: React.FC<DropdownOptionProps> = ({
+  optionName,
+  isChecked,
+  setIsChecked,
+  opposite,
+  setOpposite,
+}) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
+    if (!(setOpposite === undefined) && opposite) {
+      setOpposite(!event.target.checked);
+    }
   };
 
   return (
@@ -60,19 +71,20 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, isChecked, 
 
 
 export default function Autotimetable() {
-  const [isChecked1, setIsChecked1] = React.useState(true);
-  const [isChecked2, setIsChecked2] = React.useState(true);
+  const [isChecked1, setIsChecked1] = React.useState(false);
+  const [isChecked2, setIsChecked2] = React.useState(false);
+  const [isChecked3, setIsChecked3] = React.useState(false);
+  const [isChecked4, setIsChecked4] = React.useState(false);
 
+
+  // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -100,7 +112,9 @@ export default function Autotimetable() {
       >
         <List dense>
           <DropdownOption optionName="Least days at uni" isChecked={isChecked1} setIsChecked={setIsChecked1} />
-          <DropdownOption optionName="long and specific criteria that must be met always for timetabling" isChecked={isChecked2} setIsChecked={setIsChecked2} />
+          <DropdownOption optionName="Least distance between classes" isChecked={isChecked2} setIsChecked={setIsChecked2} />
+          <DropdownOption optionName="Least early starts" isChecked={isChecked3} setIsChecked={setIsChecked3} opposite={isChecked4} setOpposite={setIsChecked4} />
+          <DropdownOption optionName="Most early starts" isChecked={isChecked4} setIsChecked={setIsChecked4} opposite={isChecked3} setOpposite={setIsChecked3} />
 
         </List>
       </Popover>
