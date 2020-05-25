@@ -3,7 +3,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
 
-import About from "./About"
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,12 +11,13 @@ import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import Tooltip from '@material-ui/core/Tooltip';
+import About from './About';
 
 import CSESocLogo from '../assets/logo.png';
 
 const LogoImg = styled.img`
   width: 40px;
-  height:40px;
+  height: 40px;
   margin-right: 20px;
 `;
 const NavbarBox = styled.div`
@@ -77,12 +77,12 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
             </div>
           </Tooltip>
 
-          <About/>
-          </Toolbar>
-        </StyledNavBar>
-      </NavbarBox>
-    </StylesProvider>
-  );
+          <About />
+        </Toolbar>
+      </StyledNavBar>
+    </NavbarBox>
+  </StylesProvider>
+);
 
 
 export default Navbar;
