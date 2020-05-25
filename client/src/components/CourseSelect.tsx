@@ -168,6 +168,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   };
 
   const search = (query: string) => {
+    query = query.trim();
+
+    if (query.length === 0) {
+      setOptions(defaultOptions);
+      return defaultOptions;
+    }
+
     const newOptions = fuzzy.search(
       query,
     ).map(
@@ -175,6 +182,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     ).slice(
       0, searchOptions.limit,
     );
+
     setOptions(newOptions);
     return newOptions;
   };
@@ -186,15 +194,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     if (searchTimer.current) {
       // cancel whatever was added because new search results are pending
 
-      // run a search now and cancel the current search timer
-      const newOptions = search(inputValue);
-      clearInterval(searchTimer.current);
-      searchTimer.current = undefined;
-
-      // we need to add something, and our best guess is the top
-      // result of the new search
-      const newSelectedOption = newOptions[0];
-
       // find what was added/removed in the update
       const added: string[] = [];
       const removed: string[] = [];
@@ -205,8 +204,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         removed.push(courseCode);
       });
 
-      // only interfere if something was removed
+      // only interfere if something was not removed
       if (removed.length === 0) {
+        // run a search now and cancel the current search timer
+        const newOptions = search(inputValue);
+        clearInterval(searchTimer.current);
+        searchTimer.current = undefined;
+        // we need to add something, and our best guess is the top
+        // result of the new search
+        const newSelectedOption = newOptions[0];
+
         // revert back to the original value by removing what was added
         const originalValue = value.filter((course: CourseOverview) => (
           !added.includes(course.courseCode)
@@ -261,19 +268,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   }, [coursesList]);
 
   React.useEffect(() => {
-    const value = inputValue.trim();
-
-    if (value.length === 0) {
-      setOptions(defaultOptions);
-      return;
-    }
-
     clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => {
-      search(value);
+      search(inputValue);
       searchTimer.current = undefined;
     }, SEARCH_DELAY);
-  }, [inputValue]);
+  }, [inputValue, coursesList]);
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
