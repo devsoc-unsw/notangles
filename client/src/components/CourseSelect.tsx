@@ -6,7 +6,7 @@ import {
   InputAdornment,
   Box,
   Chip,
-  useTheme,
+  Theme,
 } from '@material-ui/core';
 import {
   CloseRounded,
@@ -15,12 +15,11 @@ import {
   CheckRounded,
 } from '@material-ui/icons';
 import styled, { css } from 'styled-components';
-import { borderRadius } from '../constants/theme';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
 
-const searchDelay = 300;
+const SEARCH_DELAY = 300;
 
 interface SearchOptions {
   limit: number
@@ -53,16 +52,31 @@ const StyledSelect = styled(Box)`
   text-align: left;
 `;
 
-const StyledTextField = styled(TextField)`
-  fieldset {
-    border-radius: ${borderRadius}px;
-    border-color: ${(props) => props.theme.palette.secondary.main} !important;
+const StyledTextField = styled(TextField)<{
+  theme: Theme
+}>`
+  .MuiOutlinedInput-root {
+    fieldset {
+      border-color: ${(props) => props.theme.palette.secondary.main};
+      transition: border-color 100ms;
+    }
+    &:hover fieldset {
+      border-color: ${(props) => props.theme.palette.secondary.dark};
+    }
+    &.Mui-focused fieldset {
+      border-color: ${(props) => props.theme.palette.secondary.dark};
+    }
+  }
+
+  label {
+    color: ${(props) => props.theme.palette.secondary.dark} !important;
+    transition: 200ms;
   }
 `;
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
-  color: ${(props) => props.theme.palette.secondary.main};
+  color: ${(props) => props.theme.palette.secondary.dark};
 `;
 
 const StyledChip = styled(Chip).withConfig({
@@ -119,8 +133,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const [options, setOptions] = React.useState<CoursesList>([]);
   const [inputValue, setInputValue] = React.useState<string>('');
   const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
-  const searchTimer = React.useRef<number | undefined>(undefined);
-  const theme = useTheme();
+  const searchTimer = React.useRef<number | undefined>();
 
   let defaultOptions = coursesList;
 
@@ -259,7 +272,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     searchTimer.current = setTimeout(() => {
       search(value);
       searchTimer.current = undefined;
-    }, searchDelay);
+    }, SEARCH_DELAY);
   }, [inputValue]);
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
@@ -309,9 +322,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
               ...params.InputLabelProps,
               shrink: shrinkLabel,
               style: {
-                color: theme.palette.secondary.main,
                 marginLeft: shrinkLabel ? 2 : 38,
-                transition: '200ms',
               },
             }}
             InputProps={{

@@ -32,7 +32,7 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${(props) => props.theme.palette.secondary.dark};
+  background-color: ${(props) => props.theme.palette.background.default};
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
