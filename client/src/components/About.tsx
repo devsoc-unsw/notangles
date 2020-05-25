@@ -128,7 +128,7 @@ const About: React.FC = () => {
           <Typography gutterBottom variant="body2">
             <b> DISCLAIMER </b>
             &nbsp;While we try our best, Notangles is not an official UNSW site,
-             and cannot guarantee data accuracy or reliability.
+            and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
             If you find an issue or have a suggestion, please contact us.
