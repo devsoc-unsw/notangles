@@ -10,7 +10,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
-import CourseSelect, { CourseOption } from './components/CourseSelect';
+import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -32,7 +32,7 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${(props) => props.theme.palette.secondary.dark};
+  background-color: ${(props) => props.theme.palette.background.default};
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
@@ -79,12 +79,11 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSelectCourse = async (e: CourseOption) => {
-    if (selectedCourses.find((course) => course.courseCode === e.value) === undefined) {
-      const selectedCourseClasses = await getCourseInfo('2020', 'T2', e.value);
-      if (selectedCourseClasses) {
-        setSelectedCourses([...selectedCourses, selectedCourseClasses]);
-      }
+  const handleSelectCourse = async (courseCode: string) => {
+    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
+    if (selectedCourseClasses) {
+      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      setSelectedCourses(newSelectedCourses);
     }
   };
 
@@ -127,7 +126,10 @@ const App: FunctionComponent = () => {
               <Content>
                 <SelectWrapper>
                   <CourseSelect
-                    onChange={handleSelectCourse}
+                    selectedCourses={selectedCourses}
+                    assignedColors={assignedColors}
+                    handleSelect={handleSelectCourse}
+                    handleRemove={handleRemoveCourse}
                   />
                 </SelectWrapper>
                 <DndProvider backend={HTML5Backend}>
