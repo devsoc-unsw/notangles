@@ -91,12 +91,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       </p>
       <p>{`${classTime.locationShort}`}</p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
-      <p>
-        {enrolments}
-        /
-        {capacity}
-        enrolled
-      </p>
+      <p>{`${enrolments}/${capacity} enrolled`}</p>
     </StyledCourseClass>
   );
 };
