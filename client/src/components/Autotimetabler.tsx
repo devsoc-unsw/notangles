@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import Box from '@material-ui/core/Box';
 import Popover from '@material-ui/core/Popover';
@@ -11,7 +12,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+// import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 
@@ -21,14 +22,6 @@ const DropdownButton = styled(Button)`
     margin-right:10px;
 `;
 
-const DragHandle = styled(Button)`
-    &:hover {
-        background-color: transparent;
-    }
-    &:active {
-        background-color: transparent;
-    }
-`;
 interface DropdownOptionProps {
   optionName: string
   isChecked: boolean
@@ -62,9 +55,6 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
       <ListItemText
         primary={optionName}
       />
-      <DragHandle disableRipple>
-        <DragIndicatorIcon />
-      </DragHandle>
     </ListItem>
   );
 };
@@ -111,10 +101,30 @@ export default function Autotimetable() {
         }}
       >
         <List dense>
-          <DropdownOption optionName="Least days at uni" isChecked={isChecked1} setIsChecked={setIsChecked1} />
-          <DropdownOption optionName="Least distance between classes" isChecked={isChecked2} setIsChecked={setIsChecked2} />
-          <DropdownOption optionName="Least early starts" isChecked={isChecked3} setIsChecked={setIsChecked3} opposite={isChecked4} setOpposite={setIsChecked4} />
-          <DropdownOption optionName="Most early starts" isChecked={isChecked4} setIsChecked={setIsChecked4} opposite={isChecked3} setOpposite={setIsChecked3} />
+          <DropdownOption
+            optionName="Least days at uni"
+            isChecked={isChecked1}
+            setIsChecked={setIsChecked1}
+          />
+          <DropdownOption
+            optionName="Least distance between classes"
+            isChecked={isChecked2}
+            setIsChecked={setIsChecked2}
+          />
+          <DropdownOption
+            optionName="Least early starts"
+            isChecked={isChecked3}
+            setIsChecked={setIsChecked3}
+            opposite={isChecked4}
+            setOpposite={setIsChecked4}
+          />
+          <DropdownOption
+            optionName="Most early starts"
+            isChecked={isChecked4}
+            setIsChecked={setIsChecked4}
+            opposite={isChecked3}
+            setOpposite={setIsChecked3}
+          />
 
         </List>
       </Popover>

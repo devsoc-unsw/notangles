@@ -11,7 +11,6 @@ import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect, { CourseOption } from './components/CourseSelect';
-import Autotimetabler from './components/Autotimetabler';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -131,7 +130,6 @@ const App: FunctionComponent = () => {
                     onChange={handleSelectCourse}
                   />
                 </SelectWrapper>
-                <Autotimetabler />
                 <DndProvider backend={HTML5Backend}>
                   <Inventory
                     selectedCourses={selectedCourses}
