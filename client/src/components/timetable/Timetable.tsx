@@ -15,7 +15,7 @@ const StyledTimetable = styled(Box)`
   max-height: 900px;
   margin-bottom: 20px;
   box-sizing: content-box;
-  border-radius: 6px;
+  border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
