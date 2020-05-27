@@ -1,5 +1,5 @@
 {
-  "name": "notangles-common",
+  "name": "@notangles/common",
   "version": "1.0.4",
   "scripts": {
     "lint": "eslint 'src/**/*.{ts,tsx}'",
