@@ -18,6 +18,7 @@ import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 const DropdownButton = styled(Button)`
     width: 300px;
+    height: 55px;
     text-align: left;
     margin-right:10px;
 `;

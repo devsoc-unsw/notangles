@@ -6,9 +6,11 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
+import Autotimetabler from './components/Autotimetabler';
 import { CourseData } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
@@ -124,14 +126,22 @@ const App: FunctionComponent = () => {
             />
             <ContentWrapper>
               <Content>
-                <SelectWrapper>
-                  <CourseSelect
-                    selectedCourses={selectedCourses}
-                    assignedColors={assignedColors}
-                    handleSelect={handleSelectCourse}
-                    handleRemove={handleRemoveCourse}
-                  />
-                </SelectWrapper>
+                <Grid container>
+                  <Grid item xs={8}>
+                    <SelectWrapper>
+                      <CourseSelect
+                        selectedCourses={selectedCourses}
+                        assignedColors={assignedColors}
+                        handleSelect={handleSelectCourse}
+                        handleRemove={handleRemoveCourse}
+                      />
+                    </SelectWrapper>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Autotimetabler />
+                  </Grid>
+                </Grid>
+
                 <DndProvider backend={HTML5Backend}>
                   <Inventory
                     selectedCourses={selectedCourses}
