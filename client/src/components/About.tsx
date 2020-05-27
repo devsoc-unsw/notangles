@@ -24,9 +24,9 @@ const DialogContent = styled(MuiDialogContent)`
 `;
 
 const FeatList = styled.ul`
-    margin-top: 4px;
-    margin-bottom: 6px;
-`
+  margin-top: 4px;
+  margin-bottom: 6px;
+`;
 
 const About: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -48,58 +48,58 @@ const About: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-
         <StyledDialogTitle disableTypography>
           <Typography variant="h5">
             Notangles: No more timetable Tangles
           </Typography>
-            <CloseButton
-              aria-label="close"
-              onClick={toggleIsOpen}
-            >
-              <CloseIcon />
-            </CloseButton>
+          <CloseButton aria-label="close" onClick={toggleIsOpen}>
+            <CloseIcon />
+          </CloseButton>
         </StyledDialogTitle>
 
         <DialogContent dividers>
           <Typography gutterBottom variant="body2">
-            Notangles is a tool helping UNSW students build the perfect timetable,
-            with an intuitive drag and drop interface. We have many features on
-            the way, including auto-timetabling, and syncing your timetable with friends.
+            Notangles is a tool helping UNSW students build the perfect
+            timetable, with an intuitive drag and drop interface. We have many
+            features on the way, including auto-timetabling, and syncing your
+            timetable with friends.
           </Typography>
           <Typography gutterBottom variant="body2">
             Inspired by&nbsp;
             <Link href="https://crossangles.app/" target="_blank">
-                Crossangles
+              Crossangles
             </Link>
             &nbsp;and&nbsp;
-            <Link href="https://tdransfield.net/projects/bojangles/" target="_blank">
-                Bojangles
+            <Link
+              href="https://tdransfield.net/projects/bojangles/"
+              target="_blank"
+            >
+              Bojangles
             </Link>
             , it was created by&nbsp;
-            <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
-                CSESoc Projects
+            <Link
+              href="https://www.csesoc.unsw.edu.au/teams/software-projects/"
+              target="_blank"
+            >
+              CSESoc Projects
             </Link>
             &nbsp;- a place for student-led projects where you can learn
-            something new and make some friends along the way.
-            Notangles is free and open-source.
+            something new and make some friends along the way. Notangles is free
+            and open-source.
           </Typography>
-          <Typography variant="h6">
-            How it works
-          </Typography>
+          <Typography variant="h6">How it works</Typography>
           <Typography gutterBottom variant="body2">
-            Use the course dropdown to search for and select your courses.
-            Drag and drop classes to view timetabling options.
-            <br/>Notangles does not enroll in your classes. It’s a tool for
-            planning your timetable, but you’ll still need to officially enroll on&nbsp;
+            Use the course dropdown to search for and select your courses. Drag
+            and drop classes to view timetabling options.
+            <br />
+            Notangles does not enroll in your classes. It’s a tool for planning
+            your timetable, but you’ll still need to officially enroll on&nbsp;
             <Link href="https://my.unsw.edu.au/" target="_blank">
-                myUNSW
+              myUNSW
             </Link>
             .
           </Typography>
-          <Typography variant="h6">
-            Features
-          </Typography>
+          <Typography variant="h6">Features</Typography>
           <Typography gutterBottom variant="body2">
             <FeatList>
               <li> Drag-and-drop interface </li>
@@ -110,9 +110,13 @@ const About: React.FC = () => {
           </Typography>
           <Typography variant="h6">
             Future developments [
-            <Link href="https://compclub.atlassian.net/wiki/x/JoBzM" target="_blank">
-                Roadmap
-            </Link>]
+            <Link
+              href="https://compclub.atlassian.net/wiki/x/JoBzM"
+              target="_blank"
+            >
+              Roadmap
+            </Link>
+            ]
           </Typography>
           <Typography gutterBottom variant="body2">
             <FeatList>
@@ -122,15 +126,16 @@ const About: React.FC = () => {
               <li> A mobile app so you can plan on the go </li>
             </FeatList>
           </Typography>
-          <br/>
+          <br />
           <Typography gutterBottom variant="body2">
-            <b> DISCLAIMER </b>&nbsp;While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+            <b> DISCLAIMER </b>
+            &nbsp;While we try our best, Notangles is not an official UNSW site,
+            and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
             If you find an issue or have a suggestion, please contact us.
           </Typography>
         </DialogContent>
-
       </Dialog>
     </div>
   );
