@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+
 import {
   CourseData, Period, ClassData,
 } from '../../interfaces/CourseData';
@@ -9,7 +10,7 @@ import { weekdayToXCoordinate, timeToIndex } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
-})<{
+}) <{
   isDragging: boolean
   classTime: Period
   backgroundColor: string
@@ -49,6 +50,8 @@ interface DroppedClassProps {
   courseCode: string
   color: string
   classTime: Period
+  enrolments: number
+  capacity: number
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
@@ -56,6 +59,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   courseCode,
   color,
   classTime,
+  enrolments,
+  capacity,
 }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
@@ -86,6 +91,12 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       </p>
       <p>{`${classTime.locationShort}`}</p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
+      <p>
+        {enrolments}
+        /
+        {capacity}
+        enrolled
+      </p>
     </StyledCourseClass>
   );
 };
@@ -110,6 +121,8 @@ const buildDroppedClass = ({
   <DroppedClass
     key={`${classData.classId}-${JSON.stringify(classTime)}`}
     activity={classData.activity}
+    enrolments={classData.enrolments}
+    capacity={classData.capacity}
     courseCode={course.courseCode}
     color={assignedColors[course.courseCode]}
     classTime={classTime}

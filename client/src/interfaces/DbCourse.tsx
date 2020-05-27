@@ -11,6 +11,12 @@ export interface DbCourse {
 export interface DbClass {
   activity: string
   times: DbTimes[]
+  courseEnrolment: DbCourseEnrolment
+}
+
+export interface DbCourseEnrolment {
+  enrolments: number
+  capacity: number
 }
 
 export interface DbTimes {
@@ -65,6 +71,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
       periods: dbClass.times.map(dbTimesToPeriod),
       activity: dbClass.activity,
+      enrolments: dbClass.courseEnrolment.enrolments,
+      capacity: dbClass.courseEnrolment.capacity,
     };
     if (!(dbClass.activity in classes)) {
       classes[dbClass.activity] = [];
