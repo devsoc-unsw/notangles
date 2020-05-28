@@ -16,8 +16,7 @@ import About from './About';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 
 const LogoImg = styled.img`
-  /* width: 40px; */
-  height:40px;
+  height: 40px;
   margin-right: 20px;
 `;
 const NavbarBox = styled.div`
