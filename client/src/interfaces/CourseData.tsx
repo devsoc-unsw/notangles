@@ -8,6 +8,8 @@ export interface ClassData {
   classId: string
   activity: string
   periods: Period[]
+  enrolments: number
+  capacity: number
 }
 
 export interface Period {

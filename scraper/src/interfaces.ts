@@ -42,6 +42,7 @@ enum Term {
 enum Career {
   Undergraduate = 'Undergraduate',
   Postgraduate = 'Postgraduate',
+  PGOnline = 'Postgraduate (Online)',
   Research = 'Research',
 }
 
