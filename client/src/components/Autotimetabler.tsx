@@ -17,7 +17,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 const DropdownButton = styled(Button)`
-    width: 300px;
+    width: 100%;
     height: 55px;
     text-align: left;
     margin-right:10px;
