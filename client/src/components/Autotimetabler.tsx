@@ -23,6 +23,11 @@ const DropdownButton = styled(Button)`
     margin-right:10px;
 `;
 
+const ExecuteButton = styled(Button)`
+    width: 100%;
+    border-radius: 0px 0px 5px 5px;
+`;
+
 interface DropdownOptionProps {
   optionName: string
   isChecked: boolean
@@ -128,11 +133,11 @@ export default function Autotimetable() {
           />
 
         </List>
+        <ExecuteButton variant="contained" color="primary" disableElevation>
+          GO
+          <FlashOnIcon />
+        </ExecuteButton>
       </Popover>
-      <Button variant="contained" color="primary" disableElevation>
-        GO
-        <FlashOnIcon />
-      </Button>
     </div>
   );
 }
