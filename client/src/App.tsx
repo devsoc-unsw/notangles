@@ -126,8 +126,8 @@ const App: FunctionComponent = () => {
             />
             <ContentWrapper>
               <Content>
-                <Grid container>
-                  <Grid item xs={8}>
+                <Grid container spacing={6}>
+                  <Grid item xs={12} md={8}>
                     <SelectWrapper>
                       <CourseSelect
                         selectedCourses={selectedCourses}
@@ -137,7 +137,7 @@ const App: FunctionComponent = () => {
                       />
                     </SelectWrapper>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={12} md={4}>
                     <Autotimetabler />
                   </Grid>
                 </Grid>
