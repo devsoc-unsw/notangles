@@ -66,7 +66,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   const classes: Record<string, ClassData[]> = {};
-  var latestClassFinishTime = "00:00"
+  let latestClassFinishTime = '00:00';
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
@@ -75,7 +75,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
-    classData.periods.forEach(period => latestClassFinishTime = latestClassFinishTime > period.time.end ? latestClassFinishTime : period.time.end)
+    classData.periods.forEach((period) => {
+      latestClassFinishTime = latestClassFinishTime > period.time.end
+        ? latestClassFinishTime : period.time.end;
+    });
     if (!(dbClass.activity in classes)) {
       classes[dbClass.activity] = [];
     }
@@ -86,6 +89,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
     classes,
-    latestClassFinishTime: parseInt(latestClassFinishTime.split(":")[0]),
+    latestClassFinishTime: parseInt(latestClassFinishTime.split(':')[0], 10),
   };
 };

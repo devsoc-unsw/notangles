@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/CourseData';
-import { defaultStartTime, defaultEndTime } from '../../constants/timetable'
+import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 
 const headerPadding = 15;
 
@@ -102,7 +102,9 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   setIs12HourMode,
   selectedCourses,
 }) => {
-  const latestClassFinishTime = Math.max(...selectedCourses.map(course => course.latestClassFinishTime))
+  const latestClassFinishTime = Math.max(...selectedCourses.map(
+    (course) => course.latestClassFinishTime,
+  ));
   const hoursRange = [defaultStartTime, Math.max(latestClassFinishTime, defaultEndTime)];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 

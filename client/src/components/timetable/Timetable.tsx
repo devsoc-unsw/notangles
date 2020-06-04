@@ -41,8 +41,9 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   onSelectClass,
 }) => (
   <StyledTimetable
-    rows={2 * (Math.max(...selectedCourses.map((course) => course.latestClassFinishTime), defaultEndTime)
-    - defaultStartTime + 1)}
+    rows={2 * (Math.max(...selectedCourses.map(
+      (course) => course.latestClassFinishTime,
+    ), defaultEndTime) - defaultStartTime + 1)}
   >
     <TimetableLayout
       days={days}
