@@ -14,4 +14,5 @@ export const days: string[] = [
   'Friday',
 ];
 
-export const hoursRange: number[] = [9, 18];
+export const defaultStartTime: number = 9;
+export const defaultEndTime: number = 18;

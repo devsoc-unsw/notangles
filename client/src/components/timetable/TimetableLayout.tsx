@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 import { Box } from '@material-ui/core';
+import { CourseData } from '../../interfaces/CourseData';
+import { defaultStartTime, defaultEndTime } from '../../constants/timetable'
 
 const headerPadding = 15;
 
@@ -17,7 +19,7 @@ const BaseCell = styled.div<{
   justify-content: center;
 `;
 
-const DoubleCell = styled(BaseCell)<{
+const DoubleCell = styled(BaseCell) <{
   y: number
 }>`
   grid-row: ${
@@ -36,7 +38,7 @@ const paddingStyle = css`
   padding: 0 ${headerPadding}px;
 `;
 
-const HourCell = styled(DoubleCell)<{
+const HourCell = styled(DoubleCell) <{
   is12HourMode: boolean
 }>`
   ${paddingStyle}
@@ -89,17 +91,19 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 
 interface TimetableLayoutProps {
   days: string[]
-  hoursRange: number[]
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
+  selectedCourses: CourseData[]
 }
 
 const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   days,
-  hoursRange,
   is12HourMode,
   setIs12HourMode,
+  selectedCourses,
 }) => {
+  const latestClassFinishTime = Math.max(...selectedCourses.map(course => course.latestClassFinishTime))
+  const hoursRange = [defaultStartTime, Math.max(latestClassFinishTime, defaultEndTime)];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (
