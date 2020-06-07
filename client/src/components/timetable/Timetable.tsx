@@ -2,24 +2,27 @@ import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/CourseData';
-import { days, hoursRange } from '../../constants/timetable';
+import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 
-const rows: number = hoursRange[1] - hoursRange[0] + 1;
+const defaultMinTableHeight = 700;
+const defaultMaxTableHeight = 900;
 
-const StyledTimetable = styled(Box)`
+const StyledTimetable = styled(Box) <{
+  rows: number
+}>`
   display: grid;
-  min-height: 700px;
-  max-height: 900px;
+  min-height: ${(props) => props.rows * (defaultMinTableHeight / (defaultEndTime - defaultStartTime))}px;
+  max-height: ${(props) => props.rows * (defaultMaxTableHeight / (defaultEndTime - defaultStartTime))}px;
   margin-bottom: 20px;
   box-sizing: content-box;
   border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${rows * 2}, 1fr) / auto repeat(${days.length}, 1fr);
+  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length}, 1fr);
   border: 1px solid ${(props) => props.theme.palette.secondary.main};
 `;
 
@@ -40,12 +43,16 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   setIs12HourMode,
   onSelectClass,
 }) => (
-  <StyledTimetable>
+  <StyledTimetable
+    rows={Math.max(...selectedCourses.map(
+      (course) => course.latestClassFinishTime,
+    ), defaultEndTime) - defaultStartTime}
+  >
     <TimetableLayout
       days={days}
-      hoursRange={hoursRange}
       is12HourMode={is12HourMode}
       setIs12HourMode={setIs12HourMode}
+      selectedCourses={selectedCourses}
     />
     <ClassDropzones
       selectedCourses={selectedCourses}
