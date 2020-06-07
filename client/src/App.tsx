@@ -138,7 +138,7 @@ const App: FunctionComponent = () => {
                     </SelectWrapper>
                   </Grid>
                   <Grid item xs={12} md={4}>
-                    <Autotimetabler />
+                    <Autotimetabler isDarkMode={isDarkMode} />
                   </Grid>
                 </Grid>
 

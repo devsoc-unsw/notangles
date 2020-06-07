@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+
 // import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import Box from '@material-ui/core/Box';
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -21,6 +22,7 @@ const DropdownButton = styled(Button)`
     height: 55px;
     text-align: left;
     margin-right:10px;
+    text-transform: none;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -65,8 +67,10 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   );
 };
 
-
-export default function Autotimetable() {
+interface AutotimetablerProps {
+  isDarkMode: boolean
+}
+const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
   const [isChecked1, setIsChecked1] = React.useState(false);
   const [isChecked2, setIsChecked2] = React.useState(false);
   const [isChecked3, setIsChecked3] = React.useState(false);
@@ -86,11 +90,11 @@ export default function Autotimetable() {
 
   return (
     <div>
-      <DropdownButton aria-describedby={id} variant="outlined" onClick={handleClick}>
-        <Box flexGrow={1}>Auto-timetable Options</Box>
+      <DropdownButton aria-describedby={id} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
+        <Box ml="10px" flexGrow={1}>Auto-timetable Options</Box>
         {open ? (
-          <ExpandLessIcon />
-        ) : <ExpandMoreIcon />}
+          <ArrowDropUpIcon />
+        ) : <ArrowDropDownIcon />}
       </DropdownButton>
       <Popover
         id={id}
@@ -117,6 +121,7 @@ export default function Autotimetable() {
             isChecked={isChecked2}
             setIsChecked={setIsChecked2}
           />
+
           <DropdownOption
             optionName="Least early starts"
             isChecked={isChecked3}
@@ -133,11 +138,12 @@ export default function Autotimetable() {
           />
 
         </List>
-        <ExecuteButton variant="contained" color="primary" disableElevation>
+        <ExecuteButton variant="contained" color="primary" disableElevation onClick={handleClose}>
           GO
           <FlashOnIcon />
         </ExecuteButton>
       </Popover>
     </div>
   );
-}
+};
+export default Autotimetable;
