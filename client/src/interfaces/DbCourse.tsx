@@ -85,10 +85,13 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classes[dbClass.activity].push(classData);
   });
 
+  const latestClassFinishHours = latestClassFinishTime.split(':')[0];
+  const latestClassFinishMinutes = latestClassFinishTime.split(':')[1];
+
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
     classes,
-    latestClassFinishTime: parseInt(latestClassFinishTime.split(':')[0], 10),
+    latestClassFinishTime: Number(latestClassFinishHours) + (latestClassFinishMinutes === '00' ? 0 : 1),
   };
 };

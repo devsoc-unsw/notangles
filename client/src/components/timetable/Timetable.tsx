@@ -7,19 +7,22 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 
+const defaultMinTableHeight = 700;
+const defaultMaxTableHeight = 900;
+
 const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${(props) => props.rows * 35}px;
-  max-height: ${(props) => props.rows * 45}px;
+  min-height: ${(props) => props.rows * (defaultMinTableHeight / (defaultEndTime - defaultStartTime))}px;
+  max-height: ${(props) => props.rows * (defaultMaxTableHeight / (defaultEndTime - defaultStartTime))}px;
   margin-bottom: 20px;
   box-sizing: content-box;
   border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, 1fr);
+  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length}, 1fr);
   border: 1px solid ${(props) => props.theme.palette.secondary.main};
 `;
 
@@ -41,9 +44,9 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   onSelectClass,
 }) => (
   <StyledTimetable
-    rows={2 * (Math.max(...selectedCourses.map(
+    rows={Math.max(...selectedCourses.map(
       (course) => course.latestClassFinishTime,
-    ), defaultEndTime) - defaultStartTime + 1)}
+    ), defaultEndTime) - defaultStartTime}
   >
     <TimetableLayout
       days={days}
