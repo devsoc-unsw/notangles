@@ -11,8 +11,9 @@ const rows: number = hoursRange[1] - hoursRange[0] + 1;
 
 const StyledTimetable = styled(Box)`
   display: grid;
-  min-height: 700px;
+  min-height: 900px;
   max-height: 900px;
+  margin-top: 15px;
   margin-bottom: 20px;
   box-sizing: content-box;
   border-radius: ${(props) => props.theme.shape.borderRadius}px;

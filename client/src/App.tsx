@@ -25,7 +25,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 94px; // 64px for nav bar + 30px padding
+  padding-top: 84px; // 64px for nav bar + 20px padding
   padding-left: 30px;
   padding-right: 30px;
   transition: background-color 0.25s, color 0.25s;
@@ -52,7 +52,6 @@ const Content = styled(Box)`
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
-  height: 30px;
 `;
 
 const Footer = styled(Box)`
@@ -79,10 +78,19 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
+  // TODO: temp until auto-timetabling is done
+  // currently just selects first available classes
+  const populateTimetable = (newCourse: CourseData) => {
+    Object.entries(newCourse.classes).forEach(([activity, classes]) => {
+      handleSelectClass(classes[0].classId)
+    })
+  }
+
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
     }
   };
@@ -97,20 +105,24 @@ const App: FunctionComponent = () => {
     );
   };
 
-  const handleRemoveClass = (activityId: string) => {
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(activityId),
-    );
-    setSelectedClassIds(newSelectedClassIds);
+  const handleSelectClass = (classId: string) => {
+    setSelectedClassIds((selectedClassIds) => {
+      const [courseCode, activity] = classId.split('-');
+      const newSelectedClassIds = selectedClassIds.filter(
+        (id) => !id.startsWith(`${courseCode}-${activity}`),
+      );
+      newSelectedClassIds.push(classId);
+      return newSelectedClassIds;
+    })
   };
 
-  const handleSelectClass = (classId: string) => {
-    const [courseCode, activity] = classId.split('-');
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(`${courseCode}-${activity}`),
-    );
-    newSelectedClassIds.push(classId);
-    setSelectedClassIds(newSelectedClassIds);
+  const handleRemoveClass = (activityId: string) => {
+    setSelectedClassIds((selectedClassIds) => {
+      const newSelectedClassIds = selectedClassIds.filter(
+        (id) => !id.startsWith(activityId),
+      );
+      return newSelectedClassIds;
+    })
   };
 
   return (
