@@ -78,13 +78,33 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
+  const handleSelectClass = (classId: string) => {
+    setSelectedClassIds((prevSelectedClassIds) => {
+      const [courseCode, activity] = classId.split('-');
+      const newSelectedClassIds = prevSelectedClassIds.filter(
+        (id) => !id.startsWith(`${courseCode}-${activity}`),
+      );
+      newSelectedClassIds.push(classId);
+      return newSelectedClassIds;
+    });
+  };
+
+  const handleRemoveClass = (activityId: string) => {
+    setSelectedClassIds((prevSelectedClassIds) => {
+      const newSelectedClassIds = prevSelectedClassIds.filter(
+        (id) => !id.startsWith(activityId),
+      );
+      return newSelectedClassIds;
+    });
+  };
+
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
-    Object.entries(newCourse.classes).forEach(([activity, classes]) => {
-      handleSelectClass(classes[0].classId)
-    })
-  }
+    Object.entries(newCourse.classes).forEach(([_, classes]) => {
+      handleSelectClass(classes[0].classId);
+    });
+  };
 
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
@@ -103,26 +123,6 @@ const App: FunctionComponent = () => {
     setSelectedClassIds(
       selectedClassIds.filter((id) => id.split('-')[0] !== courseCode),
     );
-  };
-
-  const handleSelectClass = (classId: string) => {
-    setSelectedClassIds((selectedClassIds) => {
-      const [courseCode, activity] = classId.split('-');
-      const newSelectedClassIds = selectedClassIds.filter(
-        (id) => !id.startsWith(`${courseCode}-${activity}`),
-      );
-      newSelectedClassIds.push(classId);
-      return newSelectedClassIds;
-    })
-  };
-
-  const handleRemoveClass = (activityId: string) => {
-    setSelectedClassIds((selectedClassIds) => {
-      const newSelectedClassIds = selectedClassIds.filter(
-        (id) => !id.startsWith(activityId),
-      );
-      return newSelectedClassIds;
-    })
   };
 
   return (
