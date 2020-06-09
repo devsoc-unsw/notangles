@@ -13,7 +13,7 @@ interface InventoryProps {
 }
 
 const StyledInventory = styled(Box)`
-  display: flex;
+  display: none;
   flex-direction: column;
 
   border: 1px solid;

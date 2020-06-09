@@ -7,16 +7,16 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 
-const defaultMinTableHeight = 700;
-const defaultMaxTableHeight = 900;
+const rowHeight = 100;
 
 const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${(props) => props.rows * (defaultMinTableHeight / (defaultEndTime - defaultStartTime))}px;
-  max-height: ${(props) => props.rows * (defaultMaxTableHeight / (defaultEndTime - defaultStartTime))}px;
-  margin-bottom: 20px;
+  min-height: ${(props) => props.rows * rowHeight}px;
+  max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
+  margin-top: 15px;
+  margin-bottom: 15px;
   box-sizing: content-box;
   border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
