@@ -2,6 +2,8 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import {
   CourseData, Period, ClassData,
@@ -130,13 +132,33 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-
+  let hasClash = false;
+  const clashes: string[] = [];
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.classes).flatMap((x) => x);
     allClasses.filter(
       (classData) => selectedClassIds.includes(classData.classId),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
+        for (let i = 0; i < droppedClasses.length; i += 1) {
+          if ((droppedClasses[i].props.classTime.time.day === classTime.time.day
+                  && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+                  >= parseInt(classTime.time.start.slice(0, 2), 10)
+                  && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+                  < parseInt(classTime.time.end.slice(0, 2), 10))
+                  || (droppedClasses[i].props.classTime.time.day === classTime.time.day
+                    && parseInt(classTime.time.start.slice(0, 2), 10)
+                    >= parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+                    && parseInt(classTime.time.start.slice(0, 2), 10)
+                    < parseInt(droppedClasses[i].props.classTime.time.end.slice(0, 2), 10))) {
+            hasClash = true;
+
+            const newClash = `${classData.classId.split('-').slice(0, -1).join(' ')} with ${droppedClasses[i].props.courseCode} ${droppedClasses[i].props.activity}`;
+            if (!clashes.includes(newClash)) {
+              clashes.push(newClash);
+            }
+          }
+        }
         droppedClasses.push(
           buildDroppedClass({
             classData,
@@ -149,7 +171,17 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     });
   });
 
-  return <>{droppedClasses}</>;
+  return (
+    <>
+      {droppedClasses}
+      {' '}
+      <Snackbar open={hasClash} autoHideDuration={6000}>
+        <Alert severity="warning">
+          {`Clashes: ${clashes.join(', ')}`}
+        </Alert>
+      </Snackbar>
+    </>
+  );
 };
 
 export default DroppedClasses;
