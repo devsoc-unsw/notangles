@@ -1,6 +1,6 @@
-import {CourseData, ClassData, Period, ClassTime} from '../interfaces/CourseData'
-import {clash} from './clash'
-import {countDays} from './countDays'
+import { CourseData, ClassData, Period, ClassTime } from '../interfaces/CourseData'
+import { clash } from './clash'
+import { countDays } from './countDays'
 
 var classDict: Record<string, ClassTime[]> = {}
 var keys : string[]
@@ -9,19 +9,10 @@ export const leastDays = (courses: CourseData[]) => {
     var classActivites = new Set()
     courses.forEach(course => {
         Object.keys(course["classes"]).forEach(classID => {
-            course["classes"][classID].forEach(classInfo => {
-                var classString = course.courseCode + "_" + classInfo.activity
-                var l = classActivites.size
-                classActivites.add(classString)
-                if (classActivites.size > l) {
-                    classDict[classString] = []
-                }
-
-                var timeObjects: ClassTime[] = []
-                classInfo["periods"].forEach(classPeriod => {
-                    timeObjects.push(classPeriod.time)
-                })
-                classDict[classString] = timeObjects
+            var classString = course.courseCode + "_" + classID
+            classDict[classString] = []
+            course["classes"][classID].forEach(timeObject => {
+                classDict[classString].push(timeObject.periods[0].time)
             })
         })
     })
@@ -30,7 +21,6 @@ export const leastDays = (courses: CourseData[]) => {
     var minTT: ClassTime[] = []
     keys = Object.keys(classDict)
     if (Object.keys(classDict).length > 0) {
-        console.log("Triggering")
         const firstkey: string = keys[0]
         classDict[firstkey].forEach(time => {
             var timetable: ClassTime[] = [time]
@@ -53,8 +43,6 @@ export const leastDays = (courses: CourseData[]) => {
 
 const fillTT = (keyNum: number, timetable: ClassTime[]) => {
     var newKeyNum = keyNum + 1
-    console.log(newKeyNum)
-    console.log(keys.length)
     if (newKeyNum >= keys.length) {
         return timetable
     }
@@ -71,7 +59,7 @@ const fillTT = (keyNum: number, timetable: ClassTime[]) => {
         })
 
         if (clashing == false) {
-            var newTT = timetable
+            var newTT = timetable.slice(0)
             newTT.push(timeslot)
             newTT = fillTT(newKeyNum, newTT)
             var days = countDays(newTT)

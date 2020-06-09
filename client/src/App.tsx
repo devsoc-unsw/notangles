@@ -14,6 +14,8 @@ import { getCoursesList } from './api/getCoursesList'
 import { CoursesList } from './interfaces/CourseOverview'
 import { useColorMapper } from './hooks/useColorMapper'
 
+import { leastDays } from './automation/leastDays'
+
 interface CourseOption {
   value: string
   label: string
@@ -58,6 +60,7 @@ const App: FunctionComponent = () => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T1', e.value)
 
     if (selectedCourseClasses) {
+      console.log(leastDays(selectedCourses))
       setSelectedCourses([...selectedCourses, selectedCourseClasses])
     }
   }

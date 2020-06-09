@@ -15,21 +15,22 @@ export const clash = (time1: ClassTime, time2: ClassTime): boolean => {
     const end_min1 = Number(time1.end.substring(3,5))
     const end_min2 = Number(time2.end.substring(3,5))
 
-    if (start_hour2 > start_hour1 && start_hour2 < end_hour1) {
-        return true
+    var clashing: boolean = false
+    if (start_hour1 <= end_hour2 && start_hour1 >= start_hour2) {
+        clashing = true
     }
 
-    if (start_hour1 > start_hour2 && start_hour1 < end_hour2) {
-        return true
+    if (end_hour1 <= end_hour2 && end_hour1 >= start_hour2) {
+        clashing = true
     }
 
-    if (end_hour2 > start_hour1 && end_hour2 < end_hour1) {
-        return true
+    if (start_hour2 <= end_hour1 && start_hour2 >= start_hour1) {
+        clashing = true
     }
 
-    if (end_hour1 > start_hour2 && end_hour1 < end_hour2) {
-        return true
+    if (end_hour2 <= end_hour1 && end_hour2 >= start_hour1) {
+        clashing = true
     }
 
-    return false;
+    return clashing
 }
