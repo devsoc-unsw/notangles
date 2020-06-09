@@ -1,6 +1,7 @@
 export interface CourseData {
   courseCode: string
   courseName: string
+  latestClassFinishTime: number
   classes: Record<string, ClassData[]>
 }
 
