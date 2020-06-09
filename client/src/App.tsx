@@ -1,7 +1,6 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { DndProvider } from 'react-dnd';
-import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
@@ -114,62 +113,60 @@ const App: FunctionComponent = () => {
   };
 
   return (
-    <StylesProvider injectFirst>
-      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <StyledApp>
-            <Navbar
-              setIsDarkMode={setIsDarkMode}
-              isDarkMode={isDarkMode}
-            />
-            <ContentWrapper>
-              <Content>
-                <SelectWrapper>
-                  <CourseSelect
-                    selectedCourses={selectedCourses}
-                    assignedColors={assignedColors}
-                    handleSelect={handleSelectCourse}
-                    handleRemove={handleRemoveCourse}
-                  />
-                </SelectWrapper>
-                <DndProvider backend={HTML5Backend}>
-                  <Inventory
-                    selectedCourses={selectedCourses}
-                    selectedClassIds={selectedClassIds}
-                    assignedColors={assignedColors}
-                    removeCourse={handleRemoveCourse}
-                    removeClass={handleRemoveClass}
-                  />
-                  <Timetable
-                    selectedCourses={selectedCourses}
-                    selectedClassIds={selectedClassIds}
-                    assignedColors={assignedColors}
-                    is12HourMode={is12HourMode}
-                    setIs12HourMode={setIs12HourMode}
-                    onSelectClass={handleSelectClass}
-                  />
-                </DndProvider>
-                <Footer>
-                  DISCLAIMER: While we try our best, Notangles is not an
-                  official UNSW site, and cannot guarantee data accuracy or
-                  reliability.
-                  <br />
-                  <br />
-                  Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="mailto:projects@csesoc.org.au">
-                    Feedback
-                  </Link>
-                  &nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="https://github.com/csesoc/notangles">
-                    GitHub
-                  </Link>
-                </Footer>
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </StylesProvider>
+    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <StyledApp>
+          <Navbar
+            setIsDarkMode={setIsDarkMode}
+            isDarkMode={isDarkMode}
+          />
+          <ContentWrapper>
+            <Content>
+              <SelectWrapper>
+                <CourseSelect
+                  selectedCourses={selectedCourses}
+                  assignedColors={assignedColors}
+                  handleSelect={handleSelectCourse}
+                  handleRemove={handleRemoveCourse}
+                />
+              </SelectWrapper>
+              <DndProvider backend={HTML5Backend}>
+                <Inventory
+                  selectedCourses={selectedCourses}
+                  selectedClassIds={selectedClassIds}
+                  assignedColors={assignedColors}
+                  removeCourse={handleRemoveCourse}
+                  removeClass={handleRemoveClass}
+                />
+                <Timetable
+                  selectedCourses={selectedCourses}
+                  selectedClassIds={selectedClassIds}
+                  assignedColors={assignedColors}
+                  is12HourMode={is12HourMode}
+                  setIs12HourMode={setIs12HourMode}
+                  onSelectClass={handleSelectClass}
+                />
+              </DndProvider>
+              <Footer>
+                DISCLAIMER: While we try our best, Notangles is not an
+                official UNSW site, and cannot guarantee data accuracy or
+                reliability.
+                <br />
+                <br />
+                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                  Feedback
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://github.com/csesoc/notangles">
+                  GitHub
+                </Link>
+              </Footer>
+            </Content>
+          </ContentWrapper>
+        </StyledApp>
+      </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 
