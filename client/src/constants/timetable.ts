@@ -4,6 +4,7 @@ export const colors: string[] = [
   '#FF5725', // red
   '#683BB5', // purple
   '#EB1E62', // pink
+  '#00BCD4', // turqoise
   '#3E51B3', // dark blue
   '#FF981A', // orange
   '#8AC352', // light green
