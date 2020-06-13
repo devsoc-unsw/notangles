@@ -35,13 +35,30 @@ const StyledCourseClass = styled(Card).withConfig({
   margin: 2px;
   position: relative;
   bottom: 0.5px;
+  span {
+    opacity : 0;
+    transition: opacity 0.5s;
+  };
 
   p {
     margin: 0 0;
+    position: relative;
+    top: 1.8rem;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: all 0.5s;
+  }
+
+  &:hover {
+    span {
+      opacity: 1;
+    };
+    p {
+      top: 0rem;
+      font-size: 0.7rem;
+    };
   }
 `;
 
@@ -89,9 +106,11 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
           {activity}
         </b>
       </p>
-      <p>{`${classTime.locationShort}`}</p>
-      <p>{`${enrolments}/${capacity} enrolled`}</p>
-      <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
+      <span>
+        <p>{`${classTime.locationShort}`}</p>
+        <p>{`${enrolments}/${capacity} enrolled`}</p>
+        <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
+      </span>
     </StyledCourseClass>
   );
 };
