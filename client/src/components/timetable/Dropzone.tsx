@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 import { Period } from '../../interfaces/CourseData';
 
+<<<<<<< Updated upstream
 export const weekdayToXCoordinate = (weekDay: string) => {
   const conversionTable: Record<string, number> = {
     Mon: 1,
@@ -16,6 +17,11 @@ export const weekdayToXCoordinate = (weekDay: string) => {
 
 export const timeToIndex = (time: string) => {
   const [hour, minute] = time.split(':').map((part: string): number => Number(part));
+=======
+export const timeToPosition = (time: number) => {
+  const hour = Math.floor(time);
+  const minute = (time - hour) * 60;
+>>>>>>> Stashed changes
   return (hour - 7) * 2 + (minute === 30 ? 1 : 0) - 2;
 };
 

@@ -9,9 +9,9 @@ export interface ClassData {
   classId: string
   courseCode: string
   activity: string
-  periods: Period[]
-  enrolments: number
-  capacity: number
+  periods?: Period[]
+  enrolments?: number
+  capacity?: number
 }
 
 export interface Period {

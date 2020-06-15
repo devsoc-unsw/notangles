@@ -22,7 +22,7 @@ const StyledTimetable = styled(Box) <{
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length}, 1fr);
+  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length + 1}, 1fr);
   border: 1px solid ${(props) => props.theme.palette.secondary.main};
 `;
 

@@ -36,8 +36,8 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1200px;
-  min-width: 600px;
+  width: 1400px;
+  min-width: 800px;
   max-width: 100%;
   margin: auto;
 
@@ -95,7 +95,7 @@ const App: FunctionComponent = () => {
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
-    Object.entries(newCourse.classes).forEach(([_, classes]) => {
+    Object.values(newCourse.classes).forEach((classes) => {
       handleSelectClass(classes[0]);
     });
   };
