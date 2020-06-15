@@ -65,13 +65,8 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-<<<<<<< Updated upstream
-  const classes: Record<string, ClassData[]> = {};
-  let latestClassFinishTime = '00:00';
-=======
   const activities: Record<string, ClassData[]> = {};
   let latestClassFinishTime = 0;
->>>>>>> Stashed changes
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
@@ -91,10 +86,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     activities[dbClass.activity].push(classData);
   });
 
-<<<<<<< Updated upstream
-  const latestClassFinishHours = latestClassFinishTime.split(':')[0];
-  const latestClassFinishMinutes = latestClassFinishTime.split(':')[1];
-=======
   Object.keys(activities).forEach((activity) => {
     activities[activity].push({
       classId: `${dbCourse.courseCode}-${activity}`,
@@ -102,17 +93,11 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       activity: activity,
     })
   })
->>>>>>> Stashed changes
 
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
-<<<<<<< Updated upstream
-    classes,
-    latestClassFinishTime: Number(latestClassFinishHours) + (latestClassFinishMinutes === '00' ? 0 : 1),
-=======
     classes: activities,
     latestClassFinishTime,
->>>>>>> Stashed changes
   };
 };
