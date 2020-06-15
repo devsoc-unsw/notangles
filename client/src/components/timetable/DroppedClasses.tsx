@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import {
   CourseData, Period, ClassData,
 } from '../../interfaces/CourseData';
-import { weekdayToXCoordinate, timeToIndex } from './Dropzone';
+import { timeToPosition } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
@@ -20,9 +20,9 @@ const StyledCourseClass = styled(Card).withConfig({
   align-items: center;
   flex-direction: column;
 
-  grid-column: ${(props) => weekdayToXCoordinate(props.classTime.time.day) + 1};
-  grid-row: ${(props) => timeToIndex(props.classTime.time.start)} /
-            ${(props) => timeToIndex(props.classTime.time.end)};
+  grid-column: ${(props) => props.classTime.time.day + 1};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
+            ${(props) => timeToPosition(props.classTime.time.end)};
 
   background-color: ${(props) => props.backgroundColor};
   opacity: ${(props) => (props.isDragging ? 0 : 1)};

@@ -3,19 +3,9 @@ import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 import { Period } from '../../interfaces/CourseData';
 
-export const weekdayToXCoordinate = (weekDay: string) => {
-  const conversionTable: Record<string, number> = {
-    Mon: 1,
-    Tue: 2,
-    Wed: 3,
-    Thu: 4,
-    Fri: 5,
-  };
-  return conversionTable[weekDay];
-};
-
-export const timeToIndex = (time: string) => {
-  const [hour, minute] = time.split(':').map((part: string): number => Number(part));
+export const timeToPosition = (time: number) => {
+  const hour = Math.floor(time)
+  const minute = (time - hour) * 60
   return (hour - 7) * 2 + (minute === 30 ? 1 : 0) - 2;
 };
 
@@ -28,9 +18,9 @@ const StyledCell = styled.div<{
   align-items: center;
   justify-content: center;
 
-  grid-column: ${(props) => weekdayToXCoordinate(props.classTime.time.day) + 1};
-  grid-row: ${(props) => timeToIndex(props.classTime.time.start)} /
-    ${(props) => timeToIndex(props.classTime.time.end)};
+  grid-column: ${(props) => props.classTime.time.day + 1};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
+    ${(props) => timeToPosition(props.classTime.time.end)};
   background-color: ${(props) => props.color};
 
   transition: opacity 200ms;

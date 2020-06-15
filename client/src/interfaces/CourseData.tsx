@@ -21,9 +21,9 @@ export interface Period {
 }
 
 export interface ClassTime {
-  day: string
-  start: string
-  end: string
+  day: number
+  start: number
+  end: number
   weeks: string
 }
 

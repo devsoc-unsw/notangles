@@ -33,6 +33,22 @@ export interface DbTime {
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
+const weekdayToNumber = (weekDay: string) => {
+  const conversionTable: Record<string, number> = {
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+  };
+  return conversionTable[weekDay];
+};
+
+const timeToNumber = (time: string) => {
+  const [hour, minute] = time.split(':').map((part) => Number(part));
+  return hour + minute / 60;
+};
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -46,9 +62,9 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
-    day: dbTimes.day,
-    start: dbTimes.time.start,
-    end: dbTimes.time.end,
+    day: weekdayToNumber(dbTimes.day),
+    start: timeToNumber(dbTimes.time.start),
+    end: timeToNumber(dbTimes.time.end),
     weeks: dbTimes.weeks,
   },
 });
@@ -66,7 +82,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   const classes: Record<string, ClassData[]> = {};
-  let latestClassFinishTime = '00:00';
+  let latestClassFinishTime = 0;
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
@@ -86,13 +102,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classes[dbClass.activity].push(classData);
   });
 
-  const latestClassFinishHours = latestClassFinishTime.split(':')[0];
-  const latestClassFinishMinutes = latestClassFinishTime.split(':')[1];
-
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
     classes,
-    latestClassFinishTime: Number(latestClassFinishHours) + (latestClassFinishMinutes === '00' ? 0 : 1),
+    latestClassFinishTime,
   };
 };
