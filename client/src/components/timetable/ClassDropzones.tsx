@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 import { Dropzone } from './Dropzone';
 
 interface ClassDropzoneProps {
   course: CourseData
   color: string
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
@@ -23,7 +23,7 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
             activity={classData.activity}
             classTime={period}
             color={color}
-            onDrop={() => onSelectClass(classData.classId)}
+            onDrop={() => onSelectClass(classData)}
           />
         ),
       ),
@@ -35,7 +35,7 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({

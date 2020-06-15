@@ -70,8 +70,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
       classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
-      periods: dbClass.times.map(dbTimesToPeriod),
+      courseCode: dbCourse.courseCode,
       activity: dbClass.activity,
+      periods: dbClass.times.map(dbTimesToPeriod),
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };

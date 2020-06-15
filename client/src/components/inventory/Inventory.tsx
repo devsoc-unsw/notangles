@@ -2,18 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import InventoryRow from './InventoryRow';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 
 interface InventoryProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
   removeCourse(courseCode: string): void
   removeClass(activityId: string): void
 }
 
 const StyledInventory = styled(Box)`
-  display: none;
+  // display: none;
   flex-direction: column;
 
   border: 1px solid;
@@ -25,7 +25,7 @@ const StyledInventory = styled(Box)`
 
 const Inventory: React.FC<InventoryProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
   removeCourse,
   removeClass,
@@ -39,7 +39,7 @@ const Inventory: React.FC<InventoryProps> = ({
             course={course}
             color={assignedColors[course.courseCode]}
             removeCourse={removeCourse}
-            selectedClassIds={selectedClassIds}
+            selectedClasses={selectedClasses}
             removeClass={removeClass}
           />
         ))

@@ -25,7 +25,7 @@ const StyledCourseClass = styled(Card).withConfig({
             ${(props) => timeToIndex(props.classTime.time.end)};
 
   background-color: ${(props) => props.backgroundColor};
-  opacity: ${(props) => (props.isDragging ? 0.5 : 1)};
+  opacity: ${(props) => (props.isDragging ? 0 : 1)};
   color: white;
   cursor: move;
   font-size: 0.9rem;
@@ -98,7 +98,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
 interface DroppedClassesProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
 }
 
@@ -126,7 +126,7 @@ const buildDroppedClass = ({
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
@@ -134,7 +134,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.classes).flatMap((x) => x);
     allClasses.filter(
-      (classData) => selectedClassIds.includes(classData.classId),
+      (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(

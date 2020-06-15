@@ -7,6 +7,7 @@ export interface CourseData {
 
 export interface ClassData {
   classId: string
+  courseCode: string
   activity: string
   periods: Period[]
   enrolments: number
