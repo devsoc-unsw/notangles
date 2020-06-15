@@ -26,3 +26,9 @@ export interface ClassTime {
   end: string
   weeks: string
 }
+
+export const filterOutClasses = (classes: ClassData[], courseCode: string, activity: string) => (
+  classes.filter((classData) => (
+    !(classData.courseCode === courseCode && classData.activity === activity)
+  ))
+);

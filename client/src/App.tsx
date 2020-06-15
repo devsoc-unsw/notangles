@@ -8,7 +8,7 @@ import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
-import { CourseData, ClassData } from './interfaces/CourseData';
+import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -79,22 +79,16 @@ const App: FunctionComponent = () => {
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
-      const newSelectedClasses = prev.filter((item) => (
-        !(classData.courseCode === item.courseCode
-        && classData.activity === item.activity)
-      ));
-      newSelectedClasses.push(classData);
-      return newSelectedClasses;
+      prev = filterOutClasses(prev, classData.courseCode, classData.activity);
+      prev.push(classData);
+      return prev;
     });
   };
 
   const handleRemoveClass = (classId: string) => {
     setSelectedClasses((prev) => {
       const [courseCode, activity] = classId.split('-');
-      return prev.filter((item) => (
-        !(courseCode === item.courseCode
-        && activity === item.activity)
-      ));
+      return filterOutClasses(prev, courseCode, activity);
     });
   };
 
