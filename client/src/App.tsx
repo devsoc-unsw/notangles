@@ -80,11 +80,11 @@ const App: FunctionComponent = () => {
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       const newSelectedClasses = prev.filter((item) => (
-        !(classData.courseCode == item.courseCode
-        && classData.activity == item.activity)
-      ))
-      newSelectedClasses.push(classData)
-      return newSelectedClasses
+        !(classData.courseCode === item.courseCode
+        && classData.activity === item.activity)
+      ));
+      newSelectedClasses.push(classData);
+      return newSelectedClasses;
     });
   };
 
@@ -92,9 +92,9 @@ const App: FunctionComponent = () => {
     setSelectedClasses((prev) => {
       const [courseCode, activity] = classId.split('-');
       return prev.filter((item) => (
-        !(courseCode == item.courseCode
-        && activity == item.activity)
-      ))
+        !(courseCode === item.courseCode
+        && activity === item.activity)
+      ));
     });
   };
 
