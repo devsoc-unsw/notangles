@@ -4,8 +4,8 @@ import { useDrop } from 'react-dnd';
 import { Period } from '../../interfaces/CourseData';
 
 export const timeToPosition = (time: number) => {
-  const hour = Math.floor(time)
-  const minute = (time - hour) * 60
+  const hour = Math.floor(time);
+  const minute = (time - hour) * 60;
   return (hour - 7) * 2 + (minute === 30 ? 1 : 0) - 2;
 };
 
