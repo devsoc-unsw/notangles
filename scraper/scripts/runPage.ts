@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer'
-import { scrapeSubject } from './scraper'
+import { scrapeSubject } from '../src/scraper'
 // Devlopment only
 ;(async () => {
   console.time('cscraper')
@@ -18,7 +18,7 @@ import { scrapeSubject } from './scraper'
     const fs = require('fs')
     fs.writeFile(
       'T1.json',
-      JSON.stringify(data.coursesData.T1),
+      JSON.stringify(data.coursesData.T2),
       'utf-8',
       (err: unknown) => {
         if (err) {

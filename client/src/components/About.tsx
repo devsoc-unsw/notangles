@@ -26,6 +26,8 @@ const DialogContent = styled(MuiDialogContent)`
 const FeatList = styled.ul`
   margin-top: 4px;
   margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 20px;
 `;
 
 const About: React.FC = () => {
@@ -100,14 +102,12 @@ const About: React.FC = () => {
             .
           </Typography>
           <Typography variant="h6">Features</Typography>
-          <Typography gutterBottom variant="body2">
-            <FeatList>
-              <li> Drag-and-drop interface </li>
-              <li> Move clutter to the class inventory </li>
-              <li> Dark mode &#x1F60E; </li>
-              <li> Select 12 or 24 hour time </li>
-            </FeatList>
-          </Typography>
+          <FeatList>
+            <li> Drag-and-drop interface </li>
+            <li> Move clutter to the class inventory </li>
+            <li> Dark mode &#x1F60E; </li>
+            <li> Select 12 or 24 hour time </li>
+          </FeatList>
           <Typography variant="h6">
             Future developments [
             <Link
@@ -118,14 +118,12 @@ const About: React.FC = () => {
             </Link>
             ]
           </Typography>
-          <Typography gutterBottom variant="body2">
-            <FeatList>
-              <li> Auto-timetabling to suit your needs </li>
-              <li> Optional login to sync your timetable across devices </li>
-              <li> Social-timetabling to coordinate classes with friends </li>
-              <li> A mobile app so you can plan on the go </li>
-            </FeatList>
-          </Typography>
+          <FeatList>
+            <li> Auto-timetabling to suit your needs </li>
+            <li> Optional login to sync your timetable across devices </li>
+            <li> Social-timetabling to coordinate classes with friends </li>
+            <li> A mobile app so you can plan on the go </li>
+          </FeatList>
           <br />
           <Typography gutterBottom variant="body2">
             <b> DISCLAIMER </b>

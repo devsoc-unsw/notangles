@@ -1,7 +1,6 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { DndProvider } from 'react-dnd';
-import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
@@ -25,7 +24,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 94px; // 64px for nav bar + 30px padding
+  padding-top: 84px; // 64px for nav bar + 20px padding
   padding-left: 30px;
   padding-right: 30px;
   transition: background-color 0.25s, color 0.25s;
@@ -52,7 +51,6 @@ const Content = styled(Box)`
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
-  height: 30px;
 `;
 
 const Footer = styled(Box)`
@@ -79,10 +77,39 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
+  const handleSelectClass = (classId: string) => {
+    setSelectedClassIds((prevSelectedClassIds) => {
+      const [courseCode, activity] = classId.split('-');
+      const newSelectedClassIds = prevSelectedClassIds.filter(
+        (id) => !id.startsWith(`${courseCode}-${activity}`),
+      );
+      newSelectedClassIds.push(classId);
+      return newSelectedClassIds;
+    });
+  };
+
+  const handleRemoveClass = (activityId: string) => {
+    setSelectedClassIds((prevSelectedClassIds) => {
+      const newSelectedClassIds = prevSelectedClassIds.filter(
+        (id) => !id.startsWith(activityId),
+      );
+      return newSelectedClassIds;
+    });
+  };
+
+  // TODO: temp until auto-timetabling is done
+  // currently just selects first available classes
+  const populateTimetable = (newCourse: CourseData) => {
+    Object.entries(newCourse.classes).forEach(([_, classes]) => {
+      handleSelectClass(classes[0].classId);
+    });
+  };
+
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
     }
   };
@@ -97,79 +124,61 @@ const App: FunctionComponent = () => {
     );
   };
 
-  const handleRemoveClass = (activityId: string) => {
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(activityId),
-    );
-    setSelectedClassIds(newSelectedClassIds);
-  };
-
-  const handleSelectClass = (classId: string) => {
-    const [courseCode, activity] = classId.split('-');
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(`${courseCode}-${activity}`),
-    );
-    newSelectedClassIds.push(classId);
-    setSelectedClassIds(newSelectedClassIds);
-  };
-
   return (
-    <StylesProvider injectFirst>
-      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <StyledApp>
-            <Navbar
-              setIsDarkMode={setIsDarkMode}
-              isDarkMode={isDarkMode}
-            />
-            <ContentWrapper>
-              <Content>
-                <SelectWrapper>
-                  <CourseSelect
-                    selectedCourses={selectedCourses}
-                    assignedColors={assignedColors}
-                    handleSelect={handleSelectCourse}
-                    handleRemove={handleRemoveCourse}
-                  />
-                </SelectWrapper>
-                <DndProvider backend={HTML5Backend}>
-                  <Inventory
-                    selectedCourses={selectedCourses}
-                    selectedClassIds={selectedClassIds}
-                    assignedColors={assignedColors}
-                    removeCourse={handleRemoveCourse}
-                    removeClass={handleRemoveClass}
-                  />
-                  <Timetable
-                    selectedCourses={selectedCourses}
-                    selectedClassIds={selectedClassIds}
-                    assignedColors={assignedColors}
-                    is12HourMode={is12HourMode}
-                    setIs12HourMode={setIs12HourMode}
-                    onSelectClass={handleSelectClass}
-                  />
-                </DndProvider>
-                <Footer>
-                  DISCLAIMER: While we try our best, Notangles is not an
-                  official UNSW site, and cannot guarantee data accuracy or
-                  reliability.
-                  <br />
-                  <br />
-                  Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="mailto:projects@csesoc.org.au">
-                    Feedback
-                  </Link>
-                  &nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="https://github.com/csesoc/notangles">
-                    GitHub
-                  </Link>
-                </Footer>
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </StylesProvider>
+    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <StyledApp>
+          <Navbar
+            setIsDarkMode={setIsDarkMode}
+            isDarkMode={isDarkMode}
+          />
+          <ContentWrapper>
+            <Content>
+              <SelectWrapper>
+                <CourseSelect
+                  selectedCourses={selectedCourses}
+                  assignedColors={assignedColors}
+                  handleSelect={handleSelectCourse}
+                  handleRemove={handleRemoveCourse}
+                />
+              </SelectWrapper>
+              <DndProvider backend={HTML5Backend}>
+                <Inventory
+                  selectedCourses={selectedCourses}
+                  selectedClassIds={selectedClassIds}
+                  assignedColors={assignedColors}
+                  removeCourse={handleRemoveCourse}
+                  removeClass={handleRemoveClass}
+                />
+                <Timetable
+                  selectedCourses={selectedCourses}
+                  selectedClassIds={selectedClassIds}
+                  assignedColors={assignedColors}
+                  is12HourMode={is12HourMode}
+                  setIs12HourMode={setIs12HourMode}
+                  onSelectClass={handleSelectClass}
+                />
+              </DndProvider>
+              <Footer>
+                DISCLAIMER: While we try our best, Notangles is not an
+                official UNSW site, and cannot guarantee data accuracy or
+                reliability.
+                <br />
+                <br />
+                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                  Feedback
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://github.com/csesoc/notangles">
+                  GitHub
+                </Link>
+              </Footer>
+            </Content>
+          </ContentWrapper>
+        </StyledApp>
+      </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 

@@ -1,6 +1,7 @@
 export interface CourseData {
   courseCode: string
   courseName: string
+  latestClassFinishTime: number
   classes: Record<string, ClassData[]>
 }
 
@@ -8,6 +9,8 @@ export interface ClassData {
   classId: string
   activity: string
   periods: Period[]
+  enrolments: number
+  capacity: number
 }
 
 export interface Period {

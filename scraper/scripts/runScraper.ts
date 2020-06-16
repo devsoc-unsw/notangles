@@ -1,4 +1,4 @@
-import { timetableScraper } from './scraper'
+import { timetableScraper } from '../src/scraper'
 // This function is for devlopment purposes only. Use npm run scraper to test the scraper
 ;(async () => {
   console.time('cscraper')
@@ -23,7 +23,7 @@ import { timetableScraper } from './scraper'
 
     fs.writeFile(
       'T1.json',
-      JSON.stringify(data.timetableData.T1),
+      JSON.stringify(data.timetableData.T2),
       'utf-8',
       (err: unknown) => {
         if (err) {
