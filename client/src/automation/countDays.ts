@@ -2,16 +2,10 @@ import {ClassTime} from '../interfaces/CourseData'
 
 export const countDays = (timetable: ClassTime []) => {
     var count = 0
-    var days: Record<string, any> = {}
+    var days: Record<string, number> = {}
     timetable.forEach(time => {
-        days[time.day]++
+        days[time.day] = 1
     })
 
-    for (var key in days) {
-        if (days[key] > 0) {
-            count++
-        }
-    }
-
-    return count
+    return Object.keys(days).length
 }

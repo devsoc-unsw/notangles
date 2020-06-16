@@ -1,25 +1,14 @@
-export const colours: string[] = [
-  'violet',
-  'indigo',
-  'blue',
-  'green',
-  'yellow',
-  'orange',
-  'red',
-]
-
-export const hours: string[] = [
-  '9:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-]
+export const colors: string[] = [
+  '#009689', // dark green
+  '#9E28AE', // violet
+  '#FF5725', // red
+  '#683BB5', // purple
+  '#EB1E62', // pink
+  '#00BCD4', // turqoise
+  '#3E51B3', // dark blue
+  '#FF981A', // orange
+  '#8AC352', // light green
+];
 
 export const days: string[] = [
   'Monday',
@@ -27,4 +16,7 @@ export const days: string[] = [
   'Wednesday',
   'Thursday',
   'Friday',
-]
+];
+
+export const defaultStartTime: number = 9;
+export const defaultEndTime: number = 18;

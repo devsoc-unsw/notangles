@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
-import { CourseData } from '../../interfaces/CourseData'
-import { Dropzone } from './Dropzone'
+import React, { FunctionComponent } from 'react';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { Dropzone } from './Dropzone';
 
 interface ClassDropzoneProps {
   course: CourseData
   color: string
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
@@ -13,27 +13,29 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
   color,
   onSelectClass,
 }) => {
-  const dropzones = Object.values(course.classes).map(classDatas =>
-    classDatas.map(classData =>
-      classData.periods.map((period, i) => (
-        <Dropzone
-          key={`${classData.classId}-${i}`}
-          courseCode={course.courseCode}
-          activity={classData.activity}
-          classTime={period}
-          color={color}
-          onDrop={() => onSelectClass(classData.classId)}
-        />
-      ))
-    )
-  )
-  return <>{dropzones}</>
-}
+  const dropzones = Object.values(course.classes).map(
+    (classDatas) => classDatas.map(
+      (classData) => classData.periods.map(
+        (period, i) => (
+          <Dropzone
+            key={`${classData.classId}-${i}`}
+            courseCode={course.courseCode}
+            activity={classData.activity}
+            classTime={period}
+            color={color}
+            onDrop={() => onSelectClass(classData)}
+          />
+        ),
+      ),
+    ),
+  );
+  return <>{dropzones}</>;
+};
 
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
@@ -41,15 +43,15 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
   assignedColors,
   onSelectClass,
 }) => {
-  const dropzones = selectedCourses.map(course => (
+  const dropzones = selectedCourses.map((course) => (
     <ClassDropzone
       key={course.courseCode}
       course={course}
       color={assignedColors[course.courseCode]}
       onSelectClass={onSelectClass}
     />
-  ))
-  return <>{dropzones}</>
-}
+  ));
+  return <>{dropzones}</>;
+};
 
-export { ClassDropzones }
+export default ClassDropzones;

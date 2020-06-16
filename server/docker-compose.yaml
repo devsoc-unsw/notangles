@@ -6,17 +6,16 @@ services:
     restart: always
     build: .
     depends_on: 
-      - database
+      - database.notangles-db
     ports:
       - "3001:3001"
     links:
-      - database
-  database:
+      - database.notangles-db
+  database.notangles-db:
     container_name: notangles-database
     restart: always
     image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
-      - ~/var/lib/notangles/data:/data/db
-  
+      - ~/var/lib/notangles/data:/data/db  

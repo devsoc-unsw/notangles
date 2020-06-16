@@ -1,48 +1,70 @@
-import React, { FunctionComponent } from 'react'
-import styled from 'styled-components'
-import { CourseData } from '../../interfaces/CourseData'
-import { days, hours } from '../../constants/timetable'
-import { TimetableLayout } from './TimetableLayout'
-import { ClassDropzones } from './ClassDropzones'
-import { DroppedClasses } from './DroppedClasses'
+import React, { FunctionComponent } from 'react';
+import styled from 'styled-components';
+import { Box } from '@material-ui/core';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import TimetableLayout from './TimetableLayout';
+import ClassDropzones from './ClassDropzones';
+import DroppedClasses from './DroppedClasses';
 
-const StyledTimetable = styled.div`
+const rowHeight = 100;
+
+const StyledTimetable = styled(Box) <{
+  rows: number
+}>`
   display: grid;
-  grid-template: auto / repeat(6, 1fr);
-  
-  border: 3px solid;
-  border-color: rgba(0, 0, 0, 0.2);
-  box-sizing: border-box;
-`
+  min-height: ${(props) => props.rows * rowHeight}px;
+  max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
+  margin-top: 15px;
+  margin-bottom: 15px;
+  box-sizing: content-box;
+  border-radius: ${(props) => props.theme.shape.borderRadius}px;
+  overflow: hidden;
+
+  grid-gap: ${1 / devicePixelRatio}px;
+  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length}, 1fr);
+  border: 1px solid ${(props) => props.theme.palette.secondary.main};
+`;
 
 interface TimetableProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
-  onSelectClass(classId: string): void
+  is12HourMode: boolean
+  setIs12HourMode(value: boolean): void
+  onSelectClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
+  is12HourMode,
+  setIs12HourMode,
   onSelectClass,
-}) => {
-  return (
-    <StyledTimetable>
-      <TimetableLayout days={days} hours={hours} />
-      <ClassDropzones
-        selectedCourses={selectedCourses}
-        assignedColors={assignedColors}
-        onSelectClass={onSelectClass}
-      />
-      <DroppedClasses
-        selectedCourses={selectedCourses}
-        selectedClassIds={selectedClassIds}
-        assignedColors={assignedColors}
-      />
-    </StyledTimetable>
-  )
-}
+}) => (
+  <StyledTimetable
+    rows={Math.max(...selectedCourses.map(
+      (course) => course.latestClassFinishTime,
+    ), defaultEndTime) - defaultStartTime}
+  >
+    <TimetableLayout
+      days={days}
+      is12HourMode={is12HourMode}
+      setIs12HourMode={setIs12HourMode}
+      selectedCourses={selectedCourses}
+    />
+    <ClassDropzones
+      selectedCourses={selectedCourses}
+      assignedColors={assignedColors}
+      onSelectClass={onSelectClass}
+    />
+    <DroppedClasses
+      selectedCourses={selectedCourses}
+      selectedClasses={selectedClasses}
+      assignedColors={assignedColors}
+    />
+  </StyledTimetable>
+);
 
-export { Timetable }
+export default Timetable;

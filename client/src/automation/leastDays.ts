@@ -1,6 +1,7 @@
 import { CourseData, ClassData, Period, ClassTime } from '../interfaces/CourseData'
 import { clash } from './clash'
 import { countDays } from './countDays'
+import { stringify } from 'querystring'
 
 var classDict: Record<string, ClassTime[]> = {}
 var keys : string[]
@@ -74,5 +75,11 @@ const fillTT = (keyNum: number, timetable: ClassTime[]) => {
 }
 
 const reconstruct = (timetable: ClassTime[]) => {
-    return timetable
+    var leastDaysTT : Record<string, ClassTime> = {}
+    var classNum = 0
+    keys.forEach(key => {
+        leastDaysTT[key] = timetable[classNum]
+        classNum++
+    });
+    return leastDaysTT
 }

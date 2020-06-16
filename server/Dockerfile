@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3001 
 
 # Run the server
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:production"]

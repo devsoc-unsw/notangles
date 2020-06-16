@@ -1,10 +1,9 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useDrag } from 'react-dnd'
+import React from 'react';
+import styled from 'styled-components';
+import { useDrag } from 'react-dnd';
 
 interface StyledInventoryCourseClassProps {
   isDragging: boolean
-  color: string
   backgroundColor: string
 }
 
@@ -14,57 +13,49 @@ const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
 
   float: left;
   margin: 10px;
-  
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   font-size: 0.7rem;
-  
-  color: ${props => props.color};
-  background-color: ${props => props.backgroundColor};
+
+  color: white;
+  background-color: ${(props) => props.backgroundColor};
   opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};
   cursor: move;
-`
+  border-radius: 6px;
+`;
 
 export interface InventoryCourseClassProps {
   courseCode: string
   activity: string
-  colour: string
+  color: string
 }
 
 const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
   courseCode,
   activity,
-  colour,
+  color,
 }) => {
-  const bgAndTextColorPairs: Record<string, string> = {
-    violet: 'white',
-    indigo: 'white',
-    green: 'white',
-    blue: 'white',
-    yellow: 'black',
-    orange: 'black',
-    red: 'black',
-  }
-
   const [{ isDragging }, drag] = useDrag({
     item: { type: `${courseCode}-${activity}` },
-    collect: monitor => ({
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  })
+  });
 
   return (
     <StyledInventoryCourseClass
       ref={drag}
       isDragging={isDragging}
-      backgroundColor={colour}
-      color={bgAndTextColorPairs[colour]}
+      backgroundColor={color}
     >
-      {`${courseCode} ${activity === 'Lecture' ? 'LEC' : 'TUTE-LAB'}`}
+      {`${courseCode}`}
+      <br />
+      {`${activity}`}
     </StyledInventoryCourseClass>
-  )
-}
+  );
+};
 
-export default InventoryCourseClass
+export default InventoryCourseClass;

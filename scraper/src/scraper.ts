@@ -8,13 +8,12 @@ import {
   CourseWarning,
   OtherTerms,
 } from './interfaces'
-import {
-  getUrls,
-  getUrlsParams,
-  scrapePage,
-  getTermFromCourse,
-} from './PageScraper'
-import { keysOf, createPages } from './helper'
+import { getTermFromCourse } from './ScraperHelpers/GetTermFromCourse'
+import { getUrls } from './ScraperHelpers/GetUrls'
+import { getPageUrls } from './ScraperHelpers/GetPageUrls'
+import { scrapePage } from './PageScraper/PageScraper'
+import { keysOf } from './ScraperHelpers/KeysOf'
+import { createPages } from './ScraperHelpers/CreatePages'
 
 interface ScrapeSubjectParams {
   page: puppeteer.Page
@@ -47,41 +46,6 @@ const scrapeSubject = async ({
   return await scrapePage(page)
 }
 
-interface getPageUrlsParams extends getUrlsParams {
-  url: string
-}
-
-/**
- * Gets all the urls on the current page matching the given regex
- * (This function is only an async puppeteer wrapper)
- *
- * @param { string } url - Url of the page to scrape
- * @param { puppeteer.Page } page - page to be used for scraping
- * @param { string } base - prefix for each scraped url
- * @param { RegExp } regex - regex to check each scraped url
- * @returns { Promise<string[]> } List of all urls on @param page . Each url is prefixed by @param base
- * @example
- *    const browser = await puppeteer.launch()
- *    const urls = getPageUrls('http://timetable.unsw.edu.au/2019/COMP1511.html', await browser.newPage(), 'http://timetable.unsw.edu.au/2019/', /html$/)
- * Expect: [ '.*html' ]*
- */
-const getPageUrls = async ({
-  url,
-  page,
-  regex,
-}: getPageUrlsParams): Promise<string[]> => {
-  await page.goto(url, {
-    waitUntil: 'networkidle2',
-  })
-
-  // Then, get each data url on that page
-  const getDataUrlsParams: getUrlsParams = {
-    page: page,
-    regex: regex,
-  }
-  return await getUrls(getDataUrlsParams)
-}
-
 /**
  * The scraper that scrapes the timetable site
  *
@@ -102,7 +66,13 @@ const timetableScraper = async (
   { timetableData: TimetableData; courseWarnings: CourseWarning[] } | false
 > => {
   // Launch the browser. Headless mode = true by default
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({
+    headless: process.env.NODE_ENV === 'DEV' ? false : true,
+    args:
+      process.env.NODE_ENV === 'DEV'
+        ? undefined
+        : ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
+  })
   try {
     const batchsize = 50
     // Create batchsize pages to scrape each course
