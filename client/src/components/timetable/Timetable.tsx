@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
@@ -28,16 +28,16 @@ const StyledTimetable = styled(Box) <{
 
 interface TimetableProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
   is12HourMode,
   setIs12HourMode,
@@ -61,7 +61,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
     />
     <DroppedClasses
       selectedCourses={selectedCourses}
-      selectedClassIds={selectedClassIds}
+      selectedClasses={selectedClasses}
       assignedColors={assignedColors}
     />
   </StyledTimetable>

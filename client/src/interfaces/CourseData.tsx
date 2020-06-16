@@ -7,6 +7,7 @@ export interface CourseData {
 
 export interface ClassData {
   classId: string
+  courseCode: string
   activity: string
   periods: Period[]
   enrolments: number
@@ -20,8 +21,14 @@ export interface Period {
 }
 
 export interface ClassTime {
-  day: string
-  start: string
-  end: string
+  day: number
+  start: number
+  end: number
   weeks: string
 }
+
+export const filterOutClasses = (classes: ClassData[], a: ClassData) => (
+  classes.filter((b) => (
+    !(a.courseCode === b.courseCode && a.activity === b.activity)
+  ))
+);

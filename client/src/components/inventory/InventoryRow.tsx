@@ -2,16 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 import { Box, Button } from '@material-ui/core';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 
 import InventoryCourseClass from './InventoryCourseClass';
 
 export interface InventoryRowProps {
   course: CourseData
   color: string
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   removeCourse(courseCode: string): void
-  removeClass(activityId: string): void
+  removeClass(classData: ClassData): void
 }
 
 const StyledInventoryRow = styled(Box)`
@@ -37,7 +37,7 @@ const RowItems = styled.div<{ canDrop: boolean, color: string }>`
 const InventoryRow: React.FC<InventoryRowProps> = ({
   course,
   removeCourse,
-  selectedClassIds,
+  selectedClasses,
   color,
   removeClass,
 }) => {
@@ -47,7 +47,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
       .filter(
         ([_, activityClasses]) => (
           !activityClasses.some(
-            (classData) => selectedClassIds.includes(classData.classId),
+            (classData) => selectedClasses.includes(classData),
           )
         ),
       )
@@ -67,7 +67,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
 
   const [{ canDrop }, drop] = useDrop({
     accept: ids,
-    drop: ({ type }) => removeClass(type.toString()),
+    drop: ({ classData }: any) => removeClass(classData),
     collect: (monitor) => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),

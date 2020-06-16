@@ -63,7 +63,7 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
@@ -79,31 +79,23 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSelectClass = (classId: string) => {
-    setSelectedClassIds((prevSelectedClassIds) => {
-      const [courseCode, activity] = classId.split('-');
-      const newSelectedClassIds = prevSelectedClassIds.filter(
-        (id) => !id.startsWith(`${courseCode}-${activity}`),
-      );
-      newSelectedClassIds.push(classId);
-      return newSelectedClassIds;
-    });
+  const handleSelectClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      [...filterOutClasses(prev, classData), classData]
+    ));
   };
 
-  const handleRemoveClass = (activityId: string) => {
-    setSelectedClassIds((prevSelectedClassIds) => {
-      const newSelectedClassIds = prevSelectedClassIds.filter(
-        (id) => !id.startsWith(activityId),
-      );
-      return newSelectedClassIds;
-    });
+  const handleRemoveClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      filterOutClasses(prev, classData)
+    ));
   };
 
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
     Object.entries(newCourse.classes).forEach(([_, classes]) => {
-      handleSelectClass(classes[0].classId);
+      handleSelectClass(classes[0]);
     });
   };
 
@@ -121,9 +113,9 @@ const App: FunctionComponent = () => {
       (course) => course.courseCode !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClassIds(
-      selectedClassIds.filter((id) => id.split('-')[0] !== courseCode),
-    );
+    setSelectedClasses((prev) => (
+      prev.filter((classData) => classData.courseCode !== courseCode)
+    ));
   };
 
   return (
@@ -154,14 +146,14 @@ const App: FunctionComponent = () => {
               <DndProvider backend={HTML5Backend}>
                 <Inventory
                   selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
+                  selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   removeCourse={handleRemoveCourse}
                   removeClass={handleRemoveClass}
                 />
                 <Timetable
                   selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
+                  selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
