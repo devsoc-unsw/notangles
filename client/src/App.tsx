@@ -78,18 +78,15 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => {
-      prev = filterOutClasses(prev, classData.courseCode, classData.activity);
-      prev.push(classData);
-      return prev;
-    });
+    setSelectedClasses((prev) => (
+      [...filterOutClasses(prev, classData), classData]
+    ));
   };
 
-  const handleRemoveClass = (classId: string) => {
-    setSelectedClasses((prev) => {
-      const [courseCode, activity] = classId.split('-');
-      return filterOutClasses(prev, courseCode, activity);
-    });
+  const handleRemoveClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      filterOutClasses(prev, classData)
+    ));
   };
 
   // TODO: temp until auto-timetabling is done

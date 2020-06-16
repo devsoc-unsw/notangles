@@ -46,24 +46,28 @@ const StyledCourseClass = styled(Card).withConfig({
 `;
 
 interface DroppedClassProps {
-  activity: string
-  courseCode: string
-  color: string
+  classData: ClassData
   classTime: Period
-  enrolments: number
-  capacity: number
+  color: string
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
-  activity,
-  courseCode,
-  color,
+  classData,
   classTime,
-  enrolments,
-  capacity,
+  color,
 }) => {
+  const {
+    courseCode,
+    activity,
+    enrolments,
+    capacity,
+  } = classData;
+
   const [{ isDragging }, drag] = useDrag({
-    item: { type: `${courseCode}-${activity}` },
+    item: {
+      type: `${courseCode}-${activity}`,
+      classData,
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -115,12 +119,9 @@ const buildDroppedClass = ({
 }): JSX.Element => (
   <DroppedClass
     key={`${classData.classId}-${JSON.stringify(classTime)}`}
-    activity={classData.activity}
-    enrolments={classData.enrolments}
-    capacity={classData.capacity}
-    courseCode={course.courseCode}
-    color={assignedColors[course.courseCode]}
+    classData={classData}
     classTime={classTime}
+    color={assignedColors[course.courseCode]}
   />
 );
 
