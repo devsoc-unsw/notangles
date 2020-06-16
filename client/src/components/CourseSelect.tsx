@@ -84,12 +84,12 @@ const StyledChip = styled(Chip).withConfig({
 })<{
   backgroundColor: string
 }>`
-  transition: none;
+  transition: none !important;
   background-color: ${(props) => (
     props.backgroundColor
       ? props.backgroundColor
       : props.theme.palette.secondary.main
-  )}
+  )} !important;
 `;
 
 const StyledOption = styled.span`
