@@ -106,25 +106,6 @@ interface DroppedClassesProps {
   assignedColors: Record<string, string>
 }
 
-const buildDroppedClass = ({
-  classData,
-  classTime,
-  course,
-  assignedColors,
-}: {
-  classData: ClassData,
-  classTime: Period,
-  course: CourseData,
-  assignedColors: Record<string, string>
-}): JSX.Element => (
-  <DroppedClass
-    key={`${classData.classId}-${JSON.stringify(classTime)}`}
-    classData={classData}
-    classTime={classTime}
-    color={assignedColors[course.courseCode]}
-  />
-);
-
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
   selectedClasses,
@@ -139,12 +120,12 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(
-          buildDroppedClass({
-            classData,
-            classTime,
-            course,
-            assignedColors,
-          }),
+          <DroppedClass
+            key={`${classData.classId}-${JSON.stringify(classTime)}`}
+            classData={classData}
+            classTime={classTime}
+            color={assignedColors[course.courseCode]}
+          />,
         );
       });
     });
