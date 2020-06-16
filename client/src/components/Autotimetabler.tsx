@@ -90,7 +90,7 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
 
   return (
     <div>
-      <DropdownButton aria-describedby={id} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
+      <DropdownButton disableElevation aria-describedby={id} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
         <Box ml="10px" flexGrow={1}>Auto-timetable Options</Box>
         {open ? (
           <ArrowDropUpIcon />
