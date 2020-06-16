@@ -1,22 +1,22 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 
-const defaultMinTableHeight = 700;
-const defaultMaxTableHeight = 900;
+const rowHeight = 100;
 
 const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${(props) => props.rows * (defaultMinTableHeight / (defaultEndTime - defaultStartTime))}px;
-  max-height: ${(props) => props.rows * (defaultMaxTableHeight / (defaultEndTime - defaultStartTime))}px;
-  margin-bottom: 20px;
+  min-height: ${(props) => props.rows * rowHeight}px;
+  max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
+  margin-top: 15px;
+  margin-bottom: 15px;
   box-sizing: content-box;
   border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
@@ -28,16 +28,16 @@ const StyledTimetable = styled(Box) <{
 
 interface TimetableProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
   is12HourMode,
   setIs12HourMode,
@@ -61,7 +61,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
     />
     <DroppedClasses
       selectedCourses={selectedCourses}
-      selectedClassIds={selectedClassIds}
+      selectedClasses={selectedClasses}
       assignedColors={assignedColors}
     />
   </StyledTimetable>

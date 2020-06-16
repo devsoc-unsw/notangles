@@ -8,7 +8,7 @@ import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
-import { CourseData } from './interfaces/CourseData';
+import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -24,7 +24,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 94px; // 64px for nav bar + 30px padding
+  padding-top: 84px; // 64px for nav bar + 20px padding
   padding-left: 30px;
   padding-right: 30px;
   transition: background-color 0.25s, color 0.25s;
@@ -51,7 +51,6 @@ const Content = styled(Box)`
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
-  height: 30px;
 `;
 
 const Footer = styled(Box)`
@@ -62,7 +61,7 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
@@ -78,10 +77,31 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
+  const handleSelectClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      [...filterOutClasses(prev, classData), classData]
+    ));
+  };
+
+  const handleRemoveClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      filterOutClasses(prev, classData)
+    ));
+  };
+
+  // TODO: temp until auto-timetabling is done
+  // currently just selects first available classes
+  const populateTimetable = (newCourse: CourseData) => {
+    Object.entries(newCourse.classes).forEach(([_, classes]) => {
+      handleSelectClass(classes[0]);
+    });
+  };
+
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
     }
   };
@@ -91,25 +111,9 @@ const App: FunctionComponent = () => {
       (course) => course.courseCode !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClassIds(
-      selectedClassIds.filter((id) => id.split('-')[0] !== courseCode),
-    );
-  };
-
-  const handleRemoveClass = (activityId: string) => {
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(activityId),
-    );
-    setSelectedClassIds(newSelectedClassIds);
-  };
-
-  const handleSelectClass = (classId: string) => {
-    const [courseCode, activity] = classId.split('-');
-    const newSelectedClassIds = selectedClassIds.filter(
-      (id) => !id.startsWith(`${courseCode}-${activity}`),
-    );
-    newSelectedClassIds.push(classId);
-    setSelectedClassIds(newSelectedClassIds);
+    setSelectedClasses((prev) => (
+      prev.filter((classData) => classData.courseCode !== courseCode)
+    ));
   };
 
   return (
@@ -133,14 +137,14 @@ const App: FunctionComponent = () => {
               <DndProvider backend={HTML5Backend}>
                 <Inventory
                   selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
+                  selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   removeCourse={handleRemoveCourse}
                   removeClass={handleRemoveClass}
                 />
                 <Timetable
                   selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
+                  selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
