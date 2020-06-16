@@ -10,7 +10,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
 import Autotimetabler from './components/Autotimetabler';
-import { CourseData } from './interfaces/CourseData';
+import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
