@@ -9,7 +9,7 @@ interface InventoryProps {
   selectedClasses: ClassData[]
   assignedColors: Record<string, string>
   removeCourse(courseCode: string): void
-  removeClass(activityId: string): void
+  removeClass(classData: ClassData): void
 }
 
 const StyledInventory = styled(Box)`

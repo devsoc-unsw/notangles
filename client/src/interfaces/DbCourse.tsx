@@ -33,6 +33,22 @@ export interface DbTime {
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
+const weekdayToNumber = (weekDay: string) => {
+  const conversionTable: Record<string, number> = {
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+  };
+  return conversionTable[weekDay];
+};
+
+const timeToNumber = (time: string) => {
+  const [hour, minute] = time.split(':').map((part) => Number(part));
+  return hour + minute / 60;
+};
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -46,9 +62,9 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
-    day: dbTimes.day,
-    start: dbTimes.time.start,
-    end: dbTimes.time.end,
+    day: weekdayToNumber(dbTimes.day),
+    start: timeToNumber(dbTimes.time.start),
+    end: timeToNumber(dbTimes.time.end),
     weeks: dbTimes.weeks,
   },
 });
@@ -65,7 +81,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-  const activities: Record<string, ClassData[]> = {};
+  const classes: Record<string, ClassData[]> = {};
   let latestClassFinishTime = 0;
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
@@ -80,24 +96,16 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       latestClassFinishTime = latestClassFinishTime > period.time.end
         ? latestClassFinishTime : period.time.end;
     });
-    if (!(dbClass.activity in activities)) {
-      activities[dbClass.activity] = [];
+    if (!(dbClass.activity in classes)) {
+      classes[dbClass.activity] = [];
     }
-    activities[dbClass.activity].push(classData);
+    classes[dbClass.activity].push(classData);
   });
-
-  Object.keys(activities).forEach((activity) => {
-    activities[activity].push({
-      classId: `${dbCourse.courseCode}-${activity}`,
-      courseCode: dbCourse.courseCode,
-      activity: activity,
-    })
-  })
 
   return {
     courseCode: dbCourse.courseCode,
     courseName: dbCourse.name,
-    classes: activities,
+    classes,
     latestClassFinishTime,
   };
 };

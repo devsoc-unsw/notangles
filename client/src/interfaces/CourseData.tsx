@@ -21,14 +21,14 @@ export interface Period {
 }
 
 export interface ClassTime {
-  day: string
-  start: string
-  end: string
+  day: number
+  start: number
+  end: number
   weeks: string
 }
 
-export const filterOutClasses = (classes: ClassData[], courseCode: string, activity: string) => (
-  classes.filter((classData) => (
-    !(classData.courseCode === courseCode && classData.activity === activity)
+export const filterOutClasses = (classes: ClassData[], a: ClassData) => (
+  classes.filter((b) => (
+    !(a.courseCode === b.courseCode && a.activity === b.activity)
   ))
 );

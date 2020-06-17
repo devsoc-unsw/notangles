@@ -11,7 +11,7 @@ export interface InventoryRowProps {
   color: string
   selectedClasses: ClassData[]
   removeCourse(courseCode: string): void
-  removeClass(activityId: string): void
+  removeClass(classData: ClassData): void
 }
 
 const StyledInventoryRow = styled(Box)`
@@ -67,7 +67,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
 
   const [{ canDrop }, drop] = useDrop({
     accept: ids,
-    drop: ({ type }) => removeClass(type.toString()),
+    drop: ({ classData }: any) => removeClass(classData),
     collect: (monitor) => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
