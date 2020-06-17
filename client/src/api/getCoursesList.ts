@@ -15,11 +15,12 @@ import { API_URL } from './config';
 
 const toCoursesList = (data: any): CoursesList => (
   data.map((course: any) => ({
+    // eslint-disable-next-line
     id: course._id,
     code: course.courseCode,
     name: course.name,
   }))
-)
+);
 
 const getCoursesList = async (
   year: string,

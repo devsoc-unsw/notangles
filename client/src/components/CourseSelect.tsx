@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import {
@@ -129,11 +129,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   handleSelect,
   handleRemove,
 }) => {
-  const [coursesList, setCoursesList] = React.useState<CoursesList>([]);
-  const [options, setOptions] = React.useState<CoursesList>([]);
-  const [inputValue, setInputValue] = React.useState<string>('');
-  const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
-  const searchTimer = React.useRef<number | undefined>();
+  const [coursesList, setCoursesList] = useState<CoursesList>([]);
+  const [options, setOptions] = useState<CoursesList>([]);
+  const [inputValue, setInputValue] = useState<string>('');
+  const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const searchTimer = useRef<number | undefined>();
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
@@ -151,8 +151,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const getCourseCodes = <Course extends {
     code: string
   }>(courses: Course[]): string[] => (
-    courses.map((course: Course) => course.code)
-  );
+      courses.map((course: Course) => course.code)
+    );
 
   // calls the callback for every course code in `b` that is not in `a`
   const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
@@ -258,15 +258,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchCoursesList();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOptions(defaultOptions);
   }, [coursesList]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => {
       search(inputValue);

@@ -2,7 +2,7 @@ import {
   CourseData,
   Activities,
   ClassData,
-  ClassPeriod
+  ClassPeriod,
 } from './CourseData';
 
 // List of the interfaces and types that are used in the scraper
@@ -91,7 +91,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     name: dbCourse.name,
     activities: {} as Activities,
     latestFinishTime: 0,
-  }
+  };
 
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
@@ -104,7 +104,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     };
     classData.periods!.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
-        courseData.latestFinishTime = period.time.end
+        courseData.latestFinishTime = period.time.end;
       }
     });
     if (!(dbClass.activity in courseData.activities)) {

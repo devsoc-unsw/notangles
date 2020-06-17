@@ -1,4 +1,4 @@
-export type Activities = Record<string, ClassData[]>
+export type Activities = Record<string, ClassData[]>;
 
 export interface CourseData {
   code: string
