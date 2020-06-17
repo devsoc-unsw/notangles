@@ -43,7 +43,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
 }) => {
   const getInventoryCourseClasses = (): React.ReactNode[] => {
     // return course classes for activities which don't currently have a selected class
-    const res = Object.entries(course.classes)
+    const res = Object.entries(course.activities)
       .filter(
         ([_, activityClasses]) => (
           !activityClasses.some(
@@ -53,8 +53,8 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
       )
       .map(([activity]) => (
         <InventoryCourseClass
-          key={`${course.courseCode}-${activity}`}
-          courseCode={course.courseCode}
+          key={`${course.code}-${activity}`}
+          courseCode={course.code}
           activity={activity}
           color={color}
         />
@@ -63,7 +63,7 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
     return res;
   };
 
-  const ids = Object.keys(course.classes).map((activity) => `${course.courseCode}-${activity}`);
+  const ids = Object.keys(course.activities).map((activity) => `${course.code}-${activity}`);
 
   const [{ canDrop }, drop] = useDrop({
     accept: ids,
@@ -79,13 +79,13 @@ const InventoryRow: React.FC<InventoryRowProps> = ({
       <RowCourseDescriptor>
         <Button
           onClick={() => {
-            removeCourse(course.courseCode);
+            removeCourse(course.code);
           }}
           color="secondary"
         >
           X
         </Button>
-        {`${course.courseCode}`}
+        {`${course.code}`}
       </RowCourseDescriptor>
       <RowItems ref={drop} canDrop={canDrop} color={color}>
         {getInventoryCourseClasses()}

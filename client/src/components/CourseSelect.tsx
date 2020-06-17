@@ -35,7 +35,7 @@ const searchOptions: SearchOptions = {
   threshold: 0.4,
   keys: [
     {
-      name: 'courseCode',
+      name: 'code',
       weight: 0.9,
     },
     {
@@ -136,13 +136,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   const searchTimer = React.useRef<number | undefined>();
 
   let defaultOptions = coursesList;
-
-  // show relevant default options based of selected courses
+  // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
-  const courseAreas = selectedValue.map((course) => getCourseArea(course.courseCode));
+  const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
   if (selectedValue.length) {
     defaultOptions = defaultOptions.filter((course) => (
-      courseAreas.includes(getCourseArea(course.courseCode))
+      courseAreas.includes(getCourseArea(course.code))
       && !selectedValue.includes(course)
     ));
   }
@@ -150,10 +149,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
   // maps a list of courses to a list of course codes
   const getCourseCodes = <Course extends {
-    courseCode: string
+    code: string
   }>(courses: Course[]): string[] => (
-      courses.map((course: Course) => course.courseCode)
-    );
+    courses.map((course: Course) => course.code)
+  );
 
   // calls the callback for every course code in `b` that is not in `a`
   const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
@@ -216,7 +215,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
         // revert back to the original value by removing what was added
         const originalValue = value.filter((course: CourseOverview) => (
-          !added.includes(course.courseCode)
+          !added.includes(course.code)
         ));
 
         // check if the new option is a duplicate
@@ -228,7 +227,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         }
         // otherwise, add the new option and call the handler
         setSelectedValue([...originalValue, newSelectedOption]);
-        handleSelect(newSelectedOption.courseCode);
+        handleSelect(newSelectedOption.code);
       } else {
         setSelectedValue(value);
         removed.forEach((courseCode: string) => handleRemove(courseCode));
@@ -297,11 +296,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             <StyledIcon>
               {
                 selectedValue.find((course: CourseOverview) => (
-                  course.courseCode === option.courseCode
+                  course.code === option.code
                 )) ? <CheckRounded /> : <AddRounded />
               }
             </StyledIcon>
-            <span>{option.courseCode}</span>
+            <span>{option.code}</span>
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
@@ -342,9 +341,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
             <StyledChip
-              label={option.courseCode}
+              label={option.code}
               color="primary"
-              backgroundColor={assignedColors[option.courseCode]}
+              backgroundColor={assignedColors[option.code]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
             />

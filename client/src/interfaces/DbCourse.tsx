@@ -1,4 +1,9 @@
-import { Period, ClassData, CourseData } from './CourseData';
+import {
+  CourseData,
+  Activities,
+  ClassData,
+  ClassPeriod
+} from './CourseData';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -58,7 +63,7 @@ const timeToNumber = (time: string) => {
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
+const dbTimesToPeriod = (dbTimes: DbTimes): ClassPeriod => ({
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
@@ -81,31 +86,32 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-  const classes: Record<string, ClassData[]> = {};
-  let latestClassFinishTime = 0;
+  const courseData = {
+    code: dbCourse.courseCode,
+    name: dbCourse.name,
+    activities: {} as Activities,
+    latestFinishTime: 0,
+  }
+
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
-      classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
-      courseCode: dbCourse.courseCode,
+      id: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
+      course: courseData,
       activity: dbClass.activity,
       periods: dbClass.times.map(dbTimesToPeriod),
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
     classData.periods!.forEach((period) => {
-      latestClassFinishTime = latestClassFinishTime > period.time.end
-        ? latestClassFinishTime : period.time.end;
+      if (period.time.end > courseData.latestFinishTime) {
+        courseData.latestFinishTime = period.time.end
+      }
     });
-    if (!(dbClass.activity in classes)) {
-      classes[dbClass.activity] = [];
+    if (!(dbClass.activity in courseData.activities)) {
+      courseData.activities[dbClass.activity] = [];
     }
-    classes[dbClass.activity].push(classData);
+    courseData.activities[dbClass.activity].push(classData);
   });
 
-  return {
-    courseCode: dbCourse.courseCode,
-    courseName: dbCourse.name,
-    classes,
-    latestClassFinishTime,
-  };
+  return courseData;
 };

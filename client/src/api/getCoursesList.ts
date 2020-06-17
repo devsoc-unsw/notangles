@@ -12,14 +12,23 @@ import { API_URL } from './config';
  * @example
  * const coursesList = await getCoursesList('2020', 'T1')
  */
+
+const toCoursesList = (data: any): CoursesList => (
+  data.map((course: any) => ({
+    id: course._id,
+    code: course.courseCode,
+    name: course.name,
+  }))
+)
+
 const getCoursesList = async (
   year: string,
   term: string,
 ): Promise<CoursesList | null> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const data = await fetch(`${baseURL}/courses/`);
-    return data.json();
+    const res = await fetch(`${baseURL}/courses/`);
+    return toCoursesList(await res.json());
   } catch (error) {
     console.error(error);
     return null;

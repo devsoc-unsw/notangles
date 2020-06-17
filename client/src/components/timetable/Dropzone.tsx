@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
-import { Period } from '../../interfaces/CourseData';
+import { ClassPeriod } from '../../interfaces/CourseData';
 
 
 export const timeToPosition = (time: number) => {
@@ -11,7 +11,7 @@ export const timeToPosition = (time: number) => {
 };
 
 const StyledCell = styled.div<{
-  classTime: Period
+  classTime: ClassPeriod
   canDrop: boolean
   color: string
 }>`
@@ -32,7 +32,7 @@ const StyledCell = styled.div<{
 interface CellProps {
   courseCode: string
   activity: string
-  classTime: Period
+  classTime: ClassPeriod
   color: string
   onDrop(): void
 }

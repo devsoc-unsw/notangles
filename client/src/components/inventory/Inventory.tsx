@@ -35,9 +35,9 @@ const Inventory: React.FC<InventoryProps> = ({
       {selectedCourses.length
         ? selectedCourses.map((course) => (
           <InventoryRow
-            key={course.courseCode}
+            key={course.code}
             course={course}
-            color={assignedColors[course.courseCode]}
+            color={assignedColors[course.code]}
             removeCourse={removeCourse}
             selectedClasses={selectedClasses}
             removeClass={removeClass}

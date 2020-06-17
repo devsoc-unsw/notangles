@@ -103,7 +103,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   selectedCourses,
 }) => {
   const latestClassFinishTime = Math.max(...selectedCourses.map(
-    (course) => course.latestClassFinishTime,
+    (course) => course.latestFinishTime,
   ));
   const hoursRange = [defaultStartTime, Math.max(latestClassFinishTime, defaultEndTime) - 1];
   const hours: string[] = generateHours(hoursRange, is12HourMode);

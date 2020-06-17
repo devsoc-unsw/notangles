@@ -66,7 +66,7 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
   const assignedColors = useColorMapper(
-    selectedCourses.map((course) => course.courseCode),
+    selectedCourses.map((course) => course.code),
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const App: FunctionComponent = () => {
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
-    Object.values(newCourse.classes).forEach((classes) => {
+    Object.values(newCourse.activities).forEach((classes) => {
       handleSelectClass(classes[0]);
     });
   };
@@ -108,11 +108,11 @@ const App: FunctionComponent = () => {
 
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
-      (course) => course.courseCode !== courseCode,
+      (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.courseCode !== courseCode)
+      prev.filter((classData) => classData.course.code !== courseCode)
     ));
   };
 

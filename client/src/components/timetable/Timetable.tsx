@@ -7,7 +7,7 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 
-const rowHeight = 100;
+const rowHeight = 85;
 
 const StyledTimetable = styled(Box) <{
   rows: number
@@ -45,7 +45,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
-      (course) => course.latestClassFinishTime,
+      (course) => course.latestFinishTime,
     ), defaultEndTime) - defaultStartTime}
   >
     <TimetableLayout
