@@ -139,7 +139,6 @@ const App: FunctionComponent = () => {
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
-                  removeCourse={handleRemoveCourse}
                   removeClass={handleRemoveClass}
                 />
                 <Timetable
