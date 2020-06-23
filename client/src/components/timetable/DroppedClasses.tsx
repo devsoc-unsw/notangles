@@ -2,6 +2,8 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import {
   CourseData, Period, ClassData,
@@ -93,8 +95,12 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
           {activity}
         </b>
       </p>
-      <p>{`${classTime.locationShort}`}</p>
-      <p>{`${enrolments}/${capacity} enrolled`}</p>
+      <p>
+        <LocationOnIcon fontSize="inherit" />
+        {`${classTime.locationShort} `}
+        <PeopleAltIcon fontSize="inherit" />
+        {` ${enrolments}/${capacity}`}
+      </p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
     </StyledCourseClass>
   );
