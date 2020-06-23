@@ -5,10 +5,14 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
+// import Alert from '@material-ui/lab/Alert';
+// import Snackbar from '@material-ui/core/Snackbar';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Inventory from './components/inventory/Inventory';
-import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
+import {
+  CourseData, ClassData, ClassTime, filterOutClasses,
+} from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -65,6 +69,8 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
+  // const [clashes, setClashes] = useState<Set<ClassData[]>>(new Set());
+
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.courseCode),
   );
@@ -115,6 +121,49 @@ const App: FunctionComponent = () => {
       prev.filter((classData) => classData.courseCode !== courseCode)
     ));
   };
+
+  // make into state to send to card component
+  // let hasClash = false;
+  // const clashes: Array<[string, string]> = [];
+
+  function hasTimeOverlap(period1: ClassTime, period2: ClassTime): boolean {
+    return ((period1.day === period2.day && period1.start >= period2.start
+        && period1.start < period2.end)
+     || (period1.day === period2.day && period2.start >= period1.start
+        && period2.start < period1.end));
+  }
+
+  const checkClashes = () => {
+    if (selectedClasses.length > 0) {
+      console.log('<>< <>< <>< ', selectedClasses[0].periods[0].time, typeof (selectedClasses[0].periods[0].time));
+    }
+
+    // for class in selectedclasses
+    //   for period in class
+    //       for class in selectedClasses
+    //           for period in class
+    //               if hasoverlap add to clashes
+    const newClashes: Array<String> = [];
+    selectedClasses.forEach((classActivity1) => {
+      classActivity1.periods.forEach((period1) => {
+        selectedClasses.forEach((classActivity2) => {
+          classActivity2.periods.forEach((period2) => {
+            if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+              // setClashes(prev => new Set(prev.add([classActivity1, classActivity2].sort())))
+              // newClashes.add([`${classActivity1.courseCode} ${classActivity1.activity}`,
+              //                `${classActivity2.courseCode} ${classActivity2.activity}`].sort())
+              if (!newClashes.includes(`${classActivity1.courseCode} ${classActivity1.activity} ${classActivity2.courseCode} ${classActivity2.activity}`)
+                      && !newClashes.includes(`${classActivity2.courseCode} ${classActivity2.activity} ${classActivity1.courseCode} ${classActivity1.activity}`)) {
+                newClashes.push(`${classActivity1.courseCode} ${classActivity1.activity} ${classActivity2.courseCode} ${classActivity2.activity}`);
+              }
+            }
+          });
+        });
+      });
+    });
+    console.log('all clashes:', newClashes);
+  };
+  checkClashes();
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -173,5 +222,4 @@ const App: FunctionComponent = () => {
     </MuiThemeProvider>
   );
 };
-
 export default App;

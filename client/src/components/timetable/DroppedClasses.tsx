@@ -114,7 +114,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-  let hasClash = false;
+  const hasClash = false;
   const clashes: string[] = [];
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.classes).flatMap((x) => x);
@@ -122,25 +122,29 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
       (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
-        for (let i = 0; i < droppedClasses.length; i += 1) {
-          if ((droppedClasses[i].props.classTime.time.day === classTime.time.day
-                  && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
-                  >= parseInt(classTime.time.start.slice(0, 2), 10)
-                  && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
-                  < parseInt(classTime.time.end.slice(0, 2), 10))
-                  || (droppedClasses[i].props.classTime.time.day === classTime.time.day
-                    && parseInt(classTime.time.start.slice(0, 2), 10)
-                    >= parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
-                    && parseInt(classTime.time.start.slice(0, 2), 10)
-                    < parseInt(droppedClasses[i].props.classTime.time.end.slice(0, 2), 10))) {
-            hasClash = true;
-
-            const newClash = `${classData.classId.split('-').slice(0, -1).join(' ')} with ${droppedClasses[i].props.courseCode} ${droppedClasses[i].props.activity}`;
-            if (!clashes.includes(newClash)) {
-              clashes.push(newClash);
-            }
-          }
-        }
+        // for (let i = 0; i < droppedClasses.length; i += 1) {
+        //   if ((droppedClasses[i].props.classTime.time.day === classTime.time.day
+        //           && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+        //           >= parseInt(classTime.time.start.slice(0, 2), 10)
+        //           && parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+        //           < parseInt(classTime.time.end.slice(0, 2), 10))
+        //           || (droppedClasses[i].props.classTime.time.day === classTime.time.day
+        //             && parseInt(classTime.time.start.slice(0, 2), 10)
+        //             >= parseInt(droppedClasses[i].props.classTime.time.start.slice(0, 2), 10)
+        //             && parseInt(classTime.time.start.slice(0, 2), 10)
+        //             < parseInt(droppedClasses[i].props.classTime.time.end.slice(0, 2), 10))) {
+        //     hasClash = true;
+        //
+        //     const newClash =
+        //     `${classData.classI
+        //       .split('-')
+        //       .slice(0, -1).join(' ')} with ${droppedClasses[i].\
+        //         props.courseCode} ${droppedClasses[i].props.activity}`;
+        //     if (!clashes.includes(newClash)) {
+        //       clashes.push(newClash);
+        //     }
+        //   }
+        // }
         droppedClasses.push(
           <DroppedClass
             key={`${classData.classId}-${JSON.stringify(classTime)}`}
