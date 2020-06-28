@@ -7,7 +7,6 @@ import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
-import Inventory from './components/inventory/Inventory';
 import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
 
@@ -135,12 +134,6 @@ const App: FunctionComponent = () => {
                 />
               </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
-                <Inventory
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  removeClass={handleRemoveClass}
-                />
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
@@ -148,6 +141,7 @@ const App: FunctionComponent = () => {
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
+                  onRemoveClass={handleRemoveClass}
                 />
               </DndProvider>
               <Footer>

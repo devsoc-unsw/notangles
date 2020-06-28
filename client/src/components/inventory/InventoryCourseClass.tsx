@@ -1,30 +1,42 @@
 import React from 'react';
 import styled from 'styled-components';
+import Card from '@material-ui/core/Card';
 import { useDrag } from 'react-dnd';
 
-interface StyledInventoryCourseClassProps {
+const StyledInventoryCourseClass = styled(Card).withConfig({
+  shouldForwardProp: (prop) => ['children'].includes(prop),
+}) <{
   isDragging: boolean
   backgroundColor: string
-}
+}>`
+  width: 100%;
+  height: 75px;
+  box-sizing: border-box;
 
-const StyledInventoryCourseClass = styled.div<StyledInventoryCourseClassProps>`
-  height: 50px;
-  width: 100px;
-
-  float: left;
-  margin: 10px;
-
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-  font-size: 0.7rem;
-
-  color: white;
   background-color: ${(props) => props.backgroundColor};
-  opacity: ${({ isDragging }) => (isDragging ? 0.5 : 1)};
+  opacity: ${(props) => (props.isDragging ? 0 : 1)};
+  color: white;
   cursor: move;
+  font-size: 0.9rem;
   border-radius: 6px;
+
+  padding: 10px;
+  margin-bottom: 5px;
+  position: relative;
+  bottom: 0.5px;
+
+  p {
+    margin: 0 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 export interface InventoryCourseClassProps {
@@ -51,9 +63,11 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
       isDragging={isDragging}
       backgroundColor={color}
     >
-      {`${courseCode}`}
-      <br />
-      {`${activity}`}
+      <b>
+        {courseCode}
+        {' '}
+        {activity}
+      </b>
     </StyledInventoryCourseClass>
   );
 };

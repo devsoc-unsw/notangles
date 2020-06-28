@@ -6,6 +6,7 @@ import { days, defaultEndTime, defaultStartTime } from '../../constants/timetabl
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
+import Inventory from '../inventory/Inventory';
 
 const rowHeight = 85;
 
@@ -33,6 +34,7 @@ interface TimetableProps {
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
   onSelectClass(classData: ClassData): void
+  onRemoveClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
@@ -42,6 +44,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   is12HourMode,
   setIs12HourMode,
   onSelectClass,
+  onRemoveClass,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
@@ -63,6 +66,13 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
+    />
+    <Inventory
+      key={selectedCourses.map(course => course.code).join(",")}
+      selectedCourses={selectedCourses}
+      selectedClasses={selectedClasses}
+      assignedColors={assignedColors}
+      removeClass={onRemoveClass}
     />
   </StyledTimetable>
 );
