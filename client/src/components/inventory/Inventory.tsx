@@ -18,13 +18,13 @@ const StyledInventory = styled.div<{
 
   background-color: ${(props) => (
     props.isVisible
-      ? props.theme.palette.secondary.light : props.theme.palette.background.default
+      ? props.theme.palette.secondary.light : "transparent"
   )};
   border: 1px solid ${(props) => (
     props.isVisible
-      ? props.theme.palette.secondary.main : props.theme.palette.background.default
+      ? props.theme.palette.secondary.main : "transparent"
   )};
-  transition: 200ms;
+  transition: 0.2s;
 
   top: -1px;
   left: -${(props) => props.theme.shape.borderRadius}px;

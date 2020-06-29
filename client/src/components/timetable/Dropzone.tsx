@@ -25,7 +25,7 @@ const StyledCell = styled.div<{
     ${(props) => timeToPosition(props.classTime.time.end) + 1};
   background-color: ${(props) => props.color};
 
-  transition: opacity 200ms;
+  transition: opacity 0.2s;
   opacity: ${(props) => (props.canDrop ? 0.3 : 0)};
   pointer-events: ${(props) => (props.canDrop ? 'auto' : 'none')};
 `;

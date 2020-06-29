@@ -70,7 +70,7 @@ const StyledTextField = styled(TextField)<{
 
   label {
     color: ${(props) => props.theme.palette.secondary.dark} !important;
-    transition: 200ms;
+    transition: 0.2s;
   }
 `;
 

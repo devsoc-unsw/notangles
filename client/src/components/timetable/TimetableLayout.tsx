@@ -17,6 +17,7 @@ const BaseCell = styled.div<{
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
   background-color: ${(props) => props.theme.palette.background.default};
   z-index: 10;
+  transition: background-color 0.2s, box-shadow 0.2s;
 
   border-top-left-radius: ${(props) => (
     props.x === 1 && props.y === 1 ? props.theme.shape.borderRadius : 0
