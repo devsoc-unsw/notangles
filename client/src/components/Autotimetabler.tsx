@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 // import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import Box from '@material-ui/core/Box';
@@ -11,10 +12,10 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Checkbox from '@material-ui/core/Checkbox';
+// import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 // import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
-
+// import Divider from '@material-ui/core/Divider';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 const DropdownButton = styled(Button)`
@@ -30,40 +31,92 @@ const ExecuteButton = styled(Button)`
     border-radius: 0px 0px 5px 5px;
 `;
 
+const StyledOptionToggle = styled(ToggleButtonGroup)`
+    /* margin-left: 40px; */
+    margin-top: 10px;
+    width:100%;
+`;
+const StyledOptionButtonToggle = styled(ToggleButton)`
+    width: 100%;
+    height: 30px;
+`;
+
 interface DropdownOptionProps {
   optionName: string
-  isChecked: boolean
-  setIsChecked(value: boolean): void
+  isChecked: string | null
+  setIsChecked(value: string | null): void
   opposite?: boolean
-  setOpposite?(value: boolean): void
 }
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
   isChecked,
   setIsChecked,
   opposite,
-  setOpposite,
 }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked);
-    if (!(setOpposite === undefined) && opposite) {
-      setOpposite(!event.target.checked);
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setIsChecked(event.target.checked);
+  //   if (!(setOpposite === undefined) && opposite) {
+  //     setOpposite(!event.target.checked);
+  //   }
+  // };
+
+  const handleAlignment = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
+    if (newAlignment !== null) {
+      setIsChecked(newAlignment);
     }
   };
 
+
   return (
 
-    <ListItem>
-      <Checkbox
-        checked={isChecked}
-        color="primary"
-        onChange={handleChange}
-        inputProps={{ 'aria-label': 'primary checkbox' }}
-      />
-      <ListItemText
-        primary={optionName}
-      />
-    </ListItem>
+  // <ListItem>
+  //   <Checkbox
+  //     checked={isChecked}
+  //     color="primary"
+  //     onChange={handleChange}
+  //     inputProps={{ 'aria-label': 'primary checkbox' }}
+  //   />
+  //   <ListItemText
+  //     primary={optionName}
+  //   />
+  // </ListItem>
+
+    // same button same max
+    //
+    <div>
+      <ListItem>
+        <ListItemText
+          primary={optionName}
+          secondary={(
+            <>
+              <StyledOptionToggle
+                size="small"
+                value={isChecked}
+                exclusive
+                onChange={handleAlignment}
+                aria-label="text alignment"
+              >
+                <StyledOptionButtonToggle value="1" aria-label="left aligned">
+                  off
+                </StyledOptionButtonToggle>
+                {opposite && (
+                <StyledOptionButtonToggle value="2" aria-label="left aligned">
+                  least
+                </StyledOptionButtonToggle>
+                )}
+
+                <StyledOptionButtonToggle value="3" aria-label="right aligned">
+                  most
+                </StyledOptionButtonToggle>
+              </StyledOptionToggle>
+            </>
+          )}
+        />
+
+
+      </ListItem>
+    </div>
+
   );
 };
 
@@ -71,11 +124,12 @@ interface AutotimetablerProps {
   isDarkMode: boolean
 }
 const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
-  const [isChecked1, setIsChecked1] = React.useState(false);
-  const [isChecked2, setIsChecked2] = React.useState(false);
-  const [isChecked3, setIsChecked3] = React.useState(false);
-  const [isChecked4, setIsChecked4] = React.useState(false);
+  // const [isChecked1, setIsChecked1] = React.useState(false);
+  // const [isChecked2, setIsChecked2] = React.useState(false);
+  // const [isChecked3, setIsChecked3] = React.useState(false);
+  // const [isChecked4, setIsChecked4] = React.useState(false);
 
+  const [alignment, setAlignment] = React.useState<string | null>('1');
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -113,28 +167,26 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
         <List dense>
           <DropdownOption
             optionName="Least days at uni"
-            isChecked={isChecked1}
-            setIsChecked={setIsChecked1}
+            isChecked={alignment}
+            setIsChecked={setAlignment}
           />
           <DropdownOption
             optionName="Least distance between classes"
-            isChecked={isChecked2}
-            setIsChecked={setIsChecked2}
+            isChecked={alignment}
+            setIsChecked={setAlignment}
           />
 
           <DropdownOption
             optionName="Least early starts"
-            isChecked={isChecked3}
-            setIsChecked={setIsChecked3}
-            opposite={isChecked4}
-            setOpposite={setIsChecked4}
+            isChecked={alignment}
+            setIsChecked={setAlignment}
+            opposite
           />
           <DropdownOption
             optionName="Most early starts"
-            isChecked={isChecked4}
-            setIsChecked={setIsChecked4}
-            opposite={isChecked3}
-            setOpposite={setIsChecked3}
+            isChecked={alignment}
+            setIsChecked={setAlignment}
+            opposite
           />
 
         </List>
