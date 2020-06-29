@@ -33,7 +33,7 @@ const StyledInventory = styled.div<{
 `;
 
 const StyledInventoryText = styled.div`
-  color: #adadad;
+  color: ${(props) => props.theme.palette.secondary.dark};
   margin: 10px;
 `;
 
