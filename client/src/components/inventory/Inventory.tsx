@@ -16,15 +16,10 @@ const StyledInventory = styled.div<{
   grid-row: 2 / -1;
   position: relative;
 
-  background-color: ${(props) => (
-    props.isVisible
-      ? props.theme.palette.secondary.light : "transparent"
-  )};
-  border: 1px solid ${(props) => (
-    props.isVisible
-      ? props.theme.palette.secondary.main : "transparent"
-  )};
-  transition: 0.2s;
+  border: 1px solid ${(props) => props.theme.palette.secondary.main};
+  background-color: ${(props) => props.theme.palette.secondary.light};
+  opacity: ${(props) => (props.isVisible ? 1 : 0)};
+  transition: opacity 0.2s;
 
   top: -1px;
   left: -${(props) => props.theme.shape.borderRadius}px;
@@ -35,6 +30,11 @@ const StyledInventory = styled.div<{
 
   border-top-right-radius: ${(props) => props.theme.shape.borderRadius}px;
   border-bottom-right-radius: ${(props) => props.theme.shape.borderRadius}px;
+`;
+
+const StyledInventoryText = styled.div`
+  color: #adadad;
+  margin: 10px;
 `;
 
 export interface InventoryProps {
@@ -89,6 +89,11 @@ const Inventory: React.FC<InventoryProps> = ({
   return (
     <StyledInventory ref={drop} isVisible={canDrop || classNodes.length > 0}>
       {classNodes}
+      {(canDrop && classNodes.length === 0) && (
+        <StyledInventoryText>
+          Drag classes here which you want out of the way
+        </StyledInventoryText>
+      )}
     </StyledInventory>
   );
 };
