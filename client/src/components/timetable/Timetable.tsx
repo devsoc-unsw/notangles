@@ -7,8 +7,9 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 import Inventory from '../inventory/Inventory';
+import CourseSelect from '../CourseSelect';
 
-const rowHeight = 85;
+const rowHeight = 92;
 
 const StyledTimetable = styled(Box) <{
   rows: number
@@ -19,12 +20,19 @@ const StyledTimetable = styled(Box) <{
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: content-box;
-  border-radius: ${(props) => props.theme.shape.borderRadius}px;
   overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => 2 * props.rows}, 1fr) / auto repeat(${days.length + 1}, 1fr);
-  border: 1px solid ${(props) => props.theme.palette.secondary.main};
+  grid-template: auto repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / 1fr auto repeat(${days.length + 1}, 1fr);
+`;
+
+const SelectWrapper = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  grid-column: 2 / -2;
+  grid-row: 1;
+  padding-top: 5px;
+  padding-bottom: 15px;
 `;
 
 interface TimetableProps {
@@ -35,6 +43,8 @@ interface TimetableProps {
   setIs12HourMode(value: boolean): void
   onSelectClass(classData: ClassData): void
   onRemoveClass(classData: ClassData): void
+  onSelectCourse(courseCode: string): void
+  onRemoveCourse(courseCode: string): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
@@ -45,12 +55,29 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   setIs12HourMode,
   onSelectClass,
   onRemoveClass,
+  onSelectCourse,
+  onRemoveCourse,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
     ), defaultEndTime) - defaultStartTime}
   >
+    <SelectWrapper>
+      <CourseSelect
+        selectedCourses={selectedCourses}
+        assignedColors={assignedColors}
+        handleSelect={onSelectCourse}
+        handleRemove={onRemoveCourse}
+      />
+    </SelectWrapper>
+    <Inventory
+      key={selectedCourses.map((course) => course.code).join(',')}
+      selectedCourses={selectedCourses}
+      selectedClasses={selectedClasses}
+      assignedColors={assignedColors}
+      removeClass={onRemoveClass}
+    />
     <TimetableLayout
       days={days}
       is12HourMode={is12HourMode}
@@ -66,13 +93,6 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
-    />
-    <Inventory
-      key={selectedCourses.map(course => course.code).join(",")}
-      selectedCourses={selectedCourses}
-      selectedClasses={selectedClasses}
-      assignedColors={assignedColors}
-      removeClass={onRemoveClass}
     />
   </StyledTimetable>
 );

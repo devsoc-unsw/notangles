@@ -18,10 +18,11 @@ const StyledCell = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 20;
 
-  grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
-    ${(props) => timeToPosition(props.classTime.time.end)};
+  grid-column: ${(props) => props.classTime.time.day + 2};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start) + 1} /
+    ${(props) => timeToPosition(props.classTime.time.end) + 1};
   background-color: ${(props) => props.color};
 
   transition: opacity 200ms;

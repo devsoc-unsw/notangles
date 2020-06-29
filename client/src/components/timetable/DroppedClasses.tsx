@@ -21,10 +21,11 @@ const StyledCourseClass = styled(Card).withConfig({
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 20;
 
-  grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
-            ${(props) => timeToPosition(props.classTime.time.end)};
+  grid-column: ${(props) => props.classTime.time.day + 2};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start) + 1} /
+            ${(props) => timeToPosition(props.classTime.time.end) + 1};
 
   background-color: ${(props) => props.backgroundColor};
   opacity: ${(props) => (props.isDragging ? 0 : 1)};

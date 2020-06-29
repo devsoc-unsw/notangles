@@ -9,10 +9,27 @@ const headerPadding = 15;
 const BaseCell = styled.div<{
   x: number
   y: number
+  endX?: boolean
+  endY?: boolean
 }>`
-  grid-column: ${(props) => props.x};
-  grid-row: ${(props) => props.y};
+  grid-column: ${(props) => props.x + 1};
+  grid-row: ${(props) => props.y + 1};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
+  background-color: ${(props) => props.theme.palette.background.default};
+  z-index: 10;
+
+  border-top-left-radius: ${(props) => (
+    props.x === 1 && props.y === 1 ? props.theme.shape.borderRadius : 0
+  )}px;
+  border-bottom-left-radius: ${(props) => (
+    props.x === 1 && props.endY ? props.theme.shape.borderRadius : 0
+  )}px;
+  border-top-right-radius: ${(props) => (
+    props.endX && props.y === 1 ? props.theme.shape.borderRadius : 0
+  )}px;
+  border-bottom-right-radius: ${(props) => (
+    props.endX && props.endY ? props.theme.shape.borderRadius : 0
+  )}px;
 
   display: inline-flex;
   align-items: center;
@@ -22,12 +39,10 @@ const BaseCell = styled.div<{
 const DoubleCell = styled(BaseCell) <{
   y: number
 }>`
-  grid-row: ${
-  (props) => {
-    props.y = props.y * 2 - 2;
+  grid-row: ${(props) => {
+    props.y = props.y * 2 - 1;
     return `${props.y} / ${props.y + 2}`;
-  }
-};
+  }};
 `;
 
 const DayCell = styled(BaseCell)`
@@ -109,20 +124,28 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (
-    <DayCell key={day} x={i + 2} y={1}>
+    <DayCell key={day} x={i + 2} y={1} endX={i === days.length - 1}>
       {day}
     </DayCell>
   ));
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} endY={i === hours.length - 1}>
       {hour}
     </HourCell>
   ));
 
   const otherCells = hours.map(
     (_, y) => days.map(
-      (_, x) => <DoubleCell key={x * 1000 + y} x={x + 2} y={y + 2} />,
+      (_, x) => (
+        <DoubleCell
+          key={x * 1000 + y}
+          x={x + 2}
+          y={y + 2}
+          endX={x === days.length - 1}
+          endY={y === hours.length - 1}
+        />
+      ),
     ),
   );
 

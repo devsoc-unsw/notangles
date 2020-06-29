@@ -8,7 +8,6 @@ import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
-import CourseSelect from './components/CourseSelect';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -23,7 +22,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 84px; // 64px for nav bar + 20px padding
+  padding-top: 64px; // 64px for nav bar + 20px padding
   padding-left: 30px;
   padding-right: 30px;
   transition: background-color 0.25s, color 0.25s;
@@ -35,8 +34,8 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1400px;
-  min-width: 800px;
+  width: 1600px;
+  min-width: 1000px;
   max-width: 100%;
   margin: auto;
 
@@ -45,11 +44,6 @@ const Content = styled(Box)`
   grid-template-columns: auto;
 
   text-align: center;
-`;
-
-const SelectWrapper = styled(Box)`
-  display: flex;
-  flex-direction: row;
 `;
 
 const Footer = styled(Box)`
@@ -125,14 +119,6 @@ const App: FunctionComponent = () => {
           />
           <ContentWrapper>
             <Content>
-              <SelectWrapper>
-                <CourseSelect
-                  selectedCourses={selectedCourses}
-                  assignedColors={assignedColors}
-                  handleSelect={handleSelectCourse}
-                  handleRemove={handleRemoveCourse}
-                />
-              </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
                 <Timetable
                   selectedCourses={selectedCourses}
@@ -142,6 +128,8 @@ const App: FunctionComponent = () => {
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
                   onRemoveClass={handleRemoveClass}
+                  onSelectCourse={handleSelectCourse}
+                  onRemoveCourse={handleRemoveCourse}
                 />
               </DndProvider>
               <Footer>

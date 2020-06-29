@@ -5,12 +5,35 @@ import { CourseData, ClassData } from '../../interfaces/CourseData';
 
 import InventoryCourseClass from './InventoryCourseClass';
 
-const StyledInventory = styled.div`
+const StyledInventory = styled.div<{
+  isVisible: boolean
+}>`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 2px;
   grid-column: -2;
   grid-row: 2 / -1;
+  position: relative;
+
+  background-color: ${(props) => (
+    props.isVisible ? '#f2f2f2' : props.theme.palette.background.default
+  )};
+  border: 1px solid ${(props) => (
+    props.isVisible
+      ? props.theme.palette.secondary.main : props.theme.palette.background.default
+  )};
+  transition: 200ms;
+
+  top: -1px;
+  left: -${(props) => props.theme.shape.borderRadius}px;
+  width: calc(100% + ${(props) => props.theme.shape.borderRadius}px);
+  height: calc(100% + 1px);
+  box-sizing: border-box;
+  padding-left: ${(props) => props.theme.shape.borderRadius + 1}px;
+
+  border-top-right-radius: ${(props) => props.theme.shape.borderRadius}px;
+  border-bottom-right-radius: ${(props) => props.theme.shape.borderRadius}px;
 `;
 
 export interface InventoryProps {
@@ -26,30 +49,26 @@ const Inventory: React.FC<InventoryProps> = ({
   assignedColors,
   removeClass,
 }) => {
-  const getInventoryCourseClasses = (): React.ReactNode[] => {
-    let classNodes: React.ReactNode[] = []
+  const classNodes: React.ReactNode[] = [];
 
-    // return course classes for activities which don't currently have a selected class
-    selectedCourses.forEach((course) => {
-      Object.entries(course.activities).forEach(([activity, activityClasses]) => {
-        if (!activityClasses.some(
-            (classData) => selectedClasses.includes(classData),
-          )
-        ) {
-          classNodes.push(
-            <InventoryCourseClass
-              key={`${course.code}-${activity}`}
-              courseCode={course.code}
-              activity={activity}
-              color={assignedColors[course.code]}
-            />
-          )
-        }
-      })
-    })
-
-    return classNodes;
-  };
+  // return course classes for activities which don't currently have a selected class
+  selectedCourses.forEach((course) => {
+    Object.entries(course.activities).forEach(([activity, activityClasses]) => {
+      if (!activityClasses.some(
+        (classData) => selectedClasses.includes(classData),
+      )
+      ) {
+        classNodes.push(
+          <InventoryCourseClass
+            key={`${course.code}-${activity}`}
+            courseCode={course.code}
+            activity={activity}
+            color={assignedColors[course.code]}
+          />,
+        );
+      }
+    });
+  });
 
   const ids = selectedCourses.reduce<string[]>((array, course): string[] => (
     [...array, ...Object.keys(course.activities).map((activity) => (
@@ -59,7 +78,7 @@ const Inventory: React.FC<InventoryProps> = ({
 
   const [{ canDrop }, drop] = useDrop({
     accept: ids,
-    drop: ({ classData }: any) => removeClass(classData),
+    drop: ({ classData }: any) => classData && removeClass(classData),
     collect: (monitor) => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
@@ -67,8 +86,8 @@ const Inventory: React.FC<InventoryProps> = ({
   });
 
   return (
-    <StyledInventory ref={drop}>
-      {getInventoryCourseClasses()}
+    <StyledInventory ref={drop} isVisible={canDrop || classNodes.length > 0}>
+      {classNodes}
     </StyledInventory>
   );
 };
