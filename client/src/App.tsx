@@ -22,7 +22,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 64px; // 64px for nav bar + 20px padding
+  padding-top: 64px; // for nav bar
   padding-left: 30px;
   padding-right: 30px;
   transition: background-color 0.25s, color 0.25s;

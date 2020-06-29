@@ -17,7 +17,8 @@ const StyledInventory = styled.div<{
   position: relative;
 
   background-color: ${(props) => (
-    props.isVisible ? '#f2f2f2' : props.theme.palette.background.default
+    props.isVisible
+      ? props.theme.palette.secondary.light : props.theme.palette.background.default
   )};
   border: 1px solid ${(props) => (
     props.isVisible
