@@ -34,7 +34,9 @@ const StyledInventory = styled.div<{
 
 const StyledInventoryText = styled.div`
   color: ${(props) => props.theme.palette.secondary.dark};
-  margin: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  position: absolute;
 `;
 
 export interface InventoryProps {
@@ -89,7 +91,7 @@ const Inventory: React.FC<InventoryProps> = ({
   return (
     <StyledInventory ref={drop} isVisible={canDrop || classNodes.length > 0}>
       {classNodes}
-      {(canDrop && classNodes.length === 0) && (
+      {classNodes.length <= 1 && (
         <StyledInventoryText>
           Drag classes here which you want out of the way
         </StyledInventoryText>

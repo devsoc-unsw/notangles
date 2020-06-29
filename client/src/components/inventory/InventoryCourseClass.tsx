@@ -12,6 +12,7 @@ const StyledInventoryCourseClass = styled(Card).withConfig({
   width: 100%;
   height: 73px;
   box-sizing: border-box;
+  z-index: 10;
 
   display: flex;
   justify-content: center;

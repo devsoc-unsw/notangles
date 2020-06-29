@@ -77,7 +77,7 @@ const Is12HourModeToggle = styled(Box)`
   font-weight: bold;
   cursor: pointer;
   user-select: none;
-  transition: color 100ms;
+  transition: color 0.1s;
   color: ${(props) => props.theme.palette.primary.main};
 
   &:hover {

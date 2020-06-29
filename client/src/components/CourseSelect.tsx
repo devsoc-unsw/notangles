@@ -58,7 +58,7 @@ const StyledTextField = styled(TextField)<{
   .MuiOutlinedInput-root {
     fieldset {
       border-color: ${(props) => props.theme.palette.secondary.main};
-      transition: border-color 100ms;
+      transition: border-color 0.1s;
     }
     &:hover fieldset {
       border-color: ${(props) => props.theme.palette.secondary.dark};
