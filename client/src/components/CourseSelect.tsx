@@ -52,7 +52,7 @@ const StyledSelect = styled(Box)`
   text-align: left;
 `;
 
-const StyledTextField = styled(TextField)<{
+const StyledTextField = styled(TextField) <{
   theme: Theme
 }>`
   .MuiOutlinedInput-root {
@@ -81,7 +81,7 @@ const StyledInputAdornment = styled(InputAdornment)`
 
 const StyledChip = styled(Chip).withConfig({
   shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
-})<{
+}) <{
   backgroundColor: string
 }>`
   transition: none !important;
@@ -121,6 +121,7 @@ interface CourseSelectProps {
   assignedColors: Record<string, string>
   handleSelect(courseCode: string): void
   handleRemove(courseCode: string): void
+  setErrorMsg(errorMsg: string): void
 }
 
 const CourseSelect: React.FC<CourseSelectProps> = ({
@@ -128,6 +129,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   assignedColors,
   handleSelect,
   handleRemove,
+  setErrorMsg,
 }) => {
   const [coursesList, setCoursesList] = React.useState<CoursesList>([]);
   const [options, setOptions] = React.useState<CoursesList>([]);
@@ -253,9 +255,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
   const fetchCoursesList = async () => {
     const fetchedCoursesList = await getCoursesList('2020', 'T2');
-    if (fetchedCoursesList) {
+    if (!('message' in fetchedCoursesList)) {
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
+    } else {
+      setErrorMsg(fetchedCoursesList.message);
     }
   };
 

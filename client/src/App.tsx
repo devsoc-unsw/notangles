@@ -3,7 +3,8 @@ import styled, { ThemeProvider } from 'styled-components';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-import { MuiThemeProvider, Box } from '@material-ui/core';
+import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
@@ -64,6 +65,7 @@ const App: FunctionComponent = () => {
   const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
+  const [errorMsg, setErrorMsg] = useState<String>('');
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.courseCode),
@@ -99,10 +101,12 @@ const App: FunctionComponent = () => {
 
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
-    if (selectedCourseClasses) {
+    if (!('message' in selectedCourseClasses)) {
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
       populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
+    } else {
+      setErrorMsg(selectedCourseClasses.message);
     }
   };
 
@@ -114,6 +118,10 @@ const App: FunctionComponent = () => {
     setSelectedClasses((prev) => (
       prev.filter((classData) => classData.courseCode !== courseCode)
     ));
+  };
+
+  const handleErrorClose = () => {
+    setErrorMsg('');
   };
 
   return (
@@ -132,6 +140,7 @@ const App: FunctionComponent = () => {
                   assignedColors={assignedColors}
                   handleSelect={handleSelectCourse}
                   handleRemove={handleRemoveCourse}
+                  setErrorMsg={setErrorMsg}
                 />
               </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
@@ -166,6 +175,11 @@ const App: FunctionComponent = () => {
                   GitHub
                 </Link>
               </Footer>
+              <Snackbar open={errorMsg !== ''} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert severity="error" onClose={handleErrorClose}>
+                  {errorMsg}
+                </Alert>
+              </Snackbar>
             </Content>
           </ContentWrapper>
         </StyledApp>

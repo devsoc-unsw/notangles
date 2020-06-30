@@ -1,6 +1,7 @@
 import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
 import { CourseData } from '../interfaces/CourseData';
 import { API_URL } from './config';
+import { NetworkError } from '../interfaces/NetworkError';
 
 /**
  * Fetches the information of a specified course
@@ -18,19 +19,21 @@ const getCourseInfo = async (
   year: string,
   term: string,
   courseCode: string,
-): Promise<CourseData | null> => {
+): Promise<CourseData | NetworkError> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
     const data = await fetch(`${baseURL}/courses/${courseCode}/`);
+    if (data.status === 400) {
+      return { message: 'Internal server error' };
+    }
+    console.log();
     const json: DbCourse = await data.json();
     if (!json) {
-      throw Error('Fetch did not get results');
+      return { message: 'Internal server error' };
     }
-
     return dbCourseToCourseData(json);
   } catch (error) {
-    console.error(error);
-    return null;
+    return { message: 'Could not connect to server' };
   }
 };
 
