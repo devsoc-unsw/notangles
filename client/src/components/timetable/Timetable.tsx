@@ -22,7 +22,7 @@ const StyledTimetable = styled(Box) <{
   box-sizing: content-box;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / auto repeat(${days.length}, 1fr) 12px 1fr;
+  grid-template: auto repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / auto repeat(${days.length}, 1fr) 11px 1fr;
 `;
 
 const SelectWrapper = styled(Box)`

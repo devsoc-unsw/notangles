@@ -48,6 +48,7 @@ const searchOptions: SearchOptions = {
 let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
 
 const StyledSelect = styled(Box)`
+  width: 100%;
   text-align: left;
   position: relative;
   left: -1px;
