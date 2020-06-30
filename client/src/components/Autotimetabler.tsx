@@ -43,18 +43,19 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
 
 interface DropdownOptionProps {
   optionName: string
-  isChecked: string | null
-  setIsChecked(value: string | null): void
-  opposite?: boolean
+  optionState: string | null
+  setOptionState(value: string | null): void
+  opts: string[]
+
 }
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
-  isChecked,
-  setIsChecked,
-  opposite,
+  optionState,
+  setOptionState,
+  opts,
 }) => {
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setIsChecked(event.target.checked);
+  //   setOptionState(event.target.checked);
   //   if (!(setOpposite === undefined) && opposite) {
   //     setOpposite(!event.target.checked);
   //   }
@@ -62,7 +63,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
   const handleAlignment = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
     if (newAlignment !== null) {
-      setIsChecked(newAlignment);
+      setOptionState(newAlignment);
     }
   };
 
@@ -71,7 +72,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
   // <ListItem>
   //   <Checkbox
-  //     checked={isChecked}
+  //     checked={optionState}
   //     color="primary"
   //     onChange={handleChange}
   //     inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -91,23 +92,20 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
             <>
               <StyledOptionToggle
                 size="small"
-                value={isChecked}
+                value={optionState}
                 exclusive
                 onChange={handleAlignment}
                 aria-label="text alignment"
               >
-                <StyledOptionButtonToggle value="1" aria-label="left aligned">
+                <StyledOptionButtonToggle value="off" aria-label="default">
                   off
                 </StyledOptionButtonToggle>
-                {opposite && (
-                <StyledOptionButtonToggle value="2" aria-label="left aligned">
-                  least
-                </StyledOptionButtonToggle>
-                )}
+                {opts.map((op) => (
+                  <StyledOptionButtonToggle value={op} aria-label={op}>
+                    {op}
+                  </StyledOptionButtonToggle>
+                ))}
 
-                <StyledOptionButtonToggle value="3" aria-label="right aligned">
-                  most
-                </StyledOptionButtonToggle>
               </StyledOptionToggle>
             </>
           )}
@@ -119,17 +117,28 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
   );
 };
+// <StyledOptionButtonToggle value="1" aria-label="left aligned">
+//   off
+// </StyledOptionButtonToggle>
+// {opposite && (
+// <StyledOptionButtonToggle value="2" aria-label="left aligned">
+//   {opts[0]}
+// </StyledOptionButtonToggle>
+// )}
+//
+// <StyledOptionButtonToggle value="3" aria-label="right aligned">
+//   most
+// </StyledOptionButtonToggle>
 
 interface AutotimetablerProps {
   isDarkMode: boolean
 }
 const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
-  // const [isChecked1, setIsChecked1] = React.useState(false);
-  // const [isChecked2, setIsChecked2] = React.useState(false);
-  // const [isChecked3, setIsChecked3] = React.useState(false);
-  // const [isChecked4, setIsChecked4] = React.useState(false);
-
-  const [alignment, setAlignment] = React.useState<string | null>('1');
+  const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
+  const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
+  const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
+  const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
+  const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<string | null>('off');
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -141,6 +150,7 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
   };
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+
 
   return (
     <div>
@@ -166,27 +176,38 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
       >
         <List dense>
           <DropdownOption
-            optionName="Least days at uni"
-            isChecked={alignment}
-            setIsChecked={setAlignment}
+            optionName="Number of days at uni"
+            optionState={daysAtUni}
+            setOptionState={setDaysAtUni}
+            opts={['least', 'most']}
           />
           <DropdownOption
-            optionName="Least distance between classes"
-            isChecked={alignment}
-            setIsChecked={setAlignment}
+            optionName="Class times"
+            optionState={timesOfDay}
+            setOptionState={setTimesOfDay}
+            opts={['earlier', 'later']}
+
           />
 
           <DropdownOption
-            optionName="Least early starts"
-            isChecked={alignment}
-            setIsChecked={setAlignment}
-            opposite
+            optionName="Walking distance between classes"
+            optionState={walkingDistance}
+            setOptionState={setWalkingDistance}
+            opts={['least']}
+
+
           />
           <DropdownOption
-            optionName="Most early starts"
-            isChecked={alignment}
-            setIsChecked={setAlignment}
-            opposite
+            optionName="Friends in classes"
+            optionState={friendsInClasses}
+            setOptionState={setFriendsInClasses}
+            opts={['most']}
+          />
+          <DropdownOption
+            optionName="Breaks between classes"
+            optionState={breaksBetweenClasses}
+            setOptionState={setBreaksBetweenClasses}
+            opts={['least', 'most']}
           />
 
         </List>
