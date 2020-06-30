@@ -23,7 +23,7 @@ const StyledCourseClass = styled(Card).withConfig({
   flex-direction: column;
   z-index: 20;
 
-  grid-column: ${(props) => props.classTime.time.day + 2};
+  grid-column: ${(props) => props.classTime.time.day + 1};
   grid-row: ${(props) => timeToPosition(props.classTime.time.start) + 1} /
             ${(props) => timeToPosition(props.classTime.time.end) + 1};
 

@@ -5,38 +5,30 @@ import { CourseData, ClassData } from '../../interfaces/CourseData';
 
 import InventoryCourseClass from './InventoryCourseClass';
 
-const StyledInventory = styled.div<{
-  isVisible: boolean
-}>`
+const StyledInventory = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 2px;
+  padding: 5px;
   grid-column: -2;
   grid-row: 2 / -1;
   position: relative;
-
   border: 1px solid ${(props) => props.theme.palette.secondary.main};
   background-color: ${(props) => props.theme.palette.secondary.light};
-  opacity: ${(props) => (props.isVisible ? 1 : 0)};
-  transition: opacity 0.2s;
-
-  top: -1px;
-  left: -${(props) => props.theme.shape.borderRadius}px;
-  width: calc(100% + ${(props) => props.theme.shape.borderRadius}px);
-  height: calc(100% + 1px);
+  transition: 0.2s;
+  border-radius: ${(props) => props.theme.shape.borderRadius}px;
   box-sizing: border-box;
-  padding-left: ${(props) => props.theme.shape.borderRadius + 1}px;
-
-  border-top-right-radius: ${(props) => props.theme.shape.borderRadius}px;
-  border-bottom-right-radius: ${(props) => props.theme.shape.borderRadius}px;
+  width: calc(100% + 2px);
+  left: -3px;
 `;
 
 const StyledInventoryText = styled.div`
   color: ${(props) => props.theme.palette.secondary.dark};
+  transition: 0.2s;
   margin-left: 10px;
   margin-right: 10px;
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 `;
 
 export interface InventoryProps {
@@ -59,8 +51,7 @@ const Inventory: React.FC<InventoryProps> = ({
     Object.entries(course.activities).forEach(([activity, activityClasses]) => {
       if (!activityClasses.some(
         (classData) => selectedClasses.includes(classData),
-      )
-      ) {
+      )) {
         classNodes.push(
           <InventoryCourseClass
             key={`${course.code}-${activity}`}
@@ -79,7 +70,7 @@ const Inventory: React.FC<InventoryProps> = ({
     ))]
   ), []);
 
-  const [{ canDrop }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: ids,
     drop: ({ classData }: any) => classData && removeClass(classData),
     collect: (monitor) => ({
@@ -89,13 +80,11 @@ const Inventory: React.FC<InventoryProps> = ({
   });
 
   return (
-    <StyledInventory ref={drop} isVisible={canDrop || classNodes.length > 0}>
+    <StyledInventory ref={drop}>
       {classNodes}
-      {classNodes.length <= 1 && (
-        <StyledInventoryText>
-          Drag classes here which you want out of the way
-        </StyledInventoryText>
-      )}
+      <StyledInventoryText>
+        Drag classes here which you want out of the way
+      </StyledInventoryText>
     </StyledInventory>
   );
 };

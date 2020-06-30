@@ -12,7 +12,7 @@ const BaseCell = styled.div<{
   endX?: boolean
   endY?: boolean
 }>`
-  grid-column: ${(props) => props.x + 1};
+  grid-column: ${(props) => props.x};
   grid-row: ${(props) => props.y + 1};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
   background-color: ${(props) => props.theme.palette.background.default};

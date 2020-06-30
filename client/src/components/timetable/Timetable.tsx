@@ -20,19 +20,18 @@ const StyledTimetable = styled(Box) <{
   margin-top: 15px;
   margin-bottom: 15px;
   box-sizing: content-box;
-  overflow: hidden;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / 1fr auto repeat(${days.length + 1}, 1fr);
+  grid-template: auto repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / auto repeat(${days.length}, 1fr) 12px 1fr;
 `;
 
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
-  grid-column: 2 / -2;
+  grid-column: 1 / -1;
   grid-row: 1;
   padding-top: 5px;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 `;
 
 interface TimetableProps {

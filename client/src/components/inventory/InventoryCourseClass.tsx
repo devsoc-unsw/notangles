@@ -9,9 +9,7 @@ const StyledInventoryCourseClass = styled(Card).withConfig({
   isDragging: boolean
   backgroundColor: string
 }>`
-  width: 100%;
-  height: 73px;
-  box-sizing: border-box;
+  // width: 100%;
   z-index: 10;
 
   display: flex;
@@ -27,10 +25,9 @@ const StyledInventoryCourseClass = styled(Card).withConfig({
   border-radius: 6px;
 
   padding: 10px;
-  margin-top: 2.5px;
-  margin-bottom: 2.5px;
   position: relative;
   bottom: 0.5px;
+  margin-bottom: 5px;
 
   p {
     margin: 0 0;
