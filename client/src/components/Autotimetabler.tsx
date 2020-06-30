@@ -13,6 +13,8 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 
+import Tooltip from '@material-ui/core/Tooltip';
+
 const DropdownButton = styled(Button)`
     width: 100%;
     height: 55px;
@@ -72,9 +74,11 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
                   off
                 </StyledOptionButtonToggle>
                 {optionChoices.map((op) => (
-                  <StyledOptionButtonToggle value={op} aria-label={op}>
-                    {op}
-                  </StyledOptionButtonToggle>
+                  <>
+                    <StyledOptionButtonToggle value={op} aria-label={op}>
+                      {op}
+                    </StyledOptionButtonToggle>
+                  </>
                 ))}
               </StyledOptionToggle>
             </>
@@ -110,12 +114,18 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
 
   return (
     <div>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
-        <Box ml="10px" flexGrow={1}>Auto-timetable Options</Box>
-        {open ? (
-          <ArrowDropUpIcon />
-        ) : <ArrowDropDownIcon />}
-      </DropdownButton>
+      <Tooltip title="Coming Soon" placement="bottom">
+        <div>
+          <DropdownButton disabled disableElevation aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
+            <Box ml="10px" flexGrow={1}>Auto-timetable Options</Box>
+            {open ? (
+              <ArrowDropUpIcon />
+            ) : <ArrowDropDownIcon />}
+          </DropdownButton>
+        </div>
+      </Tooltip>
+
+
       <Popover
         id={popoverId}
         open={open}
@@ -131,12 +141,14 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
         }}
       >
         <List dense>
+
           <DropdownOption
             optionName="Number of days at uni"
             optionState={daysAtUni}
             setOptionState={setDaysAtUni}
             optionChoices={['least', 'most']}
           />
+
           <DropdownOption
             optionName="Class times"
             optionState={timesOfDay}
