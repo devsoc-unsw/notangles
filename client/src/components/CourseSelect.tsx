@@ -18,6 +18,7 @@ import styled, { css } from 'styled-components';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
+import NetworkError from '../interfaces/NetworkError';
 
 const SEARCH_DELAY = 300;
 
@@ -122,6 +123,7 @@ interface CourseSelectProps {
   handleSelect(courseCode: string): void
   handleRemove(courseCode: string): void
   setErrorMsg(errorMsg: string): void
+  setErrorVisibility(visibility: boolean): void
 }
 
 const CourseSelect: React.FC<CourseSelectProps> = ({
@@ -130,6 +132,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   handleSelect,
   handleRemove,
   setErrorMsg,
+  setErrorVisibility,
 }) => {
   const [coursesList, setCoursesList] = React.useState<CoursesList>([]);
   const [options, setOptions] = React.useState<CoursesList>([]);
@@ -254,12 +257,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T2');
-    if (!('message' in fetchedCoursesList)) {
+    try {
+      const fetchedCoursesList = await getCoursesList('2020', 'T2');
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
-    } else {
-      setErrorMsg(fetchedCoursesList.message);
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
     }
   };
 

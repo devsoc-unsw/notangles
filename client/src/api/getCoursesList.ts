@@ -1,6 +1,7 @@
 import { CoursesList } from '../interfaces/CourseOverview';
-import { API_URL, timeoutPromise } from './config';
-import { NetworkError } from '../interfaces/NetworkError';
+import { API_URL } from './config';
+import NetworkError from '../interfaces/NetworkError';
+import timeoutPromise from '../utils/timeoutPromise';
 
 /**
  * Fetches a list of course objects, where each course object contains
@@ -16,16 +17,16 @@ import { NetworkError } from '../interfaces/NetworkError';
 const getCoursesList = async (
   year: string,
   term: string,
-): Promise<CoursesList | NetworkError> => {
+): Promise<CoursesList> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
     if (data.status === 400) {
-      return { message: 'Internal server error' };
+      throw new NetworkError('Internal server error');
     }
     return data.json();
   } catch (error) {
-    return { message: 'Could not connect to server' };
+    throw new NetworkError('Could not connect to server');
   }
 };
 

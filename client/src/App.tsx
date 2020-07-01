@@ -18,6 +18,7 @@ import useColorMapper from './hooks/useColorMapper';
 import storage from './utils/storage';
 
 import { darkTheme, lightTheme } from './constants/theme';
+import NetworkError from './interfaces/NetworkError';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -66,6 +67,7 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
+  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.courseCode),
@@ -100,13 +102,17 @@ const App: FunctionComponent = () => {
   };
 
   const handleSelectCourse = async (courseCode: string) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
-    if (!('message' in selectedCourseClasses)) {
+    try {
+      const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
       populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
-    } else {
-      setErrorMsg(selectedCourseClasses.message);
+    } catch (e) {
+      console.log('here');
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
     }
   };
 
@@ -121,7 +127,7 @@ const App: FunctionComponent = () => {
   };
 
   const handleErrorClose = () => {
-    setErrorMsg('');
+    setErrorVisibility(false);
   };
 
   return (
@@ -141,6 +147,7 @@ const App: FunctionComponent = () => {
                   handleSelect={handleSelectCourse}
                   handleRemove={handleRemoveCourse}
                   setErrorMsg={setErrorMsg}
+                  setErrorVisibility={setErrorVisibility}
                 />
               </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
@@ -175,8 +182,8 @@ const App: FunctionComponent = () => {
                   GitHub
                 </Link>
               </Footer>
-              <Snackbar open={errorMsg !== ''} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose}>
+              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert severity="error" onClose={handleErrorClose} variant="filled">
                   {errorMsg}
                 </Alert>
               </Snackbar>

@@ -1,3 +1,5 @@
-export interface NetworkError {
-  message: string
+export default class NetworkError extends Error {
+  constructor(message = '') {
+    super(message);
+  }
 }
