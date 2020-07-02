@@ -21,8 +21,8 @@ const StyledCell = styled.div<{
   z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start) + 1} /
-    ${(props) => timeToPosition(props.classTime.time.end) + 1};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
+    ${(props) => timeToPosition(props.classTime.time.end)};
   background-color: ${(props) => props.color};
 
   transition: opacity 0.2s;

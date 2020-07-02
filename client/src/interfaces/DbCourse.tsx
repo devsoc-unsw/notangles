@@ -1,6 +1,5 @@
 import {
   CourseData,
-  Activities,
   ClassData,
   ClassPeriod,
 } from './CourseData';
@@ -86,10 +85,10 @@ const dbTimesToPeriod = (dbTimes: DbTimes): ClassPeriod => ({
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-  const courseData = {
+  const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
-    activities: {} as Activities,
+    activities: {},
     latestFinishTime: 0,
   };
 
@@ -102,7 +101,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
-    classData.periods!.forEach((period) => {
+    classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
       }

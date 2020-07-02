@@ -10,7 +10,7 @@ const StyledInventory = styled.div`
   flex-direction: column;
   padding: 5px;
   grid-column: -2;
-  grid-row: 2 / -1;
+  grid-row: 1 / -1;
   position: relative;
   border: 1px solid ${(props) => props.theme.palette.secondary.main};
   background-color: ${(props) => props.theme.palette.secondary.light};
@@ -83,7 +83,7 @@ const Inventory: React.FC<InventoryProps> = ({
     <StyledInventory ref={drop}>
       {classNodes}
       <StyledInventoryText>
-        Drag classes here which you want out of the way
+        Drag classes here to get them out of the way
       </StyledInventoryText>
     </StyledInventory>
   );

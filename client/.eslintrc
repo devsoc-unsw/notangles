@@ -29,6 +29,7 @@
       }
     ],
     "react/no-array-index-key": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off"
   }
 }

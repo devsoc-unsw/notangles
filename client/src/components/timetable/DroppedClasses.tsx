@@ -24,8 +24,8 @@ const StyledCourseClass = styled(Card).withConfig({
   z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start) + 1} /
-            ${(props) => timeToPosition(props.classTime.time.end) + 1};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
+            ${(props) => timeToPosition(props.classTime.time.end)};
 
   background-color: ${(props) => props.backgroundColor};
   opacity: ${(props) => (props.isDragging ? 0 : 1)};

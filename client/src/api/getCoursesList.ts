@@ -1,9 +1,14 @@
 import { CoursesList } from '../interfaces/CourseOverview';
 import { API_URL } from './config';
 
-const toCoursesList = (data: any): CoursesList => (
-  data.map((course: any) => ({
-    // eslint-disable-next-line
+interface FetchedCourse {
+  _id: string;
+  courseCode: string;
+  name: string;
+}
+
+const toCoursesList = (data: FetchedCourse[]): CoursesList => (
+  data.map((course) => ({
     id: course._id,
     code: course.courseCode,
     name: course.name,
@@ -21,8 +26,6 @@ const toCoursesList = (data: any): CoursesList => (
  * @example
  * const coursesList = await getCoursesList('2020', 'T1')
  */
-
-
 const getCoursesList = async (
   year: string,
   term: string,

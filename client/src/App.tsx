@@ -7,6 +7,7 @@ import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
+import CourseSelect from './components/CourseSelect';
 import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -44,6 +45,14 @@ const Content = styled(Box)`
   grid-template-columns: auto;
 
   text-align: center;
+`;
+
+const SelectWrapper = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding-top: 20px;
 `;
 
 const Footer = styled(Box)`
@@ -119,6 +128,14 @@ const App: FunctionComponent = () => {
           />
           <ContentWrapper>
             <Content>
+              <SelectWrapper>
+                <CourseSelect
+                  selectedCourses={selectedCourses}
+                  assignedColors={assignedColors}
+                  handleSelect={handleSelectCourse}
+                  handleRemove={handleRemoveCourse}
+                />
+              </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
                 <Timetable
                   selectedCourses={selectedCourses}
@@ -128,8 +145,6 @@ const App: FunctionComponent = () => {
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
                   onRemoveClass={handleRemoveClass}
-                  onSelectCourse={handleSelectCourse}
-                  onRemoveCourse={handleRemoveCourse}
                 />
               </DndProvider>
               <Footer>

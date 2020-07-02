@@ -13,7 +13,7 @@ const BaseCell = styled.div<{
   endY?: boolean
 }>`
   grid-column: ${(props) => props.x};
-  grid-row: ${(props) => props.y + 1};
+  grid-row: ${(props) => props.y};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
   background-color: ${(props) => props.theme.palette.background.default};
   z-index: 10;
@@ -41,7 +41,7 @@ const DoubleCell = styled(BaseCell) <{
   y: number
 }>`
   grid-row: ${(props) => {
-    props.y = props.y * 2 - 1;
+    props.y = props.y * 2 - 2;
     return `${props.y} / ${props.y + 2}`;
   }};
 `;
