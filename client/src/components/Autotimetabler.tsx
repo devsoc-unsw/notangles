@@ -34,7 +34,7 @@ const StyledOptionToggle = styled(ToggleButtonGroup)`
 `;
 const StyledOptionButtonToggle = styled(ToggleButton)`
     width: 100%;
-    height: 30px;
+    height: 32px;
 `;
 
 interface DropdownOptionProps {
@@ -62,26 +62,22 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
         <ListItemText
           primary={optionName}
           secondary={(
-            <>
-              <StyledOptionToggle
-                size="small"
-                exclusive
-                value={optionState}
-                onChange={handleOptionChange}
-                aria-label="option choices"
-              >
-                <StyledOptionButtonToggle value="off" aria-label="default">
-                  off
+            <StyledOptionToggle
+              size="small"
+              exclusive
+              value={optionState}
+              onChange={handleOptionChange}
+              aria-label="option choices"
+            >
+              <StyledOptionButtonToggle value="off" aria-label="default">
+                off
+              </StyledOptionButtonToggle>
+              {optionChoices.map((op) => (
+                <StyledOptionButtonToggle value={op} aria-label={op}>
+                  {op}
                 </StyledOptionButtonToggle>
-                {optionChoices.map((op) => (
-                  <>
-                    <StyledOptionButtonToggle value={op} aria-label={op}>
-                      {op}
-                    </StyledOptionButtonToggle>
-                  </>
-                ))}
-              </StyledOptionToggle>
-            </>
+              ))}
+            </StyledOptionToggle>
           )}
         />
       </ListItem>
@@ -140,7 +136,7 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
           horizontal: 'right',
         }}
       >
-        <List dense>
+        <List>
 
           <DropdownOption
             optionName="Number of days at uni"
@@ -180,8 +176,8 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
 
         </List>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={handleClose}>
-          GO
           <FlashOnIcon />
+          GO
         </ExecuteButton>
       </Popover>
     </div>
