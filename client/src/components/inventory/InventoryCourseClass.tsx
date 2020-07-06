@@ -22,7 +22,7 @@ const StyledInventoryCourseClass = styled(Card).withConfig({
   color: white;
   cursor: move;
   font-size: 0.9rem;
-  border-radius: 6px;
+  border-radius: 7px;
 
   padding: 10px;
   position: relative;

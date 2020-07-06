@@ -26,6 +26,7 @@ const classMargin = 2;
 
 const StyledCourseClass = styled.div<{
   classTime: ClassPeriod
+  isDragging: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / ${(props) => (
@@ -34,7 +35,7 @@ const StyledCourseClass = styled.div<{
   transform: translate(
     ${(props) => getClassTranslateX(props.classTime)}%,
     ${(props) => getClassTranslateY(props.classTime)}%
-  );
+  ) scale(${(props) => props.isDragging ? 1.2 : 1});
 
   z-index: 1200;
   padding: ${classMargin}px;
@@ -48,9 +49,8 @@ const StyledCourseClass = styled.div<{
 `;
 
 const StyledCourseClassInner = styled(Card).withConfig({
-  shouldForwardProp: (prop) => ["children"].includes(prop),
+  shouldForwardProp: (prop) => !["backgroundColor"].includes(prop),
 }) <{
-  isDragging: boolean
   backgroundColor: string
 }>`
   display: flex;
@@ -59,11 +59,11 @@ const StyledCourseClassInner = styled(Card).withConfig({
   flex-direction: column;
   
   background-color: ${(props) => props.backgroundColor};
-  opacity: ${(props) => (props.isDragging ? 0 : 1)};
   color: white;
   cursor: move;
   font-size: 0.9rem;
-  border-radius: 6px;
+  border-radius: 7px;
+  transition: 200ms;
 
   height: 100%;
   box-sizing: border-box;
@@ -137,14 +137,15 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   return (
     <StyledCourseClass
       classTime={classTime}
+      isDragging={isDragging}
       onMouseDown={onDown}
       onMouseUp={onUp}
       onMouseMove={onMove}
       style={{left: 0, top: 0}}
     >
       <StyledCourseClassInner
-        isDragging={false}
         backgroundColor={color}
+        elevation={isDragging ? 24 : 3}
       >
         <p>
           <b>

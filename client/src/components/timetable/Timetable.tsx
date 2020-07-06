@@ -26,7 +26,10 @@ const StyledTimetable = styled(Box) <{
 
 let dragElement: HTMLElement | null = null;
 let zIndex = 1200;
-const moveTransition = 200;
+const transitionTime = 200;
+const defaultTransition = `all ${transitionTime}ms`;
+const moveTransition = `transform ${transitionTime}ms`
+
 const fromPx = (value: string) => Number(value.split("px")[0]);
 const toPx = (value: number) => value + "px";
 const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
@@ -38,6 +41,7 @@ const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => 
 const handleDragElement = (element: HTMLElement) => {
   dragElement = element;
   element.style.zIndex = String(++zIndex);
+  element.style.transition = moveTransition;
 }
 
 window.onmousemove = (event: any) => {
@@ -48,14 +52,9 @@ window.onmousemove = (event: any) => {
 
 window.onmouseup = () => {
   if (dragElement) {
-    dragElement.style.transition = moveTransition + "ms";
+    dragElement.style.transition = defaultTransition;
     dragElement.style.left = toPx(0);
     dragElement.style.top = toPx(0);
-
-    const oldDragElement = dragElement;
-    setTimeout(() => {
-      oldDragElement.style.transition = "none";
-    }, moveTransition + 50); // + 50 as padding time
   }
 
   dragElement = null;
