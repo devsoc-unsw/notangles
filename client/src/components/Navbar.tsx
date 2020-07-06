@@ -21,6 +21,7 @@ const LogoImg = styled.img`
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
+  z-index: 10;
 `;
 const StyledNavBar = styled(AppBar)`
   position: fixed;

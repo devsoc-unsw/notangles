@@ -8,7 +8,7 @@ import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 import Inventory from '../inventory/Inventory';
 
-const rowHeight = 85;
+const rowHeight = 86;
 
 const StyledTimetable = styled(Box) <{
   rows: number
@@ -18,10 +18,48 @@ const StyledTimetable = styled(Box) <{
   max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
   margin-top: 15px;
   box-sizing: content-box;
+  user-select: none;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / auto repeat(${days.length}, 1fr) 11px 1fr;
+  grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, 1fr) 11px 1fr;
 `;
+
+let dragElement: HTMLElement | null = null;
+let zIndex = 1200;
+const moveTransition = 200;
+const fromPx = (value: string) => Number(value.split("px")[0]);
+const toPx = (value: number) => value + "px";
+const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
+  element.style.left = toPx(fromPx(element.style.left) + offsetX);
+  element.style.top  = toPx(fromPx(element.style.top)  + offsetY);
+}
+
+// called when drag begins on a class
+const handleDragElement = (element: HTMLElement) => {
+  dragElement = element;
+  element.style.zIndex = String(++zIndex);
+}
+
+window.onmousemove = (event: any) => {
+  if (dragElement) {
+    moveElement(dragElement, event.movementX, event.movementY);
+  }
+}
+
+window.onmouseup = () => {
+  if (dragElement) {
+    dragElement.style.transition = moveTransition + "ms";
+    dragElement.style.left = toPx(0);
+    dragElement.style.top = toPx(0);
+
+    const oldDragElement = dragElement;
+    setTimeout(() => {
+      oldDragElement.style.transition = "none";
+    }, moveTransition + 50); // + 50 as padding time
+  }
+
+  dragElement = null;
+}
 
 interface TimetableProps {
   selectedCourses: CourseData[]
@@ -69,6 +107,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
+      setDragElement={handleDragElement}
     />
   </StyledTimetable>
 );

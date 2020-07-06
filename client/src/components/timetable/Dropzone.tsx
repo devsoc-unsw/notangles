@@ -3,12 +3,7 @@ import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
-
-export const timeToPosition = (time: number) => {
-  const hour = Math.floor(time);
-  const minute = (time - hour) * 60;
-  return (hour - 7) * 2 + (minute === 30 ? 1 : 0) - 2;
-};
+export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
 const StyledCell = styled.div<{
   classTime: ClassPeriod

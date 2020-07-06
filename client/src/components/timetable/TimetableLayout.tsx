@@ -37,15 +37,6 @@ const BaseCell = styled.div<{
   justify-content: center;
 `;
 
-const DoubleCell = styled(BaseCell) <{
-  y: number
-}>`
-  grid-row: ${(props) => {
-    props.y = props.y * 2 - 2;
-    return `${props.y} / ${props.y + 2}`;
-  }};
-`;
-
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
@@ -54,7 +45,7 @@ const paddingStyle = css`
   padding: 0 ${headerPadding}px;
 `;
 
-const HourCell = styled(DoubleCell) <{
+const HourCell = styled(BaseCell) <{
   is12HourMode: boolean
 }>`
   ${paddingStyle}
@@ -139,7 +130,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
   const otherCells = hours.map(
     (_, y) => days.map(
       (_, x) => (
-        <DoubleCell
+        <BaseCell
           key={x * 1000 + y}
           x={x + 2}
           y={y + 2}
