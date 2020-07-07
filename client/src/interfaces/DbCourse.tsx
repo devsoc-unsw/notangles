@@ -1,4 +1,8 @@
-import { Period, ClassData, CourseData } from './CourseData';
+import {
+  CourseData,
+  ClassData,
+  ClassPeriod,
+} from './CourseData';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -33,6 +37,22 @@ export interface DbTime {
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
+const weekdayToNumber = (weekDay: string) => {
+  const conversionTable: Record<string, number> = {
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+  };
+  return conversionTable[weekDay];
+};
+
+const timeToNumber = (time: string) => {
+  const [hour, minute] = time.split(':').map((part) => Number(part));
+  return hour + minute / 60;
+};
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -42,13 +62,13 @@ const locationShorten = (location: string): string => location.split(' (')[0];
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
+const dbTimesToPeriod = (dbTimes: DbTimes): ClassPeriod => ({
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
-    day: dbTimes.day,
-    start: dbTimes.time.start,
-    end: dbTimes.time.end,
+    day: weekdayToNumber(dbTimes.day),
+    start: timeToNumber(dbTimes.time.start),
+    end: timeToNumber(dbTimes.time.end),
     weeks: dbTimes.weeks,
   },
 });
@@ -65,33 +85,32 @@ const dbTimesToPeriod = (dbTimes: DbTimes): Period => ({
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-  const classes: Record<string, ClassData[]> = {};
-  let latestClassFinishTime = '00:00';
+  const courseData: CourseData = {
+    code: dbCourse.courseCode,
+    name: dbCourse.name,
+    activities: {},
+    latestFinishTime: 0,
+  };
+
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
-      classId: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
-      periods: dbClass.times.map(dbTimesToPeriod),
+      id: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
+      course: courseData,
       activity: dbClass.activity,
+      periods: dbClass.times.map(dbTimesToPeriod),
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
     classData.periods.forEach((period) => {
-      latestClassFinishTime = latestClassFinishTime > period.time.end
-        ? latestClassFinishTime : period.time.end;
+      if (period.time.end > courseData.latestFinishTime) {
+        courseData.latestFinishTime = period.time.end;
+      }
     });
-    if (!(dbClass.activity in classes)) {
-      classes[dbClass.activity] = [];
+    if (!(dbClass.activity in courseData.activities)) {
+      courseData.activities[dbClass.activity] = [];
     }
-    classes[dbClass.activity].push(classData);
+    courseData.activities[dbClass.activity].push(classData);
   });
 
-  const latestClassFinishHours = latestClassFinishTime.split(':')[0];
-  const latestClassFinishMinutes = latestClassFinishTime.split(':')[1];
-
-  return {
-    courseCode: dbCourse.courseCode,
-    courseName: dbCourse.name,
-    classes,
-    latestClassFinishTime: Number(latestClassFinishHours) + (latestClassFinishMinutes === '00' ? 0 : 1),
-  };
+  return courseData;
 };

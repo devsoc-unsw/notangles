@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '../../interfaces/CourseData';
 import { Dropzone } from './Dropzone';
 
 interface ClassDropzoneProps {
   course: CourseData
   color: string
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
@@ -13,17 +13,17 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
   color,
   onSelectClass,
 }) => {
-  const dropzones = Object.values(course.classes).map(
+  const dropzones = Object.values(course.activities).map(
     (classDatas) => classDatas.map(
       (classData) => classData.periods.map(
         (period, i) => (
           <Dropzone
-            key={`${classData.classId}-${i}`}
-            courseCode={course.courseCode}
+            key={`${classData.id}-${i}`}
+            courseCode={course.code}
             activity={classData.activity}
             classTime={period}
             color={color}
-            onDrop={() => onSelectClass(classData.classId)}
+            onDrop={() => onSelectClass(classData)}
           />
         ),
       ),
@@ -35,7 +35,7 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  onSelectClass(classId: string): void
+  onSelectClass(classData: ClassData): void
 }
 
 const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
@@ -45,9 +45,9 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
 }) => {
   const dropzones = selectedCourses.map((course) => (
     <ClassDropzone
-      key={course.courseCode}
+      key={course.code}
       course={course}
-      color={assignedColors[course.courseCode]}
+      color={assignedColors[course.code]}
       onSelectClass={onSelectClass}
     />
   ));

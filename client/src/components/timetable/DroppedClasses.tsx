@@ -2,30 +2,33 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import {
-  CourseData, Period, ClassData,
+  CourseData, ClassPeriod, ClassData,
 } from '../../interfaces/CourseData';
-import { weekdayToXCoordinate, timeToIndex } from './Dropzone';
+import { timeToPosition } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
 }) <{
   isDragging: boolean
-  classTime: Period
+  classTime: ClassPeriod
   backgroundColor: string
 }>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 20;
 
-  grid-column: ${(props) => weekdayToXCoordinate(props.classTime.time.day) + 1};
-  grid-row: ${(props) => timeToIndex(props.classTime.time.start)} /
-            ${(props) => timeToIndex(props.classTime.time.end)};
+  grid-column: ${(props) => props.classTime.time.day + 1};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
+            ${(props) => timeToPosition(props.classTime.time.end)};
 
   background-color: ${(props) => props.backgroundColor};
-  opacity: ${(props) => (props.isDragging ? 0.5 : 1)};
+  opacity: ${(props) => (props.isDragging ? 0 : 1)};
   color: white;
   cursor: move;
   font-size: 0.9rem;
@@ -46,24 +49,28 @@ const StyledCourseClass = styled(Card).withConfig({
 `;
 
 interface DroppedClassProps {
-  activity: string
-  courseCode: string
+  classData: ClassData
+  classTime: ClassPeriod
   color: string
-  classTime: Period
-  enrolments: number
-  capacity: number
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
-  activity,
-  courseCode,
-  color,
+  classData,
   classTime,
-  enrolments,
-  capacity,
+  color,
 }) => {
+  const {
+    course,
+    activity,
+    enrolments,
+    capacity,
+  } = classData;
+
   const [{ isDragging }, drag] = useDrag({
-    item: { type: `${courseCode}-${activity}` },
+    item: {
+      type: `${course.code}-${activity}`,
+      classData,
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -84,13 +91,17 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     >
       <p>
         <b>
-          {courseCode}
+          {course.code}
           {' '}
           {activity}
         </b>
       </p>
-      <p>{`${classTime.locationShort}`}</p>
-      <p>{`${enrolments}/${capacity} enrolled`}</p>
+      <p>
+        <LocationOnIcon fontSize="inherit" />
+        {`${classTime.locationShort} `}
+        <PeopleAltIcon fontSize="inherit" />
+        {` ${enrolments}/${capacity}`}
+      </p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
     </StyledCourseClass>
   );
@@ -98,52 +109,30 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
 interface DroppedClassesProps {
   selectedCourses: CourseData[]
-  selectedClassIds: string[]
+  selectedClasses: ClassData[]
   assignedColors: Record<string, string>
 }
 
-const buildDroppedClass = ({
-  classData,
-  classTime,
-  course,
-  assignedColors,
-}: {
-  classData: ClassData,
-  classTime: Period,
-  course: CourseData,
-  assignedColors: Record<string, string>
-}): JSX.Element => (
-  <DroppedClass
-    key={`${classData.classId}-${JSON.stringify(classTime)}`}
-    activity={classData.activity}
-    enrolments={classData.enrolments}
-    capacity={classData.capacity}
-    courseCode={course.courseCode}
-    color={assignedColors[course.courseCode]}
-    classTime={classTime}
-  />
-);
-
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
-  selectedClassIds,
+  selectedClasses,
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
 
   selectedCourses.forEach((course) => {
-    const allClasses = Object.values(course.classes).flatMap((x) => x);
+    const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(
-      (classData) => selectedClassIds.includes(classData.classId),
+      (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(
-          buildDroppedClass({
-            classData,
-            classTime,
-            course,
-            assignedColors,
-          }),
+          <DroppedClass
+            key={`${classData.id}-${JSON.stringify(classTime)}`}
+            classData={classData}
+            classTime={classTime}
+            color={assignedColors[course.code]}
+          />,
         );
       });
     });

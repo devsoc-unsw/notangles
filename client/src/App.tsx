@@ -5,11 +5,12 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
-import Inventory from './components/inventory/Inventory';
-import { CourseData } from './interfaces/CourseData';
+import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
+import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -24,10 +25,10 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 84px; // 64px for nav bar + 20px padding
+  padding-top: 64px; // for nav bar
   padding-left: 30px;
   padding-right: 30px;
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;
 
@@ -36,8 +37,8 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1200px;
-  min-width: 600px;
+  width: 1400px;
+  min-width: 1100px;
   max-width: 100%;
   margin: auto;
 
@@ -51,6 +52,9 @@ const Content = styled(Box)`
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding-top: 20px;
 `;
 
 const Footer = styled(Box)`
@@ -61,12 +65,12 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
   const assignedColors = useColorMapper(
-    selectedCourses.map((course) => course.courseCode),
+    selectedCourses.map((course) => course.code),
   );
 
   useEffect(() => {
@@ -77,31 +81,23 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSelectClass = (classId: string) => {
-    setSelectedClassIds((prevSelectedClassIds) => {
-      const [courseCode, activity] = classId.split('-');
-      const newSelectedClassIds = prevSelectedClassIds.filter(
-        (id) => !id.startsWith(`${courseCode}-${activity}`),
-      );
-      newSelectedClassIds.push(classId);
-      return newSelectedClassIds;
-    });
+  const handleSelectClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      [...filterOutClasses(prev, classData), classData]
+    ));
   };
 
-  const handleRemoveClass = (activityId: string) => {
-    setSelectedClassIds((prevSelectedClassIds) => {
-      const newSelectedClassIds = prevSelectedClassIds.filter(
-        (id) => !id.startsWith(activityId),
-      );
-      return newSelectedClassIds;
-    });
+  const handleRemoveClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => (
+      filterOutClasses(prev, classData)
+    ));
   };
 
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
-    Object.entries(newCourse.classes).forEach(([_, classes]) => {
-      handleSelectClass(classes[0].classId);
+    Object.values(newCourse.activities).forEach((classes) => {
+      handleSelectClass(classes[0]);
     });
   };
 
@@ -116,12 +112,12 @@ const App: FunctionComponent = () => {
 
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
-      (course) => course.courseCode !== courseCode,
+      (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClassIds(
-      selectedClassIds.filter((id) => id.split('-')[0] !== courseCode),
-    );
+    setSelectedClasses((prev) => (
+      prev.filter((classData) => classData.course.code !== courseCode)
+    ));
   };
 
   return (
@@ -134,29 +130,30 @@ const App: FunctionComponent = () => {
           />
           <ContentWrapper>
             <Content>
-              <SelectWrapper>
-                <CourseSelect
-                  selectedCourses={selectedCourses}
-                  assignedColors={assignedColors}
-                  handleSelect={handleSelectCourse}
-                  handleRemove={handleRemoveCourse}
-                />
-              </SelectWrapper>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={9}>
+                  <SelectWrapper>
+                    <CourseSelect
+                      selectedCourses={selectedCourses}
+                      assignedColors={assignedColors}
+                      handleSelect={handleSelectCourse}
+                      handleRemove={handleRemoveCourse}
+                    />
+                  </SelectWrapper>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Autotimetabler isDarkMode={isDarkMode} />
+                </Grid>
+              </Grid>
               <DndProvider backend={HTML5Backend}>
-                <Inventory
-                  selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
-                  assignedColors={assignedColors}
-                  removeCourse={handleRemoveCourse}
-                  removeClass={handleRemoveClass}
-                />
                 <Timetable
                   selectedCourses={selectedCourses}
-                  selectedClassIds={selectedClassIds}
+                  selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
+                  onRemoveClass={handleRemoveClass}
                 />
               </DndProvider>
               <Footer>
