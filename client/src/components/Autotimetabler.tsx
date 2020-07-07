@@ -96,7 +96,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 interface AutotimetablerProps {
   isDarkMode: boolean
 }
-const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
+const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
   const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
   const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
   const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
@@ -190,4 +190,4 @@ const Autotimetable: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
     </div>
   );
 };
-export default Autotimetable;
+export default Autotimetabler;
