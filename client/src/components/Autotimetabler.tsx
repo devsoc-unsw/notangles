@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
+import Grid from '@material-ui/core/Grid';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -35,6 +36,7 @@ const StyledOptionToggle = styled(ToggleButtonGroup)`
 const StyledOptionButtonToggle = styled(ToggleButton)`
     width: 100%;
     height: 32px;
+    margin-bottom: 10px;
 `;
 
 interface DropdownOptionProps {
@@ -57,31 +59,36 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   };
 
   return (
-    <div>
-      <ListItem>
-        <ListItemText
-          primary={optionName}
-          secondary={(
-            <StyledOptionToggle
-              size="small"
-              exclusive
-              value={optionState}
-              onChange={handleOptionChange}
-              aria-label="option choices"
-            >
-              <StyledOptionButtonToggle value="off" aria-label="default">
-                off
+    <ListItem key={optionName}>
+      <Grid container spacing={0}>
+        <Grid item xs={12}>
+          <ListItemText
+            primary={optionName}
+          />
+        </Grid>
+        <Grid item xs={12}>
+
+          <StyledOptionToggle
+            size="small"
+            exclusive
+            value={optionState}
+            onChange={handleOptionChange}
+            aria-label="option choices"
+          >
+            <StyledOptionButtonToggle value="off" aria-label="default">
+              off
+            </StyledOptionButtonToggle>
+            {optionChoices.map((op) => (
+              <StyledOptionButtonToggle key={op} value={op} aria-label={op}>
+                {op}
               </StyledOptionButtonToggle>
-              {optionChoices.map((op) => (
-                <StyledOptionButtonToggle value={op} aria-label={op}>
-                  {op}
-                </StyledOptionButtonToggle>
-              ))}
-            </StyledOptionToggle>
-          )}
-        />
-      </ListItem>
-    </div>
+            ))}
+          </StyledOptionToggle>
+        </Grid>
+      </Grid>
+
+
+    </ListItem>
 
   );
 };
