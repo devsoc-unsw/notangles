@@ -7,9 +7,8 @@ import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
-import Inventory from './components/inventory/Inventory';
-import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 import CourseSelect from './components/CourseSelect';
+import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -24,10 +23,10 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 84px; // 64px for nav bar + 20px padding
+  padding-top: 64px; // for nav bar
   padding-left: 30px;
   padding-right: 30px;
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;
 
@@ -36,8 +35,8 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1200px;
-  min-width: 600px;
+  width: 1400px;
+  min-width: 1100px;
   max-width: 100%;
   margin: auto;
 
@@ -51,6 +50,9 @@ const Content = styled(Box)`
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding-top: 20px;
 `;
 
 const Footer = styled(Box)`
@@ -66,7 +68,7 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
   const assignedColors = useColorMapper(
-    selectedCourses.map((course) => course.courseCode),
+    selectedCourses.map((course) => course.code),
   );
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const App: FunctionComponent = () => {
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
-    Object.entries(newCourse.classes).forEach(([_, classes]) => {
+    Object.values(newCourse.activities).forEach((classes) => {
       handleSelectClass(classes[0]);
     });
   };
@@ -108,11 +110,11 @@ const App: FunctionComponent = () => {
 
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
-      (course) => course.courseCode !== courseCode,
+      (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.courseCode !== courseCode)
+      prev.filter((classData) => classData.course.code !== courseCode)
     ));
   };
 
@@ -135,13 +137,6 @@ const App: FunctionComponent = () => {
                 />
               </SelectWrapper>
               <DndProvider backend={HTML5Backend}>
-                <Inventory
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  removeCourse={handleRemoveCourse}
-                  removeClass={handleRemoveClass}
-                />
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
@@ -149,6 +144,7 @@ const App: FunctionComponent = () => {
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
+                  onRemoveClass={handleRemoveClass}
                 />
               </DndProvider>
               <Footer>

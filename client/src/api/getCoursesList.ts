@@ -1,6 +1,20 @@
 import { CoursesList } from '../interfaces/CourseOverview';
 import { API_URL } from './config';
 
+interface FetchedCourse {
+  _id: string;
+  courseCode: string;
+  name: string;
+}
+
+const toCoursesList = (data: FetchedCourse[]): CoursesList => (
+  data.map((course) => ({
+    id: course._id,
+    code: course.courseCode,
+    name: course.name,
+  }))
+);
+
 /**
  * Fetches a list of course objects, where each course object contains
  * the course id, the course code, and course name
@@ -18,8 +32,8 @@ const getCoursesList = async (
 ): Promise<CoursesList | null> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const data = await fetch(`${baseURL}/courses/`);
-    return data.json();
+    const res = await fetch(`${baseURL}/courses/`);
+    return toCoursesList(await res.json());
   } catch (error) {
     console.error(error);
     return null;
