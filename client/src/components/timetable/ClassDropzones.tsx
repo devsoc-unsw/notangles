@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '@notangles/common';
 import { Dropzone } from './Dropzone';
 
 interface ClassDropzoneProps {

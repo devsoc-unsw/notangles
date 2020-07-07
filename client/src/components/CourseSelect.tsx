@@ -15,8 +15,8 @@ import {
   CheckRounded,
 } from '@material-ui/icons';
 import styled, { css } from 'styled-components';
+import { CourseData } from '@notangles/common';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
-import { CourseData } from '../interfaces/CourseData';
 import getCoursesList from '../api/getCoursesList';
 
 const SEARCH_DELAY = 300;
