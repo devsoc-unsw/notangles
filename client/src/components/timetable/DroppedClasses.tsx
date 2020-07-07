@@ -126,21 +126,12 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     setIsDragging(false);
   }
 
-  const onMove = (event: any) => {
-    const element = event.currentTarget;
-    if (isDragging) {
-      // element.style.left = toPx(fromPx(element.style.left) + event.movementX);
-      // element.style.top  = toPx(fromPx(element.style.top)  + event.movementY);
-    }
-  }
-
   return (
     <StyledCourseClass
       classTime={classTime}
       isDragging={isDragging}
       onMouseDown={onDown}
       onMouseUp={onUp}
-      onMouseMove={onMove}
       style={{left: 0, top: 0}}
     >
       <StyledCourseClassInner
