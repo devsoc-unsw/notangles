@@ -33,6 +33,7 @@ interface TimetableProps {
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
   onSelectClass(classData: ClassData): void
+  clashes: Array<String>
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
@@ -42,6 +43,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   is12HourMode,
   setIs12HourMode,
   onSelectClass,
+  clashes,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
@@ -63,6 +65,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
+      clashes={clashes}
     />
   </StyledTimetable>
 );

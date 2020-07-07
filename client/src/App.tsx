@@ -133,11 +133,7 @@ const App: FunctionComponent = () => {
         && period2.start < period1.end));
   }
 
-  const checkClashes = () => {
-    if (selectedClasses.length > 0) {
-      console.log('<>< <>< <>< ', selectedClasses[0].periods[0].time, typeof (selectedClasses[0].periods[0].time));
-    }
-
+  function checkClashes():Array<String> {
     // for class in selectedclasses
     //   for period in class
     //       for class in selectedClasses
@@ -149,21 +145,21 @@ const App: FunctionComponent = () => {
         selectedClasses.forEach((classActivity2) => {
           classActivity2.periods.forEach((period2) => {
             if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-              // setClashes(prev => new Set(prev.add([classActivity1, classActivity2].sort())))
-              // newClashes.add([`${classActivity1.courseCode} ${classActivity1.activity}`,
-              //                `${classActivity2.courseCode} ${classActivity2.activity}`].sort())
-              if (!newClashes.includes(`${classActivity1.courseCode} ${classActivity1.activity} ${classActivity2.courseCode} ${classActivity2.activity}`)
-                      && !newClashes.includes(`${classActivity2.courseCode} ${classActivity2.activity} ${classActivity1.courseCode} ${classActivity1.activity}`)) {
-                newClashes.push(`${classActivity1.courseCode} ${classActivity1.activity} ${classActivity2.courseCode} ${classActivity2.activity}`);
+              if (!newClashes.includes(classActivity1.classId)) {
+                newClashes.push(classActivity1.classId);
+              }
+              if (!newClashes.includes(classActivity2.classId)) {
+                newClashes.push(classActivity2.classId);
               }
             }
           });
         });
       });
     });
-    console.log('all clashes:', newClashes);
-  };
-  checkClashes();
+    console.log('all classes with clashes:', newClashes);
+    return newClashes;
+  }
+  // checkClashes();
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -198,6 +194,7 @@ const App: FunctionComponent = () => {
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
+                  clashes={checkClashes()}
                 />
               </DndProvider>
               <Footer>
