@@ -1,20 +1,22 @@
+export type Activities = Record<string, ClassData[]>;
+
 export interface CourseData {
-  courseCode: string
-  courseName: string
-  latestClassFinishTime: number
-  classes: Record<string, ClassData[]>
+  code: string
+  name: string
+  latestFinishTime: number
+  activities: Activities
 }
 
 export interface ClassData {
-  classId: string
-  courseCode: string
+  id: string
+  course: CourseData
   activity: string
-  periods: Period[]
   enrolments: number
   capacity: number
+  periods: ClassPeriod[]
 }
 
-export interface Period {
+export interface ClassPeriod {
   time: ClassTime
   location: string
   locationShort: string
@@ -29,6 +31,6 @@ export interface ClassTime {
 
 export const filterOutClasses = (classes: ClassData[], a: ClassData) => (
   classes.filter((b) => (
-    !(a.courseCode === b.courseCode && a.activity === b.activity)
+    !(a.course.code === b.course.code && a.activity === b.activity)
   ))
 );

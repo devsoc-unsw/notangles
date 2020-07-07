@@ -9,6 +9,7 @@ const baseTheme = ({
   background: {
     main: string,
     light: string,
+    dark: string,
   },
   border: {
     main: string,
@@ -27,6 +28,7 @@ const baseTheme = ({
     secondary: {
       main: border.main,
       dark: border.dark,
+      light: background.dark,
     },
     action: {
       disabled: 'rgba(255, 255, 255, 0.5)',
@@ -42,6 +44,7 @@ export const lightTheme = createMuiTheme(baseTheme({
   background: {
     main: '#fafafa',
     light: '#fff',
+    dark: '#f2f2f2',
   },
   border: {
     main: '#bdbdbd',
@@ -54,6 +57,7 @@ export const darkTheme = createMuiTheme(baseTheme({
   background: {
     main: '#212121',
     light: '#292929',
+    dark: '#181818',
   },
   border: {
     main: '#616161',

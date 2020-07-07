@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
-import { Period } from '../../interfaces/CourseData';
+import { ClassPeriod } from '../../interfaces/CourseData';
+
 
 export const timeToPosition = (time: number) => {
   const hour = Math.floor(time);
@@ -10,20 +11,21 @@ export const timeToPosition = (time: number) => {
 };
 
 const StyledCell = styled.div<{
-  classTime: Period
+  classTime: ClassPeriod
   canDrop: boolean
   color: string
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
   grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
     ${(props) => timeToPosition(props.classTime.time.end)};
   background-color: ${(props) => props.color};
 
-  transition: opacity 200ms;
+  transition: opacity 0.2s;
   opacity: ${(props) => (props.canDrop ? 0.3 : 0)};
   pointer-events: ${(props) => (props.canDrop ? 'auto' : 'none')};
 `;
@@ -31,7 +33,7 @@ const StyledCell = styled.div<{
 interface CellProps {
   courseCode: string
   activity: string
-  classTime: Period
+  classTime: ClassPeriod
   color: string
   onDrop(): void
 }
