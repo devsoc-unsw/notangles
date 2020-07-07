@@ -1,3 +1,30 @@
-const hello = (): string => 'Hello world';
+export type Activities = Record<string, ClassData[]>;
 
-export default hello;
+export interface CourseData {
+  code: string
+  name: string
+  latestFinishTime: number
+  activities: Activities
+}
+
+export interface ClassData {
+  id: string
+  course: CourseData
+  activity: string
+  enrolments: number
+  capacity: number
+  periods: ClassPeriod[]
+}
+
+export interface ClassPeriod {
+  time: ClassTime
+  location: string
+  locationShort: string
+}
+
+export interface ClassTime {
+  day: number
+  start: number
+  end: number
+  weeks: string
+}
