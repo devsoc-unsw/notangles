@@ -24,42 +24,6 @@ const StyledTimetable = styled(Box) <{
   grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, 1fr) 11px 1fr;
 `;
 
-let dragElement: HTMLElement | null = null;
-let zIndex = 1200;
-const transitionTime = 200;
-const defaultTransition = `all ${transitionTime}ms`;
-const moveTransition = `transform ${transitionTime}ms`
-
-const fromPx = (value: string) => Number(value.split("px")[0]);
-const toPx = (value: number) => value + "px";
-const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
-  element.style.left = toPx(fromPx(element.style.left) + offsetX);
-  element.style.top  = toPx(fromPx(element.style.top)  + offsetY);
-}
-
-// called when drag begins on a class
-const handleDragElement = (element: HTMLElement) => {
-  dragElement = element;
-  element.style.zIndex = String(++zIndex);
-  element.style.transition = moveTransition;
-}
-
-window.onmousemove = (event: any) => {
-  if (dragElement) {
-    moveElement(dragElement, event.movementX, event.movementY);
-  }
-}
-
-window.onmouseup = () => {
-  if (dragElement) {
-    dragElement.style.transition = defaultTransition;
-    dragElement.style.left = toPx(0);
-    dragElement.style.top = toPx(0);
-  }
-
-  dragElement = null;
-}
-
 interface TimetableProps {
   selectedCourses: CourseData[]
   selectedClasses: ClassData[]
@@ -106,7 +70,6 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
-      setDragElement={handleDragElement}
     />
   </StyledTimetable>
 );

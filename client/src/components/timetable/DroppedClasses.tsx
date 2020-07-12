@@ -4,38 +4,39 @@ import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import useDragTarget from './DragManager';
 import { timeToPosition } from './Dropzone';
 import {
   CourseData, ClassPeriod, ClassData,
 } from '../../interfaces/CourseData';
 
-const getClassTranslateX = (classTime: ClassPeriod) => (
-  (classTime.time.day - 1) * 100
-)
+const getClassTranslateX = (classPeriod: ClassPeriod) => (
+  (classPeriod.time.day - 1) * 100
+);
 
-const getClassTranslateY = (classTime: ClassPeriod) => {
+const getClassTranslateY = (classPeriod: ClassPeriod) => {
   // height compared to standard row height
-  const heightFactor = classTime.time.end - classTime.time.start;
+  const heightFactor = classPeriod.time.end - classPeriod.time.start;
   // number of rows to offset down
-  const offsetRows = timeToPosition(classTime.time.start) - 2
+  const offsetRows = timeToPosition(classPeriod.time.start) - 2;
   // calculate translate percentage (relative to height)
   return (offsetRows / heightFactor) * 100;
-}
+};
 
 const classMargin = 2;
 
 const StyledCourseClass = styled.div<{
-  classTime: ClassPeriod
+  classPeriod: ClassPeriod
   isDragging: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / ${(props) => (
-    timeToPosition(props.classTime.time.end) - timeToPosition(props.classTime.time.start) + 2
+    timeToPosition(props.classPeriod.time.end) - timeToPosition(props.classPeriod.time.start) + 2
   )};
   transform: translate(
-    ${(props) => getClassTranslateX(props.classTime)}%,
-    ${(props) => getClassTranslateY(props.classTime)}%
-  ) scale(${(props) => props.isDragging ? 1.2 : 1});
+    ${(props) => getClassTranslateX(props.classPeriod)}%,
+    ${(props) => getClassTranslateY(props.classPeriod)}%
+  ) scale(${(props) => (props.isDragging ? 1.2 : 1)});
 
   z-index: 1200;
   padding: ${classMargin}px;
@@ -49,7 +50,7 @@ const StyledCourseClass = styled.div<{
 `;
 
 const StyledCourseClassInner = styled(Card).withConfig({
-  shouldForwardProp: (prop) => !["backgroundColor"].includes(prop),
+  shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
 }) <{
   backgroundColor: string
 }>`
@@ -77,27 +78,23 @@ const StyledCourseClassInner = styled(Card).withConfig({
     overflow: hidden;
     text-overflow: ellipsis;
   }
-`
+`;
 
 interface DroppedClassProps {
-  classData: ClassData
-  classTime: ClassPeriod
+  classPeriod: ClassPeriod
   color: string
-  setDragElement: (element: HTMLElement) => void
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
-  classData,
-  classTime,
+  classPeriod,
   color,
-  setDragElement,
 }) => {
   const {
     course,
     activity,
     enrolments,
     capacity,
-  } = classData;
+  } = classPeriod.class;
 
   // const [{ isDragging }, drag] = useDrag({
   //   item: {
@@ -110,29 +107,31 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   // });
 
   const [isDragging, setIsDragging] = useState(false);
+  const [dragTarget, setDragTarget] = useDragTarget();
+  const { weeks } = classPeriod.time;
 
-  const { weeks } = classTime.time;
+  if (isDragging && !dragTarget) setIsDragging(false);
 
   const isMultipleWeeks = (wks: string) => (
     wks.includes(',') || wks.includes('-')
   );
 
   const onDown = (event: any) => {
+    setDragTarget(classPeriod, event.currentTarget);
     setIsDragging(true);
-    setDragElement(event.currentTarget);
-  }
+  };
 
   const onUp = () => {
-    setIsDragging(false);
-  }
+    // setIsDragging(false);
+  };
 
   return (
     <StyledCourseClass
-      classTime={classTime}
+      classPeriod={classPeriod}
       isDragging={isDragging}
       onMouseDown={onDown}
       onMouseUp={onUp}
-      style={{left: 0, top: 0}}
+      style={{ left: 0, top: 0 }}
     >
       <StyledCourseClassInner
         backgroundColor={color}
@@ -147,7 +146,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
         </p>
         <p>
           <LocationOnIcon fontSize="inherit" />
-          {`${classTime.locationShort} `}
+          {`${classPeriod.locationShort} `}
           <PeopleAltIcon fontSize="inherit" />
           {` ${enrolments}/${capacity}`}
         </p>
@@ -161,14 +160,12 @@ interface DroppedClassesProps {
   selectedCourses: CourseData[]
   selectedClasses: ClassData[]
   assignedColors: Record<string, string>
-  setDragElement: (element: HTMLElement) => void
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
   selectedClasses,
   assignedColors,
-  setDragElement,
 }) => {
   const droppedClasses: JSX.Element[] = [];
 
@@ -177,14 +174,12 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     allClasses.filter(
       (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
-      classData.periods.forEach((classTime) => {
+      classData.periods.forEach((classPeriod) => {
         droppedClasses.push(
           <DroppedClass
-            key={`${classData.id}-${JSON.stringify(classTime)}`}
-            classData={classData}
-            classTime={classTime}
+            key={`${classPeriod.location}-${JSON.stringify(classPeriod.time)}`}
+            classPeriod={classPeriod}
             color={assignedColors[course.code]}
-            setDragElement={setDragElement}
           />,
         );
       });

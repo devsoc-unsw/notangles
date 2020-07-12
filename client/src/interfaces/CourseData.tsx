@@ -17,6 +17,7 @@ export interface ClassData {
 }
 
 export interface ClassPeriod {
+  class: ClassData
   time: ClassTime
   location: string
   locationShort: string

@@ -62,7 +62,8 @@ const timeToNumber = (time: string) => {
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes): ClassPeriod => ({
+const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
+  class: classData,
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
@@ -97,10 +98,13 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       id: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
       course: courseData,
       activity: dbClass.activity,
-      periods: dbClass.times.map(dbTimesToPeriod),
+      periods: [],
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
+    classData.periods = dbClass.times.map((dbTime) => (
+      dbTimesToPeriod(dbTime, classData)
+    ));
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
