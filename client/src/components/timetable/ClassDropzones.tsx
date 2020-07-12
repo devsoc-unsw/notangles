@@ -19,11 +19,8 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
         (period, i) => (
           <Dropzone
             key={`${classData.id}-${i}`}
-            courseCode={course.code}
-            activity={classData.activity}
-            classTime={period}
+            classPeriod={period}
             color={color}
-            onDrop={() => onSelectClass(classData)}
           />
         ),
       ),

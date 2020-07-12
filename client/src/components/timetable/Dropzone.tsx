@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import useDragTarget from './DragManager';
 import { useDrop } from 'react-dnd';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
 const StyledCell = styled.div<{
-  classTime: ClassPeriod
+  classPeriod: ClassPeriod
   canDrop: boolean
   color: string
 }>`
@@ -15,9 +16,9 @@ const StyledCell = styled.div<{
   justify-content: center;
   z-index: 20;
 
-  grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
-    ${(props) => timeToPosition(props.classTime.time.end)};
+  grid-column: ${(props) => props.classPeriod.time.day + 1};
+  grid-row: ${(props) => timeToPosition(props.classPeriod.time.start)} /
+    ${(props) => timeToPosition(props.classPeriod.time.end)};
   background-color: ${(props) => props.color};
 
   transition: opacity 0.2s;
@@ -26,33 +27,32 @@ const StyledCell = styled.div<{
 `;
 
 interface CellProps {
-  courseCode: string
-  activity: string
-  classTime: ClassPeriod
+  classPeriod: ClassPeriod;
   color: string
-  onDrop(): void
 }
 
 const Dropzone: React.FC<CellProps> = ({
-  courseCode,
-  activity,
-  classTime,
+  classPeriod,
   color,
-  onDrop,
 }) => {
-  const [{ canDrop }, drop] = useDrop({
-    accept: `${courseCode}-${activity}`,
-    drop: onDrop,
-    collect: (monitor) => ({
-      canDrop: monitor.canDrop(),
-      isOver: monitor.isOver(),
-    }),
-  });
+  // const [{ canDrop }, drop] = useDrop({
+  //   accept: `${courseCode}-${activity}`,
+  //   drop: onDrop,
+  //   collect: (monitor) => ({
+  //     canDrop: monitor.canDrop(),
+  //     isOver: monitor.isOver(),
+  //   }),
+  // });
+  
+  const [dragTarget, _] = useDragTarget();
+  const canDrop = (
+    dragTarget != null
+    && dragTarget.class.course.code == classPeriod.class.course.code
+  );
 
   return (
     <StyledCell
-      ref={drop}
-      classTime={classTime}
+      classPeriod={classPeriod}
       canDrop={canDrop}
       color={color}
     />

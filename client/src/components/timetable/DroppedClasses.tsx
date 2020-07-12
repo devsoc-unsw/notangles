@@ -121,16 +121,11 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     setIsDragging(true);
   };
 
-  const onUp = () => {
-    // setIsDragging(false);
-  };
-
   return (
     <StyledCourseClass
       classPeriod={classPeriod}
       isDragging={isDragging}
       onMouseDown={onDown}
-      onMouseUp={onUp}
       style={{ left: 0, top: 0 }}
     >
       <StyledCourseClassInner
