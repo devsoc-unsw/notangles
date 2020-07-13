@@ -5,7 +5,9 @@ import { ClassPeriod } from '../../interfaces/CourseData';
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
-const StyledCell = styled.div<{
+const StyledCell = styled.div.attrs(() => ({
+  className: 'dropzone',
+}))<{
   classPeriod: ClassPeriod
   canDrop: boolean
   color: string
@@ -34,15 +36,6 @@ const Dropzone: React.FC<CellProps> = ({
   classPeriod,
   color,
 }) => {
-  // const [{ canDrop }, drop] = useDrop({
-  //   accept: `${courseCode}-${activity}`,
-  //   drop: onDrop,
-  //   collect: (monitor) => ({
-  //     canDrop: monitor.canDrop(),
-  //     isOver: monitor.isOver(),
-  //   }),
-  // });
-  
   const { dragTarget } = useDrag();
   const canDrop = (
     dragTarget != null

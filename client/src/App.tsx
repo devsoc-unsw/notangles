@@ -1,9 +1,9 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { DragManager } from './components/timetable/DragManager';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
+import { DragManager } from './components/timetable/DragManager';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import CourseSelect from './components/CourseSelect';

@@ -24,10 +24,9 @@ const getClassTranslateY = (classPeriod: ClassPeriod) => {
 
 const classMargin = 2;
 
-const StyledCourseClass = styled.div.attrs(() => ({
-  className: "class"
-}))<{
+const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
+  dragTarget: ClassPeriod | null
   isDragging: boolean
 }>`
   grid-column: 2;
@@ -41,14 +40,20 @@ const StyledCourseClass = styled.div.attrs(() => ({
 
   // above vs. below app bar
   z-index: ${(props) => (props.isDragging ? 1200 : 1000)};
-  padding: ${classMargin}px;
+
   // position over timetable borders
   position: relative;
+
+  padding: ${classMargin}px;
   width:  calc(100% + ${1 / devicePixelRatio}px);
   height: calc(100% + ${1 / devicePixelRatio}px);
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
+  cursor: ${(props) => {
+    if (props.dragTarget && !props.isDragging) return 'inherit';
+    return props.isDragging ? 'grabbing' : 'grab';
+  }};
 `;
 
 const StyledCourseClassInner = styled(Card).withConfig({
@@ -63,7 +68,6 @@ const StyledCourseClassInner = styled(Card).withConfig({
   
   background-color: ${(props) => props.backgroundColor};
   color: white;
-  cursor: move;
   font-size: 0.9rem;
   border-radius: 7px;
   transition: 200ms;
@@ -118,6 +122,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   return (
     <StyledCourseClass
       classPeriod={classPeriod}
+      dragTarget={dragTarget}
       isDragging={isDragging}
       onMouseDown={onDown}
       style={{ left: 0, top: 0 }}

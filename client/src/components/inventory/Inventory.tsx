@@ -64,11 +64,11 @@ const Inventory: React.FC<InventoryProps> = ({
     });
   });
 
-  const ids = selectedCourses.reduce<string[]>((array, course): string[] => (
-    [...array, ...Object.keys(course.activities).map((activity) => (
-      `${course.code}-${activity}`
-    ))]
-  ), []);
+  // const ids = selectedCourses.reduce<string[]>((array, course) => (
+  //   [...array, ...Object.keys(course.activities).map((activity) => (
+  //     `${course.code}-${activity}`
+  //   ))]
+  // ), []);
 
   return (
     <StyledInventory>
