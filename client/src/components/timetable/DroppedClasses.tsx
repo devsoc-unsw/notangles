@@ -24,7 +24,9 @@ const getClassTranslateY = (classPeriod: ClassPeriod) => {
 
 const classMargin = 2;
 
-const StyledCourseClass = styled.div<{
+const StyledCourseClass = styled.div.attrs(() => ({
+  className: "class"
+}))<{
   classPeriod: ClassPeriod
   isDragging: boolean
 }>`
@@ -37,7 +39,8 @@ const StyledCourseClass = styled.div<{
     ${(props) => getClassTranslateY(props.classPeriod)}%
   ) scale(${(props) => (props.isDragging ? 1.2 : 1)});
 
-  z-index: 1200;
+  // above vs. below app bar
+  z-index: ${(props) => (props.isDragging ? 1200 : 1000)};
   padding: ${classMargin}px;
   // position over timetable borders
   position: relative;

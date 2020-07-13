@@ -8,10 +8,10 @@ const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
 
 let dragElement: HTMLElement | null = null;
-let zIndex = 1200; // starts above material app bar
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
+
 const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
   element.style.left = toPx(fromPx(element.style.left) + offsetX);
   element.style.top = toPx(fromPx(element.style.top) + offsetY);
@@ -30,7 +30,6 @@ export const DragManager: FunctionComponent = (props) => {
 
   const handleDragTarget = (classPeriod: ClassPeriod | null, element?: HTMLElement) => {
     if (element) {
-      element.style.zIndex = String(++zIndex);
       element.style.transition = moveTransition;
       dragElement = element;
     } else {

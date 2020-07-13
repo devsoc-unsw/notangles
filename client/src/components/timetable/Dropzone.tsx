@@ -46,8 +46,9 @@ const Dropzone: React.FC<CellProps> = ({
   const { dragTarget } = useDrag();
   const canDrop = (
     dragTarget != null
-    && dragTarget.class.course.code == classPeriod.class.course.code
-    && dragTarget.class.activity == classPeriod.class.activity
+    && dragTarget.class.course.code === classPeriod.class.course.code
+    && dragTarget.class.activity === classPeriod.class.activity
+    && dragTarget.time.end - dragTarget.time.start === classPeriod.time.end - classPeriod.time.start
   );
 
   return (
