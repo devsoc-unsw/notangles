@@ -21,7 +21,7 @@ const StyledTimetable = styled(Box) <{
   user-select: none;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, 1fr) 11px 1fr;
+  grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 11px 1fr;
 `;
 
 interface TimetableProps {

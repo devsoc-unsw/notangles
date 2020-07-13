@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import React, {
+  FunctionComponent, useState, createContext, useContext
+} from 'react';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 const transitionTime = 200;
@@ -15,10 +17,15 @@ const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => 
   element.style.top = toPx(fromPx(element.style.top) + offsetY);
 };
 
-const useDragTarget = (): [
-  ClassPeriod | null,
-  (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
-] => {
+const DragContext = createContext<{
+  dragTarget: ClassPeriod | null,
+  setDragTarget: (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
+}>({
+  dragTarget: null,
+  setDragTarget: () => {}
+});
+
+export const DragManager: FunctionComponent = (props) => {
   const [dragTarget, setDragTarget] = useState<ClassPeriod | null>(null);
 
   const handleDragTarget = (classPeriod: ClassPeriod | null, element?: HTMLElement) => {
@@ -47,7 +54,17 @@ const useDragTarget = (): [
     handleDragTarget(null);
   };
 
-  return [dragTarget, handleDragTarget];
-};
+  return (
+    <DragContext.Provider value={{
+      dragTarget,
+      setDragTarget: handleDragTarget
+    }}>
+      {props.children}
+    </DragContext.Provider>
+  );
+}
 
-export default useDragTarget;
+export const useDrag = (): {
+  dragTarget: ClassPeriod | null,
+  setDragTarget: (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
+} => useContext(DragContext);

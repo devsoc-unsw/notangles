@@ -1,10 +1,9 @@
 import React, { FunctionComponent, useState } from 'react';
-import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import useDragTarget from './DragManager';
+import { useDrag } from './DragManager';
 import { timeToPosition } from './Dropzone';
 import {
   CourseData, ClassPeriod, ClassData,
@@ -66,14 +65,16 @@ const StyledCourseClassInner = styled(Card).withConfig({
   border-radius: 7px;
   transition: 200ms;
 
+  min-width: 0;
+  width: 100%;
   height: 100%;
   box-sizing: border-box;
   padding: 10px;
   position: relative;
 
   p {
-    margin: 0 0;
     width: 100%;
+    margin: 0 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -96,18 +97,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     capacity,
   } = classPeriod.class;
 
-  // const [{ isDragging }, drag] = useDrag({
-  //   item: {
-  //     type: `${course.code}-${activity}`,
-  //     classData,
-  //   },
-  //   collect: (monitor) => ({
-  //     isDragging: monitor.isDragging(),
-  //   }),
-  // });
-
   const [isDragging, setIsDragging] = useState(false);
-  const [dragTarget, setDragTarget] = useDragTarget();
+  const { dragTarget, setDragTarget } = useDrag();
   const { weeks } = classPeriod.time;
 
   if (isDragging && !dragTarget) setIsDragging(false);

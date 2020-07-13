@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import useDragTarget from './DragManager';
-import { useDrop } from 'react-dnd';
+import { useDrag } from './DragManager';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
@@ -44,10 +43,11 @@ const Dropzone: React.FC<CellProps> = ({
   //   }),
   // });
   
-  const [dragTarget, _] = useDragTarget();
+  const { dragTarget } = useDrag();
   const canDrop = (
     dragTarget != null
     && dragTarget.class.course.code == classPeriod.class.course.code
+    && dragTarget.class.activity == classPeriod.class.activity
   );
 
   return (

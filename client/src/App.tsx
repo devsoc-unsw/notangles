@@ -1,7 +1,6 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { DragManager } from './components/timetable/DragManager';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
@@ -136,7 +135,7 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-              <DndProvider backend={HTML5Backend}>
+              <DragManager>
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
@@ -146,7 +145,7 @@ const App: FunctionComponent = () => {
                   onSelectClass={handleSelectClass}
                   onRemoveClass={handleRemoveClass}
                 />
-              </DndProvider>
+              </DragManager>
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or

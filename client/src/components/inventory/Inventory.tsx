@@ -70,17 +70,8 @@ const Inventory: React.FC<InventoryProps> = ({
     ))]
   ), []);
 
-  const [, drop] = useDrop({
-    accept: ids,
-    drop: ({ classData }: any) => classData && removeClass(classData),
-    collect: (monitor) => ({
-      canDrop: monitor.canDrop(),
-      isOver: monitor.isOver(),
-    }),
-  });
-
   return (
-    <StyledInventory ref={drop}>
+    <StyledInventory>
       {classNodes}
       <StyledInventoryText>
         Drag classes here to get them out of the way
