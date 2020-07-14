@@ -14,7 +14,7 @@ const StyledCourseClass = styled(Card).withConfig({
   isDragging: boolean
   classTime: Period
   backgroundColor: string
-  clashBorder: boolean
+  hasClash: boolean
 }>`
   display: flex;
   justify-content: center;
@@ -31,7 +31,7 @@ const StyledCourseClass = styled(Card).withConfig({
   cursor: move;
   font-size: 0.9rem;
   border-radius: 6px;
-  border: ${(props) => (props.clashBorder ? 'solid red 3px' : 'none')};
+  border: ${(props) => (props.hasClash ? 'solid rgba(227, 81, 61, 0.85) 3px' : 'none')};
 
   padding: 10px;
   margin: 2px;
@@ -51,14 +51,14 @@ interface DroppedClassProps {
   classData: ClassData
   classTime: Period
   color: string
-  clashBorder: boolean
+  hasClash: boolean
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   classData,
   classTime,
   color,
-  clashBorder,
+  hasClash,
 }) => {
   const {
     courseCode,
@@ -89,7 +89,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       isDragging={isDragging}
       backgroundColor={color}
       classTime={classTime}
-      clashBorder={clashBorder}
+      hasClash={hasClash}
     >
       <p>
         <b>
@@ -131,7 +131,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
             classData={classData}
             classTime={classTime}
             color={assignedColors[course.courseCode]}
-            clashBorder={clashes.includes(classData.classId)}
+            hasClash={clashes.includes(classData.classId)}
           />,
         );
       });
