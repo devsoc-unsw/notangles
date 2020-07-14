@@ -2,23 +2,26 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import {
-  CourseData, Period, ClassData,
-} from '../../interfaces/CourseData';
+  CourseData, ClassPeriod, ClassData,
+} from '@notangles/common';
 import { timeToPosition } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
 }) <{
   isDragging: boolean
-  classTime: Period
+  classTime: ClassPeriod
   backgroundColor: string
 }>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
   grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
@@ -47,7 +50,7 @@ const StyledCourseClass = styled(Card).withConfig({
 
 interface DroppedClassProps {
   classData: ClassData
-  classTime: Period
+  classTime: ClassPeriod
   color: string
 }
 
@@ -57,7 +60,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   color,
 }) => {
   const {
-    courseCode,
+    course,
     activity,
     enrolments,
     capacity,
@@ -65,7 +68,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
   const [{ isDragging }, drag] = useDrag({
     item: {
-      type: `${courseCode}-${activity}`,
+      type: `${course.code}-${activity}`,
       classData,
     },
     collect: (monitor) => ({
@@ -88,13 +91,17 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     >
       <p>
         <b>
-          {courseCode}
+          {course.code}
           {' '}
           {activity}
         </b>
       </p>
-      <p>{`${classTime.locationShort}`}</p>
-      <p>{`${enrolments}/${capacity} enrolled`}</p>
+      <p>
+        <LocationOnIcon fontSize="inherit" />
+        {`${classTime.locationShort} `}
+        <PeopleAltIcon fontSize="inherit" />
+        {` ${enrolments}/${capacity}`}
+      </p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
     </StyledCourseClass>
   );
@@ -114,17 +121,17 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   const droppedClasses: JSX.Element[] = [];
 
   selectedCourses.forEach((course) => {
-    const allClasses = Object.values(course.classes).flatMap((x) => x);
+    const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(
       (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(
           <DroppedClass
-            key={`${classData.classId}-${JSON.stringify(classTime)}`}
+            key={`${classData.id}-${JSON.stringify(classTime)}`}
             classData={classData}
             classTime={classTime}
-            color={assignedColors[course.courseCode]}
+            color={assignedColors[course.code]}
           />,
         );
       });
