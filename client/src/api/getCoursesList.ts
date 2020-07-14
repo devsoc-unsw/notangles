@@ -40,7 +40,11 @@ const getCoursesList = async (
     }
     return toCoursesList(await data.json());
   } catch (error) {
-    throw new NetworkError('Could not connect to server');
+    if (error.message === 'timeout') {
+      throw new NetworkError('Could not connect to server');
+    } else {
+      throw error;
+    }
   }
 };
 

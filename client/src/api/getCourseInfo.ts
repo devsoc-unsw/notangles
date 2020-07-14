@@ -27,14 +27,17 @@ const getCourseInfo = async (
     if (data.status === 400) {
       throw new NetworkError('Internal server error');
     }
-    console.log();
     const json: DbCourse = await data.json();
     if (!json) {
       throw new NetworkError('Internal server error');
     }
     return dbCourseToCourseData(json);
   } catch (error) {
-    throw new NetworkError('Could not connect to server');
+    if (error.message === 'timeout') {
+      throw new NetworkError('Could not connect to server');
+    } else {
+      throw error;
+    }
   }
 };
 
