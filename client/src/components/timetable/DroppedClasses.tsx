@@ -36,7 +36,7 @@ const StyledCourseClass = styled.div<{
   transform: translate(
     ${(props) => getClassTranslateX(props.classPeriod)}%,
     ${(props) => getClassTranslateY(props.classPeriod)}%
-  ) scale(${(props) => (props.isDragging ? 1.2 : 1)});
+  ) scale(${(props) => (props.isDragging ? 1.1 : 1)});
 
   // above vs. below app bar
   z-index: ${(props) => (props.isDragging ? 1200 : 1000)};
