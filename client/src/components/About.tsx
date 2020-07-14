@@ -24,10 +24,10 @@ const DialogContent = styled(MuiDialogContent)`
 `;
 
 const FeatList = styled.ul`
-    margin-top: 4px;
-    margin-bottom: 6px;
-    font-size: 14px;
-    line-height:20px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 20px;
 `;
 
 const About: React.FC = () => {
@@ -50,24 +50,21 @@ const About: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-
         <StyledDialogTitle disableTypography>
           <Typography variant="h5">
             Notangles: No more timetable Tangles
           </Typography>
-          <CloseButton
-            aria-label="close"
-            onClick={toggleIsOpen}
-          >
+          <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
 
         <DialogContent dividers>
           <Typography gutterBottom variant="body2">
-            Notangles is a tool helping UNSW students build the perfect timetable,
-            with an intuitive drag and drop interface. We have many features on
-            the way, including auto-timetabling, and syncing your timetable with friends.
+            Notangles is a tool helping UNSW students build the perfect
+            timetable, with an intuitive drag and drop interface. We have many
+            features on the way, including auto-timetabling, and syncing your
+            timetable with friends.
           </Typography>
           <Typography gutterBottom variant="body2">
             Inspired by&nbsp;
@@ -79,30 +76,29 @@ const About: React.FC = () => {
               Crossangles
             </Link>
             , it was created by&nbsp;
-            <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
+            <Link
+              href="https://www.csesoc.unsw.edu.au/teams/software-projects/"
+              target="_blank"
+            >
               CSESoc Projects
             </Link>
             &nbsp;- a place for student-led projects where you can learn
-            something new and make some friends along the way.
-            Notangles is free and open-source.
+            something new and make some friends along the way. Notangles is free
+            and open-source.
           </Typography>
-          <Typography variant="h6">
-            How it works
-          </Typography>
+          <Typography variant="h6">How it works</Typography>
           <Typography gutterBottom variant="body2">
-            Use the course dropdown to search for and select your courses.
-            Drag and drop classes to view timetabling options.
+            Use the course dropdown to search for and select your courses. Drag
+            and drop classes to view timetabling options.
             <br />
-            Notangles does not enroll in your classes. It’s a tool for
-            planning your timetable, but you’ll still need to officially enroll on&nbsp;
+            Notangles does not enroll in your classes. It’s a tool for planning
+            your timetable, but you’ll still need to officially enroll on&nbsp;
             <Link href="https://my.unsw.edu.au/" target="_blank">
               myUNSW
             </Link>
             .
           </Typography>
-          <Typography variant="h6">
-            Features
-          </Typography>
+          <Typography variant="h6">Features</Typography>
           <FeatList>
             <li> Drag-and-drop interface </li>
             <li> Move clutter to the class inventory </li>
@@ -128,7 +124,6 @@ const About: React.FC = () => {
             If you find an issue or have a suggestion, please contact us.
           </Typography>
         </DialogContent>
-
       </Dialog>
     </div>
   );

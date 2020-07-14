@@ -7,7 +7,7 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import {
   CourseData, ClassPeriod, ClassData,
-} from '../../interfaces/CourseData';
+} from '@notangles/common';
 import { timeToPosition } from './Dropzone';
 
 const StyledCourseClass = styled(Card).withConfig({
