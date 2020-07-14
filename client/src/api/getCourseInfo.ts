@@ -1,5 +1,5 @@
+import { CourseData } from '@notangles/common';
 import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
-import { CourseData } from '../interfaces/CourseData';
 import { API_URL } from './config';
 
 /**

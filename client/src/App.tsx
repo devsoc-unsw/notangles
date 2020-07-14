@@ -5,12 +5,15 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import Timetable from './components/timetable/Timetable';
-import Navbar from './components/Navbar';
-import CourseSelect from './components/CourseSelect';
+import Grid from '@material-ui/core/Grid';
 import {
   CourseData, ClassData, ClassTime, filterOutClasses,
-} from './interfaces/CourseData';
+} from '@notangles/common';
+import Timetable from './components/timetable/Timetable';
+import Navbar from './components/Navbar';
+import Autotimetabler from './components/Autotimetabler';
+import CourseSelect from './components/CourseSelect';
+
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 
@@ -159,14 +162,21 @@ const App: FunctionComponent = () => {
           />
           <ContentWrapper>
             <Content>
-              <SelectWrapper>
-                <CourseSelect
-                  selectedCourses={selectedCourses}
-                  assignedColors={assignedColors}
-                  handleSelect={handleSelectCourse}
-                  handleRemove={handleRemoveCourse}
-                />
-              </SelectWrapper>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={9}>
+                  <SelectWrapper>
+                    <CourseSelect
+                      selectedCourses={selectedCourses}
+                      assignedColors={assignedColors}
+                      handleSelect={handleSelectCourse}
+                      handleRemove={handleRemoveCourse}
+                    />
+                  </SelectWrapper>
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Autotimetabler isDarkMode={isDarkMode} />
+                </Grid>
+              </Grid>
               <DndProvider backend={HTML5Backend}>
                 <Timetable
                   selectedCourses={selectedCourses}
