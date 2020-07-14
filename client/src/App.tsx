@@ -5,8 +5,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-// import Alert from '@material-ui/lab/Alert';
-// import Snackbar from '@material-ui/core/Snackbar';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import CourseSelect from './components/CourseSelect';
@@ -70,8 +68,6 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
-  // const [clashes, setClashes] = useState<Set<ClassData[]>>(new Set());
-
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
   );
@@ -123,10 +119,6 @@ const App: FunctionComponent = () => {
     ));
   };
 
-  // make into state to send to card component
-  // let hasClash = false;
-  // const clashes: Array<[string, string]> = [];
-
   function hasTimeOverlap(period1: ClassTime, period2: ClassTime): boolean {
     return ((period1.day === period2.day && period1.start >= period2.start
         && period1.start < period2.end)
@@ -135,11 +127,6 @@ const App: FunctionComponent = () => {
   }
 
   function checkClashes():Array<String> {
-    // for class in selectedclasses
-    //   for period in class
-    //       for class in selectedClasses
-    //           for period in class
-    //               if hasoverlap add to clashes
     const newClashes: Array<String> = [];
     selectedClasses.forEach((classActivity1) => {
       classActivity1.periods.forEach((period1) => {
