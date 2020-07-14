@@ -2,9 +2,11 @@ import React, { FunctionComponent } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 import {
-  CourseData, Period, ClassData,
+  CourseData, ClassPeriod, ClassData,
 } from '../../interfaces/CourseData';
 import { timeToPosition } from './Dropzone';
 
@@ -12,7 +14,7 @@ const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
 }) <{
   isDragging: boolean
-  classTime: Period
+  classTime: ClassPeriod
   backgroundColor: string
   hasClash: boolean
 }>`
@@ -20,6 +22,7 @@ const StyledCourseClass = styled(Card).withConfig({
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
   grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
@@ -31,7 +34,7 @@ const StyledCourseClass = styled(Card).withConfig({
   cursor: move;
   font-size: 0.9rem;
   border-radius: 6px;
-  border: ${(props) => (props.hasClash ? 'solid rgba(227, 81, 61, 0.85) 3px' : 'none')};
+  border: ${(props) => (props.hasClash ? 'solid rgba(227, 81, 61, 0.95) 3px' : 'none')};
 
   padding: 10px;
   margin: 2px;
@@ -49,7 +52,7 @@ const StyledCourseClass = styled(Card).withConfig({
 
 interface DroppedClassProps {
   classData: ClassData
-  classTime: Period
+  classTime: ClassPeriod
   color: string
   hasClash: boolean
 }
@@ -61,7 +64,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   hasClash,
 }) => {
   const {
-    courseCode,
+    course,
     activity,
     enrolments,
     capacity,
@@ -69,7 +72,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
   const [{ isDragging }, drag] = useDrag({
     item: {
-      type: `${courseCode}-${activity}`,
+      type: `${course.code}-${activity}`,
       classData,
     },
     collect: (monitor) => ({
@@ -93,13 +96,17 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     >
       <p>
         <b>
-          {courseCode}
+          {course.code}
           {' '}
           {activity}
         </b>
       </p>
-      <p>{`${classTime.locationShort}`}</p>
-      <p>{`${enrolments}/${capacity} enrolled`}</p>
+      <p>
+        <LocationOnIcon fontSize="inherit" />
+        {`${classTime.locationShort} `}
+        <PeopleAltIcon fontSize="inherit" />
+        {` ${enrolments}/${capacity}`}
+      </p>
       <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
     </StyledCourseClass>
   );
@@ -120,18 +127,18 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
 }) => {
   const droppedClasses: JSX.Element[] = [];
   selectedCourses.forEach((course) => {
-    const allClasses = Object.values(course.classes).flatMap((x) => x);
+    const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(
       (classData) => selectedClasses.includes(classData),
     ).forEach((classData) => {
       classData.periods.forEach((classTime) => {
         droppedClasses.push(
           <DroppedClass
-            key={`${classData.classId}-${JSON.stringify(classTime)}`}
+            key={`${classData.id}-${JSON.stringify(classTime)}`}
             classData={classData}
             classTime={classTime}
-            color={assignedColors[course.courseCode]}
-            hasClash={clashes.includes(classData.classId)}
+            color={assignedColors[course.code]}
+            hasClash={clashes.includes(classData.id)}
           />,
         );
       });

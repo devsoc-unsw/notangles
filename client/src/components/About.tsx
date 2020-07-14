@@ -71,12 +71,12 @@ const About: React.FC = () => {
           </Typography>
           <Typography gutterBottom variant="body2">
             Inspired by&nbsp;
-            <Link href="https://crossangles.app/" target="_blank">
-              Crossangles
-            </Link>
-            &nbsp;and&nbsp;
             <Link href="https://tdransfield.net/projects/bojangles/" target="_blank">
               Bojangles
+            </Link>
+            &nbsp;and&nbsp;
+            <Link href="https://crossangles.app/" target="_blank">
+              Crossangles
             </Link>
             , it was created by&nbsp;
             <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
@@ -110,11 +110,7 @@ const About: React.FC = () => {
             <li> Select 12 or 24 hour time </li>
           </FeatList>
           <Typography variant="h6">
-            Future developments [
-            <Link href="https://compclub.atlassian.net/wiki/x/JoBzM" target="_blank">
-              Roadmap
-            </Link>
-            ]
+            Future developments
           </Typography>
           <FeatList>
             <li> Auto-timetabling to suit your needs </li>
