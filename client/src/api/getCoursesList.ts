@@ -3,6 +3,20 @@ import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
 
+interface FetchedCourse {
+  _id: string;
+  courseCode: string;
+  name: string;
+}
+
+const toCoursesList = (data: FetchedCourse[]): CoursesList => (
+  data.map((course) => ({
+    id: course._id,
+    code: course.courseCode,
+    name: course.name,
+  }))
+);
+
 /**
  * Fetches a list of course objects, where each course object contains
  * the course id, the course code, and course name
@@ -24,7 +38,7 @@ const getCoursesList = async (
     if (data.status === 400) {
       throw new NetworkError('Internal server error');
     }
-    return data.json();
+    return toCoursesList(await data.json());
   } catch (error) {
     throw new NetworkError('Could not connect to server');
   }

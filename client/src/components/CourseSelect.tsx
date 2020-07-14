@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import {
@@ -36,7 +36,7 @@ const searchOptions: SearchOptions = {
   threshold: 0.4,
   keys: [
     {
-      name: 'courseCode',
+      name: 'code',
       weight: 0.9,
     },
     {
@@ -51,6 +51,8 @@ let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
 const StyledSelect = styled(Box)`
   width: 100%;
   text-align: left;
+  position: relative;
+  left: -1px;
 `;
 
 const StyledTextField = styled(TextField) <{
@@ -59,7 +61,7 @@ const StyledTextField = styled(TextField) <{
   .MuiOutlinedInput-root {
     fieldset {
       border-color: ${(props) => props.theme.palette.secondary.main};
-      transition: border-color 100ms;
+      transition: border-color 0.1s;
     }
     &:hover fieldset {
       border-color: ${(props) => props.theme.palette.secondary.dark};
@@ -71,7 +73,7 @@ const StyledTextField = styled(TextField) <{
 
   label {
     color: ${(props) => props.theme.palette.secondary.dark} !important;
-    transition: 200ms;
+    transition: 0.2s;
   }
 `;
 
@@ -134,20 +136,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   setErrorMsg,
   setErrorVisibility,
 }) => {
-  const [coursesList, setCoursesList] = React.useState<CoursesList>([]);
-  const [options, setOptions] = React.useState<CoursesList>([]);
-  const [inputValue, setInputValue] = React.useState<string>('');
-  const [selectedValue, setSelectedValue] = React.useState<CoursesList>([]);
-  const searchTimer = React.useRef<number | undefined>();
+  const [coursesList, setCoursesList] = useState<CoursesList>([]);
+  const [options, setOptions] = useState<CoursesList>([]);
+  const [inputValue, setInputValue] = useState<string>('');
+  const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const searchTimer = useRef<number | undefined>();
 
   let defaultOptions = coursesList;
-
-  // show relevant default options based of selected courses
+  // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
-  const courseAreas = selectedValue.map((course) => getCourseArea(course.courseCode));
+  const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
   if (selectedValue.length) {
     defaultOptions = defaultOptions.filter((course) => (
-      courseAreas.includes(getCourseArea(course.courseCode))
+      courseAreas.includes(getCourseArea(course.code))
       && !selectedValue.includes(course)
     ));
   }
@@ -155,9 +156,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
   // maps a list of courses to a list of course codes
   const getCourseCodes = <Course extends {
-    courseCode: string
+    code: string
   }>(courses: Course[]): string[] => (
-      courses.map((course: Course) => course.courseCode)
+      courses.map((course: Course) => course.code)
     );
 
   // calls the callback for every course code in `b` that is not in `a`
@@ -221,7 +222,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
 
         // revert back to the original value by removing what was added
         const originalValue = value.filter((course: CourseOverview) => (
-          !added.includes(course.courseCode)
+          !added.includes(course.code)
         ));
 
         // check if the new option is a duplicate
@@ -233,7 +234,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         }
         // otherwise, add the new option and call the handler
         setSelectedValue([...originalValue, newSelectedOption]);
-        handleSelect(newSelectedOption.courseCode);
+        handleSelect(newSelectedOption.code);
       } else {
         setSelectedValue(value);
         removed.forEach((courseCode: string) => handleRemove(courseCode));
@@ -269,15 +270,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchCoursesList();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOptions(defaultOptions);
   }, [coursesList]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => {
       search(inputValue);
@@ -307,11 +308,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             <StyledIcon>
               {
                 selectedValue.find((course: CourseOverview) => (
-                  course.courseCode === option.courseCode
+                  course.code === option.code
                 )) ? <CheckRounded /> : <AddRounded />
               }
             </StyledIcon>
-            <span>{option.courseCode}</span>
+            <span>{option.code}</span>
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
@@ -352,9 +353,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
             <StyledChip
-              label={option.courseCode}
+              label={option.code}
               color="primary"
-              backgroundColor={assignedColors[option.courseCode]}
+              backgroundColor={assignedColors[option.code]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
             />
