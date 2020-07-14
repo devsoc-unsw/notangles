@@ -1,8 +1,14 @@
 import * as express from 'express'
 import * as indexController from './index'
 import { getCourse, getCourseList } from './controllers/index'
+import * as dotenv from 'dotenv'
+import * as sentry from '@sentry/node'
+
+dotenv.config()
 
 const app = express()
+
+sentry.init({ dsn: process.env.SENTRY_DSN })
 
 /**
  * Express configuration
