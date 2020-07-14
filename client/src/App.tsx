@@ -7,11 +7,11 @@ import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
+import { CourseData, ClassData, filterOutClasses } from '@notangles/common';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';

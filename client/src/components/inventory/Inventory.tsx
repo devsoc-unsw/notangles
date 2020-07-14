@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
-import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '@notangles/common';
 
 import InventoryCourseClass from './InventoryCourseClass';
 
