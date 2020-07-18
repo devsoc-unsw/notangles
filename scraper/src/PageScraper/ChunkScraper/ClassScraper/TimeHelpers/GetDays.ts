@@ -8,7 +8,7 @@ import { Day } from '../../../../interfaces'
 const getDays = (data: string): Day[] => {
   const splitData = data.split(/, /)
   if (!splitData || splitData.length === 0) {
-    throw new Error('Invalid days: ' + splitData)
+    console.error(new Error('Invalid days: ' + splitData))
   }
 
   const possibleDays = <Day[]>splitData

@@ -5,7 +5,7 @@
  */
 const getCampusLocation = (campus: string): string => {
   if (!campus || campus === ' ') {
-    throw new Error('Invalid Campus: ' + campus)
+    console.error(new Error('Invalid Campus: ' + campus))
   }
 
   return campus

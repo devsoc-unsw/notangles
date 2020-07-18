@@ -7,7 +7,7 @@ const getSection = (data: string): string => {
   const section = data
   const sectionChecker = /^[A-Z0-9]{0,4}$/
   if (!sectionChecker.test(section)) {
-    throw new Error('Invalid Section: ' + section)
+    console.error(new Error('Invalid Section: ' + section))
   }
 
   return section

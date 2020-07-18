@@ -11,13 +11,13 @@ interface GetTimeReturn {
 const getTime = (data: string): GetTimeReturn => {
   const times = data.split(' - ')
   if (!times || times.length === 0) {
-    throw new Error('Could not find start and end times in: ' + times)
+    console.error(new Error('Could not find start and end times in: ' + times))
   }
   const time = { start: times[0], end: times[1] }
   // Checking the format of the dates
   const timeCheckerRegex = /^[0-9]{2}:[0-9]{2}$/
   if (!(timeCheckerRegex.test(time.start) && timeCheckerRegex.test(time.end))) {
-    throw new Error('Invalid Time(s): ' + JSON.stringify(time))
+    console.error(new Error('Invalid Time(s): ' + JSON.stringify(time)))
   }
 
   return time
