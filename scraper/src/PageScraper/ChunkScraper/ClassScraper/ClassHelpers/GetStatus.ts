@@ -8,7 +8,7 @@ import { Status } from '../../../../interfaces'
 const getStatus = (data: string): Status => {
   const status = <Status>data
   if (!Object.values(Status).includes(status)) {
-    throw new Error('Invalid Status: ' + status)
+    console.error(new Error('Invalid Status: ' + status))
   }
 
   return status

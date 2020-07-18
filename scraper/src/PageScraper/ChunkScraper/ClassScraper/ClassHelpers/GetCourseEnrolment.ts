@@ -44,11 +44,13 @@ const getCourseEnrolment = ({
       !courseEnrolment ||
       !(courseEnrolment.enrolments >= 0 && courseEnrolment.capacity >= 0)
     ) {
-      throw new Error(
-        'Invalid Course Enrolment: ' +
-          courseEnrolment.enrolments +
-          ' ' +
-          courseEnrolment.capacity
+      console.error(
+        new Error(
+          'Invalid Course Enrolment: ' +
+            courseEnrolment.enrolments +
+            ' ' +
+            courseEnrolment.capacity
+        )
       )
     } else if (courseEnrolment.capacity === 0) {
       // Zero capacity!!
