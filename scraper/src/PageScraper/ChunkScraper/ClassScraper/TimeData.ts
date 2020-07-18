@@ -32,9 +32,7 @@ const areTimesEqual = ({
       continue
     } else if (!date2[prop]) {
       continue
-    } else if (
-      JSON.stringify(date1?.[prop]) !== JSON.stringify(date2?.[prop])
-    ) {
+    } else if (JSON.stringify(date1[prop]) !== JSON.stringify(date2[prop])) {
       return [false, trueDate]
     }
   }
@@ -55,7 +53,6 @@ const dedupTimes = (dateList: Time[]): Time[] => {
   for (const date of dateList) {
     const len = uniqueDates.length
     for (let i = 0; i < len; i++) {
-      // uniqueDate of uniqueDates) {
       const uniqueDate = uniqueDates?.pop() || null
       const [equal, trueDate] = areTimesEqual({
         date1: date,
