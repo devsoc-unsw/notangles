@@ -173,8 +173,7 @@ const timetableScraper = async (
           // Each termlist may contain multiple courses
           for (const scrapedCourse of element.coursesData[scrapedTerm]) {
             if (!scrapedCourse) {
-              console.log(element, 'Error in result: ', result)
-              throw new Error()
+              throw new Error('Error in result: ' + JSON.stringify(element))
             }
             // If the term is in the other list, then it has no classes. Classify it!
             if (scrapedTerm === OtherTerms.Other) {

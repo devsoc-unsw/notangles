@@ -11,7 +11,9 @@ interface GetTermDatesReturn {
 const getTermDates = (data: string): GetTermDatesReturn => {
   const runDates = data.split(' - ')
   if (!runDates || runDates.length === 0) {
-    throw new Error('Could not find start and end dates in: ' + runDates)
+    console.error(
+      new Error('Could not find start and end dates in: ' + runDates)
+    )
   }
   const termDates = {
     start: runDates[0],
@@ -25,7 +27,7 @@ const getTermDates = (data: string): GetTermDatesReturn => {
       dateCheckerRegex.test(termDates.end)
     )
   ) {
-    throw new Error('Invalid Date(s): ' + termDates)
+    console.error(new Error('Invalid Date(s): ' + termDates))
   }
 
   return termDates

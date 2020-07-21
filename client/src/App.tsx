@@ -107,7 +107,7 @@ const App: FunctionComponent = () => {
 
   const handleSelectCourse = async (courseCode: string) => {
     try {
-      const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
+      const selectedCourseClasses = await getCourseInfo('2020', 'T3', courseCode);
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
       populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);

@@ -6,7 +6,7 @@
 const getActivity = (data: string): string => {
   const activity = data
   if (!activity) {
-    throw new Error('Unknown activity: ' + activity)
+    console.error(new Error('Unknown activity: ' + activity))
   }
 
   return activity
