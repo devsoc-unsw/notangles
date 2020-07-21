@@ -116,7 +116,7 @@ interface DroppedClassesProps {
   selectedCourses: CourseData[]
   selectedClasses: ClassData[]
   assignedColors: Record<string, string>
-  clashes: Array<String>
+  clashes: Array<ClassPeriod>
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
@@ -138,7 +138,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
             classData={classData}
             classTime={classTime}
             color={assignedColors[course.code]}
-            hasClash={clashes.includes(classData.id)}
+            hasClash={clashes.includes(classTime)}
           />,
         );
       });

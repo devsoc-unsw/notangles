@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, ClassData } from '@notangles/common';
+import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
@@ -30,7 +30,7 @@ interface TimetableProps {
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
   onSelectClass(classData: ClassData): void
-  clashes: Array<String>
+  clashes: Array<ClassPeriod>
   onRemoveClass(classData: ClassData): void
 }
 

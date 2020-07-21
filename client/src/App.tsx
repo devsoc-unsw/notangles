@@ -7,7 +7,7 @@ import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import {
-  CourseData, ClassData, ClassTime, filterOutClasses,
+  CourseData, ClassData, ClassTime, ClassPeriod, filterOutClasses,
 } from '@notangles/common';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
@@ -130,18 +130,18 @@ const App: FunctionComponent = () => {
   );
 
   const checkClashes = () => {
-    const newClashes: Array<String> = [];
+    const newClashes: Array<ClassPeriod> = [];
     selectedClasses.forEach((classActivity1) => {
       classActivity1.periods.forEach((period1) => {
         selectedClasses.forEach((classActivity2) => {
           classActivity2.periods.forEach((period2) => {
             if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-              if (!newClashes.includes(classActivity1.id)) {
+              if (!newClashes.includes(period1)) {
                 console.log(classActivity1);
-                newClashes.push(classActivity1.id);
+                newClashes.push(period1);
               }
-              if (!newClashes.includes(classActivity2.id)) {
-                newClashes.push(classActivity2.id);
+              if (!newClashes.includes(period2)) {
+                newClashes.push(period2);
               }
             }
           });
