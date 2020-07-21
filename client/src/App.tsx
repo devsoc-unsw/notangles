@@ -164,7 +164,7 @@ const App: FunctionComponent = () => {
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="mailto:projects@csesoc.org.au">
-                  Feedback
+                  Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">

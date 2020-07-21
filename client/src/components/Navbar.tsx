@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import Tooltip from '@material-ui/core/Tooltip';
+import Link from '@material-ui/core/Link';
 import About from './About';
 
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
@@ -58,6 +59,17 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
           <NavbarTitle variant="h6">
             Notangles
           </NavbarTitle>
+
+          <NavButton>
+            <Link
+              href="https://forms.gle/rV3QCwjsEbLNyESE6"
+              target="_blank"
+              underline="none"
+              color="inherit"
+            >
+              Feedback
+            </Link>
+          </NavButton>
 
           <DarkModeButton
             value={isDarkMode}
