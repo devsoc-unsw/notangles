@@ -60,6 +60,16 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
             Notangles
           </NavbarTitle>
 
+          <DarkModeButton
+            value={isDarkMode}
+            selected={isDarkMode}
+            onChange={() => {
+              setIsDarkMode(!isDarkMode);
+            }}
+          >
+            <DarkModeIcon fontSize="small" />
+          </DarkModeButton>
+
           <NavButton>
             <Link
               href="https://forms.gle/rV3QCwjsEbLNyESE6"
@@ -70,16 +80,6 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
               Feedback
             </Link>
           </NavButton>
-
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small" />
-          </DarkModeButton>
 
           <Tooltip title="Coming Soon" placement="bottom">
             <div>
