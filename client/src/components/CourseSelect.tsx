@@ -18,6 +18,7 @@ import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import getCoursesList from '../api/getCoursesList';
+import NetworkError from '../interfaces/NetworkError';
 
 const SEARCH_DELAY = 300;
 
@@ -54,7 +55,7 @@ const StyledSelect = styled(Box)`
   left: -1px;
 `;
 
-const StyledTextField = styled(TextField)<{
+const StyledTextField = styled(TextField) <{
   theme: Theme
 }>`
   .MuiOutlinedInput-root {
@@ -83,7 +84,7 @@ const StyledInputAdornment = styled(InputAdornment)`
 
 const StyledChip = styled(Chip).withConfig({
   shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
-})<{
+}) <{
   backgroundColor: string
 }>`
   transition: none !important;
@@ -123,6 +124,8 @@ interface CourseSelectProps {
   assignedColors: Record<string, string>
   handleSelect(courseCode: string): void
   handleRemove(courseCode: string): void
+  setErrorMsg(errorMsg: string): void
+  setErrorVisibility(visibility: boolean): void
 }
 
 const CourseSelect: React.FC<CourseSelectProps> = ({
@@ -130,6 +133,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   assignedColors,
   handleSelect,
   handleRemove,
+  setErrorMsg,
+  setErrorVisibility,
 }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptions] = useState<CoursesList>([]);
@@ -253,10 +258,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T3');
-    if (fetchedCoursesList) {
+    try {
+      const fetchedCoursesList = await getCoursesList('2020', 'T3');
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
     }
   };
 
