@@ -1,7 +1,9 @@
+import TimeoutError from '../interfaces/TimeoutError';
+
 export default function timeoutPromise(ms: number, promise: Promise<Response>): Promise<Response> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
-      reject(new Error('timeout'));
+      reject(new TimeoutError('timeout'));
     }, ms);
     promise.then(
       (res) => {
