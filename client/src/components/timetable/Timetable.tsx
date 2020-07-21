@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { CourseData, ClassData, SelectedClasses } from '../../interfaces/CourseData';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
@@ -26,12 +26,11 @@ const StyledTimetable = styled(Box) <{
 
 interface TimetableProps {
   selectedCourses: CourseData[]
-  selectedClasses: ClassData[]
+  selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
-  onSelectClass(classData: ClassData): void
-  onRemoveClass(classData: ClassData): void
+  removeClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = ({
@@ -40,8 +39,7 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   assignedColors,
   is12HourMode,
   setIs12HourMode,
-  onSelectClass,
-  onRemoveClass,
+  removeClass,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
@@ -51,9 +49,8 @@ const Timetable: FunctionComponent<TimetableProps> = ({
     <Inventory
       key={selectedCourses.map((course) => course.code).join(',')}
       selectedCourses={selectedCourses}
-      selectedClasses={selectedClasses}
       assignedColors={assignedColors}
-      removeClass={onRemoveClass}
+      removeClass={removeClass}
     />
     <TimetableLayout
       days={days}
@@ -64,10 +61,8 @@ const Timetable: FunctionComponent<TimetableProps> = ({
     <ClassDropzones
       selectedCourses={selectedCourses}
       assignedColors={assignedColors}
-      onSelectClass={onSelectClass}
     />
     <DroppedClasses
-      selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
     />

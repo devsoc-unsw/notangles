@@ -253,12 +253,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T3');
+    const fetchedCoursesList = await getCoursesList('2020', 'T1');
     if (fetchedCoursesList) {
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
     }
-    handleSelect('COMP1521'); // TODO: remove
+    // handleSelect('COMP1521'); // TODO: remove
   };
 
   useEffect(() => {

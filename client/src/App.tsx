@@ -1,20 +1,20 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { DragManager } from './components/timetable/DragManager';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import CourseSelect from './components/CourseSelect';
-import { CourseData, ClassData, filterOutClasses } from './interfaces/CourseData';
-
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
-
 import storage from './utils/storage';
-
 import { darkTheme, lightTheme } from './constants/theme';
+import {
+  CourseData,
+  ClassData,
+  SelectedClasses,
+} from './interfaces/CourseData';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -62,7 +62,7 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
 
@@ -79,15 +79,19 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      [...filterOutClasses(prev, classData), classData]
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = classData;
+      return prev;
+    });
   };
 
   const handleRemoveClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      filterOutClasses(prev, classData)
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = null;
+      return prev;
+    });
   };
 
   // TODO: temp until auto-timetabling is done
@@ -98,12 +102,26 @@ const App: FunctionComponent = () => {
     });
   };
 
+  const initCourse = (course: CourseData) => {
+    setSelectedClasses((prev) => {
+      prev[course.code] = {};
+
+      Object.keys(course.activities).forEach((activity) => {
+        prev[course.code][activity] = null;
+      });
+
+      return prev;
+    });
+
+    populateTimetable(course); // TODO: temp until auto-timetabling is done
+  };
+
   const handleSelectCourse = async (courseCode: string) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T3', courseCode);
-    if (selectedCourseClasses) {
-      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
-      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
+    const newCourse = await getCourseInfo('2020', 'T1', courseCode);
+    if (newCourse) {
+      const newSelectedCourses = [...selectedCourses, newCourse];
       setSelectedCourses(newSelectedCourses);
+      initCourse(newCourse);
     }
   };
 
@@ -112,9 +130,10 @@ const App: FunctionComponent = () => {
       (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.course.code !== courseCode)
-    ));
+    setSelectedClasses((prev) => {
+      delete prev[courseCode];
+      return prev;
+    });
   };
 
   return (
@@ -135,15 +154,14 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-              <DragManager>
+              <DragManager selectClass={handleSelectClass}>
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
                   assignedColors={assignedColors}
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
-                  onSelectClass={handleSelectClass}
-                  onRemoveClass={handleRemoveClass}
+                  removeClass={handleRemoveClass}
                 />
               </DragManager>
               <Footer>

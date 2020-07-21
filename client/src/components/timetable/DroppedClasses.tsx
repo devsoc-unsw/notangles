@@ -1,12 +1,14 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, {
+  FunctionComponent, useState, useRef,
+} from 'react';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import { useDrag } from './DragManager';
+import { useDrag, defaultTransition } from './DragManager';
 import { timeToPosition } from './Dropzone';
 import {
-  CourseData, ClassPeriod, ClassData,
+  ClassPeriod, SelectedClasses,
 } from '../../interfaces/CourseData';
 
 const getClassTranslateX = (classPeriod: ClassPeriod) => (
@@ -37,6 +39,7 @@ const StyledCourseClass = styled.div<{
     ${(props) => getClassTranslateX(props.classPeriod)}%,
     ${(props) => getClassTranslateY(props.classPeriod)}%
   ) scale(${(props) => (props.isDragging ? 1.1 : 1)});
+  transition: ${defaultTransition};
 
   // above vs. below app bar
   z-index: ${(props) => (props.isDragging ? 1200 : 1000)};
@@ -70,7 +73,7 @@ const StyledCourseClassInner = styled(Card).withConfig({
   color: white;
   font-size: 0.9rem;
   border-radius: 7px;
-  transition: 200ms;
+  transition: ${defaultTransition};
 
   min-width: 0;
   width: 100%;
@@ -151,34 +154,61 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 };
 
 interface DroppedClassesProps {
-  selectedCourses: CourseData[]
-  selectedClasses: ClassData[]
+  selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
-  selectedCourses,
   selectedClasses,
   assignedColors,
 }) => {
+  const { morphPeriods } = useDrag();
   const droppedClasses: JSX.Element[] = [];
+  const periodKeys = useRef(new Map<ClassPeriod, number>());
+  const keyCounter = useRef(0);
+  const prevPeriods = useRef<ClassPeriod[]>([]);
+  const newPeriods: ClassPeriod[] = [];
 
-  selectedCourses.forEach((course) => {
-    const allClasses = Object.values(course.activities).flatMap((x) => x);
-    allClasses.filter(
-      (classData) => selectedClasses.includes(classData),
-    ).forEach((classData) => {
-      classData.periods.forEach((classPeriod) => {
-        droppedClasses.push(
-          <DroppedClass
-            key={`${classPeriod.location}-${JSON.stringify(classPeriod.time)}`}
-            classPeriod={classPeriod}
-            color={assignedColors[course.code]}
-          />,
-        );
-      });
+  Object.values(selectedClasses).forEach((activities) => {
+    Object.values(activities).forEach((classData) => {
+      if (classData !== null) {
+        classData.periods.forEach((classPeriod) => {
+          newPeriods.push(classPeriod);
+        });
+      }
     });
   });
+
+  morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
+    const prevPeriod = prevPeriods.current[i];
+
+    if (morphPeriod !== null && morphPeriod !== prevPeriod) {
+      const periodKey = periodKeys.current.get(prevPeriod);
+
+      if (periodKey) {
+        periodKeys.current.set(morphPeriod, periodKey);
+        periodKeys.current.delete(prevPeriod);
+      }
+    }
+  });
+
+  newPeriods.forEach((classPeriod) => {
+    let key = periodKeys.current.get(classPeriod);
+    key = key !== undefined ? key : ++keyCounter.current;
+
+    droppedClasses.push(
+      <DroppedClass
+        key={`classPeriod-${key}`}
+        classPeriod={classPeriod}
+        color={assignedColors[classPeriod.class.course.code]}
+      />,
+    );
+
+    periodKeys.current.set(classPeriod, key);
+  });
+
+  // shallow copy
+  prevPeriods.current = [...newPeriods];
 
   return <>{droppedClasses}</>;
 };

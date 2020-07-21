@@ -1,4 +1,8 @@
+// mapping from activity name => all classes for that activity
 export type Activities = Record<string, ClassData[]>;
+
+// mapping from course code => activity name => selected class
+export type SelectedClasses = Record<string, Record<string, ClassData | null>>;
 
 export interface CourseData {
   code: string
@@ -29,9 +33,3 @@ export interface ClassTime {
   end: number
   weeks: string
 }
-
-export const filterOutClasses = (classes: ClassData[], a: ClassData) => (
-  classes.filter((b) => (
-    !(a.course.code === b.course.code && a.activity === b.activity)
-  ))
-);

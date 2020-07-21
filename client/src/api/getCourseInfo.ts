@@ -12,7 +12,7 @@ import { API_URL } from './config';
  * specified year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('2019', 'T3', 'COMP1511')
+ * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
 const getCourseInfo = async (
   year: string,

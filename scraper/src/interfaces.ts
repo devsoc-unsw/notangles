@@ -31,7 +31,7 @@ enum Term {
   Summer = 'Summer',
   T1 = 'T1',
   T2 = 'T2',
-  T3 = 'T3',
+  T3 = 'T1',
   S1 = 'S1',
   S2 = 'S2',
 }
