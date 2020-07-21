@@ -122,14 +122,14 @@ const App: FunctionComponent = () => {
     ));
   };
 
-  function hasTimeOverlap(period1: ClassTime, period2: ClassTime): boolean {
-    return ((period1.day === period2.day && period1.start >= period2.start
+  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
+    (period1.day === period2.day && period1.start >= period2.start
         && period1.start < period2.end)
      || (period1.day === period2.day && period2.start >= period1.start
-        && period2.start < period1.end));
-  }
+        && period2.start < period1.end)
+  );
 
-  function checkClashes():Array<String> {
+  const checkClashes = () => {
     const newClashes: Array<String> = [];
     selectedClasses.forEach((classActivity1) => {
       classActivity1.periods.forEach((period1) => {
@@ -137,6 +137,7 @@ const App: FunctionComponent = () => {
           classActivity2.periods.forEach((period2) => {
             if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
               if (!newClashes.includes(classActivity1.id)) {
+                console.log(classActivity1);
                 newClashes.push(classActivity1.id);
               }
               if (!newClashes.includes(classActivity2.id)) {
@@ -147,10 +148,8 @@ const App: FunctionComponent = () => {
         });
       });
     });
-    console.log('all classes with clashes:', newClashes);
     return newClashes;
-  }
-  // checkClashes();
+  };
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
