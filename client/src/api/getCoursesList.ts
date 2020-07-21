@@ -24,7 +24,7 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList => (
  * @return A promise containing the list of course objects offered in the specified year and term
  *
  * @example
- * const coursesList = await getCoursesList('2020', 'T2')
+ * const coursesList = await getCoursesList('2020', 'T3')
  */
 const getCoursesList = async (
   year: string,

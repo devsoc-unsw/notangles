@@ -9,6 +9,9 @@ const moveTransition = `transform ${transitionTime}ms`;
 
 let dragElement: HTMLElement | null = null;
 
+// maps HTML element => class period
+let dropzones = new Map<HTMLElement, ClassPeriod>();
+
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
 
@@ -32,10 +35,12 @@ const intersectionArea = (e1: Element, e2: Element) => {
 const DragContext = createContext<{
   dragTarget: ClassPeriod | null,
   dropTarget: ClassPeriod | null,
+  registerDropzone: (element: HTMLElement, classPeriod: ClassPeriod) => void
   setDragTarget: (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
 }>({
   dragTarget: null,
   dropTarget: null,
+  registerDropzone: () => {},
   setDragTarget: () => {},
 });
 
@@ -44,26 +49,45 @@ export const DragManager: FunctionComponent = (props) => {
   const [dropTarget, setDropTarget] = useState<ClassPeriod | null>(null);
 
   // TODO
-  // const updateDropTarget = () => {
-  //   if (dragElement == null) {
-  //     setDropTarget(null);
-  //     return;
-  //   }
+  const updateDropTarget = () => {
+    if (dragElement == null) {
+      setDropTarget(null);
+      return;
+    }
 
-  //   const bestMatch = Array.from(
-  //     document.getElementsByClassName('dropzone')
-  //   ).map((dropzoneElement) => (
-  //     {
-  //       dropzoneElement,
-  //       area: dragElement ? intersectionArea(dragElement, dropzoneElement) : 0
-  //     }
-  //   )).reduce((max, { area }) => (
-  //     area > max ? area : max
-  //   ), 0)
-  //   const { dropzoneElement, area } = bestMatch;
+    const bestMatch = Array.from(
+      document.getElementsByClassName('dropzone')
+    ).filter((dropzoneElement) => (
+      (dropzoneElement as HTMLElement).style.opacity !== "0"
+    )).map((dropzoneElement) => (
+      {
+        dropzoneElement,
+        area: dragElement ? intersectionArea(dragElement, dropzoneElement) : 0
+      }
+    )).reduce((max, current) => (
+      current.area > max.area ? current : max
+    ), {
+      dropzoneElement: null,
+      area: 0
+    } as {
+      dropzoneElement: Element | null
+      area: number
+    })
 
-  //   setDropTarget(area > 0 ? dropzoneElement : null);
-  // }
+    const { dropzoneElement, area } = bestMatch;
+
+    if (dropzoneElement) {
+      const classPeriod = dropzones.get(dropzoneElement as HTMLElement)
+      if (classPeriod) {
+        console.log(classPeriod.time)
+        // setDropTarget(area > 0 ? dropzoneElement : null);
+      }
+    }
+  }
+
+  const registerDropzone = (element: HTMLElement, classPeriod: ClassPeriod) => {
+    dropzones.set(element, classPeriod)
+  }
 
   const handleDragTarget = (classPeriod: ClassPeriod | null, element?: HTMLElement) => {
     if (element) {
@@ -79,6 +103,7 @@ export const DragManager: FunctionComponent = (props) => {
   window.onmousemove = (event: any) => {
     if (dragElement) {
       moveElement(dragElement, event.movementX, event.movementY);
+      updateDropTarget();
     }
   };
 
@@ -97,6 +122,7 @@ export const DragManager: FunctionComponent = (props) => {
     <DragContext.Provider value={{
       dragTarget,
       dropTarget,
+      registerDropzone,
       setDragTarget: handleDragTarget,
     }}
     >
@@ -107,5 +133,7 @@ export const DragManager: FunctionComponent = (props) => {
 
 export const useDrag = (): {
   dragTarget: ClassPeriod | null,
+  dropTarget: ClassPeriod | null,
+  registerDropzone: (element: HTMLElement, classPeriod: ClassPeriod) => void
   setDragTarget: (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
 } => useContext(DragContext);

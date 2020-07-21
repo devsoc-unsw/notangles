@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useDrag } from './DragManager';
 import { ClassPeriod } from '../../interfaces/CourseData';
@@ -23,7 +23,6 @@ const StyledCell = styled.div.attrs(() => ({
   background-color: ${(props) => props.color};
 
   transition: opacity 0.2s;
-  opacity: ${(props) => (props.canDrop ? 0.3 : 0)};
   pointer-events: ${(props) => (props.canDrop ? 'auto' : 'none')};
 `;
 
@@ -36,7 +35,13 @@ const Dropzone: React.FC<CellProps> = ({
   classPeriod,
   color,
 }) => {
-  const { dragTarget } = useDrag();
+  const { dragTarget, registerDropzone } = useDrag();
+  const element = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    element.current && registerDropzone(element.current, classPeriod)
+  }, [])
+
   const canDrop = (
     dragTarget != null
     && dragTarget.class.course.code === classPeriod.class.course.code
@@ -46,9 +51,13 @@ const Dropzone: React.FC<CellProps> = ({
 
   return (
     <StyledCell
+      ref={element}
       classPeriod={classPeriod}
       canDrop={canDrop}
       color={color}
+      style={{
+        opacity: canDrop ? 0.3 : 0
+      }}
     />
   );
 };

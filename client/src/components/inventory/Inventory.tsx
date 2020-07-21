@@ -72,7 +72,7 @@ const Inventory: React.FC<InventoryProps> = ({
 
   return (
     <StyledInventory>
-      {classNodes}
+      {/* {classNodes} */}
       <StyledInventoryText>
         Drag classes here to get them out of the way
       </StyledInventoryText>

@@ -49,25 +49,26 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
   activity,
   color,
 }) => {
-  const [{ isDragging }, drag] = useDrag({
-    item: { type: `${courseCode}-${activity}` },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+  // const [{ isDragging }, drag] = useDrag({
+  //   item: { type: `${courseCode}-${activity}` },
+  //   collect: (monitor) => ({
+  //     isDragging: monitor.isDragging(),
+  //   }),
+  // });
 
   return (
-    <StyledInventoryCourseClass
-      ref={drag}
-      isDragging={isDragging}
-      backgroundColor={color}
-    >
-      <b>
-        {courseCode}
-        {' '}
-        {activity}
-      </b>
-    </StyledInventoryCourseClass>
+    // <StyledInventoryCourseClass
+    //   ref={drag}
+    //   isDragging={isDragging}
+    //   backgroundColor={color}
+    // >
+    //   <b>
+    //     {courseCode}
+    //     {' '}
+    //     {activity}
+    //   </b>
+    // </StyledInventoryCourseClass>
+    <></>
   );
 };
 
