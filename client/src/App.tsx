@@ -95,33 +95,6 @@ const App: FunctionComponent = () => {
     ));
   };
 
-  // TODO: temp until auto-timetabling is done
-  // currently just selects first available classes
-  const populateTimetable = (newCourse: CourseData) => {
-    Object.values(newCourse.activities).forEach((classes) => {
-      handleSelectClass(classes[0]);
-    });
-  };
-
-  const handleSelectCourse = async (courseCode: string) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
-    if (selectedCourseClasses) {
-      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
-      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
-      setSelectedCourses(newSelectedCourses);
-    }
-  };
-
-  const handleRemoveCourse = (courseCode: string) => {
-    const newSelectedCourses = selectedCourses.filter(
-      (course) => course.code !== courseCode,
-    );
-    setSelectedCourses(newSelectedCourses);
-    setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.course.code !== courseCode)
-    ));
-  };
-
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
     (period1.day === period2.day && period1.start >= period2.start
         && period1.start < period2.end)
@@ -149,6 +122,33 @@ const App: FunctionComponent = () => {
       });
     });
     return newClashes;
+  };
+
+  // TODO: temp until auto-timetabling is done
+  // currently just selects first available classes
+  const populateTimetable = (newCourse: CourseData) => {
+    Object.values(newCourse.activities).forEach((classes) => {
+      handleSelectClass(classes[0]);
+    });
+  };
+
+  const handleSelectCourse = async (courseCode: string) => {
+    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
+    if (selectedCourseClasses) {
+      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
+      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
+      setSelectedCourses(newSelectedCourses);
+    }
+  };
+
+  const handleRemoveCourse = (courseCode: string) => {
+    const newSelectedCourses = selectedCourses.filter(
+      (course) => course.code !== courseCode,
+    );
+    setSelectedCourses(newSelectedCourses);
+    setSelectedClasses((prev) => (
+      prev.filter((classData) => classData.course.code !== courseCode)
+    ));
   };
 
   return (
