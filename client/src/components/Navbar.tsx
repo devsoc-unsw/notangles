@@ -70,7 +70,7 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
             <DarkModeIcon fontSize="small" />
           </DarkModeButton>
 
-          <NavButton>
+          <NavButton color="inherit">
             <Link
               href="https://forms.gle/rV3QCwjsEbLNyESE6"
               target="_blank"
