@@ -4,6 +4,7 @@ export interface CourseData {
   code: string
   name: string
   latestFinishTime: number
+  earliestStartTime: number
   activities: Activities
 }
 

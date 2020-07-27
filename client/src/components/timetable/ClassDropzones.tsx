@@ -6,12 +6,14 @@ interface ClassDropzoneProps {
   course: CourseData
   color: string
   onSelectClass(classData: ClassData): void
+  earliestStartTime: number
 }
 
 const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
   course,
   color,
   onSelectClass,
+  earliestStartTime,
 }) => {
   const dropzones = Object.values(course.activities).map(
     (classDatas) => classDatas.map(
@@ -23,6 +25,7 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
             activity={classData.activity}
             classTime={period}
             color={color}
+            earliestStartTime={earliestStartTime}
             onDrop={() => onSelectClass(classData)}
           />
         ),
@@ -36,15 +39,18 @@ interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
   onSelectClass(classData: ClassData): void
+  earliestStartTime: number
 }
 
 const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
   selectedCourses,
   assignedColors,
   onSelectClass,
+  earliestStartTime,
 }) => {
   const dropzones = selectedCourses.map((course) => (
     <ClassDropzone
+      earliestStartTime={earliestStartTime}
       key={course.code}
       course={course}
       color={assignedColors[course.code]}

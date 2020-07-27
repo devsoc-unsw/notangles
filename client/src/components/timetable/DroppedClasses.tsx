@@ -9,6 +9,7 @@ import {
   CourseData, ClassPeriod, ClassData,
 } from '@notangles/common';
 import { timeToPosition } from './Dropzone';
+import { defaultStartTime } from '../../constants/timetable';
 
 const StyledCourseClass = styled(Card).withConfig({
   shouldForwardProp: (prop) => ['children'].includes(prop),
@@ -16,6 +17,7 @@ const StyledCourseClass = styled(Card).withConfig({
   isDragging: boolean
   classTime: ClassPeriod
   backgroundColor: string
+  earliestStartTime: number
 }>`
   display: flex;
   justify-content: center;
@@ -24,8 +26,8 @@ const StyledCourseClass = styled(Card).withConfig({
   z-index: 20;
 
   grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start)} /
-            ${(props) => timeToPosition(props.classTime.time.end)};
+  grid-row: ${(props) => timeToPosition(props.classTime.time.start, props.earliestStartTime)} /
+            ${(props) => timeToPosition(props.classTime.time.end, props.earliestStartTime)};
 
   background-color: ${(props) => props.backgroundColor};
   opacity: ${(props) => (props.isDragging ? 0 : 1)};
@@ -52,12 +54,14 @@ interface DroppedClassProps {
   classData: ClassData
   classTime: ClassPeriod
   color: string
+  earliestStartTime: number
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   classData,
   classTime,
   color,
+  earliestStartTime,
 }) => {
   const {
     course,
@@ -88,6 +92,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       isDragging={isDragging}
       backgroundColor={color}
       classTime={classTime}
+      earliestStartTime={earliestStartTime}
     >
       <p>
         <b>
@@ -119,7 +124,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-
+  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(
@@ -132,6 +137,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
             classData={classData}
             classTime={classTime}
             color={assignedColors[course.code]}
+            earliestStartTime={earliestStartTime}
           />,
         );
       });
