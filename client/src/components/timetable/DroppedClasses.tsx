@@ -124,7 +124,10 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
+  const earliestStartTime = Math.min(
+    ...selectedCourses.map((course) => course.earliestStartTime),
+    defaultStartTime,
+  );
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(

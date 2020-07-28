@@ -45,7 +45,9 @@ const Timetable: FunctionComponent<TimetableProps> = ({
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
-    ), defaultEndTime) - Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)}
+    ), defaultEndTime) - Math.min(...selectedCourses.map(
+      (course) => course.earliestStartTime,
+    ), defaultStartTime)}
   >
     <Inventory
       key={selectedCourses.map((course) => course.code).join(',')}
@@ -64,7 +66,9 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       assignedColors={assignedColors}
       onSelectClass={onSelectClass}
-      earliestStartTime = {Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)}
+      earliestStartTime={Math.min(...selectedCourses.map(
+        (course) => course.earliestStartTime,
+      ), defaultStartTime)}
     />
     <DroppedClasses
       selectedCourses={selectedCourses}
