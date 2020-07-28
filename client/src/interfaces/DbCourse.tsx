@@ -90,6 +90,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     name: dbCourse.name,
     activities: {},
     latestFinishTime: 0,
+    earliestStartTime: 24,
   };
 
   dbCourse.classes.forEach((dbClass, index) => {
@@ -104,6 +105,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
+      }
+      if (period.time.start < courseData.earliestStartTime) {
+        courseData.earliestStartTime = period.time.start;
       }
     });
     if (!(dbClass.activity in courseData.activities)) {
