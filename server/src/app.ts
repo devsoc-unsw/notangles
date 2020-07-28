@@ -10,6 +10,9 @@ const app = express()
 
 sentry.init({ dsn: process.env.SENTRY_DSN })
 
+app.use(sentry.Handlers.requestHandler());
+app.use(sentry.Handlers.errorHandler());
+
 /**
  * Express configuration
  */
