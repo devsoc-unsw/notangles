@@ -10,7 +10,7 @@ const getCareer = (data: string): Career => {
   if (!(career && Object.values(Career).includes(career))) {
     const career2: Career = <Career>data.split(' ')[0]
     if (!(career2 && Object.values(Career).includes(career2))) {
-      throw new Error('Invalid Career: ' + career)
+      console.error(new Error('Invalid Career: ' + career))
     } else {
       console.log(
         'Warning: Career: "' +

@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData } from '@notangles/common';
 import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 
 const headerPadding = 15;

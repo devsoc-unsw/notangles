@@ -6,7 +6,7 @@
 const getSchool = (school: string): string => {
   // School is a string
   if (!school || school === ' ') {
-    throw new Error('Invalid School: ' + school)
+    console.error(new Error('Invalid School: ' + school))
   }
 
   return school

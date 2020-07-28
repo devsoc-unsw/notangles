@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, ClassData } from '../../interfaces/CourseData';
+import { CourseData, ClassData } from '@notangles/common';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';

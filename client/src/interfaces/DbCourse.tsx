@@ -2,7 +2,7 @@ import {
   CourseData,
   ClassData,
   ClassPeriod,
-} from './CourseData';
+} from '@notangles/common';
 
 // List of the interfaces and types that are used in the scraper
 

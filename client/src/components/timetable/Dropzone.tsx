@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
-import { ClassPeriod } from '../../interfaces/CourseData';
+import { ClassPeriod } from '@notangles/common';
 
 
 export const timeToPosition = (time: number) => {
