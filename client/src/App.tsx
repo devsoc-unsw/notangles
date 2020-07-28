@@ -7,7 +7,9 @@ import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import { CourseData, ClassData, filterOutClasses } from '@notangles/common';
+import {
+  CourseData, ClassData, ClassTime, ClassPeriod, filterOutClasses,
+} from '@notangles/common';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
@@ -97,6 +99,35 @@ const App: FunctionComponent = () => {
     ));
   };
 
+  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
+    (period1.day === period2.day && period1.start >= period2.start
+        && period1.start < period2.end)
+     || (period1.day === period2.day && period2.start >= period1.start
+        && period2.start < period1.end)
+  );
+
+  const checkClashes = () => {
+    const newClashes: Array<ClassPeriod> = [];
+    selectedClasses.forEach((classActivity1) => {
+      classActivity1.periods.forEach((period1) => {
+        selectedClasses.forEach((classActivity2) => {
+          classActivity2.periods.forEach((period2) => {
+            if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+              if (!newClashes.includes(period1)) {
+                console.log(classActivity1);
+                newClashes.push(period1);
+              }
+              if (!newClashes.includes(period2)) {
+                newClashes.push(period2);
+              }
+            }
+          });
+        });
+      });
+    });
+    return newClashes;
+  };
+
   // TODO: temp until auto-timetabling is done
   // currently just selects first available classes
   const populateTimetable = (newCourse: CourseData) => {
@@ -169,6 +200,7 @@ const App: FunctionComponent = () => {
                   setIs12HourMode={setIs12HourMode}
                   onSelectClass={handleSelectClass}
                   onRemoveClass={handleRemoveClass}
+                  clashes={checkClashes()}
                 />
               </DndProvider>
               <Footer>
@@ -198,5 +230,4 @@ const App: FunctionComponent = () => {
     </MuiThemeProvider>
   );
 };
-
 export default App;

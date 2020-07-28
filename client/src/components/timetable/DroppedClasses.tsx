@@ -16,6 +16,7 @@ const StyledCourseClass = styled(Card).withConfig({
   isDragging: boolean
   classTime: ClassPeriod
   backgroundColor: string
+  hasClash: boolean
 }>`
   display: flex;
   justify-content: center;
@@ -33,6 +34,7 @@ const StyledCourseClass = styled(Card).withConfig({
   cursor: move;
   font-size: 0.9rem;
   border-radius: 6px;
+  border: ${(props) => (props.hasClash ? 'solid rgba(227, 81, 61, 0.95) 3px' : 'none')};
 
   padding: 10px;
   margin: 2px;
@@ -52,12 +54,14 @@ interface DroppedClassProps {
   classData: ClassData
   classTime: ClassPeriod
   color: string
+  hasClash: boolean
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = ({
   classData,
   classTime,
   color,
+  hasClash,
 }) => {
   const {
     course,
@@ -88,6 +92,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       isDragging={isDragging}
       backgroundColor={color}
       classTime={classTime}
+      hasClash={hasClash}
     >
       <p>
         <b>
@@ -111,15 +116,16 @@ interface DroppedClassesProps {
   selectedCourses: CourseData[]
   selectedClasses: ClassData[]
   assignedColors: Record<string, string>
+  clashes: Array<ClassPeriod>
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedCourses,
   selectedClasses,
   assignedColors,
+  clashes,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-
   selectedCourses.forEach((course) => {
     const allClasses = Object.values(course.activities).flatMap((x) => x);
     allClasses.filter(
@@ -132,13 +138,18 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
             classData={classData}
             classTime={classTime}
             color={assignedColors[course.code]}
+            hasClash={clashes.includes(classTime)}
           />,
         );
       });
     });
   });
 
-  return <>{droppedClasses}</>;
+  return (
+    <>
+      {droppedClasses}
+    </>
+  );
 };
 
 export default DroppedClasses;
