@@ -25,6 +25,7 @@ const getClassTranslateY = (classPeriod: ClassPeriod) => {
 };
 
 const classMargin = 2;
+const elevatedScale = 1.2;
 
 const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
@@ -38,7 +39,7 @@ const StyledCourseClass = styled.div<{
   transform: translate(
     ${(props) => getClassTranslateX(props.classPeriod)}%,
     ${(props) => getClassTranslateY(props.classPeriod)}%
-  ) scale(${(props) => (props.isDragging ? 1.1 : 1)});
+  ) scale(${(props) => (props.isDragging ? elevatedScale : 1)});
   transition: ${defaultTransition};
 
   // above vs. below app bar

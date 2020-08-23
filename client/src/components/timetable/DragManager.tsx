@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { ClassData, ClassPeriod } from '../../interfaces/CourseData';
 
-const transitionTime = 200;
+const transitionTime = 250;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
 
@@ -39,26 +39,25 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
+// const range = (a: number, b: number) => (
+//   Array.from({length: (b - a + 1)}, (_, i) => i + a)
+// );
+
+// const enumerateWeeks = (weeks: string): number[] => (
+//   weeks.split(",").flatMap((rangeString) => {
+//     const stops = rangeString.split("-").map(string => Number(string));
+//     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
+//   })
+// );
+
+// const hasIntersection = (a: any[], b: any[]) => a.some(x => b.includes(x));
+
 export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
-  a != null
-  && a.class.course.code === b.class.course.code
+  a.class.course.code === b.class.course.code
   && a.class.activity === b.class.activity
   && a.time.end - a.time.start === b.time.end - b.time.start
-  && hasIntersection(enumerateWeeks(a.time.weeks), enumerateWeeks(b.time.weeks))
+  // && hasIntersection(enumerateWeeks(a.time.weeks), enumerateWeeks(b.time.weeks))
 );
-
-const range = (a: number, b: number) => (
-  Array.from({length: (b - a + 1)}, (_, i) => i + a)
-);
-
-const enumerateWeeks = (weeks: string): number[] => (
-  weeks.split(",").flatMap((rangeString) => {
-    const stops = rangeString.split("-").map(string => Number(string));
-    return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
-  })
-);
-
-const hasIntersection = (a: any[], b: any[]) => a.some(x => b.includes(x));
 
 const DragContext = createContext<{
   dragTarget: ClassPeriod | null,
