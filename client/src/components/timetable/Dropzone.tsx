@@ -15,7 +15,7 @@ const StyledCell = styled.div.attrs(() => ({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 20;
+  z-index: 1005;
 
   grid-column: ${(props) => props.classPeriod.time.day + 1};
   grid-row: ${(props) => timeToPosition(props.classPeriod.time.start)} /

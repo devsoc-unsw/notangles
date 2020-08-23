@@ -44,7 +44,21 @@ export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
   && a.class.course.code === b.class.course.code
   && a.class.activity === b.class.activity
   && a.time.end - a.time.start === b.time.end - b.time.start
+  && hasIntersection(enumerateWeeks(a.time.weeks), enumerateWeeks(b.time.weeks))
 );
+
+const range = (a: number, b: number) => (
+  Array.from({length: (b - a + 1)}, (_, i) => i + a)
+);
+
+const enumerateWeeks = (weeks: string): number[] => (
+  weeks.split(",").flatMap((rangeString) => {
+    const stops = rangeString.split("-").map(string => Number(string));
+    return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
+  })
+);
+
+const hasIntersection = (a: any[], b: any[]) => a.some(x => b.includes(x));
 
 const DragContext = createContext<{
   dragTarget: ClassPeriod | null,
@@ -70,7 +84,7 @@ export const DragManager: FunctionComponent<{
   const [dropTarget, setDropTarget] = useState<ClassPeriod | null>(null);
 
   const updateDropTarget = () => {
-    if (dragElement == null) {
+    if (dragElement === null) {
       setDropTarget(null);
       return;
     }
@@ -104,10 +118,6 @@ export const DragManager: FunctionComponent<{
   const morphPeriods = (from: ClassPeriod[], to: ClassPeriod[]) => {
     const result: (ClassPeriod | null)[] = [];
 
-    const toPairs: [ClassPeriod, HTMLElement][] = to.map(
-      (classPeriod) => [classPeriod, dropzones.get(classPeriod)],
-    ).filter(([, element]) => element !== undefined) as [ClassPeriod, HTMLElement][];
-
     from.forEach((fromPeriod: ClassPeriod) => {
       let match: ClassPeriod | null = null;
 
@@ -117,18 +127,19 @@ export const DragManager: FunctionComponent<{
         const fromElement = dropzones.get(fromPeriod);
 
         if (fromElement) {
-          const closest = toPairs.filter(([toPeriod]) => (
+          const closest = to.filter((toPeriod) => (
             checkCanDrop(fromPeriod, toPeriod)
-          )).map(([toPeriod, toElement]) => (
-            {
-              toPeriod,
-              distance: distanceBetween(fromElement, toElement),
-            }
-          )).reduce((max, current) => (
-            current.distance > max.distance ? current : max
+          )).map((toPeriod) => {
+            const element = dropzones.get(toPeriod);
+            const distance = (
+              element ? distanceBetween(fromElement, element) : Infinity
+            );
+            return {toPeriod, distance};
+          }).reduce((min, current) => (
+            current.distance < min.distance ? current : min
           ), {
             toPeriod: undefined,
-            distance: 0,
+            distance: Infinity,
           } as {
             toPeriod?: ClassPeriod
             distance: number
@@ -142,7 +153,8 @@ export const DragManager: FunctionComponent<{
       }
 
       // remove from `to` array if match was found
-      if (result[result.length - 1] !== null) {
+      // if (result[result.length - 1] !== null) {
+      if (match !== null) {
         to = to.filter((period) => period !== match);
       }
 

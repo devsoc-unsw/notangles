@@ -258,7 +258,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
     }
-    // handleSelect('COMP1521'); // TODO: remove
+    handleSelect('MATH1131'); // TODO: remove
   };
 
   useEffect(() => {

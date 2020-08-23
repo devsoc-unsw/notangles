@@ -179,6 +179,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     });
   });
 
+  // console.log(prevPeriods.current, newPeriods, morphPeriods(prevPeriods.current, newPeriods));
   morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
 
