@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useDrag, checkCanDrop } from './DragManager';
+import { useDrag } from './DragManager';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
@@ -16,7 +16,7 @@ const StyledCell = styled.div.attrs(() => ({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  // z-index: 1005;
+  // z-index: 3000;
   z-index: 20;
 
   grid-column: ${({classPeriod}) => classPeriod.time.day + 1};
@@ -46,6 +46,7 @@ const Dropzone: React.FC<CellProps> = ({
     dragTarget,
     dropTarget,
     registerDropzone,
+    checkCanDrop
   } = useDrag();
   const element = useRef<HTMLDivElement>(null);
 
@@ -55,9 +56,6 @@ const Dropzone: React.FC<CellProps> = ({
 
   const canDrop = dragTarget ? checkCanDrop(dragTarget, classPeriod) : false;
   const isDropTarget = classPeriod === dropTarget;
-
-  let opacity = 0;
-  if (canDrop) opacity = isDropTarget ? 0.7 : 0.3;
 
   return (
     <StyledCell

@@ -154,7 +154,10 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-              <DragManager selectClass={handleSelectClass}>
+              <DragManager
+                // selectedClasses={selectedClasses}
+                selectClass={handleSelectClass}
+              >
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}

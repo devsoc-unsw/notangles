@@ -18,17 +18,25 @@ const classMargin = 2;
 const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
   dragTarget: ClassPeriod | null
-  isDragging: boolean
+  isElevated: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / ${({classPeriod}) => (
     timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
   )};
-  transform: ${({classPeriod}) => classTransformStyle(classPeriod, false)};
+  transform: ${({classPeriod, isElevated}) => (
+    classTransformStyle(classPeriod, isElevated)
+  )};
   transition: ${defaultTransition};
 
   // above vs. below app bar
-  z-index: ${({isDragging}) => (isDragging ? 1200 : 1000)};
+  z-index: ${({classPeriod, dragTarget, isElevated}) => {
+    let z = isElevated ? 1200 : 1000;
+    if (dragTarget !== null && classPeriod === dragTarget) {
+      z++;
+    }
+    return z;
+  }};
 
   // position over timetable borders
   position: relative;
@@ -39,9 +47,9 @@ const StyledCourseClass = styled.div<{
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
-  cursor: ${({dragTarget, isDragging}) => {
-    if (dragTarget && !isDragging) return 'inherit';
-    return isDragging ? 'grabbing' : 'grab';
+  cursor: ${({dragTarget, isElevated}) => {
+    if (dragTarget && !isElevated) return 'inherit';
+    return isElevated ? 'grabbing' : 'grab';
   }};
 `;
 
@@ -93,28 +101,31 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
     capacity,
   } = classPeriod.class;
 
-  const [isDragging, setIsDragging] = useState(false);
+  // if (classPeriod.time.day == 3) console.log("update!");
+
   const { dragTarget, setDragTarget } = useDrag();
   const { weeks, weeksString } = classPeriod.time;
 
-  if (isDragging && !dragTarget) setIsDragging(false);
-
   const onDown = (event: any) => {
     setDragTarget(classPeriod, event.currentTarget);
-    setIsDragging(true);
   };
+
+  const isElevated = (
+    dragTarget !== null
+    && classPeriod.class.activity === dragTarget.class.activity
+  );
 
   return (
     <StyledCourseClass
       classPeriod={classPeriod}
       dragTarget={dragTarget}
-      isDragging={isDragging}
+      isElevated={isElevated}
       onMouseDown={onDown}
       style={{ left: 0, top: 0 }}
     >
       <StyledCourseClassInner
         backgroundColor={color}
-        elevation={isDragging ? 24 : 3}
+        elevation={isElevated ? 24 : 3}
       >
         <p>
           <b>
@@ -161,28 +172,33 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     });
   });
 
+  const prevPeriodKeys = new Map(periodKeys.current);
+
+  // console.log("===")
   morphPeriods(
     prevPeriods.current, newPeriods, dragTarget, dropTarget
   ).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
-
+    
     if (morphPeriod && morphPeriod !== prevPeriod) {
-      const periodKey = periodKeys.current.get(prevPeriod);
-
+      const periodKey = prevPeriodKeys.get(prevPeriod);
+      
       if (periodKey) {
         periodKeys.current.set(morphPeriod, periodKey);
-        periodKeys.current.delete(prevPeriod);
       }
     }
   });
 
+  // console.log(periodKeys.current);
   newPeriods.forEach((classPeriod) => {
     let key = periodKeys.current.get(classPeriod);
+    // if (!key) console.log("!", classPeriod.time.day);
     key = key !== undefined ? key : ++keyCounter.current;
+    // console.log(keyCounter.current);
 
     droppedClasses.push(
       <DroppedClass
-        key={`classPeriod-${key}`}
+        key={`${key}`}
         classPeriod={classPeriod}
         color={assignedColors[classPeriod.class.course.code]}
       />,
@@ -190,9 +206,14 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
 
     periodKeys.current.set(classPeriod, key);
   });
-
+  
   // shallow copy
   prevPeriods.current = [...newPeriods];
+  
+  // sort by key to prevent disruptions to transitions
+  droppedClasses.sort((a, b) => (
+    a.key && b.key ? Number(a.key) - Number(b.key) : 0
+  ));
 
   return <>{droppedClasses}</>;
 };
