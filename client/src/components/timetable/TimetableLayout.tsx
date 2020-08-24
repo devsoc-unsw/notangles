@@ -12,24 +12,24 @@ const BaseCell = styled.div<{
   endX?: boolean
   endY?: boolean
 }>`
-  grid-column: ${(props) => props.x};
-  grid-row: ${(props) => props.y};
-  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${(props) => props.theme.palette.secondary.main};
-  background-color: ${(props) => props.theme.palette.background.default};
+  grid-column: ${({x}) => x};
+  grid-row: ${({y}) => y};
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({theme}) => theme.palette.secondary.main};
+  background-color: ${({theme}) => theme.palette.background.default};
   z-index: 10;
   transition: background-color 0.2s, box-shadow 0.2s;
 
-  border-top-left-radius: ${(props) => (
-    props.x === 1 && props.y === 1 ? props.theme.shape.borderRadius : 0
+  border-top-left-radius: ${({theme, x, y}) => (
+    x === 1 && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-left-radius: ${(props) => (
-    props.x === 1 && props.endY ? props.theme.shape.borderRadius : 0
+  border-bottom-left-radius: ${({theme, x, endY}) => (
+    x === 1 && endY ? theme.shape.borderRadius : 0
   )}px;
-  border-top-right-radius: ${(props) => (
-    props.endX && props.y === 1 ? props.theme.shape.borderRadius : 0
+  border-top-right-radius: ${({theme, endX, y}) => (
+    endX && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-right-radius: ${(props) => (
-    props.endX && props.endY ? props.theme.shape.borderRadius : 0
+  border-bottom-right-radius: ${({theme, endX, endY}) => (
+    endX && endY ? theme.shape.borderRadius : 0
   )}px;
 
   display: inline-flex;
@@ -50,7 +50,7 @@ const HourCell = styled(BaseCell) <{
 }>`
   ${paddingStyle}
   display: grid;
-  justify-content: ${(props) => (props.is12HourMode ? 'end' : 'center')};
+  justify-content: ${({is12HourMode}) => (is12HourMode ? 'end' : 'center')};
 `;
 
 const ToggleCell = styled(BaseCell)`
@@ -69,10 +69,10 @@ const Is12HourModeToggle = styled(Box)`
   cursor: pointer;
   user-select: none;
   transition: color 0.1s;
-  color: ${(props) => props.theme.palette.primary.main};
+  color: ${({theme}) => theme.palette.primary.main};
 
   &:hover {
-    color: ${(props) => props.theme.palette.primary.dark};
+    color: ${({theme}) => theme.palette.primary.dark};
   }
 `;
 

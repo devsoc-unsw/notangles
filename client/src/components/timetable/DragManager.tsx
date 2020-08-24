@@ -2,14 +2,14 @@ import React, {
   FunctionComponent, useState, createContext, useContext,
 } from 'react';
 import { ClassData, ClassPeriod } from '../../interfaces/CourseData';
+import { timeToPosition } from './Dropzone';
 
 const transitionTime = 250;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
+export const elevatedScale = 1.2;
 
-let dragElement: HTMLElement | null = null;
-
-// maps HTML element => class period
+// maps class period => HTML element
 const dropzones = new Map<ClassPeriod, HTMLElement>();
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
@@ -19,6 +19,34 @@ const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => 
   element.style.left = toPx(fromPx(element.style.left) + offsetX);
   element.style.top = toPx(fromPx(element.style.top) + offsetY);
 };
+
+const classTranslateX = (classPeriod: ClassPeriod) => (
+  (classPeriod.time.day - 1) * 100
+);
+
+const classTranslateY = (classPeriod: ClassPeriod) => {
+  // height compared to standard row height
+  const heightFactor = classPeriod.time.end - classPeriod.time.start;
+  // number of rows to offset down
+  const offsetRows = timeToPosition(classPeriod.time.start) - 2;
+  // calculate translate percentage (relative to height)
+  return (offsetRows / heightFactor) * 100;
+};
+
+export const classTransformStyle = (classPeriod: ClassPeriod, elevated: boolean) => (
+  `translate(
+    ${classTranslateX(classPeriod)}%,
+    ${classTranslateY(classPeriod)}%
+  ) scale(${elevated ? elevatedScale : 1})`
+);
+
+const freezeTransform = (element: HTMLElement, classPeriod: ClassPeriod) => {
+  element.style.transform = classTransformStyle(classPeriod, true);
+}
+
+const unfreezeTransform = (element: HTMLElement) => {
+  element.style.removeProperty("transform");
+}
 
 const intersectionArea = (e1: Element, e2: Element) => {
   const r1 = e1.getBoundingClientRect();
@@ -39,24 +67,13 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
-// const range = (a: number, b: number) => (
-//   Array.from({length: (b - a + 1)}, (_, i) => i + a)
-// );
-
-// const enumerateWeeks = (weeks: string): number[] => (
-//   weeks.split(",").flatMap((rangeString) => {
-//     const stops = rangeString.split("-").map(string => Number(string));
-//     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
-//   })
-// );
-
 // const hasIntersection = (a: any[], b: any[]) => a.some(x => b.includes(x));
 
 export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
   a.class.course.code === b.class.course.code
   && a.class.activity === b.class.activity
   && a.time.end - a.time.start === b.time.end - b.time.start
-  // && hasIntersection(enumerateWeeks(a.time.weeks), enumerateWeeks(b.time.weeks))
+  // && hasIntersection(a.time.weeks, b.time.weeks)
 );
 
 const DragContext = createContext<{
@@ -64,7 +81,9 @@ const DragContext = createContext<{
   setDragTarget:(classPeriod: ClassPeriod | null, element?: HTMLElement) => void
   dropTarget: ClassPeriod | null,
   registerDropzone: (element: HTMLElement, classPeriod: ClassPeriod) => void
-  morphPeriods: (from: ClassPeriod[], to: ClassPeriod[]) => (ClassPeriod | null)[]
+  morphPeriods: (
+    from: ClassPeriod[], to: ClassPeriod[], drag: ClassPeriod | null, drop: ClassPeriod | null
+  ) => (ClassPeriod | null)[]
 }>({
       dragTarget: null,
       setDragTarget: () => {},
@@ -79,18 +98,19 @@ export const DragManager: FunctionComponent<{
   selectClass,
   children,
 }) => {
+  const [dragElement, setDragElement] = useState<HTMLElement | null>(null);
   const [dragTarget, setDragTarget] = useState<ClassPeriod | null>(null);
   const [dropTarget, setDropTarget] = useState<ClassPeriod | null>(null);
 
   const updateDropTarget = () => {
-    if (dragElement === null) {
+    if (!dragTarget || !dragElement) {
       setDropTarget(null);
       return;
     }
 
     // dropzone with greatest area of intersection
-    const bestMatch = Array.from(dropzones.entries()).filter(([, dropElement]) => (
-      dropElement.style.opacity !== '0'
+    const bestMatch = Array.from(dropzones.entries()).filter(([classPeriod]) => (
+      checkCanDrop(dragTarget, classPeriod)
     )).map(([classPeriod, dropElement]) => (
       {
         classPeriod,
@@ -107,17 +127,26 @@ export const DragManager: FunctionComponent<{
     });
 
     const { classPeriod, area } = bestMatch;
-    const newDropTarget = classPeriod && area > 0 ? classPeriod : null;
+    const newDropTarget = classPeriod && area > 0 ? classPeriod : dragTarget;
 
     if (newDropTarget !== dropTarget) {
       setDropTarget(newDropTarget);
+      if (newDropTarget) selectClass(newDropTarget.class);
     }
   };
 
-  const morphPeriods = (from: ClassPeriod[], to: ClassPeriod[]) => {
-    const result: (ClassPeriod | null)[] = [];
+  const morphPeriods = (
+    from: ClassPeriod[], to: ClassPeriod[], drag: ClassPeriod | null, drop: ClassPeriod | null
+  ) => {
+    const result: (ClassPeriod | null)[] = Array(from.length).fill(null);
+    
+    if (drag && drop && from.includes(drag) && to.includes(drop)) {
+      result[from.indexOf(drag)] = drop;
+    }
+    
+    from.forEach((fromPeriod: ClassPeriod, i: number) => {
+      if (result[i]) return;
 
-    from.forEach((fromPeriod: ClassPeriod) => {
       let match: ClassPeriod | null = null;
 
       if (to.includes(fromPeriod)) {
@@ -147,17 +176,17 @@ export const DragManager: FunctionComponent<{
           const { toPeriod } = closest;
           match = toPeriod || null;
         } else {
-          match = null;
+          return;
         }
       }
 
       // remove from `to` array if match was found
       // if (result[result.length - 1] !== null) {
-      if (match !== null) {
+      if (match) {
         to = to.filter((period) => period !== match);
       }
 
-      result.push(match);
+      result[i] = match;
     });
 
     return result;
@@ -168,16 +197,19 @@ export const DragManager: FunctionComponent<{
   };
 
   const handleDragTarget = (classPeriod: ClassPeriod | null, element?: HTMLElement) => {
-    if (element) {
-      element.style.transition = moveTransition;
-      document.documentElement.style.cursor = 'grabbing';
-      dragElement = element;
-      updateDropTarget();
-    } else {
-      dragElement = null;
-    }
+    if (classPeriod !== dragTarget) {
+      if (classPeriod && element) {
+        element.style.transition = moveTransition;
+        document.documentElement.style.cursor = 'grabbing';
+        freezeTransform(element, classPeriod);
+        setDragElement(element);
+        updateDropTarget();
+      } else {
+        setDragElement(null);
+      }
 
-    setDragTarget(classPeriod);
+      setDragTarget(classPeriod);
+    }
   };
 
   window.onmousemove = (event: any) => {
@@ -194,6 +226,7 @@ export const DragManager: FunctionComponent<{
       style.left = toPx(0);
       style.top = toPx(0);
       document.documentElement.style.cursor = 'default';
+      unfreezeTransform(dragElement);
 
       if (dropTarget) selectClass(dropTarget.class);
     }

@@ -16,8 +16,8 @@ import React from 'react';
 //   align-items: center;
 //   flex-direction: column;
 
-//   background-color: ${(props) => props.backgroundColor};
-//   opacity: ${(props) => (props.isDragging ? 0 : 1)};
+//   background-color: ${({backgroundColor}) => props.backgroundColor};
+//   opacity: ${({isDragging}) => (props.isDragging ? 0 : 1)};
 //   color: white;
 //   cursor: move;
 //   font-size: 0.9rem;

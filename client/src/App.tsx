@@ -29,8 +29,8 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${(props) => props.theme.palette.background.default};
-  color: ${(props) => props.theme.palette.text.primary};
+  background-color: ${({theme}) => theme.palette.background.default};
+  color: ${({theme}) => theme.palette.text.primary};
 `;
 
 const Content = styled(Box)`

@@ -5,27 +5,15 @@ import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import { useDrag, defaultTransition } from './DragManager';
+import {
+  useDrag, defaultTransition, classTransformStyle
+} from './DragManager';
 import { timeToPosition } from './Dropzone';
 import {
   ClassPeriod, SelectedClasses,
 } from '../../interfaces/CourseData';
 
-const getClassTranslateX = (classPeriod: ClassPeriod) => (
-  (classPeriod.time.day - 1) * 100
-);
-
-const getClassTranslateY = (classPeriod: ClassPeriod) => {
-  // height compared to standard row height
-  const heightFactor = classPeriod.time.end - classPeriod.time.start;
-  // number of rows to offset down
-  const offsetRows = timeToPosition(classPeriod.time.start) - 2;
-  // calculate translate percentage (relative to height)
-  return (offsetRows / heightFactor) * 100;
-};
-
 const classMargin = 2;
-const elevatedScale = 1.2;
 
 const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
@@ -33,17 +21,14 @@ const StyledCourseClass = styled.div<{
   isDragging: boolean
 }>`
   grid-column: 2;
-  grid-row: 2 / ${(props) => (
-    timeToPosition(props.classPeriod.time.end) - timeToPosition(props.classPeriod.time.start) + 2
+  grid-row: 2 / ${({classPeriod}) => (
+    timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
   )};
-  transform: translate(
-    ${(props) => getClassTranslateX(props.classPeriod)}%,
-    ${(props) => getClassTranslateY(props.classPeriod)}%
-  ) scale(${(props) => (props.isDragging ? elevatedScale : 1)});
+  transform: ${({classPeriod}) => classTransformStyle(classPeriod, false)};
   transition: ${defaultTransition};
 
   // above vs. below app bar
-  z-index: ${(props) => (props.isDragging ? 1200 : 1000)};
+  z-index: ${({isDragging}) => (isDragging ? 1200 : 1000)};
 
   // position over timetable borders
   position: relative;
@@ -54,9 +39,9 @@ const StyledCourseClass = styled.div<{
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
-  cursor: ${(props) => {
-    if (props.dragTarget && !props.isDragging) return 'inherit';
-    return props.isDragging ? 'grabbing' : 'grab';
+  cursor: ${({dragTarget, isDragging}) => {
+    if (dragTarget && !isDragging) return 'inherit';
+    return isDragging ? 'grabbing' : 'grab';
   }};
 `;
 
@@ -70,7 +55,7 @@ const StyledCourseClassInner = styled(Card).withConfig({
   align-items: center;
   flex-direction: column;
   
-  background-color: ${(props) => props.backgroundColor};
+  background-color: ${({backgroundColor}) => backgroundColor};
   color: white;
   font-size: 0.9rem;
   border-radius: 7px;
@@ -110,13 +95,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const { dragTarget, setDragTarget } = useDrag();
-  const { weeks } = classPeriod.time;
+  const { weeks, weeksString } = classPeriod.time;
 
   if (isDragging && !dragTarget) setIsDragging(false);
-
-  const isMultipleWeeks = (wks: string) => (
-    wks.includes(',') || wks.includes('-')
-  );
 
   const onDown = (event: any) => {
     setDragTarget(classPeriod, event.currentTarget);
@@ -148,7 +129,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
           <PeopleAltIcon fontSize="inherit" />
           {` ${enrolments}/${capacity}`}
         </p>
-        <p>{`${isMultipleWeeks(weeks) ? 'Weeks' : 'Week'} ${weeks.replace(/,/g, ', ')}`}</p>
+        <p>{`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`}</p>
       </StyledCourseClassInner>
     </StyledCourseClass>
   );
@@ -163,7 +144,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedClasses,
   assignedColors,
 }) => {
-  const { morphPeriods } = useDrag();
+  const { morphPeriods, dragTarget, dropTarget } = useDrag();
   const droppedClasses: JSX.Element[] = [];
   const periodKeys = useRef(new Map<ClassPeriod, number>());
   const keyCounter = useRef(0);
@@ -172,7 +153,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
 
   Object.values(selectedClasses).forEach((activities) => {
     Object.values(activities).forEach((classData) => {
-      if (classData !== null) {
+      if (classData) {
         classData.periods.forEach((classPeriod) => {
           newPeriods.push(classPeriod);
         });
@@ -180,11 +161,12 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     });
   });
 
-  // console.log(prevPeriods.current, newPeriods, morphPeriods(prevPeriods.current, newPeriods));
-  morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
+  morphPeriods(
+    prevPeriods.current, newPeriods, dragTarget, dropTarget
+  ).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
 
-    if (morphPeriod !== null && morphPeriod !== prevPeriod) {
+    if (morphPeriod && morphPeriod !== prevPeriod) {
       const periodKey = periodKeys.current.get(prevPeriod);
 
       if (periodKey) {

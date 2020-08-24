@@ -53,6 +53,17 @@ const timeToNumber = (time: string) => {
   return hour + minute / 60;
 };
 
+const range = (a: number, b: number) => (
+  Array.from({length: (b - a + 1)}, (_, i) => i + a)
+);
+
+const enumerateWeeks = (weeks: string): number[] => (
+  weeks.split(",").flatMap((rangeString) => {
+    const stops = rangeString.split("-").map(string => Number(string));
+    return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
+  })
+);
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -70,7 +81,8 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
     day: weekdayToNumber(dbTimes.day),
     start: timeToNumber(dbTimes.time.start),
     end: timeToNumber(dbTimes.time.end),
-    weeks: dbTimes.weeks,
+    weeks: enumerateWeeks(dbTimes.weeks),
+    weeksString: dbTimes.weeks.replace(/,/g, ', '),
   },
 });
 
@@ -104,7 +116,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     };
     classData.periods = dbClass.times.map((dbTime) => (
       dbTimesToPeriod(dbTime, classData)
-    ));
+    )).filter((period) => period.time.weeks.includes(1)); // TODO: remove filter part
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;

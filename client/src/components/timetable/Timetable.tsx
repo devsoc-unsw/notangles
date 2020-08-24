@@ -14,14 +14,14 @@ const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${(props) => props.rows * rowHeight}px;
-  max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
+  min-height: ${({rows}) => rows * rowHeight}px;
+  max-height: ${({rows}) => rows * rowHeight}px; // TODO: should be different to min-height
   margin-top: 15px;
   box-sizing: content-box;
   user-select: none;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${(props) => props.rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 11px 1fr;
+  grid-template: auto repeat(${({rows}) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 11px 1fr;
 `;
 
 interface TimetableProps {

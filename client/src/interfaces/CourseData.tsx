@@ -31,5 +31,6 @@ export interface ClassTime {
   day: number
   start: number
   end: number
-  weeks: string
+  weeks: number[]
+  weeksString: string
 }

@@ -10,20 +10,27 @@ const StyledCell = styled.div.attrs(() => ({
 }))<{
   classPeriod: ClassPeriod
   canDrop: boolean
+  isDropTarget: boolean
   color: string
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 1005;
+  // z-index: 1005;
+  z-index: 20;
 
-  grid-column: ${(props) => props.classPeriod.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classPeriod.time.start)} /
-    ${(props) => timeToPosition(props.classPeriod.time.end)};
-  background-color: ${(props) => props.color};
+  grid-column: ${({classPeriod}) => classPeriod.time.day + 1};
+  grid-row: ${({classPeriod}) => timeToPosition(classPeriod.time.start)} /
+    ${({classPeriod}) => timeToPosition(classPeriod.time.end)};
+  background-color: ${({color}) => color};
+  pointer-events: ${({canDrop}) => (canDrop ? 'auto' : 'none')};
 
+  opacity: ${({canDrop, isDropTarget}) => {
+    let opacity = 0;
+    if (canDrop) opacity = isDropTarget ? 0.7 : 0.3;
+    return opacity;
+  }};
   transition: opacity 0.2s;
-  pointer-events: ${(props) => (props.canDrop ? 'auto' : 'none')};
 `;
 
 interface CellProps {
@@ -57,8 +64,8 @@ const Dropzone: React.FC<CellProps> = ({
       ref={element}
       classPeriod={classPeriod}
       canDrop={canDrop}
+      isDropTarget={isDropTarget}
       color={color}
-      style={{ opacity }}
     />
   );
 };

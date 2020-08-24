@@ -59,26 +59,26 @@ const StyledTextField = styled(TextField)<{
 }>`
   .MuiOutlinedInput-root {
     fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.main};
+      border-color: ${({theme}) => theme.palette.secondary.main};
       transition: border-color 0.1s;
     }
     &:hover fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.dark};
+      border-color: ${({theme}) => theme.palette.secondary.dark};
     }
     &.Mui-focused fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.dark};
+      border-color: ${({theme}) => theme.palette.secondary.dark};
     }
   }
 
   label {
-    color: ${(props) => props.theme.palette.secondary.dark} !important;
+    color: ${({theme}) => theme.palette.secondary.dark} !important;
     transition: 0.2s;
   }
 `;
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
-  color: ${(props) => props.theme.palette.secondary.dark};
+  color: ${({theme}) => theme.palette.secondary.dark};
 `;
 
 const StyledChip = styled(Chip).withConfig({
@@ -87,10 +87,8 @@ const StyledChip = styled(Chip).withConfig({
   backgroundColor: string
 }>`
   transition: none !important;
-  background-color: ${(props) => (
-    props.backgroundColor
-      ? props.backgroundColor
-      : props.theme.palette.secondary.main
+  background-color: ${({backgroundColor, theme}) => (
+    backgroundColor ? backgroundColor : theme.palette.secondary.main
   )} !important;
 `;
 
