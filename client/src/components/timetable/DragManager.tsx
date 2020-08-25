@@ -2,10 +2,9 @@ import React, {
   FunctionComponent, useState, useContext, useRef, createContext
 } from 'react';
 import { ClassData, ClassPeriod } from '../../interfaces/CourseData';
-import { timeToPosition } from './Dropzone';
 // import { SelectedClasses } from '../../interfaces/CourseData';
 
-const transitionTime = 250;
+const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
 export const elevatedScale = 1.1;
@@ -17,6 +16,8 @@ const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => 
   element.style.left = toPx(fromPx(element.style.left) + offsetX);
   element.style.top = toPx(fromPx(element.style.top) + offsetY);
 };
+
+export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
 const classTranslateX = (classPeriod: ClassPeriod) => (
   (classPeriod.time.day - 1) * 100
@@ -128,7 +129,7 @@ export const DragManager: FunctionComponent<{
 
     if (newDropTarget && newDropTarget !== dropTarget) {
       setDropTarget(newDropTarget);
-      setDragTarget(newDropTarget);
+      console.log("go!");
       selectClass(newDropTarget.class);
     }
   };
@@ -154,6 +155,7 @@ export const DragManager: FunctionComponent<{
     if (drag && drop && from.includes(drag) && to.includes(drop)) {
       to = to.filter((period) => period !== drop);
       result[from.indexOf(drag)] = drop;
+      setDragTarget(drop);
     }
     
     from.forEach((fromPeriod: ClassPeriod, i: number) => {
@@ -205,7 +207,9 @@ export const DragManager: FunctionComponent<{
     // if ((drag && result[from.indexOf(drag)] === drop)) console.log("yep");
     // const isSetsEqual = (a: Set<any>, b: Set<any>) => a.size === b.size && Array.from(a).every(value => b.has(value))
     // console.log(isSetsEqual(new Set(result), new Set(b)));
-    // console.log(result.map((period) => period && period.time.day));
+    console.log(result.map((period) => period && period.time.day));
+    // console.log(drag && a[a.indexOf(drag)] && a[a.indexOf(drag)].time.day, result.map((period) => period && period.time.day));
+    // console.log(drag !== null, drop != null, drag && a.includes(drag), drop && b.includes(drop));
 
     return result;
   };
@@ -249,7 +253,7 @@ export const DragManager: FunctionComponent<{
       document.documentElement.style.cursor = 'default';
       unfreezeTransform(dragElement);
 
-      if (dropTarget) selectClass(dropTarget.class);
+      // if (dropTarget) selectClass(dropTarget.class);
     }
 
     handleDragTarget(null);

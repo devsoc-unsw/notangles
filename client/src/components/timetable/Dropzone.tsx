@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useDrag } from './DragManager';
+import { useDrag, defaultTransition, timeToPosition } from './DragManager';
 import { ClassPeriod } from '../../interfaces/CourseData';
-
-export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
 const StyledCell = styled.div.attrs(() => ({
   className: 'dropzone',
@@ -30,7 +28,7 @@ const StyledCell = styled.div.attrs(() => ({
     if (canDrop) opacity = isDropTarget ? 0.7 : 0.3;
     return opacity;
   }};
-  transition: opacity 0.2s;
+  transition: ${defaultTransition};
 `;
 
 interface CellProps {

@@ -114,17 +114,23 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
+
     classData.periods = dbClass.times.map((dbTime) => (
       dbTimesToPeriod(dbTime, classData)
-    ))//.filter((period) => period.time.weeks.includes(1)); // TODO: remove filter part
+    )).filter((period) => period.time.weeks.includes(1)); // TODO: remove filter part
+    
+    classData.periods = classData.periods.filter(period => period == classData.periods.find(x => x.time.day == period.time.day && x.time.start == period.time.start && x.time.end == period.time.end)); // TODO: remove line
+
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
       }
     });
+
     if (!(dbClass.activity in courseData.activities)) {
       courseData.activities[dbClass.activity] = [];
     }
+
     courseData.activities[dbClass.activity].push(classData);
   });
 

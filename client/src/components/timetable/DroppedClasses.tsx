@@ -1,14 +1,13 @@
 import React, {
-  FunctionComponent, useState, useRef,
+  FunctionComponent, useRef,
 } from 'react';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
-  useDrag, defaultTransition, classTransformStyle
+  useDrag, defaultTransition, classTransformStyle, timeToPosition
 } from './DragManager';
-import { timeToPosition } from './Dropzone';
 import {
   ClassPeriod, SelectedClasses,
 } from '../../interfaces/CourseData';
@@ -112,8 +111,14 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
   const isElevated = (
     dragTarget !== null
+    && classPeriod.class.course.code === dragTarget.class.course.code
     && classPeriod.class.activity === dragTarget.class.activity
   );
+
+  // const isElevated = (
+  //   dragTarget !== null
+  //   && classPeriod === dragTarget
+  // );
 
   return (
     <StyledCourseClass
@@ -134,13 +139,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
             {activity}
           </b>
         </p>
-        <p>
-          <LocationOnIcon fontSize="inherit" />
-          {`${classPeriod.locationShort} `}
-          <PeopleAltIcon fontSize="inherit" />
-          {` ${enrolments}/${capacity}`}
-        </p>
-        <p>{`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`}</p>
+        <p>{`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`} {/*<PeopleAltIcon fontSize="inherit" />*/} {` (${enrolments}/${capacity})`}</p>
       </StyledCourseClassInner>
     </StyledCourseClass>
   );
