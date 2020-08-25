@@ -32,15 +32,15 @@ interface TimetableProps {
   setIs12HourMode(value: boolean): void
   removeClass(classData: ClassData): void
 }
-
-const Timetable: FunctionComponent<TimetableProps> = ({
+let abc = 0;
+const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   selectedCourses,
   selectedClasses,
   assignedColors,
   is12HourMode,
   setIs12HourMode,
   removeClass,
-}) => (
+}) => {console.log(++abc);return(
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
@@ -66,7 +66,12 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
     />
-  </StyledTimetable>
-);
+  </StyledTimetable>)
+}, (prev, next) => !(
+  prev.selectedCourses.length != next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) != JSON.stringify(next.assignedColors)
+  || prev.is12HourMode !== next.is12HourMode
+));
 
 export default Timetable;

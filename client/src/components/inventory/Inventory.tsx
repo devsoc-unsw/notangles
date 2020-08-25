@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { CourseData, ClassData } from '../../interfaces/CourseData';
 
@@ -36,7 +36,7 @@ export interface InventoryProps {
   removeClass(classData: ClassData): void
 }
 
-const Inventory: React.FC<InventoryProps> = ({
+const Inventory: FunctionComponent<InventoryProps> = React.memo(({
   selectedCourses,
   assignedColors,
   removeClass,
@@ -77,6 +77,6 @@ const Inventory: React.FC<InventoryProps> = ({
       </StyledInventoryText>
     </StyledInventory>
   );
-};
+});
 
 export default Inventory;

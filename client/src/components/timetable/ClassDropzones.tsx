@@ -7,7 +7,7 @@ interface ClassDropzoneProps {
   color: string
 }
 
-const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
+const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
 }) => {
@@ -25,14 +25,16 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
     ),
   );
   return <>{dropzones}</>;
-};
+}, (prev, next) => !(
+  prev.course.code !== next.course.code || prev.color !== next.color
+));
 
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
 }
 
-const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
+const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
   selectedCourses,
   assignedColors,
 }) => {
@@ -44,6 +46,10 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
     />
   ));
   return <>{dropzones}</>;
-};
+}, (prev, next) => !(
+  prev.selectedCourses.length != next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) != JSON.stringify(next.assignedColors)
+));
 
 export default ClassDropzones;

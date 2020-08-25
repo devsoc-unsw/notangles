@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import styled from 'styled-components';
 import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
-
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -49,7 +48,7 @@ interface NavBarProps {
   isDarkMode: boolean
 }
 
-const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
+const Navbar: FunctionComponent<NavBarProps> = React.memo(({ setIsDarkMode, isDarkMode }) => (
   <StylesProvider injectFirst>
     <NavbarBox>
       <StyledNavBar>
@@ -82,7 +81,6 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
       </StyledNavBar>
     </NavbarBox>
   </StylesProvider>
-);
-
+));
 
 export default Navbar;

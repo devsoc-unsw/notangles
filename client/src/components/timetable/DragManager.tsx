@@ -39,6 +39,14 @@ export const classTransformStyle = (classPeriod: ClassPeriod, elevated: boolean)
   ) scale(${elevated ? elevatedScale : 1})`
 );
 
+export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
+  a === b || (
+    a.class.course.code === b.class.course.code
+    && a.class.activity === b.class.activity
+    && a.time.end - a.time.start === b.time.end - b.time.start
+  )
+);
+
 const freezeTransform = (element: HTMLElement, classPeriod: ClassPeriod) => {
   element.style.transform = classTransformStyle(classPeriod, true);
 }
@@ -47,10 +55,7 @@ const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty("transform");
 }
 
-const intersectionArea = (e1: Element, e2: Element) => {
-  const r1 = e1.getBoundingClientRect();
-  const r2 = e2.getBoundingClientRect();
-
+const intersectionArea = (r1: DOMRect, r2: DOMRect) => {
   const left = Math.max(r1.left, r2.left);
   const right = Math.min(r1.right, r2.right);
   const bottom = Math.min(r1.bottom, r2.bottom);
@@ -66,53 +71,64 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
-// const hasIntersection = (a: any[], b: any[]) => a.some(x => b.includes(x));
-
 const DragContext = createContext<{
-  dragTarget: ClassPeriod | null,
+  dragTarget: ClassPeriod | null
   setDragTarget: (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
-  dropTarget: ClassPeriod | null,
-  registerDropzone: (element: HTMLElement, classPeriod: ClassPeriod) => void
-  checkCanDrop: (a: ClassPeriod, b: ClassPeriod) => boolean
-  morphPeriods: (
-    from: ClassPeriod[], to: ClassPeriod[], drag: ClassPeriod | null, drop: ClassPeriod | null
-  ) => (ClassPeriod | null)[]
+  dropTarget: ClassPeriod | null
+  morphPeriods: (from: ClassPeriod[], to: ClassPeriod[]) => (ClassPeriod | null)[]
 }>({
-      dragTarget: null,
-      setDragTarget: () => {},
-      dropTarget: null,
-      registerDropzone: () => {},
-      checkCanDrop: () => false,
-      morphPeriods: () => ([]),
-    });
+  dragTarget: null,
+  setDragTarget: () => {},
+  dropTarget: null,
+  morphPeriods: () => ([]),
+});
 
+let dragElement: HTMLElement | null = null;
+let dragSource: ClassPeriod | null = null;
+let dropzones = new Map<ClassPeriod, HTMLElement>();
+
+export const registerDropzone = (classPeriod: ClassPeriod, element: HTMLElement) => {
+  dropzones.set(classPeriod, element);
+};
+
+export const unregisterDropzone = (classPeriod: ClassPeriod) => {
+  dropzones.delete(classPeriod);
+};
+
+// let bla = 0;
 export const DragManager: FunctionComponent<{
   // selectedClasses: SelectedClasses
   selectClass(classData: ClassData): void
-}> = ({
+}> = React.memo(({
   // selectedClasses,
   selectClass,
   children,
 }) => {
-  const [dragElement, setDragElement] = useState<HTMLElement | null>(null);
-  const [dragTarget, setDragTarget] = useState<ClassPeriod | null>(null);
-  const [dragSource, setDragSource] = useState<ClassPeriod | null>(null);
-  const [dropTarget, setDropTarget] = useState<ClassPeriod | null>(null);
-  const dropzones = useRef(new Map<ClassPeriod, HTMLElement>());
+  // console.trace(++bla);
+  const [{ dragTarget, dropTarget }, setTargets] = useState<{
+    dragTarget: ClassPeriod | null
+    dropTarget: ClassPeriod | null
+  }>({
+    dragTarget: null,
+    dropTarget: null,
+  });
 
   const updateDropTarget = () => {
     if (!dragTarget || !dragElement) {
-      setDropTarget(null);
       return;
     }
 
+    const dragRect = dragElement.getBoundingClientRect();
+
     // dropzone with greatest area of intersection
-    const bestMatch = Array.from(dropzones.current.entries()).filter(([classPeriod]) => (
+    const bestMatch = Array.from(dropzones.entries()).filter(([classPeriod]) => (
       checkCanDrop(dragTarget, classPeriod)
     )).map(([classPeriod, dropElement]) => (
       {
         classPeriod,
-        area: dragElement ? intersectionArea(dragElement, dropElement) : 0,
+        area: dragElement ? intersectionArea(
+          dragRect, dropElement.getBoundingClientRect()
+        ) : 0,
       }
     )).reduce((max, current) => (
       current.area > max.area ? current : max
@@ -128,34 +144,25 @@ export const DragManager: FunctionComponent<{
     const newDropTarget = classPeriod && area > 0 ? classPeriod : dragSource;
 
     if (newDropTarget && newDropTarget !== dropTarget) {
-      setDropTarget(newDropTarget);
-      console.log("go!");
-      selectClass(newDropTarget.class);
+      setTargets({dragTarget, dropTarget: newDropTarget}); // TODO: perf
+      selectClass(newDropTarget.class); // TODO: perf
     }
   };
 
-  const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
-    a === b || (
-      // b.class !== selectedClasses[b.class.course.code][b.class.activity]
-      a.class.course.code === b.class.course.code
-      && a.class.activity === b.class.activity
-      && a.time.end - a.time.start === b.time.end - b.time.start
-    )
-    // && hasIntersection(a.time.weeks, b.time.weeks)
-  );
-
-  const morphPeriods = (
-    a: ClassPeriod[], b: ClassPeriod[], drag: ClassPeriod | null, drop: ClassPeriod | null
-  ) => {
+  const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
+    // console.trace();
     let from = [...a];
     let to = [...b];
 
     const result: (ClassPeriod | null)[] = Array(from.length).fill(null);
     
-    if (drag && drop && from.includes(drag) && to.includes(drop)) {
-      to = to.filter((period) => period !== drop);
-      result[from.indexOf(drag)] = drop;
-      setDragTarget(drop);
+    if (
+      dragTarget && dropTarget && dragTarget !== dropTarget
+      && from.includes(dragTarget) && to.includes(dropTarget)
+    ) {
+      to = to.filter((period) => period !== dropTarget);
+      result[from.indexOf(dragTarget)] = dropTarget;
+      setTargets({dragTarget: dropTarget, dropTarget});
     }
     
     from.forEach((fromPeriod: ClassPeriod, i: number) => {
@@ -166,13 +173,13 @@ export const DragManager: FunctionComponent<{
       if (to.includes(fromPeriod)) {
         match = fromPeriod;
       } else {
-        const fromElement = dropzones.current.get(fromPeriod);
+        const fromElement = dropzones.get(fromPeriod);
 
         if (fromElement) {
           const closest = to.filter((toPeriod) => (
             checkCanDrop(fromPeriod, toPeriod)
           )).map((toPeriod) => {
-            const element = dropzones.current.get(toPeriod);
+            const element = dropzones.get(toPeriod);
             const distance = (
               element ? distanceBetween(fromElement, element) : Infinity
             );
@@ -200,22 +207,10 @@ export const DragManager: FunctionComponent<{
         to = to.filter((period) => period !== match);
       }
 
-      // if (match === drop) console.log("illegal match", from, to, drag, drop);
       result[i] = match;
     });
 
-    // if ((drag && result[from.indexOf(drag)] === drop)) console.log("yep");
-    // const isSetsEqual = (a: Set<any>, b: Set<any>) => a.size === b.size && Array.from(a).every(value => b.has(value))
-    // console.log(isSetsEqual(new Set(result), new Set(b)));
-    console.log(result.map((period) => period && period.time.day));
-    // console.log(drag && a[a.indexOf(drag)] && a[a.indexOf(drag)].time.day, result.map((period) => period && period.time.day));
-    // console.log(drag !== null, drop != null, drag && a.includes(drag), drop && b.includes(drop));
-
     return result;
-  };
-
-  const registerDropzone = (element: HTMLElement, classPeriod: ClassPeriod) => {
-    dropzones.current.set(classPeriod, element);
   };
 
   const handleDragTarget = (classPeriod: ClassPeriod | null, element?: HTMLElement) => {
@@ -225,22 +220,32 @@ export const DragManager: FunctionComponent<{
         document.documentElement.style.cursor = 'grabbing';
 
         freezeTransform(element, classPeriod);
-        setDragElement(element);
+        dragElement = element;
         updateDropTarget();
       } else {
-        setDragElement(null);
+        dragElement = null;
       }
 
-      setDragTarget(classPeriod);
-      setDragSource(classPeriod);
-      setDropTarget(classPeriod);
+      // TODO: these 3 lines take 100ms with 5 courses
+      // console.log("===", classPeriod)
+      // let now = Date.now()
+      setTargets({dragTarget: classPeriod, dropTarget: classPeriod});
+      dragSource = classPeriod;
+      // console.log("time:", Date.now() - now)
+      // if (Date.now() - now > 10) console.trace();
     }
   };
+
+  let lastUpdate = 0;
 
   window.onmousemove = (event: any) => {
     if (dragElement) {
       moveElement(dragElement, event.movementX, event.movementY);
-      updateDropTarget();
+
+      if (Date.now() - lastUpdate > 30) {
+        updateDropTarget();
+        lastUpdate = Date.now();
+      }
     }
   };
 
@@ -257,7 +262,7 @@ export const DragManager: FunctionComponent<{
     }
 
     handleDragTarget(null);
-    setDropTarget(null);
+    // setTargets({dragTarget: null, dropTarget: null});
   };
 
   return (
@@ -265,14 +270,11 @@ export const DragManager: FunctionComponent<{
       dragTarget,
       setDragTarget: handleDragTarget,
       dropTarget,
-      registerDropzone,
-      checkCanDrop,
-      morphPeriods,
-    }}
-    >
+      morphPeriods
+    }}>
       {children}
     </DragContext.Provider>
   );
-};
+});
 
 export const useDrag = () => useContext(DragContext);

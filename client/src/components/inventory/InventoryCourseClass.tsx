@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
+
 // import styled from 'styled-components';
 // import Card from '@material-ui/core/Card';
 
@@ -43,7 +44,7 @@ export interface InventoryCourseClassProps {
   color: string
 }
 
-const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
+const InventoryCourseClass: FunctionComponent<InventoryCourseClassProps> = React.memo(({
   courseCode,
   activity,
   color,
@@ -60,5 +61,5 @@ const InventoryCourseClass: React.FC<InventoryCourseClassProps> = ({
   //   </b>
   // </StyledInventoryCourseClass>
   <>{console.log(courseCode, activity, color)}</>
-);
+));
 export default InventoryCourseClass;

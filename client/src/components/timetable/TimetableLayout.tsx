@@ -103,7 +103,7 @@ interface TimetableLayoutProps {
   selectedCourses: CourseData[]
 }
 
-const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
+const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   days,
   is12HourMode,
   setIs12HourMode,
@@ -159,6 +159,11 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = ({
       {otherCells}
     </>
   );
-};
+}, (prev, next) => !(
+  prev.is12HourMode !== next.is12HourMode
+  || JSON.stringify(prev.days) !== JSON.stringify(next.days)
+  || prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+));
 
 export default TimetableLayout;

@@ -1,6 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useDrag, defaultTransition, timeToPosition } from './DragManager';
+import {
+  useDrag,
+  defaultTransition,
+  timeToPosition,
+  registerDropzone,
+  unregisterDropzone,
+  checkCanDrop
+} from './DragManager';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 const StyledCell = styled.div.attrs(() => ({
@@ -36,20 +43,18 @@ interface CellProps {
   color: string
 }
 
-const Dropzone: React.FC<CellProps> = ({
+const Dropzone: FunctionComponent<CellProps> = React.memo(({
   classPeriod,
   color,
 }) => {
-  const {
-    dragTarget,
-    dropTarget,
-    registerDropzone,
-    checkCanDrop
-  } = useDrag();
-  const element = useRef<HTMLDivElement>(null);
+  const { dragTarget, dropTarget } = useDrag();
 
+  const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (element.current) registerDropzone(element.current, classPeriod);
+    if (element.current) registerDropzone(classPeriod, element.current);
+    return () => {
+      if (element.current) unregisterDropzone(classPeriod);
+    }
   }, []);
 
   const canDrop = dragTarget ? checkCanDrop(dragTarget, classPeriod) : false;
@@ -64,6 +69,6 @@ const Dropzone: React.FC<CellProps> = ({
       color={color}
     />
   );
-};
+});
 
 export { Dropzone };

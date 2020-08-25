@@ -1,5 +1,5 @@
 import React, {
-  FunctionComponent, useRef,
+  FunctionComponent, useState, useRef,
 } from 'react';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
@@ -89,7 +89,7 @@ interface DroppedClassProps {
   color: string
 }
 
-const DroppedClass: FunctionComponent<DroppedClassProps> = ({
+const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   classPeriod,
   color,
 }) => {
@@ -102,7 +102,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
 
   // if (classPeriod.time.day == 3) console.log("update!");
 
+  // TODO: shouldn't update when dropTarget changes?
   const { dragTarget, setDragTarget } = useDrag();
+  
   const { weeks, weeksString } = classPeriod.time;
 
   const onDown = (event: any) => {
@@ -143,22 +145,22 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = ({
       </StyledCourseClassInner>
     </StyledCourseClass>
   );
-};
+});
 
 interface DroppedClassesProps {
   selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
 }
 
-const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
+const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
   selectedClasses,
   assignedColors,
 }) => {
-  const { morphPeriods, dragTarget, dropTarget } = useDrag();
   const droppedClasses: JSX.Element[] = [];
-  const periodKeys = useRef(new Map<ClassPeriod, number>());
-  const keyCounter = useRef(0);
+  const { morphPeriods } = useDrag();
   const prevPeriods = useRef<ClassPeriod[]>([]);
+  const [periodKeys] = useState<Map<ClassPeriod, number>>(new Map<ClassPeriod, number>());
+  const keyCounter = useRef(0);
   const newPeriods: ClassPeriod[] = [];
 
   Object.values(selectedClasses).forEach((activities) => {
@@ -171,26 +173,24 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     });
   });
 
-  const prevPeriodKeys = new Map(periodKeys.current);
+  const prevPeriodKeys = new Map(periodKeys);
 
   // console.log("===")
-  morphPeriods(
-    prevPeriods.current, newPeriods, dragTarget, dropTarget
-  ).forEach((morphPeriod, i) => {
+  morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
     
     if (morphPeriod && morphPeriod !== prevPeriod) {
       const periodKey = prevPeriodKeys.get(prevPeriod);
       
       if (periodKey) {
-        periodKeys.current.set(morphPeriod, periodKey);
+        periodKeys.set(morphPeriod, periodKey);
       }
     }
   });
 
-  // console.log(periodKeys.current);
+  // console.log(periodKeys);
   newPeriods.forEach((classPeriod) => {
-    let key = periodKeys.current.get(classPeriod);
+    let key = periodKeys.get(classPeriod);
     // if (!key) console.log("!", classPeriod.time.day);
     key = key !== undefined ? key : ++keyCounter.current;
     // console.log(keyCounter.current);
@@ -203,7 +203,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
       />,
     );
 
-    periodKeys.current.set(classPeriod, key);
+    periodKeys.set(classPeriod, key);
   });
   
   // shallow copy
@@ -214,7 +214,13 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     a.key && b.key ? Number(a.key) - Number(b.key) : 0
   ));
 
+  periodKeys.forEach((_, period) => {
+    if (!newPeriods.includes(period)) {
+      periodKeys.delete(period);
+    }
+  });
+
   return <>{droppedClasses}</>;
-};
+});
 
 export default DroppedClasses;

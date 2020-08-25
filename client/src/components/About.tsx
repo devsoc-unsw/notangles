@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import Button from '@material-ui/core/Button';
@@ -30,7 +30,7 @@ const FeatList = styled.ul`
     line-height:20px;
 `;
 
-const About: React.FC = () => {
+const About: FunctionComponent = React.memo(() => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -136,6 +136,6 @@ const About: React.FC = () => {
       </Dialog>
     </div>
   );
-};
+});
 
 export default About;

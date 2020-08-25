@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  FunctionComponent, useState, useRef, useEffect
+} from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import {
@@ -116,6 +118,11 @@ const Weak = styled.span`
   ${weakStyle}
 `;
 
+type MemoProps = {
+  selectedCourses: CourseData[]
+  assignedColors: Record<string, string>
+}
+
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
@@ -123,7 +130,7 @@ interface CourseSelectProps {
   handleRemove(courseCode: string): void
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({
+const CourseSelect: FunctionComponent<CourseSelectProps> = React.memo(({
   selectedCourses,
   assignedColors,
   handleSelect,
@@ -256,7 +263,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
     }
-    // handleSelect('COMP1511'); // TODO: remove
+    // handleSelect('MATH1131'); // TODO: remove
   };
 
   useEffect(() => {
@@ -353,6 +360,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       />
     </StyledSelect>
   );
-};
+}, (prev, next) => !(
+  prev.selectedCourses.length != next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) != JSON.stringify(next.assignedColors)
+));
 
 export default CourseSelect;
