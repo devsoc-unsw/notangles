@@ -11,17 +11,17 @@ const StyledInventory = styled.div`
   grid-column: -2;
   grid-row: 1 / -1;
   position: relative;
-  border: 1px solid ${({theme}) => theme.palette.secondary.main};
-  background-color: ${({theme}) => theme.palette.secondary.light};
+  border: 1px solid ${({ theme }) => theme.palette.secondary.main};
+  background-color: ${({ theme }) => theme.palette.secondary.light};
   transition: 0.2s;
-  border-radius: ${({theme}) => theme.shape.borderRadius}px;
+  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   box-sizing: border-box;
   width: calc(100% + 2px);
   left: -3px;
 `;
 
 const StyledInventoryText = styled.div`
-  color: ${({theme}) => theme.palette.secondary.dark};
+  color: ${({ theme }) => theme.palette.secondary.dark};
   transition: 0.2s;
   margin-left: 10px;
   margin-right: 10px;
@@ -37,46 +37,44 @@ export interface InventoryProps {
 }
 
 const Inventory: FunctionComponent<InventoryProps> = React.memo(({
-  selectedCourses,
-  assignedColors,
-  removeClass,
-}) => {
-  // const classNodes: React.ReactNode[] = [];
+  // selectedCourses,
+  // assignedColors,
+  // removeClass,
+}) =>
+// const classNodes: React.ReactNode[] = [];
 
-  // console.log(selectedCourses, assignedColors, removeClass);
+// console.log(selectedCourses, assignedColors, removeClass);
 
-  // return course classes for activities which don't currently have a selected class
-  // selectedCourses.forEach((course) => {
-  //   Object.entries(course.activities).forEach(([activity, activityClasses]) => {
-  //     if (!activityClasses.some(
-  //       (classData) => selectedClasses.includes(classData),
-  //     )) {
-  //       classNodes.push(
-  //         <InventoryCourseClass
-  //           key={`${course.code}-${activity}`}
-  //           courseCode={course.code}
-  //           activity={activity}
-  //           color={assignedColors[course.code]}
-  //         />,
-  //       );
-  //     }
-  //   });
-  // });
+// return course classes for activities which don't currently have a selected class
+// selectedCourses.forEach((course) => {
+//   Object.entries(course.activities).forEach(([activity, activityClasses]) => {
+//     if (!activityClasses.some(
+//       (classData) => selectedClasses.includes(classData),
+//     )) {
+//       classNodes.push(
+//         <InventoryCourseClass
+//           key={`${course.code}-${activity}`}
+//           courseCode={course.code}
+//           activity={activity}
+//           color={assignedColors[course.code]}
+//         />,
+//       );
+//     }
+//   });
+// });
 
-  // const ids = selectedCourses.reduce<string[]>((array, course) => (
-  //   [...array, ...Object.keys(course.activities).map((activity) => (
-  //     `${course.code}-${activity}`
-  //   ))]
-  // ), []);
-
-  return (
+// const ids = selectedCourses.reduce<string[]>((array, course) => (
+//   [...array, ...Object.keys(course.activities).map((activity) => (
+//     `${course.code}-${activity}`
+//   ))]
+// ), []);
+  (
     <StyledInventory>
       {/* {classNodes} */}
       <StyledInventoryText>
         Drag classes here to get them out of the way
       </StyledInventoryText>
     </StyledInventory>
-  );
-});
+  ));
 
 export default Inventory;

@@ -1,5 +1,5 @@
 import React, {
-  FunctionComponent, useState, useRef, useEffect
+  FunctionComponent, useState, useRef, useEffect,
 } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
@@ -61,26 +61,26 @@ const StyledTextField = styled(TextField)<{
 }>`
   .MuiOutlinedInput-root {
     fieldset {
-      border-color: ${({theme}) => theme.palette.secondary.main};
+      border-color: ${({ theme }) => theme.palette.secondary.main};
       transition: border-color 0.1s;
     }
     &:hover fieldset {
-      border-color: ${({theme}) => theme.palette.secondary.dark};
+      border-color: ${({ theme }) => theme.palette.secondary.dark};
     }
     &.Mui-focused fieldset {
-      border-color: ${({theme}) => theme.palette.secondary.dark};
+      border-color: ${({ theme }) => theme.palette.secondary.dark};
     }
   }
 
   label {
-    color: ${({theme}) => theme.palette.secondary.dark} !important;
+    color: ${({ theme }) => theme.palette.secondary.dark} !important;
     transition: 0.2s;
   }
 `;
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
-  color: ${({theme}) => theme.palette.secondary.dark};
+  color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
 const StyledChip = styled(Chip).withConfig({
@@ -89,8 +89,8 @@ const StyledChip = styled(Chip).withConfig({
   backgroundColor: string
 }>`
   transition: none !important;
-  background-color: ${({backgroundColor, theme}) => (
-    backgroundColor ? backgroundColor : theme.palette.secondary.main
+  background-color: ${({ backgroundColor, theme }) => (
+    backgroundColor || theme.palette.secondary.main
   )} !important;
 `;
 
@@ -121,7 +121,7 @@ const Weak = styled.span`
 type MemoProps = {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-}
+};
 
 interface CourseSelectProps {
   selectedCourses: CourseData[]
@@ -361,9 +361,9 @@ const CourseSelect: FunctionComponent<CourseSelectProps> = React.memo(({
     </StyledSelect>
   );
 }, (prev, next) => !(
-  prev.selectedCourses.length != next.selectedCourses.length
+  prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
-  || JSON.stringify(prev.assignedColors) != JSON.stringify(next.assignedColors)
+  || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
 ));
 
 export default CourseSelect;

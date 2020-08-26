@@ -47,9 +47,9 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
   ));
   return <>{dropzones}</>;
 }, (prev, next) => !(
-  prev.selectedCourses.length != next.selectedCourses.length
+  prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
-  || JSON.stringify(prev.assignedColors) != JSON.stringify(next.assignedColors)
+  || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
 ));
 
 export default ClassDropzones;

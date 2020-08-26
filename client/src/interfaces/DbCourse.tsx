@@ -54,12 +54,12 @@ const timeToNumber = (time: string) => {
 };
 
 const range = (a: number, b: number) => (
-  Array.from({length: (b - a + 1)}, (_, i) => i + a)
+  Array.from({ length: (b - a + 1) }, (_, i) => i + a)
 );
 
 const enumerateWeeks = (weeks: string): number[] => (
-  weeks.split(",").flatMap((rangeString) => {
-    const stops = rangeString.split("-").map(string => Number(string));
+  weeks.split(',').flatMap((rangeString) => {
+    const stops = rangeString.split('-').map((string) => Number(string));
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
   })
 );
@@ -118,8 +118,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classData.periods = dbClass.times.map((dbTime) => (
       dbTimesToPeriod(dbTime, classData)
     )).filter((period) => period.time.weeks.includes(1)); // TODO: remove filter part
-    
-    classData.periods = classData.periods.filter(period => period == classData.periods.find(x => x.time.day == period.time.day && x.time.start == period.time.start && x.time.end == period.time.end)); // TODO: remove line
+
+    classData.periods = classData.periods.filter((period) => period == classData.periods.find((x) => x.time.day == period.time.day && x.time.start == period.time.start && x.time.end == period.time.end)); // TODO: remove line
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {

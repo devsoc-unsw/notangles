@@ -12,23 +12,23 @@ const BaseCell = styled.div<{
   endX?: boolean
   endY?: boolean
 }>`
-  grid-column: ${({x}) => x};
-  grid-row: ${({y}) => y};
-  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({theme}) => theme.palette.secondary.main};
-  background-color: ${({theme}) => theme.palette.background.default};
+  grid-column: ${({ x }) => x};
+  grid-row: ${({ y }) => y};
+  box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
+  background-color: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
   transition: background-color 0.2s, box-shadow 0.2s;
 
-  border-top-left-radius: ${({theme, x, y}) => (
+  border-top-left-radius: ${({ theme, x, y }) => (
     x === 1 && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-left-radius: ${({theme, x, endY}) => (
+  border-bottom-left-radius: ${({ theme, x, endY }) => (
     x === 1 && endY ? theme.shape.borderRadius : 0
   )}px;
-  border-top-right-radius: ${({theme, endX, y}) => (
+  border-top-right-radius: ${({ theme, endX, y }) => (
     endX && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-right-radius: ${({theme, endX, endY}) => (
+  border-bottom-right-radius: ${({ theme, endX, endY }) => (
     endX && endY ? theme.shape.borderRadius : 0
   )}px;
 
@@ -50,7 +50,7 @@ const HourCell = styled(BaseCell) <{
 }>`
   ${paddingStyle}
   display: grid;
-  justify-content: ${({is12HourMode}) => (is12HourMode ? 'end' : 'center')};
+  justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
 `;
 
 const ToggleCell = styled(BaseCell)`
@@ -69,10 +69,10 @@ const Is12HourModeToggle = styled(Box)`
   cursor: pointer;
   user-select: none;
   transition: color 0.1s;
-  color: ${({theme}) => theme.palette.primary.main};
+  color: ${({ theme }) => theme.palette.primary.main};
 
   &:hover {
-    color: ${({theme}) => theme.palette.primary.dark};
+    color: ${({ theme }) => theme.palette.primary.dark};
   }
 `;
 

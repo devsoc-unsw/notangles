@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
-  useDrag, defaultTransition, classTransformStyle, timeToPosition
+  useDrag, defaultTransition, classTransformStyle, timeToPosition,
 } from './DragManager';
 import {
   ClassPeriod, SelectedClasses,
@@ -20,16 +20,16 @@ const StyledCourseClass = styled.div<{
   isElevated: boolean
 }>`
   grid-column: 2;
-  grid-row: 2 / ${({classPeriod}) => (
+  grid-row: 2 / ${({ classPeriod }) => (
     timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
   )};
-  transform: ${({classPeriod, isElevated}) => (
+  transform: ${({ classPeriod, isElevated }) => (
     classTransformStyle(classPeriod, isElevated)
   )};
   transition: ${defaultTransition};
 
   // above vs. below app bar
-  z-index: ${({classPeriod, dragTarget, isElevated}) => {
+  z-index: ${({ classPeriod, dragTarget, isElevated }) => {
     let z = isElevated ? 1200 : 1000;
     if (dragTarget !== null && classPeriod === dragTarget) {
       z++;
@@ -46,11 +46,49 @@ const StyledCourseClass = styled.div<{
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
-  cursor: ${({dragTarget, isElevated}) => {
+  cursor: ${({ dragTarget, isElevated }) => {
     if (dragTarget && !isElevated) return 'inherit';
     return isElevated ? 'grabbing' : 'grab';
   }};
 `;
+
+// const courseClassStyle = ({
+//   classPeriod,
+//   dragTarget,
+//   isElevated,
+//   zIndex,
+//   cursor,
+// }: {
+//   classPeriod: ClassPeriod
+//   dragTarget: ClassPeriod | null
+//   isElevated: boolean
+//   zIndex: number
+//   cursor: string
+// }) => ({
+//   gridColumn: 2,
+//   gridRow: `2 / ${
+//     timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
+//   }`,
+//   transform: classTransformStyle(classPeriod, isElevated),
+//   transition: defaultTransition,
+
+//   // above vs. below app bar
+//   zIndex,
+
+//   // position over timetable borders
+//   position: 'relative' as 'relative',
+
+//   padding: `${classMargin}px`,
+//   width: `calc(100% + ${1 / devicePixelRatio}px)`,
+//   height: `calc(100% + ${1 / devicePixelRatio}px)`,
+//   paddingRight: `${classMargin + 1 / devicePixelRatio}px`,
+//   paddingBottom: `${classMargin + 1 / devicePixelRatio}px`,
+//   boxSizing: 'border-box' as 'border-box',
+//   cursor,
+
+//   left: 0,
+//   top: 0,
+// });
 
 const StyledCourseClassInner = styled(Card).withConfig({
   shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
@@ -62,7 +100,7 @@ const StyledCourseClassInner = styled(Card).withConfig({
   align-items: center;
   flex-direction: column;
   
-  background-color: ${({backgroundColor}) => backgroundColor};
+  background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
   border-radius: 7px;
@@ -84,6 +122,38 @@ const StyledCourseClassInner = styled(Card).withConfig({
   }
 `;
 
+// const courseClassInnerStyle = ({
+//   backgroundColor,
+// }: {
+//   backgroundColor: string
+// }) => ({
+//   display: 'flex',
+//   justifyContent: 'center',
+//   alignItems: 'center',
+//   flexDirection: 'column' as 'column',
+
+//   backgroundColor,
+//   color: 'white',
+//   fontSize: '0.9rem',
+//   borderRadius: '7px',
+//   transition: defaultTransition,
+
+//   minWidth: 0,
+//   width: '100%',
+//   height: '100%',
+//   boxSizing: 'border-box' as 'border-box',
+//   padding: '10px',
+//   position: 'relative' as 'relative',
+// });
+
+const pStyle = {
+  width: '100%',
+  margin: '0 0',
+  whiteSpace: 'nowrap' as 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+};
+
 interface DroppedClassProps {
   classPeriod: ClassPeriod
   color: string
@@ -100,11 +170,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     capacity,
   } = classPeriod.class;
 
-  // if (classPeriod.time.day == 3) console.log("update!");
-
-  // TODO: shouldn't update when dropTarget changes?
   const { dragTarget, setDragTarget } = useDrag();
-  
+
   const { weeks, weeksString } = classPeriod.time;
 
   const onDown = (event: any) => {
@@ -117,32 +184,61 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     && classPeriod.class.activity === dragTarget.class.activity
   );
 
-  // const isElevated = (
-  //   dragTarget !== null
-  //   && classPeriod === dragTarget
-  // );
+  let zIndex = isElevated ? 1200 : 1000;
+  if (dragTarget !== null && classPeriod === dragTarget) {
+    zIndex++;
+  }
+
+  let cursor;
+  if (dragTarget && !isElevated) {
+    cursor = 'inherit';
+  } else {
+    cursor = isElevated ? 'grabbing' : 'grab';
+  }
 
   return (
     <StyledCourseClass
+      onMouseDown={onDown}
       classPeriod={classPeriod}
       dragTarget={dragTarget}
       isElevated={isElevated}
-      onMouseDown={onDown}
-      style={{ left: 0, top: 0 }}
+    // <div
+    //   onMouseDown={onDown}
+    //   style={courseClassStyle({
+    //     classPeriod,
+    //     dragTarget,
+    //     isElevated,
+    //     zIndex,
+    //     cursor,
+    //   })}
     >
-      <StyledCourseClassInner
-        backgroundColor={color}
+      {/* <Card
         elevation={isElevated ? 24 : 3}
+        style={courseClassInnerStyle({
+          backgroundColor: color
+        })}
+      > */}
+      <StyledCourseClassInner
+        elevation={isElevated ? 24 : 3}
+        backgroundColor={color}
       >
-        <p>
+        <p style={pStyle}>
           <b>
             {course.code}
             {' '}
             {activity}
           </b>
         </p>
-        <p>{`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`} {/*<PeopleAltIcon fontSize="inherit" />*/} {` (${enrolments}/${capacity})`}</p>
+        <p style={pStyle}>
+          {`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`}
+          {' '}
+          {/* <PeopleAltIcon fontSize="inherit" /> */}
+          {' '}
+          {` (${enrolments}/${capacity})`}
+        </p>
+        {/* </Card> */}
       </StyledCourseClassInner>
+      {/* </div> */}
     </StyledCourseClass>
   );
 });
@@ -175,25 +271,21 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
 
   const prevPeriodKeys = new Map(periodKeys);
 
-  // console.log("===")
   morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
-    
+
     if (morphPeriod && morphPeriod !== prevPeriod) {
       const periodKey = prevPeriodKeys.get(prevPeriod);
-      
+
       if (periodKey) {
         periodKeys.set(morphPeriod, periodKey);
       }
     }
   });
 
-  // console.log(periodKeys);
   newPeriods.forEach((classPeriod) => {
     let key = periodKeys.get(classPeriod);
-    // if (!key) console.log("!", classPeriod.time.day);
     key = key !== undefined ? key : ++keyCounter.current;
-    // console.log(keyCounter.current);
 
     droppedClasses.push(
       <DroppedClass
@@ -205,10 +297,10 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
 
     periodKeys.set(classPeriod, key);
   });
-  
+
   // shallow copy
   prevPeriods.current = [...newPeriods];
-  
+
   // sort by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (
     a.key && b.key ? Number(a.key) - Number(b.key) : 0
