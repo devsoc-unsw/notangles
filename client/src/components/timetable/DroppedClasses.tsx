@@ -15,7 +15,7 @@ import {
   timeToPosition,
   registerPeriod,
   unregisterPeriod,
-} from './DragManager';
+} from './Drag';
 import {
   ClassPeriod, SelectedClasses,
 } from '../../interfaces/CourseData';

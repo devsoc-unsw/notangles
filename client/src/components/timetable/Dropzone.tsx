@@ -7,7 +7,7 @@ import {
   registerDropzone,
   unregisterDropzone,
   // checkCanDrop,
-} from './DragManager';
+} from './Drag';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 // const StyledCell = styled.div.attrs(() => ({
@@ -64,7 +64,7 @@ const cellStyle = ({
   //   (canDrop ? 'auto' : 'none') as ('auto' | 'none')
   // ),
 
-  // opacity,
+  opacity: 0,
   transition: defaultTransition,
 });
 

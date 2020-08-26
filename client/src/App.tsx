@@ -2,7 +2,7 @@ import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { DragManager } from './components/timetable/DragManager';
+import { useDrag } from './components/timetable/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import CourseSelect from './components/CourseSelect';
@@ -82,10 +82,11 @@ const App: FunctionComponent = () => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
       prev[classData.course.code][classData.activity] = classData;
-      console.log("ping")
       return prev;
     });
   };
+
+  useDrag(handleSelectClass);
 
   const handleRemoveClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
@@ -145,10 +146,10 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-              <DragManager
+              {/* <DragManager
                 // selectedClasses={selectedClasses}
                 selectClass={handleSelectClass}
-              >
+              > */}
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
@@ -157,7 +158,7 @@ const App: FunctionComponent = () => {
                   setIs12HourMode={setIs12HourMode}
                   removeClass={handleRemoveClass}
                 />
-              </DragManager>
+              {/* </DragManager> */}
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or
