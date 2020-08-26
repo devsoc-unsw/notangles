@@ -82,6 +82,7 @@ const App: FunctionComponent = () => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
       prev[classData.course.code][classData.activity] = classData;
+      console.log("ping")
       return prev;
     });
   };
@@ -94,26 +95,16 @@ const App: FunctionComponent = () => {
     });
   };
 
-  // TODO: temp until auto-timetabling is done
-  // currently just selects first available classes
-  const populateTimetable = (newCourse: CourseData) => {
-    Object.values(newCourse.activities).forEach((classes) => {
-      handleSelectClass(classes[0]);
-    });
-  };
-
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prev) => {
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = null;
+        prev[course.code][activity] = course.activities[activity][0]; // temp
       });
-
+      
       return prev;
     });
-
-    populateTimetable(course); // TODO: temp until auto-timetabling is done
   };
 
   const handleSelectCourse = async (courseCode: string) => {

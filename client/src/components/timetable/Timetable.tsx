@@ -40,8 +40,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   is12HourMode,
   setIs12HourMode,
   removeClass,
-}) => (
-  <StyledTimetable
+}) => {console.log("dong"); return( <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
     ), defaultEndTime) - defaultStartTime}
@@ -67,11 +66,12 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
       assignedColors={assignedColors}
     />
   </StyledTimetable>
-), (prev, next) => !(
-  prev.selectedCourses.length !== next.selectedCourses.length
+)}, (prev, next) => !(
+  prev.is12HourMode !== next.is12HourMode
+  || prev.selectedClasses !== next.selectedClasses
+  || prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
   || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
-  || prev.is12HourMode !== next.is12HourMode
 ));
 
 export default Timetable;

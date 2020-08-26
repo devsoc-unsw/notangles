@@ -7,9 +7,22 @@ const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
 export const elevatedScale = 1.1;
+const defaultShadow = 3;
+const elevatedShadow = 24;
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
+
+const shadowClassName = (n: number) => `MuiPaper-elevation${n}`;
+const setShadow = (element: HTMLElement, elevated: boolean) => {
+  if (elevated) {
+    element.classList.remove(shadowClassName(defaultShadow));
+    element.classList.add(shadowClassName(elevatedShadow));
+  } else {
+    element.classList.remove(shadowClassName(elevatedShadow));
+    element.classList.add(shadowClassName(defaultShadow));
+  }
+}
 
 const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
   element.style.left = toPx(fromPx(element.style.left) + offsetX);
@@ -31,11 +44,8 @@ const classTranslateY = (classPeriod: ClassPeriod) => {
   return (offsetRows / heightFactor) * 100;
 };
 
-export const classTransformStyle = (classPeriod: ClassPeriod, elevated: boolean) => (
-  `translate(
-    ${classTranslateX(classPeriod)}%,
-    ${classTranslateY(classPeriod)}%
-  ) scale(${elevated ? elevatedScale : 1})`
+export const classTransformStyle = (classPeriod: ClassPeriod) => (
+  `translate(${classTranslateX(classPeriod)}%, ${classTranslateY(classPeriod)}%)`
 );
 
 export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
@@ -47,7 +57,7 @@ export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
 );
 
 const freezeTransform = (element: HTMLElement, classPeriod: ClassPeriod) => {
-  element.style.transform = classTransformStyle(classPeriod, true);
+  element.style.transform = classTransformStyle(classPeriod);
 };
 
 const unfreezeTransform = (element: HTMLElement) => {
@@ -70,20 +80,19 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
-const DragContext = createContext<{
-  dragTarget: ClassPeriod | null
-  setDragTarget:(classPeriod: ClassPeriod | null, element?: HTMLElement) => void
-  dropTarget: ClassPeriod | null
-  morphPeriods: (from: ClassPeriod[], to: ClassPeriod[]) => (ClassPeriod | null)[]
-}>({
-      dragTarget: null,
-      setDragTarget: () => {},
-      dropTarget: null,
-      morphPeriods: () => ([]),
-    });
+const DragContext = createContext<[
+  ClassPeriod | null,
+  (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
+]>([null, () => {}]);
+
+const MorphContext = createContext<
+  (from: ClassPeriod[], to: ClassPeriod[]) => (ClassPeriod | null)[]
+>(() => ([]));
 
 let dragElement: HTMLElement | null = null;
 let dragSource: ClassPeriod | null = null;
+let dropTarget: ClassPeriod | null = null;
+
 const dropzones = new Map<ClassPeriod, HTMLElement>();
 
 export const registerDropzone = (classPeriod: ClassPeriod, element: HTMLElement) => {
@@ -94,32 +103,85 @@ export const unregisterDropzone = (classPeriod: ClassPeriod) => {
   dropzones.delete(classPeriod);
 };
 
-const updateDropzones = (target: ClassPeriod | null) => {
-  Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
-    const canDrop = target ? checkCanDrop(target, classPeriod) : false;
-    const isDropTarget = classPeriod && classPeriod === target;
+const periods = new Map<ClassPeriod, HTMLElement>();
 
-    let opacity = '0';
-    if (canDrop) opacity = isDropTarget ? '0.7' : '0.3';
-
-    element.style.opacity = opacity;
-    element.style.pointerEvents = canDrop ? 'auto' : 'none';
-  });
+export const registerPeriod = (classPeriod: ClassPeriod, element: HTMLElement) => {
+  periods.set(classPeriod, element);
 };
+
+export const unregisterPeriod = (classPeriod: ClassPeriod) => {
+  periods.delete(classPeriod);
+};
+
+// TODO: remove?
+let lastTarget: ClassPeriod | null | undefined = undefined;
+let lastDropzonesCount: number = -1;
+//
+
+const updateDropzones = (target: ClassPeriod | null) => {
+  if (target !== lastTarget || dropzones.size !== lastDropzonesCount) {
+    Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
+      const canDrop = target ? checkCanDrop(target, classPeriod) : false;
+      const isDropTarget = classPeriod && classPeriod === target;
+
+      let opacity = '0';
+      if (canDrop) opacity = isDropTarget ? '0.7' : '0.3';
+
+      element.style.opacity = opacity;
+      element.style.pointerEvents = canDrop ? 'auto' : 'none';
+    });
+
+    lastTarget = target;
+    lastDropzonesCount = dropzones.size;
+  }
+};
+
+// TODO: remove target arg, miminmise calls to this and updateDropzones
+const updatePeriods = (target: ClassPeriod | null) => {
+  Array.from(periods.entries()).forEach(([classPeriod, element]) => {
+    const isElevated = (
+      target !== null
+      && classPeriod.class.course.code === target.class.course.code
+      && classPeriod.class.activity === target.class.activity
+    );
+  
+    let zIndex = isElevated ? 1200 : 1000;
+    if (target !== null && classPeriod === target) {
+      zIndex++;
+    }
+
+    element.style.zIndex = String(zIndex);
+    element.style.cursor = target ? 'inherit' : 'grab';
+
+    const inner = element.children[0] as HTMLElement;
+
+    inner.style.transform = `scale(${
+      isElevated ? elevatedScale : 1
+    })`;
+
+    setShadow(inner, isElevated);
+
+    // MuiPaper-elevation3
+
+    // TODO: elevation
+  });
+}
+
+let setDragTarget: (
+  (classPeriod: ClassPeriod | null, element?: HTMLElement) => void
+) = () => {};
+
+let morphPeriods: (
+  (from: ClassPeriod[], to: ClassPeriod[]) => (ClassPeriod | null)[]
+) = () => ([]);
 
 export const DragManager: FunctionComponent<{
   selectClass(classData: ClassData): void
-}> = React.memo(({
+}> = ({
   selectClass,
   children,
 }) => {
-  const [{ dragTarget, dropTarget }, setTargets] = useState<{
-    dragTarget: ClassPeriod | null
-    dropTarget: ClassPeriod | null
-  }>({
-    dragTarget: null,
-    dropTarget: null,
-  });
+  const [dragTarget, setDragTarget2] = useState<ClassPeriod | null>(null);
 
   const updateDropTarget = () => {
     if (!dragTarget || !dragElement) {
@@ -152,13 +214,13 @@ export const DragManager: FunctionComponent<{
     const newDropTarget = classPeriod && area > 0 ? classPeriod : dragSource;
 
     if (newDropTarget && newDropTarget !== dropTarget) {
-      setTargets({ dragTarget, dropTarget: newDropTarget });
-      selectClass(newDropTarget.class);
+      dropTarget = newDropTarget;
       updateDropzones(newDropTarget);
+      selectClass(newDropTarget.class);
     }
   };
 
-  const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
+  morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
     const from = [...a];
     let to = [...b];
 
@@ -170,7 +232,7 @@ export const DragManager: FunctionComponent<{
     ) {
       to = to.filter((period) => period !== dropTarget);
       result[from.indexOf(dragTarget)] = dropTarget;
-      setTargets({ dragTarget: dropTarget, dropTarget });
+      setDragTarget2(dropTarget);
     }
 
     from.forEach((fromPeriod: ClassPeriod, i: number) => {
@@ -233,12 +295,15 @@ export const DragManager: FunctionComponent<{
         dragElement = null;
       }
 
-      setTargets({ dragTarget: classPeriod, dropTarget: classPeriod });
+      setDragTarget2(classPeriod);
+      dropTarget = classPeriod;
       dragSource = classPeriod;
 
-      updateDropzones(classPeriod);
+      updatePeriods(classPeriod);
     }
   };
+
+  setDragTarget = handleDragTarget;
 
   let lastUpdate = 0;
 
@@ -262,21 +327,23 @@ export const DragManager: FunctionComponent<{
       document.documentElement.style.cursor = 'default';
       unfreezeTransform(dragElement);
     }
-
+    
     handleDragTarget(null);
+    dropTarget = null;
+    updateDropzones(null);
   };
 
+  updateDropzones(dropTarget);
+
   return (
-    <DragContext.Provider value={{
-      dragTarget,
-      setDragTarget: handleDragTarget,
-      dropTarget,
-      morphPeriods,
-    }}
-    >
-      {children}
+    <DragContext.Provider value={[dragTarget, handleDragTarget]}>
+      <MorphContext.Provider value={morphPeriods}>
+        {children}
+      </MorphContext.Provider>
     </DragContext.Provider>
   );
-});
+};
 
-export const useDrag = () => useContext(DragContext);
+// export const useDrag = () => useContext(DragContext);
+// export const useMorph = () => useContext(MorphContext);
+export {setDragTarget, morphPeriods};

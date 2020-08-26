@@ -1,12 +1,20 @@
 import React, {
-  FunctionComponent, useState, useRef,
+  FunctionComponent, useState, useRef, useEffect
 } from 'react';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
-  useDrag, defaultTransition, classTransformStyle, timeToPosition,
+  // useDrag,
+  // useMorph,
+  setDragTarget,
+  morphPeriods,
+  defaultTransition,
+  classTransformStyle,
+  timeToPosition,
+  registerPeriod,
+  unregisterPeriod,
 } from './DragManager';
 import {
   ClassPeriod, SelectedClasses,
@@ -16,26 +24,17 @@ const classMargin = 2;
 
 const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
-  dragTarget: ClassPeriod | null
-  isElevated: boolean
+  // dragTarget: ClassPeriod | null
+  // isElevated: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / ${({ classPeriod }) => (
     timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
   )};
-  transform: ${({ classPeriod, isElevated }) => (
-    classTransformStyle(classPeriod, isElevated)
+  transform: ${({ classPeriod }) => (
+    classTransformStyle(classPeriod)
   )};
   transition: ${defaultTransition};
-
-  // above vs. below app bar
-  z-index: ${({ classPeriod, dragTarget, isElevated }) => {
-    let z = isElevated ? 1200 : 1000;
-    if (dragTarget !== null && classPeriod === dragTarget) {
-      z++;
-    }
-    return z;
-  }};
 
   // position over timetable borders
   position: relative;
@@ -46,10 +45,8 @@ const StyledCourseClass = styled.div<{
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
-  cursor: ${({ dragTarget, isElevated }) => {
-    if (dragTarget && !isElevated) return 'inherit';
-    return isElevated ? 'grabbing' : 'grab';
-  }};
+  z-index: 1000;
+  cursor: grab;
 `;
 
 // const courseClassStyle = ({
@@ -122,29 +119,29 @@ const StyledCourseClassInner = styled(Card).withConfig({
   }
 `;
 
-// const courseClassInnerStyle = ({
-//   backgroundColor,
-// }: {
-//   backgroundColor: string
-// }) => ({
-//   display: 'flex',
-//   justifyContent: 'center',
-//   alignItems: 'center',
-//   flexDirection: 'column' as 'column',
+const courseClassInnerStyle = ({
+  backgroundColor,
+}: {
+  backgroundColor: string
+}) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column' as 'column',
 
-//   backgroundColor,
-//   color: 'white',
-//   fontSize: '0.9rem',
-//   borderRadius: '7px',
-//   transition: defaultTransition,
+  backgroundColor,
+  color: 'white',
+  fontSize: '0.9rem',
+  borderRadius: '7px',
+  transition: defaultTransition,
 
-//   minWidth: 0,
-//   width: '100%',
-//   height: '100%',
-//   boxSizing: 'border-box' as 'border-box',
-//   padding: '10px',
-//   position: 'relative' as 'relative',
-// });
+  minWidth: 0,
+  width: '100%',
+  height: '100%',
+  boxSizing: 'border-box' as 'border-box',
+  padding: '10px',
+  position: 'relative' as 'relative',
+});
 
 const pStyle = {
   width: '100%',
@@ -170,7 +167,15 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     capacity,
   } = classPeriod.class;
 
-  const { dragTarget, setDragTarget } = useDrag();
+  const element = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (element.current) registerPeriod(classPeriod, element.current);
+    return () => {
+      if (element.current) unregisterPeriod(classPeriod);
+    };
+  }, []);
+
+  // const [dragTarget, setDragTarget] = useDrag();
 
   const { weeks, weeksString } = classPeriod.time;
 
@@ -178,30 +183,31 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     setDragTarget(classPeriod, event.currentTarget);
   };
 
-  const isElevated = (
-    dragTarget !== null
-    && classPeriod.class.course.code === dragTarget.class.course.code
-    && classPeriod.class.activity === dragTarget.class.activity
-  );
+  // const isElevated = (
+  //   dragTarget !== null
+  //   && classPeriod.class.course.code === dragTarget.class.course.code
+  //   && classPeriod.class.activity === dragTarget.class.activity
+  // );
 
-  let zIndex = isElevated ? 1200 : 1000;
-  if (dragTarget !== null && classPeriod === dragTarget) {
-    zIndex++;
-  }
+  // let zIndex = isElevated ? 1200 : 1000;
+  // if (dragTarget !== null && classPeriod === dragTarget) {
+  //   zIndex++;
+  // }
 
-  let cursor;
-  if (dragTarget && !isElevated) {
-    cursor = 'inherit';
-  } else {
-    cursor = isElevated ? 'grabbing' : 'grab';
-  }
+  // let cursor;
+  // if (dragTarget && !isElevated) {
+  //   cursor = 'inherit';
+  // } else {
+  //   cursor = isElevated ? 'grabbing' : 'grab';
+  // }
 
   return (
     <StyledCourseClass
+      ref={element}
       onMouseDown={onDown}
       classPeriod={classPeriod}
-      dragTarget={dragTarget}
-      isElevated={isElevated}
+      // dragTarget={dragTarget}
+      // isElevated={isElevated}
     // <div
     //   onMouseDown={onDown}
     //   style={courseClassStyle({
@@ -212,16 +218,16 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     //     cursor,
     //   })}
     >
-      {/* <Card
-        elevation={isElevated ? 24 : 3}
+      <Card
+        // elevation={isElevated ? 24 : 3}
         style={courseClassInnerStyle({
           backgroundColor: color
         })}
-      > */}
-      <StyledCourseClassInner
+      >
+      {/* <StyledCourseClassInner
         elevation={isElevated ? 24 : 3}
         backgroundColor={color}
-      >
+      > */}
         <p style={pStyle}>
           <b>
             {course.code}
@@ -236,8 +242,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
           {' '}
           {` (${enrolments}/${capacity})`}
         </p>
-        {/* </Card> */}
-      </StyledCourseClassInner>
+        </Card>
+      {/* </StyledCourseClassInner> */}
       {/* </div> */}
     </StyledCourseClass>
   );
@@ -248,12 +254,12 @@ interface DroppedClassesProps {
   assignedColors: Record<string, string>
 }
 
-const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
+const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedClasses,
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-  const { morphPeriods } = useDrag();
+  // const morphPeriods = useMorph();
   const prevPeriods = useRef<ClassPeriod[]>([]);
   const [periodKeys] = useState<Map<ClassPeriod, number>>(new Map<ClassPeriod, number>());
   const keyCounter = useRef(0);
@@ -271,6 +277,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
 
   const prevPeriodKeys = new Map(periodKeys);
 
+  // console.log(morphPeriods(prevPeriods.current, newPeriods).length);
   morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
     const prevPeriod = prevPeriods.current[i];
 
@@ -313,6 +320,6 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = React.memo(({
   });
 
   return <>{droppedClasses}</>;
-});
+};
 
 export default DroppedClasses;
