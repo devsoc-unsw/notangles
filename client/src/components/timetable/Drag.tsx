@@ -1,11 +1,11 @@
 import { ClassData, ClassPeriod } from '../../interfaces/CourseData';
 
-const transitionTime = 350;
+export const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms`;
 export const elevatedScale = 1.1;
-const defaultShadow = 3;
-const elevatedShadow = 24;
+export const defaultShadow = 3;
+export const elevatedShadow = 24;
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
@@ -133,9 +133,7 @@ const updatePeriods = () => {
 
     const inner = element.children[0] as HTMLElement;
 
-    inner.style.transform = `scale(${
-      isElevated ? elevatedScale : 1
-    })`;
+    inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
 
     setShadow(inner, isElevated);
   });
@@ -276,6 +274,7 @@ window.onmousemove = (event: any) => {
   if (dragElement) {
     moveElement(dragElement, event.movementX, event.movementY);
 
+    // cap intersection calculations at ~30 fps
     if (Date.now() - lastUpdate > 30) {
       updateDropTarget();
       lastUpdate = Date.now();

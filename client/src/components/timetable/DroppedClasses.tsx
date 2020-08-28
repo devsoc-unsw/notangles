@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent, useState, useRef, useEffect
 } from 'react';
+import { CSSTransitionGroup } from 'react-transition-group'
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
@@ -10,7 +11,11 @@ import {
   // useMorph,
   setDragTarget,
   morphPeriods,
+  transitionTime,
   defaultTransition,
+  defaultShadow,
+  elevatedShadow,
+  elevatedScale,
   classTransformStyle,
   timeToPosition,
   registerPeriod,
@@ -21,6 +26,7 @@ import {
 } from '../../interfaces/CourseData';
 
 const classMargin = 2;
+const transitionName = "class";
 
 const StyledCourseClass = styled.div<{
   classPeriod: ClassPeriod
@@ -47,6 +53,30 @@ const StyledCourseClass = styled.div<{
   box-sizing: border-box;
   z-index: 1000;
   cursor: grab;
+
+  &.${transitionName}-enter {
+    & > div {
+      opacity: 0;
+      transform: scale(${elevatedScale});
+      box-shadow: ${({ theme }) => theme.shadows[elevatedShadow]};
+    }
+  }
+
+  &.${transitionName}-enter-active, &.${transitionName}-leave {
+    & > div {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: ${({ theme }) => theme.shadows[defaultShadow]};
+    }
+  };
+
+  &.${transitionName}-leave-active {
+    & > div {
+      opacity: 0;
+      // transform: scale(${2 - elevatedScale});
+      box-shadow: ${({ theme }) => theme.shadows[defaultShadow]};
+    }
+  };
 `;
 
 // const courseClassStyle = ({
@@ -87,37 +117,37 @@ const StyledCourseClass = styled.div<{
 //   top: 0,
 // });
 
-const StyledCourseClassInner = styled(Card).withConfig({
-  shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
-}) <{
-  backgroundColor: string
-}>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+// const StyledCourseClassInner = styled(Card).withConfig({
+//   shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
+// }) <{
+//   backgroundColor: string
+// }>`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-direction: column;
   
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  color: white;
-  font-size: 0.9rem;
-  border-radius: 7px;
-  transition: ${defaultTransition};
+//   background-color: ${({ backgroundColor }) => backgroundColor};
+//   color: white;
+//   font-size: 0.9rem;
+//   border-radius: 7px;
+//   transition: ${defaultTransition};
 
-  min-width: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  position: relative;
+//   min-width: 0;
+//   width: 100%;
+//   height: 100%;
+//   box-sizing: border-box;
+//   padding: 10px;
+//   position: relative;
 
-  p {
-    width: 100%;
-    margin: 0 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
+//   p {
+//     width: 100%;
+//     margin: 0 0;
+//     white-space: nowrap;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//   }
+// `;
 
 const courseClassInnerStyle = ({
   backgroundColor,
@@ -225,10 +255,11 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         })}
       >
       {/* <StyledCourseClassInner
-        elevation={isElevated ? 24 : 3}
+        // elevation={isElevated ? 24 : 3}
         backgroundColor={color}
       > */}
         <p style={pStyle}>
+        {/* <p> */}
           <b>
             {course.code}
             {' '}
@@ -236,6 +267,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
           </b>
         </p>
         <p style={pStyle}>
+        {/* <p> */}
           {`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`}
           {' '}
           {/* <PeopleAltIcon fontSize="inherit" /> */}
@@ -299,7 +331,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         key={`${key}`}
         classPeriod={classPeriod}
         color={assignedColors[classPeriod.class.course.code]}
-      />,
+      />
     );
 
     periodKeys.set(classPeriod, key);
@@ -319,7 +351,17 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
     }
   });
 
-  return <>{droppedClasses}</>;
+  return (
+    <CSSTransitionGroup
+      component="div"
+      style={{display: "contents"}}
+      transitionName={transitionName}
+      transitionEnterTimeout={transitionTime}
+      transitionLeaveTimeout={transitionTime}
+    >
+      {droppedClasses}
+    </CSSTransitionGroup>
+  );
 };
 
 export default DroppedClasses;
