@@ -5,11 +5,17 @@ import ReactGA from 'react-ga';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-ReactGA.initialize('UA-176748714-1', {
-  debug: process.env.NODE_ENV === 'development',
-});
+const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
 
-ReactGA.pageview(window.location.pathname);
+if (GOOGLE_ANALYTICS_ID !== undefined) {
+  ReactGA.initialize(GOOGLE_ANALYTICS_ID, {
+    // Debug messages in the browser console
+    debug: process.env.NODE_ENV === 'development',
+  });
+
+  // Trigger page view on the home page
+  ReactGA.pageview(window.location.pathname);
+}
 
 const Root: FunctionComponent = () => (
   <App />
