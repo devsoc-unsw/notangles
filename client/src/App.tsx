@@ -18,6 +18,8 @@ import useColorMapper from './hooks/useColorMapper';
 import storage from './utils/storage';
 
 import { darkTheme, lightTheme } from './constants/theme';
+import { autoTT } from './automation/autoTT';
+import { minDaysScore } from './automation/minDaysScore';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -104,7 +106,7 @@ const App: FunctionComponent = () => {
   const handleSelectCourse = async (courseCode: string) => {
     const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
     if (selectedCourseClasses) {
-      console.log(leastDays(selectedCourses))
+      console.log(autoTT(selectedCourses, minDaysScore))
       const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
       populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
       setSelectedCourses(newSelectedCourses);
