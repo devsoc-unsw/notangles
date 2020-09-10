@@ -17,6 +17,11 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
+window.addEventListener("load", () => {
+  lastScrollX = document.documentElement.scrollLeft;
+  lastScrollY = document.documentElement.scrollTop;
+});
+
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
 
@@ -150,10 +155,17 @@ export const useDrag = (handler: (classData: ClassData) => void) => {
   selectClass = handler;
 }
 
-const updateDropTarget = () => {
-  if (!dragTarget || !dragElement) {
-    return;
-  }
+const updateDelay = 30;
+let lastUpdate = 0;
+
+const updateDropTarget = (now?: boolean) => {
+  // Cancel if no drag, or update too soon (except if now = true)
+  if (
+    !dragTarget || !dragElement
+    || (!now && Date.now() - lastUpdate < updateDelay)
+  ) return;
+
+  lastUpdate = Date.now()
 
   const dragRect = dragElement.getBoundingClientRect();
 
@@ -271,7 +283,7 @@ export const setDragTarget = (
       
       dragElement = element;
       freezeTransform(element, classPeriod);
-      updateDropTarget();
+      updateDropTarget(true);
     } else {
       dragElement = null;
     }
@@ -295,11 +307,11 @@ const onMove = (x: number, y: number) => {
   updateDropTarget()
 }
 
-document.addEventListener("mousemove", (event: MouseEvent) => {
+window.addEventListener("mousemove", (event: MouseEvent) => {
   onMove(event.pageX, event.pageY)
 });
 
-document.addEventListener("touchmove", (event: TouchEvent) => {
+window.addEventListener("touchmove", (event: TouchEvent) => {
   if (event.touches.length > 0) {
     onMove(event.touches[0].pageX, event.touches[0].pageY)
   }
@@ -310,7 +322,7 @@ document.addEventListener("touchmove", (event: TouchEvent) => {
   }
 }, {passive: false})
 
-document.addEventListener("scroll", () => {
+window.addEventListener("scroll", () => {
   if (!dragElement) return
 
   let dx = document.documentElement.scrollLeft - lastScrollX
@@ -339,6 +351,6 @@ const drop = () => {
   dropTarget = null;
 };
 
-document.addEventListener("mouseup", drop)
-document.addEventListener("touchend", drop, {passive: false})
-document.addEventListener("blur", drop)
+window.addEventListener("mouseup", drop)
+window.addEventListener("touchend", drop, {passive: false})
+window.addEventListener("blur", drop)
