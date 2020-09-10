@@ -2,7 +2,7 @@ import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { MuiThemeProvider, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { useDrag } from './components/timetable/Drag';
+import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import CourseSelect from './components/CourseSelect';

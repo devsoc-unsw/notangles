@@ -7,7 +7,7 @@ import {
   registerDropzone,
   unregisterDropzone,
   // checkCanDrop,
-} from './Drag';
+} from '../../utils/Drag';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 // const StyledCell = styled.div.attrs(() => ({

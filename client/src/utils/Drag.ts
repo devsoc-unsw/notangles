@@ -1,4 +1,4 @@
-import { ClassData, ClassPeriod } from '../../interfaces/CourseData';
+import { ClassData, ClassPeriod } from '../interfaces/CourseData';
 
 export const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime}ms`;
@@ -6,6 +6,16 @@ const moveTransition = `transform ${transitionTime}ms`;
 export const elevatedScale = 1.1;
 export const defaultShadow = 3;
 export const elevatedShadow = 24;
+
+let dragTarget: ClassPeriod | null = null;
+let dragSource: ClassPeriod | null = null;
+let dropTarget: ClassPeriod | null = null;
+let dragElement: HTMLElement | null = null;
+// let lastUpdate = 0;
+let lastX = 0;
+let lastY = 0;
+let lastScrollX = 0;
+let lastScrollY = 0;
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
@@ -21,9 +31,9 @@ const setShadow = (element: HTMLElement, elevated: boolean) => {
   }
 }
 
-const moveElement = (element: HTMLElement, offsetX: number, offsetY: number) => {
-  element.style.left = toPx(fromPx(element.style.left) + offsetX);
-  element.style.top = toPx(fromPx(element.style.top) + offsetY);
+const moveElement = (element: HTMLElement, dx: number, dy: number) => {
+  element.style.left = toPx(fromPx(element.style.left) + dx);
+  element.style.top = toPx(fromPx(element.style.top) + dy);
 };
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
@@ -76,11 +86,6 @@ const distanceBetween = (e1: Element, e2: Element) => {
 
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
-
-let dragTarget: ClassPeriod | null = null;
-let dragSource: ClassPeriod | null = null;
-let dropTarget: ClassPeriod | null = null;
-let dragElement: HTMLElement | null = null;
 
 const dropzones = new Map<ClassPeriod, HTMLElement>();
 
@@ -245,15 +250,27 @@ export const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
 };
 
 export const setDragTarget = (
-  classPeriod: ClassPeriod | null, element?: HTMLElement
+  classPeriod: ClassPeriod | null, event?: MouseEvent & TouchEvent
 ) => {
   if (classPeriod !== dragTarget) {
-    if (classPeriod && element) {
+    if (classPeriod && event && event.currentTarget) {
+      const element = event.currentTarget as HTMLElement;
       element.style.transition = moveTransition;
       document.documentElement.style.cursor = 'grabbing';
 
-      freezeTransform(element, classPeriod);
+      if (typeof event.pageX === "number" && typeof event.pageY === "number") {
+        lastX = event.pageX
+        lastY = event.pageY
+      } else if (typeof event.touches === "object" && typeof event.touches[0] === "object") {
+        const touch = event.touches[0]
+        if (typeof touch.pageX === "number" && typeof touch.pageY === "number") {
+          lastX = touch.pageX
+          lastY = touch.pageY
+        }
+      }
+      
       dragElement = element;
+      freezeTransform(element, classPeriod);
       updateDropTarget();
     } else {
       dragElement = null;
@@ -268,21 +285,47 @@ export const setDragTarget = (
   }
 };
 
-let lastUpdate = 0;
+const onMove = (x: number, y: number) => {
+  if (!dragElement) return
 
-window.onmousemove = (event: any) => {
-  if (dragElement) {
-    moveElement(dragElement, event.movementX, event.movementY);
+  moveElement(dragElement, x - lastX, y - lastY);
+  lastX = x
+  lastY = y
 
-    // cap intersection calculations at ~30 fps
-    if (Date.now() - lastUpdate > 30) {
-      updateDropTarget();
-      lastUpdate = Date.now();
-    }
+  updateDropTarget()
+}
+
+document.addEventListener("mousemove", (event: MouseEvent) => {
+  onMove(event.pageX, event.pageY)
+});
+
+document.addEventListener("touchmove", (event: TouchEvent) => {
+  if (event.touches.length > 0) {
+    onMove(event.touches[0].pageX, event.touches[0].pageY)
   }
-};
 
-window.onmouseup = () => {
+  if (dragElement) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+}, {passive: false})
+
+document.addEventListener("scroll", () => {
+  if (!dragElement) return
+
+  let dx = document.documentElement.scrollLeft - lastScrollX
+  let dy = document.documentElement.scrollTop - lastScrollY
+
+  lastX += dx
+  lastY += dy
+  lastScrollX += dx
+  lastScrollY += dy
+
+  moveElement(dragElement, dx, dy)
+  updateDropTarget()
+})
+
+const drop = () => {
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
@@ -295,3 +338,7 @@ window.onmouseup = () => {
   setDragTarget(null);
   dropTarget = null;
 };
+
+document.addEventListener("mouseup", drop)
+document.addEventListener("touchend", drop, {passive: false})
+document.addEventListener("blur", drop)

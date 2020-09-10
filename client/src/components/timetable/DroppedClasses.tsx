@@ -20,7 +20,7 @@ import {
   timeToPosition,
   registerPeriod,
   unregisterPeriod,
-} from './Drag';
+} from '../../utils/Drag';
 import {
   ClassPeriod, SelectedClasses,
 } from '../../interfaces/CourseData';
@@ -210,7 +210,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   const { weeks, weeksString } = classPeriod.time;
 
   const onDown = (event: any) => {
-    setDragTarget(classPeriod, event.currentTarget);
+    setDragTarget(classPeriod, event);
   };
 
   // const isElevated = (
@@ -235,6 +235,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     <StyledCourseClass
       ref={element}
       onMouseDown={onDown}
+      onTouchStart={onDown}
       classPeriod={classPeriod}
       // dragTarget={dragTarget}
       // isElevated={isElevated}

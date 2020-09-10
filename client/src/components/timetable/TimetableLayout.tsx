@@ -136,6 +136,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
           y={y + 2}
           endX={x === days.length - 1}
           endY={y === hours.length - 1}
+          id={x == 0 && y == 0 ? "origin" : undefined}
         />
       ),
     ),
