@@ -34,7 +34,7 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1400px;
+  width: 1250px;
   min-width: 1100px;
   max-width: 100%;
   margin: auto;
