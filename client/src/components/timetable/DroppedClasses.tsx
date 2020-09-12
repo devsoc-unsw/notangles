@@ -268,12 +268,13 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
           </b>
         </p>
         <p style={pStyle}>
-        {/* <p> */}
-          {`${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString}`}
-          {' '}
-          {/* <PeopleAltIcon fontSize="inherit" /> */}
-          {' '}
-          {` (${enrolments}/${capacity})`}
+          <LocationOnIcon fontSize="inherit" />
+          {`${classPeriod.locationShort} `}
+        </p>
+        <p style={pStyle}>
+          <PeopleAltIcon fontSize="inherit" />
+          {` ${enrolments}/${capacity}`}
+          {` (${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString})`}
         </p>
         </Card>
       {/* </StyledCourseClassInner> */}
