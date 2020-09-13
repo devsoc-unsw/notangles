@@ -19,6 +19,7 @@ import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 const LogoImg = styled.img`
   height: 40px;
   margin-right: 20px;
+  margin-left: 20px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
@@ -30,11 +31,6 @@ const StyledNavBar = styled(AppBar)`
 `;
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
-`;
-
-const GrowBox = styled.div`
-flex-grow: 1;
-
 `;
 
 const DarkModeButton = styled(ToggleButton)`
@@ -67,16 +63,14 @@ const Navbar: React.FC<NavBarProps> = ({
     <NavbarBox>
       <StyledNavBar>
         <Toolbar>
-          <GrowBox>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-            >
-              <MenuIcon />
-            </IconButton>
-          </GrowBox>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+          >
+            <MenuIcon />
+          </IconButton>
           <LogoImg src={CSESocLogo} />
           <NavbarTitle variant="h6">
             Notangles
