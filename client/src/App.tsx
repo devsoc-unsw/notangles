@@ -37,15 +37,22 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+
   background-color: ${(props) => props.theme.palette.background.default};
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
-const Content = styled(Box)`
-  width: 1400px;
-  min-width: 1100px;
-  max-width: 100%;
-  margin: auto;
+interface StyledContentProps {
+  drawerOpen: boolean;
+}
+
+// width: ${() => (drawerOpen ? 'calc(100% - 240px)' : '100%')};
+const Content = styled(Box)<StyledContentProps>`
+  width: ${(props) => (props.drawerOpen ? 'calc(100% - 240px)' : '100%')};
+  transition: width 0.2s;
 
   display: grid;
   grid-template-rows: min-content min-content auto;
@@ -186,7 +193,7 @@ const App: FunctionComponent = () => {
             isFriendsListOpen={isFriendsListOpen}
           />
           <ContentWrapper>
-            <Content>
+            <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>

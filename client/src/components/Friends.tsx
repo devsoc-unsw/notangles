@@ -161,6 +161,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
 
     <Drawer
       className={classes.drawer}
+      transitionDuration={200}
       variant="persistent"
       anchor="left"
       open={isFriendsListOpen}
