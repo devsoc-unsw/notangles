@@ -50,7 +50,7 @@ const FriendListSuggestion: React.FC<FriendsListItemProps> = ({
     <ListItemText
       primary={name}
       secondary={(
-        <Button variant="contained">SEND REQUEST</Button>
+        <Button variant="contained" size="small">SEND REQUEST</Button>
       )}
     />
   </ListItem>
@@ -67,7 +67,7 @@ const FriendListRequest: React.FC<FriendsListItemProps> = ({
     <ListItemText
       primary={name}
       secondary={(
-        <Button variant="contained">ADD FRIEND</Button>
+        <Button variant="contained" size="small">ADD FRIEND</Button>
       )}
     />
   </ListItem>
@@ -84,7 +84,7 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
     </ListItemAvatar>
     <ListItemText
       primary={name}
-      secondary={courses ? courses.join(', ') : null}
+      secondary={courses ? courses.join(' ') : `${name} has no courses selected`}
     />
   </ListItem>
 );
@@ -136,7 +136,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
         </ListItem>
 
         <List>
-          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
           <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
           <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
           <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
