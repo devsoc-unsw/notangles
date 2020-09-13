@@ -6,7 +6,6 @@ import styled from 'styled-components';
 
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -132,8 +131,6 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
           <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
         </List>
 
-        <Divider />
-
         <ListItem alignItems="flex-start">
           Friends
         </ListItem>
@@ -144,8 +141,6 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
           <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
           <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
         </List>
-
-        <Divider />
 
         <ListItem alignItems="flex-start">
           Suggested Friends
