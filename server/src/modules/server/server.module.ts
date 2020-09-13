@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import Joi from 'joi';
 
 import { TypeOrmConfigService } from '../../configurations/typeorm.configuration';
+import { CourseModule } from '../course/course.module';
 import { EnvironmentModule } from '../environment/environment.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { EnvironmentModule } from '../environment/environment.module';
       imports: [ConfigModule, EnvironmentModule],
       useClass: TypeOrmConfigService,
     }),
+    CourseModule,
   ],
 })
 export class ServerModule {}
