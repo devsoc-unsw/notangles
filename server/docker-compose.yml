@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  server:
+    container_name: notangles-server
+    image: notangles-server
+    restart: unless-stopped
+    build: .
+    depends_on:
+      - database.notangles-db
+    ports:
+      - 8080:8080
+    links:
+      - database.notangles-db
+    environment:
+      TYPEORM_HOST: database.notangles-db
+
+  database.notangles-db:
+    container_name: notangles-database
+    restart: unless-stopped
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - /opt/containers/notangles/data:/data/db
