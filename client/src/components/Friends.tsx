@@ -8,13 +8,10 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Button from '@material-ui/core/Button';
 
 const drawerWidth = 240;
 
@@ -37,33 +34,60 @@ const useStyles = makeStyles(() => createStyles({
 }));
 
 
-// interface FriendsListItemProps {
-// }
-
-// const FriendListItem: React.FC<FriendsListItemProps> = ({
-const FriendListItem: React.FC<any> = () => (
-
+interface FriendsListItemProps {
+  name: string,
+  imageSrc: string,
+  courses?: Array<string>
+}
+// https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250
+const FriendListSuggestion: React.FC<FriendsListItemProps> = ({
+  name,
+  imageSrc,
+}) => (
   <ListItem alignItems="flex-start">
     <ListItemAvatar>
-      <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+      <Avatar alt={name} src={imageSrc} />
     </ListItemAvatar>
     <ListItemText
-      primary="Friendy McFriendFace"
+      primary={name}
       secondary={(
-        <>
-          <Typography
-            component="span"
-            variant="body2"
-            color="textPrimary"
-          >
-            Ali Connors
-          </Typography>
-          {" — I'll be in your neighborhood doing errands this…"}
-        </>
+        <Button variant="contained">SEND REQUEST</Button>
       )}
     />
   </ListItem>
+);
 
+const FriendListRequest: React.FC<FriendsListItemProps> = ({
+  name,
+  imageSrc,
+}) => (
+  <ListItem alignItems="flex-start">
+    <ListItemAvatar>
+      <Avatar alt={name} src={imageSrc} />
+    </ListItemAvatar>
+    <ListItemText
+      primary={name}
+      secondary={(
+        <Button variant="contained">ADD FRIEND</Button>
+      )}
+    />
+  </ListItem>
+);
+
+const FriendListAdded: React.FC<FriendsListItemProps> = ({
+  name,
+  imageSrc,
+  courses,
+}) => (
+  <ListItem alignItems="flex-start">
+    <ListItemAvatar>
+      <Avatar alt={name} src={imageSrc} />
+    </ListItemAvatar>
+    <ListItemText
+      primary={name}
+      secondary={courses ? courses.join(', ') : null}
+    />
+  </ListItem>
 );
 
 interface FriendsProps {
@@ -82,6 +106,9 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
   //     <ListItemText primary={text} />
   //     </ListItem>
   // ))}
+
+  const mockClassArray = ['COMP1511', 'COMP1531', 'MATH1081'];
+
   return (
 
     <StyledDrawer
@@ -94,28 +121,48 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
       }}
     >
       <DrawerContainer>
+        <ListItem alignItems="flex-start">
+          Friend Requests
+        </ListItem>
+
         <List>
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
-          <FriendListItem />
+          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
         </List>
 
         <Divider />
 
+        <ListItem alignItems="flex-start">
+          Friends
+        </ListItem>
+
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
         </List>
+
+        <Divider />
+
+        <ListItem alignItems="flex-start">
+          Suggested Friends
+        </ListItem>
+
+        <List>
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+        </List>
+
       </DrawerContainer>
     </StyledDrawer>
 
