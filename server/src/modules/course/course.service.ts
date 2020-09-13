@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Course } from './course.model';
+import { FindAllCoursesDto } from './dto/findAllCourses.dto';
 
 @Injectable()
 export class CourseService {
@@ -11,14 +12,10 @@ export class CourseService {
     private readonly courseRepository: Repository<Course>,
   ) {}
 
-  async findAll(year: number, term: number): Promise<Course[]> {
+  async findAll(dto: FindAllCoursesDto): Promise<Course[]> {
     return await this.courseRepository.find({
-      where: { term: term, year: year },
+      where: dto,
       order: { name: 'ASC' },
     });
-  }
-
-  async findByCode(code: string): Promise<Course> {
-    return await this.courseRepository.findOne({ code: code });
   }
 }
