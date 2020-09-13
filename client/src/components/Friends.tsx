@@ -1,13 +1,12 @@
 import React from 'react';
 import {
-  makeStyles, Theme, createStyles,
+  makeStyles, createStyles,
 } from '@material-ui/core/styles';
+import styled from 'styled-components';
+
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-// import IconButton from '@material-ui/core/IconButton';
-// import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-// import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -19,84 +18,21 @@ import MailIcon from '@material-ui/icons/Mail';
 
 const drawerWidth = 240;
 
-// const useStyles = makeStyles((theme: Theme) => createStyles({
-//   root: {
-//     display: 'flex',
-//   },
-//   appBar: {
-//     transition: theme.transitions.create(['margin', 'width'], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen,
-//     }),
-//   },
-//   appBarShift: {
-//     width: `calc(100% - ${drawerWidth}px)`,
-//     marginLeft: drawerWidth,
-//     transition: theme.transitions.create(['margin', 'width'], {
-//       easing: theme.transitions.easing.easeOut,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//   },
-//   menuButton: {
-//     marginRight: theme.spacing(2),
-//   },
-//   hide: {
-//     display: 'none',
-//   },
-//   drawer: {
-//     width: drawerWidth,
-//     flexShrink: 0,
-//   },
-//   drawerPaper: {
-//     width: drawerWidth,
-//   },
-//   drawerHeader: {
-//     display: 'flex',
-//     alignItems: 'center',
-//     padding: theme.spacing(0, 1),
-//     // necessary for content to be below app bar
-//     ...theme.mixins.toolbar,
-//     justifyContent: 'flex-end',
-//   },
-//   content: {
-//     flexGrow: 1,
-//     padding: theme.spacing(3),
-//     transition: theme.transitions.create('margin', {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen,
-//     }),
-//     marginLeft: -drawerWidth,
-//   },
-//   contentShift: {
-//     transition: theme.transitions.create('margin', {
-//       easing: theme.transitions.easing.easeOut,
-//       duration: theme.transitions.duration.enteringScreen,
-//     }),
-//     marginLeft: 0,
-//   },
-// }));
+const StyledDrawer = styled(Drawer)`
+    width: drawerWidth;
+    flex-shrink: 0;
+`;
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    display: 'flex',
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
+const DrawerContainer = styled.div`
+    margin-top: 70px;
+    overflow: auto;
+`;
+
+// ???
+// https://stackoverflow.com/questions/49656531/styling-material-ui-drawer-component-with-styled-components
+const useStyles = makeStyles(() => createStyles({
   drawerPaper: {
     width: drawerWidth,
-  },
-  drawerContainer: {
-    marginTop: '80px',
-    overflow: 'auto',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
   },
 }));
 
@@ -130,25 +66,14 @@ const FriendListItem: React.FC<any> = () => (
 
 );
 
-
 interface FriendsProps {
   isFriendsListOpen: boolean
 }
 
-
 const FriendsDrawer: React.FC<FriendsProps> = ({
   isFriendsListOpen,
 }) => {
-// export default function FriendsDrawer() {
   const classes = useStyles();
-  // const theme = useTheme();
-
-
-  // const handleDrawerClose = () => {
-  //   setOpen(false);
-  // };
-
-  // <div className={classes.drawerHeader}> ***
 
   // TODO map props
   // {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
@@ -159,8 +84,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
   // ))}
   return (
 
-    <Drawer
-      className={classes.drawer}
+    <StyledDrawer
       transitionDuration={200}
       variant="persistent"
       anchor="left"
@@ -169,7 +93,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
         paper: classes.drawerPaper,
       }}
     >
-      <div className={classes.drawerContainer}>
+      <DrawerContainer>
         <List>
           <FriendListItem />
           <FriendListItem />
@@ -181,7 +105,9 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
           <FriendListItem />
           <FriendListItem />
         </List>
+
         <Divider />
+
         <List>
           {['All mail', 'Trash', 'Spam'].map((text, index) => (
             <ListItem button key={text}>
@@ -190,8 +116,8 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
             </ListItem>
           ))}
         </List>
-      </div>
-    </Drawer>
+      </DrawerContainer>
+    </StyledDrawer>
 
   );
 };
