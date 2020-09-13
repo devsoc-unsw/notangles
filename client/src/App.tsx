@@ -14,6 +14,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
+import PersistentDrawerLeft from './components/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -67,6 +68,8 @@ const Footer = styled(Box)`
   margin: 40px;
 `;
 
+let drawerOpen = true;
+
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
@@ -74,6 +77,7 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(true);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -150,6 +154,11 @@ const App: FunctionComponent = () => {
     }
   };
 
+  const handleDrawerOpen = () => {
+    setIsFriendsListOpen(!isFriendsListOpen);
+    drawerOpen = !drawerOpen;
+  };
+
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
       (course) => course.code !== courseCode,
@@ -171,6 +180,10 @@ const App: FunctionComponent = () => {
           <Navbar
             setIsDarkMode={setIsDarkMode}
             isDarkMode={isDarkMode}
+            handleDrawerOpen={handleDrawerOpen}
+          />
+          <PersistentDrawerLeft
+            isFriendsListOpen={isFriendsListOpen}
           />
           <ContentWrapper>
             <Content>
