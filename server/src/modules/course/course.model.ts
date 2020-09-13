@@ -10,4 +10,10 @@ export class Course {
 
   @Column()
   name: string;
+
+  @Column()
+  year: number;
+
+  @Column()
+  term: number;
 }

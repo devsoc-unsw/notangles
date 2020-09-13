@@ -11,7 +11,14 @@ export class CourseService {
     private readonly courseRepository: Repository<Course>,
   ) {}
 
-  async findAll(): Promise<Course[]> {
-    return await this.courseRepository.find();
+  async findAll(year: number, term: number): Promise<Course[]> {
+    return await this.courseRepository.find({
+      where: { term: term, year: year },
+      order: { name: 'ASC' },
+    });
+  }
+
+  async findByCode(code: string): Promise<Course> {
+    return await this.courseRepository.findOne({ code: code });
   }
 }

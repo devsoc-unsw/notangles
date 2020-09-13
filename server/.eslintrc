@@ -38,14 +38,6 @@
     "curly": "error",
     "prefer-arrow-callback": "error",
     "simple-import-sort/sort": "error",
-    "sort-destructure-keys/sort-destructure-keys": "error",
-    "sort-keys": [
-      "error",
-      "asc",
-      {
-        "caseSensitive": true,
-        "natural": false
-      }
-    ]
+    "sort-destructure-keys/sort-destructure-keys": "error"
   }
 }
