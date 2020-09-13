@@ -8,13 +8,13 @@ import { EnvironmentService } from '../modules/environment/environment.service';
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   private readonly CONFIGURATION: Readonly<TypeOrmModuleOptions> = {
     autoLoadEntities: true,
-    database: this.configService.get<string>('TYPEORM_DATABASE', 'jikanban'),
+    database: this.configService.get<string>('TYPEORM_DATABASE', ''),
     host: this.configService.get<string>('TYPEORM_HOST', 'localhost'),
-    password: this.configService.get<string>('TYPEORM_PASSWORD', 'jikanban'),
-    port: this.configService.get<number>('TYPEORM_PORT', 5432),
+    password: this.configService.get<string>('TYPEORM_PASSWORD', ''),
+    port: this.configService.get<number>('TYPEORM_PORT', 27017),
     synchronize: this.configService.get<boolean>('TYPEORM_SYNCHRONIZE', false),
-    type: 'postgres',
-    username: this.configService.get<string>('TYPEORM_USERNAME', 'jikanban'),
+    type: 'mongodb',
+    username: this.configService.get<string>('TYPEORM_USERNAME', ''),
   };
 
   private readonly TEST_CONFIGURATION: Readonly<TypeOrmModuleOptions> = {

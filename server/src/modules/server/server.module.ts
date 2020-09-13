@@ -1,7 +1,7 @@
-import Joi from '@hapi/joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import Joi from 'joi';
 
 import { TypeOrmConfigService } from '../../configurations/typeorm.configuration';
 import { EnvironmentModule } from '../environment/environment.module';

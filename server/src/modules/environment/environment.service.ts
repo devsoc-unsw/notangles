@@ -1,4 +1,3 @@
-import Joi from '@hapi/joi';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -16,11 +15,7 @@ export class EnvironmentService {
     Environment.development,
   );
 
-  constructor(private readonly configService: ConfigService) {
-    Joi.string()
-      .valid(...Object.values(Environment))
-      .validate(this.ENVIRONMENT);
-  }
+  constructor(private readonly configService: ConfigService) {}
 
   getEnvironment(): string {
     return this.ENVIRONMENT;

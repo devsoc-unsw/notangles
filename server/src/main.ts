@@ -19,7 +19,9 @@ async function bootstrap() {
   const port = configService.get<number>('SERVER_PORT', 8080);
 
   Sentry.init({
+    debug: environmentService.isDevelopment(),
     dsn: configService.get<string>('SENTRY_DSN'),
+    enabled: environmentService.isProduction(),
     environment: environmentService.getEnvironment(),
   });
 
