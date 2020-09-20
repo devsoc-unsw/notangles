@@ -78,7 +78,7 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
   imageSrc,
   courses,
 }) => (
-  <ListItem alignItems="flex-start">
+  <ListItem button alignItems="flex-start">
     <ListItemAvatar>
       <Avatar alt={name} src={imageSrc} />
     </ListItemAvatar>

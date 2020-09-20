@@ -75,8 +75,6 @@ const Footer = styled(Box)`
   margin: 40px;
 `;
 
-let drawerOpen = true;
-
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
@@ -163,7 +161,6 @@ const App: FunctionComponent = () => {
 
   const handleDrawerOpen = () => {
     setIsFriendsListOpen(!isFriendsListOpen);
-    drawerOpen = !drawerOpen;
   };
 
   const handleRemoveCourse = (courseCode: string) => {
