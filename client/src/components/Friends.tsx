@@ -3,6 +3,7 @@ import {
   makeStyles, createStyles,
 } from '@material-ui/core/styles';
 import styled from 'styled-components';
+import FacebookLogin from 'react-facebook-login';
 
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -32,13 +33,12 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-
 interface FriendsListItemProps {
   name: string,
   imageSrc: string,
   courses?: Array<string>
 }
-// https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250
+
 const FriendListSuggestion: React.FC<FriendsListItemProps> = ({
   name,
   imageSrc,
@@ -89,14 +89,20 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
   </ListItem>
 );
 
+
 interface FriendsProps {
-  isFriendsListOpen: boolean
+  isFriendsListOpen: boolean,
+  isLoggedIn: boolean
+  setIsLoggedIn(): void
 }
 
 const FriendsDrawer: React.FC<FriendsProps> = ({
   isFriendsListOpen,
+  isLoggedIn,
+  setIsLoggedIn,
 }) => {
   const classes = useStyles();
+
 
   // TODO map props
   // {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
@@ -120,43 +126,58 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
       }}
     >
       <DrawerContainer>
-        <ListItem alignItems="flex-start">
-          Friend Requests
-        </ListItem>
+        { isLoggedIn ? (
+          <>
+            <ListItem alignItems="flex-start">
+              Friend Requests
+            </ListItem>
+            <List>
+              <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+            </List>
 
-        <List>
-          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-        </List>
+            <ListItem alignItems="flex-start">
+              Friends
+            </ListItem>
 
-        <ListItem alignItems="flex-start">
-          Friends
-        </ListItem>
+            <List>
+              <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+              <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+              <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+            </List>
 
-        <List>
-          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
-          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
-          <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
-        </List>
+            <ListItem alignItems="flex-start">
+              Suggested Friends
+            </ListItem>
 
-        <ListItem alignItems="flex-start">
-          Suggested Friends
-        </ListItem>
+            <List>
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+            </List>
+          </>
+        ) : (
+          <>
+            <h1> login!</h1>
+            <FacebookLogin
+              appId="1088597931155576"
+              autoLoad
+              fields="name,email,picture"
+              onClick={componentClicked}
+              callback={responseFacebook}
+            />
+          </>
+        )}
 
-        <List>
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-          <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-        </List>
 
       </DrawerContainer>
     </StyledDrawer>

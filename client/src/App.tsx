@@ -14,7 +14,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import PersistentDrawerLeft from './components/Friends';
+import FriendsDrawer from './components/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
@@ -83,6 +83,7 @@ const App: FunctionComponent = () => {
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -177,6 +178,10 @@ const App: FunctionComponent = () => {
     setErrorVisibility(false);
   };
 
+  const handleSetIsLoggedIn = () => {
+    setIsLoggedIn(!isLoggedIn);
+  };
+
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -186,8 +191,10 @@ const App: FunctionComponent = () => {
             isDarkMode={isDarkMode}
             handleDrawerOpen={handleDrawerOpen}
           />
-          <PersistentDrawerLeft
+          <FriendsDrawer
             isFriendsListOpen={isFriendsListOpen}
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={handleSetIsLoggedIn}
           />
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
