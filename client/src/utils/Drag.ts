@@ -1,4 +1,6 @@
-import { ClassData, ClassPeriod } from '../interfaces/CourseData';
+import {
+  CourseData, ClassData, ClassPeriod
+} from '../interfaces/CourseData';
 
 export const transitionTime = 350;
 export const defaultTransition = `all ${transitionTime}ms`;
@@ -7,9 +9,22 @@ export const elevatedScale = 1.1;
 export const defaultShadow = 3;
 export const elevatedShadow = 24;
 
-let dragTarget: ClassPeriod | null = null;
-let dragSource: ClassPeriod | null = null;
-let dropTarget: ClassPeriod | null = null;
+interface InventoryCourse {
+  class: {
+    courseCode: string
+    activity: string
+  }
+}
+
+export type CardData = ClassPeriod | InventoryCourse;
+
+export const isPeriod = (data: CardData | null): data is ClassPeriod => {
+  return data !== null && (data as ClassPeriod).time !== undefined;
+}
+
+let dragTarget: CardData | null = null;
+let dragSource: CardData | null = null;
+let dropTarget: CardData | null = null;
 let dragElement: HTMLElement | null = null;
 // let lastUpdate = 0;
 let lastX = 0;
@@ -21,6 +36,15 @@ window.addEventListener("load", () => {
   lastScrollX = document.documentElement.scrollLeft;
   lastScrollY = document.documentElement.scrollTop;
 });
+
+const getInventoryCourse = (cardData: CardData): InventoryCourse => (
+  {
+    class: {
+      courseCode: cardData.class.courseCode,
+      activity: cardData.class.activity
+    }
+  }
+)
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
@@ -43,33 +67,40 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
-const classTranslateX = (classPeriod: ClassPeriod) => (
-  (classPeriod.time.day - 1) * 100
+const classTranslateX = (cardData: CardData) => (
+  isPeriod(cardData) ? (cardData.time.day - 1) * 100 : 3 // TODO
 );
 
-const classTranslateY = (classPeriod: ClassPeriod) => {
-  // height compared to standard row height
-  const heightFactor = classPeriod.time.end - classPeriod.time.start;
-  // number of rows to offset down
-  const offsetRows = timeToPosition(classPeriod.time.start) - 2;
-  // calculate translate percentage (relative to height)
-  return (offsetRows / heightFactor) * 100;
+const classTranslateY = (cardData: CardData) => {
+  if (isPeriod(cardData)) {
+    // height compared to standard row height
+    const heightFactor = cardData.time.end - cardData.time.start;
+    // number of rows to offset down
+    const offsetRows = timeToPosition(cardData.time.start) - 2;
+    // calculate translate percentage (relative to height)
+    return (offsetRows / heightFactor) * 100;
+  } else {
+    return 3; // TODO
+  }
 };
 
-export const classTransformStyle = (classPeriod: ClassPeriod) => (
-  `translate(${classTranslateX(classPeriod)}%, ${classTranslateY(classPeriod)}%)`
+export const classTransformStyle = (cardData: CardData) => (
+  `translate(${classTranslateX(cardData)}%, ${classTranslateY(cardData)}%)`
 );
 
-export const checkCanDrop = (a: ClassPeriod, b: ClassPeriod) => (
-  a === b || (
-    a.class.course.code === b.class.course.code
+export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
+  a === null || b === null || a === b || (
+    a.class.courseCode === b.class.courseCode
     && a.class.activity === b.class.activity
-    && a.time.end - a.time.start === b.time.end - b.time.start
+    && (
+      !isPeriod(a) || !isPeriod(b)
+      || a.time.end - a.time.start === b.time.end - b.time.start
+    )
   )
 );
 
-const freezeTransform = (element: HTMLElement, classPeriod: ClassPeriod) => {
-  element.style.transform = classTransformStyle(classPeriod);
+const freezeTransform = (element: HTMLElement, cardData: CardData) => {
+  element.style.transform = classTransformStyle(cardData);
 };
 
 const unfreezeTransform = (element: HTMLElement) => {
@@ -92,24 +123,28 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
-const dropzones = new Map<ClassPeriod, HTMLElement>();
+const dropzones = new Map<ClassPeriod | null, HTMLElement>();
 
-export const registerDropzone = (classPeriod: ClassPeriod, element: HTMLElement) => {
+export const registerDropzone = (
+  classPeriod: ClassPeriod | null, element: HTMLElement
+) => {
   dropzones.set(classPeriod, element);
 };
 
-export const unregisterDropzone = (classPeriod: ClassPeriod) => {
+export const unregisterDropzone = (
+  classPeriod: ClassPeriod | null
+) => {
   dropzones.delete(classPeriod);
 };
 
-const periods = new Map<ClassPeriod, HTMLElement>();
+const cards = new Map<CardData, HTMLElement>();
 
-export const registerPeriod = (classPeriod: ClassPeriod, element: HTMLElement) => {
-  periods.set(classPeriod, element);
+export const registerCard = (data: CardData, element: HTMLElement) => {
+  cards.set(data, element);
 };
 
-export const unregisterPeriod = (classPeriod: ClassPeriod) => {
-  periods.delete(classPeriod);
+export const unregisterCard = (data: CardData) => {
+  cards.delete(data);
 };
 
 const updateDropzones = () => {
@@ -125,16 +160,22 @@ const updateDropzones = () => {
   });
 };
 
-const updatePeriods = () => {
-  Array.from(periods.entries()).forEach(([classPeriod, element]) => {
+const updateCards = () => {
+  Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = (
       dragTarget !== null
-      && classPeriod.class.course.code === dragTarget.class.course.code
-      && classPeriod.class.activity === dragTarget.class.activity
+      && (
+        cardData === dragTarget
+        || (
+          isPeriod(cardData) && isPeriod(dragTarget)
+          && cardData.class.courseCode === dragTarget.class.courseCode
+          && cardData.class.activity === dragTarget.class.activity
+        )
+      ) 
     );
   
     let zIndex = isElevated ? 1200 : 1000;
-    if (dragTarget !== null && classPeriod === dragTarget) {
+    if (dragTarget !== null && cardData === dragTarget) {
       zIndex++;
     }
 
@@ -150,9 +191,14 @@ const updatePeriods = () => {
 }
 
 let selectClass: ((classData: ClassData) => void) = () => {};
+let removeClass: ((courseCode: string, activity: string) => void) = () => {};
 
-export const useDrag = (handler: (classData: ClassData) => void) => {
-  selectClass = handler;
+export const useDrag = (
+  selectHandler: (classData: ClassData) => void,
+  removeHandler: (courseCode: string, activity: string) => void,
+) => {
+  selectClass = selectHandler;
+  removeClass = removeHandler;
 }
 
 const updateDelay = 30;
@@ -185,66 +231,75 @@ const updateDropTarget = (now?: boolean) => {
     classPeriod: undefined,
     area: 0,
   } as {
-    classPeriod?: ClassPeriod
+    classPeriod?: ClassPeriod | null
     area: number
   });
 
   const { classPeriod, area } = bestMatch;
-  const newDropTarget = classPeriod && area > 0 ? classPeriod : dragSource;
+  const result = (
+    classPeriod !== undefined && area > 0 ? classPeriod : dragSource
+  );
+  const newDropTarget = result !== null ? result : getInventoryCourse(dragTarget);
 
-  if (newDropTarget && newDropTarget !== dropTarget) {
-    dropTarget = newDropTarget;
+  if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
+    if (isPeriod(newDropTarget)) {
+      dropTarget = newDropTarget;
+      selectClass(newDropTarget.class);
+    } else {
+      // move to inventory
+      removeClass(dragTarget.class.courseCode, dragTarget.class.activity);
+    }
+
     updateDropzones();
-    selectClass(newDropTarget.class);
   }
 };
 
-export const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
+export const morphCards = (a: CardData[], b: CardData[]) => {
   const from = [...a];
   let to = [...b];
 
-  const result: (ClassPeriod | null)[] = Array(from.length).fill(null);
+  const result: (CardData | null)[] = Array(from.length).fill(null);
 
   if (
     dragTarget && dropTarget && dragTarget !== dropTarget
     && from.includes(dragTarget) && to.includes(dropTarget)
   ) {
-    to = to.filter((period) => period !== dropTarget);
+    to = to.filter((cardData) => cardData !== dropTarget);
     result[from.indexOf(dragTarget)] = dropTarget;
     dragTarget = dropTarget;
   }
 
-  from.forEach((fromPeriod: ClassPeriod, i: number) => {
-    if (result[i]) return;
+  from.forEach((fromCard: CardData, i: number) => {
+    if (result[i] || !isPeriod(fromCard)) return;
 
-    let match: ClassPeriod | null = null;
+    let match: CardData | null = null;
 
-    if (to.includes(fromPeriod)) {
-      match = fromPeriod;
+    if (to.includes(fromCard)) {
+      match = fromCard;
     } else {
-      const fromElement = dropzones.get(fromPeriod);
+      const fromElement = dropzones.get(fromCard);
 
       if (fromElement) {
-        const closest = to.filter((toPeriod) => (
-          checkCanDrop(fromPeriod, toPeriod)
-        )).map((toPeriod) => {
-          const element = dropzones.get(toPeriod);
+        const closest = to.filter((toCard) => (
+          checkCanDrop(fromCard, toCard)
+        )).map((toCard) => {
+          const element = isPeriod(toCard) ? dropzones.get(toCard) : undefined;
           const distance = (
             element ? distanceBetween(fromElement, element) : Infinity
           );
-          return { toPeriod, distance };
+          return { toCard, distance };
         }).reduce((min, current) => (
           current.distance < min.distance ? current : min
         ), {
-          toPeriod: undefined,
+          toCard: undefined,
           distance: Infinity,
         } as {
-          toPeriod?: ClassPeriod
+          toCard?: CardData
           distance: number
         });
 
-        const { toPeriod } = closest;
-        match = toPeriod || null;
+        const { toCard } = closest;
+        match = toCard || null;
       } else {
         return;
       }
@@ -252,7 +307,7 @@ export const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
 
     // remove from `to` array if match was found
     if (match) {
-      to = to.filter((period) => period !== match);
+      to = to.filter((cardData) => cardData !== match);
     }
 
     result[i] = match;
@@ -262,10 +317,10 @@ export const morphPeriods = (a: ClassPeriod[], b: ClassPeriod[]) => {
 };
 
 export const setDragTarget = (
-  classPeriod: ClassPeriod | null, event?: MouseEvent & TouchEvent
+  cardData: CardData | null, event?: MouseEvent & TouchEvent
 ) => {
-  if (classPeriod !== dragTarget) {
-    if (classPeriod && event && event.currentTarget) {
+  if (cardData !== dragTarget) {
+    if (cardData && event && event.currentTarget) {
       const element = event.currentTarget as HTMLElement;
       element.style.transition = moveTransition;
       document.documentElement.style.cursor = 'grabbing';
@@ -282,17 +337,17 @@ export const setDragTarget = (
       }
       
       dragElement = element;
-      freezeTransform(element, classPeriod);
+      freezeTransform(element, cardData);
       updateDropTarget(true);
     } else {
       dragElement = null;
     }
 
-    dragTarget = classPeriod;
-    dropTarget = classPeriod;
-    dragSource = classPeriod;
+    dragTarget = cardData;
+    dragSource = cardData;
+    dropTarget = cardData;
 
-    updatePeriods();
+    updateCards();
     updateDropzones();
   }
 };

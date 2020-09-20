@@ -1,11 +1,15 @@
-// mapping from activity name => all classes for that activity
-export type Activities = Record<string, ClassData[]>;
+// TODO: use these typedefs everywhere
+export type CourseCode = string;
+export type InInventory = null;
+export type Activity = string
+export type Activities = Record<Activity, ClassData[]>;
 
-// mapping from course code => activity name => selected class
-export type SelectedClasses = Record<string, Record<string, ClassData | null>>;
+export type SelectedClasses = (
+  Record<CourseCode, Record<Activity, ClassData | InInventory>>
+);
 
 export interface CourseData {
-  code: string
+  code: CourseCode
   name: string
   latestFinishTime: number
   activities: Activities
@@ -13,7 +17,7 @@ export interface CourseData {
 
 export interface ClassData {
   id: string
-  course: CourseData
+  courseCode: CourseCode
   activity: string
   enrolments: number
   capacity: number

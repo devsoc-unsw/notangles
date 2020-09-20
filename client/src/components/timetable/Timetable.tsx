@@ -21,7 +21,7 @@ const StyledTimetable = styled(Box) <{
   user-select: none;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${({ rows }) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr));// 11px 1fr;
+  grid-template: auto repeat(${({ rows }) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 11px 1fr;
 `;
 
 interface TimetableProps {
@@ -30,7 +30,6 @@ interface TimetableProps {
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
-  removeClass(classData: ClassData): void
 }
 
 const Timetable: FunctionComponent<TimetableProps> = React.memo(({
@@ -39,19 +38,17 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   assignedColors,
   is12HourMode,
   setIs12HourMode,
-  removeClass,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
     ), defaultEndTime) - defaultStartTime}
   >
-    {/* <Inventory
+    <Inventory
       key={selectedCourses.map((course) => course.code).join(',')}
       selectedCourses={selectedCourses}
       assignedColors={assignedColors}
-      removeClass={removeClass}
-    /> */}
+    />
     <TimetableLayout
       days={days}
       is12HourMode={is12HourMode}

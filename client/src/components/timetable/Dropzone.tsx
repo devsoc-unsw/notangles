@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {
   // useDrag,
   defaultTransition,
-  timeToPosition,
   registerDropzone,
   unregisterDropzone,
   // checkCanDrop,
@@ -39,26 +38,22 @@ import { ClassPeriod } from '../../interfaces/CourseData';
 // `;
 
 const cellStyle = ({
-  classPeriod,
-  // canDrop,
-  color,
-  // opacity,
+  x, yStart, yEnd, color
 }: {
-  classPeriod: ClassPeriod
-  // canDrop: boolean
-  color: string
-  // opacity: number
+  x: number, yStart: number, yEnd: number, color: string
 }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 20,
 
-  gridColumn: classPeriod.time.day + 1,
-  gridRow: `
-    ${timeToPosition(classPeriod.time.start)} /
-    ${timeToPosition(classPeriod.time.end)}
-  `,
+  gridColumn: x,
+  gridRow: `${yStart} / ${yEnd}`,
+  // gridColumn: classPeriod.time.day + 1,
+  // gridRow: `
+  //   ${timeToPosition(classPeriod.time.start)} /
+  //   ${timeToPosition(classPeriod.time.end)}
+  // `,
   backgroundColor: color,
   // pointerEvents: (
   //   (canDrop ? 'auto' : 'none') as ('auto' | 'none')
@@ -69,13 +64,15 @@ const cellStyle = ({
 });
 
 interface CellProps {
-  classPeriod: ClassPeriod;
+  classPeriod: ClassPeriod | null
+  x: number
+  yStart: number
+  yEnd: number
   color: string
 }
 
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod,
-  color,
+  classPeriod, x, yStart, yEnd, color,
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -103,7 +100,9 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
       ref={element}
       className="dropzone"
       style={cellStyle({
-        classPeriod,
+        x,
+        yStart,
+        yEnd,
         // canDrop,
         color,
         // opacity,

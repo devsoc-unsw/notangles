@@ -33,7 +33,6 @@ const StyledInventoryText = styled.div`
 export interface InventoryProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  removeClass(classData: ClassData): void
 }
 
 const Inventory: FunctionComponent<InventoryProps> = React.memo(({

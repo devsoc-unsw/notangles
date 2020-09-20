@@ -9,8 +9,10 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
   // useDrag,
   // useMorph,
+  CardData,
+  isPeriod,
   setDragTarget,
-  morphPeriods,
+  morphCards,
   transitionTime,
   defaultTransition,
   defaultShadow,
@@ -18,27 +20,29 @@ import {
   elevatedScale,
   classTransformStyle,
   timeToPosition,
-  registerPeriod,
-  unregisterPeriod,
+  registerCard,
+  unregisterCard,
 } from '../../utils/Drag';
 import {
-  ClassPeriod, SelectedClasses,
+  ClassPeriod, CourseData, SelectedClasses,
 } from '../../interfaces/CourseData';
 
 const classMargin = 2;
 const transitionName = "class";
 
 const StyledCourseClass = styled.div<{
-  classPeriod: ClassPeriod
+  cardData: CardData
   // dragTarget: ClassPeriod | null
   // isElevated: boolean
 }>`
   grid-column: 2;
-  grid-row: 2 / ${({ classPeriod }) => (
-    timeToPosition(classPeriod.time.end) - timeToPosition(classPeriod.time.start) + 2
+  grid-row: 2 / ${({ cardData }) => (
+    isPeriod(cardData) ? (
+      timeToPosition(cardData.time.end) - timeToPosition(cardData.time.start) + 2
+    ) : 3 // 2 / 3, i.e. starting at 2 with height 1
   )};
-  transform: ${({ classPeriod }) => (
-    classTransformStyle(classPeriod)
+  transform: ${({ cardData }) => (
+    classTransformStyle(cardData)
   )};
   transition: ${defaultTransition};
 
@@ -182,40 +186,32 @@ const pStyle = {
 };
 
 interface DroppedClassProps {
-  classPeriod: ClassPeriod
+  cardData: CardData
   color: string
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
-  classPeriod,
+  cardData,
   color,
 }) => {
-  const {
-    course,
-    activity,
-    enrolments,
-    capacity,
-  } = classPeriod.class;
-
   const element = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (element.current) registerPeriod(classPeriod, element.current);
+    if (element.current) registerCard(cardData, element.current);
     return () => {
-      if (element.current) unregisterPeriod(classPeriod);
+      if (element.current) unregisterCard(cardData);
     };
   }, []);
 
   // const [dragTarget, setDragTarget] = useDrag();
 
-  const { weeks, weeksString } = classPeriod.time;
-
   const onDown = (event: any) => {
-    setDragTarget(classPeriod, event);
+    setDragTarget(cardData, event);
   };
 
   // const isElevated = (
   //   dragTarget !== null
-  //   && classPeriod.class.course.code === dragTarget.class.course.code
+  //   && classPeriod.class.courseCode === dragTarget.class.courseCode
   //   && classPeriod.class.activity === dragTarget.class.activity
   // );
 
@@ -236,7 +232,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       ref={element}
       onMouseDown={onDown}
       onTouchStart={onDown}
-      classPeriod={classPeriod}
+      cardData={cardData}
       // dragTarget={dragTarget}
       // isElevated={isElevated}
     // <div
@@ -262,21 +258,26 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         <p style={pStyle}>
         {/* <p> */}
           <b>
-            {course.code}
+            {cardData.class.courseCode}
             {' '}
-            {activity}
+            {cardData.class.activity}
           </b>
         </p>
-        <p style={pStyle}>
-          <LocationOnIcon fontSize="inherit" />
-          {`${classPeriod.locationShort} `}
-        </p>
-        <p style={pStyle}>
-          <PeopleAltIcon fontSize="inherit" />
-          {` ${enrolments}/${capacity}`}
-          {` (${weeks.length > 0 ? 'Weeks' : 'Week'} ${weeksString})`}
-        </p>
-        </Card>
+        {isPeriod(cardData) && (
+          <p style={pStyle}>
+            <LocationOnIcon fontSize="inherit" />
+            {`${cardData.locationShort} `}
+          </p>
+        )}
+        {isPeriod(cardData) && (
+          <p style={pStyle}>
+            <PeopleAltIcon fontSize="inherit" />
+            {` ${cardData.class.enrolments}/${cardData.class.capacity} (${
+              cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'
+            } ${cardData.time.weeksString})`}
+          </p>
+        )}
+      </Card>
       {/* </StyledCourseClassInner> */}
       {/* </div> */}
     </StyledCourseClass>
@@ -293,63 +294,70 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
 }) => {
   const droppedClasses: JSX.Element[] = [];
-  // const morphPeriods = useMorph();
-  const prevPeriods = useRef<ClassPeriod[]>([]);
-  const [periodKeys] = useState<Map<ClassPeriod, number>>(new Map<ClassPeriod, number>());
+  const prevCards = useRef<CardData[]>([]);
+  const newCards: CardData[] = [];
   const keyCounter = useRef(0);
-  const newPeriods: ClassPeriod[] = [];
+  const [cardKeys] = useState<
+    Map<CardData, number>
+  >(
+    new Map<CardData, number>()
+  );
 
-  Object.values(selectedClasses).forEach((activities) => {
-    Object.values(activities).forEach((classData) => {
+  Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+    Object.entries(activities).forEach(([activity, classData]) => {
       if (classData) {
         classData.periods.forEach((classPeriod) => {
-          newPeriods.push(classPeriod);
+          newCards.push(classPeriod);
         });
+      } else {
+        // in inventory
+        newCards.push({class: {courseCode, activity}});
       }
     });
   });
 
-  const prevPeriodKeys = new Map(periodKeys);
+  const prevCardKeys = new Map(cardKeys);
 
-  // console.log(morphPeriods(prevPeriods.current, newPeriods).length);
-  morphPeriods(prevPeriods.current, newPeriods).forEach((morphPeriod, i) => {
-    const prevPeriod = prevPeriods.current[i];
+  morphCards(prevCards.current, newCards).forEach((morphCard, i) => {
+    const prevCard = prevCards.current[i];
 
-    if (morphPeriod && morphPeriod !== prevPeriod) {
-      const periodKey = prevPeriodKeys.get(prevPeriod);
+    if (morphCard && morphCard !== prevCard) {
+      const cardKey = prevCardKeys.get(prevCard);
 
-      if (periodKey) {
-        periodKeys.set(morphPeriod, periodKey);
+      if (cardKey) {
+        cardKeys.set(morphCard, cardKey);
       }
     }
   });
 
-  newPeriods.forEach((classPeriod) => {
-    let key = periodKeys.get(classPeriod);
+  newCards.forEach((cardData) => {
+    let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
 
     droppedClasses.push(
       <DroppedClass
         key={`${key}`}
-        classPeriod={classPeriod}
-        color={assignedColors[classPeriod.class.course.code]}
+        // course={classPeriod.class.course}
+        // activity={classPeriod.class.activity}
+        cardData={cardData}
+        color={assignedColors[cardData.class.courseCode]}
       />
     );
 
-    periodKeys.set(classPeriod, key);
+    cardKeys.set(cardData, key);
   });
 
   // shallow copy
-  prevPeriods.current = [...newPeriods];
+  prevCards.current = [...newCards];
 
   // sort by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (
     a.key && b.key ? Number(a.key) - Number(b.key) : 0
   ));
 
-  periodKeys.forEach((_, period) => {
-    if (!newPeriods.includes(period)) {
-      periodKeys.delete(period);
+  cardKeys.forEach((_, cardData) => {
+    if (!newCards.includes(cardData)) {
+      cardKeys.delete(cardData);
     }
   });
 

@@ -34,7 +34,7 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Content = styled(Box)`
-  width: 1250px;
+  width: 1400px;
   min-width: 1100px;
   max-width: 100%;
   margin: auto;
@@ -81,20 +81,20 @@ const App: FunctionComponent = () => {
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = classData;
+      prev[classData.courseCode][classData.activity] = classData;
       return prev;
     });
   };
 
-  useDrag(handleSelectClass);
-
-  const handleRemoveClass = (classData: ClassData) => {
+  const handleRemoveClass = (courseCode: string, activity: string) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = null;
+      prev[courseCode][activity] = null;
       return prev;
     });
   };
+  
+  useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prev) => {
@@ -156,7 +156,6 @@ const App: FunctionComponent = () => {
                   assignedColors={assignedColors}
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
-                  removeClass={handleRemoveClass}
                 />
               {/* </DragManager> */}
               <Footer>
