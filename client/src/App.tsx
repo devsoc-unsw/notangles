@@ -49,7 +49,6 @@ interface StyledContentProps {
   drawerOpen: boolean;
 }
 
-// width: ${() => (drawerOpen ? 'calc(100% - 240px)' : '100%')};
 const Content = styled(Box)<StyledContentProps>`
   width: ${(props) => (props.drawerOpen ? 'calc(100% - 240px)' : '100%')};
   transition: width 0.2s;
@@ -178,8 +177,8 @@ const App: FunctionComponent = () => {
     setErrorVisibility(false);
   };
 
-  const handleSetIsLoggedIn = () => {
-    setIsLoggedIn(!isLoggedIn);
+  const handleSetIsLoggedIn = (value: boolean) => {
+    setIsLoggedIn(value);
   };
 
   return (

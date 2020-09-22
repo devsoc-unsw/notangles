@@ -14,6 +14,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 
 const drawerWidth = 240;
+const loggedOutImgUrl = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
 
 const StyledDrawer = styled(Drawer)`
     width: drawerWidth;
@@ -23,6 +24,12 @@ const StyledDrawer = styled(Drawer)`
 const DrawerContainer = styled.div`
     margin-top: 70px;
     overflow: auto;
+`;
+
+const LoginComponent = styled.div`
+    text-align: center;
+    padding: 20px;
+    margin-top: 45%;
 `;
 
 // ???
@@ -89,11 +96,10 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
   </ListItem>
 );
 
-
 interface FriendsProps {
   isFriendsListOpen: boolean,
   isLoggedIn: boolean
-  setIsLoggedIn(): void
+  setIsLoggedIn(value: boolean): void
 }
 
 const FriendsDrawer: React.FC<FriendsProps> = ({
@@ -103,6 +109,18 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
 }) => {
   const classes = useStyles();
 
+
+  const responseFacebook = (response: any) => {
+    // TODO use response
+    console.log(response);
+    // TODO logged out state -> logged in (account button)
+    // TODO make login persist
+    setIsLoggedIn(true);
+  };
+
+  const loginOnClick = () => {
+    console.log('login');
+  };
 
   // TODO map props
   // {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
@@ -166,16 +184,21 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
             </List>
           </>
         ) : (
-          <>
-            <h1> login!</h1>
+          <LoginComponent>
+            <img src={loggedOutImgUrl} alt="You are logged out!" width="100" />
+            <h3> Log In to Notangles! </h3>
+            <p>
+              Add friends on Notangles to view each other&apos;s timetables,
+              coordinate classes, and plan events
+            </p>
             <FacebookLogin
-              appId="1088597931155576"
-              autoLoad
+              appId="2637085919726160"
+              autoLoad={false}
               fields="name,email,picture"
-              onClick={componentClicked}
+              onClick={loginOnClick}
               callback={responseFacebook}
             />
-          </>
+          </LoginComponent>
         )}
 
 
