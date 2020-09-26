@@ -15,9 +15,18 @@ export interface CourseData {
   activities: Activities
 }
 
+export interface InventoryPeriod {
+  class: {
+    courseCode: string
+    activity: string
+    inventoryData: InventoryPeriod
+  }
+}
+
 export interface ClassData {
   id: string
   courseCode: CourseCode
+  inventoryData: InventoryPeriod
   activity: string
   enrolments: number
   capacity: number

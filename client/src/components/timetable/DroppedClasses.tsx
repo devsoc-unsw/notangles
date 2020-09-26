@@ -32,6 +32,7 @@ const transitionName = "class";
 
 const StyledCourseClass = styled.div<{
   cardData: CardData
+  days: string[]
   // dragTarget: ClassPeriod | null
   // isElevated: boolean
 }>`
@@ -41,8 +42,8 @@ const StyledCourseClass = styled.div<{
       timeToPosition(cardData.time.end) - timeToPosition(cardData.time.start) + 2
     ) : 3 // 2 / 3, i.e. starting at 2 with height 1
   )};
-  transform: ${({ cardData }) => (
-    classTransformStyle(cardData)
+  transform: ${({ cardData, days }) => (
+    classTransformStyle(cardData, days)
   )};
   transition: ${defaultTransition};
 
@@ -188,11 +189,13 @@ const pStyle = {
 interface DroppedClassProps {
   cardData: CardData
   color: string
+  days: string[]
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   cardData,
   color,
+  days,
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -233,6 +236,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       onMouseDown={onDown}
       onTouchStart={onDown}
       cardData={cardData}
+      days={days}
       // dragTarget={dragTarget}
       // isElevated={isElevated}
     // <div
@@ -287,11 +291,13 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
 interface DroppedClassesProps {
   selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
+  days: string[]
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedClasses,
   assignedColors,
+  days,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -341,6 +347,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         // activity={classPeriod.class.activity}
         cardData={cardData}
         color={assignedColors[cardData.class.courseCode]}
+        days={days}
       />
     );
 

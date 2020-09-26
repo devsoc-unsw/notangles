@@ -14,10 +14,13 @@ const StyledInventory = styled.div`
   border: 1px solid ${({ theme }) => theme.palette.secondary.main};
   background-color: ${({ theme }) => theme.palette.secondary.light};
   transition: 0.2s;
-  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   box-sizing: border-box;
-  width: calc(100% + 2px);
-  left: -3px;
+  width: calc(100% + ${({ theme }) => theme.shape.borderRadius}px);
+  right: ${({ theme }) => theme.shape.borderRadius}px;
+
+  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
 `;
 
 const StyledInventoryText = styled.div`

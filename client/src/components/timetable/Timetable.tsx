@@ -21,7 +21,7 @@ const StyledTimetable = styled(Box) <{
   user-select: none;
 
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${({ rows }) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 11px 1fr;
+  grid-template: auto repeat(${({ rows }) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 1fr;
 `;
 
 interface TimetableProps {
@@ -60,6 +60,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
       assignedColors={assignedColors}
     />
     <DroppedClasses
+      days={days}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
     />

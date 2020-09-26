@@ -1,5 +1,5 @@
 import {
-  CourseData, ClassData, ClassPeriod
+  CourseData, ClassData, ClassPeriod, InventoryPeriod
 } from '../interfaces/CourseData';
 
 export const transitionTime = 350;
@@ -9,14 +9,7 @@ export const elevatedScale = 1.1;
 export const defaultShadow = 3;
 export const elevatedShadow = 24;
 
-interface InventoryCourse {
-  class: {
-    courseCode: string
-    activity: string
-  }
-}
-
-export type CardData = ClassPeriod | InventoryCourse;
+export type CardData = ClassPeriod | InventoryPeriod;
 
 export const isPeriod = (data: CardData | null): data is ClassPeriod => {
   return data !== null && (data as ClassPeriod).time !== undefined;
@@ -37,13 +30,8 @@ window.addEventListener("load", () => {
   lastScrollY = document.documentElement.scrollTop;
 });
 
-const getInventoryCourse = (cardData: CardData): InventoryCourse => (
-  {
-    class: {
-      courseCode: cardData.class.courseCode,
-      activity: cardData.class.activity
-    }
-  }
+const getInventoryPeriod = (cardData: CardData): InventoryPeriod => (
+  cardData.class.inventoryData
 )
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
@@ -67,9 +55,15 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
-const classTranslateX = (cardData: CardData) => (
-  isPeriod(cardData) ? (cardData.time.day - 1) * 100 : 3 // TODO
-);
+const classTranslateX = (cardData: CardData, days?: string[]) => {
+  let result = 0;
+  if (isPeriod(cardData)) {
+    result = cardData.time.day - 1
+  } else if (days) {
+    result = days.length
+  }
+  return result * 100;
+};
 
 const classTranslateY = (cardData: CardData) => {
   if (isPeriod(cardData)) {
@@ -84,8 +78,8 @@ const classTranslateY = (cardData: CardData) => {
   }
 };
 
-export const classTransformStyle = (cardData: CardData) => (
-  `translate(${classTranslateX(cardData)}%, ${classTranslateY(cardData)}%)`
+export const classTransformStyle = (cardData: CardData, days?: string[]) => (
+  `translate(${classTranslateX(cardData, days)}%, ${classTranslateY(cardData)}%)`
 );
 
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
@@ -239,17 +233,19 @@ const updateDropTarget = (now?: boolean) => {
   const result = (
     classPeriod !== undefined && area > 0 ? classPeriod : dragSource
   );
-  const newDropTarget = result !== null ? result : getInventoryCourse(dragTarget);
+  const newDropTarget = result !== null ? result : getInventoryPeriod(dragTarget);
+
+  // console.log(newDropTarget === dropTarget, newDropTarget, dropTarget)
 
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
     if (isPeriod(newDropTarget)) {
-      dropTarget = newDropTarget;
       selectClass(newDropTarget.class);
     } else {
-      // move to inventory
+      // moved to inventory
       removeClass(dragTarget.class.courseCode, dragTarget.class.activity);
     }
 
+    dropTarget = newDropTarget;
     updateDropzones();
   }
 };
@@ -262,7 +258,7 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
 
   if (
     dragTarget && dropTarget && dragTarget !== dropTarget
-    && from.includes(dragTarget) && to.includes(dropTarget)
+    && from.includes(dragTarget) && to.includes(dragTarget)
   ) {
     to = to.filter((cardData) => cardData !== dropTarget);
     result[from.indexOf(dragTarget)] = dropTarget;
