@@ -81,15 +81,15 @@ const App: FunctionComponent = () => {
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.courseCode][classData.activity] = classData;
+      prev[classData.course.code][classData.activity] = classData;
       return prev;
     });
   };
 
-  const handleRemoveClass = (courseCode: string, activity: string) => {
+  const handleRemoveClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[courseCode][activity] = null;
+      prev[classData.course.code][classData.activity] = null;
       return prev;
     });
   };

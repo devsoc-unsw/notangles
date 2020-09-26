@@ -37,11 +37,7 @@ const StyledCourseClass = styled.div<{
   // isElevated: boolean
 }>`
   grid-column: 2;
-  grid-row: 2 / ${({ cardData }) => (
-    isPeriod(cardData) ? (
-      timeToPosition(cardData.time.end) - timeToPosition(cardData.time.start) + 2
-    ) : 3 // 2 / 3, i.e. starting at 2 with height 1
-  )};
+  grid-row: 2 / 3;
   transform: ${({ cardData, days }) => (
     classTransformStyle(cardData, days)
   )};
@@ -49,10 +45,15 @@ const StyledCourseClass = styled.div<{
 
   // position over timetable borders
   position: relative;
-
-  padding: ${classMargin}px;
   width:  calc(100% + ${1 / devicePixelRatio}px);
-  height: calc(100% + ${1 / devicePixelRatio}px);
+  height: calc(${({ cardData }) => {
+    const heightFactor = !isPeriod(cardData) ? 1 : (
+      cardData.time.end - cardData.time.start
+    );
+    return `${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px`;
+  }});
+  
+  padding: ${classMargin}px;
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
@@ -204,7 +205,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     return () => {
       if (element.current) unregisterCard(cardData);
     };
-  }, []);
+  });
 
   // const [dragTarget, setDragTarget] = useDrag();
 
@@ -262,7 +263,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         <p style={pStyle}>
         {/* <p> */}
           <b>
-            {cardData.class.courseCode}
+            {cardData.class.course.code}
             {' '}
             {cardData.class.activity}
           </b>
@@ -288,13 +289,19 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   );
 });
 
+const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) => (
+  courses.find((course) => course.code === courseCode)?.inventoryData[activity]
+)
+
 interface DroppedClassesProps {
+  selectedCourses: CourseData[]
   selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
   days: string[]
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
+  selectedCourses,
   selectedClasses,
   assignedColors,
   days,
@@ -317,7 +324,8 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         });
       } else {
         // in inventory
-        newCards.push({class: {courseCode, activity}});
+        const inventoryPeriod = getInventoryPeriod(selectedCourses, courseCode, activity);
+        inventoryPeriod && newCards.push(inventoryPeriod);
       }
     });
   });
@@ -346,7 +354,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         // course={classPeriod.class.course}
         // activity={classPeriod.class.activity}
         cardData={cardData}
-        color={assignedColors[cardData.class.courseCode]}
+        color={assignedColors[cardData.class.course.code]}
         days={days}
       />
     );

@@ -37,7 +37,8 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
       x={-2}
       yStart={2}
       yEnd={-1}
-      color="red"
+      color="rgba(0, 0, 0, 0.1)"
+      isInventory
     />
   )
 

@@ -2,18 +2,19 @@ import {
   CourseData, ClassData, ClassPeriod, InventoryPeriod
 } from '../interfaces/CourseData';
 
+export type CardData = ClassPeriod | InventoryPeriod;
+
 export const transitionTime = 350;
+const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
-const moveTransition = `transform ${transitionTime}ms`;
+const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
 export const elevatedScale = 1.1;
 export const defaultShadow = 3;
 export const elevatedShadow = 24;
 
-export type CardData = ClassPeriod | InventoryPeriod;
-
-export const isPeriod = (data: CardData | null): data is ClassPeriod => {
-  return data !== null && (data as ClassPeriod).time !== undefined;
-}
+export const isPeriod = (data: CardData | null): data is ClassPeriod => (
+  data !== null && (data as ClassPeriod).time !== undefined
+)
 
 let dragTarget: CardData | null = null;
 let dragSource: CardData | null = null;
@@ -24,6 +25,7 @@ let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
+let days: string[] = [];
 
 window.addEventListener("load", () => {
   lastScrollX = document.documentElement.scrollLeft;
@@ -31,7 +33,7 @@ window.addEventListener("load", () => {
 });
 
 const getInventoryPeriod = (cardData: CardData): InventoryPeriod => (
-  cardData.class.inventoryData
+  cardData.class.course.inventoryData[cardData.class.activity]
 )
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
@@ -84,7 +86,7 @@ export const classTransformStyle = (cardData: CardData, days?: string[]) => (
 
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
   a === null || b === null || a === b || (
-    a.class.courseCode === b.class.courseCode
+    a.class.course.code === b.class.course.code
     && a.class.activity === b.class.activity
     && (
       !isPeriod(a) || !isPeriod(b)
@@ -94,7 +96,7 @@ export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
 );
 
 const freezeTransform = (element: HTMLElement, cardData: CardData) => {
-  element.style.transform = classTransformStyle(cardData);
+  element.style.transform = classTransformStyle(cardData, days);
 };
 
 const unfreezeTransform = (element: HTMLElement) => {
@@ -144,10 +146,15 @@ export const unregisterCard = (data: CardData) => {
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
-    const isDropTarget = classPeriod && classPeriod === dropTarget;
+
+    // TODO: make more clear
+    const isDropTarget = (
+      (classPeriod && classPeriod === dropTarget)
+      || (!classPeriod && !isPeriod(dropTarget))
+    );
 
     let opacity = '0';
-    if (canDrop) opacity = isDropTarget ? '0.7' : '0.3';
+    if (canDrop) opacity = isDropTarget ? '0.7' : (classPeriod ? '0.3' : '0');
 
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
@@ -162,7 +169,7 @@ const updateCards = () => {
         cardData === dragTarget
         || (
           isPeriod(cardData) && isPeriod(dragTarget)
-          && cardData.class.courseCode === dragTarget.class.courseCode
+          && cardData.class.course.code === dragTarget.class.course.code
           && cardData.class.activity === dragTarget.class.activity
         )
       ) 
@@ -184,15 +191,20 @@ const updateCards = () => {
   });
 }
 
-let selectClass: ((classData: ClassData) => void) = () => {};
-let removeClass: ((courseCode: string, activity: string) => void) = () => {};
+type ClassHandler = (classData: ClassData) => void;
+
+let selectClass: ClassHandler = () => {};
+let removeClass: ClassHandler = () => {};
 
 export const useDrag = (
-  selectHandler: (classData: ClassData) => void,
-  removeHandler: (courseCode: string, activity: string) => void,
+  selectHandler: ClassHandler, removeHandler: ClassHandler
 ) => {
   selectClass = selectHandler;
   removeClass = removeHandler;
+}
+
+export const setDays = (newDays: string[]) => {
+  days = newDays;
 }
 
 const updateDelay = 30;
@@ -235,18 +247,18 @@ const updateDropTarget = (now?: boolean) => {
   );
   const newDropTarget = result !== null ? result : getInventoryPeriod(dragTarget);
 
-  // console.log(newDropTarget === dropTarget, newDropTarget, dropTarget)
-
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
+    dropTarget = newDropTarget;
+    updateDropzones();
+
     if (isPeriod(newDropTarget)) {
       selectClass(newDropTarget.class);
     } else {
       // moved to inventory
-      removeClass(dragTarget.class.courseCode, dragTarget.class.activity);
+      if (isPeriod(dragTarget)) {
+        removeClass(dragTarget.class);
+      }
     }
-
-    dropTarget = newDropTarget;
-    updateDropzones();
   }
 };
 
@@ -258,7 +270,7 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
 
   if (
     dragTarget && dropTarget && dragTarget !== dropTarget
-    && from.includes(dragTarget) && to.includes(dragTarget)
+    && from.includes(dragTarget) && to.includes(dropTarget)
   ) {
     to = to.filter((cardData) => cardData !== dropTarget);
     result[from.indexOf(dragTarget)] = dropTarget;

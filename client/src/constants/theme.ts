@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core';
 
+export const borderRadius = 10;
+
 const baseTheme = ({
   type,
   background,
@@ -35,7 +37,7 @@ const baseTheme = ({
     },
   },
   shape: {
-    borderRadius: 10,
+    borderRadius,
   },
 });
 

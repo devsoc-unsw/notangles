@@ -7,6 +7,7 @@ import {
   unregisterDropzone,
   // checkCanDrop,
 } from '../../utils/Drag';
+import { borderRadius } from '../../constants/theme';
 import { ClassPeriod } from '../../interfaces/CourseData';
 
 // const StyledCell = styled.div.attrs(() => ({
@@ -38,9 +39,9 @@ import { ClassPeriod } from '../../interfaces/CourseData';
 // `;
 
 const cellStyle = ({
-  x, yStart, yEnd, color
+  x, yStart, yEnd, color, isInventory
 }: {
-  x: number, yStart: number, yEnd: number, color: string
+  x: number, yStart: number, yEnd: number, color: string, isInventory?: boolean
 }) => ({
   display: 'inline-flex',
   alignItems: 'center',
@@ -61,6 +62,8 @@ const cellStyle = ({
 
   opacity: 0,
   transition: defaultTransition,
+
+  borderBottomRightRadius: isInventory ? `${borderRadius}px` : "0px",
 });
 
 interface CellProps {
@@ -69,10 +72,11 @@ interface CellProps {
   yStart: number
   yEnd: number
   color: string
+  isInventory?: boolean
 }
 
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod, x, yStart, yEnd, color,
+  classPeriod, x, yStart, yEnd, color, isInventory
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -106,6 +110,7 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
         // canDrop,
         color,
         // opacity,
+        isInventory
       })}
     />
   );

@@ -1,8 +1,7 @@
 // TODO: use these typedefs everywhere
 export type CourseCode = string;
-export type InInventory = null;
 export type Activity = string
-export type Activities = Record<Activity, ClassData[]>;
+export type InInventory = null;
 
 export type SelectedClasses = (
   Record<CourseCode, Record<Activity, ClassData | InInventory>>
@@ -12,25 +11,24 @@ export interface CourseData {
   code: CourseCode
   name: string
   latestFinishTime: number
-  activities: Activities
-}
-
-export interface InventoryPeriod {
-  class: {
-    courseCode: string
-    activity: string
-    inventoryData: InventoryPeriod
-  }
+  activities: Record<Activity, ClassData[]>
+  inventoryData: Record<Activity, InventoryPeriod>
 }
 
 export interface ClassData {
   id: string
-  courseCode: CourseCode
-  inventoryData: InventoryPeriod
+  course: CourseData
   activity: string
   enrolments: number
   capacity: number
   periods: ClassPeriod[]
+}
+
+export interface InventoryPeriod {
+  class: {
+    course: CourseData
+    activity: string
+  }
 }
 
 export interface ClassPeriod {

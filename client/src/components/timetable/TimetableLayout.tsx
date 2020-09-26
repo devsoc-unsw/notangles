@@ -9,11 +9,12 @@ const headerPadding = 15;
 const BaseCell = styled.div<{
   x: number
   y: number
-  endX?: boolean
-  endY?: boolean
+  yTo?: number
+  isEndX?: boolean
+  isEndY?: boolean
 }>`
   grid-column: ${({ x }) => x};
-  grid-row: ${({ y }) => y};
+  grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo ? yTo : y};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
   background-color: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
@@ -22,14 +23,14 @@ const BaseCell = styled.div<{
   border-top-left-radius: ${({ theme, x, y }) => (
     x === 1 && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-left-radius: ${({ theme, x, endY }) => (
-    x === 1 && endY ? theme.shape.borderRadius : 0
+  border-bottom-left-radius: ${({ theme, x, isEndY }) => (
+    x === 1 && isEndY ? theme.shape.borderRadius : 0
   )}px;
-  border-top-right-radius: ${({ theme, endX, y }) => (
-    endX && y === 1 ? theme.shape.borderRadius : 0
+  border-top-right-radius: ${({ theme, isEndX, y }) => (
+    isEndX && y === 1 ? theme.shape.borderRadius : 0
   )}px;
-  border-bottom-right-radius: ${({ theme, endX, endY }) => (
-    endX && endY ? theme.shape.borderRadius : 0
+  border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (
+    isEndX && isEndY ? theme.shape.borderRadius : 0
   )}px;
 
   display: inline-flex;
@@ -39,6 +40,15 @@ const BaseCell = styled.div<{
 
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
+`;
+
+const OnlineCell = styled(DayCell)`
+  position: relative;
+  right: 50%;
+  width: 150%;
+  padding-left: 50%;
+  box-sizing: border-box;
+  z-index: 1;
 `;
 
 const paddingStyle = css`
@@ -116,31 +126,48 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (
-    <DayCell key={day} x={i + 2} y={1} endX={i === days.length - 1}>
+    <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
       {day}
     </DayCell>
   ));
 
+  dayCells.push(
+    <OnlineCell key="online" x={days.length + 2} y={1} isEndX>
+      Online
+    </OnlineCell>
+  )
+
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} endY={i === hours.length - 1}>
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
       {hour}
     </HourCell>
   ));
 
-  const otherCells = hours.map(
-    (_, y) => days.map(
+  const otherCells = hours.flatMap(
+    (_, y) => days.flatMap(
       (_, x) => (
         <BaseCell
           key={x * 1000 + y}
           x={x + 2}
           y={y + 2}
-          endX={x === days.length - 1}
-          endY={y === hours.length - 1}
+          isEndX={x === days.length - 1}
+          isEndY={y === hours.length - 1}
           id={x == 0 && y == 0 ? "origin" : undefined}
         />
       ),
     ),
   );
+
+  otherCells.push(
+    <OnlineCell
+      key={-1}
+      x={days.length + 2}
+      y={2}
+      yTo={-1}
+      isEndX
+      isEndY
+    />
+  )
 
   return (
     <>

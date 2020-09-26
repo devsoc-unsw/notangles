@@ -101,14 +101,15 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
-    activities: {},
     latestFinishTime: 0,
+    activities: {},
+    inventoryData: {}
   };
 
   dbCourse.classes.forEach((dbClass, index) => {
     const classData: ClassData = {
       id: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
-      courseCode: courseData.code,
+      course: courseData,
       activity: dbClass.activity,
       periods: [],
       enrolments: dbClass.courseEnrolment.enrolments,
@@ -133,6 +134,15 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
     courseData.activities[dbClass.activity].push(classData);
   });
+
+  Object.keys(courseData.activities).forEach((activity) => {
+    courseData.inventoryData[activity] = {
+      class: {
+        course: courseData,
+        activity
+      }
+    }
+  })
 
   return courseData;
 };
