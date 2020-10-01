@@ -18,14 +18,44 @@ import {
   defaultShadow,
   elevatedShadow,
   elevatedScale,
-  classTransformStyle,
-  timeToPosition,
   registerCard,
   unregisterCard,
+  timeToPosition
 } from '../../utils/Drag';
 import {
   ClassPeriod, CourseData, SelectedClasses,
 } from '../../interfaces/CourseData';
+
+const classTranslateX = (cardData: CardData, days?: string[]) => {
+  let result = 0;
+  if (isPeriod(cardData)) {
+    result = cardData.time.day - 1
+  } else if (days) {
+    result = days.length
+  }
+  return result * 100;
+};
+
+const classTranslateY = (cardData: CardData, y?: number) => {
+  if (isPeriod(cardData)) {
+    // height compared to standard row height
+    const heightFactor = cardData.time.end - cardData.time.start;
+    // number of rows to offset down
+    const offsetRows = timeToPosition(cardData.time.start) - 2;
+    // calculate translate percentage (relative to height)
+    return (offsetRows / heightFactor) * 100;
+  }
+  
+  if (y) {
+    return y * 100; // in %
+  }
+
+  return 0;
+};
+
+export const classTransformStyle = (cardData: CardData, days?: string[], y?: number) => (
+  `translate(${classTranslateX(cardData, days)}%, ${classTranslateY(cardData, y)}%)`
+);
 
 const classMargin = 2;
 const transitionName = "class";
@@ -33,13 +63,14 @@ const transitionName = "class";
 const StyledCourseClass = styled.div<{
   cardData: CardData
   days: string[]
+  y?: number
   // dragTarget: ClassPeriod | null
   // isElevated: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / 3;
-  transform: ${({ cardData, days }) => (
-    classTransformStyle(cardData, days)
+  transform: ${({ cardData, days, y }) => (
+    classTransformStyle(cardData, days, y)
   )};
   transition: ${defaultTransition};
 
@@ -170,6 +201,8 @@ const courseClassInnerStyle = ({
   fontSize: '0.9rem',
   borderRadius: '7px',
   transition: defaultTransition,
+  backfaceVisibility: 'hidden' as 'hidden',
+  fontSmoothing: 'subpixel-antialiased',
 
   minWidth: 0,
   width: '100%',
@@ -191,12 +224,14 @@ interface DroppedClassProps {
   cardData: CardData
   color: string
   days: string[]
+  y?: number
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   cardData,
   color,
   days,
+  y
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -231,6 +266,15 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   //   cursor = isElevated ? 'grabbing' : 'grab';
   // }
 
+  let activityMaxPeriods = 0;
+  if (!isPeriod(cardData)) {
+    activityMaxPeriods = Math.max(
+      ...cardData.class.course.activities[cardData.class.activity].map(
+        (classData) => classData.periods.length
+      )
+    );
+  }
+
   return (
     <StyledCourseClass
       ref={element}
@@ -238,6 +282,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       onTouchStart={onDown}
       cardData={cardData}
       days={days}
+      y={y}
       // dragTarget={dragTarget}
       // isElevated={isElevated}
     // <div
@@ -268,18 +313,22 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
             {cardData.class.activity}
           </b>
         </p>
-        {isPeriod(cardData) && (
+        {/* {isPeriod(cardData) && (
           <p style={pStyle}>
             <LocationOnIcon fontSize="inherit" />
             {`${cardData.locationShort} `}
           </p>
-        )}
+        )} */}
         {isPeriod(cardData) && (
           <p style={pStyle}>
-            <PeopleAltIcon fontSize="inherit" />
-            {` ${cardData.class.enrolments}/${cardData.class.capacity} (${
-              cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'
-            } ${cardData.time.weeksString})`}
+            <PeopleAltIcon fontSize="inherit" /> {' '}
+            {cardData.class.enrolments}/{cardData.class.capacity} {' '}
+            ({cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString})
+          </p>
+        )}
+        {!isPeriod(cardData) && (
+          <p style={pStyle}>
+            {activityMaxPeriods} class{activityMaxPeriods !== 1 && "es"}
           </p>
         )}
       </Card>
@@ -310,6 +359,8 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   const prevCards = useRef<CardData[]>([]);
   const newCards: CardData[] = [];
   const keyCounter = useRef(0);
+  const inventoryCards = useRef<CardData[]>([]);
+
   const [cardKeys] = useState<
     Map<CardData, number>
   >(
@@ -325,10 +376,19 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
       } else {
         // in inventory
         const inventoryPeriod = getInventoryPeriod(selectedCourses, courseCode, activity);
-        inventoryPeriod && newCards.push(inventoryPeriod);
+        if (inventoryPeriod) {
+          newCards.push(inventoryPeriod);
+
+          if (!inventoryCards.current.includes(inventoryPeriod)) {
+            inventoryCards.current.push(inventoryPeriod);
+          }
+        }
       }
     });
   });
+
+  // clear any inventory cards which no longer exist
+  inventoryCards.current = inventoryCards.current.filter((card) => newCards.includes(card));
 
   const prevCardKeys = new Map(cardKeys);
 
@@ -356,6 +416,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         cardData={cardData}
         color={assignedColors[cardData.class.course.code]}
         days={days}
+        y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
       />
     );
 

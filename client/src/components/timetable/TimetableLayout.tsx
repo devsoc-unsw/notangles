@@ -42,7 +42,7 @@ const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const OnlineCell = styled(DayCell)`
+const InventoryCell = styled(DayCell)`
   position: relative;
   right: 50%;
   width: 150%;
@@ -132,9 +132,9 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   ));
 
   dayCells.push(
-    <OnlineCell key="online" x={days.length + 2} y={1} isEndX>
-      Online
-    </OnlineCell>
+    <InventoryCell key="unscheduled" x={days.length + 2} y={1} isEndX>
+      Unscheduled
+    </InventoryCell>
   )
 
   const hourCells = hours.map((hour, i) => (
@@ -159,7 +159,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   );
 
   otherCells.push(
-    <OnlineCell
+    <InventoryCell
       key={-1}
       x={days.length + 2}
       y={2}

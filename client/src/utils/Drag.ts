@@ -57,33 +57,6 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number) => Math.floor(time) - 7;
 
-const classTranslateX = (cardData: CardData, days?: string[]) => {
-  let result = 0;
-  if (isPeriod(cardData)) {
-    result = cardData.time.day - 1
-  } else if (days) {
-    result = days.length
-  }
-  return result * 100;
-};
-
-const classTranslateY = (cardData: CardData) => {
-  if (isPeriod(cardData)) {
-    // height compared to standard row height
-    const heightFactor = cardData.time.end - cardData.time.start;
-    // number of rows to offset down
-    const offsetRows = timeToPosition(cardData.time.start) - 2;
-    // calculate translate percentage (relative to height)
-    return (offsetRows / heightFactor) * 100;
-  } else {
-    return 3; // TODO
-  }
-};
-
-export const classTransformStyle = (cardData: CardData, days?: string[]) => (
-  `translate(${classTranslateX(cardData, days)}%, ${classTranslateY(cardData)}%)`
-);
-
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
   a === null || b === null || a === b || (
     a.class.course.code === b.class.course.code
@@ -96,7 +69,7 @@ export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
 );
 
 const freezeTransform = (element: HTMLElement, cardData: CardData) => {
-  element.style.transform = classTransformStyle(cardData, days);
+  element.style.transform = getComputedStyle(element).getPropertyValue("transform");
 };
 
 const unfreezeTransform = (element: HTMLElement) => {
