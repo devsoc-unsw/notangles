@@ -7,7 +7,6 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
 import Inventory from '../inventory/Inventory';
-import { setDays } from '../../utils/Drag';
 
 const rowHeight = 86;
 
@@ -39,38 +38,35 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   assignedColors,
   is12HourMode,
   setIs12HourMode,
-}) => {
-  setDays(days);
-  return (
-    <StyledTimetable
-      rows={Math.max(...selectedCourses.map(
-        (course) => course.latestFinishTime,
-      ), defaultEndTime) - defaultStartTime}
-    >
-      {/* <Inventory
-        key={selectedCourses.map((course) => course.code).join(',')}
-        selectedCourses={selectedCourses}
-        assignedColors={assignedColors}
-      /> */}
-      <TimetableLayout
-        days={days}
-        is12HourMode={is12HourMode}
-        setIs12HourMode={setIs12HourMode}
-        selectedCourses={selectedCourses}
-      />
-      <ClassDropzones
-        selectedCourses={selectedCourses}
-        assignedColors={assignedColors}
-      />
-      <DroppedClasses
-        selectedCourses={selectedCourses}
-        selectedClasses={selectedClasses}
-        assignedColors={assignedColors}
-        days={days}
-      />
-    </StyledTimetable>
-  );
-}, (prev, next) => !(
+}) => (
+  <StyledTimetable
+    rows={Math.max(...selectedCourses.map(
+      (course) => course.latestFinishTime,
+    ), defaultEndTime) - defaultStartTime}
+  >
+    {/* <Inventory
+      key={selectedCourses.map((course) => course.code).join(',')}
+      selectedCourses={selectedCourses}
+      assignedColors={assignedColors}
+    /> */}
+    <TimetableLayout
+      days={days}
+      is12HourMode={is12HourMode}
+      setIs12HourMode={setIs12HourMode}
+      selectedCourses={selectedCourses}
+    />
+    <ClassDropzones
+      selectedCourses={selectedCourses}
+      assignedColors={assignedColors}
+    />
+    <DroppedClasses
+      selectedCourses={selectedCourses}
+      selectedClasses={selectedClasses}
+      assignedColors={assignedColors}
+      days={days}
+    />
+  </StyledTimetable>
+), (prev, next) => !(
   prev.is12HourMode !== next.is12HourMode
   || prev.selectedClasses !== next.selectedClasses
   || prev.selectedCourses.length !== next.selectedCourses.length

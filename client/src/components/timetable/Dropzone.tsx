@@ -80,9 +80,9 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (element.current) registerDropzone(classPeriod, element.current);
+    if (element.current) registerDropzone(classPeriod, element.current, isInventory);
     return () => {
-      if (element.current) unregisterDropzone(classPeriod);
+      if (element.current) unregisterDropzone(classPeriod, isInventory);
     };
   }, []);
 

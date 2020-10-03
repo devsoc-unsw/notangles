@@ -33,7 +33,7 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
   dropzones.push(
     <Dropzone
       key="inventory"
-      classPeriod={null} // inventory is signified by null
+      classPeriod={null} // inventory has no corresponding class period
       x={-2}
       yStart={2}
       yEnd={-1}

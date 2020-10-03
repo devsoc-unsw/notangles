@@ -1,6 +1,7 @@
 import {
   CourseData, ClassData, ClassPeriod, InventoryPeriod
 } from '../interfaces/CourseData';
+import { lightTheme } from '../constants/theme';
 
 export type CardData = ClassPeriod | InventoryPeriod;
 
@@ -11,6 +12,7 @@ const moveTransition = `transform ${transitionTime}ms, height ${heightTransition
 export const elevatedScale = 1.1;
 export const defaultShadow = 3;
 export const elevatedShadow = 24;
+const inventoryDropIntersection = 0.5; // intersection area with inventory required to drop
 
 export const isPeriod = (data: CardData | null): data is ClassPeriod => (
   data !== null && (data as ClassPeriod).time !== undefined
@@ -20,12 +22,12 @@ let dragTarget: CardData | null = null;
 let dragSource: CardData | null = null;
 let dropTarget: CardData | null = null;
 let dragElement: HTMLElement | null = null;
-// let lastUpdate = 0;
+let inventoryElement: HTMLElement | null = null;
+
 let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
-let days: string[] = [];
 
 window.addEventListener("load", () => {
   lastScrollX = document.documentElement.scrollLeft;
@@ -39,15 +41,9 @@ const getInventoryPeriod = (cardData: CardData): InventoryPeriod => (
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
 
-const shadowClassName = (n: number) => `MuiPaper-elevation${n}`;
 const setShadow = (element: HTMLElement, elevated: boolean) => {
-  if (elevated) {
-    element.classList.remove(shadowClassName(defaultShadow));
-    element.classList.add(shadowClassName(elevatedShadow));
-  } else {
-    element.classList.remove(shadowClassName(elevatedShadow));
-    element.classList.add(shadowClassName(defaultShadow));
-  }
+  // shadows are the same for light and dark theme
+  element.style.boxShadow = lightTheme.shadows[elevated ? elevatedShadow : defaultShadow];
 }
 
 const moveElement = (element: HTMLElement, dx: number, dy: number) => {
@@ -76,13 +72,17 @@ const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 
-const intersectionArea = (r1: DOMRect, r2: DOMRect) => {
-  const left = Math.max(r1.left, r2.left);
-  const right = Math.min(r1.right, r2.right);
-  const bottom = Math.min(r1.bottom, r2.bottom);
-  const top = Math.max(r1.top, r2.top);
+// given drag and drop bounding rects, returns intersection area relative to drag area
+const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
+  const left = Math.max(drag.left, drop.left);
+  const right = Math.min(drag.right, drop.right);
+  const bottom = Math.min(drag.bottom, drop.bottom);
+  const top = Math.max(drag.top, drop.top);
 
-  return Math.max(0, right - left) * Math.max(0, bottom - top);
+  const dragArea = drag.width * drag.height;
+  const intersectionArea = Math.max(0, right - left) * Math.max(0, bottom - top);
+
+  return intersectionArea / dragArea;
 };
 
 const distanceBetween = (e1: Element, e2: Element) => {
@@ -93,28 +93,7 @@ const distanceBetween = (e1: Element, e2: Element) => {
 };
 
 const dropzones = new Map<ClassPeriod | null, HTMLElement>();
-
-export const registerDropzone = (
-  classPeriod: ClassPeriod | null, element: HTMLElement
-) => {
-  dropzones.set(classPeriod, element);
-};
-
-export const unregisterDropzone = (
-  classPeriod: ClassPeriod | null
-) => {
-  dropzones.delete(classPeriod);
-};
-
 const cards = new Map<CardData, HTMLElement>();
-
-export const registerCard = (data: CardData, element: HTMLElement) => {
-  cards.set(data, element);
-};
-
-export const unregisterCard = (data: CardData) => {
-  cards.delete(data);
-};
 
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
@@ -164,6 +143,34 @@ const updateCards = () => {
   });
 }
 
+export const registerDropzone = (
+  classPeriod: ClassPeriod | null, element: HTMLElement, isInventory?: boolean
+) => {
+  dropzones.set(classPeriod, element);
+  if (isInventory) inventoryElement = element;
+};
+
+export const unregisterDropzone = (
+  classPeriod: ClassPeriod | null, isInventory?: boolean
+) => {
+  dropzones.delete(classPeriod);
+  if (isInventory) inventoryElement = null;
+};
+
+let updateTimeout: number;
+
+export const registerCard = (data: CardData, element: HTMLElement) => {
+  cards.set(data, element);
+
+  // delays update until consecutive `registerCard` calls have concluded
+  clearTimeout(updateTimeout);
+  updateTimeout = setTimeout(() => updateCards(), 0);
+};
+
+export const unregisterCard = (data: CardData) => {
+  cards.delete(data);
+};
+
 type ClassHandler = (classData: ClassData) => void;
 
 let selectClass: ClassHandler = () => {};
@@ -174,10 +181,6 @@ export const useDrag = (
 ) => {
   selectClass = selectHandler;
   removeClass = removeHandler;
-}
-
-export const setDays = (newDays: string[]) => {
-  days = newDays;
 }
 
 const updateDelay = 30;
@@ -197,14 +200,16 @@ const updateDropTarget = (now?: boolean) => {
   // dropzone with greatest area of intersection
   const bestMatch = Array.from(dropzones.entries()).filter(([classPeriod]) => (
     dragTarget && checkCanDrop(dragTarget, classPeriod)
-  )).map(([classPeriod, dropElement]) => (
-    {
-      classPeriod,
-      area: dragElement ? intersectionArea(
-        dragRect, dropElement.getBoundingClientRect(),
-      ) : 0,
-    }
-  )).reduce((max, current) => (
+  )).map(([classPeriod, dropElement]) => {
+    let area = dragElement ? getIntersectionArea(
+      dragRect, dropElement.getBoundingClientRect(),
+    ) : 0;
+
+    // avoids accidental inventory drop, and state oscillation when drag area dynamically changes
+    if (dropElement == inventoryElement && area < inventoryDropIntersection) area = 0;
+
+    return {classPeriod, area}
+  }).reduce((max, current) => (
     current.area > max.area ? current : max
   ), {
     classPeriod: undefined,
