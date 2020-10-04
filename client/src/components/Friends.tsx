@@ -172,33 +172,33 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
             </ListItem>
 
             <List>
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
-              <FriendListSuggestion name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
+              <FriendListSuggestion name={"Test here"} imageSrc={"https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"}/>
             </List>
-          </>
+            </>
         ) : (
-          <LoginComponent>
-            <img src={loggedOutImgUrl} alt="You are logged out!" width="100" />
+            <LoginComponent>
+            <img src={loggedOutImgUrl} alt="You are logged out!" width="100"/>
             <h3> Log In to Notangles! </h3>
             <p>
-              Add friends on Notangles to view each other&apos;s timetables,
-              coordinate classes, and plan events
+                Add friends on Notangles to view each other&apos;s timetables,
+                coordinate classes, and plan events
             </p>
             <FacebookLogin
-              appId="2637085919726160"
-              autoLoad={false}
-              fields="name,email,picture"
-              onClick={loginOnClick}
-              callback={responseFacebook}
-            />
-          </LoginComponent>
+             appId="2637085919726160"
+             autoLoad={false}
+             fields="name,email,picture"
+             scope="user_friends"
+             onClick={loginOnClick}
+             callback={responseFacebook}/>
+            </LoginComponent>
         )}
 
 
