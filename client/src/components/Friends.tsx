@@ -49,7 +49,7 @@ const StyledListItemText = styled(ListItemText)`
 `;
 
 const DrawerContainer = styled.div`
-    margin-top: 70px;
+    margin-top: 64px; /* navbar height */
     overflow: auto;
 `;
 
@@ -194,14 +194,17 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
     try {
       const r = await fetch(`https://graph.facebook.com/${response.userID}/friends?fields=data&access_token=${response.accessToken}`);
       const rData = await r.json();
-      rData.data.foreach((friendId) => {
-        const friendResponse = await fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${response.accessToken}`);
-        const friend = await friendResponse.json();
-        await suggestedFriends.push({
-          id: friend.id,
-          name: friend.name,
-          imageSrc: friend.picture.data.url,
-        });
+
+      rData.data.forEach((friendId: any) => {
+        fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${response.accessToken}`)
+          .then((res) => res.json())
+          .then((friend) => {
+            setSuggestedFriends(suggestedFriends.concat([{
+              id: friend.id,
+              name: friend.name,
+              imageSrc: friend.picture.data.url,
+            }]));
+          });
       });
       setIsLoggedIn(true);
       setMePhoto(response.picture.data.url);
@@ -260,7 +263,11 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
 
               <ListSubheader disableSticky>Suggested Friends</ListSubheader>
               {suggestedFriends.map((friend) => (
-                <FriendListSuggestion name={friend.name} imageSrc={friend.imageSrc} />
+                <FriendListSuggestion
+                  key={friend.id}
+                  name={friend.name}
+                  imageSrc={friend.imageSrc}
+                />
               ))}
             </List>
           </>

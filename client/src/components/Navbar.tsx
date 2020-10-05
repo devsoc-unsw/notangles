@@ -25,7 +25,7 @@ const LogoImg = styled.img`
 const NavbarBox = styled.div`
   flex-grow: 1;
   position: fixed;
-  z-index: 99999;
+  z-index: 1201; /* overriding https://material-ui.com/customization/z-index/ */
 `;
 const StyledNavBar = styled(AppBar)`
   position: fixed;
