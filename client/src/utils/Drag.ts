@@ -327,7 +327,7 @@ export const setDragTarget = (
       }
 
       dragElement = element;
-      freezeTransform(element, cardData);
+      freezeTransform(element);
       updateDropTarget(true);
     } else {
       dragElement = null;
