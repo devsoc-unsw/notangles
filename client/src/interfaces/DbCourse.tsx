@@ -103,7 +103,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     name: dbCourse.name,
     latestFinishTime: 0,
     activities: {},
-    inventoryData: {}
+    inventoryData: {},
   };
 
   dbCourse.classes.forEach((dbClass, index) => {
@@ -118,14 +118,14 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
     classData.periods = dbClass.times.map((dbTime) => (
       dbTimesToPeriod(dbTime, classData)
-    ))
+    ));
 
     // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
     classData.periods = classData.periods.filter((period) => (
-      period == classData.periods.find((x) => (
-        x.time.day == period.time.day
-        && x.time.start == period.time.start
-        && x.time.end == period.time.end
+      period === classData.periods.find((x) => (
+        x.time.day === period.time.day
+        && x.time.start === period.time.start
+        && x.time.end === period.time.end
       ))
     ));
 
@@ -146,10 +146,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     courseData.inventoryData[activity] = {
       class: {
         course: courseData,
-        activity
-      }
-    }
-  })
+        activity,
+      },
+    };
+  });
 
   return courseData;
 };

@@ -1,7 +1,7 @@
 import React, {
-  FunctionComponent, useState, useRef, useEffect
+  FunctionComponent, useState, useRef, useEffect,
 } from 'react';
-import { CSSTransitionGroup } from 'react-transition-group'
+import { CSSTransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
@@ -18,17 +18,18 @@ import {
   elevatedScale,
   registerCard,
   unregisterCard,
-  timeToPosition
+  timeToPosition,
 } from '../../utils/Drag';
 import {
-  ClassPeriod, CourseData, SelectedClasses,
+  CourseData, SelectedClasses,
 } from '../../interfaces/CourseData';
-import { inventoryMargin } from './Timetable';
+
+export const inventoryMargin = 10;
 
 const classTranslateX = (cardData: CardData, days?: string[]) => {
   if (isPeriod(cardData)) {
     return `${(cardData.time.day - 1) * 100}%`;
-  } else if (days) { // not a period, so in the inventory
+  } if (days) { // not a period, so in the inventory
     // `devicePixelRatio` refers to the width of a timetable border
     return `calc(${days.length * 100}% + ${inventoryMargin + devicePixelRatio}px)`;
   }
@@ -55,14 +56,14 @@ export const classHeight = (cardData: CardData) => {
     cardData.time.end - cardData.time.start
   );
   return `calc(${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px)`;
-}
+};
 
 export const classTransformStyle = (cardData: CardData, days?: string[], y?: number) => (
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, y)})`
 );
 
 const classMargin = 2;
-const transitionName = "class";
+const transitionName = 'class';
 
 const StyledCourseClass = styled.div<{
   cardData: CardData
@@ -147,6 +148,10 @@ const pStyle = {
   textOverflow: 'ellipsis',
 };
 
+const iconStyle = {
+  verticalAlign: 'top',
+};
+
 interface DroppedClassProps {
   cardData: CardData
   color: string
@@ -158,7 +163,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   cardData,
   color,
   days,
-  y
+  y,
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -177,8 +182,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   if (!isPeriod(cardData)) {
     activityMaxPeriods = Math.max(
       ...cardData.class.course.activities[cardData.class.activity].map(
-        (classData) => classData.periods.length
-      )
+        (classData) => classData.periods.length,
+      ),
     );
   }
 
@@ -193,7 +198,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     >
       <Card
         style={courseClassInnerStyle({
-          backgroundColor: color
+          backgroundColor: color,
         })}
       >
         <p style={pStyle}>
@@ -204,15 +209,34 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
           </b>
         </p>
         {isPeriod(cardData) && (
-          <p style={pStyle}>
-            <PeopleAltIcon fontSize="inherit" /> {' '}
-            {cardData.class.enrolments}/{cardData.class.capacity} {' '}
-            ({cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString})
-          </p>
+          <>
+            <p style={pStyle}>
+              <PeopleAltIcon fontSize="inherit" style={iconStyle} />
+              {' '}
+              {' '}
+              {cardData.class.enrolments}
+              /
+              {cardData.class.capacity}
+              {' '}
+              {' '}
+              (
+              {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
+              {' '}
+              {cardData.time.weeksString}
+              )
+            </p>
+            <p style={pStyle}>
+              <LocationOnIcon fontSize="inherit" style={iconStyle} />
+              {cardData.locationShort}
+            </p>
+          </>
         )}
         {!isPeriod(cardData) && (
           <p style={pStyle}>
-            {activityMaxPeriods} class{activityMaxPeriods !== 1 && "es"}
+            {activityMaxPeriods}
+            {' '}
+            class
+            {activityMaxPeriods !== 1 && 'es'}
           </p>
         )}
       </Card>
@@ -222,7 +246,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
 
 const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) => (
   courses.find((course) => course.code === courseCode)?.inventoryData[activity]
-)
+);
 
 interface DroppedClassesProps {
   selectedCourses: CourseData[]
@@ -244,9 +268,9 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   const inventoryCards = useRef<CardData[]>([]);
 
   const [cardKeys] = useState<
-    Map<CardData, number>
+  Map<CardData, number>
   >(
-    new Map<CardData, number>()
+    new Map<CardData, number>(),
   );
 
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
@@ -297,7 +321,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         color={assignedColors[cardData.class.course.code]}
         days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
-      />
+      />,
     );
 
     cardKeys.set(cardData, key);
@@ -320,7 +344,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   return (
     <CSSTransitionGroup
       component="div"
-      style={{display: "contents"}}
+      style={{ display: 'contents' }}
       transitionName={transitionName}
       transitionEnterTimeout={transitionTime}
       transitionLeaveTimeout={transitionTime}

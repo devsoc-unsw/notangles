@@ -14,7 +14,7 @@ const BaseCell = styled.div<{
   isEndY?: boolean
 }>`
   grid-column: ${({ x }) => x};
-  grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo ? yTo : y};
+  grid-row: ${({ y }) => y} / ${({ y, yTo }) => (yTo || y)};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
   background-color: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
@@ -45,10 +45,10 @@ const DayCell = styled(BaseCell)`
 const InventoryCell = styled(DayCell)<{
   y: number
 }>`
-  border-top-left-radius:     ${({ theme, y }) => y === 1 ? theme.shape.borderRadius : 0}px;
-  border-top-right-radius:    ${({ theme, y }) => y === 1 ? theme.shape.borderRadius : 0}px;
-  border-bottom-left-radius:  ${({ theme, y }) => y !== 1 ? theme.shape.borderRadius : 0}px;
-  border-bottom-right-radius: ${({ theme, y }) => y !== 1 ? theme.shape.borderRadius : 0}px;
+  border-top-left-radius:     ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-top-right-radius:    ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-bottom-left-radius:  ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
+  border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
 const paddingStyle = css`
@@ -134,11 +134,17 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   dayCells.push(
     <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
       Unscheduled
-    </InventoryCell>
-  )
+    </InventoryCell>,
+  );
 
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
+    <HourCell
+      key={hour}
+      x={1}
+      y={i + 2}
+      is12HourMode={is12HourMode}
+      isEndY={i === hours.length - 1}
+    >
       {hour}
     </HourCell>
   ));
@@ -152,22 +158,15 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
           y={y + 2}
           isEndX={x === days.length - 1}
           isEndY={y === hours.length - 1}
-          id={x == 0 && y == 0 ? "origin" : undefined}
+          id={x === 0 && y === 0 ? 'origin' : undefined}
         />
       ),
     ),
   );
 
   otherCells.push(
-    <InventoryCell
-      key={-1}
-      x={days.length + 3}
-      y={2}
-      yTo={-1}
-      isEndX
-      isEndY
-    />
-  )
+    <InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />,
+  );
 
   return (
     <>

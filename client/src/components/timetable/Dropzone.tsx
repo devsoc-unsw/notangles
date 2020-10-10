@@ -13,7 +13,7 @@ const cellStyle = ({
   x,
   yEnd,
   color,
-  isInventory
+  isInventory,
 }: {
   classPeriod: ClassPeriod | InInventory,
   x: number,
@@ -28,13 +28,13 @@ const cellStyle = ({
   zIndex: 20,
   gridColumn: x,
   gridRow: `2 / ${yEnd !== undefined ? yEnd : 3}`,
-  transform: `translateY(${classPeriod ? classTranslateY(classPeriod) : "0"})`,
+  transform: `translateY(${classPeriod ? classTranslateY(classPeriod) : '0'})`,
   height: classPeriod ? classHeight(classPeriod) : undefined,
   marginBottom: 1 / devicePixelRatio,
   backgroundColor: color,
   opacity: 0,
   transition: defaultTransition,
-  borderBottomRightRadius: isInventory ? `${borderRadius}px` : "0px",
+  borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
 });
 
 interface CellProps {
@@ -47,7 +47,7 @@ interface CellProps {
 }
 
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod, x, y, yEnd, color, isInventory
+  classPeriod, x, y, yEnd, color, isInventory,
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -67,10 +67,10 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
         y,
         yEnd,
         color,
-        isInventory
+        isInventory,
       })}
     />
   );
 });
 
-export { Dropzone };
+export default Dropzone;

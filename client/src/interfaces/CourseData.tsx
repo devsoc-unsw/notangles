@@ -1,5 +1,5 @@
 export type CourseCode = string;
-export type Activity = string
+export type Activity = string;
 export type InInventory = null;
 
 export type SelectedClasses = (

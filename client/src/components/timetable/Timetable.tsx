@@ -1,14 +1,13 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, ClassData, SelectedClasses } from '../../interfaces/CourseData';
+import { CourseData, SelectedClasses } from '../../interfaces/CourseData';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
-import DroppedClasses from './DroppedClasses';
+import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 
-const rowHeight = 86;
-export const inventoryMargin = 10;
+export const rowHeight = 86;
 
 const StyledTimetable = styled(Box) <{
   rows: number

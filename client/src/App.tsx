@@ -93,7 +93,7 @@ const App: FunctionComponent = () => {
       return prev;
     });
   };
-  
+
   useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
@@ -101,9 +101,10 @@ const App: FunctionComponent = () => {
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = course.activities[activity][0]; // temp until auto timetabling works
+        // temp until auto timetabling works
+        [prev[course.code][activity]] = course.activities[activity];
       });
-      
+
       return prev;
     });
   };
@@ -146,13 +147,13 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-                <Timetable
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  is12HourMode={is12HourMode}
-                  setIs12HourMode={setIs12HourMode}
-                />
+              <Timetable
+                selectedCourses={selectedCourses}
+                selectedClasses={selectedClasses}
+                assignedColors={assignedColors}
+                is12HourMode={is12HourMode}
+                setIs12HourMode={setIs12HourMode}
+              />
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or

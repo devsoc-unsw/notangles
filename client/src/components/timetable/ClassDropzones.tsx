@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import { CourseData } from '../../interfaces/CourseData';
-import { Dropzone } from './Dropzone';
-import { timeToPosition } from '../../utils/Drag';
 import { withTheme } from 'styled-components';
+import Dropzone from './Dropzone';
+import { CourseData } from '../../interfaces/CourseData';
+import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 
 interface Theme {
@@ -38,7 +38,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
     ),
   );
 
-  const inventoryColor = theme?.palette?.type === "dark" ? "255, 255, 255" : "0, 0, 0";
+  const inventoryColor = theme?.palette?.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(
@@ -50,8 +50,8 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
       yEnd={-1}
       color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
       isInventory
-    />
-  )
+    />,
+  );
 
   return <>{dropzones}</>;
 }, (prev, next) => !(
