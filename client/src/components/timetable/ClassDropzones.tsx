@@ -2,15 +2,25 @@ import React, { FunctionComponent } from 'react';
 import { CourseData } from '../../interfaces/CourseData';
 import { Dropzone } from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
+import { withTheme } from 'styled-components';
+import { inventoryDropzoneOpacity } from '../../constants/theme';
+
+interface Theme {
+  palette: {
+    type: string
+  }
+}
 
 interface ClassDropzoneProps {
   course: CourseData
   color: string
+  theme: Theme
 }
 
-const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
+const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
+  theme,
 }) => {
   const dropzones = Object.values(course.activities).flatMap(
     (classDatas) => classDatas.flatMap(
@@ -29,6 +39,8 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
     ),
   );
 
+  const inventoryColor = theme?.palette?.type === "dark" ? "255, 255, 255" : "0, 0, 0";
+
   // inventory
   dropzones.push(
     <Dropzone
@@ -37,15 +49,19 @@ const ClassDropzone: FunctionComponent<ClassDropzoneProps> = React.memo(({
       x={-2}
       yStart={2}
       yEnd={-1}
-      color="rgba(0, 0, 0, 0.1)"
+      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
       isInventory
     />
   )
 
   return <>{dropzones}</>;
 }, (prev, next) => !(
-  prev.course.code !== next.course.code || prev.color !== next.color
+  prev.theme !== next.theme
+  || prev.color !== next.color
+  || prev.course.code !== next.course.code
 ));
+
+const ThemedDropzoneGroup = withTheme(DropzoneGroup);
 
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
@@ -57,7 +73,7 @@ const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
   assignedColors,
 }) => {
   const dropzones = selectedCourses.map((course) => (
-    <ClassDropzone
+    <ThemedDropzoneGroup
       key={course.code}
       course={course}
       color={assignedColors[course.code]}

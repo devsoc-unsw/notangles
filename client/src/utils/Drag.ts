@@ -161,14 +161,13 @@ let updateTimeout: number;
 
 export const registerCard = (data: CardData, element: HTMLElement) => {
   cards.set(data, element);
-
   // delays update until consecutive `registerCard` calls have concluded
   clearTimeout(updateTimeout);
   updateTimeout = setTimeout(() => updateCards(), 0);
 };
 
-export const unregisterCard = (data: CardData) => {
-  cards.delete(data);
+export const unregisterCard = (data: CardData, element: HTMLElement) => {
+  if (cards.get(data) === element) cards.delete(data);
 };
 
 type ClassHandler = (classData: ClassData) => void;
@@ -187,7 +186,7 @@ const updateDelay = 30;
 let lastUpdate = 0;
 
 const updateDropTarget = (now?: boolean) => {
-  // Cancel if no drag, or update too soon (except if now = true)
+  // Cancel if: no drag happening, or update is too soon (except if now = true)
   if (
     !dragTarget || !dragElement
     || (!now && Date.now() - lastUpdate < updateDelay)

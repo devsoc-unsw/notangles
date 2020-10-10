@@ -42,13 +42,13 @@ const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const InventoryCell = styled(DayCell)`
-  position: relative;
-  right: 50%;
-  width: 150%;
-  padding-left: 50%;
-  box-sizing: border-box;
-  z-index: 1;
+const InventoryCell = styled(DayCell)<{
+  y: number
+}>`
+  border-top-left-radius:     ${({ theme, y }) => y === 1 ? theme.shape.borderRadius : 0}px;
+  border-top-right-radius:    ${({ theme, y }) => y === 1 ? theme.shape.borderRadius : 0}px;
+  border-bottom-left-radius:  ${({ theme, y }) => y !== 1 ? theme.shape.borderRadius : 0}px;
+  border-bottom-right-radius: ${({ theme, y }) => y !== 1 ? theme.shape.borderRadius : 0}px;
 `;
 
 const paddingStyle = css`
@@ -132,7 +132,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   ));
 
   dayCells.push(
-    <InventoryCell key="unscheduled" x={days.length + 2} y={1} isEndX>
+    <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
       Unscheduled
     </InventoryCell>
   )
@@ -161,7 +161,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   otherCells.push(
     <InventoryCell
       key={-1}
-      x={days.length + 2}
+      x={days.length + 3}
       y={2}
       yTo={-1}
       isEndX

@@ -25,36 +25,35 @@ import {
 import {
   ClassPeriod, CourseData, SelectedClasses,
 } from '../../interfaces/CourseData';
+import { inventoryMargin } from './Timetable';
 
 const classTranslateX = (cardData: CardData, days?: string[]) => {
-  let result = 0;
   if (isPeriod(cardData)) {
-    result = cardData.time.day - 1
-  } else if (days) {
-    result = days.length
+    return `${(cardData.time.day - 1) * 100}%`;
+  } else if (days) { // not a period, so in the inventory
+    // `devicePixelRatio` refers to the width of a timetable border
+    return `calc(${days.length * 100}% + ${inventoryMargin + devicePixelRatio}px)`;
   }
-  return result * 100;
+  return 0;
 };
 
 const classTranslateY = (cardData: CardData, y?: number) => {
+  let result = 0;
   if (isPeriod(cardData)) {
     // height compared to standard row height
     const heightFactor = cardData.time.end - cardData.time.start;
     // number of rows to offset down
     const offsetRows = timeToPosition(cardData.time.start) - 2;
     // calculate translate percentage (relative to height)
-    return (offsetRows / heightFactor) * 100;
+    result = (offsetRows / heightFactor);
+  } else if (y) { // not a period, so in the inventory
+    result = y;
   }
-  
-  if (y) {
-    return y * 100; // in %
-  }
-
-  return 0;
+  return `${result * 100}%`;
 };
 
 export const classTransformStyle = (cardData: CardData, days?: string[], y?: number) => (
-  `translate(${classTranslateX(cardData, days)}%, ${classTranslateY(cardData, y)}%)`
+  `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, y)})`
 );
 
 const classMargin = 2;
@@ -238,7 +237,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   useEffect(() => {
     if (element.current) registerCard(cardData, element.current);
     return () => {
-      if (element.current) unregisterCard(cardData);
+      if (element.current) unregisterCard(cardData, element.current);
     };
   });
 

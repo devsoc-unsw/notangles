@@ -9,6 +9,7 @@ import DroppedClasses from './DroppedClasses';
 import Inventory from '../inventory/Inventory';
 
 const rowHeight = 86;
+export const inventoryMargin = 10;
 
 const StyledTimetable = styled(Box) <{
   rows: number
@@ -19,9 +20,9 @@ const StyledTimetable = styled(Box) <{
   margin-top: 15px;
   box-sizing: content-box;
   user-select: none;
-
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: auto repeat(${({ rows }) => rows}, 1fr) / auto repeat(${days.length}, minmax(0, 1fr)) 1fr;
+  grid-template: auto repeat(${({ rows }) => rows}, 1fr)
+               / auto repeat(${days.length}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
 `;
 
 interface TimetableProps {
