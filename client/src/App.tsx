@@ -101,7 +101,7 @@ const App: FunctionComponent = () => {
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = course.activities[activity][0]; // temp
+        prev[course.code][activity] = course.activities[activity][0]; // temp until auto timetabling works
       });
       
       return prev;
@@ -109,7 +109,7 @@ const App: FunctionComponent = () => {
   };
 
   const handleSelectCourse = async (courseCode: string) => {
-    const newCourse = await getCourseInfo('2020', 'T1', courseCode);
+    const newCourse = await getCourseInfo('2020', 'T3', courseCode);
     if (newCourse) {
       const newSelectedCourses = [...selectedCourses, newCourse];
       setSelectedCourses(newSelectedCourses);

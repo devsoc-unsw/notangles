@@ -37,7 +37,7 @@ const classTranslateX = (cardData: CardData, days?: string[]) => {
   return 0;
 };
 
-const classTranslateY = (cardData: CardData, y?: number) => {
+export const classTranslateY = (cardData: CardData, y?: number) => {
   let result = 0;
   if (isPeriod(cardData)) {
     // height compared to standard row height
@@ -51,6 +51,13 @@ const classTranslateY = (cardData: CardData, y?: number) => {
   }
   return `${result * 100}%`;
 };
+
+export const classHeight = (cardData: CardData) => {
+  const heightFactor = !isPeriod(cardData) ? 1 : (
+    cardData.time.end - cardData.time.start
+  );
+  return `calc(${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px)`;
+}
 
 export const classTransformStyle = (cardData: CardData, days?: string[], y?: number) => (
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, y)})`
@@ -76,12 +83,7 @@ const StyledCourseClass = styled.div<{
   // position over timetable borders
   position: relative;
   width:  calc(100% + ${1 / devicePixelRatio}px);
-  height: calc(${({ cardData }) => {
-    const heightFactor = !isPeriod(cardData) ? 1 : (
-      cardData.time.end - cardData.time.start
-    );
-    return `${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px`;
-  }});
+  height: ${({ cardData }) => classHeight(cardData)};
   
   padding: ${classMargin}px;
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;

@@ -1,5 +1,5 @@
 import {
-  CourseData, ClassData, ClassPeriod, InventoryPeriod
+  CourseData, ClassData, ClassPeriod, InventoryPeriod, InInventory
 } from '../interfaces/CourseData';
 import { lightTheme } from '../constants/theme';
 
@@ -51,7 +51,7 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
   element.style.top = toPx(fromPx(element.style.top) + dy);
 };
 
-export const timeToPosition = (time: number) => Math.floor(time) - 7;
+export const timeToPosition = (time: number) => time - 7;
 
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
   a === null || b === null || a === b || (
@@ -92,17 +92,16 @@ const distanceBetween = (e1: Element, e2: Element) => {
   return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
 };
 
-const dropzones = new Map<ClassPeriod | null, HTMLElement>();
+const dropzones = new Map<ClassPeriod | InInventory, HTMLElement>();
 const cards = new Map<CardData, HTMLElement>();
 
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
-    // TODO: make more clear
     const isDropTarget = (
-      (classPeriod && classPeriod === dropTarget)
-      || (!classPeriod && !isPeriod(dropTarget))
+      (classPeriod && classPeriod === dropTarget) // is period, and period is drop darget
+      || (!classPeriod && !isPeriod(dropTarget))  // or: is inventory, and drop target is inventory class
     );
 
     let opacity = '0';
@@ -144,14 +143,14 @@ const updateCards = () => {
 }
 
 export const registerDropzone = (
-  classPeriod: ClassPeriod | null, element: HTMLElement, isInventory?: boolean
+  classPeriod: ClassPeriod | InInventory, element: HTMLElement, isInventory?: boolean
 ) => {
   dropzones.set(classPeriod, element);
   if (isInventory) inventoryElement = element;
 };
 
 export const unregisterDropzone = (
-  classPeriod: ClassPeriod | null, isInventory?: boolean
+  classPeriod: ClassPeriod | InInventory, isInventory?: boolean
 ) => {
   dropzones.delete(classPeriod);
   if (isInventory) inventoryElement = null;
@@ -214,7 +213,7 @@ const updateDropTarget = (now?: boolean) => {
     classPeriod: undefined,
     area: 0,
   } as {
-    classPeriod?: ClassPeriod | null
+    classPeriod?: ClassPeriod | InInventory
     area: number
   });
 

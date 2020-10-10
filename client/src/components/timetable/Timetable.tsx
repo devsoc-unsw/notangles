@@ -15,8 +15,7 @@ const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${({ rows }) => rows * rowHeight}px;
-  max-height: ${({ rows }) => rows * rowHeight}px; // TODO: should be different to min-height
+  height: ${({ rows }) => rows * rowHeight}px;
   margin-top: 15px;
   box-sizing: content-box;
   user-select: none;

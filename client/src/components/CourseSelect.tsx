@@ -258,12 +258,11 @@ const CourseSelect: FunctionComponent<CourseSelectProps> = React.memo(({
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T1');
+    const fetchedCoursesList = await getCoursesList('2020', 'T3');
     if (fetchedCoursesList) {
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
     }
-    // handleSelect('MATH1131'); // TODO: remove
   };
 
   useEffect(() => {

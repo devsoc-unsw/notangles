@@ -30,8 +30,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
             key={`${classData.id}-${i}`}
             classPeriod={period}
             x={period.time.day + 1}
-            yStart={timeToPosition(period.time.start)}
-            yEnd={timeToPosition(period.time.end)}
+            y={timeToPosition(period.time.start)}
             color={color}
           />
         ),
@@ -47,7 +46,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
       key="inventory"
       classPeriod={null} // inventory has no corresponding class period
       x={-2}
-      yStart={2}
+      y={2}
       yEnd={-1}
       color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
       isInventory

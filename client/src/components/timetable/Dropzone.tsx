@@ -8,7 +8,8 @@ import {
   // checkCanDrop,
 } from '../../utils/Drag';
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod } from '../../interfaces/CourseData';
+import { ClassPeriod, InInventory } from '../../interfaces/CourseData';
+import { classTranslateY, classHeight } from './DroppedClasses';
 
 // const StyledCell = styled.div.attrs(() => ({
 //   className: 'dropzone',
@@ -39,17 +40,29 @@ import { ClassPeriod } from '../../interfaces/CourseData';
 // `;
 
 const cellStyle = ({
-  x, yStart, yEnd, color, isInventory
+  classPeriod,
+  x,
+  y,
+  yEnd,
+  color,
+  isInventory
 }: {
-  x: number, yStart: number, yEnd: number, color: string, isInventory?: boolean
+  classPeriod: ClassPeriod | InInventory,
+  x: number,
+  y: number,
+  yEnd?: number,
+  color: string,
+  isInventory?: boolean
 }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 20,
-
   gridColumn: x,
-  gridRow: `${yStart} / ${yEnd}`,
+  gridRow: `2 / ${yEnd !== undefined ? yEnd : 3}`,
+  transform: `translateY(${classPeriod ? classTranslateY(classPeriod) : "0"})`,
+  height: classPeriod ? classHeight(classPeriod) : undefined,
+  marginBottom: 1 / devicePixelRatio,
   // gridColumn: classPeriod.time.day + 1,
   // gridRow: `
   //   ${timeToPosition(classPeriod.time.start)} /
@@ -59,7 +72,6 @@ const cellStyle = ({
   // pointerEvents: (
   //   (canDrop ? 'auto' : 'none') as ('auto' | 'none')
   // ),
-
   opacity: 0,
   transition: defaultTransition,
 
@@ -67,16 +79,16 @@ const cellStyle = ({
 });
 
 interface CellProps {
-  classPeriod: ClassPeriod | null
+  classPeriod: ClassPeriod | InInventory
   x: number
-  yStart: number
-  yEnd: number
+  y: number
+  yEnd?: number
   color: string
   isInventory?: boolean
 }
 
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod, x, yStart, yEnd, color, isInventory
+  classPeriod, x, y, yEnd, color, isInventory
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -104,8 +116,9 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
       ref={element}
       className="dropzone"
       style={cellStyle({
+        classPeriod,
         x,
-        yStart,
+        y,
         yEnd,
         // canDrop,
         color,

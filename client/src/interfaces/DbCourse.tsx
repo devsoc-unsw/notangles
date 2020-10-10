@@ -118,9 +118,16 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
     classData.periods = dbClass.times.map((dbTime) => (
       dbTimesToPeriod(dbTime, classData)
-    )).filter((period) => period.time.weeks.includes(1)); // TODO: remove filter part
+    ))
 
-    classData.periods = classData.periods.filter((period) => period == classData.periods.find((x) => x.time.day == period.time.day && x.time.start == period.time.start && x.time.end == period.time.end)); // TODO: remove line
+    // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
+    classData.periods = classData.periods.filter((period) => (
+      period == classData.periods.find((x) => (
+        x.time.day == period.time.day
+        && x.time.start == period.time.start
+        && x.time.end == period.time.end
+      ))
+    ));
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
