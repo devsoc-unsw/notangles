@@ -18,20 +18,6 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList => (
   }))
 );
 
-interface FetchedCourse {
-  _id: string;
-  courseCode: string;
-  name: string;
-}
-
-const toCoursesList = (data: FetchedCourse[]): CoursesList => (
-  data.map((course) => ({
-    id: course._id,
-    code: course.courseCode,
-    name: course.name,
-  }))
-);
-
 /**
  * Fetches a list of course objects, where each course object contains
  * the course id, the course code, and course name

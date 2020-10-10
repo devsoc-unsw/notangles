@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
 import Dropzone from './Dropzone';
-import { CourseData } from '../../interfaces/CourseData';
-import { CourseData, ClassData } from '@notangles/common';
+import { CourseData } from '@notangles/common';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 

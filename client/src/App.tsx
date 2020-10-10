@@ -124,6 +124,7 @@ const App: FunctionComponent = () => {
 
   const checkClashes = () => {
     const newClashes: Array<ClassPeriod> = [];
+
     selectedClasses.forEach((classActivity1) => {
       classActivity1.periods.forEach((period1) => {
         selectedClasses.forEach((classActivity2) => {
@@ -141,6 +142,7 @@ const App: FunctionComponent = () => {
         });
       });
     });
+
     return newClashes;
   };
 
@@ -206,6 +208,7 @@ const App: FunctionComponent = () => {
                 assignedColors={assignedColors}
                 is12HourMode={is12HourMode}
                 setIs12HourMode={setIs12HourMode}
+                clashes={checkClashes()}
               />
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an

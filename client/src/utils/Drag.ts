@@ -52,7 +52,9 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
   element.style.top = toPx(fromPx(element.style.top) + dy);
 };
 
-export const timeToPosition = (time: number) => time - 7;
+export const timeToPosition = (time: number, earliestStartTime: number) => (
+  earliestStartTime - 2
+);
 
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
   a === null || b === null || a === b || (
