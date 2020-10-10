@@ -146,10 +146,6 @@ const App: FunctionComponent = () => {
                   handleRemove={handleRemoveCourse}
                 />
               </SelectWrapper>
-              {/* <DragManager
-                // selectedClasses={selectedClasses}
-                selectClass={handleSelectClass}
-              > */}
                 <Timetable
                   selectedCourses={selectedCourses}
                   selectedClasses={selectedClasses}
@@ -157,7 +153,6 @@ const App: FunctionComponent = () => {
                   is12HourMode={is12HourMode}
                   setIs12HourMode={setIs12HourMode}
                 />
-              {/* </DragManager> */}
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or

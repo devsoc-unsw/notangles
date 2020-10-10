@@ -6,7 +6,6 @@ import { days, defaultEndTime, defaultStartTime } from '../../constants/timetabl
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses from './DroppedClasses';
-import Inventory from '../inventory/Inventory';
 
 const rowHeight = 86;
 export const inventoryMargin = 10;
@@ -44,11 +43,6 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
       (course) => course.latestFinishTime,
     ), defaultEndTime) - defaultStartTime}
   >
-    {/* <Inventory
-      key={selectedCourses.map((course) => course.code).join(',')}
-      selectedCourses={selectedCourses}
-      assignedColors={assignedColors}
-    /> */}
     <TimetableLayout
       days={days}
       is12HourMode={is12HourMode}
