@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, SelectedClasses } from '../../interfaces/CourseData';
+import { CourseData, SelectedClasses } from '@notangles/common';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
@@ -28,6 +28,7 @@ interface TimetableProps {
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
+  clashes: Array<ClassPeriod>
 }
 
 const Timetable: FunctionComponent<TimetableProps> = React.memo(({
@@ -36,11 +37,14 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   assignedColors,
   is12HourMode,
   setIs12HourMode,
+  clashes,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
       (course) => course.latestFinishTime,
-    ), defaultEndTime) - defaultStartTime}
+    ), defaultEndTime) - Math.min(...selectedCourses.map(
+      (course) => course.earliestStartTime,
+    ), defaultStartTime)}
   >
     <TimetableLayout
       days={days}
@@ -51,12 +55,16 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
     <ClassDropzones
       selectedCourses={selectedCourses}
       assignedColors={assignedColors}
+      earliestStartTime={Math.min(...selectedCourses.map(
+        (course) => course.earliestStartTime,
+      ), defaultStartTime)}
     />
     <DroppedClasses
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
       days={days}
+      clashes={clashes}
     />
   </StyledTimetable>
 ), (prev, next) => !(

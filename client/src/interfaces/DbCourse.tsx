@@ -1,8 +1,4 @@
-import {
-  CourseData,
-  ClassData,
-  ClassPeriod,
-} from './CourseData';
+import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -101,9 +97,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
-    latestFinishTime: 0,
     activities: {},
     inventoryData: {},
+    earliestStartTime: 24,
+    latestFinishTime: 0,
   };
 
   dbCourse.classes.forEach((dbClass, index) => {
@@ -132,6 +129,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
+      }
+
+      if (period.time.start < courseData.earliestStartTime) {
+        courseData.earliestStartTime = period.time.start;
       }
     });
 

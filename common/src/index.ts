@@ -9,6 +9,7 @@ export type SelectedClasses = (
 export interface CourseData {
   code: CourseCode
   name: string
+  earliestStartTime: number
   latestFinishTime: number
   activities: Record<Activity, ClassData[]>
   inventoryData: Record<Activity, InventoryPeriod>

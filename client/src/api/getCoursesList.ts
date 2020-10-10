@@ -1,5 +1,22 @@
 import { CoursesList } from '../interfaces/CourseOverview';
 import { API_URL } from './config';
+import NetworkError from '../interfaces/NetworkError';
+import timeoutPromise from '../utils/timeoutPromise';
+import TimeoutError from '../interfaces/TimeoutError';
+
+interface FetchedCourse {
+  _id: string;
+  courseCode: string;
+  name: string;
+}
+
+const toCoursesList = (data: FetchedCourse[]): CoursesList => (
+  data.map((course) => ({
+    id: course._id,
+    code: course.courseCode,
+    name: course.name,
+  }))
+);
 
 interface FetchedCourse {
   _id: string;
@@ -29,14 +46,20 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList => (
 const getCoursesList = async (
   year: string,
   term: string,
-): Promise<CoursesList | null> => {
+): Promise<CoursesList> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const res = await fetch(`${baseURL}/courses/`);
-    return toCoursesList(await res.json());
+    const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
+    if (data.status === 400) {
+      throw new NetworkError('Internal server error');
+    }
+    return toCoursesList(await data.json());
   } catch (error) {
-    console.error(error);
-    return null;
+    if (error instanceof TimeoutError) {
+      throw new NetworkError('Could not connect to server');
+    } else {
+      throw error;
+    }
   }
 };
 

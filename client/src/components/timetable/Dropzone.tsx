@@ -5,7 +5,7 @@ import {
   unregisterDropzone,
 } from '../../utils/Drag';
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod, InInventory } from '../../interfaces/CourseData';
+import { ClassPeriod, InInventory } from '@notangles/common';
 import { classTranslateY, classHeight } from './DroppedClasses';
 
 const cellStyle = ({
@@ -14,6 +14,7 @@ const cellStyle = ({
   yEnd,
   color,
   isInventory,
+  earliestStartTime,
 }: {
   classPeriod: ClassPeriod | InInventory,
   x: number,
@@ -21,6 +22,7 @@ const cellStyle = ({
   yEnd?: number,
   color: string,
   isInventory?: boolean
+  earliestStartTime: number
 }) => ({
   display: 'inline-flex',
   alignItems: 'center',
@@ -28,7 +30,7 @@ const cellStyle = ({
   zIndex: 20,
   gridColumn: x,
   gridRow: `2 / ${yEnd !== undefined ? yEnd : 3}`,
-  transform: `translateY(${classPeriod ? classTranslateY(classPeriod) : '0'})`,
+  transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
   height: classPeriod ? classHeight(classPeriod) : undefined,
   marginBottom: 1 / devicePixelRatio,
   backgroundColor: color,
@@ -41,13 +43,14 @@ interface CellProps {
   classPeriod: ClassPeriod | InInventory
   x: number
   y: number
-  yEnd?: number
+  earliestStartTime: number
   color: string
+  yEnd?: number
   isInventory?: boolean
 }
 
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod, x, y, yEnd, color, isInventory,
+  classPeriod, x, y, earliestStartTime, color, yEnd, isInventory,
 }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -68,6 +71,7 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
         yEnd,
         color,
         isInventory,
+        earliestStartTime,
       })}
     />
   );

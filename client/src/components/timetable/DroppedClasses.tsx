@@ -21,8 +21,9 @@ import {
   timeToPosition,
 } from '../../utils/Drag';
 import {
-  CourseData, SelectedClasses,
-} from '../../interfaces/CourseData';
+  CourseData, ClassPeriod, ClassData,
+} from '@notangles/common';
+import { defaultStartTime } from '../../constants/timetable';
 
 export const inventoryMargin = 10;
 
@@ -36,13 +37,13 @@ const classTranslateX = (cardData: CardData, days?: string[]) => {
   return 0;
 };
 
-export const classTranslateY = (cardData: CardData, y?: number) => {
+export const classTranslateY = (cardData: CardData, earliestStartTime: number, y?: number) => {
   let result = 0;
   if (isPeriod(cardData)) {
     // height compared to standard row height
     const heightFactor = cardData.time.end - cardData.time.start;
     // number of rows to offset down
-    const offsetRows = timeToPosition(cardData.time.start) - 2;
+    const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
     // calculate translate percentage (relative to height)
     result = (offsetRows / heightFactor);
   } else if (y) { // not a period, so in the inventory
@@ -69,6 +70,8 @@ const StyledCourseClass = styled.div<{
   cardData: CardData
   days: string[]
   y?: number
+  earliestStartTime: number
+  hasClash: boolean
 }>`
   grid-column: 2;
   grid-row: 2 / 3;
@@ -76,7 +79,8 @@ const StyledCourseClass = styled.div<{
     classTransformStyle(cardData, days, y)
   )};
   transition: ${defaultTransition};
-
+  border: ${({ hasClash }) => hasClash ? 'solid rgba(227, 81, 61, 0.95) 3px' : 'none'};
+  
   // position over timetable borders
   position: relative;
   width:  calc(100% + ${1 / devicePixelRatio}px);
@@ -157,6 +161,8 @@ interface DroppedClassProps {
   color: string
   days: string[]
   y?: number
+  earliestStartTime: number
+  hasClash: boolean
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
@@ -164,6 +170,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   color,
   days,
   y,
+  earliestStartTime,
+  hasClash,
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -195,6 +203,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       cardData={cardData}
       days={days}
       y={y}
+      earliestStartTime={earliestStartTime}
+      hasClash={hasClash}
     >
       <Card
         style={courseClassInnerStyle({
@@ -253,6 +263,7 @@ interface DroppedClassesProps {
   selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
   days: string[]
+  clashes: Array<ClassPeriod>
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
@@ -260,6 +271,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   selectedClasses,
   assignedColors,
   days,
+  clashes,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -271,6 +283,11 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   Map<CardData, number>
   >(
     new Map<CardData, number>(),
+  );
+
+  const earliestStartTime = Math.min(
+    ...selectedCourses.map((course) => course.earliestStartTime),
+    defaultStartTime,
   );
 
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
@@ -321,6 +338,8 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         color={assignedColors[cardData.class.course.code]}
         days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
+        earliestStartTime={earliestStartTime}
+        hasClash={clashes.includes(classTime)}
       />,
     );
 

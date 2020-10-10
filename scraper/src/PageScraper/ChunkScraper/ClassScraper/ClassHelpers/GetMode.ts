@@ -5,7 +5,7 @@
  */
 const getMode = (mode: string): string => {
   if (!mode || mode === ' ') {
-    throw new Error('Invalid Mode: ' + mode)
+    console.error(new Error('Invalid Mode: ' + mode))
   }
 
   return mode

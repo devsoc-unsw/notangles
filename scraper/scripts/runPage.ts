@@ -10,7 +10,7 @@ import { scrapeSubject } from '../src/scraper'
     const singlepage = await browser.newPage()
     const data = await scrapeSubject({
       page: singlepage,
-      course: 'http://timetable.unsw.edu.au/2020/LAWS1141.html',
+      course: 'http://timetable.unsw.edu.au/2020/SOSS3006.html',
     })
 
     console.log(JSON.stringify(data))

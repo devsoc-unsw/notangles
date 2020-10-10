@@ -28,7 +28,7 @@ const getWeeks = ({ data, classID, term }: GetWeeksParams): GetWeeksReturn => {
   if (!weeksTesterRegex.test(weeks)) {
     weeksTesterRegex = /^[0-9A-Z, <>-]+$/
     if (!weeksTesterRegex.test(weeks)) {
-      throw new Error('Invalid Weeks data: ' + weeks)
+      console.error(new Error('Invalid Weeks data: ' + weeks))
     } else {
       // Just warn -> Invalid/unknown weeks data.
       weeksWarnings.push(

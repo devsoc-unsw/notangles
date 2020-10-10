@@ -1,12 +1,12 @@
 export const colors: string[] = [
   '#009689', // dark green
   '#9E28AE', // violet
-  '#FF5725', // red
+  '#00963C', // emerald
   '#683BB5', // purple
-  '#EB1E62', // pink
+  '#2e89ff', // sapphire
   '#00BCD4', // turqoise
-  '#3E51B3', // dark blue
-  '#FF981A', // orange
+  '#2e89ff', // dark blue
+  '#3323ad', // deep blue
   '#8AC352', // light green
 ];
 

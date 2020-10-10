@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled, { css } from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/CourseData';
+import { CourseData } from '@notangles/common';
 import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 
 const headerPadding = 15;
@@ -122,7 +122,13 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   const latestClassFinishTime = Math.max(...selectedCourses.map(
     (course) => course.latestFinishTime,
   ));
-  const hoursRange = [defaultStartTime, Math.max(latestClassFinishTime, defaultEndTime) - 1];
+  const earliestClassStartTime = Math.min(...selectedCourses.map(
+    (course) => course.earliestStartTime,
+  ));
+  const hoursRange = [
+    Math.min(earliestClassStartTime, defaultStartTime),
+    Math.max(latestClassFinishTime, defaultEndTime) - 1
+  ];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (

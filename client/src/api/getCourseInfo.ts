@@ -1,6 +1,9 @@
+import { CourseData } from '@notangles/common';
 import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
-import { CourseData } from '../interfaces/CourseData';
 import { API_URL } from './config';
+import NetworkError from '../interfaces/NetworkError';
+import timeoutPromise from '../utils/timeoutPromise';
+import TimeoutError from '../interfaces/TimeoutError';
 
 /**
  * Fetches the information of a specified course
@@ -18,19 +21,24 @@ const getCourseInfo = async (
   year: string,
   term: string,
   courseCode: string,
-): Promise<CourseData | null> => {
+): Promise<CourseData> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
-    const data = await fetch(`${baseURL}/courses/${courseCode}/`);
+    const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));
+    if (data.status === 400) {
+      throw new NetworkError('Internal server error');
+    }
     const json: DbCourse = await data.json();
     if (!json) {
-      throw Error('Fetch did not get results');
+      throw new NetworkError('Internal server error');
     }
-
     return dbCourseToCourseData(json);
   } catch (error) {
-    console.error(error);
-    return null;
+    if (error instanceof TimeoutError) {
+      throw new NetworkError('Could not connect to server');
+    } else {
+      throw error;
+    }
   }
 };
 
