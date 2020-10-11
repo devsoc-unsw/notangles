@@ -5,23 +5,15 @@ import { CourseData } from '@notangles/common';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 
-interface Theme {
-  palette: {
-    type: string
-  }
-}
-
 interface ClassDropzoneProps {
   course: CourseData
   color: string
-  theme: Theme
   earliestStartTime: number
 }
 
 const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
-  theme,
   earliestStartTime
 }) => {
   const dropzones = Object.values(course.activities).flatMap(
@@ -41,7 +33,42 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
     ),
   );
 
-  const inventoryColor = theme?.palette?.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
+  return <>{dropzones}</>;
+}, (prev, next) => !(
+  prev.color !== next.color
+  || prev.earliestStartTime !== next.earliestStartTime
+  || prev.course.code !== next.course.code
+));
+
+interface Theme {
+  palette: {
+    type: string
+  }
+}
+
+interface ClassDropzonesProps {
+  selectedCourses: CourseData[]
+  assignedColors: Record<string, string>
+  earliestStartTime: number
+  theme: Theme
+}
+
+const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
+  selectedCourses,
+  assignedColors,
+  earliestStartTime,
+  theme,
+}) => {
+  const dropzones = selectedCourses.map((course) => (
+    <DropzoneGroup
+      key={course.code}
+      course={course}
+      color={assignedColors[course.code]}
+      earliestStartTime={earliestStartTime}
+    />
+  ));
+
+  const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(
@@ -60,36 +87,10 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   return <>{dropzones}</>;
 }, (prev, next) => !(
   prev.theme !== next.theme
-  || prev.color !== next.color
-  || prev.course.code !== next.course.code
-));
-
-const ThemedDropzoneGroup = withTheme(DropzoneGroup);
-
-interface ClassDropzonesProps {
-  selectedCourses: CourseData[]
-  assignedColors: Record<string, string>
-  earliestStartTime: number
-}
-
-const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
-  selectedCourses,
-  assignedColors,
-  earliestStartTime,
-}) => {
-  const dropzones = selectedCourses.map((course) => (
-    <ThemedDropzoneGroup
-      key={course.code}
-      course={course}
-      color={assignedColors[course.code]}
-      earliestStartTime={earliestStartTime}
-    />
-  ));
-  return <>{dropzones}</>;
-}, (prev, next) => !(
-  prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.earliestStartTime !== next.earliestStartTime
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
   || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
 ));
 
-export default ClassDropzones;
+export default withTheme(ClassDropzones);
