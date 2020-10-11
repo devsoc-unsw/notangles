@@ -1,8 +1,5 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { useDrag } from './utils/Drag';
 import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
@@ -10,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import {
   CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
 } from '@notangles/common';
+import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
@@ -129,9 +127,9 @@ const App: FunctionComponent = () => {
     const newClashes: ClassPeriod[] = [];
 
     const flatPeriods = Object.values(selectedClasses).flatMap(
-      (activities) => Object.values(activities)
+      (activities) => Object.values(activities),
     ).flatMap(
-      (classData) => classData ? classData.periods : []
+      (classData) => (classData ? classData.periods : []),
     );
 
     flatPeriods.forEach((period1) => {
@@ -144,8 +142,8 @@ const App: FunctionComponent = () => {
             newClashes.push(period2);
           }
         }
-      })
-    })
+      });
+    });
 
     return newClashes;
   };

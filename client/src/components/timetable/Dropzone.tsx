@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { ClassPeriod, InInventory } from '@notangles/common';
 import {
   defaultTransition,
   registerDropzone,
   unregisterDropzone,
 } from '../../utils/Drag';
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod, InInventory } from '@notangles/common';
 import { classTranslateY, classHeight } from './DroppedClasses';
 
 const cellStyle = ({

@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
-import Dropzone from './Dropzone';
 import { CourseData } from '@notangles/common';
+import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 
@@ -14,7 +14,7 @@ interface ClassDropzoneProps {
 const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
-  earliestStartTime
+  earliestStartTime,
 }) => {
   const dropzones = Object.values(course.activities).flatMap(
     (classDatas) => classDatas.flatMap(

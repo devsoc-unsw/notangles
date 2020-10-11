@@ -127,7 +127,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   ));
   const hoursRange = [
     Math.min(earliestClassStartTime, defaultStartTime),
-    Math.max(latestClassFinishTime, defaultEndTime) - 1
+    Math.max(latestClassFinishTime, defaultEndTime) - 1,
   ];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 

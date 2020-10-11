@@ -7,6 +7,9 @@ import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
+  CourseData, ClassPeriod, SelectedClasses,
+} from '@notangles/common';
+import {
   CardData,
   isPeriod,
   setDragTarget,
@@ -20,9 +23,6 @@ import {
   unregisterCard,
   timeToPosition,
 } from '../../utils/Drag';
-import {
-  CourseData, ClassPeriod, SelectedClasses,
-} from '@notangles/common';
 import { defaultStartTime } from '../../constants/timetable';
 
 export const inventoryMargin = 10;
@@ -59,7 +59,9 @@ export const classHeight = (cardData: CardData) => {
   return `calc(${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px)`;
 };
 
-export const classTransformStyle = (cardData: CardData, earliestStartTime: number, days?: string[], y?: number) => (
+export const classTransformStyle = (
+  cardData: CardData, earliestStartTime: number, days?: string[], y?: number,
+) => (
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`
 );
 
@@ -74,7 +76,9 @@ const StyledCourseClass = styled.div<{
 }>`
   grid-column: 2;
   grid-row: 2 / 3;
-  transform: ${({ cardData, earliestStartTime, days, y }) => (
+  transform: ${({
+    cardData, earliestStartTime, days, y,
+  }) => (
     classTransformStyle(cardData, earliestStartTime, days, y)
   )};
   transition: ${defaultTransition};
