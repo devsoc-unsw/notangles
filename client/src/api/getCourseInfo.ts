@@ -34,11 +34,7 @@ const getCourseInfo = async (
     }
     return dbCourseToCourseData(json);
   } catch (error) {
-    if (error instanceof TimeoutError) {
-      throw new NetworkError('Could not connect to server');
-    } else {
-      throw error;
-    }
+    throw new NetworkError('Could not connect to server');
   }
 };
 

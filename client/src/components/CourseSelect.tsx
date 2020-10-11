@@ -131,7 +131,7 @@ interface CourseSelectProps {
   setErrorVisibility(visibility: boolean): void
 }
 
-const CourseSelect: FunctionComponent<CourseSelectProps> = React.memo(({
+const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   selectedCourses,
   assignedColors,
   handleSelect,

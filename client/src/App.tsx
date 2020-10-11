@@ -116,32 +116,36 @@ const App: FunctionComponent = () => {
   };
 
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
-    (period1.day === period2.day && period1.start >= period2.start
-        && period1.start < period2.end)
-     || (period1.day === period2.day && period2.start >= period1.start
-        && period2.start < period1.end)
+    period1.day === period2.day && ((
+      period1.end > period2.start
+      && period1.start < period2.end
+    ) || (
+      period2.end > period1.start
+      && period2.start < period1.end
+    ))
   );
 
   const checkClashes = () => {
-    const newClashes: Array<ClassPeriod> = [];
+    const newClashes: ClassPeriod[] = [];
 
-    selectedClasses.forEach((classActivity1) => {
-      classActivity1.periods.forEach((period1) => {
-        selectedClasses.forEach((classActivity2) => {
-          classActivity2.periods.forEach((period2) => {
-            if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-              if (!newClashes.includes(period1)) {
-                console.log(classActivity1);
-                newClashes.push(period1);
-              }
-              if (!newClashes.includes(period2)) {
-                newClashes.push(period2);
-              }
-            }
-          });
-        });
-      });
-    });
+    const flatPeriods = Object.values(selectedClasses).flatMap(
+      (activities) => Object.values(activities)
+    ).flatMap(
+      (classData) => classData ? classData.periods : []
+    );
+
+    flatPeriods.forEach((period1) => {
+      flatPeriods.forEach((period2) => {
+        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+          if (!newClashes.includes(period1)) {
+            newClashes.push(period1);
+          }
+          if (!newClashes.includes(period2)) {
+            newClashes.push(period2);
+          }
+        }
+      })
+    })
 
     return newClashes;
   };

@@ -1,6 +1,6 @@
 import {
   ClassData, ClassPeriod, InventoryPeriod, InInventory,
-} from '../interfaces/CourseData';
+} from '@notangles/common';
 import { lightTheme } from '../constants/theme';
 
 export type CardData = ClassPeriod | InventoryPeriod;
@@ -53,7 +53,7 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 };
 
 export const timeToPosition = (time: number, earliestStartTime: number) => (
-  earliestStartTime - 2
+  time - (earliestStartTime - 2)
 );
 
 export const checkCanDrop = (a: CardData | null, b: CardData | null) => (
