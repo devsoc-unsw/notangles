@@ -170,6 +170,7 @@ const App: FunctionComponent = () => {
     );
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => {
+      prev = { ...prev };
       delete prev[courseCode];
       return prev;
     });
