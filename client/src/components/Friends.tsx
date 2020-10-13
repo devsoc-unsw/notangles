@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   makeStyles, createStyles,
 } from '@material-ui/core/styles';
@@ -7,10 +7,8 @@ import FacebookLogin from 'react-facebook-login';
 
 import Drawer from '@material-ui/core/Drawer';
 import Link from '@material-ui/core/Link';
-
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
-
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -22,6 +20,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
+import storage from '../utils/storage';
 
 const drawerWidth = 240;
 const loggedOutImgUrl = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
@@ -188,29 +187,65 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
   const [suggestedFriends, setSuggestedFriends] = React.useState<Array<FriendsListItemProps>>([]);
   const [mePhoto, setMePhoto] = React.useState<string>('');
 
-  const responseFacebook = async (response: any) => {
-    // TODO use response to store user
-    // TODO make login persist
-    try {
-      const r = await fetch(`https://graph.facebook.com/${response.userID}/friends?fields=data&access_token=${response.accessToken}`);
-      const rData = await r.json();
+  const handleFailure = (err: any) => {
+    storage.set('userID', '');
+    storage.set('accessToken', '');
+    storage.set('userPicture', '');
+    console.log(err);
+    setIsLoggedIn(false);
+  };
 
-      rData.data.forEach((friendId: any) => {
-        fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${response.accessToken}`)
-          .then((res) => res.json())
-          .then((friend) => {
-            setSuggestedFriends(suggestedFriends.concat([{
-              id: friend.id,
-              name: friend.name,
-              imageSrc: friend.picture.data.url,
-            }]));
+  const doLogin = (
+    userID: string,
+    accessToken: string,
+    pictureUrl: string,
+  ) => {
+    setIsLoggedIn(true);
+
+    fetch(`https://graph.facebook.com/${userID}/friends?fields=data&access_token=${accessToken}`)
+      .then((r) => r.json())
+      .then(
+        (r) => {
+          r.data.forEach((friendId: any) => {
+            fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${accessToken}`)
+              .then((res) => res.json())
+              .then((friend) => {
+                setSuggestedFriends((old) => [...old, {
+                  id: friend.id,
+                  name: friend.name,
+                  imageSrc: friend.picture.data.url,
+                }]);
+              });
           });
-      });
-      setIsLoggedIn(true);
-      setMePhoto(response.picture.data.url);
-      localStorage.setItem('login', response.userID);
+          setMePhoto(pictureUrl);
+        },
+      )
+      .catch(
+        (err) => {
+          handleFailure(err);
+        },
+      );
+  };
+
+  useEffect(() => {
+    const loggedInUserId = storage.get('userID');
+    if (loggedInUserId) {
+      try {
+        doLogin(loggedInUserId, storage.get('accessToken'), storage.get('userPicture'));
+      } catch (err) {
+        handleFailure(err);
+      }
+    }
+  }, []);
+
+  const responseFacebook = async (response: any) => {
+    try {
+      doLogin(response.userID, response.accessToken, response.picture.data.url);
+      storage.set('userID', response.userID);
+      storage.set('accessToken', response.accessToken);
+      storage.set('userPicture', response.picture.data.url);
     } catch (err) {
-      console.log(err);
+      handleFailure(err);
     }
   };
 
@@ -220,6 +255,9 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
 
   const logout = () => {
     setSuggestedFriends([]);
+    storage.set('userID', '');
+    storage.set('accessToken', '');
+    storage.set('userPicture', '');
     setIsLoggedIn(false);
   };
 
