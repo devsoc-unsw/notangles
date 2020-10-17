@@ -5,7 +5,14 @@ import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import {
-  CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
+  CourseData,
+  ClassData,
+  SelectedClasses,
+  ClassTime,
+  ClassPeriod,
+  CourseCode,
+  Activity,
+  InInventory
 } from '@notangles/common';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
@@ -62,6 +69,19 @@ const Footer = styled(Box)`
   margin: 40px;
 `;
 
+// https://stackoverflow.com/a/55075818/1526448
+const useUpdateEffect = (effect: Function, dependencies: any[] = []) => {
+  const isInitialMount = React.useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      effect();
+    }
+  }, dependencies);
+}
+
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
@@ -73,14 +93,6 @@ const App: FunctionComponent = () => {
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
   );
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
@@ -101,7 +113,9 @@ const App: FunctionComponent = () => {
   useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
-    setSelectedClasses((prev) => {
+    setSelectedClasses((prevRef) => {
+      const prev = {...prevRef};
+
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
@@ -148,12 +162,25 @@ const App: FunctionComponent = () => {
     return newClashes;
   };
 
-  const handleSelectCourse = async (courseCode: string) => {
+  const handleSelectCourse = async (
+    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void
+  ) => {
+    let codes: string[] = Array.isArray(data) ? data : [data];
+
     try {
-      const newCourse = await getCourseInfo('2020', 'T3', courseCode);
-      const newSelectedCourses = [...selectedCourses, newCourse];
-      setSelectedCourses(newSelectedCourses);
-      initCourse(newCourse);
+      Promise.all(
+        codes.map((code) => getCourseInfo('2020', 'T3', code))
+      ).then((result) => {
+        const newCourses = result as CourseData[];
+
+        setSelectedCourses((prev) => {
+          const newSelectedCourses = [...prev, ...newCourses];
+          if (!noInit) newCourses.forEach((course) => initCourse(course));
+          if (callback) callback(newSelectedCourses);
+
+          return newSelectedCourses;
+        });
+      })
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
@@ -177,6 +204,69 @@ const App: FunctionComponent = () => {
   const handleErrorClose = () => {
     setErrorVisibility(false);
   };
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  type ClassId = string;
+  type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
+
+  useEffect(() => {
+    handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
+      const savedClasses: SavedClasses = storage.get('selectedClasses');
+      const newSelectedClasses: SelectedClasses = {};
+
+      for (let courseCode in savedClasses) {
+        newSelectedClasses[courseCode] = {};
+  
+        for (let activity in savedClasses[courseCode]) {
+          const classId = savedClasses[courseCode][activity];
+          let classData: ClassData | null = null;
+
+          if (classId) {
+            const result = newSelectedCourses.find(
+              (x) => x.code === courseCode
+            )?.activities[activity].find(
+              (classData) => classData.id === classId
+            );
+
+            if (result) classData = result;
+          }
+  
+          newSelectedClasses[courseCode][activity] = classData;
+        }
+      }
+
+      // console.log(newSelectedClasses);
+
+      // setSelectedClasses(newSelectedClasses);
+    });
+  }, []);
+
+  useUpdateEffect(() => {
+    storage.set('selectedCourses', selectedCourses.map((course) => course.code));
+  }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    const savedClasses: SavedClasses = {};
+
+    for (let courseCode in selectedClasses) {
+      savedClasses[courseCode] = {};
+
+      for (let activity in selectedClasses[courseCode]) {
+        const classData = selectedClasses[courseCode][activity];
+
+        savedClasses[courseCode][activity] = classData ? classData.id : null;
+      }
+    }
+
+    storage.set('selectedClasses', savedClasses);
+  }, [selectedClasses]);
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
