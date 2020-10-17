@@ -14,7 +14,7 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import FriendsDrawer from './components/Friends';
+import FriendsDrawer from './components/friends/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';

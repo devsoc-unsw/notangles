@@ -20,7 +20,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
-import storage from '../utils/storage';
+import ProfileSettings from './ProfileSettings';
+import storage from '../../utils/storage';
 
 const drawerWidth = 240;
 const loggedOutImgUrl = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
@@ -283,7 +284,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
                   <Avatar alt="You" src={mePhoto} />
                 </ListItemAvatar>
                 <StyledListItems>
-                  <Button size="small">Profile settings </Button>
+                  <ProfileSettings />
                   <Button size="small" onClick={logout}>Log out</Button>
                 </StyledListItems>
               </ListItem>
