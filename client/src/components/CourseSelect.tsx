@@ -117,11 +117,6 @@ const Weak = styled.span`
   ${weakStyle}
 `;
 
-type MemoProps = {
-  selectedCourses: CourseData[]
-  assignedColors: Record<string, string>
-};
-
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
