@@ -1,11 +1,18 @@
-export type Activities = Record<string, ClassData[]>;
+export type CourseCode = string;
+export type Activity = string;
+export type InInventory = null;
+
+export type SelectedClasses = (
+  Record<CourseCode, Record<Activity, ClassData | InInventory>>
+);
 
 export interface CourseData {
-  code: string
+  code: CourseCode
   name: string
-  latestFinishTime: number
   earliestStartTime: number
-  activities: Activities
+  latestFinishTime: number
+  activities: Record<Activity, ClassData[]>
+  inventoryData: Record<Activity, InventoryPeriod>
 }
 
 export interface ClassData {
@@ -17,7 +24,15 @@ export interface ClassData {
   periods: ClassPeriod[]
 }
 
+export interface InventoryPeriod {
+  class: {
+    course: CourseData
+    activity: string
+  }
+}
+
 export interface ClassPeriod {
+  class: ClassData
   time: ClassTime
   location: string
   locationShort: string
@@ -27,11 +42,6 @@ export interface ClassTime {
   day: number
   start: number
   end: number
-  weeks: string
+  weeks: number[]
+  weeksString: string
 }
-
-export const filterOutClasses = (classes: ClassData[], a: ClassData) => (
-  classes.filter((b) => (
-    !(a.course.code === b.course.code && a.activity === b.activity)
-  ))
-);

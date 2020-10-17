@@ -1,71 +1,80 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useDrop } from 'react-dnd';
-import { ClassPeriod } from '@notangles/common';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { ClassPeriod, InInventory } from '@notangles/common';
+import {
+  defaultTransition,
+  registerDropzone,
+  unregisterDropzone,
+} from '../../utils/Drag';
+import { borderRadius } from '../../constants/theme';
+import { classTranslateY, classHeight } from './DroppedClasses';
 
-
-export const timeToPosition = (time: number, earliestStartTime: number) => {
-  const hour = Math.floor(time);
-  const minute = (time - hour) * 60;
-  return (hour - (earliestStartTime - 2)) * 2 + (minute === 30 ? 1 : 0) - 2;
-};
-
-const StyledCell = styled.div<{
-  classTime: ClassPeriod
+const cellStyle = ({
+  classPeriod,
+  x,
+  yEnd,
+  color,
+  isInventory,
+  earliestStartTime,
+}: {
+  classPeriod: ClassPeriod | InInventory,
+  x: number,
+  y: number,
+  yEnd?: number,
+  color: string,
+  isInventory?: boolean
   earliestStartTime: number
-  canDrop: boolean
-  color: string
-}>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-
-  grid-column: ${(props) => props.classTime.time.day + 1};
-  grid-row: ${(props) => timeToPosition(props.classTime.time.start, props.earliestStartTime)} /
-    ${(props) => timeToPosition(props.classTime.time.end, props.earliestStartTime)};
-  background-color: ${(props) => props.color};
-
-  transition: opacity 0.2s;
-  opacity: ${(props) => (props.canDrop ? 0.3 : 0)};
-  pointer-events: ${(props) => (props.canDrop ? 'auto' : 'none')};
-`;
+}) => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 20,
+  gridColumn: x,
+  gridRow: `2 / ${yEnd !== undefined ? yEnd : 3}`,
+  transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
+  height: classPeriod ? classHeight(classPeriod) : undefined,
+  marginBottom: 1 / devicePixelRatio,
+  backgroundColor: color,
+  opacity: 0,
+  transition: defaultTransition,
+  borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
+});
 
 interface CellProps {
-  courseCode: string
-  activity: string
-  classTime: ClassPeriod
+  classPeriod: ClassPeriod | InInventory
+  x: number
+  y: number
   earliestStartTime: number
   color: string
-  onDrop(): void
+  yEnd?: number
+  isInventory?: boolean
 }
 
-const Dropzone: React.FC<CellProps> = ({
-  courseCode,
-  activity,
-  classTime,
-  earliestStartTime,
-  color,
-  onDrop,
+const Dropzone: FunctionComponent<CellProps> = React.memo(({
+  classPeriod, x, y, earliestStartTime, color, yEnd, isInventory,
 }) => {
-  const [{ canDrop }, drop] = useDrop({
-    accept: `${courseCode}-${activity}`,
-    drop: onDrop,
-    collect: (monitor) => ({
-      canDrop: monitor.canDrop(),
-      isOver: monitor.isOver(),
-    }),
-  });
+  const element = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (element.current) registerDropzone(classPeriod, element.current, isInventory);
+    return () => {
+      if (element.current) unregisterDropzone(classPeriod, isInventory);
+    };
+  }, []);
 
   return (
-    <StyledCell
-      ref={drop}
-      classTime={classTime}
-      earliestStartTime={earliestStartTime}
-      canDrop={canDrop}
-      color={color}
+    <div
+      ref={element}
+      className="dropzone"
+      style={cellStyle({
+        classPeriod,
+        x,
+        y,
+        yEnd,
+        color,
+        isInventory,
+        earliestStartTime,
+      })}
     />
   );
-};
+});
 
-export { Dropzone };
+export default Dropzone;

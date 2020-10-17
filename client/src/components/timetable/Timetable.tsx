@@ -1,48 +1,43 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
+import { CourseData, SelectedClasses, ClassPeriod } from '@notangles/common';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
-import DroppedClasses from './DroppedClasses';
-import Inventory from '../inventory/Inventory';
+import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 
-const rowHeight = 85;
+export const rowHeight = 94;
 
 const StyledTimetable = styled(Box) <{
   rows: number
 }>`
   display: grid;
-  min-height: ${(props) => props.rows * rowHeight}px;
-  max-height: ${(props) => props.rows * rowHeight}px; // TODO: should be different to min-height
+  height: ${({ rows }) => rows * rowHeight}px;
   margin-top: 15px;
   box-sizing: content-box;
-
+  user-select: none;
   grid-gap: ${1 / devicePixelRatio}px;
-  grid-template: repeat(${(props) => 2 * props.rows + 1}, 1fr) auto / auto repeat(${days.length}, 1fr) 11px 1fr;
+  grid-template: auto repeat(${({ rows }) => rows}, 1fr)
+               / auto repeat(${days.length}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
 `;
 
 interface TimetableProps {
   selectedCourses: CourseData[]
-  selectedClasses: ClassData[]
+  selectedClasses: SelectedClasses
   assignedColors: Record<string, string>
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
-  onSelectClass(classData: ClassData): void
   clashes: Array<ClassPeriod>
-  onRemoveClass(classData: ClassData): void
 }
 
-const Timetable: FunctionComponent<TimetableProps> = ({
+const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   selectedCourses,
   selectedClasses,
   assignedColors,
   is12HourMode,
   setIs12HourMode,
-  onSelectClass,
   clashes,
-  onRemoveClass,
 }) => (
   <StyledTimetable
     rows={Math.max(...selectedCourses.map(
@@ -51,13 +46,6 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       (course) => course.earliestStartTime,
     ), defaultStartTime)}
   >
-    <Inventory
-      key={selectedCourses.map((course) => course.code).join(',')}
-      selectedCourses={selectedCourses}
-      selectedClasses={selectedClasses}
-      assignedColors={assignedColors}
-      removeClass={onRemoveClass}
-    />
     <TimetableLayout
       days={days}
       is12HourMode={is12HourMode}
@@ -67,7 +55,6 @@ const Timetable: FunctionComponent<TimetableProps> = ({
     <ClassDropzones
       selectedCourses={selectedCourses}
       assignedColors={assignedColors}
-      onSelectClass={onSelectClass}
       earliestStartTime={Math.min(...selectedCourses.map(
         (course) => course.earliestStartTime,
       ), defaultStartTime)}
@@ -76,9 +63,16 @@ const Timetable: FunctionComponent<TimetableProps> = ({
       selectedCourses={selectedCourses}
       selectedClasses={selectedClasses}
       assignedColors={assignedColors}
+      days={days}
       clashes={clashes}
     />
   </StyledTimetable>
-);
+), (prev, next) => !(
+  prev.is12HourMode !== next.is12HourMode
+  || prev.selectedClasses !== next.selectedClasses
+  || prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+));
 
 export default Timetable;
