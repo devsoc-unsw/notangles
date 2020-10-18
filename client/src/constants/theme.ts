@@ -1,5 +1,8 @@
 import { createMuiTheme } from '@material-ui/core';
 
+export const borderRadius = 10;
+export const inventoryDropzoneOpacity = 0.1;
+
 const baseTheme = ({
   type,
   background,
@@ -35,7 +38,7 @@ const baseTheme = ({
     },
   },
   shape: {
-    borderRadius: 10,
+    borderRadius,
   },
 });
 

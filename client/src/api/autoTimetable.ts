@@ -1,4 +1,4 @@
-import { ClassData, CourseData } from '@notangles/common';
+import { ClassData, CourseData, SelectedClasses } from '@notangles/common';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
@@ -11,7 +11,7 @@ import { AutoRequest, AutoCourse, Criteria } from '../interfaces/AutoRequest';
  * @param selectedCourses selected courses
  */
 const autoTimetable = async (
-  selectedClasses: ClassData[],
+  selectedClasses: SelectedClasses,
   selectedCourses: CourseData[],
   criteria: Criteria,
 ): Promise<ClassData[]> => {
@@ -22,10 +22,8 @@ const autoTimetable = async (
       code: selectedCourse.code,
       exclude: [],
     };
-    Object.entries(selectedCourse.activities).forEach(([activity, activityClasses]) => {
-      if (activityClasses.some(
-        (classData) => selectedClasses.includes(classData),
-      )) {
+    Object.entries(selectedCourse.activities).forEach(([activity]) => {
+      if (selectedClasses[selectedCourse.code][activity] != null) {
         autoCourse.exclude = [...autoCourse.exclude, activity];
       }
     });
