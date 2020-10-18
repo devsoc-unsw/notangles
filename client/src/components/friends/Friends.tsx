@@ -3,7 +3,7 @@ import {
   makeStyles, createStyles,
 } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 import Drawer from '@material-ui/core/Drawer';
 import Link from '@material-ui/core/Link';
@@ -325,6 +325,9 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
               scope="user_friends"
               onClick={loginOnClick}
               callback={responseFacebook}
+              render={(renderProps: { onClick: () => void }) => (
+                <Button variant="contained" color="primary" onClick={renderProps.onClick}>Log In With Facebook</Button>
+              )}
             />
           </LoginComponent>
         )}
