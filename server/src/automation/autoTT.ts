@@ -4,6 +4,7 @@ import {
   filterOutClasses,
   ClassData,
   ClassTime,
+  Activity,
 } from '@notangles/common'
 import { clash } from './clash'
 import Database from '../database'
@@ -39,8 +40,13 @@ interface DbTime {
   end: string
 }
 
+interface autoCourse {
+  code: string
+  exclude: Activity[]
+}
+
 export interface autoCourses {
-  courses: []
+  courses: autoCourse[]
   term: string
   year: number
   criteria: {}
@@ -90,6 +96,7 @@ const autoInit = async (courses: autoCourses) => {
     }
     ttCourses.push(await Database.dbRead(args))
   }
+  console.log(ttCourses)
 }
 
 export const autoTT = (classes: ClassData[], calc: Function) => {
@@ -156,3 +163,17 @@ const fillTT = (
 
   return bestTT
 }
+
+const request: autoCourses = {
+  courses: [
+    {
+      code: 'MATH1131',
+      exclude: ['Lecture'],
+    },
+  ],
+  year: 2020,
+  term: 'T1',
+  criteria: { daysAtUni: 10, napTime: 1 },
+}
+
+autoInit(request)
