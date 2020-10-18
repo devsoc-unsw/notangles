@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import Button from '@material-ui/core/Button';
@@ -30,7 +30,7 @@ const FeatList = styled.ul`
   line-height: 20px;
 `;
 
-const About: React.FC = () => {
+const About: FunctionComponent = React.memo(() => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -121,12 +121,19 @@ const About: React.FC = () => {
             and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
-            If you find an issue or have a suggestion, please contact us.
+            If you find an issue or have a suggestion,
+            {' '}
+            <Link
+              href="https://forms.gle/rV3QCwjsEbLNyESE6"
+              target="_blank"
+            >
+              please let us know.
+            </Link>
           </Typography>
         </DialogContent>
       </Dialog>
     </div>
   );
-};
+});
 
 export default About;

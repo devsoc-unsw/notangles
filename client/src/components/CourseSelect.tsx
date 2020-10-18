@@ -18,6 +18,7 @@ import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import getCoursesList from '../api/getCoursesList';
+import NetworkError from '../interfaces/NetworkError';
 
 const SEARCH_DELAY = 300;
 
@@ -54,43 +55,41 @@ const StyledSelect = styled(Box)`
   left: -1px;
 `;
 
-const StyledTextField = styled(TextField)<{
+const StyledTextField = styled(TextField) <{
   theme: Theme
 }>`
   .MuiOutlinedInput-root {
     fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.main};
+      border-color: ${({ theme }) => theme.palette.secondary.main};
       transition: border-color 0.1s;
     }
     &:hover fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.dark};
+      border-color: ${({ theme }) => theme.palette.secondary.dark};
     }
     &.Mui-focused fieldset {
-      border-color: ${(props) => props.theme.palette.secondary.dark};
+      border-color: ${({ theme }) => theme.palette.secondary.dark};
     }
   }
 
   label {
-    color: ${(props) => props.theme.palette.secondary.dark} !important;
+    color: ${({ theme }) => theme.palette.secondary.dark} !important;
     transition: 0.2s;
   }
 `;
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
-  color: ${(props) => props.theme.palette.secondary.dark};
+  color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
 const StyledChip = styled(Chip).withConfig({
   shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
-})<{
+}) <{
   backgroundColor: string
 }>`
   transition: none !important;
-  background-color: ${(props) => (
-    props.backgroundColor
-      ? props.backgroundColor
-      : props.theme.palette.secondary.main
+  background-color: ${({ backgroundColor, theme }) => (
+    backgroundColor || theme.palette.secondary.main
   )} !important;
 `;
 
@@ -123,13 +122,17 @@ interface CourseSelectProps {
   assignedColors: Record<string, string>
   handleSelect(courseCode: string): void
   handleRemove(courseCode: string): void
+  setErrorMsg(errorMsg: string): void
+  setErrorVisibility(visibility: boolean): void
 }
 
-const CourseSelect: React.FC<CourseSelectProps> = ({
+const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   selectedCourses,
   assignedColors,
   handleSelect,
   handleRemove,
+  setErrorMsg,
+  setErrorVisibility,
 }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptions] = useState<CoursesList>([]);
@@ -253,10 +256,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
   };
 
   const fetchCoursesList = async () => {
-    const fetchedCoursesList = await getCoursesList('2020', 'T2');
-    if (fetchedCoursesList) {
+    try {
+      const fetchedCoursesList = await getCoursesList('2020', 'T3');
       setCoursesList(fetchedCoursesList);
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
     }
   };
 
@@ -354,6 +362,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
       />
     </StyledSelect>
   );
-};
+}, (prev, next) => !(
+  prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+));
 
 export default CourseSelect;

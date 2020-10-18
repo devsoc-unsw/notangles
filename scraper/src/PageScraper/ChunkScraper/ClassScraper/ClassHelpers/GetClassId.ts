@@ -8,7 +8,7 @@ const getClassId = (data: string): number => {
   const classID = parseInt(data)
   const classIDChecker = /^[0-9]{4,5}$/
   if (!classIDChecker.test(data)) {
-    throw new Error('Invalid Class Id: ' + classID)
+    console.error(new Error('Invalid Class Id: ' + classID))
   }
 
   return classID

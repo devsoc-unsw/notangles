@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import styled from 'styled-components';
 import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
-
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import Tooltip from '@material-ui/core/Tooltip';
+import Link from '@material-ui/core/Link';
 import About from './About';
 
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
@@ -21,6 +21,7 @@ const LogoImg = styled.img`
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
+  z-index: 10;
 `;
 const StyledNavBar = styled(AppBar)`
   position: fixed;
@@ -48,7 +49,7 @@ interface NavBarProps {
   isDarkMode: boolean
 }
 
-const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
+const Navbar: FunctionComponent<NavBarProps> = React.memo(({ setIsDarkMode, isDarkMode }) => (
   <StylesProvider injectFirst>
     <NavbarBox>
       <StyledNavBar>
@@ -69,6 +70,17 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
             <DarkModeIcon fontSize="small" />
           </DarkModeButton>
 
+          <NavButton color="inherit">
+            <Link
+              href="https://forms.gle/rV3QCwjsEbLNyESE6"
+              target="_blank"
+              underline="none"
+              color="inherit"
+            >
+              Feedback
+            </Link>
+          </NavButton>
+
           <Tooltip title="Coming Soon" placement="bottom">
             <div>
               <NavButton color="inherit" disabled>Login</NavButton>
@@ -81,7 +93,6 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode }) => (
       </StyledNavBar>
     </NavbarBox>
   </StylesProvider>
-);
-
+));
 
 export default Navbar;

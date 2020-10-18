@@ -1,25 +1,22 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-
-import { MuiThemeProvider, Box } from '@material-ui/core';
+import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import { CourseData, ClassData, filterOutClasses } from '@notangles/common';
+import {
+  CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
+} from '@notangles/common';
+import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
-
 import storage from './utils/storage';
-
 import { darkTheme, lightTheme } from './constants/theme';
-import { autoTT } from './automation/autoTT';
-import { minDaysScore } from './automation/minDaysScore';
+import NetworkError from './interfaces/NetworkError';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -34,8 +31,8 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${(props) => props.theme.palette.background.default};
-  color: ${(props) => props.theme.palette.text.primary};
+  background-color: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const Content = styled(Box)`
@@ -67,9 +64,11 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
+  const [errorMsg, setErrorMsg] = useState<String>('');
+  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -84,32 +83,82 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      [...filterOutClasses(prev, classData), classData]
-    ));
-  };
-
-  const handleRemoveClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      filterOutClasses(prev, classData)
-    ));
-  };
-
-  // TODO: temp until auto-timetabling is done
-  // currently just selects first available classes
-  const populateTimetable = (newCourse: CourseData) => {
-    Object.values(newCourse.activities).forEach((classes) => {
-      handleSelectClass(classes[0]);
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = classData;
+      return prev;
     });
   };
 
+  const handleRemoveClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = null;
+      return prev;
+    });
+  };
+
+  useDrag(handleSelectClass, handleRemoveClass);
+
+  const initCourse = (course: CourseData) => {
+    setSelectedClasses((prev) => {
+      prev[course.code] = {};
+
+      Object.keys(course.activities).forEach((activity) => {
+        // temp until auto timetabling works
+        [prev[course.code][activity]] = course.activities[activity];
+      });
+
+      return prev;
+    });
+  };
+
+  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
+    period1.day === period2.day && ((
+      period1.end > period2.start
+      && period1.start < period2.end
+    ) || (
+      period2.end > period1.start
+      && period2.start < period1.end
+    ))
+  );
+
+  const checkClashes = () => {
+    const newClashes: ClassPeriod[] = [];
+
+    const flatPeriods = Object.values(selectedClasses).flatMap(
+      (activities) => Object.values(activities),
+    ).flatMap(
+      (classData) => (classData ? classData.periods : []),
+    );
+
+    flatPeriods.forEach((period1) => {
+      flatPeriods.forEach((period2) => {
+        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+          if (!newClashes.includes(period1)) {
+            newClashes.push(period1);
+          }
+          if (!newClashes.includes(period2)) {
+            newClashes.push(period2);
+          }
+        }
+      });
+    });
+
+    return newClashes;
+  };
+
   const handleSelectCourse = async (courseCode: string) => {
-    const selectedCourseClasses = await getCourseInfo('2020', 'T2', courseCode);
-    if (selectedCourseClasses) {
-      console.log(autoTT(selectedCourses, minDaysScore))
-      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
-      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
+    try {
+      const newCourse = await getCourseInfo('2020', 'T3', courseCode);
+      const newSelectedCourses = [...selectedCourses, newCourse];
       setSelectedCourses(newSelectedCourses);
+      initCourse(newCourse);
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
     }
   };
 
@@ -118,9 +167,15 @@ const App: FunctionComponent = () => {
       (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.course.code !== courseCode)
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      delete prev[courseCode];
+      return prev;
+    });
+  };
+
+  const handleErrorClose = () => {
+    setErrorVisibility(false);
   };
 
   return (
@@ -141,6 +196,8 @@ const App: FunctionComponent = () => {
                       assignedColors={assignedColors}
                       handleSelect={handleSelectCourse}
                       handleRemove={handleRemoveCourse}
+                      setErrorMsg={setErrorMsg}
+                      setErrorVisibility={setErrorVisibility}
                     />
                   </SelectWrapper>
                 </Grid>
@@ -148,17 +205,14 @@ const App: FunctionComponent = () => {
                   <Autotimetabler isDarkMode={isDarkMode} />
                 </Grid>
               </Grid>
-              <DndProvider backend={HTML5Backend}>
-                <Timetable
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  is12HourMode={is12HourMode}
-                  setIs12HourMode={setIs12HourMode}
-                  onSelectClass={handleSelectClass}
-                  onRemoveClass={handleRemoveClass}
-                />
-              </DndProvider>
+              <Timetable
+                selectedCourses={selectedCourses}
+                selectedClasses={selectedClasses}
+                assignedColors={assignedColors}
+                is12HourMode={is12HourMode}
+                setIs12HourMode={setIs12HourMode}
+                clashes={checkClashes()}
+              />
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or
@@ -167,13 +221,18 @@ const App: FunctionComponent = () => {
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="mailto:projects@csesoc.org.au">
-                  Feedback
+                  Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
                   GitHub
                 </Link>
               </Footer>
+              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert severity="error" onClose={handleErrorClose} variant="filled">
+                  {errorMsg}
+                </Alert>
+              </Snackbar>
             </Content>
           </ContentWrapper>
         </StyledApp>
@@ -181,5 +240,4 @@ const App: FunctionComponent = () => {
     </MuiThemeProvider>
   );
 };
-
 export default App;
