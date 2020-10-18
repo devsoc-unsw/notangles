@@ -96,8 +96,9 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
 interface AutotimetablerProps {
   isDarkMode: boolean
+  auto(): void
 }
-const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
+const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => {
   const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
   const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
   const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
@@ -120,7 +121,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
     <div>
       <Tooltip title="Coming Soon" placement="bottom">
         <div>
-          <DropdownButton disabled disableElevation aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
+          <DropdownButton aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
             <Box ml="10px" flexGrow={1}>Auto-timetable</Box>
             {open ? (
               <ArrowDropUpIcon />
@@ -183,7 +184,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
           />
 
         </List>
-        <ExecuteButton variant="contained" color="primary" disableElevation onClick={handleClose}>
+        <ExecuteButton variant="contained" color="primary" disableElevation onClick={auto}>
           <FlashOnIcon />
           GO
         </ExecuteButton>

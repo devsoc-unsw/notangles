@@ -46,7 +46,7 @@ const searchOptions: SearchOptions = {
   ],
 };
 
-let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
+let fuzzy = new Fuse<CourseOverview>([], searchOptions);
 
 const StyledSelect = styled(Box)`
   width: 100%;
@@ -302,7 +302,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
         inputValue={inputValue}
         // prevent built-in option filtering
         filterOptions={(o) => o}
-
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>
@@ -316,7 +315,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
-
         renderInput={(params) => (
           <StyledTextField
             {...params}
@@ -349,7 +347,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({
             }}
           />
         )}
-
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
             <StyledChip

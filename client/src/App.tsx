@@ -22,6 +22,7 @@ import storage from './utils/storage';
 
 import { darkTheme, lightTheme } from './constants/theme';
 import NetworkError from './interfaces/NetworkError';
+import autoTimetable from './api/autoTimetable';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -101,9 +102,9 @@ const App: FunctionComponent = () => {
 
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
     (period1.day === period2.day && period1.start >= period2.start
-        && period1.start < period2.end)
-     || (period1.day === period2.day && period2.start >= period1.start
-        && period2.start < period1.end)
+      && period1.start < period2.end)
+    || (period1.day === period2.day && period2.start >= period1.start
+      && period2.start < period1.end)
   );
 
   const checkClashes = () => {
@@ -164,6 +165,11 @@ const App: FunctionComponent = () => {
     setErrorVisibility(false);
   };
 
+  const auto = async () => {
+    const newClasses = await autoTimetable(selectedClasses, selectedCourses, {});
+    setSelectedClasses([...selectedClasses, ...newClasses]);
+  };
+
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -188,7 +194,10 @@ const App: FunctionComponent = () => {
                   </SelectWrapper>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <Autotimetabler isDarkMode={isDarkMode} />
+                  <Autotimetabler
+                    isDarkMode={isDarkMode}
+                    auto={auto}
+                  />
                 </Grid>
               </Grid>
               <DndProvider backend={HTML5Backend}>

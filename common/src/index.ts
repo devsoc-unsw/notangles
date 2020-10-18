@@ -10,6 +10,7 @@ export interface CourseData {
 
 export interface ClassData {
   id: string
+  classId: number
   course: CourseData
   activity: string
   enrolments: number
