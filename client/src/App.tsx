@@ -1,15 +1,13 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-
 import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import {
-  CourseData, ClassData, ClassTime, ClassPeriod, filterOutClasses,
+  CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
 } from '@notangles/common';
+import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
@@ -18,9 +16,7 @@ import FriendsDrawer from './components/friends/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
-
 import storage from './utils/storage';
-
 import { darkTheme, lightTheme } from './constants/theme';
 import NetworkError from './interfaces/NetworkError';
 
@@ -76,7 +72,7 @@ const Footer = styled(Box)`
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<ClassData[]>([]);
+  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
@@ -97,60 +93,77 @@ const App: FunctionComponent = () => {
   }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      [...filterOutClasses(prev, classData), classData]
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = classData;
+      return prev;
+    });
   };
 
   const handleRemoveClass = (classData: ClassData) => {
-    setSelectedClasses((prev) => (
-      filterOutClasses(prev, classData)
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      prev[classData.course.code][classData.activity] = null;
+      return prev;
+    });
+  };
+
+  useDrag(handleSelectClass, handleRemoveClass);
+
+  const initCourse = (course: CourseData) => {
+    setSelectedClasses((prev) => {
+      prev[course.code] = {};
+
+      Object.keys(course.activities).forEach((activity) => {
+        // temp until auto timetabling works
+        [prev[course.code][activity]] = course.activities[activity];
+      });
+
+      return prev;
+    });
   };
 
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
-    (period1.day === period2.day && period1.start >= period2.start
-        && period1.start < period2.end)
-     || (period1.day === period2.day && period2.start >= period1.start
-        && period2.start < period1.end)
+    period1.day === period2.day && ((
+      period1.end > period2.start
+      && period1.start < period2.end
+    ) || (
+      period2.end > period1.start
+      && period2.start < period1.end
+    ))
   );
 
   const checkClashes = () => {
-    const newClashes: Array<ClassPeriod> = [];
-    selectedClasses.forEach((classActivity1) => {
-      classActivity1.periods.forEach((period1) => {
-        selectedClasses.forEach((classActivity2) => {
-          classActivity2.periods.forEach((period2) => {
-            if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-              if (!newClashes.includes(period1)) {
-                console.log(classActivity1);
-                newClashes.push(period1);
-              }
-              if (!newClashes.includes(period2)) {
-                newClashes.push(period2);
-              }
-            }
-          });
-        });
+    const newClashes: ClassPeriod[] = [];
+
+    const flatPeriods = Object.values(selectedClasses).flatMap(
+      (activities) => Object.values(activities),
+    ).flatMap(
+      (classData) => (classData ? classData.periods : []),
+    );
+
+    flatPeriods.forEach((period1) => {
+      flatPeriods.forEach((period2) => {
+        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+          if (!newClashes.includes(period1)) {
+            newClashes.push(period1);
+          }
+          if (!newClashes.includes(period2)) {
+            newClashes.push(period2);
+          }
+        }
       });
     });
-    return newClashes;
-  };
 
-  // TODO: temp until auto-timetabling is done
-  // currently just selects first available classes
-  const populateTimetable = (newCourse: CourseData) => {
-    Object.values(newCourse.activities).forEach((classes) => {
-      handleSelectClass(classes[0]);
-    });
+    return newClashes;
   };
 
   const handleSelectCourse = async (courseCode: string) => {
     try {
-      const selectedCourseClasses = await getCourseInfo('2020', 'T3', courseCode);
-      const newSelectedCourses = [...selectedCourses, selectedCourseClasses];
-      populateTimetable(selectedCourseClasses); // TODO: temp until auto-timetabling is done
+      const newCourse = await getCourseInfo('2020', 'T3', courseCode);
+      const newSelectedCourses = [...selectedCourses, newCourse];
       setSelectedCourses(newSelectedCourses);
+      initCourse(newCourse);
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
@@ -168,9 +181,11 @@ const App: FunctionComponent = () => {
       (course) => course.code !== courseCode,
     );
     setSelectedCourses(newSelectedCourses);
-    setSelectedClasses((prev) => (
-      prev.filter((classData) => classData.course.code !== courseCode)
-    ));
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
+      delete prev[courseCode];
+      return prev;
+    });
   };
 
   const handleErrorClose = () => {
@@ -214,18 +229,14 @@ const App: FunctionComponent = () => {
                   <Autotimetabler isDarkMode={isDarkMode} />
                 </Grid>
               </Grid>
-              <DndProvider backend={HTML5Backend}>
-                <Timetable
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  is12HourMode={is12HourMode}
-                  setIs12HourMode={setIs12HourMode}
-                  onSelectClass={handleSelectClass}
-                  onRemoveClass={handleRemoveClass}
-                  clashes={checkClashes()}
-                />
-              </DndProvider>
+              <Timetable
+                selectedCourses={selectedCourses}
+                selectedClasses={selectedClasses}
+                assignedColors={assignedColors}
+                is12HourMode={is12HourMode}
+                setIs12HourMode={setIs12HourMode}
+                clashes={checkClashes()}
+              />
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or

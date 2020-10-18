@@ -10,7 +10,7 @@ const defaultColor = colors[colors.length - 1];
  * @return An object that maps a color to each course code
  *
  * @example
- * const assignedColors = useColorMapper(selectedCourses.map(course => course.courseCode))
+ * const assignedColors = useColorMapper(selectedCourses.map(course => course.code))
  */
 const useColorMapper = (courseCodes: string[]): Record<string, string> => {
   const [assignedColors, setAssignedColors] = useState<

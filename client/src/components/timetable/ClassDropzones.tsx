@@ -1,63 +1,96 @@
 import React, { FunctionComponent } from 'react';
-import { CourseData, ClassData } from '@notangles/common';
-import { Dropzone } from './Dropzone';
+import { withTheme } from 'styled-components';
+import { CourseData } from '@notangles/common';
+import Dropzone from './Dropzone';
+import { timeToPosition } from '../../utils/Drag';
+import { inventoryDropzoneOpacity } from '../../constants/theme';
 
 interface ClassDropzoneProps {
   course: CourseData
   color: string
-  onSelectClass(classData: ClassData): void
   earliestStartTime: number
 }
 
-const ClassDropzone: FunctionComponent<ClassDropzoneProps> = ({
+const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
-  onSelectClass,
   earliestStartTime,
 }) => {
-  const dropzones = Object.values(course.activities).map(
-    (classDatas) => classDatas.map(
-      (classData) => classData.periods.map(
+  const dropzones = Object.values(course.activities).flatMap(
+    (classDatas) => classDatas.flatMap(
+      (classData) => classData.periods.flatMap(
         (period, i) => (
           <Dropzone
             key={`${classData.id}-${i}`}
-            courseCode={course.code}
-            activity={classData.activity}
-            classTime={period}
+            classPeriod={period}
+            x={period.time.day + 1}
+            y={timeToPosition(period.time.start, earliestStartTime)}
             color={color}
             earliestStartTime={earliestStartTime}
-            onDrop={() => onSelectClass(classData)}
           />
         ),
       ),
     ),
   );
+
   return <>{dropzones}</>;
-};
+}, (prev, next) => !(
+  prev.color !== next.color
+  || prev.earliestStartTime !== next.earliestStartTime
+  || prev.course.code !== next.course.code
+));
+
+interface Theme {
+  palette: {
+    type: string
+  }
+}
 
 interface ClassDropzonesProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  onSelectClass(classData: ClassData): void
   earliestStartTime: number
+  theme: Theme
 }
 
-const ClassDropzones: FunctionComponent<ClassDropzonesProps> = ({
+const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
   selectedCourses,
   assignedColors,
-  onSelectClass,
   earliestStartTime,
+  theme,
 }) => {
   const dropzones = selectedCourses.map((course) => (
-    <ClassDropzone
-      earliestStartTime={earliestStartTime}
+    <DropzoneGroup
       key={course.code}
       course={course}
       color={assignedColors[course.code]}
-      onSelectClass={onSelectClass}
+      earliestStartTime={earliestStartTime}
     />
   ));
-  return <>{dropzones}</>;
-};
 
-export default ClassDropzones;
+  const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
+
+  // inventory
+  dropzones.push(
+    <Dropzone
+      isInventory
+      key="inventory"
+      classPeriod={null} // inventory has no corresponding class period
+      x={-2}
+      y={2}
+      yEnd={-1}
+      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
+      earliestStartTime={earliestStartTime}
+    />,
+  );
+
+  return <>{dropzones}</>;
+}, (prev, next) => !(
+  prev.theme !== next.theme
+  || prev.selectedCourses.length !== next.selectedCourses.length
+  || prev.earliestStartTime !== next.earliestStartTime
+  || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
+  || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+));
+
+export default withTheme(ClassDropzones);
