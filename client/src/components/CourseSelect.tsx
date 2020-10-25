@@ -141,17 +141,17 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const searchTimer = useRef<number | undefined>();
 
   const diffCourses = (a: {code: string}[], b: {code: string}[]) => (
-    b.filter((x) => !a.map((x) => x.code).includes(x.code))
+    b.filter((x) => !a.map((y) => y.code).includes(x.code))
   );
 
   const checkExternallyAdded = () => {
     const externallyAdded = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
     if (externallyAdded.length > 0) {
       setSelectedValue([...selectedValue, ...coursesList.filter(
-        (course) => externallyAdded.includes(course.code)
-      )])
+        (course) => externallyAdded.includes(course.code),
+      )]);
     }
-  }
+  };
 
   checkExternallyAdded();
 
@@ -195,7 +195,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     const added = diffCourses(before, after);
 
     // return before the input value and options are reset
-    if (added.length == 0) return;
+    if (added.length === 0) return;
 
     if (searchTimer.current) {
       // run a search now and cancel the current search timer
@@ -335,7 +335,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
               {...getTagProps({ index })}
               onDelete={() => {
                 setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                handleRemove(option.code)
+                handleRemove(option.code);
               }}
             />
           ))

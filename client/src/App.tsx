@@ -12,7 +12,7 @@ import {
   ClassPeriod,
   CourseCode,
   Activity,
-  InInventory
+  InInventory,
 } from '@notangles/common';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
@@ -80,7 +80,7 @@ const useUpdateEffect = (effect: Function, dependencies: any[] = []) => {
       effect();
     }
   }, dependencies);
-}
+};
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
@@ -114,7 +114,7 @@ const App: FunctionComponent = () => {
 
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {
-      const prev = {...prevRef};
+      const prev = { ...prevRef };
 
       prev[course.code] = {};
 
@@ -163,13 +163,12 @@ const App: FunctionComponent = () => {
   };
 
   const handleSelectCourse = async (
-    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void
+    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void,
   ) => {
-    let codes: string[] = Array.isArray(data) ? data : [data];
-
+    const codes: string[] = Array.isArray(data) ? data : [data];
     try {
       Promise.all(
-        codes.map((code) => getCourseInfo('2020', 'T3', code))
+        codes.map((code) => getCourseInfo('2020', 'T3', code)),
       ).then((result) => {
         const newCourses = result as CourseData[];
 
@@ -180,7 +179,7 @@ const App: FunctionComponent = () => {
 
           return newSelectedCourses;
         });
-      })
+      });
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
@@ -221,30 +220,28 @@ const App: FunctionComponent = () => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
 
-      for (let courseCode in savedClasses) {
+      Object.keys(savedClasses).forEach((courseCode) => {
         newSelectedClasses[courseCode] = {};
-  
-        for (let activity in savedClasses[courseCode]) {
+
+        Object.keys(savedClasses[courseCode]).forEach((activity) => {
           const classId = savedClasses[courseCode][activity];
           let classData: ClassData | null = null;
 
           if (classId) {
             const result = newSelectedCourses.find(
-              (x) => x.code === courseCode
+              (x) => x.code === courseCode,
             )?.activities[activity].find(
-              (classData) => classData.id === classId
+              (x) => x.id === classId
             );
 
             if (result) classData = result;
           }
-  
+
           newSelectedClasses[courseCode][activity] = classData;
-        }
-      }
+        });
+      });
 
-      // console.log(newSelectedClasses);
-
-      // setSelectedClasses(newSelectedClasses);
+      setSelectedClasses(newSelectedClasses);
     });
   }, []);
 
@@ -255,15 +252,13 @@ const App: FunctionComponent = () => {
   useUpdateEffect(() => {
     const savedClasses: SavedClasses = {};
 
-    for (let courseCode in selectedClasses) {
+    Object.keys(selectedClasses).forEach((courseCode) => {
       savedClasses[courseCode] = {};
-
-      for (let activity in selectedClasses[courseCode]) {
+      Object.keys(selectedClasses[courseCode]).forEach((activity) => {
         const classData = selectedClasses[courseCode][activity];
-
         savedClasses[courseCode][activity] = classData ? classData.id : null;
-      }
-    }
+      });
+    });
 
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
