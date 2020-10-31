@@ -120,7 +120,7 @@ const Weak = styled.span`
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  handleSelect(courseCode: string): void
+  handleSelect(data: string | string[]): void
   handleRemove(courseCode: string): void
   setErrorMsg(errorMsg: string): void
   setErrorVisibility(visibility: boolean): void
@@ -140,15 +140,20 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
 
-  const diffCourses = (a: {code: string}[], b: {code: string}[]) => (
-    b.filter((x) => !a.map((y) => y.code).includes(x.code))
-  );
+  const diffCourses = (a: {code: string}[], b: {code: string}[]) => {
+    const codes = a.map((x) => x.code);
+    return b.filter((x) => !codes.includes(x.code));
+  };
 
   const checkExternallyAdded = () => {
-    const externallyAdded = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
-    if (externallyAdded.length > 0) {
+    const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
+    const coursesListCodes = coursesList.map((x) => x.code);
+
+    // if we have info about the new courses already fetched, update the value now
+    // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
+    if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
       setSelectedValue([...selectedValue, ...coursesList.filter(
-        (course) => externallyAdded.includes(course.code),
+        (course) => addedCodes.includes(course.code),
       )]);
     }
   };
@@ -223,7 +228,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         return;
       }
     } else {
-      added.forEach((course) => handleSelect(course.code));
+      handleSelect(added.map((course) => course.code));
       setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
     }
 

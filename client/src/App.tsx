@@ -170,15 +170,13 @@ const App: FunctionComponent = () => {
       Promise.all(
         codes.map((code) => getCourseInfo('2020', 'T3', code)),
       ).then((result) => {
-        const newCourses = result as CourseData[];
+        const addedCourses = result as CourseData[];
+        const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-        setSelectedCourses((prev) => {
-          const newSelectedCourses = [...prev, ...newCourses];
-          if (!noInit) newCourses.forEach((course) => initCourse(course));
-          if (callback) callback(newSelectedCourses);
+        setSelectedCourses(newSelectedCourses);
 
-          return newSelectedCourses;
-        });
+        if (!noInit) addedCourses.forEach((course) => initCourse(course));
+        if (callback) callback(newSelectedCourses);
       });
     } catch (e) {
       if (e instanceof NetworkError) {
