@@ -21,6 +21,7 @@ import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
+import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
 import { darkTheme, lightTheme } from './constants/theme';
 import NetworkError from './interfaces/NetworkError';
@@ -68,19 +69,6 @@ const Footer = styled(Box)`
   font-size: 12px;
   margin: 40px;
 `;
-
-// https://stackoverflow.com/a/55075818/1526448
-const useUpdateEffect = (effect: Function, dependencies: any[] = []) => {
-  const isInitialMount = React.useRef(true);
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
-      effect();
-    }
-  }, dependencies);
-};
 
 const App: FunctionComponent = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
