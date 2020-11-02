@@ -181,9 +181,10 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   const element = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (element.current) registerCard(cardData, element.current);
+    const elementCurrent = element.current;
+    if (elementCurrent) registerCard(cardData, elementCurrent);
     return () => {
-      if (element.current) unregisterCard(cardData, element.current);
+      if (elementCurrent) unregisterCard(cardData, elementCurrent);
     };
   });
 

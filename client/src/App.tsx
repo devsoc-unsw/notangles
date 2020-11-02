@@ -5,7 +5,14 @@ import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import {
-  CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
+  CourseData,
+  ClassData,
+  SelectedClasses,
+  ClassTime,
+  ClassPeriod,
+  CourseCode,
+  Activity,
+  InInventory,
 } from '@notangles/common';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
@@ -16,6 +23,7 @@ import FriendsDrawer from './components/friends/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
+import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
 import { darkTheme, lightTheme } from './constants/theme';
 import NetworkError from './interfaces/NetworkError';
@@ -84,14 +92,6 @@ const App: FunctionComponent = () => {
     selectedCourses.map((course) => course.code),
   );
 
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
@@ -111,7 +111,9 @@ const App: FunctionComponent = () => {
   useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
-    setSelectedClasses((prev) => {
+    setSelectedClasses((prevRef) => {
+      const prev = { ...prevRef };
+
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
@@ -158,12 +160,22 @@ const App: FunctionComponent = () => {
     return newClashes;
   };
 
-  const handleSelectCourse = async (courseCode: string) => {
+  const handleSelectCourse = async (
+    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void,
+  ) => {
+    const codes: string[] = Array.isArray(data) ? data : [data];
     try {
-      const newCourse = await getCourseInfo('2020', 'T3', courseCode);
-      const newSelectedCourses = [...selectedCourses, newCourse];
-      setSelectedCourses(newSelectedCourses);
-      initCourse(newCourse);
+      Promise.all(
+        codes.map((code) => getCourseInfo('2020', 'T3', code)),
+      ).then((result) => {
+        const addedCourses = result as CourseData[];
+        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+
+        setSelectedCourses(newSelectedCourses);
+
+        if (!noInit) addedCourses.forEach((course) => initCourse(course));
+        if (callback) callback(newSelectedCourses);
+      });
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
@@ -195,6 +207,65 @@ const App: FunctionComponent = () => {
   const handleSetIsLoggedIn = (value: boolean) => {
     setIsLoggedIn(value);
   };
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  type ClassId = string;
+  type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
+
+  useEffect(() => {
+    handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
+      const savedClasses: SavedClasses = storage.get('selectedClasses');
+      const newSelectedClasses: SelectedClasses = {};
+
+      Object.keys(savedClasses).forEach((courseCode) => {
+        newSelectedClasses[courseCode] = {};
+
+        Object.keys(savedClasses[courseCode]).forEach((activity) => {
+          const classId = savedClasses[courseCode][activity];
+          let classData: ClassData | null = null;
+
+          if (classId) {
+            const result = newSelectedCourses.find(
+              (x) => x.code === courseCode,
+            )?.activities[activity].find(
+              (x) => x.id === classId
+            );
+
+            if (result) classData = result;
+          }
+
+          newSelectedClasses[courseCode][activity] = classData;
+        });
+      });
+
+      setSelectedClasses(newSelectedClasses);
+    });
+  }, []);
+
+  useUpdateEffect(() => {
+    storage.set('selectedCourses', selectedCourses.map((course) => course.code));
+  }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    const savedClasses: SavedClasses = {};
+
+    Object.keys(selectedClasses).forEach((courseCode) => {
+      savedClasses[courseCode] = {};
+      Object.keys(selectedClasses[courseCode]).forEach((activity) => {
+        const classData = selectedClasses[courseCode][activity];
+        savedClasses[courseCode][activity] = classData ? classData.id : null;
+      });
+    });
+
+    storage.set('selectedClasses', savedClasses);
+  }, [selectedClasses]);
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>

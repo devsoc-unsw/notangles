@@ -4,6 +4,8 @@ const defaults: Record<string, any> = {
   userID: '',
   accessToken: '',
   userPicture: '',
+  selectedCourses: [],
+  selectedClasses: {},
 };
 
 export default defaults;
