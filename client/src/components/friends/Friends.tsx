@@ -294,11 +294,11 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
                 {' '}
                 <StyledLink> Sent Requests</StyledLink>
               </ListSubheader>
-              <FriendListRequest name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListRequest name="Placeholder Name" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
 
               <ListSubheader disableSticky>Friends</ListSubheader>
-              <FriendListAdded name="Test here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" isFavourite />
-              <FriendListAdded name="Really Longgggggggggggg Nameasdjasbdjhasbj Here" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+              <FriendListAdded name="Placeholder 2" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" isFavourite />
+              <FriendListAdded name="Placeholder 3" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
 
               <ListSubheader disableSticky>Suggested Friends</ListSubheader>
               {suggestedFriends.map((friend) => (
