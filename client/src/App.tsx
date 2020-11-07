@@ -156,7 +156,7 @@ const App: FunctionComponent = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     try {
       Promise.all(
-        codes.map((code) => getCourseInfo('2020', 'T3', code)),
+        codes.map((code) => getCourseInfo('2021', 'T1', code)),
       ).then((result) => {
         const addedCourses = result as CourseData[];
         const newSelectedCourses = [...selectedCourses, ...addedCourses];

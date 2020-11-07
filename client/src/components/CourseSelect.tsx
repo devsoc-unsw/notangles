@@ -238,7 +238,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const fetchCoursesList = async () => {
     try {
-      const fetchedCoursesList = await getCoursesList('2020', 'T3');
+      const fetchedCoursesList = await getCoursesList('2021', 'T1');
       setCoursesList(fetchedCoursesList);
       checkExternallyAdded();
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
