@@ -19,6 +19,8 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
+import FriendsDrawer from './components/friends/Friends';
+
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
@@ -40,15 +42,21 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${({ theme }) => theme.palette.background.default};
-  color: ${({ theme }) => theme.palette.text.primary};
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+
+  background-color: ${(props) => props.theme.palette.background.default};
+  color: ${(props) => props.theme.palette.text.primary};
 `;
 
-const Content = styled(Box)`
-  width: 1400px;
-  min-width: 1100px;
-  max-width: 100%;
-  margin: auto;
+interface StyledContentProps {
+  drawerOpen: boolean;
+}
+
+const Content = styled(Box)<StyledContentProps>`
+  width: ${(props) => (props.drawerOpen ? 'calc(100% - 240px)' : '100%')};
+  transition: width 0.2s;
 
   display: grid;
   grid-template-rows: min-content min-content auto;
@@ -78,6 +86,8 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -175,6 +185,10 @@ const App: FunctionComponent = () => {
     }
   };
 
+  const handleDrawerOpen = () => {
+    setIsFriendsListOpen(!isFriendsListOpen);
+  };
+
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter(
       (course) => course.code !== courseCode,
@@ -201,6 +215,10 @@ const App: FunctionComponent = () => {
       return prev;
     });
   };
+  const handleSetIsLoggedIn = (value: boolean) => {
+    setIsLoggedIn(value);
+  };
+
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
@@ -267,9 +285,15 @@ const App: FunctionComponent = () => {
           <Navbar
             setIsDarkMode={setIsDarkMode}
             isDarkMode={isDarkMode}
+            handleDrawerOpen={handleDrawerOpen}
+          />
+          <FriendsDrawer
+            isFriendsListOpen={isFriendsListOpen}
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={handleSetIsLoggedIn}
           />
           <ContentWrapper>
-            <Content>
+            <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>
