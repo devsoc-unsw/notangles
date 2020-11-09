@@ -6,7 +6,7 @@ const main = async () => {
   //writing the data to the database
   const date = new Date()
   const year = date.getFullYear().toString(10)
-  const terms = await timetableScraper(date.getFullYear())
+  const terms = await timetableScraper(2021)
 
   // Error occured in scraper. Could not scrape data
   if (!terms) {

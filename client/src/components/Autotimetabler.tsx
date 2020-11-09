@@ -88,7 +88,6 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
         </Grid>
       </Grid>
 
-
     </ListItem>
 
   );
@@ -130,7 +129,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => 
         </div>
       </Tooltip>
 
-
       <Popover
         id={popoverId}
         open={open}
@@ -167,7 +165,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => 
             optionState={walkingDistance}
             setOptionState={setWalkingDistance}
             optionChoices={['least']}
-
 
           />
           <DropdownOption
