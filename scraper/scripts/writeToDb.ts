@@ -1,12 +1,12 @@
 import { timetableScraper } from '../src/scraper'
 import Database from '../src/database'
 import { dbReadParams, dbUpdateParams, dbAddParams } from '../src/database'
+require('dotenv').config()
 
 const main = async () => {
   //writing the data to the database
-  const date = new Date()
-  const year = date.getFullYear().toString(10)
-  const terms = await timetableScraper(2021)
+  const year = process.env.TIMETABLE_YEAR
+  const terms = await timetableScraper(Number(year))
 
   // Error occured in scraper. Could not scrape data
   if (!terms) {
