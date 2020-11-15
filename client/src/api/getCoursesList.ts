@@ -2,7 +2,7 @@ import { CoursesList } from '../interfaces/CourseOverview';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
-import TimeoutError from '../interfaces/TimeoutError';
+// import TimeoutError from '../interfaces/TimeoutError';
 
 interface FetchedCourse {
   _id: string;
@@ -41,11 +41,7 @@ const getCoursesList = async (
     }
     return toCoursesList(await data.json());
   } catch (error) {
-    if (error instanceof TimeoutError) {
-      throw new NetworkError('Could not connect to server');
-    } else {
-      throw error;
-    }
+    throw new NetworkError('Could not connect to server');
   }
 };
 

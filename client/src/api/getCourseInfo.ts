@@ -3,7 +3,7 @@ import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
-import TimeoutError from '../interfaces/TimeoutError';
+// import TimeoutError from '../interfaces/TimeoutError';
 
 /**
  * Fetches the information of a specified course
@@ -15,7 +15,7 @@ import TimeoutError from '../interfaces/TimeoutError';
  * specified year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('2019', 'T3', 'COMP1511')
+ * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
 const getCourseInfo = async (
   year: string,
@@ -34,11 +34,7 @@ const getCourseInfo = async (
     }
     return dbCourseToCourseData(json);
   } catch (error) {
-    if (error instanceof TimeoutError) {
-      throw new NetworkError('Could not connect to server');
-    } else {
-      throw error;
-    }
+    throw new NetworkError('Could not connect to server');
   }
 };
 

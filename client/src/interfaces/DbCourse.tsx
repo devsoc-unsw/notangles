@@ -1,8 +1,4 @@
-import {
-  CourseData,
-  ClassData,
-  ClassPeriod,
-} from '@notangles/common';
+import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -53,6 +49,17 @@ const timeToNumber = (time: string) => {
   return hour + minute / 60;
 };
 
+const range = (a: number, b: number) => (
+  Array.from({ length: (b - a + 1) }, (_, i) => i + a)
+);
+
+const enumerateWeeks = (weeks: string): number[] => (
+  weeks.split(',').flatMap((rangeString) => {
+    const stops = rangeString.split('-').map((string) => Number(string));
+    return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
+  })
+);
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -62,14 +69,16 @@ const timeToNumber = (time: string) => {
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes): ClassPeriod => ({
+const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
+  class: classData,
   location: dbTimes.location,
   locationShort: locationShorten(dbTimes.location),
   time: {
     day: weekdayToNumber(dbTimes.day),
     start: timeToNumber(dbTimes.time.start),
     end: timeToNumber(dbTimes.time.end),
-    weeks: dbTimes.weeks,
+    weeks: enumerateWeeks(dbTimes.weeks),
+    weeksString: dbTimes.weeks.replace(/,/g, ', '),
   },
 });
 
@@ -89,8 +98,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     code: dbCourse.courseCode,
     name: dbCourse.name,
     activities: {},
-    latestFinishTime: 0,
+    inventoryData: {},
     earliestStartTime: 24,
+    latestFinishTime: 0,
   };
 
   dbCourse.classes.forEach((dbClass, index) => {
@@ -98,22 +108,48 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       id: `${dbCourse.courseCode}-${dbClass.activity}-${index}`,
       course: courseData,
       activity: dbClass.activity,
-      periods: dbClass.times.map(dbTimesToPeriod),
+      periods: [],
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
     };
+
+    classData.periods = dbClass.times.map((dbTime) => (
+      dbTimesToPeriod(dbTime, classData)
+    ));
+
+    // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
+    classData.periods = classData.periods.filter((period) => (
+      period === classData.periods.find((x) => (
+        x.time.day === period.time.day
+        && x.time.start === period.time.start
+        && x.time.end === period.time.end
+      ))
+    ));
+
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = period.time.end;
       }
+
       if (period.time.start < courseData.earliestStartTime) {
         courseData.earliestStartTime = period.time.start;
       }
     });
+
     if (!(dbClass.activity in courseData.activities)) {
       courseData.activities[dbClass.activity] = [];
     }
+
     courseData.activities[dbClass.activity].push(classData);
+  });
+
+  Object.keys(courseData.activities).forEach((activity) => {
+    courseData.inventoryData[activity] = {
+      class: {
+        course: courseData,
+        activity,
+      },
+    };
   });
 
   return courseData;
