@@ -53,10 +53,11 @@ export interface autoCourses {
   term: string
   year: number
   criteria: {}
+  includeClashes: boolean
 }
 
 
-const autoTT = async (courses: autoCourses) => {
+export const autoTT = async (courses: autoCourses) => {
   const dbCourses : DbCourse[] = []
 
   // not using a foreach loop as async function calls cannot be made in a foreach loop
@@ -109,8 +110,6 @@ const autoTT = async (courses: autoCourses) => {
     })
   })
 
-  //console.log(classDict)
-
   // find best tt
   let maxScore : number = -1
   let index : number = 0
@@ -120,7 +119,7 @@ const autoTT = async (courses: autoCourses) => {
   classDict[key].forEach(clas => {
     let newTT : sortClass[] = []
     newTT.push(clas)
-    newTT = fillTT(classDict, newTT, index + 1, courses.criteria)
+    newTT = fillTT(classDict, newTT, index + 1, courses.criteria, courses.includeClashes)
     let score = calc(newTT, courses.criteria)
     if (score > maxScore) {
       bestTT = newTT.slice(0)
@@ -133,7 +132,7 @@ const autoTT = async (courses: autoCourses) => {
   })
 }
 
-const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index : number, criteria : {}) => {
+const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index : number, criteria : {}, includeClashes : boolean) => {
   if (index >= Object.keys(classDict).length) {
     return TT
   }
@@ -145,15 +144,18 @@ const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index
     let newTT : sortClass[] = TT.slice(0)
 
     let clashing = false
-    newTT.forEach(t => {
-      if (clash(clas.time, t.time) == true) {
-        clashing = true
-      }
-    })
+
+    if (includeClashes == false) {
+      newTT.forEach(t => {
+        if (clash(clas.time, t.time) == true) {
+          clashing = true
+        }
+      })
+    }
 
     if (clashing == false) {
       newTT.push(clas)
-      newTT = fillTT(classDict, newTT, index + 1, criteria)
+      newTT = fillTT(classDict, newTT, index + 1, criteria, includeClashes)
       let score = calc(newTT, criteria)
       if (score > maxScore) {
         bestTT = newTT.slice(0)
@@ -165,24 +167,28 @@ const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index
 }
 
 export const clash = (time1 : DbTimes[], time2 : DbTimes[]) => {
+  // need to convert to numbers
   let clashing = false
-  //const rangePat = /\d+-\d/g
   time1.forEach(t1 => {
     time2.forEach(t2 => {
       if (t1.day == t2.day) {
-        if (t1.time.start >= t2.time.start && t1.time.start < t2.time.end) {
+        const t1start : number = parseInt(t1.time.start.split(":")[0]) + (parseInt(t1.time.start.split(":")[1]) / 60)
+        const t1end : number = parseInt(t1.time.end.split(":")[0]) + (parseInt(t1.time.end.split(":")[1]) / 60)
+        const t2start : number = parseInt(t2.time.start.split(":")[0]) + (parseInt(t2.time.start.split(":")[1]) / 60)
+        const t2end : number = parseInt(t2.time.end.split(":")[0]) + (parseInt(t2.time.end.split(":")[1]) / 60)
+        if (t1start >= t2start && t1start < t2end) {
           clashing = true
         }
       
-        if (t1.time.end > t2.time.start && t1.time.end <= t2.time.end) {
+        if (t1end > t2start && t1end <= t2end) {
           clashing = true
         }
       
-        if (t2.time.start >= t1.time.start && t2.time.start < t1.time.end) {
+        if (t2start >= t1start && t2start < t1end) {
           clashing = true
         }
       
-        if (t2.time.end > t1.time.start && t2.time.end <= t1.time.end) {
+        if (t2end > t1start && t2end <= t1end) {
           clashing = true
         }
 
@@ -200,6 +206,7 @@ export const clash = (time1 : DbTimes[], time2 : DbTimes[]) => {
 
 const calc = (TT : sortClass[], criteria : {}) : number => {
   let score = 0
+  const maxVal = 10
   if (criteria["daysAtUni"] != undefined) {
     const days : Record<string, boolean> = {}
     TT.forEach(act => {
@@ -216,9 +223,65 @@ const calc = (TT : sortClass[], criteria : {}) : number => {
     })
 
     if (criteria["daysAtUni"] < 0) {
-      score += (7 - count) * (criteria["daysAtUni"] * -1)
+      // least amount of days at uni
+      score += ((5 - count) / 5) * maxVal * -1 * criteria["daysAtUni"]
     } else {
-      score += (count) * criteria["daysAtUni"]
+      // most amount of days at uni
+      score += (count / 5) * maxVal * criteria["daysAtUni"]
+    }
+  }
+
+  if (criteria["napTime"] != undefined) {
+    let max : number = 0
+    let total = 0
+    TT.forEach(clas => {
+      clas.time.forEach(t => {
+        const start : number = parseInt(t.time.start.split(":")[0])
+        total += start - 9
+        max += 12
+      })
+    })
+    if (criteria["napTime"] < 0) {
+      // least nap time
+      score += (1 - (total / max)) * maxVal * -1 * criteria["napTime"]
+    } else {
+      // most nap time
+      score += (total / max) * maxVal * criteria["napTime"]
+    }
+
+  }
+
+  if (criteria["breakTime"] != undefined) {
+    let total = 0
+    let max = 0
+    TT.forEach(clas1 => {
+      clas1.time.forEach(t1 => {
+        TT.forEach(clas2 => {
+          clas2.time.forEach(t2 => {
+            if (t1.day == t2.day) {
+              const t1start : number = parseInt(t1.time.start.split(":")[0]) + (parseInt(t1.time.start.split(":")[1]) / 60)
+              const t1end : number = parseInt(t1.time.end.split(":")[0]) + (parseInt(t1.time.end.split(":")[1]) / 60)
+              const t2start : number = parseInt(t2.time.start.split(":")[0]) + (parseInt(t2.time.start.split(":")[1]) / 60)
+              const t2end : number = parseInt(t2.time.end.split(":")[0]) + (parseInt(t2.time.end.split(":")[1]) / 60)
+              
+              if (t1start < t2start) {
+                total += t2start - t1end
+              } else {
+                total += t1start - t2end
+              }
+              max += 11
+            }
+          })
+        })
+      })
+    })
+
+    if (criteria["breakTime"] < 0) {
+      // least amount of break time
+      score += (1 - (total / max)) * maxVal * -1 * criteria["breakTime"]
+    } else {
+      // most amount of break time
+      score += (total / max) * maxVal * criteria["breakTime"]
     }
   }
 
@@ -238,7 +301,8 @@ const request: autoCourses = {
   ],
   year: 2020,
   term: 'T3',
-  criteria: { daysAtUni: 10, napTime: 1 },
+  criteria: { daysAtUni: -10, napTime: 1, breakTime: 5 },
+  includeClashes: false,
 }
 
 autoTT(request)

@@ -1,7 +1,6 @@
 "use strict";
 var _a;
 exports.__esModule = true;
-exports.config = exports.allConfig = exports.Env = void 0;
 var Env;
 (function (Env) {
     Env["DEV"] = "DEV";
