@@ -3,7 +3,7 @@ import { timetableScraper } from '../src/scraper'
 ;(async () => {
   console.time('cscraper')
   try {
-    const data = await timetableScraper(2020)
+    const data = await timetableScraper(Number(process.env.TIMETABLE_YEAR))
 
     if (data === false) {
       return

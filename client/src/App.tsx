@@ -5,15 +5,25 @@ import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import {
-  CourseData, ClassData, SelectedClasses, ClassTime, ClassPeriod,
+  CourseData,
+  ClassData,
+  SelectedClasses,
+  ClassTime,
+  ClassPeriod,
+  CourseCode,
+  Activity,
+  InInventory,
 } from '@notangles/common';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
+import FriendsDrawer from './components/friends/Friends';
+
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
+import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
 import { darkTheme, lightTheme } from './constants/theme';
 import NetworkError from './interfaces/NetworkError';
@@ -31,15 +41,21 @@ const ContentWrapper = styled(Box)`
   min-height: 100vh;
   box-sizing: border-box;
 
-  background-color: ${({ theme }) => theme.palette.background.default};
-  color: ${({ theme }) => theme.palette.text.primary};
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+
+  background-color: ${(props) => props.theme.palette.background.default};
+  color: ${(props) => props.theme.palette.text.primary};
 `;
 
-const Content = styled(Box)`
-  width: 1400px;
-  min-width: 1100px;
-  max-width: 100%;
-  margin: auto;
+interface StyledContentProps {
+  drawerOpen: boolean;
+}
+
+const Content = styled(Box)<StyledContentProps>`
+  width: ${(props) => (props.drawerOpen ? 'calc(100% - 240px)' : '100%')};
+  transition: width 0.2s;
 
   display: grid;
   grid-template-rows: min-content min-content auto;
@@ -69,18 +85,12 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
   );
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
@@ -101,7 +111,9 @@ const App: FunctionComponent = () => {
   useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
-    setSelectedClasses((prev) => {
+    setSelectedClasses((prevRef) => {
+      const prev = { ...prevRef };
+
       prev[course.code] = {};
 
       Object.keys(course.activities).forEach((activity) => {
@@ -148,18 +160,32 @@ const App: FunctionComponent = () => {
     return newClashes;
   };
 
-  const handleSelectCourse = async (courseCode: string) => {
+  const handleSelectCourse = async (
+    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void,
+  ) => {
+    const codes: string[] = Array.isArray(data) ? data : [data];
     try {
-      const newCourse = await getCourseInfo('2020', 'T3', courseCode);
-      const newSelectedCourses = [...selectedCourses, newCourse];
-      setSelectedCourses(newSelectedCourses);
-      initCourse(newCourse);
+      Promise.all(
+        codes.map((code) => getCourseInfo('2021', 'T1', code)),
+      ).then((result) => {
+        const addedCourses = result as CourseData[];
+        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+
+        setSelectedCourses(newSelectedCourses);
+
+        if (!noInit) addedCourses.forEach((course) => initCourse(course));
+        if (callback) callback(newSelectedCourses);
+      });
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
         setErrorVisibility(true);
       }
     }
+  };
+
+  const handleDrawerOpen = () => {
+    setIsFriendsListOpen(!isFriendsListOpen);
   };
 
   const handleRemoveCourse = (courseCode: string) => {
@@ -178,6 +204,69 @@ const App: FunctionComponent = () => {
     setErrorVisibility(false);
   };
 
+  const handleSetIsLoggedIn = (value: boolean) => {
+    setIsLoggedIn(value);
+  };
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  type ClassId = string;
+  type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
+
+  useEffect(() => {
+    handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
+      const savedClasses: SavedClasses = storage.get('selectedClasses');
+      const newSelectedClasses: SelectedClasses = {};
+
+      Object.keys(savedClasses).forEach((courseCode) => {
+        newSelectedClasses[courseCode] = {};
+
+        Object.keys(savedClasses[courseCode]).forEach((activity) => {
+          const classId = savedClasses[courseCode][activity];
+          let classData: ClassData | null = null;
+
+          if (classId) {
+            const result = newSelectedCourses.find(
+              (x) => x.code === courseCode,
+            )?.activities[activity].find(
+              (x) => x.id === classId
+            );
+
+            if (result) classData = result;
+          }
+
+          newSelectedClasses[courseCode][activity] = classData;
+        });
+      });
+
+      setSelectedClasses(newSelectedClasses);
+    });
+  }, []);
+
+  useUpdateEffect(() => {
+    storage.set('selectedCourses', selectedCourses.map((course) => course.code));
+  }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    const savedClasses: SavedClasses = {};
+
+    Object.keys(selectedClasses).forEach((courseCode) => {
+      savedClasses[courseCode] = {};
+      Object.keys(selectedClasses[courseCode]).forEach((activity) => {
+        const classData = selectedClasses[courseCode][activity];
+        savedClasses[courseCode][activity] = classData ? classData.id : null;
+      });
+    });
+
+    storage.set('selectedClasses', savedClasses);
+  }, [selectedClasses]);
+
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -185,9 +274,15 @@ const App: FunctionComponent = () => {
           <Navbar
             setIsDarkMode={setIsDarkMode}
             isDarkMode={isDarkMode}
+            handleDrawerOpen={handleDrawerOpen}
+          />
+          <FriendsDrawer
+            isFriendsListOpen={isFriendsListOpen}
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={handleSetIsLoggedIn}
           />
           <ContentWrapper>
-            <Content>
+            <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>

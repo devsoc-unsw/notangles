@@ -120,7 +120,7 @@ const Weak = styled.span`
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
-  handleSelect(courseCode: string): void
+  handleSelect(data: string | string[]): void
   handleRemove(courseCode: string): void
   setErrorMsg(errorMsg: string): void
   setErrorVisibility(visibility: boolean): void
@@ -140,6 +140,26 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
 
+  const diffCourses = (a: {code: string}[], b: {code: string}[]) => {
+    const codes = a.map((x) => x.code);
+    return b.filter((x) => !codes.includes(x.code));
+  };
+
+  const checkExternallyAdded = () => {
+    const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
+    const coursesListCodes = coursesList.map((x) => x.code);
+
+    // if we have info about the new courses already fetched, update the value now
+    // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
+    if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
+      setSelectedValue([...selectedValue, ...coursesList.filter(
+        (course) => addedCodes.includes(course.code),
+      )]);
+    }
+  };
+
+  checkExternallyAdded();
+
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
@@ -151,25 +171,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     ));
   }
   defaultOptions = defaultOptions.slice(0, searchOptions.limit);
-
-  // maps a list of courses to a list of course codes
-  const getCourseCodes = <Course extends {
-    code: string
-  }>(courses: Course[]): string[] => (
-      courses.map((course: Course) => course.code)
-    );
-
-  // calls the callback for every course code in `b` that is not in `a`
-  const diffCourseCodes = (a: string[], b: string[], callback: (courseCode: string) => void) => {
-    let didCall = false;
-    b.filter((courseCode: string) => (
-      !a.includes(courseCode)
-    )).forEach((courseCode: string) => {
-      callback(courseCode);
-      didCall = true;
-    });
-    return didCall;
-  };
 
   const search = (query: string) => {
     query = query.trim();
@@ -191,64 +192,44 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     return newOptions;
   };
 
-  const onChange = (event: any, value: any) => {
-    const before = getCourseCodes<CourseData>(selectedCourses);
-    const after = getCourseCodes<CourseOverview>(value);
+  const onChange = (_: any, value: any) => {
+    const before = selectedCourses;
+    const after = value;
+
+    // find what was added/removed in the update
+    const added = diffCourses(before, after);
+
+    // return before the input value and options are reset
+    if (added.length === 0) return;
 
     if (searchTimer.current) {
-      // cancel whatever was added because new search results are pending
+      // run a search now and cancel the current search timer
+      const newOptions = search(inputValue);
+      clearInterval(searchTimer.current);
+      searchTimer.current = undefined;
 
-      // find what was added/removed in the update
-      const added: string[] = [];
-      const removed: string[] = [];
-      diffCourseCodes(before, after, (courseCode: string) => {
-        added.push(courseCode);
-      });
-      diffCourseCodes(after, before, (courseCode: string) => {
-        removed.push(courseCode);
-      });
+      // revert back to the original value by removing what was added
+      const originalValue = value.filter((course: CourseOverview) => (
+        !added.includes(course)
+      ));
 
-      // only interfere if something was not removed
-      if (removed.length === 0) {
-        // run a search now and cancel the current search timer
-        const newOptions = search(inputValue);
-        clearInterval(searchTimer.current);
-        searchTimer.current = undefined;
-        // we need to add something, and our best guess is the top
-        // result of the new search
-        const newSelectedOption = newOptions[0];
+      // we need to add something, and our best guess is the top
+      // result of the new search
+      const newSelectedOption = newOptions[0];
 
-        // revert back to the original value by removing what was added
-        const originalValue = value.filter((course: CourseOverview) => (
-          !added.includes(course.code)
-        ));
-
-        // check if the new option is a duplicate
-        if (selectedValue.includes(newSelectedOption)) {
-          // just revert it back without adding anything
-          setSelectedValue(originalValue);
-          // return before the input value and options are reset
-          return;
-        }
+      if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
         // otherwise, add the new option and call the handler
         setSelectedValue([...originalValue, newSelectedOption]);
         handleSelect(newSelectedOption.code);
       } else {
-        setSelectedValue(value);
-        removed.forEach((courseCode: string) => handleRemove(courseCode));
+        // just revert it back without adding anything
+        setSelectedValue(originalValue);
         // return before the input value and options are reset
         return;
       }
     } else {
-      diffCourseCodes(before, after, handleSelect);
-      const didRemove = diffCourseCodes(after, before, handleRemove);
-
-      setSelectedValue(value);
-
-      if (didRemove) {
-        // return before the input value and options are reset
-        return;
-      }
+      handleSelect(added.map((course) => course.code));
+      setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
     }
 
     setOptions(defaultOptions);
@@ -257,8 +238,9 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const fetchCoursesList = async () => {
     try {
-      const fetchedCoursesList = await getCoursesList('2020', 'T3');
+      const fetchedCoursesList = await getCoursesList('2021', 'T1');
       setCoursesList(fetchedCoursesList);
+      checkExternallyAdded();
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
     } catch (e) {
       if (e instanceof NetworkError) {
@@ -300,7 +282,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         inputValue={inputValue}
         // prevent built-in option filtering
         filterOptions={(o) => o}
-
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>
@@ -314,7 +295,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             <Weak>{option.name}</Weak>
           </StyledOption>
         )}
-
         renderInput={(params) => (
           <StyledTextField
             {...params}
@@ -347,7 +327,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             }}
           />
         )}
-
         renderTags={(value: CoursesList, getTagProps) => (
           value.map((option: CourseOverview, index: number) => (
             <StyledChip
@@ -356,6 +335,10 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
               backgroundColor={assignedColors[option.code]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
+              onDelete={() => {
+                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                handleRemove(option.code);
+              }}
             />
           ))
         )}
