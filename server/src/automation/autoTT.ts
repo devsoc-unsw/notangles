@@ -126,10 +126,24 @@ export const autoTT = async (courses: autoCourses) => {
       maxScore = score
     }
   })
+
   bestTT.forEach(c => {
     console.log("Class")
     console.log(c)
+    c.time.forEach(t => {
+      console.log(t)
+    })
   })
+
+  let ret = {}
+  bestTT.forEach(act => {
+    if (ret[act.code] === undefined) {
+      ret[act.code] = {}
+    }
+    ret[act.code][act.activity] = act.id
+  })
+  console.log(ret)
+  return ret
 }
 
 const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index : number, criteria : {}, includeClashes : boolean) => {
@@ -163,6 +177,7 @@ const fillTT = (classDict : Record<string, sortClass[]>, TT : sortClass[], index
       }
     }
   })
+
   return bestTT
 }
 
@@ -301,7 +316,7 @@ const request: autoCourses = {
   ],
   year: 2020,
   term: 'T3',
-  criteria: { daysAtUni: -10, napTime: 1, breakTime: 5 },
+  criteria: { napTime: -10 },
   includeClashes: false,
 }
 
