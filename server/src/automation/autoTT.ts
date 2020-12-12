@@ -127,14 +127,6 @@ export const autoTT = async (courses: autoCourses) => {
     }
   })
 
-  bestTT.forEach(c => {
-    console.log("Class")
-    console.log(c)
-    c.time.forEach(t => {
-      console.log(t)
-    })
-  })
-
   let ret = {}
   bestTT.forEach(act => {
     if (ret[act.code] === undefined) {
@@ -142,7 +134,7 @@ export const autoTT = async (courses: autoCourses) => {
     }
     ret[act.code][act.activity] = act.id
   })
-  console.log(ret)
+
   return ret
 }
 
@@ -302,22 +294,3 @@ const calc = (TT : sortClass[], criteria : {}) : number => {
 
   return score
 }
-
-const request: autoCourses = {
-  courses: [
-    {
-      code: 'MATH1081',
-      exclude: [],
-    },
-    {
-      code: 'COMP1511',
-      exclude: ["Lecture"],
-    }
-  ],
-  year: 2020,
-  term: 'T3',
-  criteria: { napTime: -10 },
-  includeClashes: false,
-}
-
-autoTT(request)
