@@ -84,7 +84,7 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             <Weak>
               (
               {termName}
-              ,
+              {', '}
               {year}
               )
             </Weak>
