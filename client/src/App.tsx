@@ -19,14 +19,17 @@ import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import FriendsDrawer from './components/friends/Friends';
+import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
 import { darkTheme, lightTheme } from './constants/theme';
+import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
+
+const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === "true";
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -43,7 +46,7 @@ const ContentWrapper = styled(Box)`
 
   display: flex;
   flex-direction: row-reverse;
-  justify-content: flex-start;
+  justify-content: ${IS_PREVIEW ? 'flex-start' : 'center'};
 
   background-color: ${(props) => props.theme.palette.background.default};
   color: ${(props) => props.theme.palette.text.primary};
@@ -53,8 +56,17 @@ interface StyledContentProps {
   drawerOpen: boolean;
 }
 
+const getContentWidth = (drawerOpen: boolean) => {
+  let contentWidth = "1400px";
+  if (IS_PREVIEW) {
+    contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
+  }
+  return contentWidth;
+}
+
 const Content = styled(Box)<StyledContentProps>`
-  width: ${(props) => (props.drawerOpen ? 'calc(100% - 240px)' : '100%')};
+  width: ${(props) => getContentWidth(props.drawerOpen)};
+  max-width: 100%;
   transition: width 0.2s;
 
   display: grid;
@@ -85,7 +97,7 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(true);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(IS_PREVIEW);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const assignedColors = useColorMapper(
@@ -164,24 +176,22 @@ const App: FunctionComponent = () => {
     data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void,
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-    try {
-      Promise.all(
-        codes.map((code) => getCourseInfo('2021', 'T1', code)),
-      ).then((result) => {
-        const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+    Promise.all(
+      codes.map((code) => getCourseInfo(year, term, code)),
+    ).then((result) => {
+      const addedCourses = result as CourseData[];
+      const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-        setSelectedCourses(newSelectedCourses);
+      setSelectedCourses(newSelectedCourses);
 
-        if (!noInit) addedCourses.forEach((course) => initCourse(course));
-        if (callback) callback(newSelectedCourses);
-      });
-    } catch (e) {
+      if (!noInit) addedCourses.forEach((course) => initCourse(course));
+      if (callback) callback(newSelectedCourses);
+    }).catch((e) => {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
         setErrorVisibility(true);
       }
-    }
+    });
   };
 
   const handleDrawerOpen = () => {
@@ -276,11 +286,15 @@ const App: FunctionComponent = () => {
             isDarkMode={isDarkMode}
             handleDrawerOpen={handleDrawerOpen}
           />
-          <FriendsDrawer
-            isFriendsListOpen={isFriendsListOpen}
-            isLoggedIn={isLoggedIn}
-            setIsLoggedIn={handleSetIsLoggedIn}
-          />
+          {
+            IS_PREVIEW && (
+              <FriendsDrawer
+                isFriendsListOpen={isFriendsListOpen}
+                isLoggedIn={isLoggedIn}
+                setIsLoggedIn={handleSetIsLoggedIn}
+              />
+            )
+          }
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>

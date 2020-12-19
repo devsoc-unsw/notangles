@@ -23,7 +23,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ProfileSettings from './ProfileSettings';
 import storage from '../../utils/storage';
 
-const drawerWidth = 240;
+export const drawerWidth = process.env.REACT_APP_SHOW_PREVIEW === "true" ? 240 : 0;
 const loggedOutImgUrl = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
 
 const StyledDrawer = styled(Drawer)`

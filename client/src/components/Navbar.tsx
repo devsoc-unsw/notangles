@@ -14,8 +14,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import About from './About';
-
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
+import { year, termName } from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
@@ -49,6 +49,11 @@ const NavButton = styled(Button)`
   margin-right: 20px;
 `;
 
+const Weak = styled.span`
+  font-weight: 300;
+  opacity: 0.8;
+`;
+
 interface NavBarProps {
   setIsDarkMode(mode: boolean): void,
   isDarkMode: boolean,
@@ -74,7 +79,7 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
           </IconButton>
           <LogoImg src={CSESocLogo} />
           <NavbarTitle variant="h6">
-            Notangles
+            Notangles <Weak>({termName}, {year})</Weak>
           </NavbarTitle>
 
           <DarkModeButton
