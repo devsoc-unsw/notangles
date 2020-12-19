@@ -29,7 +29,7 @@ import { darkTheme, lightTheme } from './constants/theme';
 import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
-const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === "true";
+const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === 'true';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -57,12 +57,12 @@ interface StyledContentProps {
 }
 
 const getContentWidth = (drawerOpen: boolean) => {
-  let contentWidth = "1400px";
+  let contentWidth = '1400px';
   if (IS_PREVIEW) {
     contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
   }
   return contentWidth;
-}
+};
 
 const Content = styled(Box)<StyledContentProps>`
   width: ${(props) => getContentWidth(props.drawerOpen)};

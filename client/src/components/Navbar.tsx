@@ -79,7 +79,15 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
           </IconButton>
           <LogoImg src={CSESocLogo} />
           <NavbarTitle variant="h6">
-            Notangles <Weak>({termName}, {year})</Weak>
+            Notangles
+            {' '}
+            <Weak>
+              (
+              {termName}
+              ,
+              {year}
+              )
+            </Weak>
           </NavbarTitle>
 
           <DarkModeButton
