@@ -88,11 +88,9 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
           <NavbarTitle variant="h6">
             Notangles
             <Weak>
-              (
               {termName}
               {', '}
               {year}
-              )
             </Weak>
           </NavbarTitle>
 
