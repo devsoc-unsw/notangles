@@ -1,3 +1,8 @@
+export const year = '2021';
+const termNumber = 1;
+export const term = `T${termNumber}`;
+export const termName = `Term ${termNumber}`;
+
 export const colors: string[] = [
   '#009689', // dark green
   '#9E28AE', // violet

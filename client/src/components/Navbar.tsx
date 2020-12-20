@@ -14,13 +14,13 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import About from './About';
-
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
+import { year, termName } from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
   margin-right: 20px;
-  margin-left: 20px;
+  margin-left: ${process.env.REACT_APP_SHOW_PREVIEW === 'true' ? 20 : 0}px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
@@ -49,6 +49,16 @@ const NavButton = styled(Button)`
   margin-right: 20px;
 `;
 
+const Weak = styled.span`
+  font-weight: 300;
+  opacity: 0.8;
+  margin-left: 15px;
+  font-size: 90%;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+`;
+
 interface NavBarProps {
   setIsDarkMode(mode: boolean): void,
   isDarkMode: boolean,
@@ -64,17 +74,24 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
     <NavbarBox>
       <StyledNavBar>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-          >
-            <MenuIcon />
-          </IconButton>
+          {process.env.REACT_APP_SHOW_PREVIEW === 'true' && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <LogoImg src={CSESocLogo} />
           <NavbarTitle variant="h6">
             Notangles
+            <Weak>
+              {termName}
+              {', '}
+              {year}
+            </Weak>
           </NavbarTitle>
 
           <DarkModeButton

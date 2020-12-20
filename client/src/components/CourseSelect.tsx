@@ -17,6 +17,7 @@ import {
 import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
+import { year, term } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
 import NetworkError from '../interfaces/NetworkError';
 
@@ -238,7 +239,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const fetchCoursesList = async () => {
     try {
-      const fetchedCoursesList = await getCoursesList('2021', 'T1');
+      const fetchedCoursesList = await getCoursesList(year, term);
       setCoursesList(fetchedCoursesList);
       checkExternallyAdded();
       fuzzy = new Fuse(fetchedCoursesList, searchOptions);
