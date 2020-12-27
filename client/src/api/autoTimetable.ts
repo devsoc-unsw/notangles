@@ -23,7 +23,7 @@ const autoTimetable = async (
       exclude: [],
     };
     Object.entries(selectedCourse.activities).forEach(([activity]) => {
-      if (selectedClasses[selectedCourse.code][activity] != null) {
+      if (selectedClasses[selectedCourse.code][activity] == null) {
         autoCourse.exclude = [...autoCourse.exclude, activity];
       }
     });
