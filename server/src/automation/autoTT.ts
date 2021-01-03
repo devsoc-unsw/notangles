@@ -386,22 +386,3 @@ const breakTime = ({TT, criteria, maxVal}: CalcFuncParams): number => {
 const extractTime = (time: string): number => {
   return (parseInt(time.split(":")[0]) * 60) + parseInt(time.split(":")[1])
 }
-
-const request: autoCourses = {
-  courses: [
-    {
-      code: 'MATH1081',
-      exclude: [],
-    },
-    {
-      code: 'COMP1511',
-      exclude: ['Lecture'],
-    },
-  ],
-  year: 2020,
-  term: 'T3',
-  criteria: { napTime: -10 },
-  includeClashes: false,
-}
-
-autoTT(request).then((res) => console.log(res))
