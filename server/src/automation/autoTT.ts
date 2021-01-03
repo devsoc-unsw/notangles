@@ -109,25 +109,23 @@ export const autoTT = async (courses: autoCourses) => {
     })
   })
 
-  console.log(classGroups)
-
   const classDict: Record<string, SortClass[]> = {}
   dbCourses.forEach((course) => {
     course.classes.forEach((clas) => {
       let exclude = false
       courses.courses.forEach((c) => {
-        if (c.code == course.courseCode) {
+        if (c.code === course.courseCode) {
           c.exclude.forEach((act) => {
-            if (clas.activity == act) {
+            if (clas.activity === act) {
               exclude = true
             }
           })
         }
       })
 
-      if (exclude == false) {
+      if (!exclude) {
         const dictString = course.courseCode + '-' + clas.activity
-        if (classDict[dictString] === undefined) {
+        if (!classDict[dictString]) {
           classDict[dictString] = []
         }
 
@@ -196,15 +194,15 @@ const fillTT = (
 
     let clashing = false
 
-    if (includeClashes == false) {
+    if (includeClashes === false) {
       newTT.forEach((t) => {
-        if (clash(clas.time, t.time) == true) {
+        if (clash(clas.time, t.time) === true) {
           clashing = true
         }
       })
     }
 
-    if (clashing == false) {
+    if (clashing === false) {
       newTT.push(clas)
       newTT = fillTT(classDict, newTT, index + 1, criteria, includeClashes)
       let score = calc(newTT, criteria)
@@ -223,19 +221,11 @@ export const clash = (time1: DbTimes[], time2: DbTimes[]) => {
   let clashing = false
   time1.forEach((t1) => {
     time2.forEach((t2) => {
-      if (t1.day == t2.day) {
-        const t1start: number =
-          parseInt(t1.time.start.split(':')[0]) +
-          parseInt(t1.time.start.split(':')[1]) / 60
-        const t1end: number =
-          parseInt(t1.time.end.split(':')[0]) +
-          parseInt(t1.time.end.split(':')[1]) / 60
-        const t2start: number =
-          parseInt(t2.time.start.split(':')[0]) +
-          parseInt(t2.time.start.split(':')[1]) / 60
-        const t2end: number =
-          parseInt(t2.time.end.split(':')[0]) +
-          parseInt(t2.time.end.split(':')[1]) / 60
+      if (t1.day === t2.day) {
+        const t1start: number = extractTime(t1.time.start)
+        const t1end: number = extractTime(t1.time.end)
+        const t2start: number = extractTime(t2.time.start)
+        const t2end: number = extractTime(t2.time.end)
         if (t1start >= t2start && t1start < t2end) {
           clashing = true
         }
@@ -254,7 +244,7 @@ export const clash = (time1: DbTimes[], time2: DbTimes[]) => {
 
         // check weeks
 
-        if (clashing == true) {
+        if (clashing === true) {
           return clashing
         }
       }
@@ -265,13 +255,17 @@ export const clash = (time1: DbTimes[], time2: DbTimes[]) => {
 }
 
 const calc = (TT: SortClass[], criteria: {}): number => {
+  // Times are in minutes
+  const maxBreakTime = 11 * 60
+  const earliestStartTime = 8 * 60
+  const latestTime = 21 * 60
   let score = 0
   const maxVal = 10
-  if (criteria['daysAtUni'] != undefined) {
+  if (criteria['daysAtUni'] !== undefined) {
     const days: Record<string, boolean> = {}
     TT.forEach((act) => {
       act.time.forEach((t) => {
-        if (days[t.day] == undefined) {
+        if (days[t.day] === undefined) {
           days[t.day] = true
         }
       })
@@ -291,14 +285,14 @@ const calc = (TT: SortClass[], criteria: {}): number => {
     }
   }
 
-  if (criteria['napTime'] != undefined) {
+  if (criteria['napTime'] !== undefined) {
     let max: number = 0
     let total = 0
     TT.forEach((clas) => {
       clas.time.forEach((t) => {
-        const start: number = parseInt(t.time.start.split(':')[0])
-        total += start - 9
-        max += 12
+        const start: number = extractTime(t.time.start)
+        total += start - earliestStartTime
+        max += (latestTime - earliestStartTime)
       })
     })
     if (criteria['napTime'] < 0) {
@@ -310,33 +304,25 @@ const calc = (TT: SortClass[], criteria: {}): number => {
     }
   }
 
-  if (criteria['breakTime'] != undefined) {
+  if (criteria['breakTime'] !== undefined) {
     let total = 0
     let max = 0
     TT.forEach((clas1) => {
       clas1.time.forEach((t1) => {
         TT.forEach((clas2) => {
           clas2.time.forEach((t2) => {
-            if (t1.day == t2.day) {
-              const t1start: number =
-                parseInt(t1.time.start.split(':')[0]) +
-                parseInt(t1.time.start.split(':')[1]) / 60
-              const t1end: number =
-                parseInt(t1.time.end.split(':')[0]) +
-                parseInt(t1.time.end.split(':')[1]) / 60
-              const t2start: number =
-                parseInt(t2.time.start.split(':')[0]) +
-                parseInt(t2.time.start.split(':')[1]) / 60
-              const t2end: number =
-                parseInt(t2.time.end.split(':')[0]) +
-                parseInt(t2.time.end.split(':')[1]) / 60
+            if (t1.day === t2.day) {
+              const t1start: number = extractTime(t1.time.start)
+              const t1end: number = extractTime(t1.time.end)
+              const t2start: number = extractTime(t2.time.start)
+              const t2end: number = extractTime(t2.time.end)
 
               if (t1start < t2start) {
                 total += t2start - t1end
               } else {
                 total += t1start - t2end
               }
-              max += 11
+              max += maxBreakTime
             }
           })
         })
@@ -355,21 +341,6 @@ const calc = (TT: SortClass[], criteria: {}): number => {
   return score
 }
 
-const request: autoCourses = {
-  courses: [
-    {
-      code: 'MATH1081',
-      exclude: [],
-    },
-    {
-      code: 'COMP1511',
-      exclude: ['Lecture'],
-    },
-  ],
-  year: 2020,
-  term: 'T3',
-  criteria: { napTime: -10 },
-  includeClashes: false,
+const extractTime = (time: string): number => {
+  return (parseInt(time.split(":")[0]) * 60) + parseInt(time.split(":")[1])
 }
-
-autoTT(request).then((res) => console.log(res))
