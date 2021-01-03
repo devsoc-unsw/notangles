@@ -16,9 +16,6 @@ RUN npm install
 # Copy the entire project into the container
 COPY . .
 
-# Build server and install npm serve
-RUN npm run build
-
 EXPOSE 3000
 
 # Run the server
