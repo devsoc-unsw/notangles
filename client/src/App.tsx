@@ -29,8 +29,6 @@ import { darkTheme, lightTheme } from './constants/theme';
 import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
-console.log(process.env);
-
 const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === 'true';
 
 const StyledApp = styled(Box)`

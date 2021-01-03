@@ -1,6 +1,9 @@
 # Grab the latest Node base image
 FROM node:latest
 
+# Install serve
+RUN npm install -g serve
+
 # Set the current working directory inside the container
 WORKDIR /server
 
@@ -15,9 +18,8 @@ COPY . .
 
 # Build server and install npm serve
 RUN npm run build
-RUN npm install -g serve
 
 EXPOSE 3000
 
 # Run the server
-CMD ["serve", "-s","build", "-l", "3000"]
+CMD ["/bin/bash", "-c", "'npm build && serve -s build -l 3000'"]
