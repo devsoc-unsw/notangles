@@ -16,6 +16,7 @@ import {
 } from '@material-ui/icons';
 import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
+import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { year, term } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
@@ -24,7 +25,6 @@ import NetworkError from '../interfaces/NetworkError';
 const SEARCH_DELAY = 300;
 
 interface SearchOptions {
-  limit: number
   threshold: number
   keys: {
     name: string
@@ -33,7 +33,6 @@ interface SearchOptions {
 }
 
 const searchOptions: SearchOptions = {
-  limit: 6,
   threshold: 0.4,
   keys: [
     {
@@ -171,7 +170,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       && !selectedValue.includes(course)
     ));
   }
-  defaultOptions = defaultOptions.slice(0, searchOptions.limit);
+  // defaultOptions = defaultOptions.slice(0, searchOptions.limit);
 
   const search = (query: string) => {
     query = query.trim();
@@ -185,9 +184,9 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       query,
     ).map(
       (result) => result.item,
-    ).slice(
+    )/*.slice(
       0, searchOptions.limit,
-    );
+    )*/;
 
     setOptions(newOptions);
     return newOptions;
@@ -269,6 +268,26 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
+  const ListboxComponent: React.FC = ({ children }) => {
+    const getItemSize = () => 50;
+
+    const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) => (
+      React.cloneElement(data[index], {style})
+    )
+
+    return (
+      <VariableSizeList
+        height={300}
+        itemData={children}
+        itemCount={Array.isArray(children) ? children.length : 0}
+        itemSize={getItemSize}
+      >
+        {Row}
+      </VariableSizeList>
+    );
+
+  };
+
   return (
     <StyledSelect>
       <Autocomplete
@@ -283,6 +302,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         inputValue={inputValue}
         // prevent built-in option filtering
         filterOptions={(o) => o}
+        ListboxComponent={ListboxComponent}
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>
