@@ -7,7 +7,7 @@ import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 
-export const rowHeight = 94;
+export const rowHeight = 70;
 
 const StyledTimetable = styled(Box) <{
   rows: number
