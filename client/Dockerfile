@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the server
-CMD ["npm build; serve -s build -l 3000"]
+CMD ["sh", "-c", "'apt-get install npm && npm build && serve -s build -l 3000'"]
