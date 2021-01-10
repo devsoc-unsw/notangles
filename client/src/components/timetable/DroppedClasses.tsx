@@ -82,12 +82,12 @@ const StyledCourseClass = styled.div<{
     classTransformStyle(cardData, earliestStartTime, days, y)
   )};
   transition: ${defaultTransition};
-  
+
   // position over timetable borders
   position: relative;
   width:  calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
-  
+
   padding: ${classMargin}px;
   padding-right:  ${classMargin + 1 / devicePixelRatio}px;
   padding-bottom: ${classMargin + 1 / devicePixelRatio}px;

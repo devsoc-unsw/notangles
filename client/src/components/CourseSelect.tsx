@@ -1,3 +1,5 @@
+// excerpts from [https://codesandbox.io/s/material-demo-33l5y]
+
 import React, { useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
@@ -117,6 +119,11 @@ const Weak = styled.span`
   ${weakStyle}
 `;
 
+const StyledUl = styled.ul`
+  padding: 0;
+  margin: 0;
+`;
+
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
@@ -184,9 +191,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       query,
     ).map(
       (result) => result.item,
-    )/*.slice(
-      0, searchOptions.limit,
-    )*/;
+    );
 
     setOptions(newOptions);
     return newOptions;
@@ -268,25 +273,56 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
-  const ListboxComponent: React.FC = ({ children }) => {
-    const getItemSize = () => 50;
+  const OuterElementContext = React.createContext({});
 
-    const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) => (
-      React.cloneElement(data[index], {style})
-    )
+  // React.DetailedHTMLProps<
+  const OuterElementType = React.forwardRef<
+  HTMLDivElement, React.HTMLProps<HTMLDivElement>
+  >((props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  });
 
-    return (
-      <VariableSizeList
-        height={300}
-        itemData={children}
-        itemCount={Array.isArray(children) ? children.length : 0}
-        itemSize={getItemSize}
-      >
-        {Row}
-      </VariableSizeList>
-    );
+  const ListboxComponent = React.useCallback(
+    React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+      const { children, ...other } = props;
 
-  };
+      const itemCount = Array.isArray(children) ? children.length : 0;
+      const getItemSize = () => 45;
+      const maxResultsVisible = 6;
+      const paddingTop = 7;
+      const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
+
+      const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) => (
+        React.cloneElement(data[index], {
+          style: {
+            ...style,
+            top: typeof style.top === 'number' ? style.top + paddingTop : 0,
+          },
+        })
+      );
+
+      return (
+        <div ref={ref} style={{ overflow: 'hidden' }}>
+          <OuterElementContext.Provider value={other}>
+            <VariableSizeList
+              style={{ overflowX: 'hidden' }}
+              width="100%"
+              height={height}
+              itemData={children}
+              itemCount={itemCount}
+              itemSize={getItemSize}
+              outerElementType={OuterElementType}
+              innerElementType={StyledUl}
+              overscanCount={5}
+            >
+              {Row}
+            </VariableSizeList>
+          </OuterElementContext.Provider>
+        </div>
+      );
+    }), [],
+  );
 
   return (
     <StyledSelect>
