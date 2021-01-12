@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 3000
 
 # Run the server
-CMD ["npm", "run deploy"]
+ENTRYPOINT [ "/server/scripts/deploy.sh" ]
