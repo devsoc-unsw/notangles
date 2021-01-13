@@ -183,6 +183,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       && !selectedValue.includes(course)
     ));
   }
+  // defaultOptions = defaultOptions.slice(0, searchOptions.limit);
 
   const search = (query: string) => {
     query = query.trim();
