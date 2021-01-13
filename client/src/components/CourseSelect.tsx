@@ -148,10 +148,10 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const setOptions = (options: CoursesList) => {
-    // setTimeout(() => listRef?.current?.scrollTo(0), 2000);
-    setOptionsState(options);
-  }
+  const setOptions = (newOptions: CoursesList) => {
+    listRef?.current?.scrollTo(0);
+    setOptionsState(newOptions);
+  };
 
   const diffCourses = (a: {code: string}[], b: {code: string}[]) => {
     const codes = a.map((x) => x.code);
@@ -311,7 +311,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         <div ref={ref} style={{ overflow: 'hidden' }}>
           <OuterElementContext.Provider value={other}>
             <VariableSizeList
-              // ref={listRef}
+              ref={listRef}
               style={{ overflowX: 'hidden' }}
               width="100%"
               height={height}
@@ -334,7 +334,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     <StyledSelect>
       <Autocomplete
         multiple
-        autoHighlight
+        // autoHighlight
         disableClearable
         disableListWrap
         noOptionsText="No Results"
