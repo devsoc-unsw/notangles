@@ -2,6 +2,7 @@ import { Activity } from '@notangles/common'
 import Database from '../database'
 import { dbReadParams } from '../database'
 import { exit } from 'process'
+import { time } from 'console'
 
 interface DbCourse {
   courseCode: string
@@ -192,19 +193,19 @@ const fillTT = ({
 
     let clashing = false
 
-    if (includeClashes === false) {
+    if (!includeClashes) {
       newTT.forEach((t) => {
         const clashParams : ClashParams = {
           time1: clas.time,
           time2: t.time
         }
-        if (clash(clashParams) === true) {
+        if (clash(clashParams)) {
           clashing = true
         }
       })
     }
 
-    if (clashing === false) {
+    if (!clashing) {
       newTT.push(clas)
       const fillTTParams: FillTTParams = {
         classGroups: classGroups,
@@ -214,7 +215,6 @@ const fillTT = ({
         includeClashes: includeClashes
       }
 
-      newTT = fillTT(fillTTParams)
       newTT = fillTT(fillTTParams)
       const calcParams: CalcParams = {
         TT: newTT,
@@ -234,13 +234,13 @@ const fillTT = ({
 export const clash = ({time1, time2}: ClashParams): boolean => {
   // need to convert to numbers
   let clashing = false
-  time1.forEach((t1) => {
-    time2.forEach((t2) => {
-      if (t1.day === t2.day) {
-        const t1start: number = extractTime(t1.time.start)
-        const t1end: number = extractTime(t1.time.end)
-        const t2start: number = extractTime(t2.time.start)
-        const t2end: number = extractTime(t2.time.end)
+  for (let t1 = 1; t1 < time.length; t1++) {
+    for (let t2 = 1; t2 < time.length; t2++) {
+      if (time1[t1].day === time2[t2].day) {
+        const t1start: number = extractTime(time1[t1].time.start)
+        const t1end: number = extractTime(time1[t1].time.end)
+        const t2start: number = extractTime(time2[t2].time.start)
+        const t2end: number = extractTime(time2[t2].time.end)
         if (t1start >= t2start && t1start < t2end) {
           clashing = true
         }
@@ -257,40 +257,14 @@ export const clash = ({time1, time2}: ClashParams): boolean => {
           clashing = true
         }
 
-        // check weeks
-
         if (clashing === true) {
           return clashing
         }
       }
-    })
-  })
+    }
+  }
 
   return clashing
-}
-
-const calc = ({TT, criteria}: CalcParams): number => {
-  let score: number = 0
-  const maxVal: number = 10
-  const calcFuncParams: CalcFuncParams = {
-    TT: TT,
-    criteria: criteria,
-    maxVal: maxVal
-  }
-
-  if (criteria['daysAtUni'] !== undefined) {
-    score += daysAtUni(calcFuncParams)
-  }
-
-  if (criteria['napTime'] !== undefined) {
-    score += napTime(calcFuncParams)
-  }
-
-  if (criteria['breakTime'] !== undefined) {
-    score += breakTime(calcFuncParams)
-  }
-
-  return score
 }
 
 const daysAtUni = ({TT, criteria, maxVal}: CalcFuncParams): number => {
@@ -299,7 +273,7 @@ const daysAtUni = ({TT, criteria, maxVal}: CalcFuncParams): number => {
   const days: Record<string, boolean> = {}
   TT.forEach((act) => {
     act.time.forEach((t) => {
-      if (days[t.day] === undefined) {
+      if (!days[t.day]) {
         days[t.day] = true
       }
     })
@@ -382,6 +356,22 @@ const breakTime = ({TT, criteria, maxVal}: CalcFuncParams): number => {
 
   return score
 }
+
+const criterias: Record<string, Function> = { daysAtUni, napTime, breakTime }
+
+const calc = ({TT, criteria}: CalcParams): number => {
+  let score: number = 0
+  const maxVal: number = 10
+  const calcFuncParams: CalcFuncParams = {
+    TT: TT,
+    criteria: criteria,
+    maxVal: maxVal
+  }
+
+  Object.keys(criterias).forEach((key) => { score += criterias[key](calcFuncParams) } )
+  return score
+}
+
 
 const extractTime = (time: string): number => {
   return (parseInt(time.split(":")[0]) * 60) + parseInt(time.split(":")[1])
