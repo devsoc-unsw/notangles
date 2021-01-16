@@ -31,6 +31,10 @@ import NetworkError from './interfaces/NetworkError';
 const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === 'true';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
+  body {
+    background-color: ${(props) => props.theme.palette.background.default};
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
@@ -61,7 +65,6 @@ const ContentWrapper = styled(Box)`
   flex-direction: row-reverse;
   justify-content: ${IS_PREVIEW ? 'flex-start' : 'center'};
 
-  background-color: ${(props) => props.theme.palette.background.default};
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
