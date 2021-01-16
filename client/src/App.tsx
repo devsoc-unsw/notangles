@@ -1,5 +1,4 @@
 import React, { useEffect, FunctionComponent, useState } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
 import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
@@ -14,22 +13,36 @@ import {
   Activity,
   InInventory,
 } from '@notangles/common';
+import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-
 import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
-import { darkTheme, lightTheme } from './constants/theme';
+import { darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
 const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === 'true';
+
+const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.palette.background.default};
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.palette.secondary.main};
+  }
+`;
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -280,6 +293,7 @@ const App: FunctionComponent = () => {
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <GlobalStyle />
         <StyledApp>
           <Navbar
             setIsDarkMode={setIsDarkMode}

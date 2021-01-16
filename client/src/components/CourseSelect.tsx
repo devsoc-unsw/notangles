@@ -1,3 +1,5 @@
+// excerpts from [https://codesandbox.io/s/material-demo-33l5y]
+
 import React, { useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
@@ -16,6 +18,7 @@ import {
 } from '@material-ui/icons';
 import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
+import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { year, term } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
@@ -24,7 +27,6 @@ import NetworkError from '../interfaces/NetworkError';
 const SEARCH_DELAY = 300;
 
 interface SearchOptions {
-  limit: number
   threshold: number
   keys: {
     name: string
@@ -33,7 +35,6 @@ interface SearchOptions {
 }
 
 const searchOptions: SearchOptions = {
-  limit: 6,
   threshold: 0.4,
   keys: [
     {
@@ -118,6 +119,11 @@ const Weak = styled.span`
   ${weakStyle}
 `;
 
+const StyledUl = styled.ul`
+  padding: 0;
+  margin: 0;
+`;
+
 interface CourseSelectProps {
   selectedCourses: CourseData[]
   assignedColors: Record<string, string>
@@ -136,10 +142,16 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   setErrorVisibility,
 }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
-  const [options, setOptions] = useState<CoursesList>([]);
+  const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
+  const listRef = useRef<VariableSizeList | null>(null);
+
+  const setOptions = (newOptions: CoursesList) => {
+    listRef?.current?.scrollTo(0);
+    setOptionsState(newOptions);
+  };
 
   const diffCourses = (a: {code: string}[], b: {code: string}[]) => {
     const codes = a.map((x) => x.code);
@@ -171,7 +183,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       && !selectedValue.includes(course)
     ));
   }
-  defaultOptions = defaultOptions.slice(0, searchOptions.limit);
 
   const search = (query: string) => {
     query = query.trim();
@@ -185,8 +196,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       query,
     ).map(
       (result) => result.item,
-    ).slice(
-      0, searchOptions.limit,
     );
 
     setOptions(newOptions);
@@ -269,12 +278,65 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
+  const OuterElementContext = React.createContext({});
+
+  // React.DetailedHTMLProps<
+  const OuterElementType = React.forwardRef<
+  HTMLDivElement, React.HTMLProps<HTMLDivElement>
+  >((props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  });
+
+  const ListboxComponent = React.useCallback(
+    React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+      const { children, ...other } = props;
+
+      const itemCount = Array.isArray(children) ? children.length : 0;
+      const getItemSize = () => 45;
+      const maxResultsVisible = 6;
+      const paddingTop = 7;
+      const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
+
+      const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) => (
+        React.cloneElement(data[index], {
+          style: {
+            ...style,
+            top: typeof style.top === 'number' ? style.top + paddingTop : 0,
+          },
+        })
+      );
+
+      return (
+        <div ref={ref} style={{ overflow: 'hidden' }}>
+          <OuterElementContext.Provider value={other}>
+            <VariableSizeList
+              ref={listRef}
+              style={{ overflowX: 'hidden' }}
+              width="100%"
+              height={height}
+              itemData={children}
+              itemCount={itemCount}
+              itemSize={getItemSize}
+              outerElementType={OuterElementType}
+              innerElementType={StyledUl}
+              overscanCount={5}
+            >
+              {Row}
+            </VariableSizeList>
+          </OuterElementContext.Provider>
+        </div>
+      );
+    }), [],
+  );
+
   return (
     <StyledSelect>
       <Autocomplete
         multiple
-        autoHighlight
+        // autoHighlight
         disableClearable
+        disableListWrap
         noOptionsText="No Results"
         selectOnFocus={false}
         options={options}
@@ -283,6 +345,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         inputValue={inputValue}
         // prevent built-in option filtering
         filterOptions={(o) => o}
+        ListboxComponent={ListboxComponent}
         renderOption={(option) => (
           <StyledOption>
             <StyledIcon>

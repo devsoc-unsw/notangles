@@ -3,6 +3,30 @@ import { createMuiTheme } from '@material-ui/core';
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
 
+export interface ThemeType {
+  palette: {
+    type: string | undefined,
+    primary: {
+      main: string,
+    },
+    background: {
+      default: string,
+      paper: string,
+    },
+    secondary: {
+      main: string,
+      dark: string,
+      light: string,
+    },
+    action: {
+      disabled: string,
+    },
+  },
+  shape: {
+    borderRadius: string,
+  },
+}
+
 const baseTheme = ({
   type,
   background,
