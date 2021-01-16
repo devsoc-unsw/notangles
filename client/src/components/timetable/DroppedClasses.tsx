@@ -65,7 +65,7 @@ export const classTransformStyle = (
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`
 );
 
-const classMargin = 2;
+const classMargin = 1;
 const transitionName = 'class';
 
 const StyledCourseClass = styled.div<{
@@ -145,7 +145,7 @@ const courseClassInnerStyle = ({
   width: '100%',
   height: '100%',
   boxSizing: 'border-box' as 'border-box',
-  padding: '10px',
+  padding: 0,
   position: 'relative' as 'relative',
 });
 
@@ -155,6 +155,10 @@ const pStyle = {
   whiteSpace: 'nowrap' as 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+};
+
+const pStyleSmall = {
+  ...pStyle, fontSize: "85%"
 };
 
 const iconStyle = {
@@ -226,7 +230,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         </p>
         {isPeriod(cardData) && (
           <>
-            <p style={pStyle}>
+            <p style={pStyleSmall}>
               <PeopleAltIcon fontSize="inherit" style={iconStyle} />
               {' '}
               {' '}
@@ -241,7 +245,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
               {cardData.time.weeksString}
               )
             </p>
-            <p style={pStyle}>
+            <p style={pStyleSmall}>
               <LocationOnIcon fontSize="inherit" style={iconStyle} />
               {cardData.locationShort}
             </p>
