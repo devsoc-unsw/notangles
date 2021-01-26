@@ -139,7 +139,6 @@ export const autoTT = async (courses: autoCourses) => {
   let index: number = 0
   let bestTT: SortClass[] = []
 
-  //const key: string = Object.keys(classDict)[index]
   classGroups[index].forEach((clas) => {
     let newTT: SortClass[] = []
     newTT.push(clas)
@@ -357,7 +356,7 @@ const breakTime = ({TT, criteria, maxVal}: CalcFuncParams): number => {
   return score
 }
 
-const criterias: Record<string, Function> = { daysAtUni, napTime, breakTime }
+const criterias: Record<string, Function> = { "daysAtUni": daysAtUni, "napTime" : napTime, "breakTime" :breakTime }
 
 const calc = ({TT, criteria}: CalcParams): number => {
   let score: number = 0
@@ -368,7 +367,7 @@ const calc = ({TT, criteria}: CalcParams): number => {
     maxVal: maxVal
   }
 
-  Object.keys(criterias).forEach((key) => { score += criterias[key](calcFuncParams) } )
+  Object.keys(criteria).forEach((key) => { score += criterias[key](calcFuncParams) } )
   return score
 }
 
