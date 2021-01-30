@@ -1,8 +1,6 @@
 import { Activity } from '@notangles/common'
 import Database from '../database'
 import { dbReadParams } from '../database'
-import { exit } from 'process'
-import { time } from 'console'
 
 interface DbCourse {
   courseCode: string
@@ -92,7 +90,7 @@ export const autoTT = async (courses: autoCourses) => {
         return await Database.dbRead(args)
       } catch (error) {
         console.log('error')
-        exit(1)
+        return []
       }
     })
   )
@@ -233,8 +231,8 @@ const fillTT = ({
 export const clash = ({time1, time2}: ClashParams): boolean => {
   // need to convert to numbers
   let clashing = false
-  for (let t1 = 1; t1 < time.length; t1++) {
-    for (let t2 = 1; t2 < time.length; t2++) {
+  for (let t1 = 1; t1 < time1.length; t1++) {
+    for (let t2 = 1; t2 < time2.length; t2++) {
       if (time1[t1].day === time2[t2].day) {
         const t1start: number = extractTime(time1[t1].time.start)
         const t1end: number = extractTime(time1[t1].time.end)
