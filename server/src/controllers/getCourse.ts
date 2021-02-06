@@ -23,10 +23,10 @@ export const getCourse = async (req: Request, res: Response) => {
   }
 
   const course =
-    params.courseId === 'FLAG1337'
+    params.courseId === 'HACK1337'
       ? {
           _id: 'bruh',
-          courseCode: 'FLAG1337',
+          courseCode: 'HACK1337',
           name: '👀',
           school: 'School of Computer Sci & Eng',
           campus: 'Sydney',
