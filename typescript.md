@@ -29,7 +29,7 @@ printf("%s\n", "foo");
 TS
 ```ts
 console.log(42);
-console.log("foo");
+console.log('foo');
 ```
 
 ## Types
@@ -83,7 +83,7 @@ strlen(a); // 3
 
 TS
 ```ts
-let a = "foo";
+let a = 'foo';
 a.length; // 3
 ```
 
@@ -206,7 +206,7 @@ struct Course {
 }
 
 Course cs1511 = {
-	"Programming Fundamentals",
+	'Programming Fundamentals',
 	893
 };
 ```
@@ -220,7 +220,7 @@ type Course = {
 
 // could also use type inference
 let cs1511: Course = {
-	name: "Programming Fundamentals",
+	name: 'Programming Fundamentals',
 	students: 893
 }
 ```
@@ -299,12 +299,12 @@ TS
 ```ts
 let a: number | string;
 a = 42;
-a = "foo";
+a = 'foo';
 
-let b = "foo" | "bar";
-b = "foo";
-b = "bar";
-b = "baz"; // compile error
+let b = 'foo' | 'bar';
+b = 'foo';
+b = 'bar';
+b = 'baz'; // compile error
 ```
 
 ### Undefined & null
