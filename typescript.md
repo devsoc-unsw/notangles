@@ -99,7 +99,7 @@ printf("I love %d\n", a);
 
 TS
 ```ts
-let a = 49;
+const a = 49;
 console.log(`I love ${a}`);
 
 // not for only printing
@@ -116,8 +116,8 @@ bool a = true;
 
 TS
 ```ts
-let a: boolean = true;
-let b = true; // type inference
+const a: boolean = true;
+const b = true; // type inference
 ```
 
 ## Conditionals
@@ -151,9 +151,9 @@ int max = a > b ? a : b; // 2
 
 TS
 ```ts
-let a = 1;
-let b = 2;
-let max = a > b ? a : b; // 2
+const a = 1;
+const b = 2;
+const max = a > b ? a : b; // 2
 ```
 
 ## Functions
@@ -230,14 +230,67 @@ let cs1511: Course = {
 C
 ```c
 int a[3] = {1, 2, 3};
+
 a[42] = 4; // segmentation fault
 ```
 
 TS
 ```ts
-let a: number[] = [1, 2, 3];
+const a: number[] = [1, 2, 3];
+
 a[42] = 4;
 a; // [1, 2, 3, 4]
+```
+
+C
+```c
+int a[3] = {1, 2, 3};
+
+int i = 0;
+while (i < 3) {
+	int n = a[i];
+	printf("%d\n", n);
+	i++;
+}
+```
+
+TS
+```ts
+const a: number[] = [1, 2, 3];
+
+let i = 0;
+while (i < 3) {
+	const n = a[i];
+	console.log(n);
+	i++;
+}
+
+// preferred
+a.forEach((n) => {
+	console.log(n);
+});
+```
+
+C
+```c
+int a[3] = {1, 2, 3};
+
+int i = 0;
+while (i < 3) {
+	a[i] = a[i] * 2;
+	i++;
+}
+
+a; // {2, 4, 6}
+```
+
+TS
+```ts
+const a: number[] = [1, 2, 3];
+const a2 = a.map((n) => n * 2);
+
+a;  // [1, 2, 3]
+a2; // [2, 4, 6]
 ```
 
 ### Union types
