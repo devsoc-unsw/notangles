@@ -101,7 +101,10 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
 };
 
 const generateHours = (range: number[], is12HourMode: boolean): string[] => {
-  const [min, max] = range;
+  let [min, max] = range;
+  min = Math.floor(min);
+  max = Math.ceil(max);
+  console.log(range);
   // Fill an array with hour strings according to the range
   return Array(max - min + 1).fill(0).map((_, i) => generateHour(i + min, is12HourMode));
 };
