@@ -60,8 +60,7 @@ const Weak = styled.span`
 `;
 
 const Beta = styled.span`
-  font-weight: 300;
-  font-style: italic;
+  font-weight: 500;
   opacity: 0.8;
   margin-left: -8.5px;
   margin-right: 20px;
