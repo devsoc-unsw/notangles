@@ -238,7 +238,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         return;
       }
     } else {
-      handleSelect(added.map((course) => course.code));
+      handleSelect(added.map((course) => course.code)); 
       setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
     }
 
@@ -342,7 +342,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         options={options}
         value={selectedValue}
         onChange={onChange}
-        inputValue={inputValue}
+        inputValue={inputValue} // each courses 'selected' (is saved)
         // prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
@@ -367,6 +367,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             label="Select your courses"
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
+              event.preventDefault(); 
               if (event.key === 'Backspace') {
                 event.stopPropagation();
               }
