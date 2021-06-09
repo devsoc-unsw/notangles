@@ -59,6 +59,18 @@ const Weak = styled.span`
   bottom: 1px;
 `;
 
+const Beta = styled.span`
+  font-weight: 300;
+  font-style: italic;
+  opacity: 0.8;
+  margin-left: -8.5px;
+  margin-right: 20px;
+  font-size: 80%;
+  vertical-align: bottom;
+  position: relative;
+  bottom: -5px;
+`;
+
 interface NavBarProps {
   setIsDarkMode(mode: boolean): void,
   isDarkMode: boolean,
@@ -88,6 +100,9 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
           <NavbarTitle variant="h6">
             Notangles
             <Weak>
+              <Beta>
+                BETA
+              </Beta>
               {termName}
               {', '}
               {year}
