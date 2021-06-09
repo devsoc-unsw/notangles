@@ -21,6 +21,7 @@ export const days: string[] = [
   'Wednesday',
   'Thursday',
   'Friday',
+  'Saturday',
 ];
 
 export const defaultStartTime: number = 9;

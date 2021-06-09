@@ -158,7 +158,7 @@ const pStyle = {
 };
 
 const pStyleSmall = {
-  ...pStyle, fontSize: "85%"
+  ...pStyle, fontSize: '85%',
 };
 
 const iconStyle = {

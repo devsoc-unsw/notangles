@@ -40,6 +40,7 @@ const weekdayToNumber = (weekDay: string) => {
     Wed: 3,
     Thu: 4,
     Fri: 5,
+    Sat: 6,
   };
   return conversionTable[weekDay];
 };
