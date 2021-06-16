@@ -212,6 +212,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     // return before the input value and options are reset
     if (added.length === 0) return;
 
+
     if (searchTimer.current) {
       // run a search now and cancel the current search timer
       const newOptions = search(inputValue);
@@ -333,6 +334,11 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   return (
     <StyledSelect>
       <Autocomplete
+        getOptionDisabled={
+          (course) => {
+            return selectedCourses.length > 3;
+          }
+        }
         multiple
         // autoHighlight
         disableClearable
@@ -342,7 +348,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         options={options}
         value={selectedValue}
         onChange={onChange}
-        inputValue={inputValue} // each courses 'selected' (is saved)
+        inputValue={inputValue}
         // prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
@@ -367,7 +373,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             label="Select your courses"
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
-              event.preventDefault(); 
+              //event.preventDefault(); 
               if (event.key === 'Backspace') {
                 event.stopPropagation();
               }
