@@ -59,6 +59,7 @@ const StyledSelect = styled(Box)`
 
 const StyledTextField = styled(TextField) <{
   theme: Theme
+  selectedCourses: CourseData[]
 }>`
   .MuiOutlinedInput-root {
     fieldset {
@@ -74,7 +75,9 @@ const StyledTextField = styled(TextField) <{
   }
 
   label {
-    color: ${({ theme }) => theme.palette.secondary.dark} !important;
+    color: ${({ theme, selectedCourses }) => {
+      return (selectedCourses.length <= 4) ? theme.palette.secondary.dark : "red";
+    }} !important;
     transition: 0.2s;
   }
 `;
@@ -336,7 +339,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
       <Autocomplete
         getOptionDisabled={
           (course) => {
-            return selectedCourses.length > 3;
+            return selectedCourses.length > 4;
           }
         }
         multiple
@@ -369,11 +372,11 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
           <StyledTextField
             {...params}
             autoFocus
+            selectedCourses={selectedCourses}
             variant="outlined"
-            label="Select your courses"
+            label= {selectedCourses.length <= 4 ? "Select your courses" : "Maximum courses selected"}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
-              //event.preventDefault(); 
               if (event.key === 'Backspace') {
                 event.stopPropagation();
               }
