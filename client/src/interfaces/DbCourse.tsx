@@ -129,11 +129,11 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
-        courseData.latestFinishTime = Math.floor(period.time.end);
+        courseData.latestFinishTime = Math.ceil(period.time.end);
       }
 
       if (period.time.start < courseData.earliestStartTime) {
-        courseData.earliestStartTime = Math.ceil(period.time.start);
+        courseData.earliestStartTime = Math.floor(period.time.start);
       }
     });
 
