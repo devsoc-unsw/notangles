@@ -336,7 +336,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     <StyledSelect>
       <Autocomplete
         getOptionDisabled={
-          (course) => selectedCourses.length > 8
+          () => selectedCourses.length > 8
         }
         multiple
         // autoHighlight
