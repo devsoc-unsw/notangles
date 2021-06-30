@@ -26,3 +26,5 @@ export const days: string[] = [
 
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
+
+export const maxAddedCourses = 8;
