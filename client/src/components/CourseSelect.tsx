@@ -75,9 +75,7 @@ const StyledTextField = styled(TextField) <{
   }
 
   label {
-    color: ${({ theme, selectedCourses }) => {
-      return (selectedCourses.length <= 8) ? theme.palette.secondary.dark : "red";
-    }} !important;
+    color: ${({ theme, selectedCourses }) => ((selectedCourses.length <= 8) ? theme.palette.secondary.dark : 'red')} !important;
     transition: 0.2s;
   }
 `;
@@ -242,7 +240,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         return;
       }
     } else {
-      handleSelect(added.map((course) => course.code)); 
+      handleSelect(added.map((course) => course.code));
       setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
     }
 
@@ -338,9 +336,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     <StyledSelect>
       <Autocomplete
         getOptionDisabled={
-          (course) => {
-            return selectedCourses.length > 8;
-          }
+          (course) => selectedCourses.length > 8
         }
         multiple
         // autoHighlight
@@ -374,7 +370,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             autoFocus
             selectedCourses={selectedCourses}
             variant="outlined"
-            label= {selectedCourses.length <= 8 ? "Select your courses" : "Maximum courses selected"}
+            label={selectedCourses.length <= 8 ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
               if (event.key === 'Backspace') {
