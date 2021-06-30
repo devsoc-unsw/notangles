@@ -20,7 +20,7 @@ import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
-import { year, term } from '../constants/timetable';
+import { year, term, maxAddedCourses } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
 import NetworkError from '../interfaces/NetworkError';
 
@@ -75,7 +75,7 @@ const StyledTextField = styled(TextField) <{
   }
 
   label {
-    color: ${({ theme, selectedCourses }) => ((selectedCourses.length <= 8) ? theme.palette.secondary.dark : 'red')} !important;
+    color: ${({ theme, selectedCourses }) => ((selectedCourses.length < maxAddedCourses) ? theme.palette.secondary.dark : 'red')} !important;
     transition: 0.2s;
   }
 `;
@@ -336,7 +336,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
     <StyledSelect>
       <Autocomplete
         getOptionDisabled={
-          () => selectedCourses.length > 8
+          () => selectedCourses.length >= maxAddedCourses
         }
         multiple
         // autoHighlight
@@ -370,7 +370,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             autoFocus
             selectedCourses={selectedCourses}
             variant="outlined"
-            label={selectedCourses.length <= 8 ? 'Select your courses' : 'Maximum courses selected'}
+            label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
               if (event.key === 'Backspace') {
