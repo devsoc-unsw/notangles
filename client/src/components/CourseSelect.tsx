@@ -16,6 +16,8 @@ import {
   AddRounded,
   CheckRounded,
 } from '@material-ui/icons';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import styled, { css } from 'styled-components';
 import { CourseData } from '@notangles/common';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
@@ -123,6 +125,11 @@ const Weak = styled.span`
 const StyledUl = styled.ul`
   padding: 0;
   margin: 0;
+`;
+
+const RightContainer = styled.div`
+  position: absolute;
+  right: 5px;
 `;
 
 interface CourseSelectProps {
@@ -362,6 +369,10 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
+            <RightContainer>
+              <VideocamOutlinedIcon />
+              <PersonOutlineIcon />
+            </RightContainer>
           </StyledOption>
         )}
         renderInput={(params) => (
