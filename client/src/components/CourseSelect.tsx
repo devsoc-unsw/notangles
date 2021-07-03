@@ -129,7 +129,7 @@ const StyledUl = styled.ul`
 
 const RightContainer = styled.div`
   position: absolute;
-  right: 5px;
+  right: 10px;
 `;
 
 interface CourseSelectProps {
