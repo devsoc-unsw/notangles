@@ -6,14 +6,15 @@ import { StylesProvider } from '@material-ui/styles'; // make styled components 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
+import FeedbackIcon from '@material-ui/icons/ChatBubble';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import About from './About';
+import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import { year, termName } from '../constants/timetable';
 
@@ -36,8 +37,8 @@ const NavbarTitle = styled(Typography)`
 
 const DarkModeButton = styled(ToggleButton)`
   border: none;
-  border-radius:40px;
-  margin-right: 20px;
+  border-radius: 40px;
+  margin-right: 5px;
   width:40px;
   height: 40px;
 `;
@@ -45,8 +46,8 @@ const DarkModeIcon = styled(Brightness2Icon)`
   transform: rotate(180deg);
   color: #bde0ff;
 `;
-const NavButton = styled(Button)`
-  margin-right: 20px;
+const NavLink = styled(Link)`
+  margin-right: 5px;
 `;
 
 const Weak = styled.span`
@@ -118,18 +119,18 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             <DarkModeIcon fontSize="small" />
           </DarkModeButton>
 
-          <NavButton color="inherit">
-            <Link
-              href="https://forms.gle/rV3QCwjsEbLNyESE6"
-              target="_blank"
-              underline="none"
-              color="inherit"
-            >
-              Feedback
-            </Link>
-          </NavButton>
+          <NavLink
+            href="https://forms.gle/rV3QCwjsEbLNyESE6"
+            target="_blank"
+            color="inherit"
+          >
+            <IconButton color="inherit">
+              <FeedbackIcon />
+            </IconButton>
+          </NavLink>
 
           <About />
+          <Settings />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

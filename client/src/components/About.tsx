@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 
@@ -14,11 +14,17 @@ const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
 `;
+
 const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
   top: 10px;
 `;
+
+const InfoButton = styled(IconButton)`
+  margin-right: 5px;
+`;
+
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
@@ -39,9 +45,9 @@ const About: FunctionComponent = React.memo(() => {
 
   return (
     <div>
-      <Button color="inherit" onClick={toggleIsOpen}>
-        About
-      </Button>
+      <InfoButton color="inherit" onClick={toggleIsOpen}>
+        <InfoIcon />
+      </InfoButton>
       <Dialog
         disableScrollLock
         onClose={toggleIsOpen}
