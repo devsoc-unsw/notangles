@@ -9,6 +9,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -45,9 +46,11 @@ const About: FunctionComponent = React.memo(() => {
 
   return (
     <div>
-      <InfoButton color="inherit" onClick={toggleIsOpen}>
-        <InfoIcon />
-      </InfoButton>
+      <Tooltip title="About">
+        <InfoButton color="inherit" onClick={toggleIsOpen}>
+          <InfoIcon />
+        </InfoButton>
+      </Tooltip>
       <Dialog
         disableScrollLock
         onClose={toggleIsOpen}

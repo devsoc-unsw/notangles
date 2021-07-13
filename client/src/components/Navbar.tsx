@@ -12,6 +12,7 @@ import FeedbackIcon from '@material-ui/icons/ChatBubble';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import About from './About';
 import Settings from './Settings';
@@ -109,25 +110,29 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             </Weak>
           </NavbarTitle>
 
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small" />
-          </DarkModeButton>
+          <Tooltip title="Toggle dark mode">
+            <DarkModeButton
+              value={isDarkMode}
+              selected={isDarkMode}
+              onChange={() => {
+                setIsDarkMode(!isDarkMode);
+              }}
+            >
+              <DarkModeIcon fontSize="small" />
+            </DarkModeButton>
+          </Tooltip>
 
-          <NavLink
-            href="https://forms.gle/rV3QCwjsEbLNyESE6"
-            target="_blank"
-            color="inherit"
-          >
-            <IconButton color="inherit">
-              <FeedbackIcon />
-            </IconButton>
-          </NavLink>
+          <Tooltip title="Give feedback">
+            <NavLink
+              href="https://forms.gle/rV3QCwjsEbLNyESE6"
+              target="_blank"
+              color="inherit"
+            >
+              <IconButton color="inherit">
+                <FeedbackIcon />
+              </IconButton>
+            </NavLink>
+          </Tooltip>
 
           <About />
           <Settings />
