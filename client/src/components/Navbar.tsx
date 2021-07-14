@@ -8,7 +8,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
-import FeedbackIcon from '@material-ui/icons/ChatBubble';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -46,9 +45,6 @@ const DarkModeButton = styled(ToggleButton)`
 const DarkModeIcon = styled(Brightness2Icon)`
   transform: rotate(180deg);
   color: #bde0ff;
-`;
-const NavLink = styled(Link)`
-  margin-right: 5px;
 `;
 
 const Weak = styled.span`
@@ -121,19 +117,7 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
               <DarkModeIcon fontSize="small" />
             </DarkModeButton>
           </Tooltip>
-
-          <Tooltip title="Give feedback">
-            <NavLink
-              href="https://forms.gle/rV3QCwjsEbLNyESE6"
-              target="_blank"
-              color="inherit"
-            >
-              <IconButton color="inherit">
-                <FeedbackIcon />
-              </IconButton>
-            </NavLink>
-          </Tooltip>
-
+          
           <About />
           <Settings />
         </Toolbar>

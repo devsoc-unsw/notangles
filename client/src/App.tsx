@@ -350,6 +350,10 @@ const App: FunctionComponent = () => {
                   Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
+                  Feedback
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
                   GitHub
                 </Link>
