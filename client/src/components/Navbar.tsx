@@ -8,7 +8,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
-import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -117,7 +116,6 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
               <DarkModeIcon fontSize="small" />
             </DarkModeButton>
           </Tooltip>
-          
           <About />
           <Settings />
         </Toolbar>
