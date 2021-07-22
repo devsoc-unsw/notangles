@@ -29,6 +29,7 @@ interface TimetableProps {
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
   clashes: Array<ClassPeriod>
+  isSquareEdges: boolean
 }
 
 const Timetable: FunctionComponent<TimetableProps> = React.memo(({
@@ -37,6 +38,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   assignedColors,
   is12HourMode,
   setIs12HourMode,
+  isSquareEdges,
   clashes,
 }) => (
   <StyledTimetable
@@ -65,6 +67,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
       assignedColors={assignedColors}
       days={days}
       clashes={clashes}
+      isSquareEdges={isSquareEdges}
     />
   </StyledTimetable>
 ), (prev, next) => !(

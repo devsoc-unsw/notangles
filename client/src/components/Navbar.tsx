@@ -71,12 +71,16 @@ interface NavBarProps {
   setIsDarkMode(mode: boolean): void,
   isDarkMode: boolean,
   handleDrawerOpen(): void,
+  setIsSquareEdges(mode: boolean): void,
+  isSquareEdges: boolean,
 }
 
 const Navbar: FunctionComponent<NavBarProps> = React.memo(({
   setIsDarkMode,
   isDarkMode,
   handleDrawerOpen,
+  setIsSquareEdges,
+  isSquareEdges,
 }) => (
   <StylesProvider injectFirst>
     <NavbarBox>
@@ -117,7 +121,8 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             </DarkModeButton>
           </Tooltip>
           <About />
-          <Settings />
+          <Settings isSquareEdges={isSquareEdges}
+          setIsSquareEdges={setIsSquareEdges}/>
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

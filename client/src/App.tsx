@@ -115,6 +115,7 @@ const App: FunctionComponent = () => {
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(IS_PREVIEW);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -242,6 +243,10 @@ const App: FunctionComponent = () => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
 
+  useEffect(() => {
+    storage.set('isSquareEdges', isSquareEdges);
+  }, [isSquareEdges]);
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -302,6 +307,8 @@ const App: FunctionComponent = () => {
             setIsDarkMode={setIsDarkMode}
             isDarkMode={isDarkMode}
             handleDrawerOpen={handleDrawerOpen}
+            isSquareEdges={isSquareEdges}
+            setIsSquareEdges={setIsSquareEdges}
           />
           {
             IS_PREVIEW && (
@@ -337,6 +344,7 @@ const App: FunctionComponent = () => {
                 assignedColors={assignedColors}
                 is12HourMode={is12HourMode}
                 setIs12HourMode={setIs12HourMode}
+                isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
               />
               <Footer>

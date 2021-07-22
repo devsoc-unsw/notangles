@@ -123,9 +123,11 @@ const StyledCourseClass = styled.div<{
 const courseClassInnerStyle = ({
   backgroundColor,
   hasClash,
+  isSquareEdges
 }: {
   backgroundColor: string
   hasClash: boolean
+  isSquareEdges: boolean
 }) => ({
   display: 'flex',
   justifyContent: 'center',
@@ -135,7 +137,7 @@ const courseClassInnerStyle = ({
   backgroundColor,
   color: 'white',
   fontSize: '0.9rem',
-  borderRadius: '7px',
+  borderRadius: isSquareEdges ? '0px' : '7px',
   transition: defaultTransition,
   backfaceVisibility: 'hidden' as 'hidden',
   fontSmoothing: 'subpixel-antialiased',
@@ -172,6 +174,7 @@ interface DroppedClassProps {
   y?: number
   earliestStartTime: number
   hasClash: boolean
+  isSquareEdges: boolean
 }
 
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
@@ -181,6 +184,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   y,
   earliestStartTime,
   hasClash,
+  isSquareEdges,
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -219,6 +223,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         style={courseClassInnerStyle({
           backgroundColor: color,
           hasClash,
+          isSquareEdges
         })}
       >
         <p style={pStyle}>
@@ -274,6 +279,7 @@ interface DroppedClassesProps {
   assignedColors: Record<string, string>
   days: string[]
   clashes: Array<ClassPeriod>
+  isSquareEdges: boolean
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
@@ -282,6 +288,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   assignedColors,
   days,
   clashes,
+  isSquareEdges,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -350,6 +357,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
+        isSquareEdges={isSquareEdges}
       />,
     );
 

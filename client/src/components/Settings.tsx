@@ -9,6 +9,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+
 
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
@@ -26,7 +28,16 @@ const DialogContent = styled(MuiDialogContent)`
 `;
 
 
-const Settings: FunctionComponent = React.memo(() => {
+interface SettingsProps {
+  setIsSquareEdges(mode: boolean): void,
+  isSquareEdges: boolean,
+}
+
+const Settings: FunctionComponent<SettingsProps> = React.memo(({
+  isSquareEdges,
+  setIsSquareEdges
+
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -58,7 +69,13 @@ const Settings: FunctionComponent = React.memo(() => {
         </StyledDialogTitle>
 
         <DialogContent dividers>
-          yeet
+          yeet <ToggleButton
+            value={isSquareEdges}
+            selected={isSquareEdges}
+            onChange={()=> {
+              setIsSquareEdges(!isSquareEdges);
+              }}>
+            </ToggleButton>
         </DialogContent>
       </Dialog>
     </div>
