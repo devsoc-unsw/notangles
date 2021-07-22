@@ -5,7 +5,7 @@ services:
     image: notangles-server
     restart: always
     build: .
-    depends_on: 
+    depends_on:
       - database.notangles-db
     ports:
       - "3001:3001"
@@ -14,8 +14,8 @@ services:
   database.notangles-db:
     container_name: notangles-database
     restart: always
-    image: mongo:latest
+    image: mongo:4.2
     ports:
       - "27017:27017"
     volumes:
-      - ~/var/lib/notangles/data:/data/db  
+      - ~/var/lib/notangles/data:/data/db
