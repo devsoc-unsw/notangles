@@ -177,6 +177,7 @@ interface DroppedClassProps {
   isSquareEdges: boolean
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   cardData,
   color,

@@ -32,6 +32,7 @@ interface TimetableProps {
   isSquareEdges: boolean
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   selectedCourses,
   selectedClasses,
@@ -76,6 +77,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   || prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
   || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+  || prev.isSquareEdges !== next.isSquareEdges
 ));
 
 export default Timetable;

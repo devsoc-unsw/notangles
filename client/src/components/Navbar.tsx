@@ -75,6 +75,7 @@ interface NavBarProps {
   isSquareEdges: boolean,
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Navbar: FunctionComponent<NavBarProps> = React.memo(({
   setIsDarkMode,
   isDarkMode,

@@ -33,6 +33,7 @@ interface SettingsProps {
   isSquareEdges: boolean,
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Settings: FunctionComponent<SettingsProps> = React.memo(({
   isSquareEdges,
   setIsSquareEdges

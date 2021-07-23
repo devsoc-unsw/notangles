@@ -37,6 +37,7 @@ const FeatList = styled.ul`
   line-height: 20px;
 `;
 
+// beware memo - if a component isn't re-rendering, it could be why
 const About: FunctionComponent = React.memo(() => {
   const [isOpen, setIsOpen] = React.useState(false);
 
