@@ -247,7 +247,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
             </p>
             <p style={pStyleSmall}>
               <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locationShort}
+              {cardData.locations[0]}
             </p>
           </>
         )}
