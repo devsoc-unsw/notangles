@@ -79,7 +79,7 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
     >
       {classPeriod !== null && <>
         {classPeriod.locations.includes("Online") && <VideocamOutlinedIcon fontSize="large"/>}
-        {classPeriod.locations.some((x)=> x !== "Online") && <PersonOutlineIcon fontSize="large"/>}
+        {classPeriod.locations.some((x) => x !== "Online") && <PersonOutlineIcon fontSize="large"/>}
       </>}
     </div>
   );

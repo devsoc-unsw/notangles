@@ -72,8 +72,7 @@ const enumerateWeeks = (weeks: string): number[] => (
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
   class: classData,
-  location: dbTimes.location,
-  locationShort: locationShorten(dbTimes.location),
+  locations: [locationShorten(dbTimes.location)],
   time: {
     day: weekdayToNumber(dbTimes.day),
     start: timeToNumber(dbTimes.time.start),
