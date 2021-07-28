@@ -10,6 +10,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -68,8 +69,8 @@ const About: FunctionComponent = React.memo(() => {
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-
-        <DialogContent dividers>
+        <Divider />
+        <DialogContent>
           <Typography gutterBottom variant="body2">
             Notangles is a tool helping UNSW students build the perfect
             timetable, with an intuitive drag and drop interface. We have many

@@ -9,8 +9,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
-import ToggleButton from '@material-ui/lab/ToggleButton';
 import Switch from '@material-ui/core/Switch';
+import Divider from '@material-ui/core/Divider';
+
 
 
 
@@ -69,8 +70,9 @@ const Settings: FunctionComponent<SettingsProps> = React.memo(({
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-
-        <DialogContent dividers>
+        <Divider/>
+        <DialogContent>
+        <Typography variant="body1">
         <Switch
             value={isSquareEdges}
             checked={isSquareEdges}
@@ -78,7 +80,9 @@ const Settings: FunctionComponent<SettingsProps> = React.memo(({
             onChange={()=> {
               setIsSquareEdges(!isSquareEdges);
               }}
-      /> Toggle square edges on cards
+      />
+      Square corners on classes
+    </Typography>
         </DialogContent>
       </Dialog>
     </div>
