@@ -12,7 +12,7 @@ import {
   CourseCode,
   Activity,
   InInventory,
-} from '@notangles/common';
+} from './interfaces/Course';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';

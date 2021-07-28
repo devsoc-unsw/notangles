@@ -34,8 +34,7 @@ export interface InventoryPeriod {
 export interface ClassPeriod {
   class: ClassData
   time: ClassTime
-  location: string
-  locationShort: string
+  locations: string[]
 }
 
 export interface ClassTime {

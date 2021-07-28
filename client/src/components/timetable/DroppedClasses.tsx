@@ -8,7 +8,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
   CourseData, ClassPeriod, SelectedClasses,
-} from '@notangles/common';
+} from '../../interfaces/Course';
 import {
   CardData,
   isPeriod,
