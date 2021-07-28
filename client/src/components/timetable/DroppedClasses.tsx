@@ -123,7 +123,7 @@ const StyledCourseClass = styled.div<{
 const courseClassInnerStyle = ({
   backgroundColor,
   hasClash,
-  isSquareEdges
+  isSquareEdges,
 }: {
   backgroundColor: string
   hasClash: boolean
@@ -224,7 +224,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
         style={courseClassInnerStyle({
           backgroundColor: color,
           hasClash,
-          isSquareEdges
+          isSquareEdges,
         })}
       >
         <p style={pStyle}>

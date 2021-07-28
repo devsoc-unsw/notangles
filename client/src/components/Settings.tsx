@@ -13,8 +13,6 @@ import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
 
 
-
-
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
@@ -38,7 +36,7 @@ interface SettingsProps {
 // beware memo - if a component isn't re-rendering, it could be why
 const Settings: FunctionComponent<SettingsProps> = React.memo(({
   isSquareEdges,
-  setIsSquareEdges
+  setIsSquareEdges,
 
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -70,19 +68,19 @@ const Settings: FunctionComponent<SettingsProps> = React.memo(({
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-        <Divider/>
+        <Divider />
         <DialogContent>
-        <Typography variant="body1">
-        <Switch
-            value={isSquareEdges}
-            checked={isSquareEdges}
-            color="primary"
-            onChange={()=> {
-              setIsSquareEdges(!isSquareEdges);
+          <Typography variant="body1">
+            <Switch
+              value={isSquareEdges}
+              checked={isSquareEdges}
+              color="primary"
+              onChange={() => {
+                setIsSquareEdges(!isSquareEdges);
               }}
-      />
-      Square corners on classes
-    </Typography>
+            />
+            Square corners on classes
+          </Typography>
         </DialogContent>
       </Dialog>
     </div>

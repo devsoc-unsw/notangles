@@ -122,8 +122,10 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             </DarkModeButton>
           </Tooltip>
           <About />
-          <Settings isSquareEdges={isSquareEdges}
-          setIsSquareEdges={setIsSquareEdges}/>
+          <Settings
+            isSquareEdges={isSquareEdges}
+            setIsSquareEdges={setIsSquareEdges}
+          />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>
