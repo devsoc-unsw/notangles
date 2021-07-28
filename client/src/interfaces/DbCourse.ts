@@ -118,13 +118,28 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     ));
 
     // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
-    classData.periods = classData.periods.filter((period) => (
-      period === classData.periods.find((x) => (
-        x.time.day === period.time.day
-        && x.time.start === period.time.start
-        && x.time.end === period.time.end
-      ))
-    ));
+    // classData.periods = classData.periods.filter((period) => (
+    //   period === classData.periods.find((x) => (
+    //     x.time.day === period.time.day
+    //     && x.time.start === period.time.start
+    //     && x.time.end === period.time.end
+    //   ))
+    // ));
+
+    classData.periods = classData.periods.map((period) => {
+      classData.periods.forEach((other) => {
+        if (other.time.day === period.time.day
+        && other.time.start === period.time.start
+        && other.time.end === period.time.end) {
+          period.locations.push(other.locations[0]);
+        }
+      })
+      return period;
+    });
+
+    classData.periods = classData.periods.map((period) => {
+
+    });
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
