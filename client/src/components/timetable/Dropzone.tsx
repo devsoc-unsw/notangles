@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import { ClassPeriod, InInventory } from '@notangles/common';
+import { ClassPeriod, InInventory } from './interfaces/Course';
 import {
   defaultTransition,
   registerDropzone,

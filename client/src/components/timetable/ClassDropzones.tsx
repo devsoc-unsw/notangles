@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
-import { CourseData } from '@notangles/common';
+import { CourseData } from '../../interfaces/Course';
 import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
