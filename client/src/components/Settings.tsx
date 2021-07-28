@@ -10,6 +10,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import ToggleButton from '@material-ui/lab/ToggleButton';
+import Switch from '@material-ui/core/Switch';
 
 
 
@@ -70,13 +71,14 @@ const Settings: FunctionComponent<SettingsProps> = React.memo(({
         </StyledDialogTitle>
 
         <DialogContent dividers>
-          yeet <ToggleButton
+        <Switch
             value={isSquareEdges}
-            selected={isSquareEdges}
+            checked={isSquareEdges}
+            color="primary"
             onChange={()=> {
               setIsSquareEdges(!isSquareEdges);
-              }}>
-            </ToggleButton>
+              }}
+      /> Toggle square edges on cards
         </DialogContent>
       </Dialog>
     </div>
