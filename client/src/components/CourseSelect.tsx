@@ -134,6 +134,7 @@ interface CourseSelectProps {
   setErrorVisibility(visibility: boolean): void
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   selectedCourses,
   assignedColors,

@@ -29,14 +29,17 @@ interface TimetableProps {
   is12HourMode: boolean
   setIs12HourMode(value: boolean): void
   clashes: Array<ClassPeriod>
+  isSquareEdges: boolean
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   selectedCourses,
   selectedClasses,
   assignedColors,
   is12HourMode,
   setIs12HourMode,
+  isSquareEdges,
   clashes,
 }) => (
   <StyledTimetable
@@ -65,6 +68,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
       assignedColors={assignedColors}
       days={days}
       clashes={clashes}
+      isSquareEdges={isSquareEdges}
     />
   </StyledTimetable>
 ), (prev, next) => !(
@@ -73,6 +77,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   || prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
   || JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+  || prev.isSquareEdges !== next.isSquareEdges
 ));
 
 export default Timetable;

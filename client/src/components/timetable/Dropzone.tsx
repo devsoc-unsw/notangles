@@ -51,6 +51,7 @@ interface CellProps {
   isInventory?: boolean
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Dropzone: FunctionComponent<CellProps> = React.memo(({
   classPeriod, x, y, earliestStartTime, color, yEnd, isInventory,
 }) => {

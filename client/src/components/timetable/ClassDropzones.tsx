@@ -13,6 +13,7 @@ interface ClassDropzoneProps {
   earliestStartTime: number
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   course,
   color,
@@ -101,6 +102,7 @@ interface ClassDropzonesProps {
   theme: Theme
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const ClassDropzones: FunctionComponent<ClassDropzonesProps> = React.memo(({
   selectedCourses,
   assignedColors,
