@@ -134,54 +134,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     courseData.activities[dbClass.activity].push(classData);
   });
 
-  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => (
-    a.time.day === b.time.day
-    && a.time.start === b.time.start
-    && a.time.end === b.time.end
-  );
-
-  Object.keys(courseData.activities).forEach((activity) => {
-    let allPeriods: ClassPeriod[] = [];
-
-    courseData.activities[activity].forEach((classData) => {
-      allPeriods = [...allPeriods, ...classData.periods];
-    });
-
-    courseData.activities[activity].forEach((classData) => {
-      classData.periods = classData.periods.map((period) => {
-        allPeriods.forEach((other) => {
-          if (isDuplicate(period, other)) {
-            period.locations.push(other.locations[0]);
-          }
-        })
-
-        return period;
-      });
-
-      classData.periods = classData.periods.filter((period) => {
-        const duplicates = allPeriods.filter((other) => {
-          return isDuplicate(period, other);
-        });
-
-        return duplicates[0] === period;
-      });
-    });
-  });
-
-  Object.keys(courseData.activities).forEach((activity) => {
-    courseData.activities[activity] = courseData.activities[activity].filter(
-      (classData) => {
-        return (classData.periods.length !== 0);
-      }
-    );
-  });
-
-  courseData.activities = Object.fromEntries(
-    Object.entries(courseData.activities).filter(([_, classes]) => {
-      return (classes.length !== 0);
-    })
-  );
-
   Object.keys(courseData.activities).forEach((activity) => {
     courseData.inventoryData[activity] = {
       class: {

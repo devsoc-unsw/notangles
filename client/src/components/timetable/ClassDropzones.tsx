@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
-import { CourseData } from '../../interfaces/Course';
+import {
+  CourseData, ClassPeriod, Activity, ClassData
+} from '../../interfaces/Course';
 import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
@@ -16,7 +18,84 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   color,
   earliestStartTime,
 }) => {
-  const dropzones = Object.values(course.activities).flatMap(
+  // Deep copy of activities (so we can combine duplicates without affecting original)
+
+  let newActivities: Record<Activity, ClassData[]> = {};
+
+  Object.keys(course.activities).forEach((activity) => {
+    newActivities[activity] = [];
+
+    course.activities[activity].forEach((classData) => {
+      const newClassData = {...classData};
+      newClassData.periods = [];
+
+      classData.periods.forEach((period) => {
+          const newPeriod = {...period};
+          newPeriod.locations = [...period.locations];
+          newClassData.periods.push(newPeriod);
+      });
+
+      newActivities[activity].push(newClassData);
+    });
+  });
+
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => (
+    a.time.day === b.time.day
+    && a.time.start === b.time.start
+    && a.time.end === b.time.end
+  );
+
+  Object.keys(newActivities).forEach((activity) => {
+    let allPeriods: ClassPeriod[] = [];
+
+    newActivities[activity].forEach((classData) => {
+      allPeriods = [...allPeriods, ...classData.periods];
+    });
+
+    newActivities[activity].forEach((classData) => {
+      classData.periods = classData.periods.map((period) => {
+        allPeriods.forEach((other) => {
+          if (isDuplicate(period, other)) {
+            period.locations.push(other.locations[0]);
+          }
+        })
+
+        return period;
+      });
+
+      classData.periods = classData.periods.filter((period) => { // TODO
+        const duplicates = allPeriods.filter((other) => {
+          return isDuplicate(period, other);
+        });
+
+        return duplicates[0] === period;
+      });
+    });
+  });
+
+  Object.keys(newActivities).forEach((activity) => {
+    newActivities[activity] = newActivities[activity].filter( // TODO
+      (classData) => {
+        return (classData.periods.length !== 0);
+      }
+    );
+  });
+
+  Object.keys(newActivities).forEach((activity) => {
+    newActivities[activity] = newActivities[activity].filter( // TODO
+      (classData) => {
+        return (classData.periods.length !== 0);
+      }
+    );
+  });
+
+  newActivities = Object.fromEntries(
+    Object.entries(newActivities).filter(([_, classes]) => {
+      return (classes.length !== 0);
+    })
+  );
+
+  const dropzones = Object.values(newActivities).flatMap(
     (classDatas) => classDatas.flatMap(
       (classData) => classData.periods.flatMap(
         (period, i) => (
