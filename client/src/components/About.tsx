@@ -1,24 +1,32 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
 `;
+
 const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
   top: 10px;
 `;
+
+const InfoButton = styled(IconButton)`
+  margin-right: 5px;
+`;
+
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
@@ -30,6 +38,7 @@ const FeatList = styled.ul`
   line-height: 20px;
 `;
 
+// beware memo - if a component isn't re-rendering, it could be why
 const About: FunctionComponent = React.memo(() => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -39,9 +48,11 @@ const About: FunctionComponent = React.memo(() => {
 
   return (
     <div>
-      <Button color="inherit" onClick={toggleIsOpen}>
-        About
-      </Button>
+      <Tooltip title="About">
+        <InfoButton color="inherit" onClick={toggleIsOpen}>
+          <InfoIcon />
+        </InfoButton>
+      </Tooltip>
       <Dialog
         disableScrollLock
         onClose={toggleIsOpen}
@@ -58,8 +69,8 @@ const About: FunctionComponent = React.memo(() => {
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-
-        <DialogContent dividers>
+        <Divider />
+        <DialogContent>
           <Typography gutterBottom variant="body2">
             Notangles is a tool helping UNSW students build the perfect
             timetable, with an intuitive drag and drop interface. We have many
