@@ -14,6 +14,7 @@ const StyledTimetable = styled(Box) <{
 }>`
   display: grid;
   height: ${({ rows }) => rows * rowHeight}px;
+  min-width: 1000px;
   margin-top: 15px;
   box-sizing: content-box;
   user-select: none;
