@@ -24,7 +24,7 @@ import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
-import { darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
 import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
@@ -55,8 +55,8 @@ const StyledApp = styled(Box)`
 const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: 64px; // for nav bar
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: ${contentPadding}px;
+  padding-right: ${contentPadding}px;
   transition: background-color 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;

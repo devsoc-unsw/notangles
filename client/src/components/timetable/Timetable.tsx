@@ -3,24 +3,42 @@ import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData, SelectedClasses, ClassPeriod } from '@notangles/common';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { contentPadding } from '../../constants/theme';
 import TimetableLayout from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 
 export const rowHeight = 67;
 
-const StyledTimetable = styled(Box) <{
+const StyledTimetable = styled(Box)<{
   rows: number
 }>`
   display: grid;
   height: ${({ rows }) => rows * rowHeight}px;
-  min-width: 1000px;
+  min-width: 1100px;
   margin-top: 15px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: ${1 / devicePixelRatio}px;
   grid-template: auto repeat(${({ rows }) => rows}, 1fr)
                / auto repeat(${days.length}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
+`;
+
+
+
+const StyledTimetableScroll = styled(Box)`
+  padding: ${(1 / devicePixelRatio)}px;
+  position: relative;
+  left: -${contentPadding}px;
+  width: 100%;
+  padding-left: ${contentPadding}px;
+  padding-right: ${contentPadding}px;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  // https://www.w3schools.com/howto/howto_css_hide_scrollbars.asp
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 interface TimetableProps {
@@ -43,35 +61,37 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   isSquareEdges,
   clashes,
 }) => (
-  <StyledTimetable
-    rows={Math.max(...selectedCourses.map(
-      (course) => course.latestFinishTime,
-    ), defaultEndTime) - Math.min(...selectedCourses.map(
-      (course) => course.earliestStartTime,
-    ), defaultStartTime)}
-  >
-    <TimetableLayout
-      days={days}
-      is12HourMode={is12HourMode}
-      setIs12HourMode={setIs12HourMode}
-      selectedCourses={selectedCourses}
-    />
-    <ClassDropzones
-      selectedCourses={selectedCourses}
-      assignedColors={assignedColors}
-      earliestStartTime={Math.min(...selectedCourses.map(
+  <StyledTimetableScroll>
+    <StyledTimetable
+      rows={Math.max(...selectedCourses.map(
+        (course) => course.latestFinishTime,
+      ), defaultEndTime) - Math.min(...selectedCourses.map(
         (course) => course.earliestStartTime,
       ), defaultStartTime)}
-    />
-    <DroppedClasses
-      selectedCourses={selectedCourses}
-      selectedClasses={selectedClasses}
-      assignedColors={assignedColors}
-      days={days}
-      clashes={clashes}
-      isSquareEdges={isSquareEdges}
-    />
-  </StyledTimetable>
+    >
+      <TimetableLayout
+        days={days}
+        is12HourMode={is12HourMode}
+        setIs12HourMode={setIs12HourMode}
+        selectedCourses={selectedCourses}
+      />
+      <ClassDropzones
+        selectedCourses={selectedCourses}
+        assignedColors={assignedColors}
+        earliestStartTime={Math.min(...selectedCourses.map(
+          (course) => course.earliestStartTime,
+        ), defaultStartTime)}
+      />
+      <DroppedClasses
+        selectedCourses={selectedCourses}
+        selectedClasses={selectedClasses}
+        assignedColors={assignedColors}
+        days={days}
+        clashes={clashes}
+        isSquareEdges={isSquareEdges}
+      />
+    </StyledTimetable>
+  </StyledTimetableScroll>
 ), (prev, next) => !(
   prev.is12HourMode !== next.is12HourMode
   || prev.selectedClasses !== next.selectedClasses
