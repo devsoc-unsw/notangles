@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
 import {
-  CourseData, ClassPeriod, Activity, ClassData
+  CourseData, ClassPeriod, Activity, ClassData,
 } from '../../interfaces/Course';
 import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
@@ -26,7 +26,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
     newActivities[activity] = [];
 
     course.activities[activity].forEach((classData) => {
-      const newClassData = {...classData};
+      const newClassData = { ...classData };
       newClassData.periods = [...classData.periods];
       newActivities[activity].push(newClassData);
     });
@@ -47,9 +47,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
 
     newActivities[activity].forEach((classData) => {
       classData.periods = classData.periods.filter((period) => { // TODO
-        const duplicates = allPeriods.filter((other) => {
-          return isDuplicate(period, other);
-        });
+        const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
 
         return duplicates[0] === period;
       });
@@ -58,31 +56,27 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
 
   Object.keys(newActivities).forEach((activity) => {
     newActivities[activity] = newActivities[activity].filter( // TODO
-      (classData) => {
-        return (classData.periods.length !== 0);
-      }
+      (classData) => (classData.periods.length !== 0),
     );
   });
 
   newActivities = Object.fromEntries(
-    Object.entries(newActivities).filter(([_, classes]) => {
-      return (classes.length !== 0);
-    })
+    Object.entries(newActivities).filter(([_, classes]) => (classes.length !== 0)),
   );
 
   const dropzones = Object.values(newActivities).flatMap(
     (classDatas) => classDatas.flatMap(
       (classData) => classData.periods.flatMap(
-        (period, i) => {
-          return <Dropzone
+        (period, i) => (
+          <Dropzone
             key={`${classData.id}-${i}`}
             classPeriod={period}
             x={period.time.day + 1}
             y={timeToPosition(period.time.start, earliestStartTime)}
             color={color}
             earliestStartTime={earliestStartTime}
-          />;
-        },
+          />
+        ),
       ),
     ),
   );
