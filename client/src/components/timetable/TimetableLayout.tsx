@@ -113,6 +113,7 @@ interface TimetableLayoutProps {
   selectedCourses: CourseData[]
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   days,
   is12HourMode,

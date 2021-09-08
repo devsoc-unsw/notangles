@@ -20,7 +20,7 @@ import styled, { css } from 'styled-components';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { CourseData } from '../interfaces/Course';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
-import { year, term } from '../constants/timetable';
+import { year, term, maxAddedCourses } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
 import NetworkError from '../interfaces/NetworkError';
 
@@ -59,6 +59,7 @@ const StyledSelect = styled(Box)`
 
 const StyledTextField = styled(TextField) <{
   theme: Theme
+  selectedCourses: CourseData[]
 }>`
   .MuiOutlinedInput-root {
     fieldset {
@@ -74,7 +75,7 @@ const StyledTextField = styled(TextField) <{
   }
 
   label {
-    color: ${({ theme }) => theme.palette.secondary.dark} !important;
+    color: ${({ theme, selectedCourses }) => ((selectedCourses.length < maxAddedCourses) ? theme.palette.secondary.dark : 'red')} !important;
     transition: 0.2s;
   }
 `;
@@ -133,6 +134,7 @@ interface CourseSelectProps {
   setErrorVisibility(visibility: boolean): void
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   selectedCourses,
   assignedColors,
@@ -211,6 +213,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
     // return before the input value and options are reset
     if (added.length === 0) return;
+
 
     if (searchTimer.current) {
       // run a search now and cancel the current search timer
@@ -333,6 +336,9 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   return (
     <StyledSelect>
       <Autocomplete
+        getOptionDisabled={
+          () => selectedCourses.length >= maxAddedCourses
+        }
         multiple
         // autoHighlight
         disableClearable
@@ -363,8 +369,9 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
           <StyledTextField
             {...params}
             autoFocus
+            selectedCourses={selectedCourses}
             variant="outlined"
-            label="Select your courses"
+            label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
               if (event.key === 'Backspace') {

@@ -6,14 +6,14 @@ import { StylesProvider } from '@material-ui/styles'; // make styled components 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
-import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import About from './About';
+import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import { year, termName } from '../constants/timetable';
 
@@ -36,17 +36,14 @@ const NavbarTitle = styled(Typography)`
 
 const DarkModeButton = styled(ToggleButton)`
   border: none;
-  border-radius:40px;
-  margin-right: 20px;
+  border-radius: 40px;
+  margin-right: 5px;
   width:40px;
   height: 40px;
 `;
 const DarkModeIcon = styled(Brightness2Icon)`
   transform: rotate(180deg);
   color: #bde0ff;
-`;
-const NavButton = styled(Button)`
-  margin-right: 20px;
 `;
 
 const Weak = styled.span`
@@ -74,12 +71,17 @@ interface NavBarProps {
   setIsDarkMode(mode: boolean): void,
   isDarkMode: boolean,
   handleDrawerOpen(): void,
+  setIsSquareEdges(mode: boolean): void,
+  isSquareEdges: boolean,
 }
 
+// beware memo - if a component isn't re-rendering, it could be why
 const Navbar: FunctionComponent<NavBarProps> = React.memo(({
   setIsDarkMode,
   isDarkMode,
   handleDrawerOpen,
+  setIsSquareEdges,
+  isSquareEdges,
 }) => (
   <StylesProvider injectFirst>
     <NavbarBox>
@@ -108,28 +110,22 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
             </Weak>
           </NavbarTitle>
 
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small" />
-          </DarkModeButton>
-
-          <NavButton color="inherit">
-            <Link
-              href="https://forms.gle/rV3QCwjsEbLNyESE6"
-              target="_blank"
-              underline="none"
-              color="inherit"
+          <Tooltip title="Toggle dark mode">
+            <DarkModeButton
+              value={isDarkMode}
+              selected={isDarkMode}
+              onChange={() => {
+                setIsDarkMode(!isDarkMode);
+              }}
             >
-              Feedback
-            </Link>
-          </NavButton>
-
+              <DarkModeIcon fontSize="small" />
+            </DarkModeButton>
+          </Tooltip>
           <About />
+          <Settings
+            isSquareEdges={isSquareEdges}
+            setIsSquareEdges={setIsSquareEdges}
+          />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>
