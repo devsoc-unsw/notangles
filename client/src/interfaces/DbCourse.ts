@@ -1,4 +1,4 @@
-import { CourseData, ClassData, ClassPeriod } from '../interfaces/Course';
+import { CourseData, ClassData, ClassPeriod } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 

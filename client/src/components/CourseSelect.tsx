@@ -17,8 +17,8 @@ import {
   CheckRounded,
 } from '@material-ui/icons';
 import styled, { css } from 'styled-components';
-import { CourseData } from '../interfaces/Course';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
+import { CourseData } from '../interfaces/Course';
 import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { year, term } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
