@@ -18,7 +18,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   color,
   earliestStartTime,
 }) => {
-  // Deep copy of activities (so we can combine duplicates without affecting original)
+  // Deep-ish copy of activities (so we can combine duplicates without affecting original)
 
   let newActivities: Record<Activity, ClassData[]> = {};
 
@@ -27,14 +27,7 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
 
     course.activities[activity].forEach((classData) => {
       const newClassData = {...classData};
-      newClassData.periods = [];
-
-      classData.periods.forEach((period) => {
-          const newPeriod = {...period};
-          newPeriod.locations = [...period.locations];
-          newClassData.periods.push(newPeriod);
-      });
-
+      newClassData.periods = [...classData.periods];
       newActivities[activity].push(newClassData);
     });
   });
@@ -53,16 +46,6 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
     });
 
     newActivities[activity].forEach((classData) => {
-      classData.periods = classData.periods.map((period) => {
-        allPeriods.forEach((other) => {
-          if (isDuplicate(period, other)) {
-            period.locations.push(other.locations[0]);
-          }
-        })
-
-        return period;
-      });
-
       classData.periods = classData.periods.filter((period) => { // TODO
         const duplicates = allPeriods.filter((other) => {
           return isDuplicate(period, other);
@@ -71,14 +54,6 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
         return duplicates[0] === period;
       });
     });
-  });
-
-  Object.keys(newActivities).forEach((activity) => {
-    newActivities[activity] = newActivities[activity].filter( // TODO
-      (classData) => {
-        return (classData.periods.length !== 0);
-      }
-    );
   });
 
   Object.keys(newActivities).forEach((activity) => {
@@ -98,16 +73,16 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   const dropzones = Object.values(newActivities).flatMap(
     (classDatas) => classDatas.flatMap(
       (classData) => classData.periods.flatMap(
-        (period, i) => (
-          <Dropzone
+        (period, i) => {
+          return <Dropzone
             key={`${classData.id}-${i}`}
             classPeriod={period}
             x={period.time.day + 1}
             y={timeToPosition(period.time.start, earliestStartTime)}
             color={color}
             earliestStartTime={earliestStartTime}
-          />
-        ),
+          />;
+        },
       ),
     ),
   );
