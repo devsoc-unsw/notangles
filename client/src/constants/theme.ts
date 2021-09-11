@@ -76,7 +76,7 @@ export const lightTheme = createMuiTheme(baseTheme({
   },
   border: {
     main: '#bdbdbd',
-    dark: '#757575',
+    dark: '#999999',
   },
 }));
 
@@ -89,6 +89,6 @@ export const darkTheme = createMuiTheme(baseTheme({
   },
   border: {
     main: '#616161',
-    dark: '#9e9e9e',
+    dark: '#808080',
   },
 }));

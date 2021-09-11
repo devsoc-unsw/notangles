@@ -37,14 +37,23 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.palette.background.default};
+    border-radius: 5px;
   }
 
   ::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.palette.secondary.main};
+    border-radius: 5px;
+    opacity: 0.5;
+    transition: background 100ms;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.palette.secondary.dark};
   }
 `;
 
@@ -103,7 +112,7 @@ const SelectWrapper = styled(Box)`
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  margin: 40px;
+  margin: 30px;
 `;
 
 const App: FunctionComponent = () => {

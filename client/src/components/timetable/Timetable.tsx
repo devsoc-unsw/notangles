@@ -16,9 +16,7 @@ const StyledTimetable = styled(Box)<{
   display: grid;
   height: ${({ rows }) => rows * rowHeight}px;
   min-width: 1100px;
-  margin-top: 15px;
-  padding-left: ${contentPadding + (1 / devicePixelRatio)}px;
-  padding-right: ${contentPadding + (1 / devicePixelRatio)}px;
+  padding: ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: ${1 / devicePixelRatio}px;
@@ -32,13 +30,13 @@ const StyledTimetableScroll = styled(Box)`
   padding: ${(1 / devicePixelRatio)}px;
   position: relative;
   left: -${contentPadding}px;
-  width: calc(100% + ${contentPadding * 2}px);
-  overflow-y: hidden;
+  width: calc(100% + ${contentPadding * 2 - (1 / devicePixelRatio) * 2}px);
   overflow-x: scroll;
+  overflow-y: hidden;
   // https://www.w3schools.com/howto/howto_css_hide_scrollbars.asp
-  ::-webkit-scrollbar {
-    display: none;
-  }
+  // ::-webkit-scrollbar {
+  //   display: none;
+  // }
 `;
 
 interface TimetableProps {
