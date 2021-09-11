@@ -1,4 +1,4 @@
-import { CourseData } from '@notangles/common';
+import { CourseData } from '../interfaces/Course';
 import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';

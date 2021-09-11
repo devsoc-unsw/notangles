@@ -36,9 +36,11 @@ const getCoursesList = async (
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
+
     if (data.status === 400) {
       throw new NetworkError('Internal server error');
     }
+
     return toCoursesList(await data.json());
   } catch (error) {
     throw new NetworkError('Could not connect to server');

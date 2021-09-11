@@ -1,6 +1,6 @@
 import {
   ClassData, ClassPeriod, InventoryPeriod, InInventory,
-} from '@notangles/common';
+} from '../interfaces/Course';
 import { lightTheme } from '../constants/theme';
 
 export type CardData = ClassPeriod | InventoryPeriod;

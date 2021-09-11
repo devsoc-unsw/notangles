@@ -3,6 +3,7 @@ import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
+import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import {
   CourseData,
   ClassData,
@@ -12,8 +13,7 @@ import {
   CourseCode,
   Activity,
   InInventory,
-} from '@notangles/common';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
+} from './interfaces/Course';
 import { useDrag } from './utils/Drag';
 import Timetable from './components/timetable/Timetable';
 import Navbar from './components/Navbar';

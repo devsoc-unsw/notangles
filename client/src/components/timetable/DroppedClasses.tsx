@@ -8,7 +8,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import {
   CourseData, ClassPeriod, SelectedClasses,
-} from '@notangles/common';
+} from '../../interfaces/Course';
 import {
   CardData,
   isPeriod,
@@ -253,7 +253,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
             </p>
             <p style={pStyleSmall}>
               <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locationShort}
+              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
             </p>
           </>
         )}

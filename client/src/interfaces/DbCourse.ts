@@ -1,4 +1,4 @@
-import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
+import { CourseData, ClassData, ClassPeriod } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -72,8 +72,7 @@ const enumerateWeeks = (weeks: string): number[] => (
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
   class: classData,
-  location: dbTimes.location,
-  locationShort: locationShorten(dbTimes.location),
+  locations: [locationShorten(dbTimes.location)],
   time: {
     day: weekdayToNumber(dbTimes.day),
     start: timeToNumber(dbTimes.time.start),
@@ -118,15 +117,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       dbTimesToPeriod(dbTime, classData)
     ));
 
-    // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
-    classData.periods = classData.periods.filter((period) => (
-      period === classData.periods.find((x) => (
-        x.time.day === period.time.day
-        && x.time.start === period.time.start
-        && x.time.end === period.time.end
-      ))
-    ));
-
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = Math.ceil(period.time.end);
@@ -142,6 +132,32 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     }
 
     courseData.activities[dbClass.activity].push(classData);
+  });
+
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => (
+    a.time.day === b.time.day
+    && a.time.start === b.time.start
+    && a.time.end === b.time.end
+  );
+
+  Object.keys(courseData.activities).forEach((activity) => {
+    let allPeriods: ClassPeriod[] = [];
+
+    courseData.activities[activity].forEach((classData) => {
+      allPeriods = [...allPeriods, ...classData.periods];
+    });
+
+    courseData.activities[activity].forEach((classData) => {
+      classData.periods = classData.periods.map((period) => {
+        allPeriods.forEach((other) => {
+          if (period !== other && isDuplicate(period, other)) {
+            period.locations = [...period.locations, ...other.locations];
+          }
+        });
+
+        return period;
+      });
+    });
   });
 
   Object.keys(courseData.activities).forEach((activity) => {

@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
-import { ClassPeriod, InInventory } from '@notangles/common';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
   defaultTransition,
   registerDropzone,
@@ -75,7 +77,14 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
         isInventory,
         earliestStartTime,
       })}
-    />
+    >
+      {classPeriod !== null && (
+      <>
+        {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" />}
+        {classPeriod.locations.some((location) => location !== 'Online') && <PersonOutlineIcon fontSize="large" />}
+      </>
+      )}
+    </div>
   );
 });
 
