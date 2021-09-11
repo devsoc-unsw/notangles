@@ -24,12 +24,11 @@ import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
-import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
-import { year, term } from './constants/timetable';
+import {
+  darkTheme, lightTheme, ThemeType, contentPadding,
+} from './constants/theme';
+import { year, term, isPreview } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
-
-// TODO: uncomment below to enable preview mode
-const IS_PREVIEW = false;//process.env.REACT_APP_SHOW_PREVIEW === 'true';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -73,7 +72,7 @@ const ContentWrapper = styled(Box)`
 
   display: flex;
   flex-direction: row-reverse;
-  justify-content: ${IS_PREVIEW ? 'flex-start' : 'center'};
+  justify-content: ${isPreview ? 'flex-start' : 'center'};
 
   color: ${(props) => props.theme.palette.text.primary};
 `;
@@ -84,7 +83,7 @@ interface StyledContentProps {
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
-  if (IS_PREVIEW) {
+  if (isPreview) {
     contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
   }
   return contentWidth;
@@ -123,7 +122,7 @@ const App: FunctionComponent = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(IS_PREVIEW);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
 
@@ -321,7 +320,7 @@ const App: FunctionComponent = () => {
             setIsSquareEdges={setIsSquareEdges}
           />
           {
-            IS_PREVIEW && (
+            isPreview && (
               <FriendsDrawer
                 isFriendsListOpen={isFriendsListOpen}
                 isLoggedIn={isLoggedIn}

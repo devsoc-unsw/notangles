@@ -25,7 +25,6 @@ const StyledTimetable = styled(Box)<{
 `;
 
 
-
 const StyledTimetableScroll = styled(Box)`
   padding: ${(1 / devicePixelRatio)}px;
   position: relative;
