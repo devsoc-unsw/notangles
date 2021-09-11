@@ -28,7 +28,8 @@ import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/th
 import { year, term } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
-const IS_PREVIEW = process.env.REACT_APP_SHOW_PREVIEW === 'true';
+// TODO: uncomment below to enable preview mode
+const IS_PREVIEW = false;//process.env.REACT_APP_SHOW_PREVIEW === 'true';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
