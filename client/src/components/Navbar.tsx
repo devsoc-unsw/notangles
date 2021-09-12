@@ -15,12 +15,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import { year, termName } from '../constants/timetable';
+import { year, termName, isPreview } from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
   margin-right: 20px;
-  margin-left: ${process.env.REACT_APP_SHOW_PREVIEW === 'true' ? 20 : 0}px;
+  margin-left: ${isPreview ? 20 : 0}px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
@@ -87,7 +87,7 @@ const Navbar: FunctionComponent<NavBarProps> = React.memo(({
     <NavbarBox>
       <StyledNavBar>
         <Toolbar>
-          {process.env.REACT_APP_SHOW_PREVIEW === 'true' && (
+          {isPreview && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
