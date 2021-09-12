@@ -2,6 +2,7 @@ import { createMuiTheme } from '@material-ui/core';
 
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
+export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
@@ -75,7 +76,7 @@ export const lightTheme = createMuiTheme(baseTheme({
   },
   border: {
     main: '#bdbdbd',
-    dark: '#757575',
+    dark: '#999999',
   },
 }));
 
@@ -88,6 +89,6 @@ export const darkTheme = createMuiTheme(baseTheme({
   },
   border: {
     main: '#616161',
-    dark: '#9e9e9e',
+    dark: '#808080',
   },
 }));
