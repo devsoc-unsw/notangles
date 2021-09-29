@@ -1,8 +1,10 @@
 import React, { FunctionComponent } from 'react';
 
 import styled from 'styled-components';
-import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
+import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 
+import { ThemeType } from '../constants/theme';
+import { useMediaQuery } from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import { year, termName, isPreview } from '../constants/timetable';
+import { year, termName, isPreview, term } from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
@@ -76,60 +78,65 @@ interface NavBarProps {
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: FunctionComponent<NavBarProps> = React.memo(({
+const Navbar: FunctionComponent<NavBarProps> = ({
   setIsDarkMode,
   isDarkMode,
   handleDrawerOpen,
   setIsSquareEdges,
   isSquareEdges,
-}) => (
-  <StylesProvider injectFirst>
-    <NavbarBox>
-      <StyledNavBar>
-        <Toolbar>
-          {isPreview && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <LogoImg src={CSESocLogo} />
-          <NavbarTitle variant="h6">
-            Notangles
-            <Weak>
-              <Beta>
-                BETA
-              </Beta>
-              {termName}
-              {', '}
-              {year}
-            </Weak>
-          </NavbarTitle>
+}) => {
+  const theme = useTheme<ThemeType>();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-          <Tooltip title="Toggle dark mode">
-            <DarkModeButton
-              value={isDarkMode}
-              selected={isDarkMode}
-              onChange={() => {
-                setIsDarkMode(!isDarkMode);
-              }}
-            >
-              <DarkModeIcon fontSize="small" />
-            </DarkModeButton>
-          </Tooltip>
-          <About />
-          <Settings
-            isSquareEdges={isSquareEdges}
-            setIsSquareEdges={setIsSquareEdges}
-          />
-        </Toolbar>
-      </StyledNavBar>
-    </NavbarBox>
-  </StylesProvider>
-));
+  return (
+    <StylesProvider injectFirst>
+      <NavbarBox>
+        <StyledNavBar>
+          <Toolbar>
+            {isPreview && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            <LogoImg src={CSESocLogo} />
+            <NavbarTitle variant="h6">
+              Notangles
+              <Weak>
+                {!isMobile && (
+                  <Beta>
+                    Beta
+                  </Beta>
+                )}
+                {isMobile ? term : termName.concat(', ', year)}
+              </Weak>
+            </NavbarTitle>
+
+            <Tooltip title="Toggle dark mode">
+              <DarkModeButton
+                value={isDarkMode}
+                selected={isDarkMode}
+                onChange={() => {
+                  setIsDarkMode(!isDarkMode);
+                }}
+              >
+                <DarkModeIcon fontSize="small" />
+              </DarkModeButton>
+            </Tooltip>
+            <About />
+            <Settings
+              isSquareEdges={isSquareEdges}
+              setIsSquareEdges={setIsSquareEdges}
+            />
+          </Toolbar>
+        </StyledNavBar>
+      </NavbarBox>
+    </StylesProvider>
+  );
+};
 
 export default Navbar;
