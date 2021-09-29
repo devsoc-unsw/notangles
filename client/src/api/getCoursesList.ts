@@ -15,6 +15,8 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList => (
     id: course._id,
     code: course.courseCode,
     name: course.name,
+    online: Math.random() > 0.5,
+    inPerson: Math.random() > 0.5,
   }))
 );
 

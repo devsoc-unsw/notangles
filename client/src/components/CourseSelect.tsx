@@ -9,6 +9,8 @@ import {
   Box,
   Chip,
   Theme,
+  Tabs,
+  Tab,
 } from '@material-ui/core';
 import {
   CloseRounded,
@@ -153,6 +155,8 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const [selectedTab, setSelectedTab] = useState<string>('inPerson');
+
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -181,16 +185,17 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
   checkExternallyAdded();
 
-  let defaultOptions = coursesList;
-  // show relevant default options based of selected courses (TODO: improve)
-  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
-  const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
-  if (selectedValue.length) {
-    defaultOptions = defaultOptions.filter((course) => (
-      courseAreas.includes(getCourseArea(course.code))
-      && !selectedValue.includes(course)
-    ));
-  }
+  const defaultOptions = coursesList.filter((course) => {
+    if (selectedTab === 'all' && (course.online || course.inPerson)) {
+      return true;
+    } if (selectedTab === 'online' && course.online) {
+      return true;
+    } if (selectedTab === 'inPerson' && course.inPerson) {
+      return true;
+    }
+
+    return false;
+  });
 
   const search = (query: string) => {
     query = query.trim();
@@ -219,7 +224,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
 
     // return before the input value and options are reset
     if (added.length === 0) return;
-
 
     if (searchTimer.current) {
       // run a search now and cancel the current search timer
@@ -316,9 +320,18 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         })
       );
 
+      const onTabSelect = (event: React.ChangeEvent<{}>, value: any) => {
+        console.log(value);
+      };
+
       return (
         <div ref={ref} style={{ overflow: 'hidden' }}>
           <OuterElementContext.Provider value={other}>
+            <Tabs value={selectedTab} onChange={onTabSelect}>
+              <Tab label="All" value="all" />
+              <Tab label="Online" value="online" />
+              <Tab label="In-person" value="inPerson" />
+            </Tabs>
             <VariableSizeList
               ref={listRef}
               style={{ overflowX: 'hidden' }}
@@ -349,6 +362,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
         // autoHighlight
         disableClearable
         disableListWrap
+        disableCloseOnSelect
         noOptionsText="No Results"
         selectOnFocus={false}
         options={options}
@@ -370,8 +384,8 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
             <RightContainer>
-              <VideocamOutlinedIcon />
-              <PersonOutlineIcon />
+              {option.online && <VideocamOutlinedIcon />}
+              {option.inPerson && <PersonOutlineIcon />}
             </RightContainer>
           </StyledOption>
         )}
