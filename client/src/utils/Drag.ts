@@ -312,7 +312,9 @@ export const setDragTarget = (
   cardData: CardData | null, event?: MouseEvent & TouchEvent,
 ) => {
   if (cardData !== dragTarget) {
-    if (cardData && event && event.currentTarget) {
+    const scrollElement = getScrollElement();
+
+    if (cardData && event && event.currentTarget && scrollElement) {
       const element = event.currentTarget as HTMLElement;
       element.style.transition = moveTransition;
       document.documentElement.style.cursor = 'grabbing';
@@ -327,6 +329,8 @@ export const setDragTarget = (
           lastY = touch.pageY;
         }
       }
+
+      lastX += scrollElement.scrollLeft;
 
       dragElement = element;
       freezeTransform(element);
@@ -412,21 +416,29 @@ const onFrame = () => {
 requestAnimationFrame(onFrame);
 
 window.addEventListener('mousemove', (event: MouseEvent) => {
-  onMove(event.pageX, event.pageY);
-  clientX = event.clientX;
-  clientY = event.clientY;
+  const scrollElement = getScrollElement();
+
+  if (scrollElement) {
+    onMove(event.pageX + scrollElement.scrollLeft, event.pageY);
+    clientX = event.clientX;
+    clientY = event.clientY;
+  }
 });
 
 window.addEventListener('touchmove', (event: TouchEvent) => {
-  if (event.touches.length > 0) {
-    onMove(event.touches[0].pageX, event.touches[0].pageY);
-    clientX = event.touches[0].pageX;
-    clientY = event.touches[0].pageY;
-  }
+  const scrollElement = getScrollElement();
 
-  if (dragElement) {
-    event.preventDefault();
-    event.stopPropagation();
+  if (scrollElement) {
+    if (event.touches.length > 0) {
+      onMove(event.touches[0].pageX + scrollElement.scrollLeft, event.touches[0].pageY);
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    }
+
+    if (dragElement) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 }, { passive: false });
 
