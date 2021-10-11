@@ -30,10 +30,10 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
-window.addEventListener('load', () => {
-  lastScrollX = document.documentElement.scrollLeft;
-  lastScrollY = document.documentElement.scrollTop;
-});
+// window.addEventListener('load', () => {
+//   lastScrollX = document.documentElement.scrollLeft;
+//   lastScrollY = document.documentElement.scrollTop;
+// });
 
 const getInventoryPeriod = (cardData: CardData): InventoryPeriod => (
   cardData.class.course.inventoryData[cardData.class.activity]
@@ -312,7 +312,9 @@ export const setDragTarget = (
   cardData: CardData | null, event?: MouseEvent & TouchEvent,
 ) => {
   if (cardData !== dragTarget) {
-    if (cardData && event && event.currentTarget) {
+    const scrollElement = getScrollElement();
+
+    if (cardData && event && event.currentTarget && scrollElement) {
       const element = event.currentTarget as HTMLElement;
       element.style.transition = moveTransition;
       document.documentElement.style.cursor = 'grabbing';
@@ -327,6 +329,8 @@ export const setDragTarget = (
           lastY = touch.pageY;
         }
       }
+
+      lastX += scrollElement.scrollLeft;
 
       dragElement = element;
       freezeTransform(element);
@@ -354,35 +358,90 @@ const onMove = (x: number, y: number) => {
   updateDropTarget();
 };
 
+const edgeSize = 50;
+const scrollSpeed = 0.32;
+const getScrollElement = () => document.getElementById('StyledTimetableScroll');
+
+let clientX = 0;
+let clientY = 0;
+let lastFrame = Date.now();
+
+const onScroll = () => {
+  if (!dragElement) return;
+
+  const scrollElement = getScrollElement();
+
+  if (scrollElement) {
+    console.log(scrollElement.scrollLeft, lastScrollX);
+    const dx = scrollElement.scrollLeft - lastScrollX;
+    const dy = document.documentElement.scrollTop - lastScrollY;
+
+    lastX += dx;
+    lastY += dy;
+    lastScrollX = scrollElement.scrollLeft;
+    lastScrollY = document.documentElement.scrollTop;
+
+    moveElement(dragElement, dx, dy);
+    updateDropTarget();
+  }
+};
+
+window.addEventListener('scroll', onScroll);
+
+const onFrame = () => {
+  if (dragElement) {
+    const delta = Date.now() - lastFrame;
+    const { clientWidth } = document.documentElement;
+    const { clientHeight } = document.documentElement;
+    const scrollElement = getScrollElement();
+
+    if (clientY < edgeSize) { // top scroll
+      document.documentElement.scrollTop -= scrollSpeed * delta;
+    } else if (clientHeight - clientY < edgeSize) { // bottom scroll
+      document.documentElement.scrollTop += scrollSpeed * delta;
+    }
+
+    if (scrollElement && clientWidth - clientX < edgeSize) { // right scroll
+      scrollElement.scrollLeft += scrollSpeed * delta;
+    } else if (scrollElement && clientX < edgeSize) { // left scroll
+      scrollElement.scrollLeft -= scrollSpeed * delta;
+    }
+    onScroll();
+  }
+
+  lastFrame = Date.now();
+  requestAnimationFrame(onFrame);
+};
+
+requestAnimationFrame(onFrame);
+
 window.addEventListener('mousemove', (event: MouseEvent) => {
-  onMove(event.pageX, event.pageY);
+  const scrollElement = getScrollElement();
+
+  if (scrollElement) {
+    onMove(event.pageX + scrollElement.scrollLeft, event.pageY);
+    clientX = event.clientX;
+    clientY = event.clientY;
+  }
 });
 
 window.addEventListener('touchmove', (event: TouchEvent) => {
-  if (event.touches.length > 0) {
-    onMove(event.touches[0].pageX, event.touches[0].pageY);
-  }
+  const scrollElement = getScrollElement();
 
-  if (dragElement) {
-    event.preventDefault();
-    event.stopPropagation();
+  if (scrollElement) {
+    if (event.touches.length > 0) {
+      onMove(event.touches[0].pageX + scrollElement.scrollLeft, event.touches[0].pageY);
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    }
+
+    if (dragElement) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 }, { passive: false });
 
-window.addEventListener('scroll', () => {
-  if (!dragElement) return;
-
-  const dx = document.documentElement.scrollLeft - lastScrollX;
-  const dy = document.documentElement.scrollTop - lastScrollY;
-
-  lastX += dx;
-  lastY += dy;
-  lastScrollX += dx;
-  lastScrollY += dy;
-
-  moveElement(dragElement, dx, dy);
-  updateDropTarget();
-});
 
 const drop = () => {
   if (dragElement) {
