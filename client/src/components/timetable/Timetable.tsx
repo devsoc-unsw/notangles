@@ -58,7 +58,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   isSquareEdges,
   clashes,
 }) => (
-  <StyledTimetableScroll>
+  <StyledTimetableScroll id="StyledTimetableScroll">
     <StyledTimetable
       rows={Math.max(...selectedCourses.map(
         (course) => course.latestFinishTime,
