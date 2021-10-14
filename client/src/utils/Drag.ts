@@ -372,7 +372,6 @@ const onScroll = () => {
   const scrollElement = getScrollElement();
 
   if (scrollElement) {
-    console.log(scrollElement.scrollLeft, lastScrollX);
     const dx = scrollElement.scrollLeft - lastScrollX;
     const dy = document.documentElement.scrollTop - lastScrollY;
 

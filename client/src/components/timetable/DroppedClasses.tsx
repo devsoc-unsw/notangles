@@ -197,8 +197,28 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     };
   });
 
+  let timer: number | null = null;
+
   const onDown = (event: any) => {
-    setDragTarget(cardData, event);
+    event = Object.assign({}, event);
+
+    timer = setTimeout(() => {
+      setDragTarget(cardData, event);
+    }, 1000);
+
+    const onUp = () => {
+      timer !== null && clearTimeout(timer);
+
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchend", onUp);
+      // window.removeEventListener("mousemove", onUp);
+      // window.removeEventListener("touchmove", onUp);
+    };
+
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchend", onUp);
+    // window.addEventListener("mousemove", onUp);
+    // window.addEventListener("touchmove", onUp);
   };
 
   let activityMaxPeriods = 0;
