@@ -242,15 +242,22 @@ const App: FunctionComponent = () => {
   };
 
   const auto = async () => {
-    const newClasses = await autoTimetable(selectedClasses, selectedCourses, {});
-    setSelectedClasses((prev) => {
-      prev = { ...prev };
-      newClasses.forEach((classData) => {
-        prev[classData.course.code][classData.activity] = classData;
+    try {
+      const newClasses = await autoTimetable(selectedClasses, selectedCourses, {});
+
+      setSelectedClasses((prev) => {
+        prev = { ...prev };
+        newClasses.forEach((classData) => {
+          prev[classData.course.code][classData.activity] = classData;
+        });
+        return prev;
       });
-      return prev;
-    });
+    } catch (e) {
+      setErrorMsg(e.message);
+      setErrorVisibility(true);
+    }
   };
+
   const handleSetIsLoggedIn = (value: boolean) => {
     setIsLoggedIn(value);
   };

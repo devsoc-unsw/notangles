@@ -118,7 +118,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => 
 
   return (
     <div>
-      <Tooltip title="Coming Soon" placement="bottom">
+      {/* <Tooltip title="Coming Soon" placement="bottom"> */}
         <div>
           <DropdownButton aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
             <Box ml="10px" flexGrow={1}>Auto-timetable</Box>
@@ -127,7 +127,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => 
             ) : <ArrowDropDownIcon />}
           </DropdownButton>
         </div>
-      </Tooltip>
+      {/* </Tooltip> */}
 
       <Popover
         id={popoverId}

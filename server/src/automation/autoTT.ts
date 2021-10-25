@@ -131,7 +131,7 @@ export const autoTT = async (courses: autoCourses) => {
       classGroups[index].push(sortClass)
     })
   })
-  
+
   // find best tt
   let maxScore: number = -1
   let index: number = 0

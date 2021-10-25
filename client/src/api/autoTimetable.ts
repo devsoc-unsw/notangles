@@ -1,4 +1,4 @@
-import { ClassData, CourseData, SelectedClasses } from '@notangles/common';
+import { ClassData, CourseData, SelectedClasses } from '../interfaces/Course';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
@@ -56,7 +56,7 @@ const autoTimetable = async (
       Object.entries(course.activities).forEach(([activity, activityClasses]) => {
         if (!autoCourse.exclude.includes(activity)) {
           const outputClass = activityClasses.find((c) => (
-            c.classId === classData[course.code][activity]
+            c.id === classData[course.code][activity]
           ));
           if (outputClass !== undefined) {
             output.push(outputClass);
@@ -68,11 +68,7 @@ const autoTimetable = async (
     });
     return output;
   } catch (error) {
-    if (error instanceof TimeoutError) {
-      throw new NetworkError('Could not connect to server');
-    } else {
-      throw error;
-    }
+    throw new NetworkError('Could not connect to server');
   }
 };
 
