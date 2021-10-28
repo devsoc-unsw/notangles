@@ -240,9 +240,12 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
 
         if (!rippleStopped && "stop" in rippleRef.current) {
           rippleStopped = true;
-          try {
-            rippleRef.current.stop(eventUp);
-          } catch (error) {}
+
+          setTimeout(() => {
+            try {
+              rippleRef.current.stop(eventUp);
+            } catch (error) {}
+          }, 100);
         }
       }
 
