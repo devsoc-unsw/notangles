@@ -32,10 +32,6 @@ const StyledTimetableScroll = styled(Box)`
   width: calc(100% + ${contentPadding * 2 - (1 / devicePixelRatio) * 2}px);
   overflow-x: scroll;
   overflow-y: hidden;
-  // https://www.w3schools.com/howto/howto_css_hide_scrollbars.asp
-  // ::-webkit-scrollbar {
-  //   display: none;
-  // }
 `;
 
 interface TimetableProps {

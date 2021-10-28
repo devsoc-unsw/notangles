@@ -197,22 +197,21 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
 
-  useEffect(() => {
-    const elementCurrent = element.current;
-    if (elementCurrent) registerCard(cardData, elementCurrent);
-    return () => {
-      if (elementCurrent) unregisterCard(cardData, elementCurrent);
-    };
-  });
-
   let timer: number | null = null;
+  let rippleStopped = false;
+  let ignoreMouse = false;
 
-  const onDown = (event: any) => {
-    if (!("type" in event)) return;
+  const onDown = (oldEvent: any) => {
+    if (!("type" in oldEvent)) return;
+    if (oldEvent.type.includes("mouse") && ignoreMouse) return;
+    if (oldEvent.type.includes("touch")) ignoreMouse = true;
 
-    if ("start" in rippleRef.current) rippleRef.current.start(event);
+    const event = { ...oldEvent };
 
-    event = { ...event };
+    if ("start" in rippleRef.current) {
+      rippleStopped = false;
+      rippleRef.current.start(event);
+    }
 
     const startDrag = () => {
       timer = null;
@@ -220,31 +219,40 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       setInfoVisibility(false);
     }
 
-    if (event.type.includes("touch")) {
+    if (oldEvent.type.includes("touch")) {
       timer = setTimeout(startDrag, 500);
     } else {
       startDrag();
     }
 
-    const onUp = (event: any) => {
+    const onUp = (eventUp: any) => {
+      if (eventUp.type.includes("mouse") && ignoreMouse) return;
+
+      window.removeEventListener("mousemove", onUp);
+      window.removeEventListener("touchmove", onUp);
+
+      if (
+        (timer || !eventUp.type.includes("move"))
+        && "stop" in rippleRef.current
+      ) {
+        window.removeEventListener('mouseup', onUp);
+        window.removeEventListener('touchend', onUp);
+
+        if (!rippleStopped && "stop" in rippleRef.current) {
+          rippleStopped = true;
+          try {
+            rippleRef.current.stop(eventUp);
+          } catch (error) {}
+        }
+      }
+
       if (timer !== null) {
         clearTimeout(timer);
         timer = null;
         setInfoVisibility(true);
       }
 
-      if (
-        (timer || !event.type.includes("move"))
-        && "stop" in rippleRef.current
-      ) {
-        rippleRef.current.stop(event);
-
-        window.removeEventListener('mouseup', onUp);
-        window.removeEventListener('touchend', onUp);
-      }
-
-      window.removeEventListener("mousemove", onUp);
-      window.removeEventListener("touchmove", onUp);
+      eventUp.preventDefault();
     };
 
     window.addEventListener('mouseup', onUp);
@@ -252,6 +260,20 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     window.addEventListener("mousemove", onUp);
     window.addEventListener("touchmove", onUp, { passive: false });
   };
+
+  useEffect(() => {
+    const elementCurrent = element.current;
+
+    if (elementCurrent) {
+      registerCard(cardData, elementCurrent);
+    }
+
+    return () => {
+      if (elementCurrent) {
+        unregisterCard(cardData, elementCurrent);
+      }
+    };
+  });
 
   let activityMaxPeriods = 0;
   if (!isPeriod(cardData)) {
