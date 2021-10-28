@@ -25,6 +25,7 @@ import {
   timeToPosition,
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 
 export const inventoryMargin = 10;
 
@@ -142,13 +143,16 @@ const courseClassInnerStyle = ({
   transition: defaultTransition,
   backfaceVisibility: 'hidden' as 'hidden',
   fontSmoothing: 'subpixel-antialiased',
-  border: hasClash ? 'solid red 4px' : 'solid transparent 4px',
+  border: hasClash ? 'solid red 4px' : 'solid transparent 0px',
+  paddingLeft: 4,
+  paddingRight: 4,
+  paddingTop: 0,
+  paddingBottom: 0,
 
   minWidth: 0,
   width: '100%',
   height: '100%',
   boxSizing: 'border-box' as 'border-box',
-  padding: 0,
   position: 'relative' as 'relative',
 });
 
@@ -191,6 +195,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   setInfoVisibility,
 }) => {
   const element = useRef<HTMLDivElement>(null);
+  const rippleRef = useRef<any>(null);
 
   useEffect(() => {
     const elementCurrent = element.current;
@@ -203,31 +208,49 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   let timer: number | null = null;
 
   const onDown = (event: any) => {
+    if (!("type" in event)) return;
+
+    if ("start" in rippleRef.current) rippleRef.current.start(event);
+
     event = { ...event };
 
-    timer = setTimeout(() => {
+    const startDrag = () => {
       timer = null;
       setDragTarget(cardData, event);
       setInfoVisibility(false);
-    }, 1000);
+    }
 
-    const onUp = () => {
+    if (event.type.includes("touch")) {
+      timer = setTimeout(startDrag, 500);
+    } else {
+      startDrag();
+    }
+
+    const onUp = (event: any) => {
       if (timer !== null) {
         clearTimeout(timer);
         timer = null;
         setInfoVisibility(true);
       }
 
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchend', onUp);
-      // window.removeEventListener("mousemove", onUp);
-      // window.removeEventListener("touchmove", onUp);
+      if (
+        (timer || !event.type.includes("move"))
+        && "stop" in rippleRef.current
+      ) {
+        rippleRef.current.stop(event);
+
+        window.removeEventListener('mouseup', onUp);
+        window.removeEventListener('touchend', onUp);
+      }
+
+      window.removeEventListener("mousemove", onUp);
+      window.removeEventListener("touchmove", onUp);
     };
 
     window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchend', onUp);
-    // window.addEventListener("mousemove", onUp);
-    // window.addEventListener("touchmove", onUp);
+    window.addEventListener('touchend', onUp, { passive: false });
+    window.addEventListener("mousemove", onUp);
+    window.addEventListener("touchmove", onUp, { passive: false });
   };
 
   let activityMaxPeriods = 0;
@@ -249,54 +272,53 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       y={y}
       earliestStartTime={earliestStartTime}
     >
-      <ButtonBase>
-        <Card
-          style={courseClassInnerStyle({
-            backgroundColor: color,
-            hasClash,
-            isSquareEdges,
-          })}
-        >
-          <p style={pStyle}>
-            <b>
-              {cardData.class.course.code}
+      <Card
+        style={courseClassInnerStyle({
+          backgroundColor: color,
+          hasClash,
+          isSquareEdges,
+        })}
+      >
+        <p style={pStyle}>
+          <b>
+            {cardData.class.course.code}
+            {' '}
+            {cardData.class.activity}
+          </b>
+        </p>
+        {isPeriod(cardData) && (
+          <>
+            <p style={pStyleSmall}>
+              <PeopleAltIcon fontSize="inherit" style={iconStyle} />
               {' '}
-              {cardData.class.activity}
-            </b>
-          </p>
-          {isPeriod(cardData) && (
-            <>
-              <p style={pStyleSmall}>
-                <PeopleAltIcon fontSize="inherit" style={iconStyle} />
-                {' '}
-                {' '}
-                {cardData.class.enrolments}
-                /
-                {cardData.class.capacity}
-                {' '}
-                {' '}
-                (
-                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
-                {' '}
-                {cardData.time.weeksString}
-                )
-              </p>
-              <p style={pStyleSmall}>
-                <LocationOnIcon fontSize="inherit" style={iconStyle} />
-                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-              </p>
-            </>
-          )}
-          {!isPeriod(cardData) && (
-            <p style={pStyle}>
-              {activityMaxPeriods}
               {' '}
-              class
-              {activityMaxPeriods !== 1 && 'es'}
+              {cardData.class.enrolments}
+              /
+              {cardData.class.capacity}
+              {' '}
+              {' '}
+              (
+              {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
+              {' '}
+              {cardData.time.weeksString}
+              )
             </p>
-          )}
-        </Card>
-      </ButtonBase>
+            <p style={pStyleSmall}>
+              <LocationOnIcon fontSize="inherit" style={iconStyle} />
+              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+            </p>
+          </>
+        )}
+        {!isPeriod(cardData) && (
+          <p style={pStyle}>
+            {activityMaxPeriods}
+            {' '}
+            class
+            {activityMaxPeriods !== 1 && 'es'}
+          </p>
+        )}
+        <TouchRipple ref={rippleRef} />
+      </Card>
     </StyledCourseClass>
   );
 });

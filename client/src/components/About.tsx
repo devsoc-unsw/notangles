@@ -138,8 +138,8 @@ const About: FunctionComponent = React.memo(() => {
               href="https://forms.gle/rV3QCwjsEbLNyESE6"
               target="_blank"
             >
-              please let us know.
-            </Link>
+              please let us know
+            </Link>.
           </Typography>
         </DialogContent>
       </Dialog>
