@@ -121,10 +121,20 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
+  const [infoMsg] = useState<String>('Press and hold to drag a class');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
+
+  if (infoVisibility) {
+    storage.set('hasShownInfoMessage', true);
+
+    if (storage.get('hasShownInfoMessage')) {
+      setInfoVisibility(false);
+    }
+  }
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -238,6 +248,10 @@ const App: FunctionComponent = () => {
 
   const handleErrorClose = () => {
     setErrorVisibility(false);
+  };
+
+  const handleInfoClose = () => {
+    setInfoVisibility(false);
   };
 
   const handleSetIsLoggedIn = (value: boolean) => {
@@ -355,6 +369,7 @@ const App: FunctionComponent = () => {
                 setIs12HourMode={setIs12HourMode}
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
+                setInfoVisibility={setInfoVisibility}
               />
               <Footer>
                 DISCLAIMER: While we try our best, Notangles is not an
@@ -378,6 +393,11 @@ const App: FunctionComponent = () => {
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert severity="error" onClose={handleErrorClose} variant="filled">
                   {errorMsg}
+                </Alert>
+              </Snackbar>
+              <Snackbar open={infoVisibility}>
+                <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                  {infoMsg}
                 </Alert>
               </Snackbar>
             </Content>

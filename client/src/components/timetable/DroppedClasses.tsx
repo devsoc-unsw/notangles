@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import { ButtonBase } from '@material-ui/core';
 import {
   CourseData, ClassPeriod, SelectedClasses,
 } from '../../interfaces/Course';
@@ -175,6 +176,7 @@ interface DroppedClassProps {
   earliestStartTime: number
   hasClash: boolean
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -186,6 +188,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   earliestStartTime,
   hasClash,
   isSquareEdges,
+  setInfoVisibility,
 }) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -200,23 +203,29 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   let timer: number | null = null;
 
   const onDown = (event: any) => {
-    event = Object.assign({}, event);
+    event = { ...event };
 
     timer = setTimeout(() => {
+      timer = null;
       setDragTarget(cardData, event);
+      setInfoVisibility(false);
     }, 1000);
 
     const onUp = () => {
-      timer !== null && clearTimeout(timer);
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+        setInfoVisibility(true);
+      }
 
-      window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("touchend", onUp);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchend', onUp);
       // window.removeEventListener("mousemove", onUp);
       // window.removeEventListener("touchmove", onUp);
     };
 
-    window.addEventListener("mouseup", onUp);
-    window.addEventListener("touchend", onUp);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchend', onUp);
     // window.addEventListener("mousemove", onUp);
     // window.addEventListener("touchmove", onUp);
   };
@@ -240,52 +249,54 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       y={y}
       earliestStartTime={earliestStartTime}
     >
-      <Card
-        style={courseClassInnerStyle({
-          backgroundColor: color,
-          hasClash,
-          isSquareEdges,
-        })}
-      >
-        <p style={pStyle}>
-          <b>
-            {cardData.class.course.code}
-            {' '}
-            {cardData.class.activity}
-          </b>
-        </p>
-        {isPeriod(cardData) && (
-          <>
-            <p style={pStyleSmall}>
-              <PeopleAltIcon fontSize="inherit" style={iconStyle} />
-              {' '}
-              {' '}
-              {cardData.class.enrolments}
-              /
-              {cardData.class.capacity}
-              {' '}
-              {' '}
-              (
-              {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
-              {' '}
-              {cardData.time.weeksString}
-              )
-            </p>
-            <p style={pStyleSmall}>
-              <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-            </p>
-          </>
-        )}
-        {!isPeriod(cardData) && (
+      <ButtonBase>
+        <Card
+          style={courseClassInnerStyle({
+            backgroundColor: color,
+            hasClash,
+            isSquareEdges,
+          })}
+        >
           <p style={pStyle}>
-            {activityMaxPeriods}
-            {' '}
-            class
-            {activityMaxPeriods !== 1 && 'es'}
+            <b>
+              {cardData.class.course.code}
+              {' '}
+              {cardData.class.activity}
+            </b>
           </p>
-        )}
-      </Card>
+          {isPeriod(cardData) && (
+            <>
+              <p style={pStyleSmall}>
+                <PeopleAltIcon fontSize="inherit" style={iconStyle} />
+                {' '}
+                {' '}
+                {cardData.class.enrolments}
+                /
+                {cardData.class.capacity}
+                {' '}
+                {' '}
+                (
+                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
+                {' '}
+                {cardData.time.weeksString}
+                )
+              </p>
+              <p style={pStyleSmall}>
+                <LocationOnIcon fontSize="inherit" style={iconStyle} />
+                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+              </p>
+            </>
+          )}
+          {!isPeriod(cardData) && (
+            <p style={pStyle}>
+              {activityMaxPeriods}
+              {' '}
+              class
+              {activityMaxPeriods !== 1 && 'es'}
+            </p>
+          )}
+        </Card>
+      </ButtonBase>
     </StyledCourseClass>
   );
 });
@@ -301,6 +312,7 @@ interface DroppedClassesProps {
   days: string[]
   clashes: Array<ClassPeriod>
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
@@ -310,6 +322,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   days,
   clashes,
   isSquareEdges,
+  setInfoVisibility,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -379,6 +392,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
+        setInfoVisibility={setInfoVisibility}
       />,
     );
 

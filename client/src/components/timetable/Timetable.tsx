@@ -46,6 +46,7 @@ interface TimetableProps {
   setIs12HourMode(value: boolean): void
   clashes: Array<ClassPeriod>
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -57,6 +58,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   setIs12HourMode,
   isSquareEdges,
   clashes,
+  setInfoVisibility,
 }) => (
   <StyledTimetableScroll id="StyledTimetableScroll">
     <StyledTimetable
@@ -86,6 +88,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
         days={days}
         clashes={clashes}
         isSquareEdges={isSquareEdges}
+        setInfoVisibility={setInfoVisibility}
       />
     </StyledTimetable>
   </StyledTimetableScroll>
