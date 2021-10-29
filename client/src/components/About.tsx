@@ -139,7 +139,8 @@ const About: FunctionComponent = React.memo(() => {
               target="_blank"
             >
               please let us know
-            </Link>.
+            </Link>
+            .
           </Typography>
         </DialogContent>
       </Dialog>

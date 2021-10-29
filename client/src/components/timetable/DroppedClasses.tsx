@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import { ButtonBase } from '@material-ui/core';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import {
   CourseData, ClassPeriod, SelectedClasses,
 } from '../../interfaces/Course';
@@ -25,7 +25,6 @@ import {
   timeToPosition,
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 
 export const inventoryMargin = 10;
 
@@ -202,13 +201,13 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   let ignoreMouse = false;
 
   const onDown = (oldEvent: any) => {
-    if (!("type" in oldEvent)) return;
-    if (oldEvent.type.includes("mouse") && ignoreMouse) return;
-    if (oldEvent.type.includes("touch")) ignoreMouse = true;
+    if (!('type' in oldEvent)) return;
+    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
+    if (oldEvent.type.includes('touch')) ignoreMouse = true;
 
     const event = { ...oldEvent };
 
-    if ("start" in rippleRef.current) {
+    if ('start' in rippleRef.current) {
       rippleStopped = false;
       rippleRef.current.start(event);
     }
@@ -217,34 +216,36 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       timer = null;
       setDragTarget(cardData, event);
       setInfoVisibility(false);
-    }
+    };
 
-    if (oldEvent.type.includes("touch")) {
+    if (oldEvent.type.includes('touch')) {
       timer = setTimeout(startDrag, 500);
     } else {
       startDrag();
     }
 
     const onUp = (eventUp: any) => {
-      if (eventUp.type.includes("mouse") && ignoreMouse) return;
+      if (eventUp.type.includes('mouse') && ignoreMouse) return;
 
-      window.removeEventListener("mousemove", onUp);
-      window.removeEventListener("touchmove", onUp);
+      window.removeEventListener('mousemove', onUp);
+      window.removeEventListener('touchmove', onUp);
 
       if (
-        (timer || !eventUp.type.includes("move"))
-        && "stop" in rippleRef.current
+        (timer || !eventUp.type.includes('move'))
+        && 'stop' in rippleRef.current
       ) {
         window.removeEventListener('mouseup', onUp);
         window.removeEventListener('touchend', onUp);
 
-        if (!rippleStopped && "stop" in rippleRef.current) {
+        if (!rippleStopped && 'stop' in rippleRef.current) {
           rippleStopped = true;
 
           setTimeout(() => {
             try {
               rippleRef.current.stop(eventUp);
-            } catch (error) {}
+            } catch (error) {
+              console.log(error);
+            }
           }, 100);
         }
       }
@@ -260,8 +261,8 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
 
     window.addEventListener('mouseup', onUp);
     window.addEventListener('touchend', onUp, { passive: false });
-    window.addEventListener("mousemove", onUp);
-    window.addEventListener("touchmove", onUp, { passive: false });
+    window.addEventListener('mousemove', onUp);
+    window.addEventListener('touchmove', onUp, { passive: false });
   };
 
   useEffect(() => {
