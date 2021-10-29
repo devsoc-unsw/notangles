@@ -129,11 +129,11 @@ const App: FunctionComponent = () => {
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
 
   if (infoVisibility) {
-    storage.set('hasShownInfoMessage', true);
-
     if (storage.get('hasShownInfoMessage')) {
       setInfoVisibility(false);
     }
+
+    storage.set('hasShownInfoMessage', true);
   }
 
   const assignedColors = useColorMapper(
