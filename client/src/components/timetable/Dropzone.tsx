@@ -30,9 +30,9 @@ const cellStyle = ({
   justifyContent: 'center',
   zIndex: 20,
   gridColumn: x,
-  gridRow: `2 / -1`,
+  gridRow: '2 / -1',
   transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
-  height: isInventory ? "100%" : classHeight(classPeriod),
+  height: isInventory ? '100%' : classHeight(classPeriod),
   marginBottom: 1 / devicePixelRatio,
   backgroundColor: color,
   opacity: 0,
@@ -79,8 +79,8 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
     >
       {classPeriod !== null && (
       <>
-        {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{color: "white"}} />}
-        {classPeriod.locations.some((location) => location !== 'Online') && <PersonOutlineIcon fontSize="large" style={{color: "white"}} />}
+        {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{ color: 'white' }} />}
+        {classPeriod.locations.some((location) => location !== 'Online') && <PersonOutlineIcon fontSize="large" style={{ color: 'white' }} />}
       </>
       )}
     </div>

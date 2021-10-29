@@ -4,15 +4,16 @@ import { Box } from '@material-ui/core';
 import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { contentPadding } from '../../constants/theme';
-import { TimetableLayout, rowHeight } from './TimetableLayout';
+import { TimetableLayout } from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
+import { timetableWidth } from '../../utils/Drag';
 
 const StyledTimetable = styled(Box)<{
   rows: number
 }>`
   display: grid;
-  min-width: 1100px;
+  min-width: ${timetableWidth}px;
   padding: ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;

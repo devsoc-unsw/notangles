@@ -372,7 +372,7 @@ const App: FunctionComponent = () => {
                 setInfoVisibility={setInfoVisibility}
               />
               <Footer>
-                DISCLAIMER: While we try our best, Notangles is not an
+                While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or
                 reliability.
                 <br />
@@ -387,7 +387,7 @@ const App: FunctionComponent = () => {
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  GitHub
+                  Source
                 </Link>
               </Footer>
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>

@@ -1,10 +1,11 @@
 import {
   ClassData, ClassPeriod, InventoryPeriod, InInventory,
 } from '../interfaces/Course';
-import { lightTheme } from '../constants/theme';
+import { contentPadding, lightTheme } from '../constants/theme';
 
 export type CardData = ClassPeriod | InventoryPeriod;
 
+export const timetableWidth = 1100;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
@@ -13,7 +14,7 @@ export const elevatedScale = 1.1;
 export const getDefaultShadow = (isSquareEdges: boolean) => (
   isSquareEdges ? 0 : 3
 );
-export const getElevatedShadow = (_: boolean) => 24 ;
+export const getElevatedShadow = (_: boolean) => 24;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
@@ -48,8 +49,8 @@ const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
   element.style.boxShadow = lightTheme.shadows[
     elevated
-    ? getElevatedShadow(isSquareEdges)
-    : getDefaultShadow(isSquareEdges)
+      ? getElevatedShadow(isSquareEdges)
+      : getDefaultShadow(isSquareEdges)
   ];
 };
 
@@ -322,7 +323,41 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
   return result;
 };
 
-const getScrollElement = () => document.getElementById('StyledTimetableScroll');
+let onScroll = () => {};
+
+const getScrollElement = () => {
+  const element = document.getElementById('StyledTimetableScroll');
+  if (element) element.onscroll = onScroll;
+  return element;
+};
+
+const edgeSize = 50;
+const scrollSpeed = 0.32;
+
+let clientX = 0;
+let clientY = 0;
+let lastFrame = Date.now();
+
+onScroll = () => {
+  const scrollElement = getScrollElement();
+
+  if (!scrollElement) return;
+
+  const dx = scrollElement.scrollLeft - lastScrollX;
+  const dy = document.documentElement.scrollTop - lastScrollY;
+
+  if (dragElement) {
+    moveElement(dragElement, dx, dy);
+    updateDropTarget();
+  }
+
+  lastX += dx;
+  lastY += dy;
+  lastScrollX = scrollElement.scrollLeft;
+  lastScrollY = document.documentElement.scrollTop;
+};
+
+window.addEventListener('scroll', onScroll);
 
 export const setDragTarget = (
   cardData: CardData | null, event?: MouseEvent & TouchEvent,
@@ -366,45 +401,17 @@ export const setDragTarget = (
 
 export const setIsSquareEdges = (value: boolean) => {
   isSquareEdges = value;
-}
+};
 
 const onMove = (x: number, y: number) => {
   if (dragElement) {
-    moveElement(dragElement, x - lastX, y - lastY);;
+    moveElement(dragElement, x - lastX, y - lastY);
     updateDropTarget();
   }
 
   lastX = x;
   lastY = y;
 };
-
-const edgeSize = 50;
-const scrollSpeed = 0.32;
-
-let clientX = 0;
-let clientY = 0;
-let lastFrame = Date.now();
-
-const onScroll = () => {
-  const scrollElement = getScrollElement();
-
-  if (!scrollElement) return;
-
-  const dx = scrollElement.scrollLeft - lastScrollX;
-  const dy = document.documentElement.scrollTop - lastScrollY;
-
-  if (dragElement) {
-    moveElement(dragElement, dx, dy);
-    updateDropTarget();
-  }
-
-  lastX += dx;
-  lastY += dy;
-  lastScrollX = scrollElement.scrollLeft;
-  lastScrollY = document.documentElement.scrollTop;
-};
-
-window.addEventListener('scroll', onScroll);
 
 const onFrame = () => {
   if (dragElement) {
@@ -419,7 +426,12 @@ const onFrame = () => {
       document.documentElement.scrollTop += scrollSpeed * delta;
     }
 
-    if (scrollElement && clientWidth - clientX < edgeSize) { // right scroll
+    if (
+      scrollElement && clientWidth - clientX < edgeSize
+      && scrollElement.scrollLeft < (
+        timetableWidth - window.innerWidth + contentPadding * 2
+      )
+    ) { // right scroll
       scrollElement.scrollLeft += scrollSpeed * delta;
     } else if (scrollElement && clientX < edgeSize) { // left scroll
       scrollElement.scrollLeft -= scrollSpeed * delta;

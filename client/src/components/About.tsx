@@ -63,7 +63,7 @@ const About: FunctionComponent = React.memo(() => {
       >
         <StyledDialogTitle disableTypography>
           <Typography variant="h5">
-            Notangles: No more timetable Tangles
+            Notangles: no more timetable tangles
           </Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
@@ -72,8 +72,8 @@ const About: FunctionComponent = React.memo(() => {
         <Divider />
         <DialogContent>
           <Typography gutterBottom variant="body2">
-            Notangles is a tool helping UNSW students build the perfect
-            timetable, with an intuitive drag and drop interface. We have many
+            Notangles is an app for UNSW students to build their perfect
+            timetable, even before class registration opens. We have many
             features on the way, including auto-timetabling, and syncing your
             timetable with friends.
           </Typography>
@@ -93,52 +93,56 @@ const About: FunctionComponent = React.memo(() => {
             >
               CSESoc Projects
             </Link>
-            &nbsp;- a place for student-led projects where you can learn
-            something new and make some friends along the way. Notangles is free
-            and open-source.
+            &nbsp;– a place for student-led projects where you can learn
+            something new, and make some friends along the way. Notangles is free
+            and
+            {' '}
+            <Link href="https://github.com/csesoc/notangles">open-source</Link>
+            .
           </Typography>
           <Typography variant="h6">How it works</Typography>
           <Typography gutterBottom variant="body2">
-            Use the course dropdown to search for and select your courses. Drag
-            and drop classes to view timetabling options.
-            <br />
-            Notangles does not enroll in your classes. It’s a tool for planning
-            your timetable, but you’ll still need to officially enroll on&nbsp;
+            Select your courses, then drag-and-drop classes to customise your timetable.
+            You can drag clutter (like lectures which you aren’t going to watch live) to
+            the unscheduled column.
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            Note: Notangles does not enroll in your classes. It’s a tool for planning
+            your timetable, but you’ll still need to officially enroll at&nbsp;
             <Link href="https://my.unsw.edu.au/" target="_blank">
               myUNSW
             </Link>
             .
           </Typography>
-          <Typography variant="h6">Features</Typography>
-          <FeatList>
+          {/* <FeatList>
             <li> Drag-and-drop interface </li>
             <li> Move clutter to the class inventory </li>
             <li> Dark mode &#x1F60E; </li>
             <li> Select 12 or 24 hour time </li>
-          </FeatList>
+          </FeatList> */}
           <Typography variant="h6">
             Future developments
           </Typography>
           <FeatList>
-            <li> Auto-timetabling to suit your needs </li>
-            <li> Optional login to sync your timetable across devices </li>
-            <li> Social-timetabling to coordinate classes with friends </li>
-            <li> A mobile app so you can plan on the go </li>
+            <li> Auto-timetabling</li>
+            <li> Sync your timetable with friends</li>
+            <li> A mobile app</li>
           </FeatList>
-          <br />
+          <Typography variant="h6">
+            Disclaimer
+          </Typography>
           <Typography gutterBottom variant="body2">
-            <b> DISCLAIMER </b>
-            &nbsp;While we try our best, Notangles is not an official UNSW site,
+            While we try our best, Notangles is not an official UNSW site,
             and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
-            If you find an issue or have a suggestion,
+            If you find an issue or have a suggestion, please
             {' '}
             <Link
               href="https://forms.gle/rV3QCwjsEbLNyESE6"
               target="_blank"
             >
-              please let us know
+              let us know
             </Link>
             .
           </Typography>

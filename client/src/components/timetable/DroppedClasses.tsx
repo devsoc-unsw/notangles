@@ -34,7 +34,6 @@ const classTranslateX = (cardData: CardData, days?: string[]) => {
   if (isPeriod(cardData)) {
     return `${(cardData.time.day - 1) * 100}%`;
   }
-
   // not a period, so in the inventory
   if (days) {
     // `1 / devicePixelRatio` refers to the width of a timetable border
@@ -44,6 +43,7 @@ const classTranslateX = (cardData: CardData, days?: string[]) => {
       inventoryMargin + 1 / devicePixelRatio
     }px)`;
   }
+
 
   return 0;
 };
@@ -75,7 +75,7 @@ export const classHeight = (cardData?: CardData | InInventory) => {
   // height compared to standard row height
   const heightFactor = getHeightFactor(cardData);
 
-  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`
+  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
 export const classTransformStyle = (
@@ -125,8 +125,8 @@ const StyledCourseClass = styled.div<{
       opacity: 0;
       transform: scale(${elevatedScale});
       box-shadow: ${({ theme, isSquareEdges }) => (
-        theme.shadows[getElevatedShadow(isSquareEdges)]
-      )};
+    theme.shadows[getElevatedShadow(isSquareEdges)]
+  )};
     }
   }
 
@@ -135,8 +135,8 @@ const StyledCourseClass = styled.div<{
       opacity: 1;
       transform: scale(1);
       box-shadow: ${({ theme, isSquareEdges }) => (
-        theme.shadows[getDefaultShadow(isSquareEdges)]
-      )};
+    theme.shadows[getDefaultShadow(isSquareEdges)]
+  )};
     }
   };
 
@@ -145,8 +145,8 @@ const StyledCourseClass = styled.div<{
       opacity: 0;
       // transform: scale(${2 - elevatedScale});
       box-shadow: ${({ theme, isSquareEdges }) => (
-        theme.shadows[getDefaultShadow(isSquareEdges)]
-      )};
+    theme.shadows[getDefaultShadow(isSquareEdges)]
+  )};
     }
   };
 `;
