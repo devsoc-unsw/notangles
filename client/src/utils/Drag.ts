@@ -129,8 +129,6 @@ const updateDropzones = () => {
   });
 };
 
-// const zIndex = 1000;
-
 const getIsElevated = (cardData: CardData) => (
   dragTarget !== null
   && (
@@ -143,7 +141,7 @@ const getIsElevated = (cardData: CardData) => (
   )
 );
 
-let zIndex = 1000;
+let zIndex = 100;
 
 const updateCards = () => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
@@ -450,6 +448,11 @@ const onFrame = () => {
 requestAnimationFrame(onFrame);
 
 window.addEventListener('mousemove', (event: MouseEvent) => {
+  if (dragElement) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   const scrollElement = getScrollElement();
 
   if (scrollElement) {
@@ -460,6 +463,11 @@ window.addEventListener('mousemove', (event: MouseEvent) => {
 });
 
 window.addEventListener('touchmove', (event: TouchEvent) => {
+  if (dragElement) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   const scrollElement = getScrollElement();
 
   if (scrollElement) {
@@ -468,11 +476,6 @@ window.addEventListener('touchmove', (event: TouchEvent) => {
       clientX = event.touches[0].clientX;
       clientY = event.touches[0].clientY;
     }
-  }
-
-  if (dragElement) {
-    event.preventDefault();
-    event.stopPropagation();
   }
 }, { passive: false });
 

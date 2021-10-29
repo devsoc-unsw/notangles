@@ -105,7 +105,7 @@ const StyledCourseClass = styled.div<{
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
   box-sizing: border-box;
-  z-index: 1000;
+  z-index: 100;
   cursor: grab;
 
   padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
@@ -345,9 +345,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
             {cardData.class.activity}
           </b>
         </p>
-        {isPeriod(cardData) && (
-          <>
-            <p style={pStyleSmall}>
+        <p style={pStyleSmall}>
+          {isPeriod(cardData) ? (
+            <>
               <PeopleAltIcon fontSize="inherit" style={iconStyle} />
               {' '}
               {' '}
@@ -361,21 +361,19 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
               {' '}
               {cardData.time.weeksString}
               )
-            </p>
-            <p style={pStyleSmall}>
+              <br />
               <LocationOnIcon fontSize="inherit" style={iconStyle} />
               {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-            </p>
-          </>
-        )}
-        {!isPeriod(cardData) && (
-          <p style={pStyle}>
-            {activityMaxPeriods}
-            {' '}
-            class
-            {activityMaxPeriods !== 1 && 'es'}
-          </p>
-        )}
+            </>
+          ) : (
+            <>
+              {activityMaxPeriods}
+              {' '}
+              class
+              {activityMaxPeriods !== 1 && 'es'}
+            </>
+          )}
+        </p>
         <TouchRipple ref={rippleRef} />
       </Card>
     </StyledCourseClass>
