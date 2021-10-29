@@ -32,7 +32,8 @@ import NetworkError from './interfaces/NetworkError';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
-    background-color: ${(props) => props.theme.palette.background.default};
+    background: ${(props) => props.theme.palette.background.default};
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar {
@@ -49,7 +50,7 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
-    transition: background 100ms;
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -66,7 +67,7 @@ const ContentWrapper = styled(Box)`
   padding-top: 64px; // for nav bar
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;
 

@@ -22,9 +22,9 @@ const BaseCell = styled.div<{
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => (yTo || y)};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
-  background-color: ${({ theme }) => theme.palette.background.default};
+  background: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -91,7 +91,7 @@ const StyledChip = styled(Chip).withConfig({
   backgroundColor: string
 }>`
   transition: none !important;
-  background-color: ${({ backgroundColor, theme }) => (
+  background: ${({ backgroundColor, theme }) => (
     backgroundColor || theme.palette.secondary.main
   )} !important;
 `;

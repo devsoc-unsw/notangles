@@ -323,7 +323,7 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
   return result;
 };
 
-let onScroll = () => {};
+let onScroll = (_?: Event) => {};
 
 const getScrollElement = () => {
   const element = document.getElementById('StyledTimetableScroll');
@@ -338,7 +338,7 @@ let clientX = 0;
 let clientY = 0;
 let lastFrame = Date.now();
 
-onScroll = () => {
+onScroll = (event?) => {
   const scrollElement = getScrollElement();
 
   if (!scrollElement) return;
@@ -349,6 +349,9 @@ onScroll = () => {
   if (dragElement) {
     moveElement(dragElement, dx, dy);
     updateDropTarget();
+
+    event?.preventDefault();
+    event?.stopPropagation();
   }
 
   lastX += dx;
@@ -357,7 +360,7 @@ onScroll = () => {
   lastScrollY = document.documentElement.scrollTop;
 };
 
-window.addEventListener('scroll', onScroll);
+window.addEventListener('scroll', onScroll, { passive: false });
 
 export const setDragTarget = (
   cardData: CardData | null, event?: MouseEvent & TouchEvent,
@@ -465,11 +468,11 @@ window.addEventListener('touchmove', (event: TouchEvent) => {
       clientX = event.touches[0].clientX;
       clientY = event.touches[0].clientY;
     }
+  }
 
-    if (dragElement) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+  if (dragElement) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 }, { passive: false });
 
