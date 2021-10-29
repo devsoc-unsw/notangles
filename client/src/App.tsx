@@ -112,7 +112,7 @@ const SelectWrapper = styled(Box)`
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  margin: 30px;
+  margin-bottom: 25px;
 `;
 
 const App: FunctionComponent = () => {

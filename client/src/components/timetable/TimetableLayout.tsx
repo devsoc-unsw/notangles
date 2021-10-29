@@ -4,7 +4,13 @@ import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/Course';
 import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 
-const headerPadding = 15;
+export const rowHeight = 60;
+const classMargin = 1;
+const headerPadding = 10;
+
+export const getClassMargin = (isSquareEdges: boolean) => (
+  isSquareEdges ? 0 : classMargin
+);
 
 const BaseCell = styled.div<{
   x: number
@@ -19,6 +25,9 @@ const BaseCell = styled.div<{
   background-color: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
   transition: background-color 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   border-top-left-radius: ${({ theme, x, y }) => (
     x === 1 && y === 1 ? theme.shape.borderRadius : 0
@@ -32,10 +41,10 @@ const BaseCell = styled.div<{
   border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (
     isEndX && isEndY ? theme.shape.borderRadius : 0
   )}px;
+`;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+const GridCell = styled(BaseCell)`
+  height: ${rowHeight}px;
 `;
 
 const DayCell = styled(BaseCell)`
@@ -55,7 +64,7 @@ const paddingStyle = css`
   padding: 0 ${headerPadding}px;
 `;
 
-const HourCell = styled(BaseCell) <{
+const HourCell = styled(GridCell) <{
   is12HourMode: boolean
 }>`
   ${paddingStyle}
@@ -93,7 +102,7 @@ const ColumnWidthGuide = styled.span`
 
 const generateHour = (n: number, is12HourMode: boolean): string => {
   if (is12HourMode) {
-    const period = n < 12 ? 'AM' : 'PM';
+    const period = n < 12 ? 'am' : 'pm';
     if (n > 12) n -= 12;
     return `${n} ${period}`;
   }
@@ -114,7 +123,7 @@ interface TimetableLayoutProps {
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
+export const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   days,
   is12HourMode,
   setIs12HourMode,
@@ -159,7 +168,7 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   const otherCells = hours.flatMap(
     (_, y) => days.flatMap(
       (_, x) => (
-        <BaseCell
+        <GridCell
           key={x * 1000 + y}
           x={x + 2}
           y={y + 2}
@@ -199,5 +208,3 @@ const TimetableLayout: FunctionComponent<TimetableLayoutProps> = React.memo(({
   || prev.selectedCourses.length !== next.selectedCourses.length
   || prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
 ));
-
-export default TimetableLayout;

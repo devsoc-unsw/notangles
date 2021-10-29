@@ -10,8 +10,10 @@ const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
 const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
 export const elevatedScale = 1.1;
-export const defaultShadow = 3;
-export const elevatedShadow = 24;
+export const getDefaultShadow = (isSquareEdges: boolean) => (
+  isSquareEdges ? 0 : 3
+);
+export const getElevatedShadow = (_: boolean) => 24 ;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
@@ -24,11 +26,11 @@ let dragSource: CardData | null = null;
 let dropTarget: CardData | null = null;
 let dragElement: HTMLElement | null = null;
 let inventoryElement: HTMLElement | null = null;
-
 let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
+let isSquareEdges = false;
 
 // window.addEventListener('load', () => {
 //   lastScrollX = document.documentElement.scrollLeft;
@@ -44,7 +46,11 @@ const toPx = (value: number) => `${value}px`;
 
 const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
-  element.style.boxShadow = lightTheme.shadows[elevated ? elevatedShadow : defaultShadow];
+  element.style.boxShadow = lightTheme.shadows[
+    elevated
+    ? getElevatedShadow(isSquareEdges)
+    : getDefaultShadow(isSquareEdges)
+  ];
 };
 
 const moveElement = (element: HTMLElement, dx: number, dy: number) => {
@@ -357,6 +363,10 @@ export const setDragTarget = (
     updateDropzones();
   }
 };
+
+export const setIsSquareEdges = (value: boolean) => {
+  isSquareEdges = value;
+}
 
 const onMove = (x: number, y: number) => {
   if (dragElement) {
