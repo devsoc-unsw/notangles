@@ -156,7 +156,6 @@ const updateCards = () => {
   });
 
   if (dragElement) {
-    console.log(zIndex);
     dragElement.style.zIndex = String(zIndex++);
   }
 };
@@ -360,13 +359,13 @@ export const setDragTarget = (
 };
 
 const onMove = (x: number, y: number) => {
-  if (!dragElement) return;
+  if (dragElement) {
+    moveElement(dragElement, x - lastX, y - lastY);;
+    updateDropTarget();
+  }
 
-  moveElement(dragElement, x - lastX, y - lastY);
   lastX = x;
   lastY = y;
-
-  updateDropTarget();
 };
 
 const edgeSize = 50;
@@ -377,22 +376,22 @@ let clientY = 0;
 let lastFrame = Date.now();
 
 const onScroll = () => {
-  if (!dragElement) return;
-
   const scrollElement = getScrollElement();
 
-  if (scrollElement) {
-    const dx = scrollElement.scrollLeft - lastScrollX;
-    const dy = document.documentElement.scrollTop - lastScrollY;
+  if (!scrollElement) return;
 
-    lastX += dx;
-    lastY += dy;
-    lastScrollX = scrollElement.scrollLeft;
-    lastScrollY = document.documentElement.scrollTop;
+  const dx = scrollElement.scrollLeft - lastScrollX;
+  const dy = document.documentElement.scrollTop - lastScrollY;
 
+  if (dragElement) {
     moveElement(dragElement, dx, dy);
     updateDropTarget();
   }
+
+  lastX += dx;
+  lastY += dy;
+  lastScrollX = scrollElement.scrollLeft;
+  lastScrollY = document.documentElement.scrollTop;
 };
 
 window.addEventListener('scroll', onScroll);
@@ -415,6 +414,7 @@ const onFrame = () => {
     } else if (scrollElement && clientX < edgeSize) { // left scroll
       scrollElement.scrollLeft -= scrollSpeed * delta;
     }
+
     onScroll();
   }
 
