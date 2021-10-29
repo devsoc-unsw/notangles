@@ -136,21 +136,16 @@ const getIsElevated = (cardData: CardData) => (
   )
 );
 
+let zIndex = 1000;
+
 const updateCards = () => {
-  Array.from(cards.entries()).sort(([a], [b]) => {
-    if (dragTarget !== null) {
-      if (a === dragTarget) return 1;
-      if (b === dragTarget) return -1;
-    }
-
-    if (getIsElevated(a)) return 1;
-    if (getIsElevated(b)) return -1;
-
-    return 0;
-  }).forEach(([cardData, element], index) => {
+  Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
 
-    element.style.zIndex = String(1000 + index);
+    if (isElevated) {
+      element.style.zIndex = String(zIndex++);
+    }
+
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
 
     const inner = element.children[0] as HTMLElement;
@@ -159,6 +154,11 @@ const updateCards = () => {
 
     setShadow(inner, isElevated);
   });
+
+  if (dragElement) {
+    console.log(zIndex);
+    dragElement.style.zIndex = String(zIndex++);
+  }
 };
 
 export const registerDropzone = (
