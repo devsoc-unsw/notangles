@@ -122,26 +122,35 @@ const updateDropzones = () => {
   });
 };
 
-const updateCards = () => {
-  Array.from(cards.entries()).forEach(([cardData, element]) => {
-    const isElevated = (
-      dragTarget !== null
-      && (
-        cardData === dragTarget
-        || (
-          isPeriod(cardData) && isPeriod(dragTarget)
-          && cardData.class.course.code === dragTarget.class.course.code
-          && cardData.class.activity === dragTarget.class.activity
-        )
-      )
-    );
+// const zIndex = 1000;
 
-    let zIndex = isElevated ? 1200 : 1000;
-    if (dragTarget !== null && cardData === dragTarget) {
-      zIndex++;
+const getIsElevated = (cardData: CardData) => (
+  dragTarget !== null
+  && (
+    cardData === dragTarget
+    || (
+      isPeriod(cardData) && isPeriod(dragTarget)
+      && cardData.class.course.code === dragTarget.class.course.code
+      && cardData.class.activity === dragTarget.class.activity
+    )
+  )
+);
+
+const updateCards = () => {
+  Array.from(cards.entries()).sort(([a], [b]) => {
+    if (dragTarget !== null) {
+      if (a === dragTarget) return 1;
+      if (b === dragTarget) return -1;
     }
 
-    element.style.zIndex = String(zIndex);
+    if (getIsElevated(a)) return 1;
+    if (getIsElevated(b)) return -1;
+
+    return 0;
+  }).forEach(([cardData, element], index) => {
+    const isElevated = getIsElevated(cardData);
+
+    element.style.zIndex = String(1000 + index);
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
 
     const inner = element.children[0] as HTMLElement;
