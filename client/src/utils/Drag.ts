@@ -118,14 +118,15 @@ const updateDropzones = () => {
 
     if (canDrop) {
       if (isDropTarget) {
-        opacity = '0.7';
+        opacity = '0.8';
       } else {
-        opacity = classPeriod ? '0.3' : '0';
+        opacity = classPeriod ? '0.5' : '0';
       }
     }
 
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
+    element.style.zIndex = canDrop ? '700' : '50';
   });
 };
 
@@ -141,14 +142,21 @@ const getIsElevated = (cardData: CardData) => (
   )
 );
 
-let zIndex = 100;
+const initialZIndex = 100;
+const initialElevatedZIndex = 750;
+const elevatedZIndexOffset = initialElevatedZIndex - initialZIndex;
+let zIndex = initialZIndex;
+
+const getElevatedZIndex = () => String((zIndex++) + elevatedZIndexOffset);
 
 const updateCards = () => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
-      element.style.zIndex = String(zIndex++);
+      element.style.zIndex = getElevatedZIndex();
+    } else if (Number(element.style.zIndex) >= initialElevatedZIndex) {
+      element.style.zIndex = String(Number(element.style.zIndex) - elevatedZIndexOffset);
     }
 
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
@@ -161,7 +169,7 @@ const updateCards = () => {
   });
 
   if (dragElement) {
-    dragElement.style.zIndex = String(zIndex++);
+    dragElement.style.zIndex = getElevatedZIndex();
   }
 };
 

@@ -28,7 +28,8 @@ const cellStyle = ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 20,
+  zIndex: 50,
+  pointerEvents: 'none' as 'none',
   gridColumn: x,
   gridRow: '2 / -1',
   transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
@@ -36,7 +37,7 @@ const cellStyle = ({
   marginBottom: 1 / devicePixelRatio,
   backgroundColor: color,
   opacity: 0,
-  transition: defaultTransition,
+  transition: `${defaultTransition}, z-index 0s`,
   borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
 });
 

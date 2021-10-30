@@ -118,7 +118,7 @@ const StyledCourseClass = styled.div<{
     getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : (1 / devicePixelRatio))
   )}px;
 
-  transition: ${defaultTransition};
+  transition: ${defaultTransition}, z-index 0s;
 
   &.${transitionName}-enter {
     & > div {
