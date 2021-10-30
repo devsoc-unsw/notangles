@@ -169,7 +169,7 @@ const courseClassInnerStyle = ({
   color: 'white',
   fontSize: '0.9rem',
   borderRadius: isSquareEdges ? '0px' : '7px',
-  transition: defaultTransition,
+  transition: `${defaultTransition}, z-index 0s`,
   backfaceVisibility: 'hidden' as 'hidden',
   fontSmoothing: 'subpixel-antialiased',
   border: hasClash ? 'solid red 4px' : 'solid transparent 0px',
