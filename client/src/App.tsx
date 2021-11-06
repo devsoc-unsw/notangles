@@ -363,7 +363,7 @@ const App: FunctionComponent = () => {
                 <br />
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
                   Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
