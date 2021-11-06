@@ -101,7 +101,7 @@ const Privacy: FunctionComponent = () => (
     <h2>Questions or concerns.</h2>
     <p>
       If you have any questions or concerns regarding privacy on our Website, please
-      send us a detailed message at projects@csesoc.org.au. We will make every
+      send us a detailed message at notangles@csesoc.org.au. We will make every
       effort to resolve your concerns.
     </p>
     <p>
