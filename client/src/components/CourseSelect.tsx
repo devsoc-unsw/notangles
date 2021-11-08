@@ -53,8 +53,6 @@ let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
 const StyledSelect = styled(Box)`
   width: 100%;
   text-align: left;
-  position: relative;
-  left: -1px;
 `;
 
 const StyledTextField = styled(TextField) <{
@@ -91,7 +89,7 @@ const StyledChip = styled(Chip).withConfig({
   backgroundColor: string
 }>`
   transition: none !important;
-  background-color: ${({ backgroundColor, theme }) => (
+  background: ${({ backgroundColor, theme }) => (
     backgroundColor || theme.palette.secondary.main
   )} !important;
 `;
