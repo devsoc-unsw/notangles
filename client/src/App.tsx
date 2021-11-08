@@ -32,7 +32,8 @@ import NetworkError from './interfaces/NetworkError';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
-    background-color: ${(props) => props.theme.palette.background.default};
+    background: ${(props) => props.theme.palette.background.default};
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar {
@@ -49,7 +50,7 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
-    transition: background 100ms;
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -66,7 +67,7 @@ const ContentWrapper = styled(Box)`
   padding-top: 64px; // for nav bar
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;
 
@@ -112,7 +113,7 @@ const SelectWrapper = styled(Box)`
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  margin: 30px;
+  margin-bottom: 25px;
 `;
 
 const App: FunctionComponent = () => {
@@ -121,11 +122,21 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
+  const [infoMsg] = useState<String>('Press and hold to drag a class');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
+  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
   const [lastUpdated, setLastUpdated] = useState(0);
+
+  if (infoVisibility) {
+    if (storage.get('hasShownInfoMessage')) {
+      setInfoVisibility(false);
+    }
+
+    storage.set('hasShownInfoMessage', true);
+  }
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -243,6 +254,10 @@ const App: FunctionComponent = () => {
 
   const handleErrorClose = () => {
     setErrorVisibility(false);
+  };
+
+  const handleInfoClose = () => {
+    setInfoVisibility(false);
   };
 
   const handleSetIsLoggedIn = (value: boolean) => {
@@ -373,9 +388,10 @@ const App: FunctionComponent = () => {
                 setIs12HourMode={setIs12HourMode}
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
+                setInfoVisibility={setInfoVisibility}
               />
               <Footer>
-                DISCLAIMER: While we try our best, Notangles is not an
+                While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or
                 reliability.
                 <br />
@@ -390,7 +406,7 @@ const App: FunctionComponent = () => {
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  GitHub
+                  Source
                 </Link>
                 {lastUpdated !== 0 && (
                 <>
@@ -407,6 +423,11 @@ const App: FunctionComponent = () => {
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert severity="error" onClose={handleErrorClose} variant="filled">
                   {errorMsg}
+                </Alert>
+              </Snackbar>
+              <Snackbar open={infoVisibility}>
+                <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                  {infoMsg}
                 </Alert>
               </Snackbar>
             </Content>
