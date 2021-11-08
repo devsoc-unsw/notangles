@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:latest
+FROM node:14.17.6
 
 # Install serve
 RUN npm install -g serve
