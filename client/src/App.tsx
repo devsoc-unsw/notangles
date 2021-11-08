@@ -128,6 +128,7 @@ const App: FunctionComponent = () => {
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
+  const [lastUpdated, setLastUpdated] = useState(0);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -155,6 +156,10 @@ const App: FunctionComponent = () => {
       prev[classData.course.code][classData.activity] = null;
       return prev;
     });
+  };
+
+  const handleLastUpdated = (date: number) => {
+    setLastUpdated(date);
   };
 
   useDrag(handleSelectClass, handleRemoveClass);
@@ -322,6 +327,18 @@ const App: FunctionComponent = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
+  // `date`: timestamp in milliseconds
+  // returns: time in relative format, such as "5 minutes" (ago) or "10 hours" (ago)
+  const getRelativeTime = (date: number): string => {
+    const diff = Date.now() - date;
+    const minutes = Math.round(diff / 60000);
+    if (minutes < 60) {
+      return `${minutes} minutes`;
+    }
+    const hours = Math.round(minutes / 60);
+    return `${hours} hours`;
+  };
+
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -355,6 +372,7 @@ const App: FunctionComponent = () => {
                       handleRemove={handleRemoveCourse}
                       setErrorMsg={setErrorMsg}
                       setErrorVisibility={setErrorVisibility}
+                      setLastUpdated={handleLastUpdated}
                     />
                   </SelectWrapper>
                 </Grid>
@@ -379,7 +397,7 @@ const App: FunctionComponent = () => {
                 <br />
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
                   Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
@@ -390,6 +408,17 @@ const App: FunctionComponent = () => {
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
                   Source
                 </Link>
+                {lastUpdated !== 0 && (
+                <>
+                  <br />
+                  <br />
+                  Data last updated
+                  {' '}
+                  {getRelativeTime(lastUpdated)}
+                  {' '}
+                  ago.
+                </>
+                )}
               </Footer>
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert severity="error" onClose={handleErrorClose} variant="filled">

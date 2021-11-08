@@ -1,4 +1,4 @@
-export const year = '2021';
+export const year = '2022';
 const termNumber = 3;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;

@@ -130,6 +130,7 @@ interface CourseSelectProps {
   handleRemove(courseCode: string): void
   setErrorMsg(errorMsg: string): void
   setErrorVisibility(visibility: boolean): void
+  setLastUpdated(date: number): void
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -140,6 +141,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   handleRemove,
   setErrorMsg,
   setErrorVisibility,
+  setLastUpdated,
 }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
@@ -250,9 +252,10 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(({
   const fetchCoursesList = async () => {
     try {
       const fetchedCoursesList = await getCoursesList(year, term);
-      setCoursesList(fetchedCoursesList);
+      setCoursesList(fetchedCoursesList.courses);
       checkExternallyAdded();
-      fuzzy = new Fuse(fetchedCoursesList, searchOptions);
+      fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
+      setLastUpdated(fetchedCoursesList.lastUpdated);
     } catch (e) {
       if (e instanceof NetworkError) {
         setErrorMsg(e.message);
