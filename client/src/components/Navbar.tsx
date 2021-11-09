@@ -3,8 +3,7 @@ import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 
-import { ThemeType } from '../constants/theme';
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -13,11 +12,14 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
+import { ThemeType } from '../constants/theme';
 
 import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import { year, termName, isPreview, term } from '../constants/timetable';
+import {
+  year, termName, isPreview, term,
+} from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
@@ -86,7 +88,7 @@ const Navbar: FunctionComponent<NavBarProps> = ({
   isSquareEdges,
 }) => {
   const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <StylesProvider injectFirst>
