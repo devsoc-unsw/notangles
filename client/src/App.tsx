@@ -33,7 +33,8 @@ import autoTimetable from './api/autoTimetable';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
-    background-color: ${(props) => props.theme.palette.background.default};
+    background: ${(props) => props.theme.palette.background.default};
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar {
@@ -50,7 +51,7 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
-    transition: background 100ms;
+    transition: background 0.2s;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -67,7 +68,7 @@ const ContentWrapper = styled(Box)`
   padding-top: 64px; // for nav bar
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s;
   min-height: 100vh;
   box-sizing: border-box;
 
@@ -113,7 +114,7 @@ const SelectWrapper = styled(Box)`
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  margin: 30px;
+  margin-bottom: 25px;
 `;
 
 const App: FunctionComponent = () => {
@@ -122,10 +123,21 @@ const App: FunctionComponent = () => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
+  const [infoMsg] = useState<String>('Press and hold to drag a class');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
+  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
+  const [lastUpdated, setLastUpdated] = useState(0);
+
+  if (infoVisibility) {
+    if (storage.get('hasShownInfoMessage')) {
+      setInfoVisibility(false);
+    }
+
+    storage.set('hasShownInfoMessage', true);
+  }
 
   const assignedColors = useColorMapper(
     selectedCourses.map((course) => course.code),
@@ -145,6 +157,10 @@ const App: FunctionComponent = () => {
       prev[classData.course.code][classData.activity] = null;
       return prev;
     });
+  };
+
+  const handleLastUpdated = (date: number) => {
+    setLastUpdated(date);
   };
 
   useDrag(handleSelectClass, handleRemoveClass);
@@ -256,6 +272,10 @@ const App: FunctionComponent = () => {
       setErrorMsg(e.message);
       setErrorVisibility(true);
     }
+  }
+
+  const handleInfoClose = () => {
+    setInfoVisibility(false);
   };
 
   const handleSetIsLoggedIn = (value: boolean) => {
@@ -325,6 +345,18 @@ const App: FunctionComponent = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
+  // `date`: timestamp in milliseconds
+  // returns: time in relative format, such as "5 minutes" (ago) or "10 hours" (ago)
+  const getRelativeTime = (date: number): string => {
+    const diff = Date.now() - date;
+    const minutes = Math.round(diff / 60000);
+    if (minutes < 60) {
+      return `${minutes} minutes`;
+    }
+    const hours = Math.round(minutes / 60);
+    return `${hours} hours`;
+  };
+
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -358,6 +390,7 @@ const App: FunctionComponent = () => {
                       handleRemove={handleRemoveCourse}
                       setErrorMsg={setErrorMsg}
                       setErrorVisibility={setErrorVisibility}
+                      setLastUpdated={handleLastUpdated}
                     />
                   </SelectWrapper>
                 </Grid>
@@ -376,15 +409,16 @@ const App: FunctionComponent = () => {
                 setIs12HourMode={setIs12HourMode}
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
+                setInfoVisibility={setInfoVisibility}
               />
               <Footer>
-                DISCLAIMER: While we try our best, Notangles is not an
+                While we try our best, Notangles is not an
                 official UNSW site, and cannot guarantee data accuracy or
                 reliability.
                 <br />
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:projects@csesoc.org.au">
+                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
                   Email
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
@@ -393,12 +427,28 @@ const App: FunctionComponent = () => {
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  GitHub
+                  Source
                 </Link>
+                {lastUpdated !== 0 && (
+                <>
+                  <br />
+                  <br />
+                  Data last updated
+                  {' '}
+                  {getRelativeTime(lastUpdated)}
+                  {' '}
+                  ago.
+                </>
+                )}
               </Footer>
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert severity="error" onClose={handleErrorClose} variant="filled">
                   {errorMsg}
+                </Alert>
+              </Snackbar>
+              <Snackbar open={infoVisibility}>
+                <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                  {infoMsg}
                 </Alert>
               </Snackbar>
             </Content>
