@@ -53,8 +53,10 @@ const autoTimetable = async (
     courses.forEach((autoCourse) => {
       const course = selectedCourses.find((c) => c.code === autoCourse.code);
       if (course === undefined) throw new NetworkError('Internal server error');
+      console.log(classData);
       Object.entries(course.activities).forEach(([activity, activityClasses]) => {
         if (!autoCourse.exclude.includes(activity)) {
+          console.log(activity, activityClasses, classData[course.code])
           const outputClass = activityClasses.find((c) => (
             c.id === classData[course.code][activity]
           ));
