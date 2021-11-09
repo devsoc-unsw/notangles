@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
-import { ClassPeriod, InInventory } from '@notangles/common';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
   defaultTransition,
   registerDropzone,
@@ -11,7 +13,6 @@ import { classTranslateY, classHeight } from './DroppedClasses';
 const cellStyle = ({
   classPeriod,
   x,
-  yEnd,
   color,
   isInventory,
   earliestStartTime,
@@ -27,15 +28,16 @@ const cellStyle = ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 20,
+  zIndex: 50,
+  pointerEvents: 'none' as 'none',
   gridColumn: x,
-  gridRow: `2 / ${yEnd !== undefined ? yEnd : 3}`,
+  gridRow: '2 / -1',
   transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
-  height: classPeriod ? classHeight(classPeriod) : undefined,
+  height: isInventory ? '100%' : classHeight(classPeriod),
   marginBottom: 1 / devicePixelRatio,
   backgroundColor: color,
   opacity: 0,
-  transition: defaultTransition,
+  transition: `${defaultTransition}, z-index 0s`,
   borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
 });
 
@@ -75,7 +77,14 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
         isInventory,
         earliestStartTime,
       })}
-    />
+    >
+      {classPeriod !== null && (
+      <>
+        {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{ color: 'white' }} />}
+        {classPeriod.locations.some((location) => location !== 'Online') && <PersonOutlineIcon fontSize="large" style={{ color: 'white' }} />}
+      </>
+      )}
+    </div>
   );
 });
 

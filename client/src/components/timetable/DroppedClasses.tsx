@@ -6,42 +6,58 @@ import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import {
-  CourseData, ClassPeriod, SelectedClasses,
-} from '@notangles/common';
+  CourseData, ClassPeriod, SelectedClasses, InInventory,
+} from '../../interfaces/Course';
 import {
   CardData,
   isPeriod,
   setDragTarget,
+  setIsSquareEdges,
   morphCards,
   transitionTime,
   defaultTransition,
-  defaultShadow,
-  elevatedShadow,
+  getDefaultShadow,
+  getElevatedShadow,
   elevatedScale,
   registerCard,
   unregisterCard,
   timeToPosition,
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
+import { rowHeight, getClassMargin } from './TimetableLayout';
 
 export const inventoryMargin = 10;
 
 const classTranslateX = (cardData: CardData, days?: string[]) => {
   if (isPeriod(cardData)) {
     return `${(cardData.time.day - 1) * 100}%`;
-  } if (days) { // not a period, so in the inventory
-    // `devicePixelRatio` refers to the width of a timetable border
-    return `calc(${days.length * 100}% + ${inventoryMargin + devicePixelRatio}px)`;
   }
+  // not a period, so in the inventory
+  if (days) {
+    // `1 / devicePixelRatio` refers to the width of a timetable border
+    return `calc(${
+      days.length * 100
+    }% + ${
+      inventoryMargin + 1 / devicePixelRatio
+    }px)`;
+  }
+
+
   return 0;
 };
 
+const getHeightFactor = (cardData?: CardData | InInventory) => (
+  cardData && isPeriod(cardData) ? cardData.time.end - cardData.time.start : 1
+);
+
 export const classTranslateY = (cardData: CardData, earliestStartTime: number, y?: number) => {
   let result = 0;
+  // height compared to standard row height
+  const heightFactor = getHeightFactor(cardData);
+
   if (isPeriod(cardData)) {
-    // height compared to standard row height
-    const heightFactor = cardData.time.end - cardData.time.start;
     // number of rows to offset down
     const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
     // calculate translate percentage (relative to height)
@@ -49,14 +65,17 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
   } else if (y) { // not a period, so in the inventory
     result = y;
   }
-  return `${result * 100}%`;
+
+  return (
+    `calc(${result * 100}% + ${result / devicePixelRatio}px)`
+  );
 };
 
-export const classHeight = (cardData: CardData) => {
-  const heightFactor = !isPeriod(cardData) ? 1 : (
-    cardData.time.end - cardData.time.start
-  );
-  return `calc(${heightFactor * 100}% + ${heightFactor / devicePixelRatio}px)`;
+export const classHeight = (cardData?: CardData | InInventory) => {
+  // height compared to standard row height
+  const heightFactor = getHeightFactor(cardData);
+
+  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
 export const classTransformStyle = (
@@ -65,7 +84,6 @@ export const classTransformStyle = (
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`
 );
 
-const classMargin = 1;
 const transitionName = 'class';
 
 const StyledCourseClass = styled.div<{
@@ -73,33 +91,42 @@ const StyledCourseClass = styled.div<{
   days: string[]
   y?: number
   earliestStartTime: number
+  isSquareEdges: boolean
 }>`
+  position: relative;
   grid-column: 2;
-  grid-row: 2 / 3;
+  grid-row: 2 / -1;
   transform: ${({
     cardData, earliestStartTime, days, y,
   }) => (
     classTransformStyle(cardData, earliestStartTime, days, y)
   )};
-  transition: ${defaultTransition};
-
   // position over timetable borders
-  position: relative;
-  width:  calc(100% + ${1 / devicePixelRatio}px);
+  width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
-
-  padding: ${classMargin}px;
-  padding-right:  ${classMargin + 1 / devicePixelRatio}px;
-  padding-bottom: ${classMargin + 1 / devicePixelRatio}px;
   box-sizing: border-box;
-  z-index: 1000;
+  z-index: 100;
   cursor: grab;
+
+  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
+
+  padding-right: ${({ isSquareEdges }) => (
+    getClassMargin(isSquareEdges) + 1 / devicePixelRatio
+  )}px;
+
+  padding-bottom: ${({ isSquareEdges }) => (
+    getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : (1 / devicePixelRatio))
+  )}px;
+
+  transition: ${defaultTransition}, z-index 0s;
 
   &.${transitionName}-enter {
     & > div {
       opacity: 0;
       transform: scale(${elevatedScale});
-      box-shadow: ${({ theme }) => theme.shadows[elevatedShadow]};
+      box-shadow: ${({ theme, isSquareEdges }) => (
+    theme.shadows[getElevatedShadow(isSquareEdges)]
+  )};
     }
   }
 
@@ -107,7 +134,9 @@ const StyledCourseClass = styled.div<{
     & > div {
       opacity: 1;
       transform: scale(1);
-      box-shadow: ${({ theme }) => theme.shadows[defaultShadow]};
+      box-shadow: ${({ theme, isSquareEdges }) => (
+    theme.shadows[getDefaultShadow(isSquareEdges)]
+  )};
     }
   };
 
@@ -115,7 +144,9 @@ const StyledCourseClass = styled.div<{
     & > div {
       opacity: 0;
       // transform: scale(${2 - elevatedScale});
-      box-shadow: ${({ theme }) => theme.shadows[defaultShadow]};
+      box-shadow: ${({ theme, isSquareEdges }) => (
+    theme.shadows[getDefaultShadow(isSquareEdges)]
+  )};
     }
   };
 `;
@@ -138,16 +169,19 @@ const courseClassInnerStyle = ({
   color: 'white',
   fontSize: '0.9rem',
   borderRadius: isSquareEdges ? '0px' : '7px',
-  transition: defaultTransition,
+  transition: `${defaultTransition}, z-index 0s`,
   backfaceVisibility: 'hidden' as 'hidden',
   fontSmoothing: 'subpixel-antialiased',
-  border: hasClash ? 'solid red 4px' : 'solid transparent 4px',
+  border: hasClash ? 'solid red 4px' : 'solid transparent 0px',
+  paddingLeft: 4,
+  paddingRight: 4,
+  paddingTop: 0,
+  paddingBottom: 0,
 
   minWidth: 0,
   width: '100%',
   height: '100%',
   boxSizing: 'border-box' as 'border-box',
-  padding: 0,
   position: 'relative' as 'relative',
 });
 
@@ -175,6 +209,7 @@ interface DroppedClassProps {
   earliestStartTime: number
   hasClash: boolean
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -186,20 +221,95 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
   earliestStartTime,
   hasClash,
   isSquareEdges,
+  setInfoVisibility,
 }) => {
   const element = useRef<HTMLDivElement>(null);
+  const rippleRef = useRef<any>(null);
+
+  let timer: number | null = null;
+  let rippleStopped = false;
+  let ignoreMouse = false;
+
+  setIsSquareEdges(isSquareEdges);
+
+  const onDown = (oldEvent: any) => {
+    if (!('type' in oldEvent)) return;
+    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
+    if (oldEvent.type.includes('touch')) ignoreMouse = true;
+
+    const event = { ...oldEvent };
+
+    if ('start' in rippleRef.current) {
+      rippleStopped = false;
+      rippleRef.current.start(event);
+    }
+
+    const startDrag = () => {
+      timer = null;
+      setDragTarget(cardData, event);
+      setInfoVisibility(false);
+    };
+
+    if (oldEvent.type.includes('touch')) {
+      timer = setTimeout(startDrag, 500);
+    } else {
+      startDrag();
+    }
+
+    const onUp = (eventUp: any) => {
+      if (eventUp.type.includes('mouse') && ignoreMouse) return;
+
+      window.removeEventListener('mousemove', onUp);
+      window.removeEventListener('touchmove', onUp);
+
+      if (
+        (timer || !eventUp.type.includes('move'))
+        && 'stop' in rippleRef.current
+      ) {
+        window.removeEventListener('mouseup', onUp);
+        window.removeEventListener('touchend', onUp);
+
+        if (!rippleStopped && 'stop' in rippleRef.current) {
+          rippleStopped = true;
+
+          setTimeout(() => {
+            try {
+              rippleRef.current.stop(eventUp);
+            } catch (error) {
+              console.log(error);
+            }
+          }, 100);
+        }
+      }
+
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+        setInfoVisibility(true);
+      }
+
+      eventUp.preventDefault();
+    };
+
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchend', onUp, { passive: false });
+    window.addEventListener('mousemove', onUp);
+    window.addEventListener('touchmove', onUp, { passive: false });
+  };
 
   useEffect(() => {
     const elementCurrent = element.current;
-    if (elementCurrent) registerCard(cardData, elementCurrent);
+
+    if (elementCurrent) {
+      registerCard(cardData, elementCurrent);
+    }
+
     return () => {
-      if (elementCurrent) unregisterCard(cardData, elementCurrent);
+      if (elementCurrent) {
+        unregisterCard(cardData, elementCurrent);
+      }
     };
   });
-
-  const onDown = (event: any) => {
-    setDragTarget(cardData, event);
-  };
 
   let activityMaxPeriods = 0;
   if (!isPeriod(cardData)) {
@@ -219,6 +329,7 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
       days={days}
       y={y}
       earliestStartTime={earliestStartTime}
+      isSquareEdges={isSquareEdges}
     >
       <Card
         style={courseClassInnerStyle({
@@ -234,9 +345,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
             {cardData.class.activity}
           </b>
         </p>
-        {isPeriod(cardData) && (
-          <>
-            <p style={pStyleSmall}>
+        <p style={pStyleSmall}>
+          {isPeriod(cardData) ? (
+            <>
               <PeopleAltIcon fontSize="inherit" style={iconStyle} />
               {' '}
               {' '}
@@ -250,21 +361,20 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
               {' '}
               {cardData.time.weeksString}
               )
-            </p>
-            <p style={pStyleSmall}>
+              <br />
               <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locationShort}
-            </p>
-          </>
-        )}
-        {!isPeriod(cardData) && (
-          <p style={pStyle}>
-            {activityMaxPeriods}
-            {' '}
-            class
-            {activityMaxPeriods !== 1 && 'es'}
-          </p>
-        )}
+              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+            </>
+          ) : (
+            <>
+              {activityMaxPeriods}
+              {' '}
+              class
+              {activityMaxPeriods !== 1 && 'es'}
+            </>
+          )}
+        </p>
+        <TouchRipple ref={rippleRef} />
       </Card>
     </StyledCourseClass>
   );
@@ -281,6 +391,7 @@ interface DroppedClassesProps {
   days: string[]
   clashes: Array<ClassPeriod>
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
@@ -290,6 +401,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   days,
   clashes,
   isSquareEdges,
+  setInfoVisibility,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -359,6 +471,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
+        setInfoVisibility={setInfoVisibility}
       />,
     );
 

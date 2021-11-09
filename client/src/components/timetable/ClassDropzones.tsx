@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { withTheme } from 'styled-components';
-import { CourseData } from '@notangles/common';
+import {
+  CourseData, ClassPeriod, Activity, ClassData,
+} from '../../interfaces/Course';
 import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
@@ -17,7 +19,53 @@ const DropzoneGroup: FunctionComponent<ClassDropzoneProps> = React.memo(({
   color,
   earliestStartTime,
 }) => {
-  const dropzones = Object.values(course.activities).flatMap(
+  // Deep-ish copy of activities (so we can combine duplicates without affecting original)
+
+  let newActivities: Record<Activity, ClassData[]> = {};
+
+  Object.keys(course.activities).forEach((activity) => {
+    newActivities[activity] = [];
+
+    course.activities[activity].forEach((classData) => {
+      const newClassData = { ...classData };
+      newClassData.periods = [...classData.periods];
+      newActivities[activity].push(newClassData);
+    });
+  });
+
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => (
+    a.time.day === b.time.day
+    && a.time.start === b.time.start
+    && a.time.end === b.time.end
+  );
+
+  Object.keys(newActivities).forEach((activity) => {
+    let allPeriods: ClassPeriod[] = [];
+
+    newActivities[activity].forEach((classData) => {
+      allPeriods = [...allPeriods, ...classData.periods];
+    });
+
+    newActivities[activity].forEach((classData) => {
+      classData.periods = classData.periods.filter((period) => { // TODO
+        const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
+
+        return duplicates[0] === period;
+      });
+    });
+  });
+
+  Object.keys(newActivities).forEach((activity) => {
+    newActivities[activity] = newActivities[activity].filter( // TODO
+      (classData) => (classData.periods.length !== 0),
+    );
+  });
+
+  newActivities = Object.fromEntries(
+    Object.entries(newActivities).filter(([_, classes]) => (classes.length !== 0)),
+  );
+
+  const dropzones = Object.values(newActivities).flatMap(
     (classDatas) => classDatas.flatMap(
       (classData) => classData.periods.flatMap(
         (period, i) => (

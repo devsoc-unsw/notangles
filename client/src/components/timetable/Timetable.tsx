@@ -1,21 +1,19 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, SelectedClasses, ClassPeriod } from '@notangles/common';
+import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { contentPadding } from '../../constants/theme';
-import TimetableLayout from './TimetableLayout';
+import { TimetableLayout } from './TimetableLayout';
 import ClassDropzones from './ClassDropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
-
-export const rowHeight = 67;
+import { timetableWidth } from '../../utils/Drag';
 
 const StyledTimetable = styled(Box)<{
   rows: number
 }>`
   display: grid;
-  height: ${({ rows }) => rows * rowHeight}px;
-  min-width: 1100px;
+  min-width: ${timetableWidth}px;
   padding: ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
@@ -32,10 +30,6 @@ const StyledTimetableScroll = styled(Box)`
   width: calc(100% + ${contentPadding * 2 - (1 / devicePixelRatio) * 2}px);
   overflow-x: scroll;
   overflow-y: hidden;
-  // https://www.w3schools.com/howto/howto_css_hide_scrollbars.asp
-  // ::-webkit-scrollbar {
-  //   display: none;
-  // }
 `;
 
 interface TimetableProps {
@@ -46,6 +40,7 @@ interface TimetableProps {
   setIs12HourMode(value: boolean): void
   clashes: Array<ClassPeriod>
   isSquareEdges: boolean
+  setInfoVisibility(value: boolean): void
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -57,8 +52,9 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
   setIs12HourMode,
   isSquareEdges,
   clashes,
+  setInfoVisibility,
 }) => (
-  <StyledTimetableScroll>
+  <StyledTimetableScroll id="StyledTimetableScroll">
     <StyledTimetable
       rows={Math.max(...selectedCourses.map(
         (course) => course.latestFinishTime,
@@ -86,6 +82,7 @@ const Timetable: FunctionComponent<TimetableProps> = React.memo(({
         days={days}
         clashes={clashes}
         isSquareEdges={isSquareEdges}
+        setInfoVisibility={setInfoVisibility}
       />
     </StyledTimetable>
   </StyledTimetableScroll>
