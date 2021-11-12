@@ -4,8 +4,9 @@ import React, {
 import { CSSTransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import VideocamIcon from '@material-ui/icons/Videocam';
+import PersonIcon from '@material-ui/icons/Person';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import {
   CourseData, ClassPeriod, SelectedClasses, InInventory,
@@ -320,6 +321,13 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
     );
   }
 
+  const locations = isPeriod(cardData) ? [...cardData.locations] : [];
+  locations.sort((a, b) => {
+    if (a === "Online") return 1;
+    if (b === "Online") return -1;
+    return 0;
+  });
+
   return (
     <StyledCourseClass
       ref={element}
@@ -362,8 +370,9 @@ const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
               {cardData.time.weeksString}
               )
               <br />
-              <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+              {locations.includes('Online') && <VideocamIcon fontSize="inherit" style={iconStyle} />}
+              {locations.some((location) => location !== 'Online') && <PersonIcon fontSize="inherit" style={iconStyle} />}
+              {locations[0] + (locations.length > 1 ? ` + ${locations.length - 1}` : '')}
             </>
           ) : (
             <>

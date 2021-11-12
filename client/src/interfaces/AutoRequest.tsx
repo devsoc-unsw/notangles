@@ -5,7 +5,8 @@ export interface AutoCourse {
 
 export interface Criteria {
   daysAtUni?: number,
-  breaks?: number,
+  breakTime?: number,
+  napTime?: number,
   walkingDistance?: number,
   friends?: number,
   starFriends?: number,

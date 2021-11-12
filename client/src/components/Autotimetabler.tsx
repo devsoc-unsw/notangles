@@ -14,30 +14,29 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import Grid from '@material-ui/core/Grid';
 
-import Tooltip from '@material-ui/core/Tooltip';
-
 const DropdownButton = styled(Button)`
-    width: 100%;
-    height: 55px;
-    text-align: left;
-    margin-top: 20px;
-    margin-right:10px;
-    text-transform: none;
+  width: 100%;
+  height: 55px;
+  text-align: left;
+  margin-top: 20px;
+  margin-right: 10px;
+  text-transform: none;
 `;
 
 const ExecuteButton = styled(Button)`
-    width: 100%;
-    border-radius: 0px 0px 5px 5px;
+  width: 100%;
+  border-radius: 0px 0px 5px 5px;
 `;
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
-    margin-top: 10px;
-    width:100%;
+  margin-top: 10px;
+  width:100%;
 `;
+
 const StyledOptionButtonToggle = styled(ToggleButton)`
-    width: 100%;
-    height: 32px;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 32px;
+  margin-bottom: 10px;
 `;
 
 interface DropdownOptionProps {
@@ -120,8 +119,8 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode, auto }) => 
     <div>
       {/* <Tooltip title="Coming Soon" placement="bottom"> */}
         <div>
-          <DropdownButton aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
-            <Box ml="10px" flexGrow={1}>Auto-timetable</Box>
+          <DropdownButton aria-describedby={popoverId} variant="outlined" onClick={handleClick}>
+            <Box ml="10px" flexGrow={1}>Auto</Box>
             {open ? (
               <ArrowDropUpIcon />
             ) : <ArrowDropDownIcon />}

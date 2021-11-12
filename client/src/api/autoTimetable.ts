@@ -2,8 +2,9 @@ import { ClassData, CourseData, SelectedClasses } from '../interfaces/Course';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
-import TimeoutError from '../interfaces/TimeoutError';
+// import TimeoutError from '../interfaces/TimeoutError';
 import { AutoRequest, AutoCourse, Criteria } from '../interfaces/AutoRequest';
+import { term, year } from '../constants/timetable';
 
 /**
  *
@@ -32,8 +33,8 @@ const autoTimetable = async (
 
   const request: AutoRequest = {
     courses,
-    year: 2020,
-    term: 'T3',
+    year: Number(year),
+    term,
     criteria,
   };
 
@@ -53,13 +54,12 @@ const autoTimetable = async (
     courses.forEach((autoCourse) => {
       const course = selectedCourses.find((c) => c.code === autoCourse.code);
       if (course === undefined) throw new NetworkError('Internal server error');
-      console.log(classData);
       Object.entries(course.activities).forEach(([activity, activityClasses]) => {
         if (!autoCourse.exclude.includes(activity)) {
-          console.log(activity, activityClasses, classData[course.code])
           const outputClass = activityClasses.find((c) => (
-            c.id === classData[course.code][activity]
+            c.classId === classData[course.code][activity]
           ));
+          console.log(outputClass)
           if (outputClass !== undefined) {
             output.push(outputClass);
           } else {

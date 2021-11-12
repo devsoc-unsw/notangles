@@ -259,7 +259,11 @@ const App: FunctionComponent = () => {
 
   const auto = async () => {
     try {
-      const newClasses = await autoTimetable(selectedClasses, selectedCourses, {});
+      const newClasses = await autoTimetable(selectedClasses, selectedCourses, {
+        daysAtUni: -1,
+        breakTime: 0,
+        napTime: 0
+      },);
 
       setSelectedClasses((prev) => {
         prev = { ...prev };
@@ -269,7 +273,7 @@ const App: FunctionComponent = () => {
         return prev;
       });
     } catch (e) {
-      setErrorMsg(e.message);
+      setErrorMsg(e.message); // TODO
       setErrorVisibility(true);
     }
   }
