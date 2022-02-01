@@ -1,15 +1,11 @@
-import React, {
-  FunctionComponent, useState, useRef, useEffect,
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import {
-  CourseData, ClassPeriod, SelectedClasses, InInventory,
-} from '../../interfaces/Course';
+import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   isPeriod,
@@ -37,20 +33,14 @@ const classTranslateX = (cardData: CardData, days?: string[]) => {
   // not a period, so in the inventory
   if (days) {
     // `1 / devicePixelRatio` refers to the width of a timetable border
-    return `calc(${
-      days.length * 100
-    }% + ${
-      inventoryMargin + 1 / devicePixelRatio
-    }px)`;
+    return `calc(${days.length * 100}% + ${inventoryMargin + 1 / devicePixelRatio}px)`;
   }
-
 
   return 0;
 };
 
-const getHeightFactor = (cardData?: CardData | InInventory) => (
-  cardData && isPeriod(cardData) ? cardData.time.end - cardData.time.start : 1
-);
+const getHeightFactor = (cardData?: CardData | InInventory) =>
+  cardData && isPeriod(cardData) ? cardData.time.end - cardData.time.start : 1;
 
 export const classTranslateY = (cardData: CardData, earliestStartTime: number, y?: number) => {
   let result = 0;
@@ -61,14 +51,13 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
     // number of rows to offset down
     const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
     // calculate translate percentage (relative to height)
-    result = (offsetRows / heightFactor);
-  } else if (y) { // not a period, so in the inventory
+    result = offsetRows / heightFactor;
+  } else if (y) {
+    // not a period, so in the inventory
     result = y;
   }
 
-  return (
-    `calc(${result * 100}% + ${result / devicePixelRatio}px)`
-  );
+  return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
 };
 
 export const classHeight = (cardData?: CardData | InInventory) => {
@@ -78,29 +67,22 @@ export const classHeight = (cardData?: CardData | InInventory) => {
   return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
-export const classTransformStyle = (
-  cardData: CardData, earliestStartTime: number, days?: string[], y?: number,
-) => (
-  `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`
-);
+export const classTransformStyle = (cardData: CardData, earliestStartTime: number, days?: string[], y?: number) =>
+  `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
 
 const StyledCourseClass = styled.div<{
-  cardData: CardData
-  days: string[]
-  y?: number
-  earliestStartTime: number
-  isSquareEdges: boolean
+  cardData: CardData;
+  days: string[];
+  y?: number;
+  earliestStartTime: number;
+  isSquareEdges: boolean;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({
-    cardData, earliestStartTime, days, y,
-  }) => (
-    classTransformStyle(cardData, earliestStartTime, days, y)
-  )};
+  transform: ${({ cardData, earliestStartTime, days, y }) => classTransformStyle(cardData, earliestStartTime, days, y)};
   // position over timetable borders
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
@@ -110,13 +92,9 @@ const StyledCourseClass = styled.div<{
 
   padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
 
-  padding-right: ${({ isSquareEdges }) => (
-    getClassMargin(isSquareEdges) + 1 / devicePixelRatio
-  )}px;
+  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
 
-  padding-bottom: ${({ isSquareEdges }) => (
-    getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : (1 / devicePixelRatio))
-  )}px;
+  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 
   transition: ${defaultTransition}, z-index 0s;
 
@@ -124,9 +102,7 @@ const StyledCourseClass = styled.div<{
     & > div {
       opacity: 0;
       transform: scale(${elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => (
-    theme.shadows[getElevatedShadow(isSquareEdges)]
-  )};
+      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getElevatedShadow(isSquareEdges)]};
     }
   }
 
@@ -134,21 +110,17 @@ const StyledCourseClass = styled.div<{
     & > div {
       opacity: 1;
       transform: scale(1);
-      box-shadow: ${({ theme, isSquareEdges }) => (
-    theme.shadows[getDefaultShadow(isSquareEdges)]
-  )};
+      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
     }
-  };
+  }
 
   &.${transitionName}-leave-active {
     & > div {
       opacity: 0;
       // transform: scale(${2 - elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => (
-    theme.shadows[getDefaultShadow(isSquareEdges)]
-  )};
+      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
     }
-  };
+  }
 `;
 
 const courseClassInnerStyle = ({
@@ -156,9 +128,9 @@ const courseClassInnerStyle = ({
   hasClash,
   isSquareEdges,
 }: {
-  backgroundColor: string
-  hasClash: boolean
-  isSquareEdges: boolean
+  backgroundColor: string;
+  hasClash: boolean;
+  isSquareEdges: boolean;
 }) => ({
   display: 'flex',
   justifyContent: 'center',
@@ -194,7 +166,8 @@ const pStyle = {
 };
 
 const pStyleSmall = {
-  ...pStyle, fontSize: '85%',
+  ...pStyle,
+  fontSize: '85%',
 };
 
 const iconStyle = {
@@ -202,199 +175,172 @@ const iconStyle = {
 };
 
 interface DroppedClassProps {
-  cardData: CardData
-  color: string
-  days: string[]
-  y?: number
-  earliestStartTime: number
-  hasClash: boolean
-  isSquareEdges: boolean
-  setInfoVisibility(value: boolean): void
+  cardData: CardData;
+  color: string;
+  days: string[];
+  y?: number;
+  earliestStartTime: number;
+  hasClash: boolean;
+  isSquareEdges: boolean;
+  setInfoVisibility(value: boolean): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const DroppedClass: FunctionComponent<DroppedClassProps> = React.memo(({
-  cardData,
-  color,
-  days,
-  y,
-  earliestStartTime,
-  hasClash,
-  isSquareEdges,
-  setInfoVisibility,
-}) => {
-  const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<any>(null);
+const DroppedClass: React.FC<DroppedClassProps> = React.memo(
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility }) => {
+    const element = useRef<HTMLDivElement>(null);
+    const rippleRef = useRef<any>(null);
 
-  let timer: number | null = null;
-  let rippleStopped = false;
-  let ignoreMouse = false;
+    let timer: number | null = null;
+    let rippleStopped = false;
+    let ignoreMouse = false;
 
-  setIsSquareEdges(isSquareEdges);
+    setIsSquareEdges(isSquareEdges);
 
-  const onDown = (oldEvent: any) => {
-    if (!('type' in oldEvent)) return;
-    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
-    if (oldEvent.type.includes('touch')) ignoreMouse = true;
+    const onDown = (oldEvent: any) => {
+      if (!('type' in oldEvent)) return;
+      if (oldEvent.type.includes('mouse') && ignoreMouse) return;
+      if (oldEvent.type.includes('touch')) ignoreMouse = true;
 
-    const event = { ...oldEvent };
+      const event = { ...oldEvent };
 
-    if ('start' in rippleRef.current) {
-      rippleStopped = false;
-      rippleRef.current.start(event);
-    }
-
-    const startDrag = () => {
-      timer = null;
-      setDragTarget(cardData, event);
-      setInfoVisibility(false);
-    };
-
-    if (oldEvent.type.includes('touch')) {
-      timer = setTimeout(startDrag, 500);
-    } else {
-      startDrag();
-    }
-
-    const onUp = (eventUp: any) => {
-      if (eventUp.type.includes('mouse') && ignoreMouse) return;
-
-      window.removeEventListener('mousemove', onUp);
-      window.removeEventListener('touchmove', onUp);
-
-      if (
-        (timer || !eventUp.type.includes('move'))
-        && 'stop' in rippleRef.current
-      ) {
-        window.removeEventListener('mouseup', onUp);
-        window.removeEventListener('touchend', onUp);
-
-        if (!rippleStopped && 'stop' in rippleRef.current) {
-          rippleStopped = true;
-
-          setTimeout(() => {
-            try {
-              rippleRef.current.stop(eventUp);
-            } catch (error) {
-              console.log(error);
-            }
-          }, 100);
-        }
+      if ('start' in rippleRef.current) {
+        rippleStopped = false;
+        rippleRef.current.start(event);
       }
 
-      if (timer !== null) {
-        clearTimeout(timer);
+      const startDrag = () => {
         timer = null;
-        setInfoVisibility(true);
+        setDragTarget(cardData, event);
+        setInfoVisibility(false);
+      };
+
+      if (oldEvent.type.includes('touch')) {
+        timer = setTimeout(startDrag, 500);
+      } else {
+        startDrag();
       }
 
-      eventUp.preventDefault();
+      const onUp = (eventUp: any) => {
+        if (eventUp.type.includes('mouse') && ignoreMouse) return;
+
+        window.removeEventListener('mousemove', onUp);
+        window.removeEventListener('touchmove', onUp);
+
+        if ((timer || !eventUp.type.includes('move')) && 'stop' in rippleRef.current) {
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('touchend', onUp);
+
+          if (!rippleStopped && 'stop' in rippleRef.current) {
+            rippleStopped = true;
+
+            setTimeout(() => {
+              try {
+                rippleRef.current.stop(eventUp);
+              } catch (error) {
+                console.log(error);
+              }
+            }, 100);
+          }
+        }
+
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+          setInfoVisibility(true);
+        }
+
+        eventUp.preventDefault();
+      };
+
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('touchend', onUp, { passive: false });
+      window.addEventListener('mousemove', onUp);
+      window.addEventListener('touchmove', onUp, { passive: false });
     };
 
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchend', onUp, { passive: false });
-    window.addEventListener('mousemove', onUp);
-    window.addEventListener('touchmove', onUp, { passive: false });
-  };
+    useEffect(() => {
+      const elementCurrent = element.current;
 
-  useEffect(() => {
-    const elementCurrent = element.current;
+      if (elementCurrent) {
+        registerCard(cardData, elementCurrent);
+      }
 
-    if (elementCurrent) {
-      registerCard(cardData, elementCurrent);
+      return () => {
+        if (elementCurrent) {
+          unregisterCard(cardData, elementCurrent);
+        }
+      };
+    });
+
+    let activityMaxPeriods = 0;
+    if (!isPeriod(cardData)) {
+      activityMaxPeriods = Math.max(
+        ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
+      );
     }
 
-    return () => {
-      if (elementCurrent) {
-        unregisterCard(cardData, elementCurrent);
-      }
-    };
-  });
-
-  let activityMaxPeriods = 0;
-  if (!isPeriod(cardData)) {
-    activityMaxPeriods = Math.max(
-      ...cardData.class.course.activities[cardData.class.activity].map(
-        (classData) => classData.periods.length,
-      ),
+    return (
+      <StyledCourseClass
+        ref={element}
+        onMouseDown={onDown}
+        onTouchStart={onDown}
+        cardData={cardData}
+        days={days}
+        y={y}
+        earliestStartTime={earliestStartTime}
+        isSquareEdges={isSquareEdges}
+      >
+        <Card
+          style={courseClassInnerStyle({
+            backgroundColor: color,
+            hasClash,
+            isSquareEdges,
+          })}
+        >
+          <p style={pStyle}>
+            <b>
+              {cardData.class.course.code} {cardData.class.activity}
+            </b>
+          </p>
+          <p style={pStyleSmall}>
+            {isPeriod(cardData) ? (
+              <>
+                <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
+                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
+                )
+                <br />
+                <LocationOnIcon fontSize="inherit" style={iconStyle} />
+                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+              </>
+            ) : (
+              <>
+                {activityMaxPeriods} class
+                {activityMaxPeriods !== 1 && 'es'}
+              </>
+            )}
+          </p>
+          <TouchRipple ref={rippleRef} />
+        </Card>
+      </StyledCourseClass>
     );
   }
-
-  return (
-    <StyledCourseClass
-      ref={element}
-      onMouseDown={onDown}
-      onTouchStart={onDown}
-      cardData={cardData}
-      days={days}
-      y={y}
-      earliestStartTime={earliestStartTime}
-      isSquareEdges={isSquareEdges}
-    >
-      <Card
-        style={courseClassInnerStyle({
-          backgroundColor: color,
-          hasClash,
-          isSquareEdges,
-        })}
-      >
-        <p style={pStyle}>
-          <b>
-            {cardData.class.course.code}
-            {' '}
-            {cardData.class.activity}
-          </b>
-        </p>
-        <p style={pStyleSmall}>
-          {isPeriod(cardData) ? (
-            <>
-              <PeopleAltIcon fontSize="inherit" style={iconStyle} />
-              {' '}
-              {' '}
-              {cardData.class.enrolments}
-              /
-              {cardData.class.capacity}
-              {' '}
-              {' '}
-              (
-              {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'}
-              {' '}
-              {cardData.time.weeksString}
-              )
-              <br />
-              <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-            </>
-          ) : (
-            <>
-              {activityMaxPeriods}
-              {' '}
-              class
-              {activityMaxPeriods !== 1 && 'es'}
-            </>
-          )}
-        </p>
-        <TouchRipple ref={rippleRef} />
-      </Card>
-    </StyledCourseClass>
-  );
-});
-
-const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) => (
-  courses.find((course) => course.code === courseCode)?.inventoryData[activity]
 );
 
+const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) =>
+  courses.find((course) => course.code === courseCode)?.inventoryData[activity];
+
 interface DroppedClassesProps {
-  selectedCourses: CourseData[]
-  selectedClasses: SelectedClasses
-  assignedColors: Record<string, string>
-  days: string[]
-  clashes: Array<ClassPeriod>
-  isSquareEdges: boolean
-  setInfoVisibility(value: boolean): void
+  selectedCourses: CourseData[];
+  selectedClasses: SelectedClasses;
+  assignedColors: Record<string, string>;
+  days: string[];
+  clashes: Array<ClassPeriod>;
+  isSquareEdges: boolean;
+  setInfoVisibility(value: boolean): void;
 }
 
-const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
+const DroppedClasses: React.FC<DroppedClassesProps> = ({
   selectedCourses,
   selectedClasses,
   assignedColors,
@@ -409,16 +355,9 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   const keyCounter = useRef(0);
   const inventoryCards = useRef<CardData[]>([]);
 
-  const [cardKeys] = useState<
-  Map<CardData, number>
-  >(
-    new Map<CardData, number>(),
-  );
+  const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
 
-  const earliestStartTime = Math.min(
-    ...selectedCourses.map((course) => course.earliestStartTime),
-    defaultStartTime,
-  );
+  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
@@ -472,7 +411,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
         setInfoVisibility={setInfoVisibility}
-      />,
+      />
     );
 
     cardKeys.set(cardData, key);
@@ -482,9 +421,7 @@ const DroppedClasses: FunctionComponent<DroppedClassesProps> = ({
   prevCards.current = [...newCards];
 
   // sort by key to prevent disruptions to transitions
-  droppedClasses.sort((a, b) => (
-    a.key && b.key ? Number(a.key) - Number(b.key) : 0
-  ));
+  droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
 
   cardKeys.forEach((_, cardData) => {
     if (!newCards.includes(cardData)) {

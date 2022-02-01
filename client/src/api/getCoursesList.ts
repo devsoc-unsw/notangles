@@ -12,13 +12,12 @@ interface FetchedCourse {
   name: string;
 }
 
-const toCoursesList = (data: FetchedCourse[]): CoursesList => (
+const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
     id: course._id,
     code: course.courseCode,
     name: course.name,
-  }))
-);
+  }));
 
 interface CoursesListWithDate {
   lastUpdated: number;
@@ -38,10 +37,7 @@ interface CoursesListWithDate {
  * @example
  * const coursesList = await getCoursesList('2020', 'T1')
  */
-const getCoursesList = async (
-  year: string,
-  term: string,
-): Promise<CoursesListWithDate> => {
+const getCoursesList = async (year: string, term: string): Promise<CoursesListWithDate> => {
   const baseURL = `${API_URL}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));

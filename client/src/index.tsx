@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import ReactGA from 'react-ga';
@@ -19,7 +19,7 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
   ReactGA.pageview(window.location.pathname);
 }
 
-const Root: FunctionComponent = () => (
+const Root: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route exact component={App} path="/" />

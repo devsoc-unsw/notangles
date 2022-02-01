@@ -15,14 +15,7 @@ export const colors: string[] = [
   '#8AC352', // light green
 ];
 
-export const days: string[] = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
+export const days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
@@ -30,4 +23,4 @@ export const defaultEndTime: number = 18;
 export const maxAddedCourses = 8;
 
 // TODO: uncomment below to enable preview mode
-export const isPreview = false;// process.env.REACT_APP_SHOW_PREVIEW === 'true';
+export const isPreview = false; // process.env.REACT_APP_SHOW_PREVIEW === 'true';

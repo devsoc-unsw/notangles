@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
 import styled from 'styled-components';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
@@ -17,9 +17,7 @@ import { ThemeType } from '../constants/theme';
 import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import {
-  year, termName, isPreview, term,
-} from '../constants/timetable';
+import { year, termName, isPreview, term } from '../constants/timetable';
 
 const LogoImg = styled.img`
   height: 40px;
@@ -42,7 +40,7 @@ const DarkModeButton = styled(ToggleButton)`
   border: none;
   border-radius: 40px;
   margin-right: 5px;
-  width:40px;
+  width: 40px;
   height: 40px;
 `;
 const DarkModeIcon = styled(Brightness2Icon)`
@@ -72,21 +70,15 @@ const Beta = styled.span`
 `;
 
 interface NavBarProps {
-  setIsDarkMode(mode: boolean): void,
-  isDarkMode: boolean,
-  handleDrawerOpen(): void,
-  setIsSquareEdges(mode: boolean): void,
-  isSquareEdges: boolean,
+  setIsDarkMode(mode: boolean): void;
+  isDarkMode: boolean;
+  handleDrawerOpen(): void;
+  setIsSquareEdges(mode: boolean): void;
+  isSquareEdges: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: FunctionComponent<NavBarProps> = ({
-  setIsDarkMode,
-  isDarkMode,
-  handleDrawerOpen,
-  setIsSquareEdges,
-  isSquareEdges,
-}) => {
+const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -96,12 +88,7 @@ const Navbar: FunctionComponent<NavBarProps> = ({
         <StyledNavBar>
           <Toolbar>
             {isPreview && (
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-              >
+              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
                 <MenuIcon />
               </IconButton>
             )}
@@ -109,11 +96,7 @@ const Navbar: FunctionComponent<NavBarProps> = ({
             <NavbarTitle variant="h6">
               Notangles
               <Weak>
-                {!isMobile && (
-                  <Beta>
-                    Beta
-                  </Beta>
-                )}
+                {!isMobile && <Beta>Beta</Beta>}
                 {isMobile ? term : termName.concat(', ', year)}
               </Weak>
             </NavbarTitle>
@@ -130,10 +113,7 @@ const Navbar: FunctionComponent<NavBarProps> = ({
               </DarkModeButton>
             </Tooltip>
             <About />
-            <Settings
-              isSquareEdges={isSquareEdges}
-              setIsSquareEdges={setIsSquareEdges}
-            />
+            <Settings isSquareEdges={isSquareEdges} setIsSquareEdges={setIsSquareEdges} />
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>

@@ -13,27 +13,21 @@ const defaultColor = colors[colors.length - 1];
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.code))
  */
 const useColorMapper = (courseCodes: string[]): Record<string, string> => {
-  const [assignedColors, setAssignedColors] = useState<
-  Record<string, string>
-  >({});
+  const [assignedColors, setAssignedColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const takenColors = new Set<string>();
     const newAssignedColors: Record<string, string> = {};
 
     courseCodes.forEach((item) => {
-      const color = item in assignedColors
-        ? assignedColors[item]
-        : colors.find((c) => !takenColors.has(c));
+      const color = item in assignedColors ? assignedColors[item] : colors.find((c) => !takenColors.has(c));
       newAssignedColors[item] = color || defaultColor;
       if (color) {
         takenColors.add(color);
       }
     });
 
-    if (
-      JSON.stringify(assignedColors) !== JSON.stringify(newAssignedColors)
-    ) {
+    if (JSON.stringify(assignedColors) !== JSON.stringify(newAssignedColors)) {
       setAssignedColors(newAssignedColors);
     }
   }, [courseCodes]);

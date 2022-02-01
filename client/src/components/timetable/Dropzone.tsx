@@ -1,12 +1,8 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
-import {
-  defaultTransition,
-  registerDropzone,
-  unregisterDropzone,
-} from '../../utils/Drag';
+import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { borderRadius } from '../../constants/theme';
 import { classTranslateY, classHeight } from './DroppedClasses';
 
@@ -17,13 +13,13 @@ const cellStyle = ({
   isInventory,
   earliestStartTime,
 }: {
-  classPeriod: ClassPeriod | InInventory,
-  x: number,
-  y: number,
-  yEnd?: number,
-  color: string,
-  isInventory?: boolean
-  earliestStartTime: number
+  classPeriod: ClassPeriod | InInventory;
+  x: number;
+  y: number;
+  yEnd?: number;
+  color: string;
+  isInventory?: boolean;
+  earliestStartTime: number;
 }) => ({
   display: 'inline-flex',
   alignItems: 'center',
@@ -42,19 +38,17 @@ const cellStyle = ({
 });
 
 interface CellProps {
-  classPeriod: ClassPeriod | InInventory
-  x: number
-  y: number
-  earliestStartTime: number
-  color: string
-  yEnd?: number
-  isInventory?: boolean
+  classPeriod: ClassPeriod | InInventory;
+  x: number;
+  y: number;
+  earliestStartTime: number;
+  color: string;
+  yEnd?: number;
+  isInventory?: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Dropzone: FunctionComponent<CellProps> = React.memo(({
-  classPeriod, x, y, earliestStartTime, color, yEnd, isInventory,
-}) => {
+const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const elementCurrent = element.current;
@@ -79,10 +73,12 @@ const Dropzone: FunctionComponent<CellProps> = React.memo(({
       })}
     >
       {classPeriod !== null && (
-      <>
-        {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{ color: 'white' }} />}
-        {classPeriod.locations.some((location) => location !== 'Online') && <PersonOutlineIcon fontSize="large" style={{ color: 'white' }} />}
-      </>
+        <>
+          {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{ color: 'white' }} />}
+          {classPeriod.locations.some((location) => location !== 'Online') && (
+            <PersonOutlineIcon fontSize="large" style={{ color: 'white' }} />
+          )}
+        </>
       )}
     </div>
   );

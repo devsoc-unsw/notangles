@@ -1,4 +1,4 @@
-import React, { useEffect, FunctionComponent, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
@@ -24,9 +24,7 @@ import getCourseInfo from './api/getCourseInfo';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import storage from './utils/storage';
-import {
-  darkTheme, lightTheme, ThemeType, contentPadding,
-} from './constants/theme';
+import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
 import { year, term, isPreview } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
 
@@ -116,7 +114,7 @@ const Footer = styled(Box)`
   margin-bottom: 25px;
 `;
 
-const App: FunctionComponent = () => {
+const App: React.FC = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
@@ -138,9 +136,7 @@ const App: FunctionComponent = () => {
     storage.set('hasShownInfoMessage', true);
   }
 
-  const assignedColors = useColorMapper(
-    selectedCourses.map((course) => course.code),
-  );
+  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
@@ -179,24 +175,17 @@ const App: FunctionComponent = () => {
     });
   };
 
-  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) => (
-    period1.day === period2.day && ((
-      period1.end > period2.start
-      && period1.start < period2.end
-    ) || (
-      period2.end > period1.start
-      && period2.start < period1.end
-    ))
-  );
+  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
+    period1.day === period2.day &&
+    ((period1.end > period2.start && period1.start < period2.end) ||
+      (period2.end > period1.start && period2.start < period1.end));
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
 
-    const flatPeriods = Object.values(selectedClasses).flatMap(
-      (activities) => Object.values(activities),
-    ).flatMap(
-      (classData) => (classData ? classData.periods : []),
-    );
+    const flatPeriods = Object.values(selectedClasses)
+      .flatMap((activities) => Object.values(activities))
+      .flatMap((classData) => (classData ? classData.periods : []));
 
     flatPeriods.forEach((period1) => {
       flatPeriods.forEach((period2) => {
@@ -215,25 +204,27 @@ const App: FunctionComponent = () => {
   };
 
   const handleSelectCourse = async (
-    data: string | string[], noInit?: boolean, callback?: (selectedCourses: CourseData[]) => void,
+    data: string | string[],
+    noInit?: boolean,
+    callback?: (selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-    Promise.all(
-      codes.map((code) => getCourseInfo(year, term, code)),
-    ).then((result) => {
-      const addedCourses = result as CourseData[];
-      const newSelectedCourses = [...selectedCourses, ...addedCourses];
+    Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
+      .then((result) => {
+        const addedCourses = result as CourseData[];
+        const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-      setSelectedCourses(newSelectedCourses);
+        setSelectedCourses(newSelectedCourses);
 
-      if (!noInit) addedCourses.forEach((course) => initCourse(course));
-      if (callback) callback(newSelectedCourses);
-    }).catch((e) => {
-      if (e instanceof NetworkError) {
-        setErrorMsg(e.message);
-        setErrorVisibility(true);
-      }
-    });
+        if (!noInit) addedCourses.forEach((course) => initCourse(course));
+        if (callback) callback(newSelectedCourses);
+      })
+      .catch((e) => {
+        if (e instanceof NetworkError) {
+          setErrorMsg(e.message);
+          setErrorVisibility(true);
+        }
+      });
   };
 
   const handleDrawerOpen = () => {
@@ -241,9 +232,7 @@ const App: FunctionComponent = () => {
   };
 
   const handleRemoveCourse = (courseCode: string) => {
-    const newSelectedCourses = selectedCourses.filter(
-      (course) => course.code !== courseCode,
-    );
+    const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => {
       prev = { ...prev };
@@ -292,11 +281,9 @@ const App: FunctionComponent = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-            const result = newSelectedCourses.find(
-              (x) => x.code === courseCode,
-            )?.activities[activity].find(
-              (x) => x.id === classId
-            );
+            const result = newSelectedCourses
+              .find((x) => x.code === courseCode)
+              ?.activities[activity].find((x) => x.id === classId);
 
             if (result) classData = result;
           }
@@ -310,7 +297,10 @@ const App: FunctionComponent = () => {
   }, []);
 
   useUpdateEffect(() => {
-    storage.set('selectedCourses', selectedCourses.map((course) => course.code));
+    storage.set(
+      'selectedCourses',
+      selectedCourses.map((course) => course.code)
+    );
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -351,15 +341,9 @@ const App: FunctionComponent = () => {
             isSquareEdges={isSquareEdges}
             setIsSquareEdges={setIsSquareEdges}
           />
-          {
-            isPreview && (
-              <FriendsDrawer
-                isFriendsListOpen={isFriendsListOpen}
-                isLoggedIn={isLoggedIn}
-                setIsLoggedIn={handleSetIsLoggedIn}
-              />
-            )
-          }
+          {isPreview && (
+            <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
+          )}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
@@ -391,9 +375,7 @@ const App: FunctionComponent = () => {
                 setInfoVisibility={setInfoVisibility}
               />
               <Footer>
-                While we try our best, Notangles is not an
-                official UNSW site, and cannot guarantee data accuracy or
-                reliability.
+                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
                 <br />
                 Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
@@ -409,15 +391,11 @@ const App: FunctionComponent = () => {
                   Source
                 </Link>
                 {lastUpdated !== 0 && (
-                <>
-                  <br />
-                  <br />
-                  Data last updated
-                  {' '}
-                  {getRelativeTime(lastUpdated)}
-                  {' '}
-                  ago.
-                </>
+                  <>
+                    <br />
+                    <br />
+                    Data last updated {getRelativeTime(lastUpdated)} ago.
+                  </>
                 )}
               </Footer>
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>

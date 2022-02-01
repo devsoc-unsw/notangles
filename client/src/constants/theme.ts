@@ -6,36 +6,36 @@ export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
-    type: string | undefined,
+    type: string | undefined;
     primary: {
-      main: string,
-    },
+      main: string;
+    };
     background: {
-      default: string,
-      paper: string,
-    },
+      default: string;
+      paper: string;
+    };
     secondary: {
-      main: string,
-      dark: string,
-      light: string,
-    },
+      main: string;
+      dark: string;
+      light: string;
+    };
     action: {
-      disabled: string,
-    },
-  },
+      disabled: string;
+    };
+  };
   shape: {
-    borderRadius: string,
-  },
+    borderRadius: string;
+  };
   breakpoints: {
     values: {
-      xs: number,
-      sm: number,
-      md: number,
-      lg: number,
-      xl: number
-    },
-    down: (key: string) => string
-  }
+      xs: number;
+      sm: number;
+      md: number;
+      lg: number;
+      xl: number;
+    };
+    down: (key: string) => string;
+  };
 }
 
 const baseTheme = ({
@@ -43,16 +43,16 @@ const baseTheme = ({
   background,
   border,
 }: {
-  type: 'light' | 'dark' | undefined,
+  type: 'light' | 'dark' | undefined;
   background: {
-    main: string,
-    light: string,
-    dark: string,
-  },
+    main: string;
+    light: string;
+    dark: string;
+  };
   border: {
-    main: string,
-    dark: string,
-  }
+    main: string;
+    dark: string;
+  };
 }) => ({
   palette: {
     type,
@@ -86,28 +86,32 @@ const baseTheme = ({
   },
 });
 
-export const lightTheme = createMuiTheme(baseTheme({
-  type: 'light',
-  background: {
-    main: '#fafafa',
-    light: '#fff',
-    dark: '#f2f2f2',
-  },
-  border: {
-    main: '#bdbdbd',
-    dark: '#999999',
-  },
-}));
+export const lightTheme = createMuiTheme(
+  baseTheme({
+    type: 'light',
+    background: {
+      main: '#fafafa',
+      light: '#fff',
+      dark: '#f2f2f2',
+    },
+    border: {
+      main: '#bdbdbd',
+      dark: '#999999',
+    },
+  })
+);
 
-export const darkTheme = createMuiTheme(baseTheme({
-  type: 'dark',
-  background: {
-    main: '#212121',
-    light: '#292929',
-    dark: '#181818',
-  },
-  border: {
-    main: '#616161',
-    dark: '#808080',
-  },
-}));
+export const darkTheme = createMuiTheme(
+  baseTheme({
+    type: 'dark',
+    background: {
+      main: '#212121',
+      light: '#292929',
+      dark: '#181818',
+    },
+    border: {
+      main: '#616161',
+      dark: '#808080',
+    },
+  })
+);
