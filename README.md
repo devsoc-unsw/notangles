@@ -27,7 +27,7 @@ Clone the repository:
 
 Install dependencies by running:
 
-`cd client && npm install && cd ../server && npm install && cd ../scraper && npm install && cd ..`
+`cd client && npm install && cd ..`
 
 ### Running the back-end
 
