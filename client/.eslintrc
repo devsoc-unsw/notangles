@@ -4,7 +4,6 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": ["airbnb-base", "airbnb-typescript", "prettier"],
   "parserOptions": {
-    "tsconfigRootDir": "./client",
     "project": "./tsconfig.json"
   },
   "rules": {
