@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
@@ -86,7 +86,7 @@ const baseTheme = ({
   },
 });
 
-export const lightTheme = createMuiTheme(
+export const lightTheme = createTheme(
   baseTheme({
     type: 'light',
     background: {
@@ -101,7 +101,7 @@ export const lightTheme = createMuiTheme(
   })
 );
 
-export const darkTheme = createMuiTheme(
+export const darkTheme = createTheme(
   baseTheme({
     type: 'dark',
     background: {

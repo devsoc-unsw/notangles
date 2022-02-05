@@ -89,7 +89,7 @@ const getContentWidth = (drawerOpen: boolean) => {
 };
 
 const Content = styled(Box)<StyledContentProps>`
-  width: ${(props) => getContentWidth(props.drawerOpen)};
+  width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
 
@@ -206,7 +206,7 @@ const App: React.FC = () => {
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
-    callback?: (selectedCourses: CourseData[]) => void
+    callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(codes.map((code) => getCourseInfo(year, term, code)))

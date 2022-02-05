@@ -2,8 +2,9 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "prettier"],
-  "extends": ["airbnb-typescript", "prettier"],
+  "extends": ["airbnb-base", "airbnb-typescript", "prettier"],
   "parserOptions": {
+    "tsconfigRootDir": "./client",
     "project": "./tsconfig.json"
   },
   "rules": {
@@ -16,7 +17,7 @@
         "argsIgnorePattern": "_"
       }
     ],
-    "no-shadow": [
+    "@typescript-eslint/no-shadow": [
       "error",
       {
         "allow": ["_"]

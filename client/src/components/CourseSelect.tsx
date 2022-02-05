@@ -37,7 +37,7 @@ const searchOptions: SearchOptions = {
   ],
 };
 
-let fuzzy = new Fuse<CourseOverview, SearchOptions>([], searchOptions);
+let fuzzy = new Fuse<CourseOverview>([], searchOptions);
 
 const StyledSelect = styled(Box)`
   width: 100%;
@@ -245,7 +245,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
 
     useEffect(() => {
       clearTimeout(searchTimer.current);
-      searchTimer.current = setTimeout(() => {
+      searchTimer.current = window.setTimeout(() => {
         search(inputValue);
         searchTimer.current = undefined;
       }, SEARCH_DELAY);
