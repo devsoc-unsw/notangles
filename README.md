@@ -43,7 +43,7 @@ You can then access the client at `localhost:3000` in your favourite web browser
 
 (Skip this for now) Navigate into `notangles/server` and run `docker-compose up`. This runs the server and the database as a bundle.
 
-(Start from here) After that, navigate to the `timetable-scraper` repo and run `npm start`. This will start the scraper’s server. To update the scraped data, run `npm run scraper`. This command should only need to be run once each term.
+(Start from here) After that, navigate to the `timetable-scraper` repo (which can be found [here](https://github.com/csesoc/timetable-scraper)) and run `npm start` to start the scraper’s server. To update the scraped data, run `npm run scraper`. This command should only need to be run once each term.
 
 ## Documentation
 
