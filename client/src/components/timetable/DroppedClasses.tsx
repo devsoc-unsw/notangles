@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
@@ -216,7 +216,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
       };
 
       if (oldEvent.type.includes('touch')) {
-        timer = setTimeout(startDrag, 500);
+        timer = window.setTimeout(startDrag, 500);
       } else {
         startDrag();
       }
@@ -430,15 +430,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   });
 
   return (
-    <CSSTransitionGroup
-      component="div"
-      style={{ display: 'contents' }}
-      transitionName={transitionName}
-      transitionEnterTimeout={transitionTime}
-      transitionLeaveTimeout={transitionTime}
-    >
-      {droppedClasses}
-    </CSSTransitionGroup>
+    <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
+      <>{droppedClasses}</>
+    </CSSTransition>
   );
 };
 

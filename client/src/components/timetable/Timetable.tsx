@@ -5,7 +5,7 @@ import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Cours
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { contentPadding } from '../../constants/theme';
 import { TimetableLayout } from './TimetableLayout';
-import ClassDropzones from './ClassDropzones';
+import Dropzones from './Dropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import { timetableWidth } from '../../utils/Drag';
 
@@ -68,7 +68,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           setIs12HourMode={setIs12HourMode}
           selectedCourses={selectedCourses}
         />
-        <ClassDropzones
+        <Dropzones
           selectedCourses={selectedCourses}
           assignedColors={assignedColors}
           earliestStartTime={Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)}

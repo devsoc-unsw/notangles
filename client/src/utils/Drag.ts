@@ -167,7 +167,7 @@ export const registerCard = (data: CardData, element: HTMLElement) => {
   cards.set(data, element);
   // delays update until consecutive `registerCard` calls have concluded
   clearTimeout(updateTimeout);
-  updateTimeout = setTimeout(() => updateCards(), 0);
+  updateTimeout = window.setTimeout(() => updateCards(), 0);
 };
 
 export const unregisterCard = (data: CardData, element: HTMLElement) => {

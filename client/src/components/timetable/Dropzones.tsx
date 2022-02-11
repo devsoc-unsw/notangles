@@ -84,7 +84,7 @@ interface Theme {
   };
 }
 
-interface ClassDropzonesProps {
+interface DropzonesProps {
   selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
   earliestStartTime: number;
@@ -92,7 +92,7 @@ interface ClassDropzonesProps {
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const ClassDropzones: React.FC<ClassDropzonesProps> = React.memo(
+const Dropzones: React.FC<DropzonesProps> = React.memo(
   ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
     const dropzones = selectedCourses.map((course) => (
       <DropzoneGroup
@@ -131,4 +131,4 @@ const ClassDropzones: React.FC<ClassDropzonesProps> = React.memo(
     )
 );
 
-export default withTheme(ClassDropzones);
+export default withTheme(Dropzones);
