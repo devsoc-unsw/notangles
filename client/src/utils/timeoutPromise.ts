@@ -13,7 +13,7 @@ export default function timeoutPromise(ms: number, promise: Promise<Response>): 
       (err) => {
         clearTimeout(timeoutId);
         reject(err);
-      },
+      }
     );
   });
 }

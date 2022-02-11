@@ -1,4 +1,4 @@
-export const year = '2021';
+export const year = '2022';
 const termNumber = 1;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;
@@ -15,13 +15,12 @@ export const colors: string[] = [
   '#8AC352', // light green
 ];
 
-export const days: string[] = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-];
+export const days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
+
+export const maxAddedCourses = 8;
+
+// TODO: uncomment below to enable preview mode
+export const isPreview = false; // process.env.REACT_APP_SHOW_PREVIEW === 'true';

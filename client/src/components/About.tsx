@@ -1,24 +1,32 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoIcon from '@material-ui/icons/Info';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
 `;
+
 const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
   top: 10px;
 `;
+
+const InfoButton = styled(IconButton)`
+  margin-right: 5px;
+`;
+
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
@@ -30,7 +38,8 @@ const FeatList = styled.ul`
   line-height: 20px;
 `;
 
-const About: FunctionComponent = React.memo(() => {
+// beware memo - if a component isn't re-rendering, it could be why
+const About: React.FC = React.memo(() => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -39,9 +48,11 @@ const About: FunctionComponent = React.memo(() => {
 
   return (
     <div>
-      <Button color="inherit" onClick={toggleIsOpen}>
-        About
-      </Button>
+      <Tooltip title="About">
+        <InfoButton color="inherit" onClick={toggleIsOpen}>
+          <InfoIcon />
+        </InfoButton>
+      </Tooltip>
       <Dialog
         disableScrollLock
         onClose={toggleIsOpen}
@@ -51,20 +62,16 @@ const About: FunctionComponent = React.memo(() => {
         maxWidth="sm"
       >
         <StyledDialogTitle disableTypography>
-          <Typography variant="h5">
-            Notangles: No more timetable Tangles
-          </Typography>
+          <Typography variant="h5">Notangles: no more timetable tangles</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-
-        <DialogContent dividers>
+        <Divider />
+        <DialogContent>
           <Typography gutterBottom variant="body2">
-            Notangles is a tool helping UNSW students build the perfect
-            timetable, with an intuitive drag and drop interface. We have many
-            features on the way, including auto-timetabling, and syncing your
-            timetable with friends.
+            Notangles is an app for UNSW students to build their perfect timetable, even before class registration opens. We have
+            many features on the way, including auto-timetabling, and syncing your timetable with friends.
           </Typography>
           <Typography gutterBottom variant="body2">
             Inspired by&nbsp;
@@ -76,59 +83,47 @@ const About: FunctionComponent = React.memo(() => {
               Crossangles
             </Link>
             , it was created by&nbsp;
-            <Link
-              href="https://www.csesoc.unsw.edu.au/teams/software-projects/"
-              target="_blank"
-            >
+            <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
               CSESoc Projects
             </Link>
-            &nbsp;- a place for student-led projects where you can learn
-            something new and make some friends along the way. Notangles is free
-            and open-source.
+            &nbsp;– a place for student-led projects where you can learn something new, and make some friends along the way.
+            Notangles is free and <Link href="https://github.com/csesoc/notangles">open-source</Link>.
           </Typography>
           <Typography variant="h6">How it works</Typography>
           <Typography gutterBottom variant="body2">
-            Use the course dropdown to search for and select your courses. Drag
-            and drop classes to view timetabling options.
-            <br />
-            Notangles does not enroll in your classes. It’s a tool for planning
-            your timetable, but you’ll still need to officially enroll on&nbsp;
+            Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures which
+            you aren’t going to watch live) to the unscheduled column.
+          </Typography>
+          <Typography gutterBottom variant="body2">
+            Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need to
+            officially enroll at&nbsp;
             <Link href="https://my.unsw.edu.au/" target="_blank">
               myUNSW
             </Link>
             .
           </Typography>
-          <Typography variant="h6">Features</Typography>
-          <FeatList>
+          {/* <FeatList>
             <li> Drag-and-drop interface </li>
             <li> Move clutter to the class inventory </li>
             <li> Dark mode &#x1F60E; </li>
             <li> Select 12 or 24 hour time </li>
-          </FeatList>
-          <Typography variant="h6">
-            Future developments
-          </Typography>
+          </FeatList> */}
+          <Typography variant="h6">Future developments</Typography>
           <FeatList>
-            <li> Auto-timetabling to suit your needs </li>
-            <li> Optional login to sync your timetable across devices </li>
-            <li> Social-timetabling to coordinate classes with friends </li>
-            <li> A mobile app so you can plan on the go </li>
+            <li> Auto-timetabling</li>
+            <li> Sync your timetable with friends</li>
+            <li> A mobile app</li>
           </FeatList>
-          <br />
+          <Typography variant="h6">Disclaimer</Typography>
           <Typography gutterBottom variant="body2">
-            <b> DISCLAIMER </b>
-            &nbsp;While we try our best, Notangles is not an official UNSW site,
-            and cannot guarantee data accuracy or reliability.
+            While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
           </Typography>
           <Typography gutterBottom variant="body2">
-            If you find an issue or have a suggestion,
-            {' '}
-            <Link
-              href="https://forms.gle/rV3QCwjsEbLNyESE6"
-              target="_blank"
-            >
-              please let us know.
+            If you find an issue or have a suggestion, please{' '}
+            <Link href="https://forms.gle/rV3QCwjsEbLNyESE6" target="_blank">
+              let us know
             </Link>
+            .
           </Typography>
         </DialogContent>
       </Dialog>

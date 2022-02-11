@@ -1,34 +1,34 @@
-import { CourseData, ClassData, ClassPeriod } from '@notangles/common';
+import { CourseData, ClassData, ClassPeriod } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 
 export interface DbCourse {
-  courseCode: string
-  name: string
-  classes: DbClass[]
+  courseCode: string;
+  name: string;
+  classes: DbClass[];
 }
 
 export interface DbClass {
-  activity: string
-  times: DbTimes[]
-  courseEnrolment: DbCourseEnrolment
+  activity: string;
+  times: DbTimes[];
+  courseEnrolment: DbCourseEnrolment;
 }
 
 export interface DbCourseEnrolment {
-  enrolments: number
-  capacity: number
+  enrolments: number;
+  capacity: number;
 }
 
 export interface DbTimes {
-  time: DbTime
-  day: string
-  location: string
-  weeks: string
+  time: DbTime;
+  day: string;
+  location: string;
+  weeks: string;
 }
 
 export interface DbTime {
-  start: string
-  end: string
+  start: string;
+  end: string;
 }
 
 const locationShorten = (location: string): string => location.split(' (')[0];
@@ -40,6 +40,7 @@ const weekdayToNumber = (weekDay: string) => {
     Wed: 3,
     Thu: 4,
     Fri: 5,
+    Sat: 6,
   };
   return conversionTable[weekDay];
 };
@@ -49,16 +50,13 @@ const timeToNumber = (time: string) => {
   return hour + minute / 60;
 };
 
-const range = (a: number, b: number) => (
-  Array.from({ length: (b - a + 1) }, (_, i) => i + a)
-);
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => i + a);
 
-const enumerateWeeks = (weeks: string): number[] => (
+const enumerateWeeks = (weeks: string): number[] =>
   weeks.split(',').flatMap((rangeString) => {
     const stops = rangeString.split('-').map((string) => Number(string));
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
-  })
-);
+  });
 
 /**
  * An adapter that formats a DBTimes object to a Period object
@@ -71,8 +69,7 @@ const enumerateWeeks = (weeks: string): number[] => (
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
   class: classData,
-  location: dbTimes.location,
-  locationShort: locationShorten(dbTimes.location),
+  locations: [locationShorten(dbTimes.location)],
   time: {
     day: weekdayToNumber(dbTimes.day),
     start: timeToNumber(dbTimes.time.start),
@@ -113,26 +110,15 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       capacity: dbClass.courseEnrolment.capacity,
     };
 
-    classData.periods = dbClass.times.map((dbTime) => (
-      dbTimesToPeriod(dbTime, classData)
-    ));
-
-    // temporary deduplication (TODO: remove when the equivalent backend feature has been merged)
-    classData.periods = classData.periods.filter((period) => (
-      period === classData.periods.find((x) => (
-        x.time.day === period.time.day
-        && x.time.start === period.time.start
-        && x.time.end === period.time.end
-      ))
-    ));
+    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
-        courseData.latestFinishTime = period.time.end;
+        courseData.latestFinishTime = Math.ceil(period.time.end);
       }
 
       if (period.time.start < courseData.earliestStartTime) {
-        courseData.earliestStartTime = period.time.start;
+        courseData.earliestStartTime = Math.floor(period.time.start);
       }
     });
 
@@ -141,6 +127,29 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     }
 
     courseData.activities[dbClass.activity].push(classData);
+  });
+
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
+  Object.keys(courseData.activities).forEach((activity) => {
+    let allPeriods: ClassPeriod[] = [];
+
+    courseData.activities[activity].forEach((classData) => {
+      allPeriods = [...allPeriods, ...classData.periods];
+    });
+
+    courseData.activities[activity].forEach((classData) => {
+      classData.periods = classData.periods.map((period) => {
+        allPeriods.forEach((other) => {
+          if (period !== other && isDuplicate(period, other)) {
+            period.locations = [...period.locations, ...other.locations];
+          }
+        });
+
+        return period;
+      });
+    });
   });
 
   Object.keys(courseData.activities).forEach((activity) => {
