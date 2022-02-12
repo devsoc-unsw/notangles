@@ -3,32 +3,32 @@ import { CourseData, ClassData, ClassPeriod } from './Course';
 // List of the interfaces and types that are used in the scraper
 
 export interface DbCourse {
-  courseCode: string
-  name: string
-  classes: DbClass[]
+  courseCode: string;
+  name: string;
+  classes: DbClass[];
 }
 
 export interface DbClass {
-  activity: string
-  times: DbTimes[]
-  courseEnrolment: DbCourseEnrolment
+  activity: string;
+  times: DbTimes[];
+  courseEnrolment: DbCourseEnrolment;
 }
 
 export interface DbCourseEnrolment {
-  enrolments: number
-  capacity: number
+  enrolments: number;
+  capacity: number;
 }
 
 export interface DbTimes {
-  time: DbTime
-  day: string
-  location: string
-  weeks: string
+  time: DbTime;
+  day: string;
+  location: string;
+  weeks: string;
 }
 
 export interface DbTime {
-  start: string
-  end: string
+  start: string;
+  end: string;
 }
 
 const locationShorten = (location: string): string => location.split(' (')[0];
@@ -50,16 +50,13 @@ const timeToNumber = (time: string) => {
   return hour + minute / 60;
 };
 
-const range = (a: number, b: number) => (
-  Array.from({ length: (b - a + 1) }, (_, i) => i + a)
-);
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => i + a);
 
-const enumerateWeeks = (weeks: string): number[] => (
+const enumerateWeeks = (weeks: string): number[] =>
   weeks.split(',').flatMap((rangeString) => {
     const stops = rangeString.split('-').map((string) => Number(string));
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
-  })
-);
+  });
 
 /**
  * An adapter that formats a DBTimes object to a Period object
@@ -113,9 +110,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       capacity: dbClass.courseEnrolment.capacity,
     };
 
-    classData.periods = dbClass.times.map((dbTime) => (
-      dbTimesToPeriod(dbTime, classData)
-    ));
+    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));
 
     classData.periods.forEach((period) => {
       if (period.time.end > courseData.latestFinishTime) {
@@ -134,11 +129,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     courseData.activities[dbClass.activity].push(classData);
   });
 
-  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => (
-    a.time.day === b.time.day
-    && a.time.start === b.time.start
-    && a.time.end === b.time.end
-  );
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
   Object.keys(courseData.activities).forEach((activity) => {
     let allPeriods: ClassPeriod[] = [];

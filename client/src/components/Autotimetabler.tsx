@@ -17,42 +17,36 @@ import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 
 const DropdownButton = styled(Button)`
-    width: 100%;
-    height: 55px;
-    text-align: left;
-    margin-top: 20px;
-    margin-right:10px;
-    text-transform: none;
+  width: 100%;
+  height: 55px;
+  text-align: left;
+  margin-top: 20px;
+  margin-right: 10px;
+  text-transform: none;
 `;
 
 const ExecuteButton = styled(Button)`
-    width: 100%;
-    border-radius: 0px 0px 5px 5px;
+  width: 100%;
+  border-radius: 0px 0px 5px 5px;
 `;
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
-    margin-top: 10px;
-    width:100%;
+  margin-top: 10px;
+  width: 100%;
 `;
 const StyledOptionButtonToggle = styled(ToggleButton)`
-    width: 100%;
-    height: 32px;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 32px;
+  margin-bottom: 10px;
 `;
 
 interface DropdownOptionProps {
-  optionName: string
-  optionState: string | null
-  setOptionState(value: string | null): void
-  optionChoices: string[]
-
+  optionName: string;
+  optionState: string | null;
+  setOptionState(value: string | null): void;
+  optionChoices: string[];
 }
-const DropdownOption: React.FC<DropdownOptionProps> = ({
-  optionName,
-  optionState,
-  setOptionState,
-  optionChoices,
-}) => {
+const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState, setOptionState, optionChoices }) => {
   const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
     if (newOption !== null) {
       setOptionState(newOption);
@@ -63,12 +57,9 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
     <ListItem key={optionName}>
       <Grid container spacing={0}>
         <Grid item xs={12}>
-          <ListItemText
-            primary={optionName}
-          />
+          <ListItemText primary={optionName} />
         </Grid>
         <Grid item xs={12}>
-
           <StyledOptionToggle
             size="small"
             exclusive
@@ -87,14 +78,12 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
           </StyledOptionToggle>
         </Grid>
       </Grid>
-
     </ListItem>
-
   );
 };
 
 interface AutotimetablerProps {
-  isDarkMode: boolean
+  isDarkMode: boolean;
 }
 const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
   const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
@@ -119,11 +108,18 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
     <div>
       <Tooltip title="Coming Soon" placement="bottom">
         <div>
-          <DropdownButton disabled disableElevation aria-describedby={popoverId} variant="contained" color={isDarkMode ? 'secondary' : 'default'} onClick={handleClick}>
-            <Box ml="10px" flexGrow={1}>Auto-timetable</Box>
-            {open ? (
-              <ArrowDropUpIcon />
-            ) : <ArrowDropDownIcon />}
+          <DropdownButton
+            disabled
+            disableElevation
+            aria-describedby={popoverId}
+            variant="contained"
+            color={isDarkMode ? 'secondary' : 'default'}
+            onClick={handleClick}
+          >
+            <Box ml="10px" flexGrow={1}>
+              Auto-timetable
+            </Box>
+            {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
           </DropdownButton>
         </div>
       </Tooltip>
@@ -143,7 +139,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
         }}
       >
         <List>
-
           <DropdownOption
             optionName="Number of days at uni"
             optionState={daysAtUni}
@@ -156,7 +151,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
             optionState={timesOfDay}
             setOptionState={setTimesOfDay}
             optionChoices={['earlier', 'later']}
-
           />
 
           <DropdownOption
@@ -164,7 +158,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
             optionState={walkingDistance}
             setOptionState={setWalkingDistance}
             optionChoices={['least']}
-
           />
           <DropdownOption
             optionName="Friends in classes"
@@ -178,7 +171,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
             setOptionState={setBreaksBetweenClasses}
             optionChoices={['least', 'most']}
           />
-
         </List>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={handleClose}>
           <FlashOnIcon />
