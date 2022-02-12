@@ -22,7 +22,6 @@ const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
 
-
 const ProfileSettings: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -44,9 +43,7 @@ const ProfileSettings: React.FC = () => {
         maxWidth="sm"
       >
         <StyledDialogTitle disableTypography>
-          <Typography variant="h5">
-            Profile Settings
-          </Typography>
+          <Typography variant="h5">Profile Settings</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
