@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
-
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -27,18 +26,13 @@ const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
 
-
 interface SettingsProps {
-  setIsSquareEdges(mode: boolean): void,
-  isSquareEdges: boolean,
+  setIsSquareEdges(mode: boolean): void;
+  isSquareEdges: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Settings: FunctionComponent<SettingsProps> = React.memo(({
-  isSquareEdges,
-  setIsSquareEdges,
-
-}) => {
+const Settings: React.FC<SettingsProps> = React.memo(({ isSquareEdges, setIsSquareEdges }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -61,9 +55,7 @@ const Settings: FunctionComponent<SettingsProps> = React.memo(({
         maxWidth="sm"
       >
         <StyledDialogTitle disableTypography>
-          <Typography variant="h5">
-            Settings
-          </Typography>
+          <Typography variant="h5">Settings</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
