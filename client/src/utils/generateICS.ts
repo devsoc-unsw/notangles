@@ -37,7 +37,8 @@ function generateDateArray(hour: number, day: number, week: number): DateArray {
  * @param classes the global class data
  * @returns all the extrapolated events that occur in that term
  */
-function getAllEvents(courses: CourseData[], classes: SelectedClasses): EventDetails[] {
+export function getAllEvents(courses: CourseData[], classes: SelectedClasses): EventDetails[] {
+    // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
     let allClasses = courses.flatMap((course) =>
         Object.keys(course.activities).filter((possibleActivity) => (
             classes[course.code] !== null && classes[course.code][possibleActivity] !== null
