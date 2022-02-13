@@ -1,8 +1,9 @@
-const ics = require('ics')
+const ics = require('ics');
 import { firstMomentOfTerm } from "../constants/timetable";
 import dayjs from 'dayjs';
 import { CourseData, SelectedClasses } from "../interfaces/Course";
 import { saveAs } from 'file-saver';
+import { DateArray } from "ics";
 
 export function downloadIcsFile (courses: CourseData[], classes: SelectedClasses) : void {
     if (classes === null) {
@@ -14,25 +15,27 @@ export function downloadIcsFile (courses: CourseData[], classes: SelectedClasses
         ))
         .map((activities) => classes[course.code][activities])
     );
-
-    let icsFile = allClasses.flatMap((classTime) => (
-        // this cant actually be null, i just filtered it, ts is dumb
-        classTime!.periods.flatMap((period) => (
-            period.time.weeks.map((week) => (
-                ics.createEvent({
-                    start: generateDateArray(week, period.time.start, period.time.day),
-                    end: generateDateArray(week, period.time.end, period.time.day),
-                    title: `${classTime!.course.code} ${classTime!.id}`,
-                    location: period.locations[0]
-                })
-            ))
-        ))
-    )).map((obj) => obj.value);
-    const blob = new Blob([icsFile.join("\n")])
-    saveAs(blob, "notangles.ics");
+    console.log(classes);
+    let icsFile = allClasses.flatMap(
+        (classTime) => (
+            // this cant actually be null, i just filtered it, ts is dumb
+            classTime!.periods.flatMap((period) => (
+                    period.time.weeks.map((week) => (
+                        ics.createEvent({
+                            start: generateDateArray(period.time.start, period.time.day, week),
+                            end: generateDateArray(period.time.start, period.time.day, week),
+                            title: `${classTime!.id.replace("-", " ")}`,
+                            location: period.locations[0]
+                        })
+                    ))
+                )
+            )
+        )
+    ).map((obj) => obj.value);
+    saveAs(new Blob([icsFile.join("\n")], {type: 'text/ics'}), "notangles.ics");
 }
 
-const generateDateArray = (week: number, time: number, day: number): [number, number, number, number, number] => {
-    let date = dayjs(firstMomentOfTerm).add(week, 'week').add(day, 'day').add(time, 'minute');
-    return [date.year(), date.month(), date.day(), date.hour(), date.minute()]
+function generateDateArray(hour: number, day: number, week: number): DateArray {
+    let currDate = dayjs(firstMomentOfTerm).add(week - 1, 'w').add(day - 1, 'd').add(hour, 'h');
+    return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 }

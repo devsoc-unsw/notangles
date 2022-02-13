@@ -365,7 +365,7 @@ const App: React.FC = () => {
                   <Autotimetabler isDarkMode={isDarkMode} />
                 </Grid>
               </Grid>
-              <Button onClick={ () => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
+              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
               <Timetable
                 selectedCourses={selectedCourses}
                 selectedClasses={selectedClasses}

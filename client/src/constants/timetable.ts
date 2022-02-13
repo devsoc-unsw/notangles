@@ -2,7 +2,7 @@ export const year = '2022';
 const termNumber = 1;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;
-export const firstMomentOfTerm = `${year}-01-14T9:00:00.000`
+export const firstMomentOfTerm = `2022-02-13T13:00:00.000Z` // must 12am of the first day, be correct in utc https://www.timestamp-converter.com/
 
 export const colors: string[] = [
   '#009689', // dark green
