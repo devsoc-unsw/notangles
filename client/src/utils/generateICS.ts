@@ -1,4 +1,4 @@
-const ics = require('ics');
+import { createEvent } from 'ics';
 import { firstMomentOfTerm } from "../constants/timetable";
 import dayjs from 'dayjs';
 import { CourseData, SelectedClasses, ClassPeriod } from "../interfaces/Course";
@@ -16,7 +16,7 @@ export function downloadIcsFile (courses: CourseData[], classes: SelectedClasses
         return;
     }
     const icsFile = getAllEvents(courses, classes).map(([period, week]) =>
-        ics.createEvent({
+        createEvent({
             start: generateDateArray(period.time.start, period.time.day, week),
             end: generateDateArray(period.time.end, period.time.day, week),
             title: `${period.class.course.code} ${period.class.activity}`,
