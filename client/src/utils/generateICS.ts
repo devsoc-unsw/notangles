@@ -1,7 +1,7 @@
 const ics = require('ics');
 import { firstMomentOfTerm } from "../constants/timetable";
 import dayjs from 'dayjs';
-import { CourseData, SelectedClasses, EventDetails } from "../interfaces/Course";
+import { CourseData, SelectedClasses, ClassPeriod } from "../interfaces/Course";
 import { saveAs } from 'file-saver';
 import { DateArray } from "ics";
 
@@ -15,12 +15,12 @@ export function downloadIcsFile (courses: CourseData[], classes: SelectedClasses
     if (classes === null) {
         return;
     }
-    const icsFile = getAllEvents(courses, classes).map((eventDetails) =>
+    const icsFile = getAllEvents(courses, classes).map(([period, week]) =>
         ics.createEvent({
-            start: generateDateArray(eventDetails.period.time.start, eventDetails.period.time.day, eventDetails.week),
-            end: generateDateArray(eventDetails.period.time.end, eventDetails.period.time.day, eventDetails.week),
-            title: `${eventDetails.period.class.course.code} ${eventDetails.period.class.activity}`,
-            location: eventDetails.period.locations[0]
+            start: generateDateArray(period.time.start, period.time.day, week),
+            end: generateDateArray(period.time.end, period.time.day, week),
+            title: `${period.class.course.code} ${period.class.activity}`,
+            location: period.locations[0]
         })
     ).map((obj) => obj.value);
     saveAs(new Blob([icsFile.join("\n")], {type: 'text/ics'}), "notangles.ics");
@@ -37,7 +37,7 @@ function generateDateArray(hour: number, day: number, week: number): DateArray {
  * @param classes the global class data
  * @returns all the extrapolated events that occur in that term
  */
-export function getAllEvents(courses: CourseData[], classes: SelectedClasses): EventDetails[] {
+export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
     // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
     let allClasses = courses.flatMap((course) =>
         Object.keys(course.activities).filter((possibleActivity) => (
@@ -50,10 +50,7 @@ export function getAllEvents(courses: CourseData[], classes: SelectedClasses): E
             // this cant actually be null, i just filtered it, ts is dumb
             classTime!.periods.flatMap((period) => (
                     period.time.weeks.map((week) => (
-                        {
-                            period: period,
-                            week: week
-                        })
+                        [period, week] as [ClassPeriod, number])
                     )
                 )
             )

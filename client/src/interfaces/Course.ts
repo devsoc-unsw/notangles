@@ -42,8 +42,3 @@ export interface ClassTime {
   weeks: number[];
   weeksString: string;
 }
-
-export interface EventDetails {
-  period: ClassPeriod;
-  week: number;
-}
