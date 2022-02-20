@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
+import { List, ListItem } from '@material-ui/core';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -27,17 +28,42 @@ const DialogContent = styled(MuiDialogContent)`
 `;
 
 interface SettingsProps {
+  setIsDarkMode(mode: boolean): void;
+  isDarkMode: boolean;
   setIsSquareEdges(mode: boolean): void;
   isSquareEdges: boolean;
+  setIs12HourMode(mode: boolean): void;
+  is12HourMode: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Settings: React.FC<SettingsProps> = React.memo(({ isSquareEdges, setIsSquareEdges }) => {
+const Settings: React.FC<SettingsProps> = React.memo(({ setIsDarkMode, isDarkMode, setIsSquareEdges, isSquareEdges, setIs12HourMode, is12HourMode }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
     setIsOpen(!isOpen);
   };
+
+  const settingsToggles: {state: boolean, setter: (mode: boolean) => void, desc: string}[] = [
+    {state: isDarkMode, setter: setIsDarkMode, desc: 'Dark Mode'},
+    {state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes'},
+    {state: is12HourMode, setter: setIs12HourMode, desc: 'Display Times in 12-hour format'},
+  ]
+
+  const settings = settingsToggles.map((e) => {
+    return (<div><Divider /> 
+      <DialogContent>
+        <Switch
+      value={e['state']}
+      checked={e['state']}
+      color="primary"
+      onChange={() => {
+        e['setter'](!e['state']);
+      }}
+      />
+          {e['desc']}
+      </DialogContent></div>)
+    })
 
   return (
     <div>
@@ -60,20 +86,7 @@ const Settings: React.FC<SettingsProps> = React.memo(({ isSquareEdges, setIsSqua
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-        <Divider />
-        <DialogContent>
-          <Typography variant="body1">
-            <Switch
-              value={isSquareEdges}
-              checked={isSquareEdges}
-              color="primary"
-              onChange={() => {
-                setIsSquareEdges(!isSquareEdges);
-              }}
-            />
-            Square corners on classes
-          </Typography>
-        </DialogContent>
+        <Typography variant="body1">{settings}</Typography>
       </Dialog>
     </div>
   );

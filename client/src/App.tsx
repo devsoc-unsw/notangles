@@ -340,6 +340,8 @@ const App: React.FC = () => {
             handleDrawerOpen={handleDrawerOpen}
             isSquareEdges={isSquareEdges}
             setIsSquareEdges={setIsSquareEdges}
+            is12HourMode={is12HourMode}
+            setIs12HourMode={setIs12HourMode}
           />
           {isPreview && (
             <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />

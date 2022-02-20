@@ -75,10 +75,12 @@ interface NavBarProps {
   handleDrawerOpen(): void;
   setIsSquareEdges(mode: boolean): void;
   isSquareEdges: boolean;
+  setIs12HourMode(mode: boolean): void;
+  is12HourMode: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges }) => {
+const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges, setIs12HourMode, is12HourMode }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -113,7 +115,14 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawer
               </DarkModeButton>
             </Tooltip>
             <About />
-            <Settings isSquareEdges={isSquareEdges} setIsSquareEdges={setIsSquareEdges} />
+            <Settings
+              isSquareEdges={isSquareEdges}
+              setIsSquareEdges={setIsSquareEdges}
+              isDarkMode={isDarkMode}
+              setIsDarkMode={setIsDarkMode}
+              is12HourMode={is12HourMode}
+              setIs12HourMode={setIs12HourMode}
+            />
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
