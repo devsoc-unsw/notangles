@@ -7,9 +7,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Privacy: React.FC = () => (
   <div style={{padding: "50px"}}>
-    <h1>Application privacy statement</h1>
+    <h1 style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>Application privacy statement</h1>
 
-    <p>
+    <p style={{width: "75%", maxWidth: "1050px", margin: "auto", padding: "20px"}}>
       This privacy statement (“Privacy Statement”) applies to the treatment of personally identifiable information submitted by,
       or otherwise obtained from, you in connection with the associated application (“Application”). The Application is provided
       by Notangles (and may be provided by Notangles on behalf of a Notangles licensor or partner (“Application Partner”). By
@@ -17,7 +17,7 @@ const Privacy: React.FC = () => (
       Privacy Statement.
     </p>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel1a-content"
@@ -41,7 +41,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel2a-content"
@@ -62,7 +62,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel3a-content"
@@ -92,7 +92,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel4a-content"
@@ -113,7 +113,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel5a-content"
@@ -136,7 +136,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel6a-content"
@@ -163,7 +163,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel7a-content"
@@ -185,7 +185,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <Accordion>
+    <Accordion style={{width: "75%", maxWidth: "1050px", margin: "auto"}}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon/>}
         aria-controls="panel7a-content"
@@ -205,7 +205,7 @@ const Privacy: React.FC = () => (
       </AccordionDetails>
     </Accordion>
 
-    <p style={{textAlign: "right"}}>
+    <p style={{textAlign: "right", width: "75%", maxWidth: "1050px", margin: "auto", padding: "20px"}}>
       Effective Date: 11
       <sup>th</sup> October, 2020
     </p>
