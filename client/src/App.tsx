@@ -390,6 +390,10 @@ const App: React.FC = () => {
                 <Link target="_blank" href="https://github.com/csesoc/notangles">
                   Source
                 </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="/privacy">
+                  Privacy
+                </Link>
                 {lastUpdated !== 0 && (
                   <>
                     <br />
