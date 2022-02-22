@@ -23,6 +23,7 @@ import {
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
+import { orange, red } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -305,14 +306,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
           </p>
           <p style={pStyleSmall}>
             {isPeriod(cardData) ? (
-              <>
-                <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
-                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
-                )
-                <br />
-                <LocationOnIcon fontSize="inherit" style={iconStyle} />
-                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-              </>
+              <PeriodMetadata period={cardData} />
             ) : (
               <>
                 {activityMaxPeriods} class
@@ -326,6 +320,45 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
     );
   }
 );
+
+interface PeriodMetadataProps {
+  period: ClassPeriod;
+}
+
+const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
+  const percentEnrolled = period.class.enrolments / period.class.capacity;
+
+  const enrolledColor = percentEnrolled == 1 ? red[600] : undefined;
+
+  return (
+    <div>
+      <span
+        style={{
+          color: enrolledColor,
+          fontWeight: 'bolder',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <PeopleAltIcon fontSize="inherit" style={iconStyle} />
+        <p>
+          {period.class.enrolments}/{period.class.capacity}
+        </p>
+      </span>
+      <br />
+      <span>
+        ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
+      </span>
+      <br />
+      <span>
+        <LocationOnIcon fontSize="inherit" style={iconStyle} />
+        {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+      </span>
+    </div>
+  );
+};
 
 const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) =>
   courses.find((course) => course.code === courseCode)?.inventoryData[activity];
