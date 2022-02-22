@@ -7,6 +7,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.4",
+    "@mui/icons-material": "^5.4.2",
+    "@mui/material": "^5.4.3",
     "@notangles/common": "^1.0.12",
     "fuse.js": "^6.5.3",
     "react": "^17.0.2",
