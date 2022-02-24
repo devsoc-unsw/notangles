@@ -77,10 +77,26 @@ interface NavBarProps {
   isSquareEdges: boolean;
   setIs12HourMode(mode: boolean): void;
   is12HourMode: boolean;
+  setIsHideFullClasses(mode: boolean): void;
+  isHideFullClasses: boolean,
+  setIsDefaultUnscheduled(mode: boolean): void;
+  isDefaultUnscheduled: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges, setIs12HourMode, is12HourMode }) => {
+const Navbar: React.FC<NavBarProps> = ({
+  setIsDarkMode,
+  isDarkMode,
+  handleDrawerOpen,
+  setIsSquareEdges,
+  isSquareEdges,
+  setIs12HourMode,
+  is12HourMode,
+  setIsHideFullClasses,
+  isHideFullClasses,
+  setIsDefaultUnscheduled,
+  isDefaultUnscheduled,
+}) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -122,6 +138,10 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawer
               setIsDarkMode={setIsDarkMode}
               is12HourMode={is12HourMode}
               setIs12HourMode={setIs12HourMode}
+              isHideFullClasses={isHideFullClasses}
+              setIsHideFullClasses={setIsHideFullClasses}
+              isDefaultUnscheduled={isDefaultUnscheduled}
+              setIsDefaultUnscheduled={setIsDefaultUnscheduled}
             />
           </Toolbar>
         </StyledNavBar>

@@ -126,6 +126,8 @@ const App: React.FC = () => {
   const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
+  const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
+  const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [lastUpdated, setLastUpdated] = useState(0);
 
   if (infoVisibility) {
@@ -160,21 +162,21 @@ const App: React.FC = () => {
 
   useDrag(handleSelectClass, handleRemoveClass);
 
-  const initCourse = (course: CourseData) => {
-    setSelectedClasses((prevRef) => {
-      const prev = { ...prevRef };
+  const initCourse = (course: CourseData, isDefaultUnscheduled?: boolean) => {
+      setSelectedClasses((prevRef) => {
+        const prev = { ...prevRef };
 
-      prev[course.code] = {};
+        prev[course.code] = {};
 
-      Object.keys(course.activities).forEach((activity) => {
-        // temp until auto timetabling works
-        [prev[course.code][activity]] = course.activities[activity];
+        Object.keys(course.activities).forEach((activity) => {
+          // temp until auto timetabling works
+          [prev[course.code][activity]] = isDefaultUnscheduled ? [null] : course.activities[activity]; // null for unscheduled
+        });
+
+        return prev;
       });
-
-      return prev;
-    });
   };
-
+  
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
     period1.day === period2.day &&
     ((period1.end > period2.start && period1.start < period2.end) ||
@@ -206,7 +208,8 @@ const App: React.FC = () => {
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
-    callback?: (_selectedCourses: CourseData[]) => void
+    callback?: (_selectedCourses: CourseData[]) => void,
+    isDefaultUnscheduled?: boolean,
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
@@ -216,7 +219,7 @@ const App: React.FC = () => {
 
         setSelectedCourses(newSelectedCourses);
 
-        if (!noInit) addedCourses.forEach((course) => initCourse(course));
+        if (!noInit) addedCourses.forEach((course) => initCourse(course, isDefaultUnscheduled));
         if (callback) callback(newSelectedCourses);
       })
       .catch((e) => {
@@ -265,6 +268,14 @@ const App: React.FC = () => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
 
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled])
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -293,7 +304,7 @@ const App: React.FC = () => {
       });
 
       setSelectedClasses(newSelectedClasses);
-    });
+    }, undefined);
   }, []);
 
   useUpdateEffect(() => {
@@ -342,6 +353,10 @@ const App: React.FC = () => {
             setIsSquareEdges={setIsSquareEdges}
             is12HourMode={is12HourMode}
             setIs12HourMode={setIs12HourMode}
+            isHideFullClasses={isHideFullClasses}
+            setIsHideFullClasses={setIsHideFullClasses}
+            isDefaultUnscheduled={isDefaultUnscheduled}
+            setIsDefaultUnscheduled={setIsDefaultUnscheduled}
           />
           {isPreview && (
             <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
@@ -359,6 +374,7 @@ const App: React.FC = () => {
                       setErrorMsg={setErrorMsg}
                       setErrorVisibility={setErrorVisibility}
                       setLastUpdated={handleLastUpdated}
+                      isDefaultUnscheduled={isDefaultUnscheduled}
                     />
                   </SelectWrapper>
                 </Grid>
@@ -375,6 +391,7 @@ const App: React.FC = () => {
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
                 setInfoVisibility={setInfoVisibility}
+                isHideFullClasses={isHideFullClasses}
               />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
