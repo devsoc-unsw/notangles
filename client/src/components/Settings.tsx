@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -23,8 +22,9 @@ const CloseButton = styled(IconButton)`
   right: 10px;
   top: 10px;
 `;
-const DialogContent = styled(MuiDialogContent)`
-  padding: 20px;
+
+const SettingsList = styled(List)`
+  padding: 0;
 `;
 
 interface SettingsProps {
@@ -72,17 +72,17 @@ const Settings: React.FC<SettingsProps> = React.memo(
       return (
         <>
           <Divider />
-          <DialogContent>
-            <Switch
-              value={e['state']}
-              checked={e['state']}
-              color="primary"
-              onChange={() => {
-                e['setter'](!e['state']);
-              }}
-            />
-            {e['desc']}
-          </DialogContent>
+            <ListItem>
+              <Switch
+                value={e['state']}
+                checked={e['state']}
+                color="primary"
+                onChange={() => {
+                  e['setter'](!e['state']);
+                }}
+              />
+              {e['desc']}
+            </ListItem>
         </>
       );
     });
@@ -108,7 +108,9 @@ const Settings: React.FC<SettingsProps> = React.memo(
               <CloseIcon />
             </CloseButton>
           </StyledDialogTitle>
-          <Typography variant="body1">{settings}</Typography>
+          <Typography variant="body1">
+            <SettingsList>{settings}</SettingsList>
+          </Typography>
         </Dialog>
       </div>
     );
