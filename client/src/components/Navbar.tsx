@@ -93,7 +93,7 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawer
                 <MenuIcon />
               </IconButton>
             )}
-            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(curr => curr === CSESocLogo ? CSESocLogoTwo : CSESocLogo)}/>
+            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)}/>
             <NavbarTitle variant="h6">
               Notangles
               <Weak>
