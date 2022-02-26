@@ -114,6 +114,27 @@ const About: React.FC = React.memo(() => {
             <li> Sync your timetable with friends</li>
             <li> A mobile app</li>
           </FeatList>
+          <Typography variant="h6">About the team</Typography>
+          <Typography gutterBottom variant="body2">
+            The current 2022 development team consists of two leads and nine members.
+          </Typography>
+          <Typography gutterBottom variant="body2"><strong>Team Leads:</strong></Typography>
+          <FeatList>
+            <li>Mun Joon Teo</li>
+            <li>Oliver Xu</li>
+          </FeatList>
+          <Typography gutterBottom variant="body2"><strong>Members:</strong></Typography>
+          <FeatList>
+            <li>Angella (Mai) Pham</li>
+            <li>Emily Tang</li>
+            <li>Grace Kan</li>
+            <li>Manhua Lu</li>
+            <li>Martin Knezevic</li>
+            <li>Maxwell Philips</li>
+            <li>Omar Khursheed</li>              
+            <li>Raiyan Ahmed</li>
+            <li>Sijin Soon</li>
+          </FeatList>
           <Typography variant="h6">Disclaimer</Typography>
           <Typography gutterBottom variant="body2">
             While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
