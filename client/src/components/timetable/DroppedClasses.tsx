@@ -183,11 +183,12 @@ interface DroppedClassProps {
   hasClash: boolean;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility }) => {
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo }) => { 
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -279,7 +280,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
         ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
       );
     }
-
+    
     return (
       <StyledCourseClass
         ref={element}
@@ -305,20 +306,24 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
           </p>
           <p style={pStyleSmall}>
             {isPeriod(cardData) ? (
-              <>
-                <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
-                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
-                )
-                <br />
-                <LocationOnIcon fontSize="inherit" style={iconStyle} />
-                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-              </>
-            ) : (
+              isHideClassInfo ? (
+                <></>
+              ) : ( 
+                <>
+                  <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
+                  {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
+                  )
+                  <br />
+                  <LocationOnIcon fontSize="inherit" style={iconStyle} />
+                  {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+                </>
+              )
+            ) : ( 
               <>
                 {activityMaxPeriods} class
                 {activityMaxPeriods !== 1 && 'es'}
               </>
-            )}
+            )} 
           </p>
           <TouchRipple ref={rippleRef} />
         </Card>
@@ -338,6 +343,7 @@ interface DroppedClassesProps {
   clashes: Array<ClassPeriod>;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({
@@ -348,6 +354,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   clashes,
   isSquareEdges,
   setInfoVisibility,
+  isHideClassInfo,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -411,6 +418,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
         setInfoVisibility={setInfoVisibility}
+        isHideClassInfo={isHideClassInfo}
       />
     );
 

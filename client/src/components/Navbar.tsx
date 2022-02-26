@@ -66,6 +66,8 @@ interface NavBarProps {
   isHideFullClasses: boolean,
   setIsDefaultUnscheduled(mode: boolean): void;
   isDefaultUnscheduled: boolean;
+  setIsHideClassInfo(mode: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -81,6 +83,8 @@ const Navbar: React.FC<NavBarProps> = ({
   isHideFullClasses,
   setIsDefaultUnscheduled,
   isDefaultUnscheduled,
+  setIsHideClassInfo,
+  isHideClassInfo,
 }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -116,6 +120,8 @@ const Navbar: React.FC<NavBarProps> = ({
               setIsHideFullClasses={setIsHideFullClasses}
               isDefaultUnscheduled={isDefaultUnscheduled}
               setIsDefaultUnscheduled={setIsDefaultUnscheduled}
+              isHideClassInfo={isHideClassInfo}
+              setIsHideClassInfo={setIsHideClassInfo}
             />
           </Toolbar>
         </StyledNavBar>

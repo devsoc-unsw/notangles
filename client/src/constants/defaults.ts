@@ -4,6 +4,7 @@ const defaults: Record<string, any> = {
   isSquareEdges: false,
   isHideFullClasses: false,
   isDefaultUnscheduled: false,
+  isHideClassInfo: false,
   userID: '',
   accessToken: '',
   userPicture: '',

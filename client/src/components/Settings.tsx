@@ -38,6 +38,8 @@ interface SettingsProps {
   isHideFullClasses: boolean,
   setIsDefaultUnscheduled(mode: boolean): void;
   isDefaultUnscheduled: boolean;
+  setIsHideClassInfo(mode: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -53,6 +55,8 @@ const Settings: React.FC<SettingsProps> = React.memo(
     isHideFullClasses,
     setIsDefaultUnscheduled,
     isDefaultUnscheduled,
+    setIsHideClassInfo,
+    isHideClassInfo,
   }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -65,24 +69,25 @@ const Settings: React.FC<SettingsProps> = React.memo(
       { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
       { state: is12HourMode, setter: setIs12HourMode, desc: 'Display Times in 12-hour format' },
       { state: isHideFullClasses, setter: setIsHideFullClasses, desc: 'Hide classes that are at full capacity' },
-      { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Send newly added classes to Unscheduled by default' }
+      { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Send newly added classes to Unscheduled by default' },
+      { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class information' },
     ];
 
     const settings = settingsToggles.map((e) => {
       return (
         <>
           <Divider />
-            <ListItem>
-              <Switch
-                value={e['state']}
-                checked={e['state']}
-                color="primary"
-                onChange={() => {
-                  e['setter'](!e['state']);
-                }}
-              />
-              {e['desc']}
-            </ListItem>
+          <ListItem>
+            <Switch
+              value={e['state']}
+              checked={e['state']}
+              color="primary"
+              onChange={() => {
+                e['setter'](!e['state']);
+              }}
+            />
+            {e['desc']}
+          </ListItem>
         </>
       );
     });

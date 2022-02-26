@@ -128,6 +128,7 @@ const App: React.FC = () => {
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
   const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
+  const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [lastUpdated, setLastUpdated] = useState(0);
 
   if (infoVisibility) {
@@ -276,6 +277,10 @@ const App: React.FC = () => {
     storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
   }, [isDefaultUnscheduled])
 
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo])
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -357,6 +362,8 @@ const App: React.FC = () => {
             setIsHideFullClasses={setIsHideFullClasses}
             isDefaultUnscheduled={isDefaultUnscheduled}
             setIsDefaultUnscheduled={setIsDefaultUnscheduled}
+            isHideClassInfo={isHideClassInfo}
+            setIsHideClassInfo={setIsHideClassInfo}
           />
           {isPreview && (
             <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
@@ -392,6 +399,7 @@ const App: React.FC = () => {
                 clashes={checkClashes()}
                 setInfoVisibility={setInfoVisibility}
                 isHideFullClasses={isHideFullClasses}
+                isHideClassInfo={isHideClassInfo}
               />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.

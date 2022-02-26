@@ -42,6 +42,7 @@ interface TimetableProps {
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
   isHideFullClasses: boolean;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -56,6 +57,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
     clashes,
     setInfoVisibility,
     isHideFullClasses,
+    isHideClassInfo,
   }) => (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable
@@ -84,6 +86,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           clashes={clashes}
           isSquareEdges={isSquareEdges}
           setInfoVisibility={setInfoVisibility}
+          isHideClassInfo={isHideClassInfo}
         />
       </StyledTimetable>
     </StyledTimetableScroll>
@@ -96,7 +99,8 @@ const Timetable: React.FC<TimetableProps> = React.memo(
       prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
       JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
       prev.isSquareEdges !== next.isSquareEdges ||
-      prev.isHideFullClasses !== next.isHideFullClasses
+      prev.isHideFullClasses !== next.isHideFullClasses ||
+      prev.isHideClassInfo !== next.isHideClassInfo
     )
 );
 
