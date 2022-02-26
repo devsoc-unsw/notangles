@@ -21,13 +21,15 @@ import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
 import { year, termName, isPreview, term } from '../constants/timetable';
 
 const LogoImg = styled.img`
-  height: 40px;
-  margin-right: 20px;
-  margin-left: ${isPreview ? 20 : 0}px;
+  height: 46px;
+  margin-right: 12.5px;
+  margin-top: -2px;
+  margin-left: ${isPreview ? 9.5 : -11.5}px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
   position: fixed;
+  margin-left: 0px;
   z-index: 1201; /* overriding https://material-ui.com/customization/z-index/ */
 `;
 const StyledNavBar = styled(AppBar)`
