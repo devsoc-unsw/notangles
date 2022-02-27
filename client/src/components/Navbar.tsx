@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styled from 'styled-components';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
@@ -17,16 +17,19 @@ import { ThemeType } from '../constants/theme';
 import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
+import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
 import { year, termName, isPreview, term } from '../constants/timetable';
 
 const LogoImg = styled.img`
-  height: 40px;
-  margin-right: 20px;
-  margin-left: ${isPreview ? 20 : 0}px;
+  height: 46px;
+  margin-right: 12.5px;
+  margin-top: -2px;
+  margin-left: ${isPreview ? 9.5 : -11.5}px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
   position: fixed;
+  margin-left: 0px;
   z-index: 1201; /* overriding https://material-ui.com/customization/z-index/ */
 `;
 const StyledNavBar = styled(AppBar)`
@@ -81,7 +84,7 @@ interface NavBarProps {
 const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const [currLogo, setCurrLogo] = useState(CSESocLogo)
   return (
     <StylesProvider injectFirst>
       <NavbarBox>
@@ -92,7 +95,7 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawer
                 <MenuIcon />
               </IconButton>
             )}
-            <LogoImg src={CSESocLogo} />
+            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)}/>
             <NavbarTitle variant="h6">
               Notangles
               <Weak>
