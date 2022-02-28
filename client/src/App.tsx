@@ -171,7 +171,9 @@ const App: React.FC = () => {
 
         Object.keys(course.activities).forEach((activity) => {
           // temp until auto timetabling works
-          [prev[course.code][activity]] = isDefaultUnscheduled ? [null] : course.activities[activity]; // null for unscheduled
+          prev[course.code][activity] = isDefaultUnscheduled
+            ? null
+            : (course.activities[activity].find((x) => x.enrolments != x.capacity) ?? null); // null for unscheduled
         });
 
         return prev;
