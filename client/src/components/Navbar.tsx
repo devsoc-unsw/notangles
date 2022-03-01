@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import styled from 'styled-components';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
@@ -18,6 +18,7 @@ import About from './About';
 import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import { year, termName, isPreview, term } from '../constants/timetable';
+import { AppContext } from '../AppContext';
 
 const LogoImg = styled.img`
   height: 40px;
@@ -70,17 +71,15 @@ const Beta = styled.span`
 `;
 
 interface NavBarProps {
-  setIsDarkMode(mode: boolean): void;
-  isDarkMode: boolean;
   handleDrawerOpen(): void;
-  setIsSquareEdges(mode: boolean): void;
-  isSquareEdges: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges }) => {
+const Navbar: React.FC<NavBarProps> = ({ handleDrawerOpen }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const { isDarkMode, setIsDarkMode, isSquareEdges, setIsSquareEdges } = useContext(AppContext)
 
   return (
     <StylesProvider injectFirst>
@@ -107,6 +106,7 @@ const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawer
                 selected={isDarkMode}
                 onChange={() => {
                   setIsDarkMode(!isDarkMode);
+                  console.log(isDarkMode)
                 }}
               >
                 <DarkModeIcon fontSize="small" />

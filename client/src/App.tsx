@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
@@ -27,7 +27,7 @@ import storage from './utils/storage';
 import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
 import { year, term, isPreview } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
-import AppContextProvider from './AppContext';
+import AppContextProvider, { AppContext } from './AppContext';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -119,7 +119,6 @@ const App: React.FC = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [infoMsg] = useState<String>('Press and hold to drag a class');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
@@ -128,6 +127,8 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
   const [lastUpdated, setLastUpdated] = useState(0);
+
+  const { isDarkMode } = useContext(AppContext)
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -337,11 +338,7 @@ const App: React.FC = () => {
           <GlobalStyle />
           <StyledApp>
             <Navbar
-              setIsDarkMode={setIsDarkMode}
-              isDarkMode={isDarkMode}
               handleDrawerOpen={handleDrawerOpen}
-              isSquareEdges={isSquareEdges}
-              setIsSquareEdges={setIsSquareEdges}
             />
             {isPreview && (
               <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
