@@ -6,6 +6,8 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft'
 import {
   CardData,
   isPeriod,
@@ -23,6 +25,8 @@ import {
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid'
 
 export const inventoryMargin = 10;
 
@@ -71,6 +75,12 @@ export const classTransformStyle = (cardData: CardData, earliestStartTime: numbe
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
+
+const StyledSideArrow = styled(Grid)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 
 const StyledCourseClass = styled.div<{
   cardData: CardData;
@@ -297,7 +307,9 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
             hasClash,
             isSquareEdges,
           })}
-        >
+        > <Grid container>
+          <StyledSideArrow item xs={1}><IconButton size="small"><ArrowLeftIcon/></IconButton></StyledSideArrow>
+          <Grid item xs={10}>
           <p style={pStyle}>
             <b>
               {cardData.class.course.code} {cardData.class.activity}
@@ -321,6 +333,9 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
             )}
           </p>
           <TouchRipple ref={rippleRef} />
+          </Grid>
+          <StyledSideArrow item xs={1}><IconButton size="small"><ArrowRightIcon/></IconButton></StyledSideArrow>
+          </Grid>
         </Card>
       </StyledCourseClass>
     );
