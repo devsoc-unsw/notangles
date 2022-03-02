@@ -23,7 +23,7 @@ import {
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
-import { orange, red } from '@material-ui/core/colors';
+import { red } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -330,23 +330,23 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
 
   const enrolledColor = percentEnrolled == 1 ? red[600] : undefined;
 
+  const EnrolledIndicator = styled.span`
+    color: enrolledColor;
+    font-weight: bolder;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  `;
+
   return (
     <div>
-      <span
-        style={{
-          color: enrolledColor,
-          fontWeight: 'bolder',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
+      <EnrolledIndicator>
         <PeopleAltIcon fontSize="inherit" style={iconStyle} />
         <p>
           {period.class.enrolments}/{period.class.capacity}
         </p>
-      </span>
+      </EnrolledIndicator>
       <br />
       <span>
         ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
