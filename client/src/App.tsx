@@ -373,6 +373,7 @@ const App: React.FC = () => {
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
                 setInfoVisibility={setInfoVisibility}
+                handleSelectClass={handleSelectClass}
               />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.

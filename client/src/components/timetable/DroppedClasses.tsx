@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
+import { CourseData, ClassData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft'
 import {
@@ -27,6 +27,7 @@ import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid'
+import { InventoryPeriod } from '@notangles/common';
 
 export const inventoryMargin = 10;
 
@@ -193,11 +194,12 @@ interface DroppedClassProps {
   hasClash: boolean;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  shiftClasses(dir: number, cardData: CardData): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility }) => {
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, shiftClasses }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -211,25 +213,25 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
       if (!('type' in oldEvent)) return;
       if (oldEvent.type.includes('mouse') && ignoreMouse) return;
       if (oldEvent.type.includes('touch')) ignoreMouse = true;
-
+      
       const event = { ...oldEvent };
 
       if ('start' in rippleRef.current) {
         rippleStopped = false;
         rippleRef.current.start(event);
       }
-
-      const startDrag = () => {
-        timer = null;
-        setDragTarget(cardData, event);
-        setInfoVisibility(false);
-      };
-
-      if (oldEvent.type.includes('touch')) {
-        timer = window.setTimeout(startDrag, 500);
-      } else {
-        startDrag();
-      }
+      
+        const startDrag = () => {
+          timer = null;
+          setDragTarget(cardData, event);
+          setInfoVisibility(false);
+        };
+  
+        if (oldEvent.type.includes('touch')) {
+          timer = window.setTimeout(startDrag, 500);
+        } else {
+          startDrag();
+        }
 
       const onUp = (eventUp: any) => {
         if (eventUp.type.includes('mouse') && ignoreMouse) return;
@@ -308,7 +310,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
             isSquareEdges,
           })}
         > <Grid container>
-          <StyledSideArrow item xs={1}><IconButton size="small"><ArrowLeftIcon/></IconButton></StyledSideArrow>
+          <StyledSideArrow item xs={1}><IconButton size="small" onClick={() => shiftClasses(-1, cardData)}><ArrowLeftIcon/></IconButton></StyledSideArrow>
           <Grid item xs={10}>
           <p style={pStyle}>
             <b>
@@ -334,7 +336,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
           </p>
           <TouchRipple ref={rippleRef} />
           </Grid>
-          <StyledSideArrow item xs={1}><IconButton size="small"><ArrowRightIcon/></IconButton></StyledSideArrow>
+          <StyledSideArrow item xs={1}><IconButton size="small" onClick={() => shiftClasses(1, cardData)}><ArrowRightIcon/></IconButton></StyledSideArrow>
           </Grid>
         </Card>
       </StyledCourseClass>
@@ -348,6 +350,7 @@ const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity:
 interface DroppedClassesProps {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
+  handleSelectClass(classData: ClassData): void;
   assignedColors: Record<string, string>;
   days: string[];
   clashes: Array<ClassPeriod>;
@@ -363,6 +366,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   clashes,
   isSquareEdges,
   setInfoVisibility,
+  handleSelectClass,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -411,6 +415,15 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
     }
   });
 
+  const shiftClasses = (dir: number, c: CardData) => {
+    if ("time" in c) { // ts goes mental without this if
+      const newclasses = c.class.course.activities[c.class.activity].filter((value) => (
+        value.periods.some((v) => v.time.day == c.time.day && v.time.start == c.time.start && v.time.end == c.time.end)
+      ));
+      handleSelectClass(newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]);
+    }
+  }
+
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
@@ -419,6 +432,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
       <DroppedClass
         key={`${key}`}
         cardData={cardData}
+        shiftClasses={shiftClasses}
         color={assignedColors[cardData.class.course.code]}
         days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
