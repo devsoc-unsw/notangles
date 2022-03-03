@@ -16,15 +16,19 @@ import useGif from '../assets/how_to_use.gif';
 
 const HowToUseImg = styled.img`
   display: block;
-  margin: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px auto 10px;
   width: 100%;
+  border-radius: 2%;
 `;
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
+`;
+
+const StyledTypography = styled(Typography)`
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
 const CloseButton = styled(IconButton)`
@@ -72,7 +76,7 @@ const About: React.FC = React.memo(() => {
         maxWidth="sm"
       >
         <StyledDialogTitle disableTypography>
-          <Typography variant="h5">Notangles: no more timetable tangles</Typography>
+          <StyledTypography variant="h5">Notangles: no more timetable tangles</StyledTypography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
@@ -99,7 +103,7 @@ const About: React.FC = React.memo(() => {
             &nbsp;– a place for student-led projects where you can learn something new, and make some friends along the way.
             Notangles is free and <Link href="https://github.com/csesoc/notangles">open-source</Link>.
           </Typography>
-          <Typography variant="h6">How it works</Typography>
+          <StyledTypography variant="h6">How it works</StyledTypography>
           <Typography gutterBottom variant="body2">
             Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures which
             you aren’t going to watch live) to the unscheduled column.
@@ -119,13 +123,13 @@ const About: React.FC = React.memo(() => {
             <li> Dark mode &#x1F60E; </li>
             <li> Select 12 or 24 hour time </li>
           </FeatList> */}
-          <Typography variant="h6">Future developments</Typography>
+          <StyledTypography variant="h6">Future developments</StyledTypography>
           <FeatList>
             <li> Auto-timetabling</li>
             <li> Sync your timetable with friends</li>
             <li> A mobile app</li>
           </FeatList>
-          <Typography variant="h6">About the team</Typography>
+          <StyledTypography variant="h6">About the team</StyledTypography>
           <Typography gutterBottom variant="body2">
             The current 2022 development team consists of two leads and nine members.
           </Typography>
@@ -146,7 +150,7 @@ const About: React.FC = React.memo(() => {
             <li>Raiyan Ahmed</li>
             <li>Sijin Soon</li>
           </FeatList>
-          <Typography variant="h6">Disclaimer</Typography>
+          <StyledTypography variant="h6">Disclaimer</StyledTypography>
           <Typography gutterBottom variant="body2">
             While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
           </Typography>
