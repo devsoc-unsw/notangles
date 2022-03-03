@@ -12,6 +12,16 @@ import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 
+import useGif from '../assets/how_to_use.gif';
+
+const HowToUseImg = styled.img`
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+`;
+
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
@@ -94,6 +104,7 @@ const About: React.FC = React.memo(() => {
             Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures which
             you aren’t going to watch live) to the unscheduled column.
           </Typography>
+          <HowToUseImg src={useGif} alt='how to use gif'/>
           <Typography gutterBottom variant="body2">
             Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need to
             officially enroll at&nbsp;
