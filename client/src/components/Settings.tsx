@@ -65,28 +65,28 @@ const Settings: React.FC<SettingsProps> = React.memo(
     };
 
     const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
-      { state: isDarkMode, setter: setIsDarkMode, desc: 'Dark Mode' },
+      { state: isDarkMode, setter: setIsDarkMode, desc: 'Dark mode' },
       { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
-      { state: is12HourMode, setter: setIs12HourMode, desc: 'Display Times in 12-hour format' },
+      { state: is12HourMode, setter: setIs12HourMode, desc: 'Display times in 12-hour format' },
       { state: isHideFullClasses, setter: setIsHideFullClasses, desc: 'Hide classes that are at full capacity' },
       { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Send newly added classes to Unscheduled by default' },
-      { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class information' },
+      { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide detailed class information' },
     ];
 
-    const settings = settingsToggles.map((e) => {
+    const settings = settingsToggles.map((setting) => {
       return (
         <>
           <Divider />
           <ListItem>
             <Switch
-              value={e['state']}
-              checked={e['state']}
+              value={setting['state']}
+              checked={setting['state']}
               color="primary"
               onChange={() => {
-                e['setter'](!e['state']);
+                setting['setter'](!setting['state']);
               }}
             />
-            {e['desc']}
+            {setting['desc']}
           </ListItem>
         </>
       );
