@@ -140,7 +140,7 @@ const About: React.FC = React.memo(() => {
           </FeatList>
           <Typography gutterBottom variant="body2"><strong>Members:</strong></Typography>
           <FeatList>
-            <li>Angella (Mai) Pham</li>
+            <li>Angella Pham</li>
             <li>Emily Tang</li>
             <li>Grace Kan</li>
             <li>Manhua Lu</li>
