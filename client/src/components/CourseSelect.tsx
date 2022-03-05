@@ -114,16 +114,17 @@ const StyledUl = styled.ul`
 interface CourseSelectProps {
   selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
-  handleSelect(data: string | string[]): void;
+  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void, isDefaultUnscheduled?: boolean): void;
   handleRemove(courseCode: string): void;
   setErrorMsg(errorMsg: string): void;
   setErrorVisibility(visibility: boolean): void;
   setLastUpdated(date: number): void;
+  isDefaultUnscheduled: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = React.memo(
-  ({ selectedCourses, assignedColors, handleSelect, handleRemove, setErrorMsg, setErrorVisibility, setLastUpdated }) => {
+  ({ selectedCourses, assignedColors, handleSelect, handleRemove, setErrorMsg, setErrorVisibility, setLastUpdated, isDefaultUnscheduled }) => {
     const [coursesList, setCoursesList] = useState<CoursesList>([]);
     const [options, setOptionsState] = useState<CoursesList>([]);
     const [inputValue, setInputValue] = useState<string>('');
@@ -212,7 +213,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
           return;
         }
       } else {
-        handleSelect(added.map((course) => course.code));
+        handleSelect(added.map((course) => course.code), undefined, undefined, isDefaultUnscheduled);
         setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
       }
 
@@ -385,7 +386,8 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
     !(
       prev.selectedCourses.length !== next.selectedCourses.length ||
       prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
+      prev.isDefaultUnscheduled !== next.isDefaultUnscheduled
     )
 );
 

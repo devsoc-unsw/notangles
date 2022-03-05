@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { Box } from '@material-ui/core';
 import { CourseData } from '../../interfaces/Course';
 import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 
@@ -70,18 +69,6 @@ const ToggleCell = styled(BaseCell)`
   & span {
     grid-column: 1;
     grid-row: 1;
-  }
-`;
-
-const Is12HourModeToggle = styled(Box)`
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.1s;
-  color: ${({ theme }) => theme.palette.primary.main};
-
-  &:hover {
-    color: ${({ theme }) => theme.palette.primary.dark};
   }
 `;
 
@@ -158,9 +145,6 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = React.memo(
     return (
       <>
         <ToggleCell key={0} x={1} y={1}>
-          <Is12HourModeToggle component="span" onClick={() => setIs12HourMode(!is12HourMode)}>
-            {`${is12HourMode ? '12' : '24'} h`}
-          </Is12HourModeToggle>
           {
             // Invisible guide for the column width for
             // consistency between 24 and 12 hour time.
