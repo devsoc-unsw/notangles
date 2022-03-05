@@ -120,7 +120,6 @@ const App: React.FC = () => {
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
-  const [infoMsg] = useState<String>('Press and hold to drag a class');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
@@ -332,88 +331,85 @@ const App: React.FC = () => {
   };
 
   return (
-    <AppContextProvider>
-      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <GlobalStyle />
-          <StyledApp>
-            <Navbar
-              handleDrawerOpen={handleDrawerOpen}
-            />
-            {isPreview && (
-              <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
-            )}
-            <ContentWrapper>
-              <Content drawerOpen={isFriendsListOpen}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={9}>
-                    <SelectWrapper>
-                      <CourseSelect
-                        selectedCourses={selectedCourses}
-                        assignedColors={assignedColors}
-                        handleSelect={handleSelectCourse}
-                        handleRemove={handleRemoveCourse}
-                        setErrorMsg={setErrorMsg}
-                        setErrorVisibility={setErrorVisibility}
-                        setLastUpdated={handleLastUpdated}
-                      />
-                    </SelectWrapper>
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <Autotimetabler isDarkMode={isDarkMode} />
-                  </Grid>
+    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <StyledApp>
+          <Navbar
+            handleDrawerOpen={handleDrawerOpen}
+          />
+          {isPreview && (
+            <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
+          )}
+          <ContentWrapper>
+            <Content drawerOpen={isFriendsListOpen}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={9}>
+                  <SelectWrapper>
+                    <CourseSelect
+                      selectedCourses={selectedCourses}
+                      assignedColors={assignedColors}
+                      handleSelect={handleSelectCourse}
+                      handleRemove={handleRemoveCourse}
+                      setErrorMsg={setErrorMsg}
+                      setErrorVisibility={setErrorVisibility}
+                      setLastUpdated={handleLastUpdated}
+                    />
+                  </SelectWrapper>
                 </Grid>
-                <Timetable
-                  selectedCourses={selectedCourses}
-                  selectedClasses={selectedClasses}
-                  assignedColors={assignedColors}
-                  is12HourMode={is12HourMode}
-                  setIs12HourMode={setIs12HourMode}
-                  isSquareEdges={isSquareEdges}
-                  clashes={checkClashes()}
-                  setInfoVisibility={setInfoVisibility}
-                />
-                <Footer>
-                  While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
-                  <br />
-                  <br />
-                  Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-                    Email
-                  </Link>
-                  &nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-                    Feedback
-                  </Link>
-                  &nbsp;&nbsp;•&nbsp;&nbsp;
-                  <Link target="_blank" href="https://github.com/csesoc/notangles">
-                    Source
-                  </Link>
-                  {lastUpdated !== 0 && (
-                    <>
-                      <br />
-                      <br />
-                      Data last updated {getRelativeTime(lastUpdated)} ago.
-                    </>
-                  )}
-                </Footer>
-                <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                  <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                    {errorMsg}
-                  </Alert>
-                </Snackbar>
-                <Snackbar open={infoVisibility}>
-                  <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                    {infoMsg}
-                  </Alert>
-                </Snackbar>
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </AppContextProvider>
-
+                <Grid item xs={12} md={3}>
+                  <Autotimetabler isDarkMode={isDarkMode} />
+                </Grid>
+              </Grid>
+              <Timetable
+                selectedCourses={selectedCourses}
+                selectedClasses={selectedClasses}
+                assignedColors={assignedColors}
+                is12HourMode={is12HourMode}
+                setIs12HourMode={setIs12HourMode}
+                isSquareEdges={isSquareEdges}
+                clashes={checkClashes()}
+                setInfoVisibility={setInfoVisibility}
+              />
+              <Footer>
+                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+                <br />
+                <br />
+                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
+                  Email
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
+                  Feedback
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://github.com/csesoc/notangles">
+                  Source
+                </Link>
+                {lastUpdated !== 0 && (
+                  <>
+                    <br />
+                    <br />
+                    Data last updated {getRelativeTime(lastUpdated)} ago.
+                  </>
+                )}
+              </Footer>
+              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert severity="error" onClose={handleErrorClose} variant="filled">
+                  {errorMsg}
+                </Alert>
+              </Snackbar>
+              <Snackbar open={infoVisibility}>
+                <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                  Press and hold to drag a class
+                </Alert>
+              </Snackbar>
+            </Content>
+          </ContentWrapper>
+        </StyledApp>
+      </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 export default App;

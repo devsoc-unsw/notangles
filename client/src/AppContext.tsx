@@ -21,8 +21,6 @@ export interface IAppContext {
     errorMsg: string;
     setErrorMsg: (newErrorMsg: string) => void;
 
-    infoMsg: string;
-
     errorVisibility: boolean;
     setErrorVisibility: (newErrorVisibility: boolean) => void;
 
@@ -51,16 +49,14 @@ export const AppContext = createContext<IAppContext>({
     selectedClasses: {},
     setSelectedClasses: () => {},
 
-    is12HourMode: storage.get('is12HourMode'),
+    is12HourMode: false,
     setIs12HourMode: () => {},
 
-    isDarkMode: storage.get('isDarkMode'),
+    isDarkMode: false,
     setIsDarkMode: () => {},
 
     errorMsg: '',
     setErrorMsg: () => {},
-
-    infoMsg: 'Press and hold to drag a class',
 
     errorVisibility: false,
     setErrorVisibility: () => {},
@@ -74,7 +70,7 @@ export const AppContext = createContext<IAppContext>({
     isLoggedIn: false,
     setIsLoggedIn: () => {},
 
-    isSquareEdges: storage.get('isSquareEdges'),
+    isSquareEdges: false,
     setIsSquareEdges: () => {},
 
     lastUpdated: 0,
@@ -89,7 +85,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
     const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
     const [errorMsg, setErrorMsg] = useState<string>('');
-    const [infoMsg] = useState<string>('Press and hold to drag a class');
     const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
     const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
     const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
@@ -108,7 +103,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
         setIsDarkMode,
         errorMsg,
         setErrorMsg,
-        infoMsg,
         errorVisibility,
         setErrorVisibility,
         infoVisibility,
