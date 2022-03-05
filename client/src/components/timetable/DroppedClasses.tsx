@@ -1,29 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
+import {
+  CardData,
+  defaultTransition,
+  elevatedScale,
+  getDefaultShadow,
+  getElevatedShadow,
+  isPeriod,
+  morphCards,
+  registerCard,
+  setDragTarget,
+  setIsSquareEdges,
+  timeToPosition,
+  transitionTime,
+  unregisterCard,
+} from '../../utils/Drag';
+import { ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
+import React, { useEffect, useRef, useState } from 'react';
+import { getClassMargin, rowHeight } from './TimetableLayout';
+
 import { CSSTransition } from 'react-transition-group';
-import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
-import {
-  CardData,
-  isPeriod,
-  setDragTarget,
-  setIsSquareEdges,
-  morphCards,
-  transitionTime,
-  defaultTransition,
-  getDefaultShadow,
-  getElevatedShadow,
-  elevatedScale,
-  registerCard,
-  unregisterCard,
-  timeToPosition,
-} from '../../utils/Drag';
+import { Warning } from '@material-ui/icons';
 import { defaultStartTime } from '../../constants/timetable';
-import { rowHeight, getClassMargin } from './TimetableLayout';
-import { orange, red } from '@material-ui/core/colors';
+import styled from 'styled-components';
+import { yellow } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -162,7 +164,7 @@ const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden',
+  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
   textOverflow: 'ellipsis',
 };
 
@@ -328,35 +330,28 @@ interface PeriodMetadataProps {
 const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   const percentEnrolled = period.class.enrolments / period.class.capacity;
 
-  const enrolledColor = percentEnrolled == 1 ? red[600] : undefined;
+  const StyledCapacityIndicator = styled.p`
+    text-overflow: ellipsis;
+    font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
+  `;
 
   return (
-    <div>
-      <span
-        style={{
-          color: enrolledColor,
-          fontWeight: 'bolder',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <PeopleAltIcon fontSize="inherit" style={iconStyle} />
-        <p>
+    <>
+      <StyledCapacityIndicator>
+        {percentEnrolled === 1 ? (
+          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem', color: yellow[400] }} />
+        ) : (
+          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem' }} />
+        )}
+        <span>
           {period.class.enrolments}/{period.class.capacity}
-        </p>
-      </span>
+        </span>
+      </StyledCapacityIndicator>
+      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
       <br />
-      <span>
-        ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
-      </span>
-      <br />
-      <span>
-        <LocationOnIcon fontSize="inherit" style={iconStyle} />
-        {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
-      </span>
-    </div>
+      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+    </>
   );
 };
 
