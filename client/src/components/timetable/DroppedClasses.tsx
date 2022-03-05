@@ -83,6 +83,12 @@ const StyledSideArrow = styled(Grid)`
   align-items: center;
 `
 
+const StyledIconShadow = styled(IconButton)`
+  width: 20px;
+  height: 20px;
+  color: white;
+`
+
 const StyledCourseClass = styled.div<{
   cardData: CardData;
   days: string[];
@@ -195,11 +201,12 @@ interface DroppedClassProps {
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
   shiftClasses(dir: number, cardData: CardData): void;
+  hasArrows: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, shiftClasses }) => {
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, shiftClasses, hasArrows }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -210,6 +217,12 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
     setIsSquareEdges(isSquareEdges);
 
     const onDown = (oldEvent: any) => {
+      if (
+        oldEvent.target.className.baseVal === 'MuiSvgIcon-root' ||
+        oldEvent.target.parentElement.className.baseVal === 'MuiSvgIcon-root'
+      )
+        return;
+
       if (!('type' in oldEvent)) return;
       if (oldEvent.type.includes('mouse') && ignoreMouse) return;
       if (oldEvent.type.includes('touch')) ignoreMouse = true;
@@ -309,34 +322,46 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
             hasClash,
             isSquareEdges,
           })}
-        > <Grid container>
-          <StyledSideArrow item xs={1}><IconButton size="small" onClick={() => shiftClasses(-1, cardData)}><ArrowLeftIcon/></IconButton></StyledSideArrow>
-          <Grid item xs={10}>
-          <p style={pStyle}>
-            <b>
-              {cardData.class.course.code} {cardData.class.activity}
-            </b>
-          </p>
-          <p style={pStyleSmall}>
-            {isPeriod(cardData) ? (
-              <>
-                <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
-                {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
-                )
-                <br />
-                <LocationOnIcon fontSize="inherit" style={iconStyle} />
-                {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-              </>
-            ) : (
-              <>
-                {activityMaxPeriods} class
-                {activityMaxPeriods !== 1 && 'es'}
-              </>
-            )}
-          </p>
-          <TouchRipple ref={rippleRef} />
-          </Grid>
-          <StyledSideArrow item xs={1}><IconButton size="small" onClick={() => shiftClasses(1, cardData)}><ArrowRightIcon/></IconButton></StyledSideArrow>
+        >
+          {' '}
+          <Grid container>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
+                  <ArrowLeftIcon />
+                </StyledIconShadow>
+              )}
+            </StyledSideArrow>
+            <Grid item xs={10}>
+              <p style={pStyle}>
+                <b>
+                  {cardData.class.course.code} {cardData.class.activity}
+                </b>
+              </p>
+              <p style={pStyleSmall}>
+                {isPeriod(cardData) ? (
+                  <>
+                    <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
+                    {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
+                    )
+                    <br />
+                    <LocationOnIcon fontSize="inherit" style={iconStyle} />
+                    {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+                  </>
+                ) : (
+                  <>
+                    {activityMaxPeriods} class
+                    {activityMaxPeriods !== 1 && 'es'}
+                  </>
+                )}
+              </p>
+              <TouchRipple ref={rippleRef} />
+            </Grid>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
+                <ArrowRightIcon />
+              </StyledIconShadow>}
+            </StyledSideArrow>
           </Grid>
         </Card>
       </StyledCourseClass>
@@ -416,13 +441,25 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   });
 
   const shiftClasses = (dir: number, c: CardData) => {
-    if ("time" in c) { // ts goes mental without this if
-      const newclasses = c.class.course.activities[c.class.activity].filter((value) => (
+    if ('time' in c) {
+      // ts goes mental without this if
+      const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
         value.periods.some((v) => v.time.day == c.time.day && v.time.start == c.time.start && v.time.end == c.time.end)
-      ));
-      handleSelectClass(newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]);
+      );
+      handleSelectClass(
+        newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]
+      );
     }
-  }
+  };
+
+  const hasArrows = (c: CardData) =>
+    'time' in c &&
+    c.class.course.activities[c.class.activity].filter(
+      (value) =>
+        value.periods[0].time.day == c.time.day &&
+        value.periods[0].time.start == c.time.start &&
+        value.periods[0].time.end == c.time.end
+    ).length > 1;
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
@@ -433,6 +470,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
         key={`${key}`}
         cardData={cardData}
         shiftClasses={shiftClasses}
+        hasArrows={hasArrows(cardData)}
         color={assignedColors[cardData.class.course.code]}
         days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
