@@ -1,18 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import SettingsIcon from '@material-ui/icons/Settings';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import Switch from '@material-ui/core/Switch';
+import Divider from '@material-ui/core/Divider';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
   padding: 20px;
 `;
+
 const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
@@ -22,7 +26,13 @@ const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
 
-const ProfileSettings: React.FC = () => {
+interface SettingsProps {
+  setIsSquareEdges(mode: boolean): void;
+  isSquareEdges: boolean;
+}
+
+// beware memo - if a component isn't re-rendering, it could be why
+const Settings: React.FC<SettingsProps> = React.memo(({ isSquareEdges, setIsSquareEdges }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -31,9 +41,11 @@ const ProfileSettings: React.FC = () => {
 
   return (
     <div>
-      <Button size="small" color="inherit" onClick={toggleIsOpen}>
-        Profile Settings
-      </Button>
+      <Tooltip title="Settings">
+        <IconButton color="inherit" onClick={toggleIsOpen}>
+          <SettingsIcon />
+        </IconButton>
+      </Tooltip>
       <Dialog
         disableScrollLock
         onClose={toggleIsOpen}
@@ -43,16 +55,28 @@ const ProfileSettings: React.FC = () => {
         maxWidth="sm"
       >
         <StyledDialogTitle disableTypography>
-          <Typography variant="h5">Profile Settings</Typography>
+          <Typography variant="h5">Settings</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />
           </CloseButton>
         </StyledDialogTitle>
-
-        <DialogContent dividers />
+        <Divider />
+        <DialogContent>
+          <Typography variant="body1">
+            <Switch
+              value={isSquareEdges}
+              checked={isSquareEdges}
+              color="primary"
+              onChange={() => {
+                setIsSquareEdges(!isSquareEdges);
+              }}
+            />
+            Square corners on classes
+          </Typography>
+        </DialogContent>
       </Dialog>
     </div>
   );
-};
+});
 
-export default ProfileSettings;
+export default Settings;

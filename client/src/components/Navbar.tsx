@@ -1,30 +1,35 @@
-import React, { FunctionComponent } from 'react';
+import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { StylesProvider } from '@material-ui/styles'; // make styled components styling have priority
+import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 
+import { useMediaQuery } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
-import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Tooltip from '@material-ui/core/Tooltip';
+import { ThemeType } from '../constants/theme';
 
 import About from './About';
+import Settings from './Settings';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import { year, termName } from '../constants/timetable';
+import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
+import { year, termName, isPreview, term } from '../constants/timetable';
 
 const LogoImg = styled.img`
-  height: 40px;
-  margin-right: 20px;
-  margin-left: ${process.env.REACT_APP_SHOW_PREVIEW === 'true' ? 20 : 0}px;
+  height: 46px;
+  margin-right: 12.5px;
+  margin-top: -2px;
+  margin-left: ${isPreview ? 9.5 : -11.5}px;
 `;
 const NavbarBox = styled.div`
   flex-grow: 1;
   position: fixed;
+  margin-left: 0px;
   z-index: 1201; /* overriding https://material-ui.com/customization/z-index/ */
 `;
 const StyledNavBar = styled(AppBar)`
@@ -36,17 +41,14 @@ const NavbarTitle = styled(Typography)`
 
 const DarkModeButton = styled(ToggleButton)`
   border: none;
-  border-radius:40px;
-  margin-right: 20px;
-  width:40px;
+  border-radius: 40px;
+  margin-right: 5px;
+  width: 40px;
   height: 40px;
 `;
 const DarkModeIcon = styled(Brightness2Icon)`
   transform: rotate(180deg);
   color: #bde0ff;
-`;
-const NavButton = styled(Button)`
-  margin-right: 20px;
 `;
 
 const Weak = styled.span`
@@ -71,69 +73,55 @@ const Beta = styled.span`
 `;
 
 interface NavBarProps {
-  setIsDarkMode(mode: boolean): void,
-  isDarkMode: boolean,
-  handleDrawerOpen(): void,
+  setIsDarkMode(mode: boolean): void;
+  isDarkMode: boolean;
+  handleDrawerOpen(): void;
+  setIsSquareEdges(mode: boolean): void;
+  isSquareEdges: boolean;
 }
 
-const Navbar: FunctionComponent<NavBarProps> = React.memo(({
-  setIsDarkMode,
-  isDarkMode,
-  handleDrawerOpen,
-}) => (
-  <StylesProvider injectFirst>
-    <NavbarBox>
-      <StyledNavBar>
-        <Toolbar>
-          {process.env.REACT_APP_SHOW_PREVIEW === 'true' && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <LogoImg src={CSESocLogo} />
-          <NavbarTitle variant="h6">
-            Notangles
-            <Weak>
-              <Beta>
-                BETA
-              </Beta>
-              {termName}
-              {', '}
-              {year}
-            </Weak>
-          </NavbarTitle>
+// beware memo - if a component isn't re-rendering, it could be why
+const Navbar: React.FC<NavBarProps> = ({ setIsDarkMode, isDarkMode, handleDrawerOpen, setIsSquareEdges, isSquareEdges }) => {
+  const theme = useTheme<ThemeType>();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [currLogo, setCurrLogo] = useState(CSESocLogo)
+  return (
+    <StylesProvider injectFirst>
+      <NavbarBox>
+        <StyledNavBar>
+          <Toolbar>
+            {isPreview && (
+              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
+                <MenuIcon />
+              </IconButton>
+            )}
+            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)}/>
+            <NavbarTitle variant="h6">
+              Notangles
+              <Weak>
+                {!isMobile && <Beta>Beta</Beta>}
+                {isMobile ? term : termName.concat(', ', year)}
+              </Weak>
+            </NavbarTitle>
 
-          <DarkModeButton
-            value={isDarkMode}
-            selected={isDarkMode}
-            onChange={() => {
-              setIsDarkMode(!isDarkMode);
-            }}
-          >
-            <DarkModeIcon fontSize="small" />
-          </DarkModeButton>
-
-          <NavButton color="inherit">
-            <Link
-              href="https://forms.gle/rV3QCwjsEbLNyESE6"
-              target="_blank"
-              underline="none"
-              color="inherit"
-            >
-              Feedback
-            </Link>
-          </NavButton>
-
-          <About />
-        </Toolbar>
-      </StyledNavBar>
-    </NavbarBox>
-  </StylesProvider>
-));
+            <Tooltip title="Toggle dark mode">
+              <DarkModeButton
+                value={isDarkMode}
+                selected={isDarkMode}
+                onChange={() => {
+                  setIsDarkMode(!isDarkMode);
+                }}
+              >
+                <DarkModeIcon fontSize="small" />
+              </DarkModeButton>
+            </Tooltip>
+            <About />
+            <Settings isSquareEdges={isSquareEdges} setIsSquareEdges={setIsSquareEdges} />
+          </Toolbar>
+        </StyledNavBar>
+      </NavbarBox>
+    </StylesProvider>
+  );
+};
 
 export default Navbar;

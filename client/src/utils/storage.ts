@@ -8,7 +8,8 @@ const storage = {
 
     if (key in data) {
       return data[key];
-    } if (key in defaults) {
+    }
+    if (key in defaults) {
       storage.set(key, defaults[key]);
       return defaults[key];
     }

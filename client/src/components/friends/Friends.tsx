@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  makeStyles, createStyles,
-} from '@material-ui/core/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
@@ -22,73 +20,72 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import ProfileSettings from './ProfileSettings';
 import storage from '../../utils/storage';
+import LoggedOutImg from '../../assets/sidebar_cat.svg';
 
-export const drawerWidth = process.env.REACT_APP_SHOW_PREVIEW === 'true' ? 240 : 0;
-const loggedOutImgUrl = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
+import { isPreview } from '../../constants/timetable';
+
+export const drawerWidth = isPreview ? 240 : 0;
 
 const StyledDrawer = styled(Drawer)`
-    width: drawerWidth;
-    flex-shrink: 0;
+  width: drawerWidth;
+  flex-shrink: 0;
 `;
 
 const StyledLink = styled(Link)`
-    font-size: 10px;
-    cursor: pointer;
-    margin-left: 10px;
+  font-size: 10px;
+  cursor: pointer;
+  margin-left: 10px;
 `;
 
 const StyledListItems = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 
 const StyledListItemText = styled(ListItemText)`
-    overflow: hidden;
-    text-overflow: ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const DrawerContainer = styled.div`
-    margin-top: 64px; /* navbar height */
-    overflow: auto;
+  margin-top: 64px; /* navbar height */
+  overflow: auto;
 `;
 
 const LoginComponent = styled.div`
-    text-align: center;
-    padding: 20px;
-    margin-top: 45%;
+  text-align: center;
+  padding: 20px;
+  margin-top: 45%;
 `;
 const StyledActionButtonGroup = styled(ButtonGroup)`
-    width: 100%;
+  width: 100%;
 `;
 // ???
 // https://stackoverflow.com/questions/49656531/styling-material-ui-drawer-component-with-styled-components
-const useStyles = makeStyles(() => createStyles({
-  drawerPaper: {
-    width: drawerWidth,
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    drawerPaper: {
+      width: drawerWidth,
+    },
+  })
+);
 
 interface FriendsListItemProps {
-  name: string,
-  imageSrc: string,
-  courses?: Array<string>,
-  id?: string
-  isFavourite?: boolean
+  name: string;
+  imageSrc: string;
+  courses?: Array<string>;
+  id?: string;
+  isFavourite?: boolean;
 }
 
-const FriendListSuggestion: React.FC<FriendsListItemProps> = ({
-  name,
-  imageSrc,
-}) => (
+const FriendListSuggestion: React.FC<FriendsListItemProps> = ({ name, imageSrc }) => (
   <ListItem>
     <ListItemAvatar>
       <Avatar alt={name} src={imageSrc} />
     </ListItemAvatar>
     <StyledListItems>
-      <StyledListItemText
-        primary={name}
-      />
+      <StyledListItemText primary={name} />
       <StyledActionButtonGroup size="small" aria-label="small outlined button group">
         <Button>REQUEST </Button>
         <Button>DELETE</Button>
@@ -97,34 +94,22 @@ const FriendListSuggestion: React.FC<FriendsListItemProps> = ({
   </ListItem>
 );
 
-const FriendListRequest: React.FC<FriendsListItemProps> = ({
-  name,
-  imageSrc,
-}) => (
+const FriendListRequest: React.FC<FriendsListItemProps> = ({ name, imageSrc }) => (
   <ListItem alignItems="flex-start">
     <ListItemAvatar>
       <Avatar alt={name} src={imageSrc} />
     </ListItemAvatar>
     <StyledListItems>
-
-      <StyledListItemText
-        primary={name}
-      />
+      <StyledListItemText primary={name} />
       <StyledActionButtonGroup size="small" aria-label="small outlined button group">
         <Button>ACCEPT</Button>
         <Button>DECLINE</Button>
       </StyledActionButtonGroup>
     </StyledListItems>
-
   </ListItem>
 );
 
-const FriendListAdded: React.FC<FriendsListItemProps> = ({
-  name,
-  imageSrc,
-  courses,
-  isFavourite,
-}) => {
+const FriendListAdded: React.FC<FriendsListItemProps> = ({ name, imageSrc, courses, isFavourite }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -139,10 +124,7 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
       <ListItemAvatar>
         <Avatar alt={name} src={imageSrc} />
       </ListItemAvatar>
-      <StyledListItemText
-        primary={name}
-        secondary={courses ? courses.join(' ') : `${name} has no courses selected`}
-      />
+      <StyledListItemText primary={name} secondary={courses ? courses.join(' ') : `${name} has no courses selected`} />
       <ListItemSecondaryAction>
         <IconButton
           disableRipple
@@ -154,13 +136,7 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
         >
           <MoreVertIcon />
         </IconButton>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
+        <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
           <MenuItem onClick={handleClose}>
             {isFavourite ? 'F' : 'Unf'}
             avourite
@@ -174,16 +150,12 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({
 };
 
 interface FriendsProps {
-  isFriendsListOpen: boolean,
-  isLoggedIn: boolean
-  setIsLoggedIn(value: boolean): void
+  isFriendsListOpen: boolean;
+  isLoggedIn: boolean;
+  setIsLoggedIn(value: boolean): void;
 }
 
-const FriendsDrawer: React.FC<FriendsProps> = ({
-  isFriendsListOpen,
-  isLoggedIn,
-  setIsLoggedIn,
-}) => {
+const FriendsDrawer: React.FC<FriendsProps> = ({ isFriendsListOpen, isLoggedIn, setIsLoggedIn }) => {
   const classes = useStyles();
   const [suggestedFriends, setSuggestedFriends] = React.useState<Array<FriendsListItemProps>>([]);
   const [mePhoto, setMePhoto] = React.useState<string>('');
@@ -196,36 +168,31 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
     setIsLoggedIn(false);
   };
 
-  const doLogin = (
-    userID: string,
-    accessToken: string,
-    pictureUrl: string,
-  ) => {
+  const doLogin = (userID: string, accessToken: string, pictureUrl: string) => {
     setIsLoggedIn(true);
 
     fetch(`https://graph.facebook.com/${userID}/friends?fields=data&access_token=${accessToken}`)
       .then((r) => r.json())
-      .then(
-        (r) => {
-          r.data.forEach((friendId: any) => {
-            fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${accessToken}`)
-              .then((res) => res.json())
-              .then((friend) => {
-                setSuggestedFriends((old) => [...old, {
+      .then((r) => {
+        r.data.forEach((friendId: any) => {
+          fetch(`https://graph.facebook.com/${friendId.id}?fields=id,name,picture&access_token=${accessToken}`)
+            .then((res) => res.json())
+            .then((friend) => {
+              setSuggestedFriends((old) => [
+                ...old,
+                {
                   id: friend.id,
                   name: friend.name,
                   imageSrc: friend.picture.data.url,
-                }]);
-              });
-          });
-          setMePhoto(pictureUrl);
-        },
-      )
-      .catch(
-        (err) => {
-          handleFailure(err);
-        },
-      );
+                },
+              ]);
+            });
+        });
+        setMePhoto(pictureUrl);
+      })
+      .catch((err) => {
+        handleFailure(err);
+      });
   };
 
   useEffect(() => {
@@ -265,7 +232,6 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
   const mockClassArray = ['COMP1511', 'COMP1531', 'MATH1081'];
 
   return (
-
     <StyledDrawer
       transitionDuration={200}
       variant="persistent"
@@ -276,7 +242,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
       }}
     >
       <DrawerContainer>
-        { isLoggedIn ? (
+        {isLoggedIn ? (
           <>
             <List>
               <ListItem>
@@ -285,39 +251,43 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
                 </ListItemAvatar>
                 <StyledListItems>
                   <ProfileSettings />
-                  <Button size="small" onClick={logout}>Log out</Button>
+                  <Button size="small" onClick={logout}>
+                    Log out
+                  </Button>
                 </StyledListItems>
               </ListItem>
 
               <ListSubheader disableSticky>
-                Friend Requests
-                {' '}
-                <StyledLink> Sent Requests</StyledLink>
+                Friend Requests <StyledLink> Sent Requests</StyledLink>
               </ListSubheader>
-              <FriendListRequest name="Placeholder Name" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" />
+              <FriendListRequest
+                name="Placeholder Name"
+                imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"
+              />
 
               <ListSubheader disableSticky>Friends</ListSubheader>
-              <FriendListAdded name="Placeholder 2" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" isFavourite />
-              <FriendListAdded name="Placeholder 3" imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250" courses={mockClassArray} />
+              <FriendListAdded
+                name="Placeholder 2"
+                imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"
+                isFavourite
+              />
+              <FriendListAdded
+                name="Placeholder 3"
+                imageSrc="https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2013/08/facebook-silhouette_thumb.jpg?w=250"
+                courses={mockClassArray}
+              />
 
               <ListSubheader disableSticky>Suggested Friends</ListSubheader>
               {suggestedFriends.map((friend) => (
-                <FriendListSuggestion
-                  key={friend.id}
-                  name={friend.name}
-                  imageSrc={friend.imageSrc}
-                />
+                <FriendListSuggestion key={friend.id} name={friend.name} imageSrc={friend.imageSrc} />
               ))}
             </List>
           </>
         ) : (
           <LoginComponent>
-            <img src={loggedOutImgUrl} alt="You are logged out!" width="100" />
+            <img src={LoggedOutImg} alt="You are logged out!" width="132" />
             <h3> Log In to Notangles! </h3>
-            <p>
-              Add friends on Notangles to view each other&apos;s timetables,
-              coordinate classes, and plan events
-            </p>
+            <p>Add friends on Notangles to view each other&apos;s timetables, coordinate classes, and plan events</p>
             <FacebookLogin
               appId="2637085919726160"
               autoLoad={false}
@@ -326,16 +296,15 @@ const FriendsDrawer: React.FC<FriendsProps> = ({
               onClick={loginOnClick}
               callback={responseFacebook}
               render={(renderProps: { onClick: () => void }) => (
-                <Button variant="contained" color="primary" onClick={renderProps.onClick}>Log In With Facebook</Button>
+                <Button variant="contained" color="primary" onClick={renderProps.onClick}>
+                  Log In With Facebook
+                </Button>
               )}
             />
           </LoginComponent>
         )}
-
-
       </DrawerContainer>
     </StyledDrawer>
-
   );
 };
 
