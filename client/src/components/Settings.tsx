@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
-import { List, ListItem } from '@material-ui/core';
+import { List, ListItem, ListItemText } from '@material-ui/core';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -24,7 +24,16 @@ const CloseButton = styled(IconButton)`
 `;
 
 const SettingsList = styled(List)`
-  padding: 0;
+  padding: 0 0 0 10px;
+`;
+
+const SettingText = styled(ListItemText)`
+  padding: 5px 0 5px 0;
+`;
+
+const StyledSwitch = styled(Switch)`
+  position: absolute;
+  right: 10px
 `;
 
 interface SettingsProps {
@@ -67,10 +76,10 @@ const Settings: React.FC<SettingsProps> = React.memo(
     const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
       { state: isDarkMode, setter: setIsDarkMode, desc: 'Dark mode' },
       { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
-      { state: is12HourMode, setter: setIs12HourMode, desc: 'Display times in 12-hour format' },
-      { state: isHideFullClasses, setter: setIsHideFullClasses, desc: 'Hide classes that are at full capacity' },
-      { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Send newly added classes to Unscheduled by default' },
-      { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide detailed class information' },
+      { state: is12HourMode, setter: setIs12HourMode, desc: '12-hour time' },
+      { state: isHideFullClasses, setter: setIsHideFullClasses, desc: 'Hide full classes' },
+      { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
+      { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
     ];
 
     const settings = settingsToggles.map((setting) => {
@@ -78,15 +87,15 @@ const Settings: React.FC<SettingsProps> = React.memo(
         <>
           <Divider />
           <ListItem>
-            <Switch
+            <SettingText primary={setting['desc']} />
+            <StyledSwitch
               value={setting['state']}
               checked={setting['state']}
               color="primary"
               onChange={() => {
                 setting['setter'](!setting['state']);
               }}
-            />
-            {setting['desc']}
+            /> 
           </ListItem>
         </>
       );
