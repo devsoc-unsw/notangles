@@ -335,6 +335,15 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
     font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
   `;
 
+  const EnrolledIndicator = styled.span`
+    color: enrolledColor;
+    font-weight: bolder;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  `;
+
   return (
     <>
       <StyledCapacityIndicator>
