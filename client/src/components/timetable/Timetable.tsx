@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
 import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
@@ -8,6 +8,7 @@ import { TimetableLayout } from './TimetableLayout';
 import Dropzones from './Dropzones';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import { timetableWidth } from '../../utils/Drag';
+import { AppContext } from '../../AppContext';
 
 const StyledTimetable = styled(Box)<{
   rows: number;
@@ -36,11 +37,14 @@ interface TimetableProps {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   assignedColors: Record<string, string>;
-  is12HourMode: boolean;
-  setIs12HourMode(value: boolean): void;
   clashes: Array<ClassPeriod>;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+}
+
+const getContext = () => {
+  const { is12HourMode, setIs12HourMode } = useContext(AppContext)
+  return { is12HourMode, setIs12HourMode }
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -49,8 +53,6 @@ const Timetable: React.FC<TimetableProps> = React.memo(
     selectedCourses,
     selectedClasses,
     assignedColors,
-    is12HourMode,
-    setIs12HourMode,
     isSquareEdges,
     clashes,
     setInfoVisibility,
@@ -64,8 +66,8 @@ const Timetable: React.FC<TimetableProps> = React.memo(
       >
         <TimetableLayout
           days={days}
-          is12HourMode={is12HourMode}
-          setIs12HourMode={setIs12HourMode}
+          is12HourMode={getContext().is12HourMode}
+          setIs12HourMode={getContext().setIs12HourMode}
           selectedCourses={selectedCourses}
         />
         <Dropzones
@@ -85,15 +87,15 @@ const Timetable: React.FC<TimetableProps> = React.memo(
       </StyledTimetable>
     </StyledTimetableScroll>
   ),
-  (prev, next) =>
-    !(
-      prev.is12HourMode !== next.is12HourMode ||
-      prev.selectedClasses !== next.selectedClasses ||
-      prev.selectedCourses.length !== next.selectedCourses.length ||
-      prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
-      prev.isSquareEdges !== next.isSquareEdges
-    )
+  // (prev, next) =>
+  //   !(
+  //     prev.is12HourMode !== next.is12HourMode ||
+  //     prev.selectedClasses !== next.selectedClasses ||
+  //     prev.selectedCourses.length !== next.selectedCourses.length ||
+  //     prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
+  //     JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
+  //     prev.isSquareEdges !== next.isSquareEdges
+  //   )
 );
 
 export default Timetable;

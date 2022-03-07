@@ -118,7 +118,6 @@ const Footer = styled(Box)`
 const App: React.FC = () => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
-  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [errorMsg, setErrorMsg] = useState<String>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
@@ -127,7 +126,7 @@ const App: React.FC = () => {
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
   const [lastUpdated, setLastUpdated] = useState(0);
 
-  const { isDarkMode } = useContext(AppContext)
+  const { isDarkMode, is12HourMode } = useContext(AppContext)
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -365,8 +364,6 @@ const App: React.FC = () => {
                 selectedCourses={selectedCourses}
                 selectedClasses={selectedClasses}
                 assignedColors={assignedColors}
-                is12HourMode={is12HourMode}
-                setIs12HourMode={setIs12HourMode}
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
                 setInfoVisibility={setInfoVisibility}
