@@ -186,11 +186,12 @@ interface DroppedClassProps {
   hasClash: boolean;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility }) => {
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -367,6 +368,7 @@ interface DroppedClassesProps {
   clashes: Array<ClassPeriod>;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({
@@ -377,6 +379,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   clashes,
   isSquareEdges,
   setInfoVisibility,
+  isHideClassInfo,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -440,6 +443,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
         setInfoVisibility={setInfoVisibility}
+        isHideClassInfo={isHideClassInfo}
       />
     );
 

@@ -9,11 +9,12 @@ interface ClassDropzoneProps {
   course: CourseData;
   color: string;
   earliestStartTime: number;
+  isHideFullClasses: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
-  ({ course, color, earliestStartTime }) => {
+  ({ course, color, earliestStartTime, isHideFullClasses }) => {
     // Deep-ish copy of activities (so we can combine duplicates without affecting original)
 
     let newActivities: Record<Activity, ClassData[]> = {};
@@ -51,7 +52,9 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter(
         // TODO
-        (classData) => classData.periods.length !== 0
+        (classData) =>
+          classData.periods.length !== 0 &&
+          (!isHideFullClasses || (isHideFullClasses && classData.enrolments !== classData.capacity))
       );
     });
 
@@ -75,7 +78,7 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     return <>{dropzones}</>;
   },
   (prev, next) =>
-    !(prev.color !== next.color || prev.earliestStartTime !== next.earliestStartTime || prev.course.code !== next.course.code)
+    !(prev.color !== next.color || prev.earliestStartTime !== next.earliestStartTime || prev.course.code !== next.course.code || prev.isHideFullClasses !== next.isHideFullClasses)
 );
 
 interface Theme {
@@ -89,17 +92,19 @@ interface DropzonesProps {
   assignedColors: Record<string, string>;
   earliestStartTime: number;
   theme: Theme;
+  isHideFullClasses: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const Dropzones: React.FC<DropzonesProps> = React.memo(
-  ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
+  ({ selectedCourses, assignedColors, earliestStartTime, theme, isHideFullClasses }) => {
     const dropzones = selectedCourses.map((course) => (
       <DropzoneGroup
         key={course.code}
         course={course}
         color={assignedColors[course.code]}
         earliestStartTime={earliestStartTime}
+        isHideFullClasses={isHideFullClasses}
       />
     ));
 
@@ -127,7 +132,8 @@ const Dropzones: React.FC<DropzonesProps> = React.memo(
       prev.selectedCourses.length !== next.selectedCourses.length ||
       prev.earliestStartTime !== next.earliestStartTime ||
       prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
+      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
+      prev.isHideFullClasses !== next.isHideFullClasses
     )
 );
 
