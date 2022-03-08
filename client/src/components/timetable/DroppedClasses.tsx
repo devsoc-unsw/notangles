@@ -332,16 +332,8 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
 
   const StyledCapacityIndicator = styled.p`
     text-overflow: ellipsis;
+    margin: 0;
     font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
-  `;
-
-  const EnrolledIndicator = styled.span`
-    color: enrolledColor;
-    font-weight: bolder;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
   `;
 
   return (
