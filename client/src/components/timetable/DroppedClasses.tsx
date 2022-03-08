@@ -1,28 +1,31 @@
-import React, { useState, useRef, useEffect } from 'react';
+import {
+  CardData,
+  defaultTransition,
+  elevatedScale,
+  getDefaultShadow,
+  getElevatedShadow,
+  isPeriod,
+  morphCards,
+  registerCard,
+  setDragTarget,
+  setIsSquareEdges,
+  timeToPosition,
+  transitionTime,
+  unregisterCard,
+} from '../../utils/Drag';
+import { ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
+import React, { useEffect, useRef, useState } from 'react';
+import { getClassMargin, rowHeight } from './TimetableLayout';
+
 import { CSSTransition } from 'react-transition-group';
-import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
-import {
-  CardData,
-  isPeriod,
-  setDragTarget,
-  setIsSquareEdges,
-  morphCards,
-  transitionTime,
-  defaultTransition,
-  getDefaultShadow,
-  getElevatedShadow,
-  elevatedScale,
-  registerCard,
-  unregisterCard,
-  timeToPosition,
-} from '../../utils/Drag';
+import { Warning } from '@material-ui/icons';
 import { defaultStartTime } from '../../constants/timetable';
-import { rowHeight, getClassMargin } from './TimetableLayout';
+import styled from 'styled-components';
+import { yellow } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -161,7 +164,7 @@ const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden',
+  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
   textOverflow: 'ellipsis',
 };
 
@@ -188,7 +191,7 @@ interface DroppedClassProps {
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo }) => { 
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -280,7 +283,7 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
         ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
       );
     }
-    
+
     return (
       <StyledCourseClass
         ref={element}
@@ -306,24 +309,13 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
           </p>
           <p style={pStyleSmall}>
             {isPeriod(cardData) ? (
-              isHideClassInfo ? (
-                <></>
-              ) : ( 
-                <>
-                  <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
-                  {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
-                  )
-                  <br />
-                  <LocationOnIcon fontSize="inherit" style={iconStyle} />
-                  {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-                </>
-              )
-            ) : ( 
+              <PeriodMetadata period={cardData} />
+            ) : (
               <>
                 {activityMaxPeriods} class
                 {activityMaxPeriods !== 1 && 'es'}
               </>
-            )} 
+            )}
           </p>
           <TouchRipple ref={rippleRef} />
         </Card>
@@ -331,6 +323,39 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
     );
   }
 );
+
+interface PeriodMetadataProps {
+  period: ClassPeriod;
+}
+
+const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
+  const percentEnrolled = period.class.enrolments / period.class.capacity;
+
+  const StyledCapacityIndicator = styled.p`
+    text-overflow: ellipsis;
+    margin: 0;
+    font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
+  `;
+
+  return (
+    <>
+      <StyledCapacityIndicator>
+        {percentEnrolled === 1 ? (
+          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem', color: yellow[400] }} />
+        ) : (
+          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem' }} />
+        )}
+        <span>
+          {period.class.enrolments}/{period.class.capacity}
+        </span>
+      </StyledCapacityIndicator>
+      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
+      <br />
+      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+    </>
+  );
+};
 
 const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) =>
   courses.find((course) => course.code === courseCode)?.inventoryData[activity];
