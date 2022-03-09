@@ -1,6 +1,6 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, InputAdornment, Box, Chip, Theme } from '@material-ui/core';
@@ -12,6 +12,7 @@ import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
 import { year, term, maxAddedCourses } from '../constants/timetable';
 import getCoursesList from '../api/getCoursesList';
 import NetworkError from '../interfaces/NetworkError';
+import { AppContext } from '../AppContext';
 
 const SEARCH_DELAY = 300;
 
@@ -112,24 +113,22 @@ const StyledUl = styled.ul`
 `;
 
 interface CourseSelectProps {
-  selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
   handleSelect(data: string | string[]): void;
   handleRemove(courseCode: string): void;
-  setErrorMsg(errorMsg: string): void;
-  setErrorVisibility(visibility: boolean): void;
-  setLastUpdated(date: number): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = React.memo(
-  ({ selectedCourses, assignedColors, handleSelect, handleRemove, setErrorMsg, setErrorVisibility, setLastUpdated }) => {
+  ({ assignedColors, handleSelect, handleRemove }) => {
     const [coursesList, setCoursesList] = useState<CoursesList>([]);
     const [options, setOptionsState] = useState<CoursesList>([]);
     const [inputValue, setInputValue] = useState<string>('');
     const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
     const searchTimer = useRef<number | undefined>();
     const listRef = useRef<VariableSizeList | null>(null);
+
+    const { selectedCourses, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
 
     const setOptions = (newOptions: CoursesList) => {
       listRef?.current?.scrollTo(0);

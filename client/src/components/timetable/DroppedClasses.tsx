@@ -1,16 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
 import Card from '@material-ui/core/Card';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { CourseData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
+import { CourseData, ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   isPeriod,
   setDragTarget,
-  setIsSquareEdges,
   morphCards,
   transitionTime,
   defaultTransition,
@@ -23,6 +22,8 @@ import {
 } from '../../utils/Drag';
 import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
+import { AppContext } from '../../AppContext';
+import { days } from '../../constants/timetable';
 
 export const inventoryMargin = 10;
 
@@ -177,19 +178,17 @@ const iconStyle = {
 interface DroppedClassProps {
   cardData: CardData;
   color: string;
-  days: string[];
   y?: number;
   earliestStartTime: number;
   hasClash: boolean;
-  isSquareEdges: boolean;
-  setInfoVisibility(value: boolean): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility }) => {
+  ({ cardData, color, y, earliestStartTime, hasClash }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
+    const { isSquareEdges, setIsSquareEdges, setInfoVisibility } = useContext(AppContext)
 
     let timer: number | null = null;
     let rippleStopped = false;
@@ -331,23 +330,13 @@ const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity:
   courses.find((course) => course.code === courseCode)?.inventoryData[activity];
 
 interface DroppedClassesProps {
-  selectedCourses: CourseData[];
-  selectedClasses: SelectedClasses;
   assignedColors: Record<string, string>;
-  days: string[];
   clashes: Array<ClassPeriod>;
-  isSquareEdges: boolean;
-  setInfoVisibility(value: boolean): void;
 }
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({
-  selectedCourses,
-  selectedClasses,
   assignedColors,
-  days,
   clashes,
-  isSquareEdges,
-  setInfoVisibility,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -356,6 +345,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   const inventoryCards = useRef<CardData[]>([]);
 
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
+
+  const { selectedCourses, selectedClasses, isSquareEdges, setInfoVisibility } = useContext(AppContext)
 
   const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
@@ -405,12 +396,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
         key={`${key}`}
         cardData={cardData}
         color={assignedColors[cardData.class.course.code]}
-        days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
-        isSquareEdges={isSquareEdges}
-        setInfoVisibility={setInfoVisibility}
       />
     );
 

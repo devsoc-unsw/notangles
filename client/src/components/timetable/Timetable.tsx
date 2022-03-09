@@ -34,24 +34,17 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 interface TimetableProps {
-  selectedCourses: CourseData[];
-  selectedClasses: SelectedClasses;
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
-  isSquareEdges: boolean;
-  setInfoVisibility(value: boolean): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const Timetable: React.FC<TimetableProps> = ({
-  selectedCourses,
-  selectedClasses,
   assignedColors,
-  isSquareEdges,
   clashes,
-  setInfoVisibility,
 }) => {
-  const { is12HourMode, setIs12HourMode } = useContext(AppContext);
+
+  const { selectedCourses, selectedClasses} = useContext(AppContext)
 
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
@@ -61,25 +54,13 @@ const Timetable: React.FC<TimetableProps> = ({
           Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
         }
       >
-        <TimetableLayout
-          days={days}
-          is12HourMode={is12HourMode}
-          setIs12HourMode={setIs12HourMode}
-          selectedCourses={selectedCourses}
-        />
+        <TimetableLayout/>
         <Dropzones
-          selectedCourses={selectedCourses}
           assignedColors={assignedColors}
-          earliestStartTime={Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)}
         />
         <DroppedClasses
-          selectedCourses={selectedCourses}
-          selectedClasses={selectedClasses}
           assignedColors={assignedColors}
-          days={days}
           clashes={clashes}
-          isSquareEdges={isSquareEdges}
-          setInfoVisibility={setInfoVisibility}
         />
       </StyledTimetable>
     </StyledTimetableScroll>

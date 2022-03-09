@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { withTheme } from 'styled-components';
 import { CourseData, ClassPeriod, Activity, ClassData } from '../../interfaces/Course';
 import Dropzone from './Dropzone';
 import { timeToPosition } from '../../utils/Drag';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
+import { AppContext } from '../../AppContext';
+import { defaultStartTime } from '../../constants/timetable';
 
 interface ClassDropzoneProps {
   course: CourseData;
@@ -85,13 +87,15 @@ interface Theme {
 }
 
 interface DropzonesProps {
-  selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
-  earliestStartTime: number;
   theme: Theme;
 }
 
-const Dropzones: React.FC<DropzonesProps> = ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
+const Dropzones: React.FC<DropzonesProps> = ({ assignedColors, theme }) => {
+  const { selectedCourses } = useContext(AppContext)
+
+  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
+
   const dropzones = selectedCourses.map((course) => (
     <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
   ));

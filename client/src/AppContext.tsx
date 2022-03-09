@@ -34,9 +34,6 @@ export interface IAppContext {
     isLoggedIn: boolean;
     setIsLoggedIn: (newIsLoggedIn: boolean) => void;
 
-    isSquareEdges: boolean;
-    setIsSquareEdges: (newIsSquareEdges: boolean) => void;
-
     lastUpdated: number;
     setLastUpdated: (newLastUpdated: number) => void;
 
@@ -90,7 +87,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
     const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-    const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
     const [lastUpdated, setLastUpdated] = useState(0);
 
     const initialContext: IAppContext = {
@@ -112,8 +108,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
         setIsFriendsListOpen,
         isLoggedIn,
         setIsLoggedIn,
-        isSquareEdges,
-        setIsSquareEdges,
         lastUpdated,
         setLastUpdated,
     }

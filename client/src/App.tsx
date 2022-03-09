@@ -116,7 +116,6 @@ const Footer = styled(Box)`
 `;
 
 const App: React.FC = () => {
-
   const { 
     selectedCourses, setSelectedCourses,
     selectedClasses, setSelectedClasses,
@@ -125,8 +124,7 @@ const App: React.FC = () => {
     errorMsg, setErrorMsg,
     errorVisibility, setErrorVisibility,
     infoVisibility, setInfoVisibility,
-    isFriendsListOpen, setIsFriendsListOpen,
-    isLoggedIn, setIsLoggedIn,
+    isFriendsListOpen,
     isSquareEdges,
     lastUpdated, setLastUpdated 
   } = useContext(AppContext);
@@ -230,10 +228,6 @@ const App: React.FC = () => {
       });
   };
 
-  const handleDrawerOpen = () => {
-    setIsFriendsListOpen(!isFriendsListOpen);
-  };
-
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
@@ -250,10 +244,6 @@ const App: React.FC = () => {
 
   const handleInfoClose = () => {
     setInfoVisibility(false);
-  };
-
-  const handleSetIsLoggedIn = (value: boolean) => {
-    setIsLoggedIn(value);
   };
 
   useEffect(() => {
@@ -337,25 +327,17 @@ const App: React.FC = () => {
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <GlobalStyle />
         <StyledApp>
-          <Navbar
-            handleDrawerOpen={handleDrawerOpen}
-          />
-          {isPreview && (
-            <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
-          )}
+          <Navbar />
+          { isPreview && <FriendsDrawer /> }
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>
                     <CourseSelect
-                      selectedCourses={selectedCourses}
                       assignedColors={assignedColors}
                       handleSelect={handleSelectCourse}
                       handleRemove={handleRemoveCourse}
-                      setErrorMsg={setErrorMsg}
-                      setErrorVisibility={setErrorVisibility}
-                      setLastUpdated={handleLastUpdated}
                     />
                   </SelectWrapper>
                 </Grid>
@@ -364,12 +346,8 @@ const App: React.FC = () => {
                 </Grid>
               </Grid>
               <Timetable
-                selectedCourses={selectedCourses}
-                selectedClasses={selectedClasses}
                 assignedColors={assignedColors}
-                isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
-                setInfoVisibility={setInfoVisibility}
               />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.

@@ -364,6 +364,10 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
   }
 };
 
+export const getIsSquareEdges = () => {
+  return isSquareEdges;
+}
+
 export const setIsSquareEdges = (value: boolean) => {
   isSquareEdges = value;
 };

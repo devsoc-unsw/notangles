@@ -70,17 +70,16 @@ const Beta = styled.span`
   bottom: -5px;
 `;
 
-interface NavBarProps {
-  handleDrawerOpen(): void;
-}
-
 // beware memo - if a component isn't re-rendering, it could be why
-const Navbar: React.FC<NavBarProps> = ({ handleDrawerOpen }) => {
+const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { isDarkMode, setIsDarkMode } = useContext(AppContext)
-  const { isSquareEdges, setIsSquareEdges } = useContext(AppContext)
+  const { isDarkMode, setIsDarkMode, isFriendsListOpen, setIsFriendsListOpen } = useContext(AppContext)
+
+  const handleDrawerOpen = () => {
+    setIsFriendsListOpen(!isFriendsListOpen);
+  };
 
   return (
     <StylesProvider injectFirst>
@@ -107,14 +106,13 @@ const Navbar: React.FC<NavBarProps> = ({ handleDrawerOpen }) => {
                 selected={isDarkMode}
                 onChange={() => {
                   setIsDarkMode(!isDarkMode);
-                  console.log(isDarkMode)
                 }}
               >
                 <DarkModeIcon fontSize="small" />
               </DarkModeButton>
             </Tooltip>
             <About />
-            <Settings isSquareEdges={isSquareEdges} setIsSquareEdges={setIsSquareEdges} />
+            <Settings />
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
