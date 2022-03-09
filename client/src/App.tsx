@@ -27,7 +27,7 @@ import storage from './utils/storage';
 import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
 import { year, term, isPreview } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
-import AppContextProvider, { AppContext } from './AppContext';
+import { AppContext } from './AppContext';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -97,7 +97,7 @@ const Content = styled(Box)<StyledContentProps>`
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
-
+SS
   text-align: center;
 `;
 
@@ -116,17 +116,20 @@ const Footer = styled(Box)`
 `;
 
 const App: React.FC = () => {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
-  const [errorMsg, setErrorMsg] = useState<String>('');
-  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
-  const [lastUpdated, setLastUpdated] = useState(0);
 
-  const { isDarkMode, is12HourMode } = useContext(AppContext)
+  const { 
+    selectedCourses, setSelectedCourses,
+    selectedClasses, setSelectedClasses,
+    is12HourMode, 
+    isDarkMode, 
+    errorMsg, setErrorMsg,
+    errorVisibility, setErrorVisibility,
+    infoVisibility, setInfoVisibility,
+    isFriendsListOpen, setIsFriendsListOpen,
+    isLoggedIn, setIsLoggedIn,
+    isSquareEdges,
+    lastUpdated, setLastUpdated 
+  } = useContext(AppContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -357,7 +360,7 @@ const App: React.FC = () => {
                   </SelectWrapper>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <Autotimetabler isDarkMode={isDarkMode} />
+                  <Autotimetabler/>
                 </Grid>
               </Grid>
               <Timetable
