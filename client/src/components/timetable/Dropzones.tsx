@@ -91,44 +91,27 @@ interface DropzonesProps {
   theme: Theme;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
-const Dropzones: React.FC<DropzonesProps> = React.memo(
-  ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
-    const dropzones = selectedCourses.map((course) => (
-      <DropzoneGroup
-        key={course.code}
-        course={course}
-        color={assignedColors[course.code]}
-        earliestStartTime={earliestStartTime}
-      />
-    ));
+const Dropzones: React.FC<DropzonesProps> = ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
+  const dropzones = selectedCourses.map((course) => (
+    <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
+  ));
 
-    const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
+  const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
 
-    // inventory
-    dropzones.push(
-      <Dropzone
-        isInventory
-        key="inventory"
-        classPeriod={null} // inventory has no corresponding class period
-        x={-2}
-        y={2}
-        yEnd={-1}
-        color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
-        earliestStartTime={earliestStartTime}
-      />
-    );
-
-    return <>{dropzones}</>;
-  },
-  (prev, next) =>
-    !(
-      prev.theme !== next.theme ||
-      prev.selectedCourses.length !== next.selectedCourses.length ||
-      prev.earliestStartTime !== next.earliestStartTime ||
-      prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
-    )
-);
+  // inventory
+  dropzones.push(
+    <Dropzone
+      isInventory
+      key="inventory"
+      classPeriod={null} // inventory has no corresponding class period
+      x={-2}
+      y={2}
+      yEnd={-1}
+      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
+      earliestStartTime={earliestStartTime}
+    />
+  );
+  return <>{dropzones}</>;
+};
 
 export default withTheme(Dropzones);
