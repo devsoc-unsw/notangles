@@ -10,7 +10,8 @@ export interface IAppContext {
     setSelectedCourses: (newSelectedCourses: CourseData[]) => void;
 
     selectedClasses: SelectedClasses;
-    setSelectedClasses: (newSelectedClasses: SelectedClasses) => void;
+    setSelectedClasses(newSelectedClasses: SelectedClasses) : void;
+    setSelectedClasses(callback: (oldSelectedClasses: SelectedClasses) => SelectedClasses) : void;
 
     is12HourMode: boolean;
     setIs12HourMode: (newIs12HourMode: boolean) => void;

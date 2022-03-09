@@ -79,7 +79,8 @@ const Navbar: React.FC<NavBarProps> = ({ handleDrawerOpen }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { isDarkMode, setIsDarkMode, isSquareEdges, setIsSquareEdges } = useContext(AppContext)
+  const { isDarkMode, setIsDarkMode } = useContext(AppContext)
+  const { isSquareEdges, setIsSquareEdges } = useContext(AppContext)
 
   return (
     <StylesProvider injectFirst>
