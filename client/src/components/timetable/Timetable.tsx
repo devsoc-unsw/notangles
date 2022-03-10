@@ -42,6 +42,8 @@ interface TimetableProps {
   clashes: Array<ClassPeriod>;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideFullClasses: boolean;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
@@ -56,6 +58,8 @@ const Timetable: React.FC<TimetableProps> = React.memo(
     clashes,
     setInfoVisibility,
     handleSelectClass,
+    isHideFullClasses,
+    isHideClassInfo,
   }) => (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable
@@ -74,6 +78,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           selectedCourses={selectedCourses}
           assignedColors={assignedColors}
           earliestStartTime={Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)}
+          isHideFullClasses={isHideFullClasses}
         />
         <DroppedClasses
           selectedCourses={selectedCourses}
@@ -84,6 +89,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           isSquareEdges={isSquareEdges}
           setInfoVisibility={setInfoVisibility}
           handleSelectClass={handleSelectClass}
+          isHideClassInfo={isHideClassInfo}
         />
       </StyledTimetable>
     </StyledTimetableScroll>
@@ -95,7 +101,9 @@ const Timetable: React.FC<TimetableProps> = React.memo(
       prev.selectedCourses.length !== next.selectedCourses.length ||
       prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
       JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors) ||
-      prev.isSquareEdges !== next.isSquareEdges
+      prev.isSquareEdges !== next.isSquareEdges ||
+      prev.isHideFullClasses !== next.isHideFullClasses ||
+      prev.isHideClassInfo !== next.isHideClassInfo
     )
 );
 

@@ -1,33 +1,37 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { CSSTransition } from 'react-transition-group';
-import styled from 'styled-components';
-import Card from '@material-ui/core/Card';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { CourseData, ClassData, ClassPeriod, SelectedClasses, InInventory } from '../../interfaces/Course';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft'
 import {
   CardData,
-  isPeriod,
-  setDragTarget,
-  setIsSquareEdges,
-  morphCards,
-  transitionTime,
   defaultTransition,
+  elevatedScale,
   getDefaultShadow,
   getElevatedShadow,
-  elevatedScale,
+  isPeriod,
+  morphCards,
   registerCard,
-  unregisterCard,
+  setDragTarget,
+  setIsSquareEdges,
   timeToPosition,
+  transitionTime,
+  unregisterCard,
 } from '../../utils/Drag';
+import {  ClassData, ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
+import React, { useEffect, useRef, useState } from 'react';
+import { getClassMargin, rowHeight } from './TimetableLayout';
+
+import { CSSTransition } from 'react-transition-group';
+import Card from '@material-ui/core/Card';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
+import { Warning } from '@material-ui/icons';
 import { defaultStartTime } from '../../constants/timetable';
 import { rowHeight, getClassMargin } from './TimetableLayout';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid'
 import { InventoryPeriod } from '@notangles/common';
+import styled from 'styled-components';
+import { yellow } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -178,7 +182,7 @@ const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden',
+  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
   textOverflow: 'ellipsis',
 };
 
@@ -202,11 +206,12 @@ interface DroppedClassProps {
   setInfoVisibility(value: boolean): void;
   shiftClasses(dir: number, cardData: CardData): void;
   hasArrows: boolean;
+  isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, shiftClasses, hasArrows }) => {
+  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo, shiftClasses, hasArrows }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -369,6 +374,39 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
   }
 );
 
+interface PeriodMetadataProps {
+  period: ClassPeriod;
+}
+
+const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
+  const percentEnrolled = period.class.enrolments / period.class.capacity;
+
+  const StyledCapacityIndicator = styled.p`
+    text-overflow: ellipsis;
+    margin: 0;
+    font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
+  `;
+
+  return (
+    <>
+      <StyledCapacityIndicator>
+        {percentEnrolled === 1 ? (
+          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem', color: yellow[400] }} />
+        ) : (
+          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem' }} />
+        )}
+        <span>
+          {period.class.enrolments}/{period.class.capacity}
+        </span>
+      </StyledCapacityIndicator>
+      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
+      <br />
+      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+    </>
+  );
+};
+
 const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) =>
   courses.find((course) => course.code === courseCode)?.inventoryData[activity];
 
@@ -381,6 +419,7 @@ interface DroppedClassesProps {
   clashes: Array<ClassPeriod>;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  isHideClassInfo: boolean;
 }
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({
@@ -392,6 +431,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   isSquareEdges,
   setInfoVisibility,
   handleSelectClass,
+  isHideClassInfo,
 }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -478,6 +518,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
         isSquareEdges={isSquareEdges}
         setInfoVisibility={setInfoVisibility}
+        isHideClassInfo={isHideClassInfo}
       />
     );
 
