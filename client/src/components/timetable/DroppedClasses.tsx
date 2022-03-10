@@ -1,5 +1,19 @@
+import React, { useEffect, useRef, useState } from 'react';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
+import Card from '@material-ui/core/Card';
+import { yellow } from '@material-ui/core/colors';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { Warning } from '@material-ui/icons';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft'
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import { CSSTransition } from 'react-transition-group';
+import styled from 'styled-components';
+
+import { defaultStartTime } from '../../constants/timetable';
+import { ClassData, ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -13,24 +27,10 @@ import {
   setIsSquareEdges,
   timeToPosition,
   transitionTime,
-  unregisterCard,
+  unregisterCard
 } from '../../utils/Drag';
-import {  ClassData, ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
-import React, { useEffect, useRef, useState } from 'react';
+import { getClassMargin, rowHeight } from './TimetableLayout';
 
-import { CSSTransition } from 'react-transition-group';
-import Card from '@material-ui/core/Card';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { Warning } from '@material-ui/icons';
-import { defaultStartTime } from '../../constants/timetable';
-import { rowHeight, getClassMargin } from './TimetableLayout';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid'
-import { InventoryPeriod } from '@notangles/common';
-import styled from 'styled-components';
-import { yellow } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -84,13 +84,13 @@ const StyledSideArrow = styled(Grid)`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const StyledIconShadow = styled(IconButton)`
   width: 20px;
   height: 20px;
   color: white;
-`
+`;
 
 const StyledCourseClass = styled.div<{
   cardData: CardData;
@@ -210,7 +210,19 @@ interface DroppedClassProps {
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo, shiftClasses, hasArrows }) => {
+  ({
+    cardData,
+    color,
+    days,
+    y,
+    earliestStartTime,
+    hasClash,
+    isSquareEdges,
+    setInfoVisibility,
+    isHideClassInfo,
+    shiftClasses,
+    hasArrows,
+  }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -230,25 +242,25 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
       if (!('type' in oldEvent)) return;
       if (oldEvent.type.includes('mouse') && ignoreMouse) return;
       if (oldEvent.type.includes('touch')) ignoreMouse = true;
-      
+
       const event = { ...oldEvent };
 
       if ('start' in rippleRef.current) {
         rippleStopped = false;
         rippleRef.current.start(event);
       }
-      
-        const startDrag = () => {
-          timer = null;
-          setDragTarget(cardData, event);
-          setInfoVisibility(false);
-        };
-  
-        if (oldEvent.type.includes('touch')) {
-          timer = window.setTimeout(startDrag, 500);
-        } else {
-          startDrag();
-        }
+
+      const startDrag = () => {
+        timer = null;
+        setDragTarget(cardData, event);
+        setInfoVisibility(false);
+      };
+
+      if (oldEvent.type.includes('touch')) {
+        timer = window.setTimeout(startDrag, 500);
+      } else {
+        startDrag();
+      }
 
       const onUp = (eventUp: any) => {
         if (eventUp.type.includes('mouse') && ignoreMouse) return;
@@ -362,9 +374,11 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
               <TouchRipple ref={rippleRef} />
             </Grid>
             <StyledSideArrow item xs={1}>
-              {hasArrows && <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
-                <ArrowRightIcon />
-              </StyledIconShadow>}
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
+                  <ArrowRightIcon />
+                </StyledIconShadow>
+              )}
             </StyledSideArrow>
           </Grid>
         </Card>
