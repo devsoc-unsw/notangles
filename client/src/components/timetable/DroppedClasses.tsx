@@ -17,7 +17,6 @@ import {
 } from '../../utils/Drag';
 import {  ClassData, ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
 import React, { useEffect, useRef, useState } from 'react';
-import { getClassMargin, rowHeight } from './TimetableLayout';
 
 import { CSSTransition } from 'react-transition-group';
 import Card from '@material-ui/core/Card';
