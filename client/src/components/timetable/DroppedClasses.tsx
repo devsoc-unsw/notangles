@@ -1,3 +1,19 @@
+import React, { useEffect, useRef, useState } from 'react';
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
+import Card from '@material-ui/core/Card';
+import { yellow } from '@material-ui/core/colors';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { Warning } from '@material-ui/icons';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import { CSSTransition } from 'react-transition-group';
+import styled from 'styled-components';
+
+import { defaultStartTime } from '../../constants/timetable';
+import { ClassData, ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -11,21 +27,10 @@ import {
   setIsSquareEdges,
   timeToPosition,
   transitionTime,
-  unregisterCard,
+  unregisterCard
 } from '../../utils/Drag';
-import { ClassPeriod, CourseData, InInventory, SelectedClasses } from '../../interfaces/Course';
-import React, { useEffect, useRef, useState } from 'react';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
-import { CSSTransition } from 'react-transition-group';
-import Card from '@material-ui/core/Card';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import { Warning } from '@material-ui/icons';
-import { defaultStartTime } from '../../constants/timetable';
-import styled from 'styled-components';
-import { yellow } from '@material-ui/core/colors';
 
 export const inventoryMargin = 10;
 
@@ -74,6 +79,18 @@ export const classTransformStyle = (cardData: CardData, earliestStartTime: numbe
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
+
+const StyledSideArrow = styled(Grid)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledIconShadow = styled(IconButton)`
+  width: 20px;
+  height: 20px;
+  color: white;
+`;
 
 const StyledCourseClass = styled.div<{
   cardData: CardData;
@@ -186,12 +203,26 @@ interface DroppedClassProps {
   hasClash: boolean;
   isSquareEdges: boolean;
   setInfoVisibility(value: boolean): void;
+  shiftClasses(dir: number, cardData: CardData): void;
+  hasArrows: boolean;
   isHideClassInfo: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
 const DroppedClass: React.FC<DroppedClassProps> = React.memo(
-  ({ cardData, color, days, y, earliestStartTime, hasClash, isSquareEdges, setInfoVisibility, isHideClassInfo }) => {
+  ({
+    cardData,
+    color,
+    days,
+    y,
+    earliestStartTime,
+    hasClash,
+    isSquareEdges,
+    setInfoVisibility,
+    isHideClassInfo,
+    shiftClasses,
+    hasArrows,
+  }) => {
     const element = useRef<HTMLDivElement>(null);
     const rippleRef = useRef<any>(null);
 
@@ -202,6 +233,12 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
     setIsSquareEdges(isSquareEdges);
 
     const onDown = (oldEvent: any) => {
+      if (
+        oldEvent.target.className.baseVal === 'MuiSvgIcon-root' ||
+        oldEvent.target.parentElement.className.baseVal === 'MuiSvgIcon-root'
+      )
+        return;
+
       if (!('type' in oldEvent)) return;
       if (oldEvent.type.includes('mouse') && ignoreMouse) return;
       if (oldEvent.type.includes('touch')) ignoreMouse = true;
@@ -302,22 +339,48 @@ const DroppedClass: React.FC<DroppedClassProps> = React.memo(
             isSquareEdges,
           })}
         >
-          <p style={pStyle}>
-            <b>
-              {cardData.class.course.code} {cardData.class.activity}
-            </b>
-          </p>
-          <p style={pStyleSmall}>
-            {isPeriod(cardData) ? (
-              <PeriodMetadata period={cardData} />
-            ) : (
-              <>
-                {activityMaxPeriods} class
-                {activityMaxPeriods !== 1 && 'es'}
-              </>
-            )}
-          </p>
-          <TouchRipple ref={rippleRef} />
+          {' '}
+          <Grid container>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
+                  <ArrowLeftIcon />
+                </StyledIconShadow>
+              )}
+            </StyledSideArrow>
+            <Grid item xs={10}>
+              <p style={pStyle}>
+                <b>
+                  {cardData.class.course.code} {cardData.class.activity}
+                </b>
+              </p>
+              <p style={pStyleSmall}>
+                {isPeriod(cardData) ? (
+                  <>
+                    <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
+                    {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
+                    )
+                    <br />
+                    <LocationOnIcon fontSize="inherit" style={iconStyle} />
+                    {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
+                  </>
+                ) : (
+                  <>
+                    {activityMaxPeriods} class
+                    {activityMaxPeriods !== 1 && 'es'}
+                  </>
+                )}
+              </p>
+              <TouchRipple ref={rippleRef} />
+            </Grid>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
+                  <ArrowRightIcon />
+                </StyledIconShadow>
+              )}
+            </StyledSideArrow>
+          </Grid>
         </Card>
       </StyledCourseClass>
     );
@@ -363,6 +426,7 @@ const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity:
 interface DroppedClassesProps {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
+  handleSelectClass(classData: ClassData): void;
   assignedColors: Record<string, string>;
   days: string[];
   clashes: Array<ClassPeriod>;
@@ -379,6 +443,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
   clashes,
   isSquareEdges,
   setInfoVisibility,
+  handleSelectClass,
   isHideClassInfo,
 }) => {
   const droppedClasses: JSX.Element[] = [];
@@ -428,6 +493,27 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
     }
   });
 
+  const shiftClasses = (dir: number, c: CardData) => {
+    if ('time' in c) {
+      // ts goes mental without this if
+      const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
+        value.periods.some((v) => v.time.day == c.time.day && v.time.start == c.time.start && v.time.end == c.time.end)
+      );
+      handleSelectClass(
+        newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]
+      );
+    }
+  };
+
+  const hasArrows = (c: CardData) =>
+    'time' in c &&
+    c.class.course.activities[c.class.activity].filter(
+      (value) =>
+        value.periods[0].time.day == c.time.day &&
+        value.periods[0].time.start == c.time.start &&
+        value.periods[0].time.end == c.time.end
+    ).length > 1;
+
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
@@ -436,6 +522,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({
       <DroppedClass
         key={`${key}`}
         cardData={cardData}
+        shiftClasses={shiftClasses}
+        hasArrows={hasArrows(cardData)}
         color={assignedColors[cardData.class.course.code]}
         days={days}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}

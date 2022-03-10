@@ -400,6 +400,7 @@ const App: React.FC = () => {
                 isSquareEdges={isSquareEdges}
                 clashes={checkClashes()}
                 setInfoVisibility={setInfoVisibility}
+                handleSelectClass={handleSelectClass}
                 isHideFullClasses={isHideFullClasses}
                 isHideClassInfo={isHideClassInfo}
               />
