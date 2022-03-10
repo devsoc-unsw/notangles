@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
+import { CourseData, ClassData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { contentPadding } from '../../constants/theme';
 import { TimetableLayout } from './TimetableLayout';
@@ -35,6 +35,7 @@ const StyledTimetableScroll = styled(Box)`
 interface TimetableProps {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
+  handleSelectClass(classData: ClassData): void;
   assignedColors: Record<string, string>;
   is12HourMode: boolean;
   setIs12HourMode(value: boolean): void;
@@ -56,6 +57,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
     isSquareEdges,
     clashes,
     setInfoVisibility,
+    handleSelectClass,
     isHideFullClasses,
     isHideClassInfo,
   }) => (
@@ -86,6 +88,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           clashes={clashes}
           isSquareEdges={isSquareEdges}
           setInfoVisibility={setInfoVisibility}
+          handleSelectClass={handleSelectClass}
           isHideClassInfo={isHideClassInfo}
         />
       </StyledTimetable>
