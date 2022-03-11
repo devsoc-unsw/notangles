@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 import { withTheme } from 'styled-components';
-import { CourseData, ClassPeriod, Activity, ClassData } from '../../interfaces/Course';
-import Dropzone from './Dropzone';
-import { timeToPosition } from '../../utils/Drag';
-import { inventoryDropzoneOpacity } from '../../constants/theme';
+
 import { AppContext } from '../../AppContext';
+import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
+import { Activity, ClassData, ClassPeriod, CourseData } from '../../interfaces/Course';
+import { timeToPosition } from '../../utils/Drag';
+import Dropzone from './Dropzone';
 
 interface ClassDropzoneProps {
   course: CourseData;

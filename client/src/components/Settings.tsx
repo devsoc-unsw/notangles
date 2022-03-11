@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -11,8 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
-
-import {getIsSquaredEdges, setIsSquaredEdges} from "../utils/Drag"
+import styled from 'styled-components';
 
 import { AppContext } from '../AppContext';
 
@@ -32,6 +30,8 @@ const DialogContent = styled(MuiDialogContent)`
 
 const Settings: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const { isSquareEdges, setIsSquareEdges } = useContext(AppContext);
 
   const toggleIsOpen = () => {
     setIsOpen(!isOpen);
@@ -62,11 +62,11 @@ const Settings: React.FC = () => {
         <DialogContent>
           <Typography variant="body1">
             <Switch
-              value={getIsSquareEdges()}
-              checked={getIsSquareEdges()}
+              value={isSquareEdges}
+              checked={isSquareEdges}
               color="primary"
               onChange={() => {
-                setIsSquareEdges(!getIsSquareEdges());
+                setIsSquareEdges(!isSquareEdges);
               }}
             />
             Square corners on classes

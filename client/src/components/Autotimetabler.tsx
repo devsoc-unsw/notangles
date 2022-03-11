@@ -83,18 +83,14 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState
   );
 };
 
-interface AutotimetablerProps {
-}
-
-const Autotimetabler: React.FC<AutotimetablerProps> = () => {
-
-  const { isDarkMode } = useContext(AppContext);
-
+const Autotimetabler: React.FC = () => {
   const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
   const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
   const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
   const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<string | null>('off');
+
+  const { isDarkMode } = useContext(AppContext);
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);

@@ -1,33 +1,36 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Link from '@material-ui/core/Link';
+import React, { useContext, useEffect } from 'react';
+
+import { Box, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
-import {
-  CourseData,
-  ClassData,
-  SelectedClasses,
-  ClassTime,
-  ClassPeriod,
-  CourseCode,
-  Activity,
-  InInventory,
-} from './interfaces/Course';
-import { useDrag } from './utils/Drag';
-import Timetable from './components/timetable/Timetable';
-import Navbar from './components/Navbar';
+import Link from '@material-ui/core/Link';
+import { Alert } from '@material-ui/lab';
+
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+
+import getCourseInfo from './api/getCourseInfo';
+import { AppContext } from './AppContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import getCourseInfo from './api/getCourseInfo';
+import Navbar from './components/Navbar';
+import Timetable from './components/timetable/Timetable';
+import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { isPreview, term, year } from './constants/timetable';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import storage from './utils/storage';
-import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
-import { year, term, isPreview } from './constants/timetable';
+import {
+  Activity,
+  ClassData,
+  ClassPeriod,
+  ClassTime,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+} from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
-import { AppContext } from './AppContext';
+import { useDrag } from './utils/Drag';
+import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -116,17 +119,23 @@ const Footer = styled(Box)`
 `;
 
 const App: React.FC = () => {
-  const { 
-    selectedCourses, setSelectedCourses,
-    selectedClasses, setSelectedClasses,
-    is12HourMode, 
-    isDarkMode, 
-    errorMsg, setErrorMsg,
-    errorVisibility, setErrorVisibility,
-    infoVisibility, setInfoVisibility,
-    isFriendsListOpen,
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    is12HourMode,
+    isDarkMode,
     isSquareEdges,
-    lastUpdated, setLastUpdated 
+    errorMsg,
+    setErrorMsg,
+    errorVisibility,
+    setErrorVisibility,
+    infoVisibility,
+    setInfoVisibility,
+    isFriendsListOpen,
+    lastUpdated,
+    setLastUpdated,
   } = useContext(AppContext);
 
   if (infoVisibility) {
@@ -328,7 +337,7 @@ const App: React.FC = () => {
         <GlobalStyle />
         <StyledApp>
           <Navbar />
-          { isPreview && <FriendsDrawer /> }
+          {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
@@ -342,13 +351,10 @@ const App: React.FC = () => {
                   </SelectWrapper>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <Autotimetabler/>
+                  <Autotimetabler />
                 </Grid>
               </Grid>
-              <Timetable
-                assignedColors={assignedColors}
-                clashes={checkClashes()}
-              />
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />

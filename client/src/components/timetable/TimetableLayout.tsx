@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import styled, { css } from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/Course';
-import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
+import styled, { css } from 'styled-components';
+
 import { AppContext } from '../../AppContext';
-import { days } from '../../constants/timetable';
+import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -110,7 +109,7 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, setIs12HourMode, selectedCourses } = useContext(AppContext)
+  const { is12HourMode, setIs12HourMode, selectedCourses } = useContext(AppContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
@@ -168,4 +167,4 @@ export const TimetableLayout: React.FC = () => {
       {otherCells}
     </>
   );
-}
+};

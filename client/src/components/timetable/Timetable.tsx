@@ -1,14 +1,15 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 import { Box } from '@material-ui/core';
-import { CourseData, SelectedClasses, ClassPeriod } from '../../interfaces/Course';
-import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
-import { contentPadding } from '../../constants/theme';
-import { TimetableLayout } from './TimetableLayout';
-import Dropzones from './Dropzones';
-import DroppedClasses, { inventoryMargin } from './DroppedClasses';
-import { timetableWidth } from '../../utils/Drag';
+import styled from 'styled-components';
+
 import { AppContext } from '../../AppContext';
+import { contentPadding } from '../../constants/theme';
+import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { ClassPeriod } from '../../interfaces/Course';
+import { timetableWidth } from '../../utils/Drag';
+import DroppedClasses, { inventoryMargin } from './DroppedClasses';
+import Dropzones from './Dropzones';
+import { TimetableLayout } from './TimetableLayout';
 
 const StyledTimetable = styled(Box)<{
   rows: number;
@@ -39,12 +40,8 @@ interface TimetableProps {
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Timetable: React.FC<TimetableProps> = ({
-  assignedColors,
-  clashes,
-}) => {
-
-  const { selectedCourses, selectedClasses} = useContext(AppContext)
+const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes }) => {
+  const { selectedCourses } = useContext(AppContext);
 
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
@@ -54,14 +51,9 @@ const Timetable: React.FC<TimetableProps> = ({
           Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
         }
       >
-        <TimetableLayout/>
-        <Dropzones
-          assignedColors={assignedColors}
-        />
-        <DroppedClasses
-          assignedColors={assignedColors}
-          clashes={clashes}
-        />
+        <TimetableLayout />
+        <Dropzones assignedColors={assignedColors} />
+        <DroppedClasses assignedColors={assignedColors} clashes={clashes} />
       </StyledTimetable>
     </StyledTimetableScroll>
   );
