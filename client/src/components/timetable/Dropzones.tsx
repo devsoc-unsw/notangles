@@ -18,6 +18,7 @@ interface ClassDropzoneProps {
 const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
   ({ course, color, earliestStartTime }) => {
     // Deep-ish copy of activities (so we can combine duplicates without affecting original)
+    const { isHideFullClasses } = useContext(AppContext);
 
     let newActivities: Record<Activity, ClassData[]> = {};
 
@@ -54,7 +55,9 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter(
         // TODO
-        (classData) => classData.periods.length !== 0
+        (classData) =>
+          classData.periods.length !== 0 &&
+          (!isHideFullClasses || (isHideFullClasses && classData.enrolments !== classData.capacity))
       );
     });
 
@@ -81,27 +84,23 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     !(prev.color !== next.color || prev.earliestStartTime !== next.earliestStartTime || prev.course.code !== next.course.code)
 );
 
-interface Theme {
-  palette: {
-    type: string;
-  };
-}
+interface Theme {}
 
 interface DropzonesProps {
   assignedColors: Record<string, string>;
   theme: Theme;
 }
 
-const Dropzones: React.FC<DropzonesProps> = ({ assignedColors, theme }) => {
-  const { selectedCourses } = useContext(AppContext)
+const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
+  const { selectedCourses, isDarkMode } = useContext(AppContext);
 
-  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
+  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
   const dropzones = selectedCourses.map((course) => (
     <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
   ));
 
-  const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
+  const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(

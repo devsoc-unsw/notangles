@@ -1,5 +1,5 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import React, { useContext, useEffect,  useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
@@ -116,7 +116,11 @@ const StyledUl = styled.ul`
 
 interface CourseSelectProps {
   assignedColors: Record<string, string>;
-  handleSelect(data: string | string[]): void;
+  handleSelect(
+    data: string | string[],
+    a?: boolean,
+    callback?: (_selectedCourses: CourseData[]) => void,
+  ): void;
   handleRemove(courseCode: string): void;
 }
 

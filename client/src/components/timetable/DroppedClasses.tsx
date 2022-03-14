@@ -2,6 +2,12 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import Card from '@material-ui/core/Card';
+import { yellow } from '@material-ui/core/colors';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { Warning } from '@material-ui/icons';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
@@ -10,7 +16,7 @@ import styled from 'styled-components';
 
 import { AppContext } from '../../AppContext';
 import { days, defaultStartTime } from '../../constants/timetable';
-import { ClassPeriod, CourseData, InInventory } from '../../interfaces/Course';
+import { ClassData, ClassPeriod, CourseData, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -74,6 +80,18 @@ export const classTransformStyle = (cardData: CardData, earliestStartTime: numbe
   `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
+
+const StyledSideArrow = styled(Grid)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledIconShadow = styled(IconButton)`
+  width: 20px;
+  height: 20px;
+  color: white;
+`;
 
 const StyledCourseClass = styled.div<{
   cardData: CardData;
@@ -164,7 +182,7 @@ const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden',
+  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
   textOverflow: 'ellipsis',
 };
 
@@ -183,146 +201,204 @@ interface DroppedClassProps {
   y?: number;
   earliestStartTime: number;
   hasClash: boolean;
+  shiftClasses(dir: number, cardData: CardData): void;
+  hasArrows: boolean;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const DroppedClass: React.FC<DroppedClassProps> = React.memo(({ cardData, color, y, earliestStartTime, hasClash }) => {
-  const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<any>(null);
-  const { setInfoVisibility, isSquareEdges } = useContext(AppContext);
+const DroppedClass: React.FC<DroppedClassProps> = React.memo(
+  ({ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }) => {
+    const element = useRef<HTMLDivElement>(null);
+    const rippleRef = useRef<any>(null);
+    const { setInfoVisibility, isSquareEdges, isHideClassInfo } = useContext(AppContext);
 
-  let timer: number | null = null;
-  let rippleStopped = false;
-  let ignoreMouse = false;
+    let timer: number | null = null;
+    let rippleStopped = false;
+    let ignoreMouse = false;
 
-  const onDown = (oldEvent: any) => {
-    if (!('type' in oldEvent)) return;
-    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
-    if (oldEvent.type.includes('touch')) ignoreMouse = true;
+    const onDown = (oldEvent: any) => {
+      if (
+        oldEvent.target.className.baseVal === 'MuiSvgIcon-root' ||
+        oldEvent.target.parentElement.className.baseVal === 'MuiSvgIcon-root'
+      )
+        return;
 
-    const event = { ...oldEvent };
+      if (!('type' in oldEvent)) return;
+      if (oldEvent.type.includes('mouse') && ignoreMouse) return;
+      if (oldEvent.type.includes('touch')) ignoreMouse = true;
 
-    if ('start' in rippleRef.current) {
-      rippleStopped = false;
-      rippleRef.current.start(event);
-    }
+      const event = { ...oldEvent };
 
-    const startDrag = () => {
-      timer = null;
-      setDragTarget(cardData, event);
-      setInfoVisibility(false);
-    };
-
-    if (oldEvent.type.includes('touch')) {
-      timer = window.setTimeout(startDrag, 500);
-    } else {
-      startDrag();
-    }
-
-    const onUp = (eventUp: any) => {
-      if (eventUp.type.includes('mouse') && ignoreMouse) return;
-
-      window.removeEventListener('mousemove', onUp);
-      window.removeEventListener('touchmove', onUp);
-
-      if ((timer || !eventUp.type.includes('move')) && 'stop' in rippleRef.current) {
-        window.removeEventListener('mouseup', onUp);
-        window.removeEventListener('touchend', onUp);
-
-        if (!rippleStopped && 'stop' in rippleRef.current) {
-          rippleStopped = true;
-
-          setTimeout(() => {
-            try {
-              rippleRef.current.stop(eventUp);
-            } catch (error) {
-              console.log(error);
-            }
-          }, 100);
-        }
+      if ('start' in rippleRef.current) {
+        rippleStopped = false;
+        rippleRef.current.start(event);
       }
 
-      if (timer !== null) {
-        clearTimeout(timer);
+      const startDrag = () => {
         timer = null;
-        setInfoVisibility(true);
+        setDragTarget(cardData, event);
+        setInfoVisibility(false);
+      };
+
+      if (oldEvent.type.includes('touch')) {
+        timer = window.setTimeout(startDrag, 500);
+      } else {
+        startDrag();
       }
 
-      eventUp.preventDefault();
+      const onUp = (eventUp: any) => {
+        if (eventUp.type.includes('mouse') && ignoreMouse) return;
+
+        window.removeEventListener('mousemove', onUp);
+        window.removeEventListener('touchmove', onUp);
+
+        if ((timer || !eventUp.type.includes('move')) && 'stop' in rippleRef.current) {
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('touchend', onUp);
+
+          if (!rippleStopped && 'stop' in rippleRef.current) {
+            rippleStopped = true;
+
+            setTimeout(() => {
+              try {
+                rippleRef.current.stop(eventUp);
+              } catch (error) {
+                console.log(error);
+              }
+            }, 100);
+          }
+        }
+
+        if (timer !== null) {
+          clearTimeout(timer);
+          timer = null;
+          setInfoVisibility(true);
+        }
+
+        eventUp.preventDefault();
+      };
+
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('touchend', onUp, { passive: false });
+      window.addEventListener('mousemove', onUp);
+      window.addEventListener('touchmove', onUp, { passive: false });
     };
 
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchend', onUp, { passive: false });
-    window.addEventListener('mousemove', onUp);
-    window.addEventListener('touchmove', onUp, { passive: false });
-  };
+    useEffect(() => {
+      const elementCurrent = element.current;
 
-  useEffect(() => {
-    const elementCurrent = element.current;
+      if (elementCurrent) {
+        registerCard(cardData, elementCurrent);
+      }
 
-    if (elementCurrent) {
-      registerCard(cardData, elementCurrent);
+      return () => {
+        if (elementCurrent) {
+          unregisterCard(cardData, elementCurrent);
+        }
+      };
+    });
+
+    let activityMaxPeriods = 0;
+    if (!isPeriod(cardData)) {
+      activityMaxPeriods = Math.max(
+        ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
+      );
     }
 
-    return () => {
-      if (elementCurrent) {
-        unregisterCard(cardData, elementCurrent);
-      }
-    };
-  });
-
-  let activityMaxPeriods = 0;
-  if (!isPeriod(cardData)) {
-    activityMaxPeriods = Math.max(
-      ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
+    return (
+      <StyledCourseClass
+        ref={element}
+        onMouseDown={onDown}
+        onTouchStart={onDown}
+        cardData={cardData}
+        days={days}
+        y={y}
+        earliestStartTime={earliestStartTime}
+        isSquareEdges={isSquareEdges}
+      >
+        <Card
+          style={courseClassInnerStyle({
+            backgroundColor: color,
+            hasClash,
+            isSquareEdges,
+          })}
+        >
+          <Grid container>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
+                  <ArrowLeftIcon />
+                </StyledIconShadow>
+              )}
+            </StyledSideArrow>
+            <Grid item xs={10}>
+              <p style={pStyle}>
+                <b>
+                  {cardData.class.course.code} {cardData.class.activity}
+                </b>
+              </p>
+              <p style={pStyleSmall}>
+                {isPeriod(cardData) ? (
+                  isHideClassInfo ? (
+                    <></>
+                  ) : (
+                    <PeriodMetadata period={cardData} />
+                  )
+                ) : (
+                  <>
+                    {activityMaxPeriods} class
+                    {activityMaxPeriods !== 1 && 'es'}
+                  </>
+                )}
+              </p>
+              <TouchRipple ref={rippleRef} />
+            </Grid>
+            <StyledSideArrow item xs={1}>
+              {hasArrows && (
+                <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
+                  <ArrowRightIcon />
+                </StyledIconShadow>
+              )}
+            </StyledSideArrow>
+          </Grid>
+        </Card>
+      </StyledCourseClass>
     );
   }
+);
+
+interface PeriodMetadataProps {
+  period: ClassPeriod;
+}
+
+const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
+  const percentEnrolled = period.class.enrolments / period.class.capacity;
+
+  const StyledCapacityIndicator = styled.p`
+    text-overflow: ellipsis;
+    margin: 0;
+    font-weight: ${percentEnrolled === 1 ? 'bolder' : undefined};
+  `;
 
   return (
-    <StyledCourseClass
-      ref={element}
-      onMouseDown={onDown}
-      onTouchStart={onDown}
-      cardData={cardData}
-      days={days}
-      y={y}
-      earliestStartTime={earliestStartTime}
-      isSquareEdges={isSquareEdges}
-    >
-      <Card
-        style={courseClassInnerStyle({
-          backgroundColor: color,
-          hasClash,
-          isSquareEdges,
-        })}
-      >
-        <p style={pStyle}>
-          <b>
-            {cardData.class.course.code} {cardData.class.activity}
-          </b>
-        </p>
-        <p style={pStyleSmall}>
-          {isPeriod(cardData) ? (
-            <>
-              <PeopleAltIcon fontSize="inherit" style={iconStyle} /> {cardData.class.enrolments}/{cardData.class.capacity} (
-              {cardData.time.weeks.length > 0 ? 'Weeks' : 'Week'} {cardData.time.weeksString}
-              )
-              <br />
-              <LocationOnIcon fontSize="inherit" style={iconStyle} />
-              {cardData.locations[0] + (cardData.locations.length > 1 ? ` + ${cardData.locations.length - 1}` : '')}
-            </>
-          ) : (
-            <>
-              {activityMaxPeriods} class
-              {activityMaxPeriods !== 1 && 'es'}
-            </>
-          )}
-        </p>
-        <TouchRipple ref={rippleRef} />
-      </Card>
-    </StyledCourseClass>
+    <>
+      <StyledCapacityIndicator>
+        {percentEnrolled === 1 ? (
+          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem', color: yellow[400] }} />
+        ) : (
+          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem' }} />
+        )}
+        <span>
+          {period.class.enrolments}/{period.class.capacity}
+        </span>
+      </StyledCapacityIndicator>
+      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
+      <br />
+      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+    </>
   );
-});
+};
 
 const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity: string) =>
   courses.find((course) => course.code === courseCode)?.inventoryData[activity];
@@ -330,9 +406,10 @@ const getInventoryPeriod = (courses: CourseData[], courseCode: string, activity:
 interface DroppedClassesProps {
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
+  handleSelectClass(classData: ClassData): void;
 }
 
-const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes }) => {
+const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes, handleSelectClass }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
   const newCards: CardData[] = [];
@@ -382,6 +459,27 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     }
   });
 
+  const shiftClasses = (dir: number, c: CardData) => {
+    if ('time' in c) {
+      // ts goes mental without this if
+      const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
+        value.periods.some((v) => v.time.day == c.time.day && v.time.start == c.time.start && v.time.end == c.time.end)
+      );
+      handleSelectClass(
+        newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]
+      );
+    }
+  };
+
+  const hasArrows = (c: CardData) =>
+    'time' in c &&
+    c.class.course.activities[c.class.activity].filter(
+      (value) =>
+        value.periods[0].time.day == c.time.day &&
+        value.periods[0].time.start == c.time.start &&
+        value.periods[0].time.end == c.time.end
+    ).length > 1;
+
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
@@ -390,6 +488,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
       <DroppedClass
         key={`${key}`}
         cardData={cardData}
+        shiftClasses={shiftClasses}
+        hasArrows={hasArrows(cardData)}
         color={assignedColors[cardData.class.course.code]}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}

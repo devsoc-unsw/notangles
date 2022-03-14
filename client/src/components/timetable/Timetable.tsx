@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AppContext } from '../../AppContext';
 import { contentPadding } from '../../constants/theme';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
-import { ClassPeriod } from '../../interfaces/Course';
+import { ClassData, ClassPeriod } from '../../interfaces/Course';
 import { timetableWidth } from '../../utils/Drag';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
@@ -37,10 +37,11 @@ const StyledTimetableScroll = styled(Box)`
 interface TimetableProps {
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
+  handleSelectClass(classData: ClassData): void;
 }
 
 // beware memo - if a component isn't re-rendering, it could be why
-const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes }) => {
+const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
   const { selectedCourses } = useContext(AppContext);
 
   return (
@@ -53,7 +54,7 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes }) => {
       >
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
-        <DroppedClasses assignedColors={assignedColors} clashes={clashes} />
+        <DroppedClasses assignedColors={assignedColors} clashes={clashes} handleSelectClass={handleSelectClass} />
       </StyledTimetable>
     </StyledTimetableScroll>
   );

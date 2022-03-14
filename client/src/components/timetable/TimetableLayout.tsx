@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { Box } from '@material-ui/core';
 import styled, { css } from 'styled-components';
 
 import { AppContext } from '../../AppContext';
@@ -74,18 +73,6 @@ const ToggleCell = styled(BaseCell)`
   }
 `;
 
-const Is12HourModeToggle = styled(Box)`
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.1s;
-  color: ${({ theme }) => theme.palette.primary.main};
-
-  &:hover {
-    color: ${({ theme }) => theme.palette.primary.dark};
-  }
-`;
-
 const ColumnWidthGuide = styled.span`
   opacity: 0;
   pointer-events: none;
@@ -109,7 +96,7 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, setIs12HourMode, selectedCourses } = useContext(AppContext);
+  const { is12HourMode, selectedCourses } = useContext(AppContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
@@ -152,9 +139,6 @@ export const TimetableLayout: React.FC = () => {
   return (
     <>
       <ToggleCell key={0} x={1} y={1}>
-        <Is12HourModeToggle component="span" onClick={() => setIs12HourMode(!is12HourMode)}>
-          {`${is12HourMode ? '12' : '24'} h`}
-        </Is12HourModeToggle>
         {
           // Invisible guide for the column width for
           // consistency between 24 and 12 hour time.

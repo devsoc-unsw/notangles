@@ -127,6 +127,9 @@ const App: React.FC = () => {
     is12HourMode,
     isDarkMode,
     isSquareEdges,
+    isHideFullClasses,
+    isDefaultUnscheduled,
+    isHideClassInfo,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -178,7 +181,9 @@ const App: React.FC = () => {
 
       Object.keys(course.activities).forEach((activity) => {
         // temp until auto timetabling works
-        [prev[course.code][activity]] = course.activities[activity];
+        prev[course.code][activity] = isDefaultUnscheduled
+          ? null
+          : course.activities[activity].find((x) => x.enrolments != x.capacity) ?? null; // null for unscheduled
       });
 
       return prev;
@@ -267,6 +272,18 @@ const App: React.FC = () => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
 
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -354,7 +371,7 @@ const App: React.FC = () => {
                   <Autotimetabler />
                 </Grid>
               </Grid>
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} />
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
