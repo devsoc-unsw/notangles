@@ -90,6 +90,7 @@ const Timetable: React.FC<TimetableProps> = React.memo(
           setInfoVisibility={setInfoVisibility}
           handleSelectClass={handleSelectClass}
           isHideClassInfo={isHideClassInfo}
+          isHideFullClasses={isHideFullClasses}
         />
       </StyledTimetable>
     </StyledTimetableScroll>
