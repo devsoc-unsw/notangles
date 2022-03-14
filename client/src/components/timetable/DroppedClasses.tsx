@@ -418,7 +418,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
 
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
 
-  const { selectedCourses, selectedClasses } = useContext(AppContext);
+  const { selectedCourses, selectedClasses, isHideFullClasses } = useContext(AppContext);
 
   const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
@@ -459,13 +459,17 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     }
   });
 
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
   const shiftClasses = (dir: number, c: CardData) => {
     if ('time' in c) {
       // ts goes mental without this if
       const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
-        value.periods.some((v) => v.time.day == c.time.day && v.time.start == c.time.start && v.time.end == c.time.end)
+        value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || (value.enrolments != value.capacity)))
       );
-      handleSelectClass(
+      
+      if (newclasses.length) handleSelectClass(
         newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]
       );
     }
@@ -474,10 +478,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
   const hasArrows = (c: CardData) =>
     'time' in c &&
     c.class.course.activities[c.class.activity].filter(
-      (value) =>
-        value.periods[0].time.day == c.time.day &&
-        value.periods[0].time.start == c.time.start &&
-        value.periods[0].time.end == c.time.end
+      (value) => isDuplicate(value.periods[0], c) && (!isHideFullClasses || (value.enrolments != value.capacity) || (value.id == c.class.id))
     ).length > 1;
 
   newCards.forEach((cardData) => {

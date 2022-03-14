@@ -35,6 +35,14 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
       a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
+    if (isHideFullClasses) {
+      Object.keys(newActivities).forEach((activity) => {
+        newActivities[activity] = newActivities[activity].filter(
+          (classData) => classData.enrolments !== classData.capacity
+        );
+      });
+    }
+
     Object.keys(newActivities).forEach((activity) => {
       let allPeriods: ClassPeriod[] = [];
 
@@ -56,8 +64,7 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
       newActivities[activity] = newActivities[activity].filter(
         // TODO
         (classData) =>
-          classData.periods.length !== 0 &&
-          (!isHideFullClasses || (isHideFullClasses && classData.enrolments !== classData.capacity))
+          classData.periods.length !== 0
       );
     });
 
