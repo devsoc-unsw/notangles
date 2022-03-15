@@ -197,6 +197,17 @@ const iconStyle = {
   verticalAlign: 'top',
 };
 
+const iconPeopleStyle = {
+  ...iconStyle,
+  marginRight: '0.2rem',
+};
+
+const iconWarningStyle = {
+  ...iconStyle,
+  marginRight: '0.2rem',
+  color: yellow[400],
+};
+
 interface PeriodMetadataProps {
   period: ClassPeriod;
 }
@@ -214,9 +225,9 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
     <>
       <span style={StyledCapacityIndicator({ percentEnrolled })}>
         {percentEnrolled === 1 ? (
-          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.2rem', color: yellow[400] }} />
+          <Warning fontSize="inherit" style={iconWarningStyle} />
         ) : (
-          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.2rem' }} />
+          <PeopleAltIcon fontSize="inherit" style={iconPeopleStyle} />
         )}
         <span>
           {period.class.enrolments}/{period.class.capacity}{' '}
