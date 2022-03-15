@@ -67,7 +67,7 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
 
   display: flex;
@@ -108,6 +108,19 @@ const SelectWrapper = styled(Box)`
   grid-row: 1;
   padding-top: 20px;
 `;
+
+const ICSButton = styled(Button)`
+  && {
+    min-width: 250px;
+    // width: 20%;
+    margin: auto;
+    background-color: ${(props) => props.theme.palette.primary.main};
+    color: #FFFFFF;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
+`
 
 const Footer = styled(Box)`
   text-align: center;
@@ -392,7 +405,6 @@ const App: React.FC = () => {
                   <Autotimetabler isDarkMode={isDarkMode} />
                 </Grid>
               </Grid>
-              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
               <Timetable
                 selectedCourses={selectedCourses}
                 selectedClasses={selectedClasses}
@@ -406,6 +418,8 @@ const App: React.FC = () => {
                 isHideFullClasses={isHideFullClasses}
                 isHideClassInfo={isHideClassInfo}
               />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              <br />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
