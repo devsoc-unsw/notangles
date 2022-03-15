@@ -188,8 +188,8 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
 const updateDelay = 30;
 let lastUpdate = 0;
 
-let currentClassTime: ClassTime|undefined;
-const setcurrentClassTime = (time: ClassTime|undefined) => {
+let currentClassTime: ClassTime | undefined;
+const setcurrentClassTime = (time: ClassTime | undefined) => {
   currentClassTime = time;
 };
 
@@ -230,17 +230,18 @@ const updateDropTarget = (now?: boolean) => {
 
     if (isPeriod(newDropTarget)) {
       let newTime = newDropTarget.time;
-      if (!currentClassTime || (
+      if (
+        !currentClassTime ||
         newTime.day !== currentClassTime.day ||
         newTime.start !== currentClassTime.start ||
         newTime.end !== currentClassTime.end
-      )) {
-        setcurrentClassTime(undefined)
+      ) {
+        setcurrentClassTime(undefined);
         selectClass(newDropTarget.class);
       }
     } else if (isPeriod(dragTarget)) {
       // moved to inventory
-      setcurrentClassTime(undefined)
+      setcurrentClassTime(undefined);
       removeClass(dragTarget.class);
     }
   } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
