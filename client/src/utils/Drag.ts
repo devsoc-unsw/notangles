@@ -188,8 +188,8 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
 const updateDelay = 30;
 let lastUpdate = 0;
 
-let currentClassTime: ClassTime;
-const setcurrentClassTime = (time: ClassTime) => {
+let currentClassTime: ClassTime|undefined;
+const setcurrentClassTime = (time: ClassTime|undefined) => {
   currentClassTime = time;
 };
 
@@ -230,12 +230,12 @@ const updateDropTarget = (now?: boolean) => {
 
     if (isPeriod(newDropTarget)) {
       let newTime = newDropTarget.class.periods[0].time;
-      if (
-        newTime.day != currentClassTime.day ||
+      if (!currentClassTime || (
+        newTime.day !== currentClassTime.day ||
         newTime.start !== currentClassTime.start ||
         newTime.end !== currentClassTime.end
-      ) {
-        setcurrentClassTime(newDropTarget.class.periods[0].time);
+      )) {
+        setcurrentClassTime(undefined)
         selectClass(newDropTarget.class);
       }
     } else if (isPeriod(dragTarget)) {
@@ -364,7 +364,11 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
 
       dragElement = element;
       freezeTransform(element);
-      if ('periods' in cardData.class) setcurrentClassTime(cardData.class.periods[0].time);
+      if ('periods' in cardData.class) {
+        setcurrentClassTime(cardData.class.periods[0].time);
+      } else {
+        setcurrentClassTime(undefined);
+      }
       updateDropTarget(true);
     } else {
       dragElement = null;
