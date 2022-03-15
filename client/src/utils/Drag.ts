@@ -1,5 +1,6 @@
-import { ClassData, ClassPeriod, InventoryPeriod, InInventory, ClassTime } from '../interfaces/Course';
 import { contentPadding, lightTheme } from '../constants/theme';
+import { ClassData, ClassPeriod, ClassTime, InInventory, InventoryPeriod } from '../interfaces/Course';
+import storage from './storage';
 
 export type CardData = ClassPeriod | InventoryPeriod;
 
@@ -25,7 +26,6 @@ let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
-let isSquareEdges = false;
 
 // window.addEventListener('load', () => {
 //   lastScrollX = document.documentElement.scrollLeft;
@@ -39,6 +39,7 @@ const toPx = (value: number) => `${value}px`;
 
 const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
+  const isSquareEdges = storage.get('isSquareEdges');
   element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };
 
@@ -228,9 +229,13 @@ const updateDropTarget = (now?: boolean) => {
     updateDropzones();
 
     if (isPeriod(newDropTarget)) {
-      let newTime = newDropTarget.class.periods[0].time
-      if (newTime.day != currentClassTime.day || newTime.start !== currentClassTime.start || newTime.end !== currentClassTime.end) {
-        setcurrentClassTime(newDropTarget.class.periods[0].time)
+      let newTime = newDropTarget.class.periods[0].time;
+      if (
+        newTime.day != currentClassTime.day ||
+        newTime.start !== currentClassTime.start ||
+        newTime.end !== currentClassTime.end
+      ) {
+        setcurrentClassTime(newDropTarget.class.periods[0].time);
         selectClass(newDropTarget.class);
       }
     } else if (isPeriod(dragTarget)) {
@@ -372,10 +377,6 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
     updateCards();
     updateDropzones();
   }
-};
-
-export const setIsSquareEdges = (value: boolean) => {
-  isSquareEdges = value;
 };
 
 const onMove = (x: number, y: number) => {

@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+
+import { borderRadius } from '../../constants/theme';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
-import { borderRadius } from '../../constants/theme';
-import { classTranslateY, classHeight } from './DroppedClasses';
+import { classHeight, classTranslateY } from './DroppedClasses';
 
 const cellStyle = ({
   classPeriod,
