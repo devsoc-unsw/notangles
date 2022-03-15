@@ -9,7 +9,7 @@ import { timetableWidth } from '../../utils/Drag';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
-import { CourseContext } from '../../CourseContext';
+import { CourseContext } from '../../context/CourseContext';
 
 const StyledTimetable = styled(Box)<{
   rows: number;

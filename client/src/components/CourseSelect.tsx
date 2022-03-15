@@ -10,12 +10,12 @@ import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
 
 import getCoursesList from '../api/getCoursesList';
-import { AppContext } from '../AppContext';
+import { AppContext } from '../context/AppContext';
 import { maxAddedCourses, term, year } from '../constants/timetable';
 import { CourseData } from '../interfaces/Course';
 import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
-import { CourseContext } from '../CourseContext';
+import { CourseContext } from '../context/CourseContext';
 
 const SEARCH_DELAY = 300;
 

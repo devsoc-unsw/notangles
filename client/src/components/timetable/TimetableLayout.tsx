@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
 
-import { AppContext } from '../../AppContext';
+import { AppContext } from '../../context/AppContext';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
-import { CourseContext } from '../../CourseContext';
+import { CourseContext } from '../../context/CourseContext';
 
 export const rowHeight = 60;
 const classMargin = 1;

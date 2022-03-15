@@ -14,8 +14,8 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
 
-import { AppContext } from '../../AppContext';
-import { CourseContext } from '../../CourseContext';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 
 import { days, defaultStartTime } from '../../constants/timetable';
 import { ClassData, ClassPeriod, InInventory } from '../../interfaces/Course';

@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, useState } from 'react';
-import { CourseData, SelectedClasses } from './interfaces/Course';
-import { CourseContextProviderProps } from './PropTypes';
+import { CourseData, SelectedClasses } from '../interfaces/Course';
+import { CourseContextProviderProps } from '../types/PropTypes';
 
 export interface ICourseContext {
   selectedCourses: CourseData[];

@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
-import { isPreview } from './constants/timetable';
-import { AppContextProviderProps } from './PropTypes';
-import storage from './utils/storage';
+import { isPreview } from '../constants/timetable';
+import { AppContextProviderProps } from '../types/PropTypes';
+import storage from '../utils/storage';
 
 export interface IAppContext {
   is12HourMode: boolean;

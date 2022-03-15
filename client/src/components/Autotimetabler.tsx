@@ -13,7 +13,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import Grid from '@material-ui/core/Grid';
-import { AppContext } from '../AppContext';
+import { AppContext } from '../context/AppContext';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
