@@ -49,8 +49,7 @@ interface CellProps {
   isInventory?: boolean;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
-const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
+const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const elementCurrent = element.current;
@@ -84,6 +83,6 @@ const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestS
       )}
     </div>
   );
-});
+};
 
 export default Dropzone;

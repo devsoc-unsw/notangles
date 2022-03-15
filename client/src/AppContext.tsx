@@ -1,17 +1,9 @@
 import React, { createContext, useState } from 'react';
 import { isPreview } from './constants/timetable';
-import { CourseData, SelectedClasses } from './interfaces/Course';
 import { AppContextProviderProps } from './PropTypes';
 import storage from './utils/storage';
 
 export interface IAppContext {
-  selectedCourses: CourseData[];
-  setSelectedCourses: (newSelectedCourses: CourseData[]) => void;
-
-  selectedClasses: SelectedClasses;
-  setSelectedClasses(newSelectedClasses: SelectedClasses): void;
-  setSelectedClasses(callback: (oldSelectedClasses: SelectedClasses) => SelectedClasses): void;
-
   is12HourMode: boolean;
   setIs12HourMode: (newIs12HourMode: boolean) => void;
 
@@ -50,12 +42,6 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
-  selectedCourses: [],
-  setSelectedCourses: () => {},
-
-  selectedClasses: {},
-  setSelectedClasses: () => {},
-
   is12HourMode: false,
   setIs12HourMode: () => {},
 
@@ -94,8 +80,6 @@ export const AppContext = createContext<IAppContext>({
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
@@ -110,10 +94,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [lastUpdated, setLastUpdated] = useState(0);
 
   const initialContext: IAppContext = {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
     is12HourMode,
     setIs12HourMode,
     isDarkMode,

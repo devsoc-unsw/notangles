@@ -9,6 +9,7 @@ import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
 import { AppContext } from './AppContext';
+import { CourseContext } from './CourseContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
@@ -120,10 +121,6 @@ const Footer = styled(Box)`
 
 const App: React.FC = () => {
   const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -140,6 +137,8 @@ const App: React.FC = () => {
     lastUpdated,
     setLastUpdated,
   } = useContext(AppContext);
+
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {

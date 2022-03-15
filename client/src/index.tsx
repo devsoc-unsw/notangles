@@ -6,6 +6,7 @@ import App from './App';
 import AppContextProvider from './AppContext';
 import Privacy from './components/Privacy';
 import './index.css';
+import CourseContextProvider from './CourseContext';
 import * as serviceWorker from './serviceWorker';
 
 const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
@@ -22,12 +23,14 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
 
 const Root: React.FC = () => (
   <AppContextProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route element={<App />} path="/" />
-        <Route element={<Privacy />} path="/privacy" />
-      </Routes>
-    </BrowserRouter>
+    <CourseContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<App />} path="/" />
+          <Route element={<Privacy />} path="/privacy" />
+        </Routes>
+      </BrowserRouter>
+    </CourseContextProvider>
   </AppContextProvider>
 );
 

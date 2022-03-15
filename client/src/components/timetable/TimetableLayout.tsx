@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 
 import { AppContext } from '../../AppContext';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { CourseContext } from '../../CourseContext';
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -96,7 +97,8 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, selectedCourses } = useContext(AppContext);
+  const { is12HourMode } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));

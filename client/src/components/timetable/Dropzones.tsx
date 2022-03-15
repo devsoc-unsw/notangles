@@ -4,6 +4,7 @@ import { withTheme } from 'styled-components';
 import { AppContext } from '../../AppContext';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
+import { CourseContext } from '../../CourseContext';
 import { Activity, ClassData, ClassPeriod, CourseData } from '../../interfaces/Course';
 import { timeToPosition } from '../../utils/Drag';
 import Dropzone from './Dropzone';
@@ -14,82 +15,74 @@ interface ClassDropzoneProps {
   earliestStartTime: number;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
-const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
-  ({ course, color, earliestStartTime }) => {
-    // Deep-ish copy of activities (so we can combine duplicates without affecting original)
-    const { isHideFullClasses } = useContext(AppContext);
+const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestStartTime }) => {
+  const { isHideFullClasses } = useContext(AppContext);
 
-    let newActivities: Record<Activity, ClassData[]> = {};
+  // Deep-ish copy of activities (so we can combine duplicates without affecting original)
+  let newActivities: Record<Activity, ClassData[]> = {};
 
-    Object.keys(course.activities).forEach((activity) => {
-      newActivities[activity] = [];
+  Object.keys(course.activities).forEach((activity) => {
+    newActivities[activity] = [];
 
-      course.activities[activity].forEach((classData) => {
-        const newClassData = { ...classData };
-        newClassData.periods = [...classData.periods];
-        newActivities[activity].push(newClassData);
-      });
+    course.activities[activity].forEach((classData) => {
+      const newClassData = { ...classData };
+      newClassData.periods = [...classData.periods];
+      newActivities[activity].push(newClassData);
+    });
+  });
+
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
+  if (isHideFullClasses) {
+    Object.keys(newActivities).forEach((activity) => {
+      newActivities[activity] = newActivities[activity].filter((classData) => classData.enrolments !== classData.capacity);
+    });
+  }
+
+  Object.keys(newActivities).forEach((activity) => {
+    let allPeriods: ClassPeriod[] = [];
+
+    newActivities[activity].forEach((classData) => {
+      allPeriods = [...allPeriods, ...classData.periods];
     });
 
-    const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-      a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
-
-    if (isHideFullClasses) {
-      Object.keys(newActivities).forEach((activity) => {
-        newActivities[activity] = newActivities[activity].filter(
-          (classData) => classData.enrolments !== classData.capacity
-        );
-      });
-    }
-
-    Object.keys(newActivities).forEach((activity) => {
-      let allPeriods: ClassPeriod[] = [];
-
-      newActivities[activity].forEach((classData) => {
-        allPeriods = [...allPeriods, ...classData.periods];
-      });
-
-      newActivities[activity].forEach((classData) => {
-        classData.periods = classData.periods.filter((period) => {
-          // TODO
-          const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
-
-          return duplicates[0] === period;
-        });
-      });
-    });
-
-    Object.keys(newActivities).forEach((activity) => {
-      newActivities[activity] = newActivities[activity].filter(
+    newActivities[activity].forEach((classData) => {
+      classData.periods = classData.periods.filter((period) => {
         // TODO
-        (classData) =>
-          classData.periods.length !== 0
-      );
+        const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
+
+        return duplicates[0] === period;
+      });
     });
+  });
 
-    newActivities = Object.fromEntries(Object.entries(newActivities).filter(([_, classes]) => classes.length !== 0));
-
-    const dropzones = Object.values(newActivities).flatMap((classDatas) =>
-      classDatas.flatMap((classData) =>
-        classData.periods.flatMap((period, i) => (
-          <Dropzone
-            key={`${classData.id}-${i}`}
-            classPeriod={period}
-            x={period.time.day + 1}
-            y={timeToPosition(period.time.start, earliestStartTime)}
-            color={color}
-            earliestStartTime={earliestStartTime}
-          />
-        ))
-      )
+  Object.keys(newActivities).forEach((activity) => {
+    newActivities[activity] = newActivities[activity].filter(
+      // TODO
+      (classData) => classData.periods.length !== 0
     );
+  });
 
-    return <>{dropzones}</>;
-  },
-  (prev, next) =>
-    !(prev.color !== next.color || prev.earliestStartTime !== next.earliestStartTime || prev.course.code !== next.course.code)
-);
+  newActivities = Object.fromEntries(Object.entries(newActivities).filter(([_, classes]) => classes.length !== 0));
+
+  const dropzones = Object.values(newActivities).flatMap((classDatas) =>
+    classDatas.flatMap((classData) =>
+      classData.periods.flatMap((period, i) => (
+        <Dropzone
+          key={`${classData.id}-${i}`}
+          classPeriod={period}
+          x={period.time.day + 1}
+          y={timeToPosition(period.time.start, earliestStartTime)}
+          color={color}
+          earliestStartTime={earliestStartTime}
+        />
+      ))
+    )
+  );
+
+  return <>{dropzones}</>;
+};
 
 interface Theme {}
 
@@ -99,7 +92,8 @@ interface DropzonesProps {
 }
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { selectedCourses, isDarkMode } = useContext(AppContext);
+  const { isDarkMode } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
   const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 

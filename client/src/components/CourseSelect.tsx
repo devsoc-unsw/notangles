@@ -15,6 +15,7 @@ import { maxAddedCourses, term, year } from '../constants/timetable';
 import { CourseData } from '../interfaces/Course';
 import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseContext } from '../CourseContext';
 
 const SEARCH_DELAY = 300;
 
@@ -116,15 +117,10 @@ const StyledUl = styled.ul`
 
 interface CourseSelectProps {
   assignedColors: Record<string, string>;
-  handleSelect(
-    data: string | string[],
-    a?: boolean,
-    callback?: (_selectedCourses: CourseData[]) => void,
-  ): void;
+  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
   handleRemove(courseCode: string): void;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
@@ -133,7 +129,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { selectedCourses, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
   const setOptions = (newOptions: CoursesList) => {
     listRef?.current?.scrollTo(0);

@@ -58,7 +58,6 @@ const Beta = styled.span`
   bottom: -5px;
 `;
 
-// beware memo - if a component isn't re-rendering, it could be why
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
