@@ -1,15 +1,13 @@
 import React, { useContext, useEffect } from 'react';
 
-import { Box, MuiThemeProvider, Snackbar } from '@material-ui/core';
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
-
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
 import { AppContext } from './AppContext';
-import { CourseContext } from './CourseContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
@@ -17,6 +15,7 @@ import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
+import { CourseContext } from './CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import {
@@ -31,6 +30,7 @@ import {
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
+import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
@@ -370,6 +370,7 @@ const App: React.FC = () => {
                   <Autotimetabler />
                 </Grid>
               </Grid>
+              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
