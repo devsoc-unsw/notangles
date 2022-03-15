@@ -212,18 +212,17 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
 
   return (
     <>
-      <p style={StyledCapacityIndicator({ percentEnrolled })}>
+      <span style={StyledCapacityIndicator({ percentEnrolled })}>
         {percentEnrolled === 1 ? (
-          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem', color: yellow[400] }} />
+          <Warning fontSize="inherit" style={{ ...iconStyle, marginRight: '0.2rem', color: yellow[400] }} />
         ) : (
-          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.5rem' }} />
+          <PeopleAltIcon fontSize="inherit" style={{ ...iconStyle, marginRight: '0.2rem' }} />
         )}
         <span>
-          {period.class.enrolments}/{period.class.capacity}
+          {period.class.enrolments}/{period.class.capacity}{' '}
         </span>
-      </p>
-      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})
-      <br />
+      </span>
+      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
       <LocationOnIcon fontSize="inherit" style={iconStyle} />
       {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
     </>
