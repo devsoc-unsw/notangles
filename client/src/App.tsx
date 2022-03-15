@@ -1,32 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Link from '@material-ui/core/Link';
+import React, { useContext, useEffect } from 'react';
+
+import { Box, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
-import {
-  CourseData,
-  ClassData,
-  SelectedClasses,
-  ClassTime,
-  ClassPeriod,
-  CourseCode,
-  Activity,
-  InInventory,
-} from './interfaces/Course';
-import { useDrag } from './utils/Drag';
-import Timetable from './components/timetable/Timetable';
-import Navbar from './components/Navbar';
+import Link from '@material-ui/core/Link';
+import { Alert } from '@material-ui/lab';
+
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+
+import getCourseInfo from './api/getCourseInfo';
+import { AppContext } from './AppContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import getCourseInfo from './api/getCourseInfo';
+import Navbar from './components/Navbar';
+import Timetable from './components/timetable/Timetable';
+import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { isPreview, term, year } from './constants/timetable';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import storage from './utils/storage';
-import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
-import { year, term, isPreview } from './constants/timetable';
+import {
+  Activity,
+  ClassData,
+  ClassPeriod,
+  ClassTime,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+} from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
+import { useDrag } from './utils/Drag';
+import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -96,7 +100,7 @@ const Content = styled(Box)<StyledContentProps>`
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
-
+SS
   text-align: center;
 `;
 
@@ -115,18 +119,27 @@ const Footer = styled(Box)`
 `;
 
 const App: React.FC = () => {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
-  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
-  const [errorMsg, setErrorMsg] = useState<String>('');
-  const [infoMsg] = useState<String>('Press and hold to drag a class');
-  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
-  const [lastUpdated, setLastUpdated] = useState(0);
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    is12HourMode,
+    isDarkMode,
+    isSquareEdges,
+    isHideFullClasses,
+    isDefaultUnscheduled,
+    isHideClassInfo,
+    errorMsg,
+    setErrorMsg,
+    errorVisibility,
+    setErrorVisibility,
+    infoVisibility,
+    setInfoVisibility,
+    isFriendsListOpen,
+    lastUpdated,
+    setLastUpdated,
+  } = useContext(AppContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -168,7 +181,9 @@ const App: React.FC = () => {
 
       Object.keys(course.activities).forEach((activity) => {
         // temp until auto timetabling works
-        [prev[course.code][activity]] = course.activities[activity];
+        prev[course.code][activity] = isDefaultUnscheduled
+          ? null
+          : course.activities[activity].find((x) => x.enrolments != x.capacity) ?? null; // null for unscheduled
       });
 
       return prev;
@@ -227,10 +242,6 @@ const App: React.FC = () => {
       });
   };
 
-  const handleDrawerOpen = () => {
-    setIsFriendsListOpen(!isFriendsListOpen);
-  };
-
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
@@ -249,10 +260,6 @@ const App: React.FC = () => {
     setInfoVisibility(false);
   };
 
-  const handleSetIsLoggedIn = (value: boolean) => {
-    setIsLoggedIn(value);
-  };
-
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
@@ -264,6 +271,18 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
+
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
@@ -334,46 +353,25 @@ const App: React.FC = () => {
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <GlobalStyle />
         <StyledApp>
-          <Navbar
-            setIsDarkMode={setIsDarkMode}
-            isDarkMode={isDarkMode}
-            handleDrawerOpen={handleDrawerOpen}
-            isSquareEdges={isSquareEdges}
-            setIsSquareEdges={setIsSquareEdges}
-          />
-          {isPreview && (
-            <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
-          )}
+          <Navbar />
+          {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>
                     <CourseSelect
-                      selectedCourses={selectedCourses}
                       assignedColors={assignedColors}
                       handleSelect={handleSelectCourse}
                       handleRemove={handleRemoveCourse}
-                      setErrorMsg={setErrorMsg}
-                      setErrorVisibility={setErrorVisibility}
-                      setLastUpdated={handleLastUpdated}
                     />
                   </SelectWrapper>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <Autotimetabler isDarkMode={isDarkMode} />
+                  <Autotimetabler />
                 </Grid>
               </Grid>
-              <Timetable
-                selectedCourses={selectedCourses}
-                selectedClasses={selectedClasses}
-                assignedColors={assignedColors}
-                is12HourMode={is12HourMode}
-                setIs12HourMode={setIs12HourMode}
-                isSquareEdges={isSquareEdges}
-                clashes={checkClashes()}
-                setInfoVisibility={setInfoVisibility}
-              />
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
@@ -409,7 +407,7 @@ const App: React.FC = () => {
               </Snackbar>
               <Snackbar open={infoVisibility}>
                 <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  {infoMsg}
+                  Press and hold to drag a class
                 </Alert>
               </Snackbar>
             </Content>

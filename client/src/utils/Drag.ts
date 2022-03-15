@@ -1,5 +1,6 @@
-import { ClassData, ClassPeriod, InventoryPeriod, InInventory } from '../interfaces/Course';
 import { contentPadding, lightTheme } from '../constants/theme';
+import { ClassData, ClassPeriod, ClassTime, InInventory, InventoryPeriod } from '../interfaces/Course';
+import storage from './storage';
 
 export type CardData = ClassPeriod | InventoryPeriod;
 
@@ -25,7 +26,6 @@ let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
-let isSquareEdges = false;
 
 // window.addEventListener('load', () => {
 //   lastScrollX = document.documentElement.scrollLeft;
@@ -39,6 +39,7 @@ const toPx = (value: number) => `${value}px`;
 
 const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
+  const isSquareEdges = storage.get('isSquareEdges');
   element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };
 
@@ -187,6 +188,11 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
 const updateDelay = 30;
 let lastUpdate = 0;
 
+let currentClassTime: ClassTime;
+const setcurrentClassTime = (time: ClassTime) => {
+  currentClassTime = time;
+};
+
 const updateDropTarget = (now?: boolean) => {
   // Cancel if: no drag happening, or update is too soon (except if now = true)
   if (!dragTarget || !dragElement || (!now && Date.now() - lastUpdate < updateDelay)) return;
@@ -223,7 +229,15 @@ const updateDropTarget = (now?: boolean) => {
     updateDropzones();
 
     if (isPeriod(newDropTarget)) {
-      selectClass(newDropTarget.class);
+      let newTime = newDropTarget.class.periods[0].time;
+      if (
+        newTime.day != currentClassTime.day ||
+        newTime.start !== currentClassTime.start ||
+        newTime.end !== currentClassTime.end
+      ) {
+        setcurrentClassTime(newDropTarget.class.periods[0].time);
+        selectClass(newDropTarget.class);
+      }
     } else if (isPeriod(dragTarget)) {
       // moved to inventory
       removeClass(dragTarget.class);
@@ -350,6 +364,7 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
 
       dragElement = element;
       freezeTransform(element);
+      if ('periods' in cardData.class) setcurrentClassTime(cardData.class.periods[0].time);
       updateDropTarget(true);
     } else {
       dragElement = null;
@@ -362,10 +377,6 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
     updateCards();
     updateDropzones();
   }
-};
-
-export const setIsSquareEdges = (value: boolean) => {
-  isSquareEdges = value;
 };
 
 const onMove = (x: number, y: number) => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -20,11 +20,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import ProfileSettings from './ProfileSettings';
 import storage from '../../utils/storage';
+import LoggedOutImg from '../../assets/sidebar_cat.svg';
+
 import { isPreview } from '../../constants/timetable';
+import {AppContext} from '../../AppContext'
 
 export const drawerWidth = isPreview ? 240 : 0;
-const loggedOutImgUrl =
-  'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/739a0188-3fa1-4c9c-be25-fe0e3690300d/d9hzoc1-2967e7dd-8047-43f5-900f-cc6fb991bf10.png/v1/fill/w_1121,h_713,strp/neko_atsume___tubbs_cat_vector_by_elexisheaven_d9hzoc1-pre.png';
 
 const StyledDrawer = styled(Drawer)`
   width: drawerWidth;
@@ -149,16 +150,16 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({ name, imageSrc, cours
   );
 };
 
-interface FriendsProps {
-  isFriendsListOpen: boolean;
-  isLoggedIn: boolean;
-  setIsLoggedIn(value: boolean): void;
-}
-
-const FriendsDrawer: React.FC<FriendsProps> = ({ isFriendsListOpen, isLoggedIn, setIsLoggedIn }) => {
+const FriendsDrawer: React.FC = () => {
   const classes = useStyles();
   const [suggestedFriends, setSuggestedFriends] = React.useState<Array<FriendsListItemProps>>([]);
   const [mePhoto, setMePhoto] = React.useState<string>('');
+
+  const { isLoggedIn, setIsLoggedIn, isFriendsListOpen } = useContext(AppContext)
+
+  const handleSetIsLoggedIn = (value: boolean) => {
+    setIsLoggedIn(value);
+  };
 
   const handleFailure = (err: any) => {
     storage.set('userID', '');
@@ -285,7 +286,7 @@ const FriendsDrawer: React.FC<FriendsProps> = ({ isFriendsListOpen, isLoggedIn, 
           </>
         ) : (
           <LoginComponent>
-            <img src={loggedOutImgUrl} alt="You are logged out!" width="100" />
+            <img src={LoggedOutImg} alt="You are logged out!" width="132" />
             <h3> Log In to Notangles! </h3>
             <p>Add friends on Notangles to view each other&apos;s timetables, coordinate classes, and plan events</p>
             <FacebookLogin

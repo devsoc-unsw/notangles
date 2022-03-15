@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { withTheme } from 'styled-components';
-import { CourseData, ClassPeriod, Activity, ClassData } from '../../interfaces/Course';
-import Dropzone from './Dropzone';
-import { timeToPosition } from '../../utils/Drag';
+
+import { AppContext } from '../../AppContext';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
+import { defaultStartTime } from '../../constants/timetable';
+import { Activity, ClassData, ClassPeriod, CourseData } from '../../interfaces/Course';
+import { timeToPosition } from '../../utils/Drag';
+import Dropzone from './Dropzone';
 
 interface ClassDropzoneProps {
   course: CourseData;
@@ -15,6 +18,7 @@ interface ClassDropzoneProps {
 const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
   ({ course, color, earliestStartTime }) => {
     // Deep-ish copy of activities (so we can combine duplicates without affecting original)
+    const { isHideFullClasses } = useContext(AppContext);
 
     let newActivities: Record<Activity, ClassData[]> = {};
 
@@ -30,6 +34,14 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
 
     const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
       a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
+    if (isHideFullClasses) {
+      Object.keys(newActivities).forEach((activity) => {
+        newActivities[activity] = newActivities[activity].filter(
+          (classData) => classData.enrolments !== classData.capacity
+        );
+      });
+    }
 
     Object.keys(newActivities).forEach((activity) => {
       let allPeriods: ClassPeriod[] = [];
@@ -51,7 +63,8 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter(
         // TODO
-        (classData) => classData.periods.length !== 0
+        (classData) =>
+          classData.periods.length !== 0
       );
     });
 
@@ -78,57 +91,38 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = React.memo(
     !(prev.color !== next.color || prev.earliestStartTime !== next.earliestStartTime || prev.course.code !== next.course.code)
 );
 
-interface Theme {
-  palette: {
-    type: string;
-  };
-}
+interface Theme {}
 
 interface DropzonesProps {
-  selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
-  earliestStartTime: number;
   theme: Theme;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
-const Dropzones: React.FC<DropzonesProps> = React.memo(
-  ({ selectedCourses, assignedColors, earliestStartTime, theme }) => {
-    const dropzones = selectedCourses.map((course) => (
-      <DropzoneGroup
-        key={course.code}
-        course={course}
-        color={assignedColors[course.code]}
-        earliestStartTime={earliestStartTime}
-      />
-    ));
+const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
+  const { selectedCourses, isDarkMode } = useContext(AppContext);
 
-    const inventoryColor = theme.palette.type === 'dark' ? '255, 255, 255' : '0, 0, 0';
+  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
-    // inventory
-    dropzones.push(
-      <Dropzone
-        isInventory
-        key="inventory"
-        classPeriod={null} // inventory has no corresponding class period
-        x={-2}
-        y={2}
-        yEnd={-1}
-        color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
-        earliestStartTime={earliestStartTime}
-      />
-    );
+  const dropzones = selectedCourses.map((course) => (
+    <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
+  ));
 
-    return <>{dropzones}</>;
-  },
-  (prev, next) =>
-    !(
-      prev.theme !== next.theme ||
-      prev.selectedCourses.length !== next.selectedCourses.length ||
-      prev.earliestStartTime !== next.earliestStartTime ||
-      prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
-    )
-);
+  const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
+
+  // inventory
+  dropzones.push(
+    <Dropzone
+      isInventory
+      key="inventory"
+      classPeriod={null} // inventory has no corresponding class period
+      x={-2}
+      y={2}
+      yEnd={-1}
+      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
+      earliestStartTime={earliestStartTime}
+    />
+  );
+  return <>{dropzones}</>;
+};
 
 export default withTheme(Dropzones);
