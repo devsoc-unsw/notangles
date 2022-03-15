@@ -71,7 +71,7 @@ const Settings: React.FC = () => {
 
   const settings = settingsToggles.map((setting) => {
     return (
-      <>
+      <div key={setting.desc}>
         <Divider />
         <ListItem>
           <SettingText primary={setting['desc']} />
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
             }}
           />
         </ListItem>
-      </>
+      </div>
     );
   });
 
