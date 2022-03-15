@@ -229,7 +229,7 @@ const updateDropTarget = (now?: boolean) => {
     updateDropzones();
 
     if (isPeriod(newDropTarget)) {
-      let newTime = newDropTarget.class.periods[0].time;
+      let newTime = newDropTarget.time;
       if (!currentClassTime || (
         newTime.day !== currentClassTime.day ||
         newTime.start !== currentClassTime.start ||
@@ -240,8 +240,10 @@ const updateDropTarget = (now?: boolean) => {
       }
     } else if (isPeriod(dragTarget)) {
       // moved to inventory
+      setcurrentClassTime(undefined)
       removeClass(dragTarget.class);
     }
+  } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
   }
 };
 
@@ -364,8 +366,8 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
 
       dragElement = element;
       freezeTransform(element);
-      if ('periods' in cardData.class) {
-        setcurrentClassTime(cardData.class.periods[0].time);
+      if ('time' in cardData) {
+        setcurrentClassTime(cardData.time);
       } else {
         setcurrentClassTime(undefined);
       }
