@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
+import { MuiThemeProvider, Box, Snackbar, Button } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +27,7 @@ import storage from './utils/storage';
 import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
 import { year, term, isPreview } from './constants/timetable';
 import NetworkError from './interfaces/NetworkError';
+import { downloadIcsFile } from './utils/generateICS';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -391,6 +392,7 @@ const App: React.FC = () => {
                   <Autotimetabler isDarkMode={isDarkMode} />
                 </Grid>
               </Grid>
+              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
               <Timetable
                 selectedCourses={selectedCourses}
                 selectedClasses={selectedClasses}
