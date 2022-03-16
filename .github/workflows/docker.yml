@@ -13,11 +13,11 @@ jobs:
         component: [client, server]
         include:
           - component: client
-            args:
-              - FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
-              - GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}
-              - GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
-              - GOOGLE_OAUTH_CLIENT_ID=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+            secrets: |
+              FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
+              GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}
+              GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+              GOOGLE_OAUTH_CLIENT_ID=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           - component: server
             args: []
     permissions:
@@ -46,7 +46,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64
           file: ${{ matrix.component }}/Dockerfile
-          build-args: ${{ matrix.args }}
+          secrets: ${{ matrix.secrets }}
           tags: |
             ghcr.io/csesoc/notangles-${{ matrix.component }}:${{ github.sha }}
             ghcr.io/csesoc/notangles-${{ matrix.component }}:latest
