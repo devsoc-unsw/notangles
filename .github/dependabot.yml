@@ -4,6 +4,10 @@ updates:
     directory: "/client"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/client"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "npm"
     directory: "/common"
     schedule:
@@ -12,3 +16,11 @@ updates:
     directory: "/server"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/server"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      timezone: "daily"
