@@ -5,8 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "NODE_ENV=DEV ts-node server.ts",
-    "start:production": "NODE_ENV=PROD ts-node server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:production": "NODE_ENV=PROD node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
