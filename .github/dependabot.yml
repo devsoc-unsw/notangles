@@ -12,3 +12,7 @@ updates:
     directory: "/server"
     schedule:
       interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      timezone: "daily"
