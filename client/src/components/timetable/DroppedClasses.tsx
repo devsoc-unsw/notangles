@@ -18,7 +18,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
 import { days, defaultStartTime } from '../../constants/timetable';
-import { ClassData, ClassPeriod, InInventory } from '../../interfaces/Course';
+import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -33,6 +33,8 @@ import {
   transitionTime,
   unregisterCard,
 } from '../../utils/Drag';
+import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
+import { CourseClassInnerStyleProps, StyledCapacityIndicatorProps, StyledCourseClassProps } from '../../interfaces/StyleProps';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
@@ -95,13 +97,7 @@ const StyledIconShadow = styled(IconButton)`
   color: white;
 `;
 
-const StyledCourseClass = styled.div<{
-  cardData: CardData;
-  days: string[];
-  y?: number;
-  earliestStartTime: number;
-  isSquareEdges: boolean;
-}>`
+const StyledCourseClass = styled.div<StyledCourseClassProps>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
@@ -146,15 +142,7 @@ const StyledCourseClass = styled.div<{
   }
 `;
 
-const courseClassInnerStyle = ({
-  backgroundColor,
-  hasClash,
-  isSquareEdges,
-}: {
-  backgroundColor: string;
-  hasClash: boolean;
-  isSquareEdges: boolean;
-}) => ({
+const courseClassInnerStyle = ({ backgroundColor, hasClash, isSquareEdges }: CourseClassInnerStyleProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -208,11 +196,7 @@ const iconWarningStyle = {
   color: yellow[400],
 };
 
-interface PeriodMetadataProps {
-  period: ClassPeriod;
-}
-
-const StyledCapacityIndicator = ({ percentEnrolled }: { percentEnrolled: number }) => ({
+const StyledCapacityIndicator = ({ percentEnrolled }: StyledCapacityIndicatorProps) => ({
   textOverflow: 'ellipsis',
   margin: 0,
   fontWeight: `${percentEnrolled === 1 ? 'bolder' : undefined}`,
@@ -239,16 +223,6 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
     </>
   );
 };
-
-interface DroppedClassProps {
-  cardData: CardData;
-  color: string;
-  y?: number;
-  earliestStartTime: number;
-  hasClash: boolean;
-  shiftClasses(dir: number, cardData: CardData): void;
-  hasArrows: boolean;
-}
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   cardData,
@@ -416,12 +390,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     </StyledCourseClass>
   );
 };
-
-interface DroppedClassesProps {
-  assignedColors: Record<string, string>;
-  clashes: Array<ClassPeriod>;
-  handleSelectClass(classData: ClassData): void;
-}
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes, handleSelectClass }) => {
   const droppedClasses: JSX.Element[] = [];

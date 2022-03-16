@@ -4,25 +4,12 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod, InInventory } from '../../interfaces/Course';
+import { CellProps } from '../../interfaces/PropTypes';
+import { CellStyleProps } from '../../interfaces/StyleProps';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { classHeight, classTranslateY } from './DroppedClasses';
 
-const cellStyle = ({
-  classPeriod,
-  x,
-  color,
-  isInventory,
-  earliestStartTime,
-}: {
-  classPeriod: ClassPeriod | InInventory;
-  x: number;
-  y: number;
-  yEnd?: number;
-  color: string;
-  isInventory?: boolean;
-  earliestStartTime: number;
-}) => ({
+const cellStyle = ({ classPeriod, x, color, isInventory, earliestStartTime }: CellStyleProps) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -38,16 +25,6 @@ const cellStyle = ({
   transition: `${defaultTransition}, z-index 0s`,
   borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
 });
-
-interface CellProps {
-  classPeriod: ClassPeriod | InInventory;
-  x: number;
-  y: number;
-  earliestStartTime: number;
-  color: string;
-  yEnd?: number;
-  isInventory?: boolean;
-}
 
 const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);

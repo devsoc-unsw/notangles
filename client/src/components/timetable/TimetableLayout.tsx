@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 import { AppContext } from '../../context/AppContext';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
+import { BaseCellStyleProps, DayCellProps, GridCellProps } from '../../interfaces/StyleProps';
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -11,13 +12,7 @@ const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
-const BaseCell = styled.div<{
-  x: number;
-  y: number;
-  yTo?: number;
-  isEndX?: boolean;
-  isEndY?: boolean;
-}>`
+const BaseCell = styled.div<BaseCellStyleProps>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
@@ -42,9 +37,7 @@ const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const InventoryCell = styled(DayCell)<{
-  y: number;
-}>`
+const InventoryCell = styled(DayCell)<DayCellProps>`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
@@ -55,9 +48,7 @@ const paddingStyle = css`
   padding: 0 ${headerPadding}px;
 `;
 
-const HourCell = styled(GridCell)<{
-  is12HourMode: boolean;
-}>`
+const HourCell = styled(GridCell)<GridCellProps>`
   ${paddingStyle}
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};

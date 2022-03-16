@@ -28,6 +28,7 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
+import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -79,10 +80,6 @@ const ContentWrapper = styled(Box)`
 
   color: ${(props) => props.theme.palette.text.primary};
 `;
-
-interface StyledContentProps {
-  drawerOpen: boolean;
-}
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';

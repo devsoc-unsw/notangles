@@ -15,6 +15,7 @@ import { maxAddedCourses, term, year } from '../constants/timetable';
 import { CourseData } from '../interfaces/Course';
 import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseSelectProps } from '../interfaces/PropTypes';
 import { CourseContext } from '../context/CourseContext';
 
 const SEARCH_DELAY = 300;
@@ -114,12 +115,6 @@ const StyledUl = styled.ul`
   padding: 0;
   margin: 0;
 `;
-
-interface CourseSelectProps {
-  assignedColors: Record<string, string>;
-  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
-  handleRemove(courseCode: string): void;
-}
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);

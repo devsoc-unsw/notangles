@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { isPreview } from '../constants/timetable';
-import { AppContextProviderProps } from '../types/PropTypes';
+import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
 export interface IAppContext {
