@@ -52,8 +52,7 @@ const FeatList = styled.ul`
   line-height: 20px;
 `;
 
-// beware memo - if a component isn't re-rendering, it could be why
-const About: React.FC = React.memo(() => {
+const About: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -108,7 +107,7 @@ const About: React.FC = React.memo(() => {
             Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures which
             you aren’t going to watch live) to the unscheduled column.
           </Typography>
-          <HowToUseImg src={useGif} alt='how to use gif'/>
+          <HowToUseImg src={useGif} alt="how to use gif" />
           <Typography gutterBottom variant="body2">
             Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need to
             officially enroll at&nbsp;
@@ -133,12 +132,16 @@ const About: React.FC = React.memo(() => {
           <Typography gutterBottom variant="body2">
             The current 2022 development team consists of two leads and nine members.
           </Typography>
-          <Typography gutterBottom variant="body2"><strong>Team Leads:</strong></Typography>
+          <Typography gutterBottom variant="body2">
+            <strong>Team Leads:</strong>
+          </Typography>
           <FeatList>
             <li>Mun Joon Teo</li>
             <li>Oliver Xu</li>
           </FeatList>
-          <Typography gutterBottom variant="body2"><strong>Members:</strong></Typography>
+          <Typography gutterBottom variant="body2">
+            <strong>Members:</strong>
+          </Typography>
           <FeatList>
             <li>Angella Pham</li>
             <li>Emily Tang</li>
@@ -146,7 +149,7 @@ const About: React.FC = React.memo(() => {
             <li>Manhua Lu</li>
             <li>Martin Knezevic</li>
             <li>Maxwell Philips</li>
-            <li>Omar Khursheed</li>              
+            <li>Omar Khursheed</li>
             <li>Raiyan Ahmed</li>
             <li>Sijin Soon</li>
           </FeatList>
@@ -165,6 +168,6 @@ const About: React.FC = React.memo(() => {
       </Dialog>
     </div>
   );
-});
+};
 
 export default About;

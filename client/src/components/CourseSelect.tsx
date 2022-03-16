@@ -1,19 +1,24 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Fuse from 'fuse.js';
+import { Box, Chip, InputAdornment, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, InputAdornment, Box, Chip, Theme, Tabs, Tab } from '@material-ui/core';
-import { CloseRounded, SearchRounded, AddRounded, CheckRounded } from '@material-ui/icons';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+
+import Fuse from 'fuse.js';
+import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
-import { VariableSizeList, ListChildComponentProps } from 'react-window';
-import { CourseData } from '../interfaces/Course';
-import { CoursesList, CourseOverview } from '../interfaces/CourseOverview';
-import { year, term, maxAddedCourses } from '../constants/timetable';
+
 import getCoursesList from '../api/getCoursesList';
+import { AppContext } from '../context/AppContext';
+import { maxAddedCourses, term, year } from '../constants/timetable';
+import { CourseData } from '../interfaces/Course';
+import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseSelectProps } from '../interfaces/PropTypes';
+import { CourseContext } from '../context/CourseContext';
 
 const SEARCH_DELAY = 300;
 
@@ -118,298 +123,291 @@ const RightContainer = styled.div`
   right: 10px;
 `;
 
-interface CourseSelectProps {
-  selectedCourses: CourseData[];
-  assignedColors: Record<string, string>;
-  handleSelect(data: string | string[]): void;
-  handleRemove(courseCode: string): void;
-  setErrorMsg(errorMsg: string): void;
-  setErrorVisibility(visibility: boolean): void;
-  setLastUpdated(date: number): void;
-}
+const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+  const [coursesList, setCoursesList] = useState<CoursesList>([]);
+  const [options, setOptionsState] = useState<CoursesList>([]);
+  const [inputValue, setInputValue] = useState<string>('');
+  const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const [selectedTab, setSelectedTab] = useState<string>('inPerson');
+  const searchTimer = useRef<number | undefined>();
+  const listRef = useRef<VariableSizeList | null>(null);
+
+  const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
+
+  const setOptions = (newOptions: CoursesList) => {
+    listRef?.current?.scrollTo(0);
+    setOptionsState(newOptions);
+  };
+
+  const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
+    const codes = a.map((x) => x.code);
+    return b.filter((x) => !codes.includes(x.code));
+  };
+
+  const checkExternallyAdded = () => {
+    const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
+    const coursesListCodes = coursesList.map((x) => x.code);
+
+    // if we have info about the new courses already fetched, update the value now
+    // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
+    if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
+      setSelectedValue([...selectedValue, ...coursesList.filter((course) => addedCodes.includes(course.code))]);
+    }
+  };
+
+  checkExternallyAdded();
+
+  let defaultOptions = coursesList.filter((course) => {
+    if (selectedTab === 'all' && (course.online || course.inPerson)) {
+      return true;
+    } if (selectedTab === 'online' && course.online) {
+      return true;
+    } if (selectedTab === 'inPerson' && course.inPerson) {
+      return true;
+    }
+
+    return false;
+  });
   
-// beware memo - if a component isn't re-rendering, it could be why
-const CourseSelect: React.FC<CourseSelectProps> = React.memo(
-  ({ selectedCourses, assignedColors, handleSelect, handleRemove, setErrorMsg, setErrorVisibility, setLastUpdated }) => {
-    const [coursesList, setCoursesList] = useState<CoursesList>([]);
-    const [options, setOptionsState] = useState<CoursesList>([]);
-    const [inputValue, setInputValue] = useState<string>('');
-    const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
-    const [selectedTab, setSelectedTab] = useState<string>('inPerson');
-    const searchTimer = useRef<number | undefined>();
-    const listRef = useRef<VariableSizeList | null>(null);
-
-    const setOptions = (newOptions: CoursesList) => {
-      listRef?.current?.scrollTo(0);
-      setOptionsState(newOptions);
-    };
-
-    const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
-      const codes = a.map((x) => x.code);
-      return b.filter((x) => !codes.includes(x.code));
-    };
-
-    const checkExternallyAdded = () => {
-      const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
-      const coursesListCodes = coursesList.map((x) => x.code);
-
-      // if we have info about the new courses already fetched, update the value now
-      // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
-      if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
-        setSelectedValue([...selectedValue, ...coursesList.filter((course) => addedCodes.includes(course.code))]);
-      }
-    };
-
-    checkExternallyAdded();
-
-    const defaultOptions = coursesList.filter((course) => {
-      if (selectedTab === 'all' && (course.online || course.inPerson)) {
-        return true;
-      } if (selectedTab === 'online' && course.online) {
-        return true;
-      } if (selectedTab === 'inPerson' && course.inPerson) {
-        return true;
-      }
-  
-      return false;
-    });
-
-    const search = (query: string) => {
-      query = query.trim();
-
-      if (query.length === 0) {
-        setOptions(defaultOptions);
-        return defaultOptions;
-      }
-
-      const newOptions = fuzzy.search(query).map((result) => result.item);
-
-      setOptions(newOptions);
-      return newOptions;
-    };
-
-    const onChange = (_: any, value: any) => {
-      const before = selectedCourses;
-      const after = value;
-
-      // find what was added/removed in the update
-      const added = diffCourses(before, after);
-
-      // return before the input value and options are reset
-      if (added.length === 0) return;
-
-      if (searchTimer.current) {
-        // run a search now and cancel the current search timer
-        const newOptions = search(inputValue);
-        clearInterval(searchTimer.current);
-        searchTimer.current = undefined;
-
-        // revert back to the original value by removing what was added
-        const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
-
-        // we need to add something, and our best guess is the top
-        // result of the new search
-        const newSelectedOption = newOptions[0];
-
-        if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
-          // otherwise, add the new option and call the handler
-          setSelectedValue([...originalValue, newSelectedOption]);
-          handleSelect(newSelectedOption.code);
-        } else {
-          // just revert it back without adding anything
-          setSelectedValue(originalValue);
-          // return before the input value and options are reset
-          return;
-        }
-      } else {
-        handleSelect(added.map((course) => course.code));
-        setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
-      }
-
-      setOptions(defaultOptions);
-      setInputValue('');
-    };
-
-    const fetchCoursesList = async () => {
-      try {
-        const fetchedCoursesList = await getCoursesList(year, term);
-        setCoursesList(fetchedCoursesList.courses);
-        checkExternallyAdded();
-        fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
-        setLastUpdated(fetchedCoursesList.lastUpdated);
-      } catch (e) {
-        if (e instanceof NetworkError) {
-          setErrorMsg(e.message);
-          setErrorVisibility(true);
-        }
-      }
-    };
-    
-    useEffect(() => {
-      fetchCoursesList();
-    }, []);
-
-    useEffect(() => {
-      setOptions(defaultOptions);
-    }, [coursesList]);
-
-    useEffect(() => {
-      clearTimeout(searchTimer.current);
-      searchTimer.current = window.setTimeout(() => {
-        search(inputValue);
-        searchTimer.current = undefined;
-      }, SEARCH_DELAY);
-    }, [inputValue, coursesList]);
-
-    const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
-
-    const OuterElementContext = React.createContext({});
-
-    // React.DetailedHTMLProps<
-    const OuterElementType = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
-      const outerProps = React.useContext(OuterElementContext);
-      return <div ref={ref} {...props} {...outerProps} />;
-    });
-
-    const ListboxComponent = React.useCallback(
-      React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
-        const { children, ...other } = props;
-
-        const itemCount = Array.isArray(children) ? children.length : 0;
-        const getItemSize = () => 45;
-        const maxResultsVisible = 6;
-        const paddingTop = 7;
-        const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
-
-        const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
-          React.cloneElement(data[index], {
-            style: {
-              ...style,
-              top: typeof style.top === 'number' ? style.top + paddingTop : 0,
-            },
-          });
-
-        const onTabSelect = (event: React.ChangeEvent<{}>, value: any) => {
-          console.log(value);
-        };
-
-        return (
-          <div ref={ref} style={{ overflow: 'hidden' }}>
-            <OuterElementContext.Provider value={other}>
-            <Tabs value={selectedTab} onChange={onTabSelect}>
-              <Tab label="All" value="all" />
-              <Tab label="Online" value="online" />
-              <Tab label="In-person" value="inPerson" />
-            </Tabs>
-              <VariableSizeList
-                ref={listRef}
-                style={{ overflowX: 'hidden' }}
-                width="100%"
-                height={height}
-                itemData={children}
-                itemCount={itemCount}
-                itemSize={getItemSize}
-                outerElementType={OuterElementType}
-                innerElementType={StyledUl}
-                overscanCount={5}
-              >
-                {Row}
-              </VariableSizeList>
-            </OuterElementContext.Provider>
-          </div>
-        );
-      }),
-      []
+  // show relevant default options based of selected courses (TODO: improve)
+  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
+  const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
+  if (selectedValue.length) {
+    defaultOptions = defaultOptions.filter(
+      (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course)
     );
+  }
 
-    return (
-      <StyledSelect>
-        <Autocomplete
-          getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
-          multiple
-          // autoHighlight
-          disableClearable
-          disableListWrap
-          noOptionsText="No Results"
-          selectOnFocus={false}
-          options={options}
-          value={selectedValue}
-          onChange={onChange}
-          inputValue={inputValue}
-          // prevent built-in option filtering
-          filterOptions={(o) => o}
-          ListboxComponent={ListboxComponent}
-          renderOption={(option) => (
-            <StyledOption>
-              <StyledIcon>
-                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
-              </StyledIcon>
-              <span>{option.code}</span>
-              <Weak>{option.name}</Weak>
-              <RightContainer>
-                {option.online && <VideocamOutlinedIcon />}
-                {option.inPerson && <PersonOutlineIcon />}
-              </RightContainer>
-            </StyledOption>
-          )}
-          renderInput={(params) => (
-            <StyledTextField
-              {...params}
-              autoFocus
-              selectedCourses={selectedCourses}
-              variant="outlined"
-              label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
-              onChange={(event) => setInputValue(event.target.value)}
-              onKeyDown={(event: any) => {
-                if (event.key === 'Backspace') {
-                  event.stopPropagation();
-                }
-              }}
-              InputLabelProps={{
-                ...params.InputLabelProps,
-                shrink: shrinkLabel,
-                style: {
-                  marginLeft: shrinkLabel ? 2 : 38,
-                },
-              }}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <>
-                    <StyledInputAdornment position="start">
-                      <SearchRounded />
-                    </StyledInputAdornment>
-                    {params.InputProps.startAdornment}
-                  </>
-                ),
+  const search = (query: string) => {
+    query = query.trim();
+
+    if (query.length === 0) {
+      setOptions(defaultOptions);
+      return defaultOptions;
+    }
+
+    const newOptions = fuzzy.search(query).map((result) => result.item);
+
+    setOptions(newOptions);
+    return newOptions;
+  };
+
+  const onChange = (_: any, value: any) => {
+    const before = selectedCourses;
+    const after = value;
+
+    // find what was added/removed in the update
+    const added = diffCourses(before, after);
+
+    // return before the input value and options are reset
+    if (added.length === 0) return;
+
+    if (searchTimer.current) {
+      // run a search now and cancel the current search timer
+      const newOptions = search(inputValue);
+      clearInterval(searchTimer.current);
+      searchTimer.current = undefined;
+
+      // revert back to the original value by removing what was added
+      const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
+
+      // we need to add something, and our best guess is the top
+      // result of the new search
+      const newSelectedOption = newOptions[0];
+
+      if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
+        // otherwise, add the new option and call the handler
+        setSelectedValue([...originalValue, newSelectedOption]);
+        handleSelect(newSelectedOption.code);
+      } else {
+        // just revert it back without adding anything
+        setSelectedValue(originalValue);
+        // return before the input value and options are reset
+        return;
+      }
+    } else {
+      handleSelect(added.map((course) => course.code));
+      setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
+    }
+
+    setOptions(defaultOptions);
+    setInputValue('');
+  };
+
+  const fetchCoursesList = async () => {
+    try {
+      const fetchedCoursesList = await getCoursesList(year, term);
+      setCoursesList(fetchedCoursesList.courses);
+      checkExternallyAdded();
+      fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
+      setLastUpdated(fetchedCoursesList.lastUpdated);
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setErrorMsg(e.message);
+        setErrorVisibility(true);
+      }
+    }
+  };
+    
+  useEffect(() => {
+    fetchCoursesList();
+  }, []);
+
+  useEffect(() => {
+    setOptions(defaultOptions);
+  }, [coursesList]);
+
+  useEffect(() => {
+    clearTimeout(searchTimer.current);
+    searchTimer.current = window.setTimeout(() => {
+      search(inputValue);
+      searchTimer.current = undefined;
+    }, SEARCH_DELAY);
+  }, [inputValue, coursesList]);
+
+  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
+
+  const OuterElementContext = React.createContext({});
+
+  const OuterElementType = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  });
+
+  const ListboxComponent = React.useCallback(
+    React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+      const { children, ...other } = props;
+
+      const itemCount = Array.isArray(children) ? children.length : 0;
+      const getItemSize = () => 45;
+      const maxResultsVisible = 6;
+      const paddingTop = 7;
+      const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
+
+      const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
+        React.cloneElement(data[index], {
+          style: {
+            ...style,
+            top: typeof style.top === 'number' ? style.top + paddingTop : 0,
+          },
+        });
+
+      const onTabSelect = (event: React.ChangeEvent<{}>, value: any) => {
+        console.log(value);
+      };
+
+      return (
+        <div ref={ref} style={{ overflow: 'hidden' }}>
+          <OuterElementContext.Provider value={other}>
+          <Tabs value={selectedTab} onChange={onTabSelect}>
+            <Tab label="All" value="all" />
+            <Tab label="Online" value="online" />
+            <Tab label="In-person" value="inPerson" />
+          </Tabs>
+            <VariableSizeList
+              ref={listRef}
+              style={{ overflowX: 'hidden' }}
+              width="100%"
+              height={height}
+              itemData={children}
+              itemCount={itemCount}
+              itemSize={getItemSize}
+              outerElementType={OuterElementType}
+              innerElementType={StyledUl}
+              overscanCount={5}
+            >
+              {Row}
+            </VariableSizeList>
+          </OuterElementContext.Provider>
+        </div>
+      );
+    }),
+    []
+  );
+
+  return (
+    <StyledSelect>
+      <Autocomplete
+        getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
+        multiple
+        // autoHighlight
+        disableClearable
+        disableListWrap
+        noOptionsText="No Results"
+        selectOnFocus={false}
+        options={options}
+        value={selectedValue}
+        onChange={onChange}
+        inputValue={inputValue}
+        // prevent built-in option filtering
+        filterOptions={(o) => o}
+        ListboxComponent={ListboxComponent}
+        getOptionSelected={(option, value) => option.code === value.code}
+        renderOption={(option) => (
+          <StyledOption>
+            <StyledIcon>
+              {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
+            </StyledIcon>
+            <span>{option.code}</span>
+            <Weak>{option.name}</Weak>
+            <RightContainer>
+              {option.online && <VideocamOutlinedIcon />}
+              {option.inPerson && <PersonOutlineIcon />}
+            </RightContainer>
+          </StyledOption>
+        )}
+        renderInput={(params) => (
+          <StyledTextField
+            {...params}
+            autoFocus
+            selectedCourses={selectedCourses}
+            variant="outlined"
+            label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={(event: any) => {
+              if (event.key === 'Backspace') {
+                event.stopPropagation();
+              }
+            }}
+            InputLabelProps={{
+              ...params.InputLabelProps,
+              shrink: shrinkLabel,
+              style: {
+                marginLeft: shrinkLabel ? 2 : 38,
+              },
+            }}
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <StyledInputAdornment position="start">
+                    <SearchRounded />
+                  </StyledInputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
+        renderTags={(value: CoursesList, getTagProps) =>
+          value.map((option: CourseOverview, index: number) => (
+            <StyledChip
+              label={option.code}
+              color="primary"
+              backgroundColor={assignedColors[option.code]}
+              deleteIcon={<CloseRounded />}
+              {...getTagProps({ index })}
+              onDelete={() => {
+                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                handleRemove(option.code);
               }}
             />
-          )}
-          renderTags={(value: CoursesList, getTagProps) =>
-            value.map((option: CourseOverview, index: number) => (
-              <StyledChip
-                label={option.code}
-                color="primary"
-                backgroundColor={assignedColors[option.code]}
-                deleteIcon={<CloseRounded />}
-                {...getTagProps({ index })}
-                onDelete={() => {
-                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                  handleRemove(option.code);
-                }}
-              />
-            ))
-          }
-        />
-      </StyledSelect>
-    );
-  },
-  (prev, next) =>
-    !(
-      prev.selectedCourses.length !== next.selectedCourses.length ||
-      prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code) ||
-      JSON.stringify(prev.assignedColors) !== JSON.stringify(next.assignedColors)
-    )
-);
+          ))
+        }
+      />
+    </StyledSelect>
+  );
+};
 
 export default CourseSelect;

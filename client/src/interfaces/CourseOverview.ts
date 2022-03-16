@@ -6,3 +6,14 @@ export interface CourseOverview {
   online: boolean
   inPerson: boolean
 }
+
+export interface CoursesListWithDate {
+  lastUpdated: number;
+  courses: CoursesList;
+}
+
+export interface FetchedCourse {
+  _id: string;
+  courseCode: string;
+  name: string;
+}

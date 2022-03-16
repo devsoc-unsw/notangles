@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import App from './App';
-import * as serviceWorker from './serviceWorker';
 import Privacy from './components/Privacy';
+import AppContextProvider from './context/AppContext';
+import CourseContextProvider from './context/CourseContext';
+import * as serviceWorker from './serviceWorker';
+
+import './index.css';
 
 const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
 
@@ -20,12 +24,16 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
 }
 
 const Root: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route element={<App />} path="/" />
-      <Route element={<Privacy />} path="/privacy" />
-    </Routes>
-  </BrowserRouter>
+  <AppContextProvider>
+    <CourseContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<App />} path="/" />
+          <Route element={<Privacy />} path="/privacy" />
+        </Routes>
+      </BrowserRouter>
+    </CourseContextProvider>
+  </AppContextProvider>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));

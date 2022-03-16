@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -23,6 +23,7 @@ import storage from '../../utils/storage';
 import LoggedOutImg from '../../assets/sidebar_cat.svg';
 
 import { isPreview } from '../../constants/timetable';
+import { AppContext } from '../../context/AppContext';
 
 export const drawerWidth = isPreview ? 240 : 0;
 
@@ -149,16 +150,16 @@ const FriendListAdded: React.FC<FriendsListItemProps> = ({ name, imageSrc, cours
   );
 };
 
-interface FriendsProps {
-  isFriendsListOpen: boolean;
-  isLoggedIn: boolean;
-  setIsLoggedIn(value: boolean): void;
-}
-
-const FriendsDrawer: React.FC<FriendsProps> = ({ isFriendsListOpen, isLoggedIn, setIsLoggedIn }) => {
+const FriendsDrawer: React.FC = () => {
   const classes = useStyles();
   const [suggestedFriends, setSuggestedFriends] = React.useState<Array<FriendsListItemProps>>([]);
   const [mePhoto, setMePhoto] = React.useState<string>('');
+
+  const { isLoggedIn, setIsLoggedIn, isFriendsListOpen } = useContext(AppContext);
+
+  const handleSetIsLoggedIn = (value: boolean) => {
+    setIsLoggedIn(value);
+  };
 
   const handleFailure = (err: any) => {
     storage.set('userID', '');

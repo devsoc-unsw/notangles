@@ -141,11 +141,12 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
     courseData.activities[activity].forEach((classData) => {
       classData.periods = classData.periods.map((period) => {
-        allPeriods.forEach((other) => {
-          if (period !== other && isDuplicate(period, other)) {
-            period.locations = [...period.locations, ...other.locations];
-          }
-        });
+        period.locations = [
+          ...period.locations,
+          ...allPeriods
+            .filter((aPeriod) => period != aPeriod && isDuplicate(period, aPeriod))
+            .map((periods) => periods.locations[0]),
+        ];
 
         return period;
       });

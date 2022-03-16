@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/common"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/server"
+    schedule:
+      interval: "daily"
