@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+
+import { borderRadius } from '../../constants/theme';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
-import { borderRadius } from '../../constants/theme';
-import { classTranslateY, classHeight } from './DroppedClasses';
+import { classHeight, classTranslateY } from './DroppedClasses';
 
 const cellStyle = ({
   classPeriod,
@@ -47,8 +49,7 @@ interface CellProps {
   isInventory?: boolean;
 }
 
-// beware memo - if a component isn't re-rendering, it could be why
-const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
+const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const elementCurrent = element.current;
@@ -82,6 +83,6 @@ const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestS
       )}
     </div>
   );
-});
+};
 
 export default Dropzone;

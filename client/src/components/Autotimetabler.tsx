@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import Box from '@material-ui/core/Box';
@@ -13,6 +13,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import Grid from '@material-ui/core/Grid';
+import { AppContext } from '../context/AppContext';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -82,15 +83,14 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState
   );
 };
 
-interface AutotimetablerProps {
-  isDarkMode: boolean;
-}
-const Autotimetabler: React.FC<AutotimetablerProps> = ({ isDarkMode }) => {
+const Autotimetabler: React.FC = () => {
   const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
   const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
   const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
   const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<string | null>('off');
+
+  const { isDarkMode } = useContext(AppContext);
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
