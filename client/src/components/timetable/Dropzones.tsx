@@ -1,19 +1,14 @@
 import React, { useContext } from 'react';
 import { withTheme } from 'styled-components';
 
-import { AppContext } from '../../context/AppContext';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
+import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, ClassPeriod, CourseData } from '../../interfaces/Course';
+import { Activity, ClassData, ClassPeriod } from '../../interfaces/Course';
+import { ClassDropzoneProps, DropzonesProps } from '../../interfaces/PropTypes';
 import { timeToPosition } from '../../utils/Drag';
 import Dropzone from './Dropzone';
-
-interface ClassDropzoneProps {
-  course: CourseData;
-  color: string;
-  earliestStartTime: number;
-}
 
 const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestStartTime }) => {
   const { isHideFullClasses } = useContext(AppContext);
@@ -83,13 +78,6 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestSt
 
   return <>{dropzones}</>;
 };
-
-interface Theme {}
-
-interface DropzonesProps {
-  assignedColors: Record<string, string>;
-  theme: Theme;
-}
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   const { isDarkMode } = useContext(AppContext);

@@ -4,16 +4,15 @@ import styled from 'styled-components';
 
 import { contentPadding } from '../../constants/theme';
 import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
-import { ClassData, ClassPeriod } from '../../interfaces/Course';
+import { CourseContext } from '../../context/CourseContext';
+import { TimetableProps } from '../../interfaces/PropTypes';
+import { StyledTimetableProps } from '../../interfaces/StyleProps';
 import { timetableWidth } from '../../utils/Drag';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
-import { CourseContext } from '../../context/CourseContext';
 
-const StyledTimetable = styled(Box)<{
-  rows: number;
-}>`
+const StyledTimetable = styled(Box)<StyledTimetableProps>`
   display: grid;
   min-width: ${timetableWidth}px;
   padding: ${contentPadding}px;
@@ -33,12 +32,6 @@ const StyledTimetableScroll = styled(Box)`
   overflow-x: scroll;
   overflow-y: hidden;
 `;
-
-interface TimetableProps {
-  assignedColors: Record<string, string>;
-  clashes: Array<ClassPeriod>;
-  handleSelectClass(classData: ClassData): void;
-}
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
   const { selectedCourses } = useContext(CourseContext);
