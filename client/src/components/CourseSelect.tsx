@@ -239,7 +239,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       }
     }
   };
-    
+
   useEffect(() => {
     fetchCoursesList();
   }, []);
