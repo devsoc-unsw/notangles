@@ -4,11 +4,23 @@ updates:
     directory: "/client"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/client"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "npm"
     directory: "/common"
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
     directory: "/server"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/server"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "daily"
