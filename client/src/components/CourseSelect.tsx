@@ -1,7 +1,7 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import { Box, Chip, InputAdornment, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
@@ -108,6 +108,10 @@ const StyledIcon = styled.span`
   ${weakStyle}
 `;
 
+const StyledIconRight = styled(StyledIcon)`
+  margin-right: 0;
+`;
+
 const Weak = styled.span`
   margin-left: 7px;
   ${weakStyle}
@@ -128,7 +132,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
-  const [selectedTab, setSelectedTab] = useState<string>('inPerson');
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -158,17 +161,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   checkExternallyAdded();
 
-  let defaultOptions = coursesList.filter((course) => {
-    if (selectedTab === 'all' && (course.online || course.inPerson)) {
-      return true;
-    } if (selectedTab === 'online' && course.online) {
-      return true;
-    } if (selectedTab === 'inPerson' && course.inPerson) {
-      return true;
-    }
-
-    return false;
-  });
+  let defaultOptions = coursesList;
   
   // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
@@ -293,18 +286,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           },
         });
 
-      const onTabSelect = (event: React.ChangeEvent<{}>, value: any) => {
-        console.log(value);
-      };
-
       return (
         <div ref={ref} style={{ overflow: 'hidden' }}>
           <OuterElementContext.Provider value={other}>
-          <Tabs value={selectedTab} onChange={onTabSelect}>
-            <Tab label="All" value="all" />
-            <Tab label="Online" value="online" />
-            <Tab label="In-person" value="inPerson" />
-          </Tabs>
             <VariableSizeList
               ref={listRef}
               style={{ overflowX: 'hidden' }}
@@ -352,8 +336,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
             <RightContainer>
-              {option.online && <VideocamOutlinedIcon />}
-              {option.inPerson && <PersonOutlineIcon />}
+              {option.online && <StyledIconRight><VideocamOutlinedIcon /></StyledIconRight>}
+              {option.inPerson && <StyledIconRight><PersonOutlineIcon /></StyledIconRight>}
             </RightContainer>
           </StyledOption>
         )}
