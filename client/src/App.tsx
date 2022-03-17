@@ -389,7 +389,7 @@ const App: React.FC = () => {
                   Source
                 </Link>
                 &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="/privacy">
+                <Link href="/privacy">
                   Privacy
                 </Link>
                 {lastUpdated !== 0 && (

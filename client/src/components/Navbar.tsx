@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
 
-import { useMediaQuery } from '@material-ui/core';
+import { Typography, useMediaQuery } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import Link from '@mui/material/Link';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
 
@@ -81,15 +81,18 @@ const Navbar: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             )}
-            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
-            <NavbarTitle variant="h6">
-              Notangles
+            <a href="/">
+              <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
+            </a>
+            <NavbarTitle variant="h6" >
+              <Link href='/' color="inherit" underline="none">
+                Notangles
+              </Link>
               <Weak>
                 {!isMobile && <Beta>Beta</Beta>}
                 {isMobile ? term : termName.concat(', ', year)}
               </Weak>
             </NavbarTitle>
-
             <About />
             <Settings />
           </Toolbar>
