@@ -2,10 +2,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
 import Fuse from 'fuse.js';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
@@ -162,7 +160,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   checkExternallyAdded();
 
   let defaultOptions = coursesList;
-  
   // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
   const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
@@ -336,8 +333,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
             <RightContainer>
-              {option.online && <StyledIconRight><VideocamOutlinedIcon /></StyledIconRight>}
-              {option.inPerson && <StyledIconRight><PersonOutlineIcon /></StyledIconRight>}
+              {option.online && <StyledIconRight><VideocamOutlined /></StyledIconRight>}
+              {option.inPerson && <StyledIconRight><PersonOutline /></StyledIconRight>}
             </RightContainer>
           </StyledOption>
         )}

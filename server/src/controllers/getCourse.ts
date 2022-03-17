@@ -24,8 +24,6 @@ export const getCourse = async (req: Request, res: Response) => {
 
   const course = await Database.dbRead(args)
 
-  console.log(course)
-
   if (course) {
     res.send(JSON.stringify(course))
   } else {
