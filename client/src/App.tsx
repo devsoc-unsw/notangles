@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, Box, Snackbar, Button } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Link from '@material-ui/core/Link';
-=======
 import React, { useContext, useEffect } from 'react';
 
-import { Box, MuiThemeProvider, Snackbar } from '@material-ui/core';
->>>>>>> 47ccab28291a2cefd8901fb95e6e1c99384bc924
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
@@ -38,13 +31,7 @@ import {
 import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
 import storage from './utils/storage';
-<<<<<<< HEAD
-import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
-import { year, term, isPreview } from './constants/timetable';
-import NetworkError from './interfaces/NetworkError';
 import { downloadIcsFile } from './utils/generateICS';
-=======
->>>>>>> 47ccab28291a2cefd8901fb95e6e1c99384bc924
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -399,6 +386,10 @@ const App: React.FC = () => {
                 </Grid>
               </Grid>
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+              <br />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              <br />
+              <br />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
