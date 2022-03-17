@@ -7,7 +7,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.4",
-    "@mui/icons-material": "^5.4.2",
+    "@mui/icons-material": "^5.5.1",
     "@notangles/common": "^1.0.12",
     "dayjs": "^1.10.7",
     "file-saver": "^2.0.5",
