@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "types": ["node"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "outDir": "./dist"
   }
 }
