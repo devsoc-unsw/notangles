@@ -39,7 +39,6 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 `;
 
-
 const StyledApp = styled(Box)`
   height: 100%;
 `;
@@ -75,15 +74,13 @@ const Privacy: React.FC = () => {
               Privacy Statement.
             </p>
 
-            <Accordion>
+            <Accordion style={{margin: "auto"}}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon/>}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  What personal information does Notangles collect?
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>What personal information does Notangles collect?</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -99,15 +96,13 @@ const Privacy: React.FC = () => {
               </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion style={{margin: "auto"}}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon/>}
                 aria-controls="panel2a-content"
                 id="panel2a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  How does Notangles use the information it collects?
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>How does Notangles use the information it collects?</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -120,15 +115,13 @@ const Privacy: React.FC = () => {
               </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion style={{margin: "auto"}}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon/>}
                 aria-controls="panel3a-content"
                 id="panel3a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  Will Notangles share any of the personal information it receives?
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>Will Notangles share any of the personal information it receives?</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -156,9 +149,7 @@ const Privacy: React.FC = () => {
                 aria-controls="panel4a-content"
                 id="panel4a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  Conditions of use.
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>Conditions of use.</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -177,9 +168,7 @@ const Privacy: React.FC = () => {
                 aria-controls="panel5a-content"
                 id="panel5a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  Third party applications/websites.
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>Third party applications/websites.</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -200,9 +189,7 @@ const Privacy: React.FC = () => {
                 aria-controls="panel6a-content"
                 id="panel6a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  What personal information can I access?
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>What personal information can I access?</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -227,9 +214,7 @@ const Privacy: React.FC = () => {
                 aria-controls="panel7a-content"
                 id="panel7a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  Changes to this privacy statement.
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>Changes to this privacy statement.</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
@@ -249,9 +234,7 @@ const Privacy: React.FC = () => {
                 aria-controls="panel7a-content"
                 id="panel7a-header"
               >
-                <Typography style={{fontWeight: "bold"}}>
-                  Questions or concerns.
-                </Typography>
+                <Typography style={{fontWeight: "bold"}}>Questions or concerns.</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>

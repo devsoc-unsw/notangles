@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { isPreview } from './constants/timetable';
 import { CourseData, SelectedClasses } from './interfaces/Course';
 import { AppContextProviderProps } from './PropTypes';
@@ -108,6 +108,30 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    storage.set('isSquareEdges', isSquareEdges);
+  }, [isSquareEdges]);
+
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
 
   const initialContext: IAppContext = {
     selectedCourses,

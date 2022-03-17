@@ -260,30 +260,6 @@ const App: React.FC = () => {
     setInfoVisibility(false);
   };
 
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
-  useEffect(() => {
-    storage.set('isHideFullClasses', isHideFullClasses);
-  }, [isHideFullClasses]);
-
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
-
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);
-
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
