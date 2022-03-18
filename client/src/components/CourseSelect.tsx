@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
 
 import Fuse from 'fuse.js';
@@ -10,11 +10,13 @@ import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
 
 import getCoursesList from '../api/getCoursesList';
-import { AppContext } from '../AppContext';
+import { AppContext } from '../context/AppContext';
 import { maxAddedCourses, term, year } from '../constants/timetable';
 import { CourseData } from '../interfaces/Course';
 import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseSelectProps } from '../interfaces/PropTypes';
+import { CourseContext } from '../context/CourseContext';
 
 const SEARCH_DELAY = 300;
 
@@ -104,6 +106,10 @@ const StyledIcon = styled.span`
   ${weakStyle}
 `;
 
+const StyledIconRight = styled(StyledIcon)`
+  margin-right: 0;
+`;
+
 const Weak = styled.span`
   margin-left: 7px;
   ${weakStyle}
@@ -114,17 +120,11 @@ const StyledUl = styled.ul`
   margin: 0;
 `;
 
-interface CourseSelectProps {
-  assignedColors: Record<string, string>;
-  handleSelect(
-    data: string | string[],
-    a?: boolean,
-    callback?: (_selectedCourses: CourseData[]) => void,
-  ): void;
-  handleRemove(courseCode: string): void;
-}
+const RightContainer = styled.div`
+  position: absolute;
+  right: 10px;
+`;
 
-// beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
@@ -133,7 +133,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { selectedCourses, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
   const setOptions = (newOptions: CoursesList) => {
     listRef?.current?.scrollTo(0);
@@ -331,6 +332,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
+            <RightContainer>
+              {option.online && <StyledIconRight><VideocamOutlined /></StyledIconRight>}
+              {option.inPerson && <StyledIconRight><PersonOutline /></StyledIconRight>}
+            </RightContainer>
           </StyledOption>
         )}
         renderInput={(params) => (

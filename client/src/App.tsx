@@ -1,14 +1,11 @@
 import React, { useContext, useEffect } from 'react';
-
 import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
-
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
-import { AppContext } from './AppContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
@@ -16,6 +13,8 @@ import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
+import { AppContext } from './context/AppContext';
+import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import {
@@ -29,9 +28,10 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
+import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
-import storage from './utils/storage';
 import { downloadIcsFile } from './utils/generateICS';
+import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -80,10 +80,6 @@ const ContentWrapper = styled(Box)`
 
   color: ${(props) => props.theme.palette.text.primary};
 `;
-
-interface StyledContentProps {
-  drawerOpen: boolean;
-}
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
@@ -134,10 +130,6 @@ const Footer = styled(Box)`
 
 const App: React.FC = () => {
   const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -154,6 +146,8 @@ const App: React.FC = () => {
     lastUpdated,
     setLastUpdated,
   } = useContext(AppContext);
+
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -197,7 +191,7 @@ const App: React.FC = () => {
         // temp until auto timetabling works
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments != x.capacity) ?? null; // null for unscheduled
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null; // null for unscheduled
       });
 
       return prev;
@@ -372,23 +366,23 @@ const App: React.FC = () => {
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <div>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
-                  <SelectWrapper>
-                    <CourseSelect
-                      assignedColors={assignedColors}
-                      handleSelect={handleSelectCourse}
-                      handleRemove={handleRemoveCourse}
-                    />
-                  </SelectWrapper>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={9}>
+                    <SelectWrapper>
+                      <CourseSelect
+                        assignedColors={assignedColors}
+                        handleSelect={handleSelectCourse}
+                        handleRemove={handleRemoveCourse}
+                      />
+                    </SelectWrapper>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Autotimetabler />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <Autotimetabler />
-                </Grid>
-              </Grid>
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <br />
-              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <br />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
               </div>
               <br />
               <br />

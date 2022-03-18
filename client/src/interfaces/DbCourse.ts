@@ -144,7 +144,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
         period.locations = [
           ...period.locations,
           ...allPeriods
-            .filter((aPeriod) => period != aPeriod && isDuplicate(period, aPeriod))
+            .filter((aPeriod) => period !== aPeriod && isDuplicate(period, aPeriod))
             .map((periods) => periods.locations[0]),
         ];
 

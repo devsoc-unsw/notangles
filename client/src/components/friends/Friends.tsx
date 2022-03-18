@@ -23,7 +23,7 @@ import storage from '../../utils/storage';
 import LoggedOutImg from '../../assets/sidebar_cat.svg';
 
 import { isPreview } from '../../constants/timetable';
-import {AppContext} from '../../AppContext'
+import { AppContext } from '../../context/AppContext';
 
 export const drawerWidth = isPreview ? 240 : 0;
 
@@ -155,7 +155,7 @@ const FriendsDrawer: React.FC = () => {
   const [suggestedFriends, setSuggestedFriends] = React.useState<Array<FriendsListItemProps>>([]);
   const [mePhoto, setMePhoto] = React.useState<string>('');
 
-  const { isLoggedIn, setIsLoggedIn, isFriendsListOpen } = useContext(AppContext)
+  const { isLoggedIn, setIsLoggedIn, isFriendsListOpen } = useContext(AppContext);
 
   const handleSetIsLoggedIn = (value: boolean) => {
     setIsLoggedIn(value);

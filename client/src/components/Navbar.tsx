@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
 
-import { AppContext } from '../AppContext';
+import { AppContext } from '../context/AppContext';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
 import { ThemeType } from '../constants/theme';
@@ -58,7 +58,6 @@ const Beta = styled.span`
   bottom: -5px;
 `;
 
-// beware memo - if a component isn't re-rendering, it could be why
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

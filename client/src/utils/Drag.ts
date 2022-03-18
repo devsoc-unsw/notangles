@@ -188,8 +188,8 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
 const updateDelay = 30;
 let lastUpdate = 0;
 
-let currentClassTime: ClassTime;
-const setcurrentClassTime = (time: ClassTime) => {
+let currentClassTime: ClassTime | undefined;
+const setcurrentClassTime = (time: ClassTime | undefined) => {
   currentClassTime = time;
 };
 
@@ -229,19 +229,22 @@ const updateDropTarget = (now?: boolean) => {
     updateDropzones();
 
     if (isPeriod(newDropTarget)) {
-      let newTime = newDropTarget.class.periods[0].time;
+      let newTime = newDropTarget.time;
       if (
-        newTime.day != currentClassTime.day ||
+        !currentClassTime ||
+        newTime.day !== currentClassTime.day ||
         newTime.start !== currentClassTime.start ||
         newTime.end !== currentClassTime.end
       ) {
-        setcurrentClassTime(newDropTarget.class.periods[0].time);
+        setcurrentClassTime(undefined);
         selectClass(newDropTarget.class);
       }
     } else if (isPeriod(dragTarget)) {
       // moved to inventory
+      setcurrentClassTime(undefined);
       removeClass(dragTarget.class);
     }
+  } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
   }
 };
 
@@ -364,7 +367,11 @@ export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & To
 
       dragElement = element;
       freezeTransform(element);
-      if ('periods' in cardData.class) setcurrentClassTime(cardData.class.periods[0].time);
+      if ('time' in cardData) {
+        setcurrentClassTime(cardData.time);
+      } else {
+        setcurrentClassTime(undefined);
+      }
       updateDropTarget(true);
     } else {
       dragElement = null;

@@ -1,22 +1,36 @@
 # Grab the latest Node base image
-FROM node:14.17.6
-
-# Install serve
-RUN npm install -g serve
+FROM node:17.7.1-alpine as builder
 
 # Set the current working directory inside the container
-WORKDIR /server
+WORKDIR /app
 
-# Copy packages.json and package-lock.json into the container
 COPY package.json package-lock.json ./
-
-# Install node modules inside the container using the copied package.json
 RUN npm install
 
-# Copy the entire project into the container
 COPY . .
 
-EXPOSE 3000
+ARG FACEBOOK_APP_ID
+ARG GOOGLE_ANALYTICS_ID
+ARG GOOGLE_API_KEY
+ARG GOOGLE_OAUTH_CLIENT_ID
 
-# Run the server
-ENTRYPOINT [ "/server/scripts/deploy.sh" ]
+ENV REACT_APP_FACEBOOK_APP_ID=$FACEBOOK_APP_ID
+ENV REACT_APP_GOOGLE_ANALYTICS_ID=$GOOGLE_ANALYTICS_ID
+ENV REACT_APP_GOOGLE_API_KEY=$GOOGLE_API_KEY
+ENV REACT_APP_GOOGLE_OAUTH_CLIENT_ID=$GOOGLE_OAUTH_CLIENT_ID
+
+RUN npm run build
+
+# nginx state for serving content
+FROM nginx:1.21.6-alpine
+# Set working directory to nginx asset directory
+WORKDIR /usr/share/nginx/html
+# Remove default nginx static assets
+RUN rm -rf ./*
+# Copy static assets from builder stage
+COPY --from=builder /app/build .
+
+EXPOSE 80
+
+# Containers run nginx with global directives and daemon off
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
