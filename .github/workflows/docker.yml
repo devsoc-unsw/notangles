@@ -32,7 +32,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64
           file: client/Dockerfile
-          secrets: |
+          build-args: |
             FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
             GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
