@@ -191,7 +191,11 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
       let lengthQuery = query.length;
       if (lengthQuery <= 8) {
         newOptions.sort((a, b) =>
-          a.code.substring(0, lengthQuery) === query && b.code.substring(0, lengthQuery) === query && a.code < b.code ? -1 : 1
+          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          a.code < b.code
+            ? -1
+            : 1
         );
       }
 
