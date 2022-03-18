@@ -179,6 +179,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
 
+    // sorting results
+    let lengthQuery = query.length;
+    if (lengthQuery <= 8) {
+      newOptions.sort((a, b) =>
+        a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+        b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+        a.code < b.code
+          ? -1
+          : 1
+      );
+    }
+
     setOptions(newOptions);
     return newOptions;
   };
@@ -333,8 +345,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
             <RightContainer>
-              {option.online && <StyledIconRight><VideocamOutlined /></StyledIconRight>}
-              {option.inPerson && <StyledIconRight><PersonOutline /></StyledIconRight>}
+              {option.online && (
+                <StyledIconRight>
+                  <VideocamOutlined />
+                </StyledIconRight>
+              )}
+              {option.inPerson && (
+                <StyledIconRight>
+                  <PersonOutline />
+                </StyledIconRight>
+              )}
             </RightContainer>
           </StyledOption>
         )}
