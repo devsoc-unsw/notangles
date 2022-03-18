@@ -1,14 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Navbar from './Navbar';
-import { Box, MuiThemeProvider } from '@material-ui/core';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { AppContext } from '../AppContext';
-import { contentPadding, darkTheme, lightTheme, ThemeType } from '../constants/theme';
+import { Box } from '@material-ui/core';
+import styled from 'styled-components';
+import { contentPadding } from '../constants/theme';
 
 const ContentWrapper = styled(Box)`
   width: 75%;
@@ -22,8 +20,6 @@ const ContentWrapper = styled(Box)`
 `;
 
 const Privacy: React.FC = () => {
-
-  const { isDarkMode } = useContext(AppContext);
 
   return (
     <ContentWrapper>

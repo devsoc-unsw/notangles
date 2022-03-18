@@ -1,19 +1,18 @@
 import React, { useContext, useEffect } from 'react';
 
-import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
+import { Box, Button, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
 
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import Navbar from './components/Navbar';
+import { drawerWidth } from './components/friends/Friends';
 import Timetable from './components/timetable/Timetable';
-import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { contentPadding } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
