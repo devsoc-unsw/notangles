@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
 
 import Fuse from 'fuse.js';
@@ -106,6 +106,10 @@ const StyledIcon = styled.span`
   ${weakStyle}
 `;
 
+const StyledIconRight = styled(StyledIcon)`
+  margin-right: 0;
+`;
+
 const Weak = styled.span`
   margin-left: 7px;
   ${weakStyle}
@@ -114,6 +118,11 @@ const Weak = styled.span`
 const StyledUl = styled.ul`
   padding: 0;
   margin: 0;
+`;
+
+const RightContainer = styled.div`
+  position: absolute;
+  right: 10px;
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
@@ -323,6 +332,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
+            <RightContainer>
+              {option.online && <StyledIconRight><VideocamOutlined /></StyledIconRight>}
+              {option.inPerson && <StyledIconRight><PersonOutline /></StyledIconRight>}
+            </RightContainer>
           </StyledOption>
         )}
         renderInput={(params) => (
@@ -377,4 +390,5 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     </StyledSelect>
   );
 };
+
 export default CourseSelect;
