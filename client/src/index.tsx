@@ -61,29 +61,31 @@ const StyledApp = styled(Box)`
   height: 100%;
 `;
 
-const { isDarkMode } = useContext(AppContext);
-
-const Root: React.FC = () => (
-  <AppContextProvider>
-    <CourseContextProvider>
-      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <GlobalStyle />
-          <StyledApp>
-            <Navbar />
-            {isPreview && <FriendsDrawer />}
-            <BrowserRouter>
-              <Routes>
-                <Route element={<App />} path="/" />
-                <Route element={<Privacy />} path="/privacy" />
-              </Routes>
-            </BrowserRouter>
-          </StyledApp>
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </CourseContextProvider>
-  </AppContextProvider>
-);
+const Root: React.FC = () => {
+  const { isDarkMode } = useContext(AppContext);
+  return (
+    <AppContextProvider>
+      <CourseContextProvider>
+        <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+          <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+            <GlobalStyle />
+            <StyledApp>
+              <Navbar />
+              {isPreview && <FriendsDrawer />}
+              <BrowserRouter>
+                <Routes>
+                  <Route element={<App />} path="/" />
+                  <Route element={<Privacy />} path="/privacy" />
+                </Routes>
+              </BrowserRouter>
+            </StyledApp>
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </CourseContextProvider>
+    </AppContextProvider>
+  );
+}
+  
 
 ReactDOM.render(<Root />, document.getElementById('root'));
 
