@@ -114,7 +114,12 @@ const StyledUl = styled.ul`
 interface CourseSelectProps {
   selectedCourses: CourseData[];
   assignedColors: Record<string, string>;
-  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void, isDefaultUnscheduled?: boolean): void;
+  handleSelect(
+    data: string | string[],
+    a?: boolean,
+    callback?: (_selectedCourses: CourseData[]) => void,
+    isDefaultUnscheduled?: boolean
+  ): void;
   handleRemove(courseCode: string): void;
   setErrorMsg(errorMsg: string): void;
   setErrorVisibility(visibility: boolean): void;
@@ -124,7 +129,16 @@ interface CourseSelectProps {
 
 // beware memo - if a component isn't re-rendering, it could be why
 const CourseSelect: React.FC<CourseSelectProps> = React.memo(
-  ({ selectedCourses, assignedColors, handleSelect, handleRemove, setErrorMsg, setErrorVisibility, setLastUpdated, isDefaultUnscheduled }) => {
+  ({
+    selectedCourses,
+    assignedColors,
+    handleSelect,
+    handleRemove,
+    setErrorMsg,
+    setErrorVisibility,
+    setLastUpdated,
+    isDefaultUnscheduled,
+  }) => {
     const [coursesList, setCoursesList] = useState<CoursesList>([]);
     const [options, setOptionsState] = useState<CoursesList>([]);
     const [inputValue, setInputValue] = useState<string>('');
@@ -145,7 +159,6 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
     const checkExternallyAdded = () => {
       const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
       const coursesListCodes = coursesList.map((x) => x.code);
-
       // if we have info about the new courses already fetched, update the value now
       // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
       if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
@@ -167,13 +180,20 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
 
     const search = (query: string) => {
       query = query.trim();
-
       if (query.length === 0) {
         setOptions(defaultOptions);
         return defaultOptions;
       }
 
       const newOptions = fuzzy.search(query).map((result) => result.item);
+
+      // sorting results
+      let lengthQuery = query.length;
+      if (lengthQuery <= 8) {
+        newOptions.sort((a, b) =>
+          a.code.substring(0, lengthQuery) === query && b.code.substring(0, lengthQuery) === query && a.code < b.code ? -1 : 1
+        );
+      }
 
       setOptions(newOptions);
       return newOptions;
@@ -201,6 +221,7 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
         // we need to add something, and our best guess is the top
         // result of the new search
         const newSelectedOption = newOptions[0];
+        console.log(newOptions[0]);
 
         if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
           // otherwise, add the new option and call the handler
@@ -213,7 +234,12 @@ const CourseSelect: React.FC<CourseSelectProps> = React.memo(
           return;
         }
       } else {
-        handleSelect(added.map((course) => course.code), undefined, undefined, isDefaultUnscheduled);
+        handleSelect(
+          added.map((course) => course.code),
+          undefined,
+          undefined,
+          isDefaultUnscheduled
+        );
         setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
       }
 
