@@ -71,7 +71,7 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 50vh;
+  min-height: 100vh;
   box-sizing: border-box;
 
   display: flex;
@@ -371,6 +371,7 @@ const App: React.FC = () => {
           {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
+              <div>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={9}>
                   <SelectWrapper>
@@ -388,6 +389,7 @@ const App: React.FC = () => {
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
               <br />
               <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              </div>
               <br />
               <br />
               <Footer>
