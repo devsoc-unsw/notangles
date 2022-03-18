@@ -450,24 +450,22 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
 
   const shiftClasses = (dir: number, c: CardData) => {
     if ('time' in c) {
-      // ts goes mental without this if
       const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
-        value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || value.enrolments != value.capacity))
+        value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || value.enrolments !== value.capacity))
       );
 
       if (newclasses.length)
         handleSelectClass(
-          newclasses[(newclasses.findIndex((v) => v.id == c.class.id) + newclasses.length + dir) % newclasses.length]
+          newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + newclasses.length + dir) % newclasses.length]
         );
     }
   };
 
   const hasArrows = (c: CardData) =>
-    'time' in c &&
-    c.class.course.activities[c.class.activity].filter(
-      (value) =>
-        isDuplicate(value.periods[0], c) && (!isHideFullClasses || value.enrolments != value.capacity || value.id == c.class.id)
-    ).length > 1;
+  'time' in c &&
+  c.class.course.activities[c.class.activity].filter(
+    (value) => value.periods.length && isDuplicate(value.periods[0], c) && (!isHideFullClasses || (value.enrolments !== value.capacity) || (value.id === c.class.id))
+  ).length > 1;
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
