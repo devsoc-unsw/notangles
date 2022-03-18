@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 
-import { Box, MuiThemeProvider, Snackbar } from '@material-ui/core';
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
@@ -8,7 +8,6 @@ import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
-import { AppContext } from './AppContext';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
@@ -16,6 +15,8 @@ import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
+import { AppContext } from './context/AppContext';
+import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import {
@@ -29,40 +30,10 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
+import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
+import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-
-const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
-  body {
-    background: ${(props) => props.theme.palette.background.default};
-    transition: background 0.2s;
-  }
-
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.palette.background.default};
-    border-radius: 5px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.palette.secondary.main};
-    border-radius: 5px;
-    opacity: 0.5;
-    transition: background 0.2s;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.palette.secondary.dark};
-  }
-`;
-
-const StyledApp = styled(Box)`
-  height: 100%;
-`;
 
 const ContentWrapper = styled(Box)`
   text-align: center;
@@ -79,10 +50,6 @@ const ContentWrapper = styled(Box)`
 
   color: ${(props) => props.theme.palette.text.primary};
 `;
-
-interface StyledContentProps {
-  drawerOpen: boolean;
-}
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
@@ -120,10 +87,6 @@ const Footer = styled(Box)`
 
 const App: React.FC = () => {
   const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -140,6 +103,8 @@ const App: React.FC = () => {
     lastUpdated,
     setLastUpdated,
   } = useContext(AppContext);
+
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -325,72 +290,64 @@ const App: React.FC = () => {
   };
 
   return (
-    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        <StyledApp>
-          <Navbar />
-          {isPreview && <FriendsDrawer />}
-          <ContentWrapper>
-            <Content drawerOpen={isFriendsListOpen}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
-                  <SelectWrapper>
-                    <CourseSelect
-                      assignedColors={assignedColors}
-                      handleSelect={handleSelectCourse}
-                      handleRemove={handleRemoveCourse}
-                    />
-                  </SelectWrapper>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Autotimetabler />
-                </Grid>
-              </Grid>
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <Footer>
-                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
-                <br />
-                <br />
-                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-                  Email
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-                  Feedback
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  Source
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link href="/privacy">
-                  Privacy
-                </Link>
-                {lastUpdated !== 0 && (
-                  <>
-                    <br />
-                    <br />
-                    Data last updated {getRelativeTime(lastUpdated)} ago.
-                  </>
-                )}
-              </Footer>
-              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                  {errorMsg}
-                </Alert>
-              </Snackbar>
-              <Snackbar open={infoVisibility}>
-                <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  Press and hold to drag a class
-                </Alert>
-              </Snackbar>
-            </Content>
-          </ContentWrapper>
-        </StyledApp>
-      </ThemeProvider>
-    </MuiThemeProvider>
+    <ContentWrapper>
+      <Content drawerOpen={isFriendsListOpen}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={9}>
+            <SelectWrapper>
+              <CourseSelect
+                assignedColors={assignedColors}
+                handleSelect={handleSelectCourse}
+                handleRemove={handleRemoveCourse}
+              />
+            </SelectWrapper>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Autotimetabler />
+          </Grid>
+        </Grid>
+        <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
+        <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+        <Footer>
+          While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+          <br />
+          <br />
+          Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link target="_blank" href="mailto:notangles@csesoc.org.au">
+            Email
+          </Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
+            Feedback
+          </Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link target="_blank" href="https://github.com/csesoc/notangles">
+            Source
+          </Link>
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <Link href="/privacy">
+            Privacy
+          </Link>
+          {lastUpdated !== 0 && (
+            <>
+              <br />
+              <br />
+              Data last updated {getRelativeTime(lastUpdated)} ago.
+            </>
+          )}
+        </Footer>
+        <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+          <Alert severity="error" onClose={handleErrorClose} variant="filled">
+            {errorMsg}
+          </Alert>
+        </Snackbar>
+        <Snackbar open={infoVisibility}>
+          <Alert severity="info" onClose={handleInfoClose} variant="filled">
+            Press and hold to drag a class
+          </Alert>
+        </Snackbar>
+      </Content>
+    </ContentWrapper>
   );
 };
 export default App;

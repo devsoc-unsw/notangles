@@ -12,7 +12,7 @@ import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
 import styled from 'styled-components';
 
-import { AppContext } from '../AppContext';
+import { AppContext } from '../context/AppContext';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -71,7 +71,7 @@ const Settings: React.FC = () => {
 
   const settings = settingsToggles.map((setting) => {
     return (
-      <>
+      <div key={setting.desc}>
         <Divider />
         <ListItem>
           <SettingText primary={setting['desc']} />
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
             }}
           />
         </ListItem>
-      </>
+      </div>
     );
   });
 

@@ -58,7 +58,6 @@ const Beta = styled.span`
   bottom: -5px;
 `;
 
-// beware memo - if a component isn't re-rendering, it could be why
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -84,14 +83,14 @@ const Navbar: React.FC = () => {
             <a href="/">
               <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
             </a>
-            <NavbarTitle variant="h6" >
-              <Link href='/' color="inherit" underline="none">
+            <NavbarTitle variant="h6">
+              <Link href="/" color="inherit" underline="none">
                 Notangles
+                <Weak>
+                  {!isMobile && <Beta>Beta</Beta>}
+                  {isMobile ? term : termName.concat(', ', year)}
+                </Weak>
               </Link>
-              <Weak>
-                {!isMobile && <Beta>Beta</Beta>}
-                {isMobile ? term : termName.concat(', ', year)}
-              </Weak>
             </NavbarTitle>
             <About />
             <Settings />
