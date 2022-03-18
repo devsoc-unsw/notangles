@@ -463,11 +463,10 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
   };
 
   const hasArrows = (c: CardData) =>
-    'time' in c &&
-    c.class.course.activities[c.class.activity].filter(
-      (value) =>
-        isDuplicate(value.periods[0], c) && (!isHideFullClasses || value.enrolments != value.capacity || value.id == c.class.id)
-    ).length > 1;
+  'time' in c &&
+  c.class.course.activities[c.class.activity].filter(
+    (value) => value.periods.length && isDuplicate(value.periods[0], c) && (!isHideFullClasses || (value.enrolments != value.capacity) || (value.id == c.class.id))
+  ).length > 1;
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
