@@ -32,6 +32,7 @@ import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { stringify } from 'querystring';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -222,7 +223,7 @@ const App: React.FC = () => {
     Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
       .then((result) => {
         const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+        const newSelectedCourses = [...addedCourses];
 
         setSelectedCourses(newSelectedCourses);
 
@@ -327,7 +328,7 @@ const App: React.FC = () => {
         savedClasses[courseCode][activity] = classData ? classData.id : null;
       });
     });
-
+    
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
@@ -342,6 +343,29 @@ const App: React.FC = () => {
     const hours = Math.round(minutes / 60);
     return `${hours} hours`;
   };
+
+  const auto = async (values: any) => {
+    console.log(values)
+    console.log(selectedCourses)
+    if (selectedCourses && selectedCourses.length) {      
+      // const data = selectedCourses.map((v) =>
+      //   Object.entries(v.activities)
+      //     .filter(([a, b]) => a != 'Lecture')
+      //     .map(([v, classes]) => classes.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
+      // ); // alternative if (activities excluding lecture).length() > 1
+      const periodData = selectedCourses.map((v) =>
+        Object.entries(v.activities)
+          .filter(([a, b]) => a != 'Lecture')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+      );
+
+    
+      const obj: {[k: string]: any} = ['start', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
+      obj["periods"] = periodData
+      console.log(JSON.stringify(obj))
+
+
+    }
+  }
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -363,7 +387,7 @@ const App: React.FC = () => {
                   </SelectWrapper>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                  <Autotimetabler />
+                  <Autotimetabler auto={auto}/>
                 </Grid>
               </Grid>
               <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
