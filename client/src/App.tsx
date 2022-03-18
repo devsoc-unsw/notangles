@@ -115,12 +115,12 @@ const ICSButton = styled(Button)`
     // width: 20%;
     margin: auto;
     background-color: ${(props) => props.theme.palette.primary.main};
-    color: #FFFFFF;
+    color: #ffffff;
     &:hover {
       background-color: #598dff;
     }
   }
-`
+`;
 
 const Footer = styled(Box)`
   text-align: center;
