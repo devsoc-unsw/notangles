@@ -355,7 +355,7 @@ const App: React.FC = () => {
       // ); // alternative if (activities excluding lecture).length() > 1
       const periodData = selectedCourses.map((v) =>
         Object.entries(v.activities)
-          .filter(([a, b]) => a != 'Lecture')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
       );
 
     
