@@ -153,8 +153,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     // if we have info about the new courses already fetched, update the value now
     // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
     if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
-      setSelectedValue([...selectedValue, ...coursesList.filter((course) => addedCodes.includes(course.code))]);
-    }
+      setSelectedValue([
+        ...selectedValue,
+        ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
+      ]); // the nullish coalesce above was the best way I found to shut ts up.
+    } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
+
   };
 
   checkExternallyAdded();
