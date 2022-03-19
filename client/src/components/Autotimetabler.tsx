@@ -100,6 +100,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<string | null>('');
   const [startValue, setStartValue] = React.useState<string>('');
+  const [endValue, setEndValue] = React.useState<string>('');
   const [days, setDays] = React.useState<Array<string>>(weekdays)
   const { isDarkMode } = useContext(AppContext);
 
@@ -107,7 +108,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
   const doAuto = () => {
-    const ops: Array<string|null> = [startValue, days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? "5" : daysAtUni]
+    const ops: Array<string|null> = [startValue, endValue, days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? "5" : daysAtUni]
     auto(ops)
     setAnchorEl(null);
   }
@@ -175,6 +176,25 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
                     shrink: true,
                   }}
                   onChange={(event) => setStartValue(event.target.value)}
+                />
+              </Grid>
+            </Grid>
+          </ListItem>
+
+          <ListItem>
+            <Grid container spacing={0}>
+              <Grid item xs={8}>
+                <ListItemText primary="Earliest end time" />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-number"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={(event) => setEndValue(event.target.value)}
                 />
               </Grid>
             </Grid>

@@ -223,7 +223,8 @@ const App: React.FC = () => {
     Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
       .then((result) => {
         const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...addedCourses];
+        const newSelectedCourses = [...selectedCourses, ...addedCourses].slice(0, 3);
+
 
         setSelectedCourses(newSelectedCourses);
 
@@ -359,7 +360,7 @@ const App: React.FC = () => {
       );
 
     
-      const obj: {[k: string]: any} = ['start', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
+      const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
       obj["periods"] = periodData
       console.log(JSON.stringify(obj))
 
