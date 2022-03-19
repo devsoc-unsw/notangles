@@ -109,6 +109,19 @@ const SelectWrapper = styled(Box)`
   padding-top: 20px;
 `;
 
+const ICSButton = styled(Button)`
+  && {
+    min-width: 250px;
+    // width: 20%;
+    margin: auto;
+    background-color: ${(props) => props.theme.palette.primary.main};
+    color: #ffffff;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
+`;
+
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
@@ -352,22 +365,27 @@ const App: React.FC = () => {
           {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
-                  <SelectWrapper>
-                    <CourseSelect
-                      assignedColors={assignedColors}
-                      handleSelect={handleSelectCourse}
-                      handleRemove={handleRemoveCourse}
-                    />
-                  </SelectWrapper>
+              <div>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={9}>
+                    <SelectWrapper>
+                      <CourseSelect
+                        assignedColors={assignedColors}
+                        handleSelect={handleSelectCourse}
+                        handleRemove={handleRemoveCourse}
+                      />
+                    </SelectWrapper>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Autotimetabler />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <Autotimetabler />
-                </Grid>
-              </Grid>
-              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <br />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              </div>
+              <br />
+              <br />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />

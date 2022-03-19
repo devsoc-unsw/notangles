@@ -333,8 +333,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
             <RightContainer>
-              {option.online && <StyledIconRight><VideocamOutlined /></StyledIconRight>}
-              {option.inPerson && <StyledIconRight><PersonOutline /></StyledIconRight>}
+              {option.online && (
+                <StyledIconRight>
+                  <VideocamOutlined />
+                </StyledIconRight>
+              )}
+              {option.inPerson && (
+                <StyledIconRight>
+                  <PersonOutline />
+                </StyledIconRight>
+              )}
             </RightContainer>
           </StyledOption>
         )}
