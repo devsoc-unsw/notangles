@@ -22,7 +22,7 @@
     "react-transition-group": "^4.4.2",
     "react-window": "^1.8.6",
     "styled-components": "^5.3.3",
-    "web-vitals": "^0.2.4",
+    "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.1",
     "workbox-broadcast-update": "^6.5.1",
     "workbox-cacheable-response": "^6.5.1",
