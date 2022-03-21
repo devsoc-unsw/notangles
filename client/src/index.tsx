@@ -7,7 +7,6 @@ import App from './App';
 import Privacy from './components/Privacy';
 import AppContextProvider, { AppContext } from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import * as serviceWorker from './serviceWorker';
 
 import './index.css';
 import { Box, MuiThemeProvider, ThemeProvider } from '@material-ui/core';
@@ -16,6 +15,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview } from './constants/timetable';
 import FriendsDrawer from './components/friends/Friends';
+import * as swRegistration from './serviceWorkerRegistration';
 
 const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
 
@@ -84,12 +84,11 @@ const Root: React.FC = () => {
       </CourseContextProvider>
     </AppContextProvider>
   );
-}
-  
+};
 
 ReactDOM.render(<Root />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.register();
+swRegistration.register();
