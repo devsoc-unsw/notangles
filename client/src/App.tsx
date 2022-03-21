@@ -1,10 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-
 import { Box, Button, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
-
 import styled from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -12,7 +10,6 @@ import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import { drawerWidth } from './components/friends/Friends';
 import Timetable from './components/timetable/Timetable';
-import { contentPadding } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
@@ -33,22 +30,6 @@ import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-
-const ContentWrapper = styled(Box)`
-  text-align: center;
-  padding-top: 64px; // for nav bar
-  padding-left: ${contentPadding}px;
-  padding-right: ${contentPadding}px;
-  transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: ${isPreview ? 'flex-start' : 'center'};
-
-  color: ${(props) => props.theme.palette.text.primary};
-`;
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
@@ -99,12 +80,7 @@ const Footer = styled(Box)`
 
 const App: React.FC = () => {
   const {
-    is12HourMode,
-    isDarkMode,
-    isSquareEdges,
-    isHideFullClasses,
     isDefaultUnscheduled,
-    isHideClassInfo,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -302,7 +278,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <ContentWrapper>
+    <>
       <Content drawerOpen={isFriendsListOpen}>
         <div>
           <Grid container spacing={2}>
@@ -360,7 +336,7 @@ const App: React.FC = () => {
           </Alert>
         </Snackbar>
       </Content>
-    </ContentWrapper>
+    </>
   );
 };
 export default App;
