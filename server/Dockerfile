@@ -20,6 +20,6 @@ RUN npm install --production
 
 COPY --from=builder /server/dist .
 
-EXPOSE 3001 
+EXPOSE 3001
 
 CMD ["npm", "run", "start:production"]

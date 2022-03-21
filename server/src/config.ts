@@ -5,8 +5,8 @@ export enum Env {
 }
 
 interface Config {
-  database: string,
-  scraper: string
+  database: string;
+  scraper: string;
 }
 
 export const allConfig: Record<Env, Config> = {
@@ -25,5 +25,5 @@ export const allConfig: Record<Env, Config> = {
     database: 'mongodb://database.notangles-db:27017/',
     scraper: 'mongodb://database.notangles-db:27017',
   },
-}
-export const config: Config = allConfig[process.env.NODE_ENV || Env.DEV]
+};
+export const config: Config = allConfig[process.env.NODE_ENV || Env.DEV];
