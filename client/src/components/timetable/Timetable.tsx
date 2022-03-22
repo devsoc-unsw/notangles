@@ -3,8 +3,9 @@ import { Box } from '@material-ui/core';
 import styled from 'styled-components';
 
 import { contentPadding } from '../../constants/theme';
-import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
+import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { StyledTimetableProps } from '../../interfaces/StyleProps';
 import { timetableWidth } from '../../utils/Drag';
@@ -21,7 +22,7 @@ const StyledTimetable = styled(Box)<StyledTimetableProps>`
   grid-gap: ${1 / devicePixelRatio}px;
   grid-template:
     auto repeat(${({ rows }) => rows}, 1fr)
-    / auto repeat(${days.length}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
+    / auto repeat(${({ cols }) => cols}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
 `;
 
 const StyledTimetableScroll = styled(Box)`
@@ -34,11 +35,13 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses} = useContext(CourseContext);
+  const { days } = useContext(AppContext);
 
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable
+        cols={days.length}
         rows={
           Math.max(...selectedCourses.map((course) => course.latestFinishTime), defaultEndTime) -
           Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
