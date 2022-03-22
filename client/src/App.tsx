@@ -123,6 +123,7 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    isSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -262,6 +263,10 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
+
+  useEffect(() => {
+    storage.set('isSortAlphabetic', isSortAlphabetic);
+  }, [isSortAlphabetic]);
 
   useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
