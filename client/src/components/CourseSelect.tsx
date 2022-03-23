@@ -125,6 +125,12 @@ const RightContainer = styled.div`
   right: 10px;
 `;
 
+const Career = styled.div`
+  position: absolute;
+  right: 65px;
+  ${weakStyle};
+`;
+
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
@@ -158,7 +164,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
       ]); // the nullish coalesce above was the best way I found to shut ts up.
     } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
-
   };
 
   checkExternallyAdded();
@@ -336,6 +341,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
+            <Career>Undergraduate</Career> {/* Place holder until we can get data from scraper */}
             <RightContainer>
               {option.online && (
                 <StyledIconRight>
