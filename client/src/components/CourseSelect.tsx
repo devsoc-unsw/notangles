@@ -341,7 +341,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
-            <Career>Undergraduate</Career> {/* Place holder until we can get data from scraper */}
+            <Career>{option.career}</Career>
             <RightContainer>
               {option.online && (
                 <StyledIconRight>
