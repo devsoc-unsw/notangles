@@ -15,7 +15,7 @@
     "dist/"
   ],
   "devDependencies": {
-    "@types/node": "^14.0.18",
+    "@types/node": "^17.0.23",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
     "@typescript-eslint/parser": "^2.34.0",
     "eslint": "^7.4.0",
