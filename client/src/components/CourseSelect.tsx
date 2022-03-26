@@ -146,6 +146,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     return b.filter((x) => !codes.includes(x.code));
   };
 
+  useEffect(() => {
+    setSelectedValue([...selectedCourses.map(x => x.code).map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0])])
+  }, [selectedCourses])
+
   const checkExternallyAdded = () => {
     const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
     const coursesListCodes = coursesList.map((x) => x.code);
@@ -384,8 +388,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           />
         )}
         renderTags={(value: CoursesList, getTagProps) =>
-          value.map((option: CourseOverview, index: number) => (
-            <StyledChip
+          value.map((option: CourseOverview, index: number) => {
+            return (<StyledChip
               label={option.code}
               color="primary"
               backgroundColor={assignedColors[option.code]}
@@ -395,8 +399,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
                 setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
                 handleRemove(option.code);
               }}
-            />
-          ))
+            />);
+            })
         }
       />
     </StyledSelect>
