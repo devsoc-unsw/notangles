@@ -42,6 +42,9 @@ export interface IAppContext {
 
   lastUpdated: number;
   setLastUpdated: (newLastUpdated: number) => void;
+
+  days: string[];
+  setDays: (newDays: string[]) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -83,6 +86,9 @@ export const AppContext = createContext<IAppContext>({
 
   lastUpdated: 0,
   setLastUpdated: () => {},
+
+  days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  setDays: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -99,6 +105,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
+  const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -127,6 +134,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsLoggedIn,
     lastUpdated,
     setLastUpdated,
+    days,
+    setDays
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
