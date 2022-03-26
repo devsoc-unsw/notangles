@@ -17,6 +17,7 @@ import { isPreview, term, termName, year } from '../constants/timetable';
 
 import About from './About';
 import Settings from './Settings';
+import History from './History';
 
 const LogoImg = styled.img`
   height: 46px;
@@ -88,7 +89,7 @@ const Navbar: React.FC = () => {
                 {isMobile ? term : termName.concat(', ', year)}
               </Weak>
             </NavbarTitle>
-
+            <History/>
             <About />
             <Settings />
           </Toolbar>
