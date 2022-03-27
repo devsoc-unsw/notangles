@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Undo from '@material-ui/icons/Undo';
 import Redo from '@material-ui/icons/Redo';
 import Tooltip from '@material-ui/core/Tooltip';
 import { CourseContext } from '../context/CourseContext';
 import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../interfaces/Course';
-import { ContactSupportOutlined } from '@material-ui/icons';
 import { AppContext } from '../context/AppContext';
 
 interface Action {
@@ -17,11 +16,14 @@ type Actions = Action[];
 
 const History: React.FC = () => {
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
-  useContext(AppContext)
+  useContext(AppContext);
 
   const actions = useRef<Actions>([]);
   const actionsPointer = useRef(-1);
   const dontAdd = useRef(false);
+
+  const [disableLeft, setDisableLeft] = useState(true);
+  const [disableRight, setDisableRight] = useState(true);
 
   const duplicateClasses = (prev: SelectedClasses) => {
     const newClasses: SelectedClasses = {};
@@ -30,18 +32,7 @@ const History: React.FC = () => {
       const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
       Object.entries(activities).forEach(([activity, classData]) => {
-        // if (classData !== null) {
-          newActivityCopy[activity] = classData !== null ? { // can be replaced by the spread operator but im kinda unreasonably scared it will not work
-            
-            ...classData
-            // id: classData.id,
-            // course: classData.course,
-            // activity: classData.activity,
-            // enrolments: classData.enrolments,
-            // capacity: classData.capacity,
-            // periods: classData.periods,
-          } : null;
-        // }
+        newActivityCopy[activity] = classData !== null ? { ...classData } : null;
       });
       newClasses[courseCode] = { ...newActivityCopy };
     });
@@ -49,70 +40,41 @@ const History: React.FC = () => {
     return newClasses;
   };
 
+  const incrementActionsPointer = (direction: number) => {
+    actionsPointer.current += direction;
+    setDisableLeft(actionsPointer.current <= 1);
+    setDisableRight(actionsPointer.current + 1 >= actions.current.length);
+  };
+
   useEffect(() => {
-    if (!dontAdd.current) {
-      if (actions.current.length > actionsPointer.current + 1) {
-        actions.current = [
-          ...actions.current.slice(0, actionsPointer.current + 1),
-          { courses: [ ...selectedCourses ], classes: duplicateClasses(selectedClasses) },
-        ];
-        
-      } else {
-        actions.current.push({ courses: [ ...selectedCourses ], classes: duplicateClasses(selectedClasses) });
-      }
-      actionsPointer.current++;
-
-      // console.log(actions.current.map((c) => (Object.entries(c.classes).map(([cc, v])=> {return Object.entries(v).map(([bbb, vvv]) => vvv?.id)}))), actionsPointer.current);
+    if (dontAdd.current) {
+      dontAdd.current = false;
+      return; // prevents adding change induced from re/undo click
     }
-
-    dontAdd.current = false;
+    if (actions.current.length > actionsPointer.current + 1) {
+      // discard remainding redos as we branched off
+      actions.current = actions.current.slice(0, actionsPointer.current + 1);
+    }
+    actions.current.push({ courses: [...selectedCourses], classes: duplicateClasses(selectedClasses) });
+    incrementActionsPointer(1);
   }, [selectedClasses]);
 
-
-  // const handleRemoveCourse = (courseCode: string) => {
-  //   const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
-  //   setSelectedCourses(newSelectedCourses);
-  //   setSelectedClasses((prev) => {
-  //     prev = { ...prev };
-  //     delete prev[courseCode];
-  //     return prev;
-  //   });
-  // };
-
-
-
   const changeHistory = (direction: number) => {
-    if (actionsPointer.current + direction >= 1 && actionsPointer.current + direction < actions.current.length) {
-      actionsPointer.current += direction;
-      dontAdd.current = true;
-
-      // const prevCourses = Object.keys(selectedClasses)
-      // const nextCourses = Object.keys(actions.current[actionsPointer.current].classes)
-
-      // if (prevCourses.length >= nextCourses.length) {
-      //   // handleRemoveCourse(prevCourses[prevCourses.length - 1])
-      //   // console.log(actions.current[actionsPointer.current].courses, selectedCourses)
-      //   // setSelectedCourses()
-
-      // }
-      setSelectedCourses(actions.current[actionsPointer.current].courses);
-      setSelectedClasses(duplicateClasses(actions.current[actionsPointer.current].classes)); // very important to duplicate here again or things will break
-      
-      
-      
-      // console.log(actions.current.map((c) => (Object.entries(c.classes).map(([cc, v])=> {return Object.entries(v).map(([bbb, vvv]) => vvv?.id)}))), actionsPointer.current);
-    }
+    incrementActionsPointer(direction);
+    dontAdd.current = true;
+    setSelectedCourses(actions.current[actionsPointer.current].courses);
+    setSelectedClasses(duplicateClasses(actions.current[actionsPointer.current].classes)); // very important to duplicate here again or things will break
   };
 
   return (
     <>
       <Tooltip title="Undo">
-        <IconButton color="inherit" onClick={() => changeHistory(-1)}>
+        <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
           <Undo />
         </IconButton>
       </Tooltip>
       <Tooltip title="Redo">
-        <IconButton color="inherit" onClick={() => changeHistory(1)}>
+        <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)}>
           <Redo />
         </IconButton>
       </Tooltip>
