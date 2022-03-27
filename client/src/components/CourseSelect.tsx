@@ -357,7 +357,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             </StyledIcon>
             <span>{option.code}</span>
             <Weak>{option.name}</Weak>
-            <Career>{option.career}</Career>
+            <Career>
+              {option.career === 'Undergraduate'
+                ? 'UGRD'
+                : option.career === 'Postgraduate'
+                ? 'PGRD'
+                : option.career === 'Research'
+                ? 'RSCH'
+                : null}
+            </Career>
             <RightContainer>
               {option.online && (
                 <StyledIconRight>
