@@ -6,6 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { CourseContext } from '../context/CourseContext';
 import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../interfaces/Course';
 import { AppContext } from '../context/AppContext';
+import RestoreIcon from '@material-ui/icons/Restore';
 
 interface Action {
   courses: CourseData[];
@@ -66,8 +67,32 @@ const History: React.FC = () => {
     setSelectedClasses(duplicateClasses(actions.current[actionsPointer.current].classes)); // very important to duplicate here again or things will break
   };
 
+  const restoreInitial = () => {
+    setSelectedCourses(actions.current[1].courses);
+    setSelectedClasses(duplicateClasses(actions.current[1].classes)); // very important to duplicate here again or things will break
+  }
+
+  const handleKeyDown = (event: any) => {
+    if (!event.ctrlKey) return;
+    if (event.key === 'z' && actionsPointer.current > 1) {
+      changeHistory(-1);
+    }
+    if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
+      changeHistory(1);
+    }
+  };
+
+  useEffect(() => { 
+    window.addEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <>
+      <Tooltip title="Reset Timetable">
+        <IconButton color="inherit" onClick={() => restoreInitial()}>
+          <RestoreIcon />
+        </IconButton>
+      </Tooltip>
       <Tooltip title="Undo">
         <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
           <Undo />
