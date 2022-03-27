@@ -1,11 +1,12 @@
+name: Docker
 on:
   push:
     branches:
-      - "dev"
+      - 'dev'
 
 jobs:
   build-client:
-    name: "Docker Build (Client)"
+    name: 'Build (Client)'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,7 +43,7 @@ jobs:
             ghcr.io/csesoc/notangles-client:latest
           labels: ${{ steps.meta.outputs.labels }}
   build-server:
-    name: "Docker Build (Server)"
+    name: 'Build (Server)'
     runs-on: ubuntu-latest
     permissions:
       contents: read

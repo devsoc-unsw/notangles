@@ -17,7 +17,7 @@ import styled from 'styled-components';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
-import { days, defaultStartTime } from '../../constants/timetable';
+import { defaultStartTime } from '../../constants/timetable';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
   CardData,
@@ -235,7 +235,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 }) => {
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo } = useContext(AppContext);
+  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days } = useContext(AppContext);
 
   let timer: number | null = null;
   let rippleStopped = false;

@@ -132,6 +132,8 @@ const Career = styled.div`
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+  const { isSortAlphabetic } = useContext(AppContext);
+
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
@@ -187,6 +189,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
+
+    // sorting results
+    if (isSortAlphabetic) {
+      let lengthQuery = query.length;
+      if (lengthQuery <= 8) {
+        newOptions.sort((a, b) =>
+          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          a.code < b.code
+            ? -1
+            : 1
+        );
+      }
+    }
 
     setOptions(newOptions);
     return newOptions;
