@@ -72,7 +72,7 @@ const History: React.FC = () => {
     setSelectedClasses(duplicateClasses(actions.current[1].classes)); // very important to duplicate here again or things will break
   }
 
-  const handleKeyDown = (event: any) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (!event.ctrlKey) return;
     if (event.key === 'z' && actionsPointer.current > 1) {
       changeHistory(-1);
