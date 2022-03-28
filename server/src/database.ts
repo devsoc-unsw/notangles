@@ -46,7 +46,7 @@ class Database {
    * This should only be called by other functions in this file
    */
   connect = async () => {
-    const client = new MongoClient(url, { useNewUrlParser: true })
+    const client = new MongoClient(url)
     this.client = await client.connect()
   }
 
