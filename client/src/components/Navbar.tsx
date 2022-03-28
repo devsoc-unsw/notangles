@@ -16,6 +16,7 @@ import { ThemeType } from '../constants/theme';
 import { isPreview, term, termName, year } from '../constants/timetable';
 
 import About from './About';
+import Privacy from './Privacy';
 import Settings from './Settings';
 
 const LogoImg = styled.img`
@@ -93,6 +94,7 @@ const Navbar: React.FC = () => {
               </Link>
             </NavbarTitle>
             <About />
+            <Privacy />
             <Settings />
           </Toolbar>
         </StyledNavBar>

@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { isPreview } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
@@ -22,6 +22,9 @@ export interface IAppContext {
   isHideClassInfo: boolean;
   setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
 
+  isSortAlphabetic: boolean;
+  setIsSortAlphabetic: (newIsSortAlphabetic: boolean) => void;
+
   errorMsg: string;
   setErrorMsg: (newErrorMsg: string) => void;
 
@@ -39,6 +42,9 @@ export interface IAppContext {
 
   lastUpdated: number;
   setLastUpdated: (newLastUpdated: number) => void;
+
+  days: string[];
+  setDays: (newDays: string[]) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -60,6 +66,9 @@ export const AppContext = createContext<IAppContext>({
   isHideClassInfo: false,
   setIsHideClassInfo: () => {},
 
+  isSortAlphabetic: false,
+  setIsSortAlphabetic: () => {},
+
   errorMsg: '',
   setErrorMsg: () => {},
 
@@ -77,6 +86,9 @@ export const AppContext = createContext<IAppContext>({
 
   lastUpdated: 0,
   setLastUpdated: () => {},
+
+  days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  setDays: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -86,36 +98,14 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
+  const [isSortAlphabetic, setIsSortAlphabetic] = useState<boolean>(storage.get('isSortAlphabetic'));
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
-  useEffect(() => {
-    storage.set('isHideFullClasses', isHideFullClasses);
-  }, [isHideFullClasses]);
-
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
-
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);  
+  const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -130,6 +120,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
+    isSortAlphabetic,
+    setIsSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -142,6 +134,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsLoggedIn,
     lastUpdated,
     setLastUpdated,
+    days,
+    setDays,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

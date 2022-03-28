@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -113,29 +114,43 @@ const PrivacyQuestions = [
   },
 ];
 
-const PrivacyContent: React.FC = () => {
+const PrivacyAccordion = styled(Accordion)`
+  margin: auto;
+`;
 
+const PrivacyAccordionSummary = styled(AccordionSummary)`
+  background-color: ${(props) => props.theme.palette.primary.main};
+  color: ${(props) => props.theme.palette.primary.contrastText};
+`;
+
+const PrivacyContentTitle = styled(Typography)`
+  && {
+    font-weight: bold;
+  }
+`;
+
+const PrivacyContent: React.FC = () => {
   const PrivacyMap = PrivacyQuestions.map((privacy) => {
     const { title, content } = privacy;
     return (
       <div>
-        <Accordion style={{ margin: 'auto' }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-            <Typography style={{ fontWeight: 'bold' }}>{title}</Typography>
-          </AccordionSummary>
+        <PrivacyAccordion>
+          <PrivacyAccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <PrivacyContentTitle gutterBottom variant="body2">
+              {title}
+            </PrivacyContentTitle>
+          </PrivacyAccordionSummary>
           <AccordionDetails>
-            <Typography>{content}</Typography>
+            <Typography gutterBottom variant="body2">
+              {content}
+            </Typography>
           </AccordionDetails>
-        </Accordion>
+        </PrivacyAccordion>
       </div>
     );
   });
 
-  return (
-    <React.Fragment>
-      { PrivacyMap }
-    </React.Fragment>
-  );
+  return <React.Fragment>{PrivacyMap}</React.Fragment>;
 };
 
 export default PrivacyContent;

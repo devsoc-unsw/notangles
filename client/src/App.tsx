@@ -1,15 +1,17 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, Snackbar } from '@material-ui/core';
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
-import styled from 'styled-components';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
-import { drawerWidth } from './components/friends/Friends';
+import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
+import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
+import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
@@ -31,6 +33,48 @@ import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
+const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
+  body {
+    background: ${(props) => props.theme.palette.background.default};
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.palette.background.default};
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.palette.secondary.main};
+    border-radius: 5px;
+    opacity: 0.5;
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.palette.secondary.dark};
+  }
+`;
+
+const StyledApp = styled(Box)`
+  height: 100%;
+`;
+
+const ContentWrapper = styled(Box)`
+  text-align: center;
+  padding-top: 64px; // for nav bar
+  padding-left: ${contentPadding}px;
+  padding-right: ${contentPadding}px;
+  transition: background 0.2s, color 0.2s;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: ${isPreview ? 'flex-start' : 'center'};
+  color: ${(props) => props.theme.palette.text.primary};
+`;
+
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
   if (isPreview) {
@@ -43,7 +87,6 @@ const Content = styled(Box)<StyledContentProps>`
   width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
-
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
@@ -80,7 +123,13 @@ const Footer = styled(Box)`
 
 const App: React.FC = () => {
   const {
+    is12HourMode,
+    isDarkMode,
+    isSquareEdges,
+    isHideFullClasses,
     isDefaultUnscheduled,
+    isHideClassInfo,
+    isSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -90,6 +139,8 @@ const App: React.FC = () => {
     isFriendsListOpen,
     lastUpdated,
     setLastUpdated,
+    days,
+    setDays,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -213,6 +264,34 @@ const App: React.FC = () => {
     setInfoVisibility(false);
   };
 
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    storage.set('isSortAlphabetic', isSortAlphabetic);
+  }, [isSortAlphabetic]);
+
+  useEffect(() => {
+    storage.set('isSquareEdges', isSquareEdges);
+  }, [isSquareEdges]);
+
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -249,6 +328,15 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
+    if (
+      selectedCourses.some((v) =>
+        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
+      )
+    ) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+    } else if (days.length !== 5) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -278,65 +366,74 @@ const App: React.FC = () => {
   };
 
   return (
-    <>
-      <Content drawerOpen={isFriendsListOpen}>
-        <div>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={9}>
-              <SelectWrapper>
-                <CourseSelect
-                  assignedColors={assignedColors}
-                  handleSelect={handleSelectCourse}
-                  handleRemove={handleRemoveCourse}
-                />
-              </SelectWrapper>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Autotimetabler />
-            </Grid>
-          </Grid>
-          <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-          <br />
-          <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-        </div>
-        <br />
-        <br />
-        <Footer>
-          While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
-          <br />
-          <br />
-          Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-          <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-            Email
-          </Link>
-          &nbsp;&nbsp;•&nbsp;&nbsp;
-          <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-            Feedback
-          </Link>
-          &nbsp;&nbsp;•&nbsp;&nbsp;
-          <Link target="_blank" href="https://github.com/csesoc/notangles">
-            Source
-          </Link>
-          {lastUpdated !== 0 && (
-            <>
+    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <StyledApp>
+          <Navbar />
+          {isPreview && <FriendsDrawer />}
+          <ContentWrapper>
+            <Content drawerOpen={isFriendsListOpen}>
+              <div>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={9}>
+                    <SelectWrapper>
+                      <CourseSelect
+                        assignedColors={assignedColors}
+                        handleSelect={handleSelectCourse}
+                        handleRemove={handleRemoveCourse}
+                      />
+                    </SelectWrapper>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <Autotimetabler />
+                  </Grid>
+                </Grid>
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <br />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              </div>
               <br />
               <br />
-              Data last updated {getRelativeTime(lastUpdated)} ago.
-            </>
-          )}
-        </Footer>
-        <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-          <Alert severity="error" onClose={handleErrorClose} variant="filled">
-            {errorMsg}
-          </Alert>
-        </Snackbar>
-        <Snackbar open={infoVisibility}>
-          <Alert severity="info" onClose={handleInfoClose} variant="filled">
-            Press and hold to drag a class
-          </Alert>
-        </Snackbar>
-      </Content>
-    </>
+              <Footer>
+                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
+                <br />
+                <br />
+                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
+                  Email
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
+                  Feedback
+                </Link>
+                &nbsp;&nbsp;•&nbsp;&nbsp;
+                <Link target="_blank" href="https://github.com/csesoc/notangles">
+                  Source
+                </Link>
+                {lastUpdated !== 0 && (
+                  <>
+                    <br />
+                    <br />
+                    Data last updated {getRelativeTime(lastUpdated)} ago.
+                  </>
+                )}
+              </Footer>
+              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert severity="error" onClose={handleErrorClose} variant="filled">
+                  {errorMsg}
+                </Alert>
+              </Snackbar>
+              <Snackbar open={infoVisibility}>
+                <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                  Press and hold to drag a class
+                </Alert>
+              </Snackbar>
+            </Content>
+          </ContentWrapper>
+        </StyledApp>
+      </ThemeProvider>
+    </MuiThemeProvider>
   );
 };
 export default App;
