@@ -136,6 +136,7 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    isSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -145,6 +146,8 @@ const App: React.FC = () => {
     isFriendsListOpen,
     lastUpdated,
     setLastUpdated,
+    days,
+    setDays
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -277,6 +280,10 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    storage.set('isSortAlphabetic', isSortAlphabetic);
+  }, [isSortAlphabetic]);
+
+  useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
 
@@ -328,6 +335,11 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
+    if (selectedCourses.some((v) => Object.entries(v.activities).some(([a, b]) => b.some(vv => vv.periods.some(vvv => vvv.time.day === 6))))) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])
+    } else if (days.length !== 5) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {

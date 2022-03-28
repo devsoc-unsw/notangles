@@ -12,6 +12,7 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
     name: course.name,
     online: course.online,
     inPerson: course.inPerson,
+    career: course.career,
   }));
 
 /**
