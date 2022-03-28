@@ -71,7 +71,7 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 50vh;
+  min-height: 100vh;
   box-sizing: border-box;
 
   display: flex;
@@ -112,7 +112,6 @@ const SelectWrapper = styled(Box)`
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
-    // width: 20%;
     margin: auto;
     background-color: ${(props) => props.theme.palette.primary.main};
     color: #ffffff;
