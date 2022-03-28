@@ -5,6 +5,7 @@ const defaults: Record<string, any> = {
   isHideFullClasses: false,
   isDefaultUnscheduled: false,
   isHideClassInfo: false,
+  isSortAlphabetic: false,
   userID: '',
   accessToken: '',
   userPicture: '',

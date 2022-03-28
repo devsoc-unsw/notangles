@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
 
 import { AppContext } from '../../context/AppContext';
-import { days, defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { BaseCellStyleProps, DayCellProps, GridCellProps } from '../../interfaces/StyleProps';
 
@@ -88,7 +88,7 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode } = useContext(AppContext);
+  const { is12HourMode, days } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
