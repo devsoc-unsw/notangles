@@ -7,6 +7,8 @@ import time
 # special class that can be used to generate ALL the solutions
 
 # reduces period data
+
+
 def redlist(lists):
     l = lists
     if len(l[0]) == 1:  # for purely single-period classes
@@ -25,18 +27,22 @@ def redlist(lists):
 
     return []  # if i just missed something
 
+
 '''yields solutions'''
+
+
 def sols(start, end, days, gap, maxdays, periods):
 
-    gap = gap * 2 # minimum break between classes
+    gap = gap * 2  # minimum break between classes
     mxd = maxdays if maxdays else len(days)
 
     newdata = [redlist(l) for l in periods]  # reduces data
 
-    model = cp_model.CpModel() # start making the constraints model
+    model = cp_model.CpModel()  # start making the constraints model
 
     numCourses = len(newdata)
-    normalClassIndices = list(i for i in range(numCourses) if not newdata[i][2])
+    normalClassIndices = list(i for i in range(
+        numCourses) if not newdata[i][2])
 
     classStartTimes = [model.NewIntVarFromDomain(cp_model.Domain.FromValues(
         newdata[i][1]), 'x%i' % i) for i in normalClassIndices]  # start times
@@ -45,7 +51,8 @@ def sols(start, end, days, gap, maxdays, periods):
 
     specialIntervalVars = []
     for s in range(numCourses):  # handles classes with two periods across multiple days
-        if not newdata[s][2]: continue
+        if not newdata[s][2]:
+            continue
         print('shouldntbehere')
         duration, specialperiods, _ = newdata[s]
         specPerIter = range(len(specialperiods))
@@ -91,7 +98,8 @@ def sols(start, end, days, gap, maxdays, periods):
         # within domain of permitted days of the week
         day = model.NewIntVarFromDomain(daydom, 'day')
         for i in classStartTimes:
-            model.AddDivisionEquality(day, i, 100) # makes them all on the same day
+            # makes them all on the same day
+            model.AddDivisionEquality(day, i, 100)
 
     if mxd in [2, 3, 4]:
         Days = [model.NewIntVarFromDomain(daydom, 'day%i' % i) for i in range(
@@ -127,6 +135,6 @@ def sols(start, end, days, gap, maxdays, periods):
     if solver.StatusName(status) != 'INFEASIBLE':
         sol = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
         print(sol)
-        return sol # List[int]
+        return sol  # List[int]
     else:
         return [0]

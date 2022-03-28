@@ -7,7 +7,8 @@
     "start": "NODE_ENV=DEV ts-node server.ts",
     "start:production": "NODE_ENV=PROD node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "proto:gen": "./src/proto-gen.sh"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,8 @@
     "express": "^4.17.3",
     "google-protobuf": "^3.20.0-rc.2",
     "grpc": "^1.24.11",
+    "grpc_tools_node_protoc_ts": "^5.3.2",
+    "grpc-tools": "^1.11.2",
     "minimist": "^1.2.6",
     "mongodb": "^4.4.1"
   },
