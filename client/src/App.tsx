@@ -375,7 +375,7 @@ const App: React.FC = () => {
 
     
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
-      obj["periods"] = JSON.stringify(periodData)
+      obj["periods_list_serialized"] = JSON.stringify(periodData)
       // console.log(JSON.stringify(obj))
 
       doAutoRequest(obj).then((Rarray) => {

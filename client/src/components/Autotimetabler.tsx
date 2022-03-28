@@ -94,7 +94,7 @@ interface AutotimetablerProps {
 
 const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-  const [daysAtUni, setDaysAtUni] = React.useState<string | null>('off');
+  const [daysAtUni, setDaysAtUni] = React.useState<string>('off');
   const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
   const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
   const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
@@ -108,7 +108,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
   const doAuto = () => {
-    const ops: Array<string|null> = [startValue, endValue, days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? "5" : daysAtUni]
+    const ops: Array<string|number|null> = [parseInt(startValue), parseInt(endValue), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), parseInt(breaksBetweenClasses ?? '0'), daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
     auto(ops)
     setAnchorEl(null);
   }
