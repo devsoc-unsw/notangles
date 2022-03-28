@@ -1,8 +1,5 @@
-import { Request, Response } from 'express'
-import Database from './database';
-/**
- * GET /
- */
+import { Request, Response } from 'express';
+
 export let index = (req: Request, res: Response) => {
-  res.send('Hello Notangles!')
-}
+  res.send('Hello Notangles!');
+};
