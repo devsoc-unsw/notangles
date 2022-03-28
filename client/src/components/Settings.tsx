@@ -54,6 +54,8 @@ const Settings: React.FC = () => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
+    isSortAlphabetic,
+    setIsSortAlphabetic,
   } = useContext(AppContext);
 
   const toggleIsOpen = () => {
@@ -67,6 +69,7 @@ const Settings: React.FC = () => {
     { state: isHideFullClasses, setter: setIsHideFullClasses, desc: 'Hide full classes' },
     { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
     { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
+    { state: isSortAlphabetic, setter: setIsSortAlphabetic, desc: 'Sort results in ascending order' },
   ];
 
   const settings = settingsToggles.map((setting) => {

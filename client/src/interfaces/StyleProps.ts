@@ -7,6 +7,7 @@ export interface StyledContentProps {
 
 export interface StyledTimetableProps {
   rows: number;
+  cols: number;
 }
 
 export interface StyledCourseClassProps {
