@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+
+message TimetableConstraints { 
+    int32 start = 1;
+    int32 end = 2;
+    string days = 3;
+    int32 gap = 4;
+    int32 maxdays = 5;
+    string periods_list_serialized = 6; 
+}
+
+message AutoTimetableResponse { 
+    repeated float = 1;
+}
+
+service AutoTimetabler { 
+    rpc FindBestTimetable (TimetableConstraints) returns (AutoTimetableResponse);
+}  

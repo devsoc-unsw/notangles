@@ -344,6 +344,20 @@ const App: React.FC = () => {
     return `${hours} hours`;
   };
 
+  const doAutoRequest = async (data: any): Promise<number[]> => {
+    const rawResponse = await fetch('http://localhost:3001/himom', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    const content = await rawResponse.json();
+  
+    return content.given
+  }
+
   const auto = async (values: any) => {
     console.log(values)
     console.log(selectedCourses)
@@ -360,8 +374,22 @@ const App: React.FC = () => {
 
     
       const obj: {[k: string]: any} = ['start', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
-      obj["periods"] = periodData
-      console.log(JSON.stringify(obj))
+      obj["periods"] = JSON.stringify(periodData)
+      // console.log(JSON.stringify(obj))
+
+      doAutoRequest(obj).then((Rarray) => {
+        console.log(Rarray);
+        Rarray.forEach((timeAsNum, index) => {
+          const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
+          console.log(day, start)
+          // handleSelectClass()
+          const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => c.periods[0].time.day === day && c.periods[0].time.start === start)
+          if (k !== undefined) {
+            handleSelectClass(k)
+          }
+        })
+      });
+
 
 
     }
