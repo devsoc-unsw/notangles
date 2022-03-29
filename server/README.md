@@ -16,8 +16,12 @@ While in the project directory `notangles/server`, run:
 
 ## Running
 
-While in the project directory, run:
-`npm start`
+For the node server, while in the project directory, run:
+`npm start` or `npm run start`
+
+For the python server, navigate from the project directory to `python_server`, and run:
+`python autotimetabler_server.py`
+Note: you may need to install grpc with `python -m pip install grpcio`
 
 ## Tech Stack
 
@@ -48,6 +52,10 @@ termId: is expected to be in yyyy-term format
 term format is a capital letter followed by a number ie:- T3 or S1
 
 Returns a list of all courses that are running in the specified term and year as javascript objects where each element in the list represents a course
+
+#### `POST /auto`
+
+Returns a list of ints that correspond to class times for the inputed data
 
 ### Secret.json
 
