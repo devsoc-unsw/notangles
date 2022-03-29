@@ -71,7 +71,7 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
 
   display: flex;
