@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import { List, ListItem, ListItemText } from '@material-ui/core';
+import { List, ListItemText } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
@@ -25,17 +25,19 @@ const CloseButton = styled(IconButton)`
   top: 10px;
 `;
 
-const SettingsList = styled(List)`
-  padding: 0 0 0 10px;
+const SettingsList = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
-const SettingText = styled(ListItemText)`
-  padding: 5px 0 5px 0;
+const SettingsItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 1vh 20px;
 `;
 
-const StyledSwitch = styled(Switch)`
-  position: absolute;
-  right: 10px;
+const SettingText = styled.div`
+  padding: 1vh 0;
 `;
 
 const Settings: React.FC = () => {
@@ -76,9 +78,9 @@ const Settings: React.FC = () => {
     return (
       <div key={setting.desc}>
         <Divider />
-        <ListItem>
-          <SettingText primary={setting['desc']} />
-          <StyledSwitch
+        <SettingsItem>
+          <SettingText>{setting['desc']}</SettingText>
+          <Switch
             value={setting['state']}
             checked={setting['state']}
             color="primary"
@@ -86,7 +88,7 @@ const Settings: React.FC = () => {
               setting['setter'](!setting['state']);
             }}
           />
-        </ListItem>
+        </SettingsItem>
       </div>
     );
   });
