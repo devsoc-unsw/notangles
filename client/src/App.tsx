@@ -67,7 +67,7 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: row-reverse;
@@ -105,7 +105,6 @@ const SelectWrapper = styled(Box)`
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
-    // width: 20%;
     margin: auto;
     background-color: ${(props) => props.theme.palette.primary.main};
     color: #ffffff;
@@ -374,25 +373,23 @@ const App: React.FC = () => {
           {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
-              <div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={9}>
-                    <SelectWrapper>
-                      <CourseSelect
-                        assignedColors={assignedColors}
-                        handleSelect={handleSelectCourse}
-                        handleRemove={handleRemoveCourse}
-                      />
-                    </SelectWrapper>
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <Autotimetabler />
-                  </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={9}>
+                  <SelectWrapper>
+                    <CourseSelect
+                      assignedColors={assignedColors}
+                      handleSelect={handleSelectCourse}
+                      handleRemove={handleRemoveCourse}
+                    />
+                  </SelectWrapper>
                 </Grid>
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                <br />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              </div>
+                <Grid item xs={12} md={3}>
+                  <Autotimetabler />
+                </Grid>
+              </Grid>
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+              <br />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
               <br />
               <br />
               <Footer>

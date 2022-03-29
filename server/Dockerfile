@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:17.7.1-alpine as builder
+FROM node:17.8.0-alpine as builder
 
 WORKDIR /server
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 
-FROM node:17.7.1-alpine
+FROM node:17.8.0-alpine
 
 WORKDIR /server
 
@@ -20,6 +20,6 @@ RUN npm install --production
 
 COPY --from=builder /server/dist .
 
-EXPOSE 3001 
+EXPOSE 3001
 
 CMD ["npm", "run", "start:production"]

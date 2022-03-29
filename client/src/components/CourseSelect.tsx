@@ -1,5 +1,7 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import {useTheme } from '@material-ui/styles';
+import { useMediaQuery } from '@material-ui/core';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
@@ -17,6 +19,7 @@ import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseSelectProps } from '../interfaces/PropTypes';
 import { CourseContext } from '../context/CourseContext';
+import { ThemeType } from '../constants/theme';
 
 const SEARCH_DELAY = 300;
 
@@ -125,7 +128,15 @@ const RightContainer = styled.div`
   right: 10px;
 `;
 
+const Career = styled.div`
+  position: absolute;
+  right: 65px;
+  ${weakStyle};
+`;
+
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+  const { isSortAlphabetic } = useContext(AppContext);
+
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
@@ -158,7 +169,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
       ]); // the nullish coalesce above was the best way I found to shut ts up.
     } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
-
   };
 
   checkExternallyAdded();
@@ -182,6 +192,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
+
+    // sorting results
+    if (isSortAlphabetic) {
+      let lengthQuery = query.length;
+      if (lengthQuery <= 8) {
+        newOptions.sort((a, b) =>
+          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          a.code < b.code
+            ? -1
+            : 1
+        );
+      }
+    }
 
     setOptions(newOptions);
     return newOptions;
@@ -311,6 +335,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     []
   );
 
+  const theme = useTheme<ThemeType>();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <StyledSelect>
       <Autocomplete
@@ -335,7 +362,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
             </StyledIcon>
             <span>{option.code}</span>
-            <Weak>{option.name}</Weak>
+            <Weak>{!isMobile && option.name}</Weak>
+            <Career>
+              {option.career === 'Undergraduate'
+                ? 'UGRD'
+                : option.career === 'Postgraduate'
+                ? 'PGRD'
+                : option.career === 'Research'
+                ? 'RSCH'
+                : null}
+            </Career>
             <RightContainer>
               {option.online && (
                 <StyledIconRight>
