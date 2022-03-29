@@ -22,6 +22,9 @@ export interface IAppContext {
   isHideClassInfo: boolean;
   setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
 
+  isSortAlphabetic: boolean;
+  setIsSortAlphabetic: (newIsSortAlphabetic: boolean) => void;
+
   errorMsg: string;
   setErrorMsg: (newErrorMsg: string) => void;
 
@@ -42,6 +45,9 @@ export interface IAppContext {
 
   isDrag: boolean;
   setIsDrag: (newIsDrag: boolean) => void;
+  
+  days: string[];
+  setDays: (newDays: string[]) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -63,6 +69,9 @@ export const AppContext = createContext<IAppContext>({
   isHideClassInfo: false,
   setIsHideClassInfo: () => {},
 
+  isSortAlphabetic: false,
+  setIsSortAlphabetic: () => {},
+
   errorMsg: '',
   setErrorMsg: () => {},
 
@@ -83,6 +92,9 @@ export const AppContext = createContext<IAppContext>({
 
   isDrag: false,
   setIsDrag: () => {},
+
+  days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  setDays: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -92,6 +104,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
+  const [isSortAlphabetic, setIsSortAlphabetic] = useState<boolean>(storage.get('isSortAlphabetic'));
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
@@ -99,6 +112,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
+  const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -113,6 +127,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
+    isSortAlphabetic,
+    setIsSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -126,7 +142,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     lastUpdated,
     setLastUpdated,
     isDrag,
-    setIsDrag
+    setIsDrag,
+    days,
+    setDays,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

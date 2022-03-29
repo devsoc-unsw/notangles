@@ -1,11 +1,10 @@
 import React, { useContext, useState } from 'react';
 
-import { useMediaQuery } from '@material-ui/core';
+import { Typography, useMediaQuery } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
 
@@ -16,6 +15,7 @@ import { ThemeType } from '../constants/theme';
 import { isPreview, term, termName, year } from '../constants/timetable';
 
 import About from './About';
+import Privacy from './Privacy';
 import Settings from './Settings';
 import History from './History';
 
@@ -91,6 +91,7 @@ const Navbar: React.FC = () => {
             </NavbarTitle>
             <History/>
             <About />
+            <Privacy />
             <Settings />
           </Toolbar>
         </StyledNavBar>
