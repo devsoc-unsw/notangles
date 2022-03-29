@@ -96,9 +96,9 @@ jobs:
           git config user.name "CSESoc CD"
           git config user.email "technical@csesoc.org.au"
           git checkout -b update/notangles/${{ github.sha }}
-          yq -i '.spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' apps/projects/notangles/deploy.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' apps/projects/notangles/deploy.yml
           git add . 
           git commit -m "feat(notangles): update image" 
           git push -u origin update/notangles/${{ github.sha }}
-          gh pr create --title "feat(notangles): update image" --body "Updates the image for the notangles deployment to commit `${{ github.sha }}`." > URL
+          gh pr create --title "feat(notangles): update image" --body "Updates the image for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
           gh pr merge $(cat URL) --squash -d
