@@ -17,15 +17,14 @@ type Actions = Action[];
 
 const History: React.FC = () => {
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
-  useContext(AppContext);
+  const { isDrag, setIsDrag } = useContext(AppContext);
 
   const actions = useRef<Actions>([]);
-  const actionsPointer = useRef(-1);
+  const actionsPointer = useRef(-1); // set to -1 as it will increment predictably as app starts up
   const dontAdd = useRef(false);
 
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
-
   const duplicateClasses = (prev: SelectedClasses) => {
     const newClasses: SelectedClasses = {};
 
@@ -47,18 +46,38 @@ const History: React.FC = () => {
     setDisableRight(actionsPointer.current + 1 >= actions.current.length);
   };
 
+  const areIdenticalClasses = (curr: SelectedClasses, next: SelectedClasses) => {
+    const cVals = Object.values(curr);
+    const nVals = Object.values(next);
+    if (cVals.length !== nVals.length) return false;
+
+    for (let i = 0; i < cVals.length; i++) {
+      const ciVals = Object.values(cVals[i]);
+      const niVals = Object.values(nVals[i]);
+      if (ciVals.length !== niVals.length) return false;
+
+      for (let j = 0; j < ciVals.length; j++) {
+        if (!ciVals[j] !== !niVals[j]) return false; // if exactly one is null
+        if (ciVals[j]?.id !== niVals[j]?.id) return false;
+      }
+    }
+    return true;
+  };
+
   useEffect(() => {
+    if (isDrag) return;
     if (dontAdd.current) {
       dontAdd.current = false;
       return; // prevents adding change induced from re/undo click
     }
+    if (actions.current.length && areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses)) return;
     if (actions.current.length > actionsPointer.current + 1) {
       // discard remainding redos as we branched off
       actions.current = actions.current.slice(0, actionsPointer.current + 1);
     }
     actions.current.push({ courses: [...selectedCourses], classes: duplicateClasses(selectedClasses) });
     incrementActionsPointer(1);
-  }, [selectedClasses]);
+  }, [selectedClasses, isDrag]);
 
   const changeHistory = (direction: number) => {
     incrementActionsPointer(direction);
@@ -69,8 +88,8 @@ const History: React.FC = () => {
 
   const restoreInitial = () => {
     setSelectedCourses(actions.current[1].courses);
-    setSelectedClasses(duplicateClasses(actions.current[1].classes)); // very important to duplicate here again or things will break
-  }
+    setSelectedClasses(duplicateClasses(actions.current[1].classes));
+  };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!event.ctrlKey) return;
@@ -82,8 +101,9 @@ const History: React.FC = () => {
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('mouseup', () => setIsDrag(false)); // only triggers useEffect function if isDrag was true previously
   }, []);
 
   return (
@@ -94,14 +114,18 @@ const History: React.FC = () => {
         </IconButton>
       </Tooltip>
       <Tooltip title="Undo">
-        <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
-          <Undo />
-        </IconButton>
+        <span>
+          <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
+            <Undo />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Redo">
-        <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)}>
-          <Redo />
-        </IconButton>
+        <span>
+          <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)}>
+            <Redo />
+          </IconButton>
+        </span>
       </Tooltip>
     </>
   );
