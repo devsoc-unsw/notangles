@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { AppContext } from '../context/AppContext';
+import { darkTheme, lightTheme } from '../constants/theme';
+import { ThemeProvider } from '@mui/system';
 
 const PrivacyQuestions = [
   {
@@ -130,23 +133,41 @@ const PrivacyContentTitle = styled(Typography)`
 `;
 
 const PrivacyContent: React.FC = () => {
+  const { isDarkMode } = useContext(AppContext);
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   const PrivacyMap = PrivacyQuestions.map((privacy) => {
     const { title, content } = privacy;
     return (
-      <div>
-        <PrivacyAccordion>
-          <PrivacyAccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+      <ThemeProvider theme={theme}>
+        <PrivacyAccordion style={{ margin: 'auto' }}>
+          <PrivacyAccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            sx={{
+              backgroundColor: `background.main`,
+              color: `text.primary`,
+              borderColor: `secondary.main`,
+            }}
+          >
             <PrivacyContentTitle gutterBottom variant="body2">
               {title}
             </PrivacyContentTitle>
           </PrivacyAccordionSummary>
-          <AccordionDetails>
+          <AccordionDetails
+            sx={{
+              backgroundColor: `background.main`,
+              color: `text.primary`,
+              borderColor: `secondary.main`,
+            }}
+          >
             <Typography gutterBottom variant="body2">
               {content}
             </Typography>
           </AccordionDetails>
         </PrivacyAccordion>
-      </div>
+      </ThemeProvider>
     );
   });
 

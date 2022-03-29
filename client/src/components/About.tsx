@@ -60,7 +60,7 @@ const About: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       <Tooltip title="About">
         <InfoButton color="inherit" onClick={toggleIsOpen}>
           <InfoIcon />
@@ -166,7 +166,7 @@ const About: React.FC = () => {
           </Typography>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

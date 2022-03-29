@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import PrivacyContent from './PrivacyContent';
-import IconButton from '@material-ui/core/IconButton';
 import SecurityIcon from '@mui/icons-material/Security';
+import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,10 +10,6 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-
-const PrivacyButton = styled(SecurityIcon)`
-  margin-right: 5px;
-`;
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -31,13 +27,17 @@ const CloseButton = styled(IconButton)`
   top: 10px;
 `;
 
+const PrivacyButton = styled(IconButton)`
+  margin-right: 5px;
+`;
+
 const DialogContent = styled(MuiDialogContent)`
   padding: 20px;
 `;
 
 const StyledDialogBody = styled(Typography)`
   padding-bottom: 20px;
-`
+`;
 
 const FooterText = styled(Typography)`
   text-align: right;
@@ -52,7 +52,7 @@ const Privacy: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       <Tooltip title="Privacy">
         <PrivacyButton color="inherit" onClick={toggleIsOpen}>
           <SecurityIcon />
@@ -87,7 +87,7 @@ const Privacy: React.FC = () => {
           </FooterText>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
