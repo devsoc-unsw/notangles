@@ -2,6 +2,7 @@
   "compilerOptions": {
     "types": ["node"],
     "resolveJsonModule": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "typeRoots": ["node_modules/@types"]
   }
 }

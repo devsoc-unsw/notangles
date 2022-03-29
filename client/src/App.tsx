@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
@@ -26,6 +26,7 @@ import {
   CourseData,
   InInventory,
   SelectedClasses,
+  AutoData,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
 import { StyledContentProps } from './interfaces/StyleProps';
@@ -345,8 +346,19 @@ const App: React.FC = () => {
     return `${hours} hours`;
   };
 
+
+  const periodsListSerialized = useRef(''); 
+  useEffect(() => {
+    if (selectedCourses && selectedCourses.length) {
+      periodsListSerialized.current = JSON.stringify(selectedCourses.map((v) =>
+        Object.entries(v.activities)
+          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+      ));
+    }
+  }, [selectedCourses]) 
+
   const doAutoRequest = async (data: any): Promise<number[]> => {
-    const rawResponse = await fetch('http://localhost:3001/himom', {
+    const rawResponse = await fetch('http://localhost:3001/auto', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -360,41 +372,24 @@ const App: React.FC = () => {
   }
 
   const auto = async (values: any) => {
-    console.log(values)
     console.log(selectedCourses)
-    if (selectedCourses && selectedCourses.length) {      
-      // const data = selectedCourses.map((v) =>
-      //   Object.entries(v.activities)
-      //     .filter(([a, b]) => a != 'Lecture')
-      //     .map(([v, classes]) => classes.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
-      // ); // alternative if (activities excluding lecture).length() > 1
-      const periodData = selectedCourses.map((v) =>
-        Object.entries(v.activities)
-          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-      );
-
-    
+    if (selectedCourses && selectedCourses.length) {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
-      obj["periods_list_serialized"] = JSON.stringify(periodData)
-      // console.log(JSON.stringify(obj))
+      obj["periodsListSerialized"] = periodsListSerialized.current
 
       doAutoRequest(obj).then((Rarray) => {
-        console.log(Rarray);
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
           console.log(day, start)
-          // handleSelectClass()
           const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => c.periods[0].time.day === day && c.periods[0].time.start === start)
           if (k !== undefined) {
             handleSelectClass(k)
           }
         })
       });
-
-
-
     }
   }
+
 
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>

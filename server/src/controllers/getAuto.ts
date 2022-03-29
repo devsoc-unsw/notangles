@@ -1,9 +1,6 @@
 import { Response, Request } from 'express';
 import * as util from 'util';
 
-// const GRPC_PATH = '../proto'
-
-
 import * as grpc from 'grpc';
 import { TimetableConstraints } from '../proto/autotimetabler_pb';
 import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
@@ -12,7 +9,7 @@ import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
 type AutoData = TimetableConstraints.AsObject
 
 
-export const getHello = async (req: Request, res: Response) => {
+export const getAuto = async (req: Request, res: Response) => {
   var client = new AutoTimetablerClient('localhost:50051', grpc.credentials.createInsecure());
   const constraints = new TimetableConstraints()
   const data: AutoData = req.body

@@ -1,3 +1,3 @@
-import { getHello } from './getHello';
+import { getAuto } from './getAuto';
 
-export { getHello };
+export { getAuto };

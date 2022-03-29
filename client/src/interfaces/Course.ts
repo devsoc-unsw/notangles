@@ -42,3 +42,12 @@ export interface ClassTime {
   weeks: number[];
   weeksString: string;
 }
+
+export interface AutoData {
+  start: number;
+  end: number;
+  days: string;
+  gap: number;
+  maxdays: number;
+  periodsListSerialized: string;
+}

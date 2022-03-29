@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Response, Request } from 'express';
 import * as bodyParser from 'body-parser';
 import * as indexController from './index';
-import { getHello } from './controllers/index';
+import { getAuto } from './controllers/index';
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.get('/', indexController.index);
 app.get('/api/himom/:message', (req, res) => {
   res.send(JSON.stringify({ your: req.params.message }));
 });
-// app.get('/himom/:message', getHello)
-app.post('/himom', getHello);
+
+app.post('/auto', getAuto);
 
 export default app;
