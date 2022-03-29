@@ -1,15 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import PrivacyContent from './PrivacyContent';
-import SecurityIcon from '@mui/icons-material/Security';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import SecurityIcon from '@material-ui/icons/Security';
+import PrivacyContent from './PrivacyContent';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
