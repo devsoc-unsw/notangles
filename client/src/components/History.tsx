@@ -113,14 +113,14 @@ const History: React.FC = () => {
           <RestoreIcon />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Undo">
+      <Tooltip title="Undo (Ctrl+Z)">
         <span>
           <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
             <Undo />
           </IconButton>
         </span>
       </Tooltip>
-      <Tooltip title="Redo">
+      <Tooltip title="Redo (Ctrl+Y)">
         <span>
           <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)}>
             <Redo />

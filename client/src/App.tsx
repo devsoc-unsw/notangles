@@ -10,6 +10,7 @@ import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/Navbar';
+import History from './components/History';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
@@ -374,7 +375,7 @@ const App: React.FC = () => {
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
+                <Grid item xs={12} md={6}>
                   <SelectWrapper>
                     <CourseSelect
                       assignedColors={assignedColors}
@@ -383,8 +384,11 @@ const App: React.FC = () => {
                     />
                   </SelectWrapper>
                 </Grid>
-                <Grid item xs={12} md={3}>
+                <Grid item xs={9} md={3} >
                   <Autotimetabler />
+                </Grid>
+                <Grid item  xs={3} md={3}  container alignItems='center' justifyContent='center' alignContent='flex-end'>
+                  <History/>
                 </Grid>
               </Grid>
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
