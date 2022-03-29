@@ -22,9 +22,6 @@ export interface ThemeType {
     action: {
       disabled: string;
     };
-    text: {
-      primary: string;
-    };
   };
   shape: {
     borderRadius: string;
@@ -45,7 +42,6 @@ const baseTheme = ({
   type,
   background,
   border,
-  text,
 }: {
   type: 'light' | 'dark' | undefined;
   background: {
@@ -56,9 +52,6 @@ const baseTheme = ({
   border: {
     main: string;
     dark: string;
-  };
-  text: {
-    primary: string;
   };
 }) => ({
   palette: {
@@ -77,9 +70,6 @@ const baseTheme = ({
     },
     action: {
       disabled: 'rgba(255, 255, 255, 0.5)',
-    },
-    text: {
-      primary: text.primary,
     },
   },
   shape: {
@@ -108,9 +98,6 @@ export const lightTheme = createTheme(
       main: '#bdbdbd',
       dark: '#999999',
     },
-    text: {
-      primary: '#000000',
-    },
   })
 );
 
@@ -125,9 +112,6 @@ export const darkTheme = createTheme(
     border: {
       main: '#616161',
       dark: '#808080',
-    },
-    text: {
-      primary: '#fafafa',
     },
   })
 );
