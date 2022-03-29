@@ -4,7 +4,6 @@ import ReactGA from 'react-ga';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import App from './App';
-import Privacy from './components/Privacy';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 
@@ -29,7 +28,6 @@ const Root: React.FC = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<App />} path="/" />
-          <Route element={<Privacy />} path="/privacy" />
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>

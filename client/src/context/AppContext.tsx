@@ -135,7 +135,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     lastUpdated,
     setLastUpdated,
     days,
-    setDays
+    setDays,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

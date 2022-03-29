@@ -38,24 +38,20 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${(props) => props.theme.palette.background.default};
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-
   ::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.palette.background.default};
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.palette.secondary.dark};
   }
@@ -73,11 +69,9 @@ const ContentWrapper = styled(Box)`
   transition: background 0.2s, color 0.2s;
   min-height: 50vh;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
@@ -93,7 +87,6 @@ const Content = styled(Box)<StyledContentProps>`
   width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
-
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
