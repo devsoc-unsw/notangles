@@ -2,11 +2,11 @@ name: Docker
 on:
   push:
     branches:
-      - 'dev'
+      - "dev"
 
 jobs:
   build-client:
-    name: 'Build (Client)'
+    name: "Build (Client)"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,7 +43,7 @@ jobs:
             ghcr.io/csesoc/notangles-client:latest
           labels: ${{ steps.meta.outputs.labels }}
   build-server:
-    name: 'Build (Server)'
+    name: "Build (Server)"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -74,3 +74,31 @@ jobs:
             ghcr.io/csesoc/notangles-server:${{ github.sha }}
             ghcr.io/csesoc/notangles-server:latest
           labels: ${{ steps.meta.outputs.labels }}
+  deploy:
+    name: Deploy (CD)
+    runs-on: ubuntu-latest
+    needs: [build-client, build-server]
+    concurrency: production
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: csesoc/deployment
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Install yq - portable yaml processor
+        uses: mikefarah/yq@v4.24.2
+      - name: Update deployment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config user.name "CSESoc CD"
+          git config user.email "technical@csesoc.org.au"
+          git checkout -b update/notangles/${{ github.sha }}
+          yq -i '.spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' apps/projects/notangles/deploy.yml
+          git add . 
+          git commit -m "feat(notangles): update image" 
+          git push -u origin update/notangles/${{ github.sha }}
+          gh pr create --title "feat(notangles): update image" --body "Updates the image for the notangles deployment to commit `${{ github.sha }}`." > URL
+          gh pr merge $(cat URL) --squash -d
