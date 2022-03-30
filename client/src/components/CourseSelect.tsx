@@ -342,7 +342,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   );
 
   const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMedium = useMediaQuery(theme.breakpoints.only('md'));
+  const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
 
   return (
     <StyledSelect>
@@ -368,7 +369,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
             </StyledIcon>
             <span>{option.code}</span>
-            <Weak>{!isMobile && option.name}</Weak>
+            <Weak>{!(isMedium || isTiny) && option.name}</Weak>
             <Career>
               {option.career === 'Undergraduate'
                 ? 'UGRD'
@@ -427,18 +428,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         )}
         renderTags={(value: CoursesList, getTagProps) =>
           value.map((option: CourseOverview, index: number) => {
-            return (<StyledChip
-              label={option.code}
-              color="primary"
-              backgroundColor={assignedColors[option.code]}
-              deleteIcon={<CloseRounded />}
-              {...getTagProps({ index })}
-              onDelete={() => {
-                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                handleRemove(option.code);
-              }}
-            />);
-            })
+            return (
+              <StyledChip
+                label={option.code}
+                color="primary"
+                backgroundColor={assignedColors[option.code]}
+                deleteIcon={<CloseRounded />}
+                {...getTagProps({ index })}
+                onDelete={() => {
+                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                  handleRemove(option.code);
+                }}
+              />
+            );
+          })
         }
       />
     </StyledSelect>

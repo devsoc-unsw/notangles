@@ -34,7 +34,9 @@ export interface ThemeType {
       lg: number;
       xl: number;
     };
+    up: (key: string) => string;
     down: (key: string) => string;
+    only: (key: string) => string;
   };
 }
 
@@ -42,7 +44,7 @@ const baseTheme = ({
   type,
   background,
   border,
-  action
+  action,
 }: {
   type: 'light' | 'dark' | undefined;
   background: {
@@ -56,7 +58,7 @@ const baseTheme = ({
   };
   action: {
     disabled: string;
-  }
+  };
 }) => ({
   palette: {
     type,
@@ -82,8 +84,8 @@ const baseTheme = ({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 600,
-      md: 750, // change this
+      sm: 768,
+      md: 1024,
       lg: 1200,
       xl: 1536,
     },
@@ -103,8 +105,8 @@ export const lightTheme = createTheme(
       dark: '#999999',
     },
     action: {
-      disabled: `rgba(0,0,0,0.5)`
-    }
+      disabled: `rgba(0,0,0,0.5)`,
+    },
   })
 );
 
@@ -121,7 +123,7 @@ export const darkTheme = createTheme(
       dark: '#808080',
     },
     action: {
-      disabled: `rgba(255,255,255,0.5)`
-    }
+      disabled: `rgba(255,255,255,0.5)`,
+    },
   })
 );
