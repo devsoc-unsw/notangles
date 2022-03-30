@@ -103,6 +103,13 @@ const SelectWrapper = styled(Box)`
   padding-top: 20px;
 `;
 
+const AutotimetablerWrapper = styled(Box)`
+  flex: 1;
+`
+const HistoryWrapper = styled(Box)`
+  margin-top: 20px;
+`
+
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
@@ -375,7 +382,7 @@ const App: React.FC = () => {
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid item sm={12} md={6}>
                   <SelectWrapper>
                     <CourseSelect
                       assignedColors={assignedColors}
@@ -384,11 +391,13 @@ const App: React.FC = () => {
                     />
                   </SelectWrapper>
                 </Grid>
-                <Grid item xs={9} md={3} >
-                  <Autotimetabler />
-                </Grid>
-                <Grid item  xs={3} md={3}  container alignItems='center' justifyContent='center' alignContent='flex-end'>
-                  <History/>
+                <Grid item container direction="row" alignItems="center" sm={12} md={6}>
+                  <AutotimetablerWrapper>
+                    <Autotimetabler />
+                  </AutotimetablerWrapper>
+                  <HistoryWrapper>
+                    <History />
+                  </HistoryWrapper>
                 </Grid>
               </Grid>
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
