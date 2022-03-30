@@ -1,6 +1,6 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import {useTheme } from '@material-ui/styles';
+import { useTheme } from '@material-ui/styles';
 import { useMediaQuery } from '@material-ui/core';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
@@ -158,8 +158,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   useEffect(() => {
-    setSelectedValue([...selectedCourses.map(x => x.code).map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0])])
-  }, [selectedCourses])
+    setSelectedValue([
+      ...selectedCourses.map((x) => x.code).map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
+    ]);
+  }, [selectedCourses]);
 
   const checkExternallyAdded = () => {
     const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
