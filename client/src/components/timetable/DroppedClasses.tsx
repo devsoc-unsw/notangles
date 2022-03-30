@@ -235,7 +235,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 }) => {
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days } = useContext(AppContext);
+  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag } = useContext(AppContext);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -261,6 +261,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
     const startDrag = () => {
       timer = null;
+      setIsDrag(true)
       setDragTarget(cardData, event);
       setInfoVisibility(false);
     };
