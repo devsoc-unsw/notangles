@@ -382,7 +382,7 @@ const App: React.FC = () => {
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
-                <Grid item sm={12} md={6}>
+                <Grid item xs={12} md={6}>
                   <SelectWrapper>
                     <CourseSelect
                       assignedColors={assignedColors}
@@ -391,7 +391,7 @@ const App: React.FC = () => {
                     />
                   </SelectWrapper>
                 </Grid>
-                <Grid item container direction="row" alignItems="center" sm={12} md={6}>
+                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
                   <AutotimetablerWrapper>
                     <Autotimetabler />
                   </AutotimetablerWrapper>

@@ -42,6 +42,7 @@ const baseTheme = ({
   type,
   background,
   border,
+  action
 }: {
   type: 'light' | 'dark' | undefined;
   background: {
@@ -53,6 +54,9 @@ const baseTheme = ({
     main: string;
     dark: string;
   };
+  action: {
+    disabled: string;
+  }
 }) => ({
   palette: {
     type,
@@ -69,7 +73,7 @@ const baseTheme = ({
       light: background.dark,
     },
     action: {
-      disabled: 'rgba(255, 255, 255, 0.5)',
+      disabled: action.disabled,
     },
   },
   shape: {
@@ -98,6 +102,9 @@ export const lightTheme = createTheme(
       main: '#bdbdbd',
       dark: '#999999',
     },
+    action: {
+      disabled: `rgba(0,0,0,0.5)`
+    }
   })
 );
 
@@ -113,5 +120,8 @@ export const darkTheme = createTheme(
       main: '#616161',
       dark: '#808080',
     },
+    action: {
+      disabled: `rgba(255,255,255,0.5)`
+    }
   })
 );
