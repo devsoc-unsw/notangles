@@ -60,7 +60,7 @@ const Beta = styled.span`
 
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const { isFriendsListOpen, setIsFriendsListOpen } = useContext(AppContext);
 
