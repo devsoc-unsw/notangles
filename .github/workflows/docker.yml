@@ -79,7 +79,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-client, build-server]
     concurrency: production
-    environment: production
+    environment: 
+      name: production
+      url: https://notangles.csesoc.unsw.edu.au
 
     steps:
       - name: Checkout repository
