@@ -1,5 +1,4 @@
 import { Response, Request } from 'express';
-import * as util from 'util';
 
 import * as grpc from 'grpc';
 import { TimetableConstraints } from '../proto/autotimetabler_pb';

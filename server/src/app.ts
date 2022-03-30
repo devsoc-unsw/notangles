@@ -20,10 +20,6 @@ app.use((req: Request, res: Response, next) => {
 });
 
 app.get('/', indexController.index);
-app.get('/api/himom/:message', (req, res) => {
-  res.send(JSON.stringify({ your: req.params.message }));
-});
-
 app.post('/auto', getAuto);
 
 export default app;

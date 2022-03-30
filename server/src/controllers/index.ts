@@ -1,3 +1,2 @@
-import { getAuto } from './getAuto';
-
+import { getAuto } from './getAutotimetable';
 export { getAuto };
