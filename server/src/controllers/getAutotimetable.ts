@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 
-import * as grpc from 'grpc';
+import * as grpc from '@grpc/grpc-js';
 import { TimetableConstraints } from '../proto/autotimetabler_pb';
 import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
 

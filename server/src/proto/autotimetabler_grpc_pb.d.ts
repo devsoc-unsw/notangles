@@ -4,7 +4,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import * as grpc from "grpc";
+import * as grpc from "@grpc/grpc-js";
 import * as autotimetabler_pb from "./autotimetabler_pb";
 
 interface IAutoTimetablerService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
