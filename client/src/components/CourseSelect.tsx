@@ -342,7 +342,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   );
 
   const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMedium = useMediaQuery(theme.breakpoints.only('md'));
+  const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
 
   return (
     <StyledSelect>
@@ -368,7 +369,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
             </StyledIcon>
             <span>{option.code}</span>
-            <Weak>{!isMobile && option.name}</Weak>
+            <Weak>{!(isMedium || isTiny) && option.name}</Weak>
             <Career>
               {option.career === 'Undergraduate'
                 ? 'UGRD'
