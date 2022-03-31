@@ -1,10 +1,5 @@
 from functools import reduce
-import json
 from ortools.sat.python import cp_model
-import sys
-import time
-
-# special class that can be used to generate ALL the solutions
 
 # reduces period data
 

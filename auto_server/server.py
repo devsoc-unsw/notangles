@@ -4,7 +4,7 @@ import json
 from concurrent import futures
 import logging
 
-import autotimetabler_find
+import auto
 import autotimetabler_pb2_grpc
 import autotimetabler_pb2
 
@@ -22,7 +22,7 @@ class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
             request.maxdays,
             json.loads(request.periods_list_serialized)
         ]
-        return autotimetabler_pb2.AutoTimetableResponse(times=autotimetabler_find.sols(*data))
+        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(*data))
 
 
 def main():
