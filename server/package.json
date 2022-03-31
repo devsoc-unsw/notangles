@@ -7,7 +7,6 @@
     "start": "NODE_ENV=DEV ts-node server.ts",
     "start:production": "NODE_ENV=PROD node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
     "proto:gen": "./src/proto-gen.sh"
   },
   "author": "",
