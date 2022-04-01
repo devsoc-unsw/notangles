@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import DateFnsUtils from '@date-io/date-fns';
 
 import getCourseInfo from './api/getCourseInfo';
 import Autotimetabler from './components/Autotimetabler';
@@ -34,6 +35,7 @@ import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { stringify } from 'querystring';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -376,7 +378,6 @@ const App: React.FC = () => {
     if (selectedCourses && selectedCourses.length) {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
       obj["periodsListSerialized"] = periodsListSerialized.current
-
       doAutoRequest(obj).then((Rarray) => {
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
@@ -394,6 +395,7 @@ const App: React.FC = () => {
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <GlobalStyle />
         <StyledApp>
           <Navbar />
@@ -453,6 +455,7 @@ const App: React.FC = () => {
             </Content>
           </ContentWrapper>
         </StyledApp>
+        </MuiPickersUtilsProvider>
       </ThemeProvider>
     </MuiThemeProvider>
   );

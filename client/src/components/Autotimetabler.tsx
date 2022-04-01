@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel'
@@ -16,10 +16,12 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import Grid from '@material-ui/core/Grid';
 import { AppContext } from '../context/AppContext';
-
+import { TimePicker, KeyboardTimePicker } from '@material-ui/pickers'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Tooltip from '@material-ui/core/Tooltip';
 import { stringify } from 'querystring';
-
+import { Fragment } from 'react';
+import DateFnsUtils from '@date-io/date-fns';
 const DropdownButton = styled(Button)`
   width: 100%;
   height: 55px;
@@ -103,12 +105,14 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const [endValue, setEndValue] = React.useState<string>('');
   const [days, setDays] = React.useState<Array<string>>(weekdays)
   const { isDarkMode } = useContext(AppContext);
+  const [startTime, setStartTime] = useState<Date|null>(new Date(2022, 0, 0, 9));
+  const [endTime, setEndTime] = useState<Date|null>(new Date(2022, 0, 0, 21));
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
   const doAuto = () => {
-    const ops: Array<string|number|null> = [parseInt(startValue), parseInt(endValue), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), parseInt(breaksBetweenClasses ?? '0'), daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
+    const ops: Array<string|number|null|undefined> = [startTime?.getHours(), endTime?.getHours(), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), parseInt(breaksBetweenClasses ?? '0'), daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
     auto(ops)
     setAnchorEl(null);
   }
@@ -126,6 +130,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   ) => {
     setDays(newFormats);
   };
+
 
   return (
     <div>
@@ -165,18 +170,14 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={8}>
+              </Grid>
+
+              <Grid item xs={8}>
                 <ListItemText primary="Earliest start time" />
               </Grid>
 
               <Grid item xs={4}>
-                <TextField
-                  id="outlined-number"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={(event) => setStartValue(event.target.value)}
-                />
+              <TimePicker views={['hours']}   value={startTime} onChange={(e) => {setStartTime(e)}} />
               </Grid>
             </Grid>
           </ListItem>
@@ -188,14 +189,15 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
               </Grid>
 
               <Grid item xs={4}>
-                <TextField
+              <TimePicker views={['hours']}   value={endTime} onChange={(e) => {setEndTime(e)}} />
+                {/* <TextField
                   id="outlined-number"
                   type="number"
                   InputLabelProps={{
                     shrink: true,
                   }}
                   onChange={(event) => setEndValue(event.target.value)}
-                />
+                /> */}
               </Grid>
             </Grid>
           </ListItem>
