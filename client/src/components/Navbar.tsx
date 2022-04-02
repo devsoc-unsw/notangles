@@ -71,30 +71,39 @@ const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(CSESocLogo);
 
   return (
-    <StylesProvider injectFirst>
-      <NavbarBox>
-        <StyledNavBar>
-          <Toolbar>
-            {isPreview && (
-              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
-                <MenuIcon />
-              </IconButton>
-            )}
-            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
-            <NavbarTitle variant="h6">
-              Notangles
-              <Weak>
-                {!isMobile && <Beta>Beta</Beta>}
-                {isMobile ? term : termName.concat(', ', year)}
-              </Weak>
-            </NavbarTitle>
-            <About />
-            <Privacy />
-            <Settings />
-          </Toolbar>
-        </StyledNavBar>
-      </NavbarBox>
-    </StylesProvider>
+    <button
+      type="button"
+      onClick={() => {
+        console.log('Here in navbar');
+        throw Error('Oops something wrong in navbar!');
+      }}
+    >
+      Break the world
+    </button>
+    // <StylesProvider injectFirst>
+    //   <NavbarBox>
+    //     <StyledNavBar>
+    //       <Toolbar>
+    //         {isPreview && (
+    //           <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
+    //             <MenuIcon />
+    //           </IconButton>
+    //         )}
+    //         <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
+    //         <NavbarTitle variant="h6">
+    //           Notangles
+    //           <Weak>
+    //             {!isMobile && <Beta>Beta</Beta>}
+    //             {isMobile ? term : termName.concat(', ', year)}
+    //           </Weak>
+    //         </NavbarTitle>
+    //         <About />
+    //         <Privacy />
+    //         <Settings />
+    //       </Toolbar>
+    //     </StyledNavBar>
+    //   </NavbarBox>
+    // </StylesProvider>
   );
 };
 

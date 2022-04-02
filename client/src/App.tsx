@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Autotimetabler from './components/Autotimetabler';
@@ -32,6 +33,7 @@ import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { AppsRounded } from '@material-ui/icons';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -433,4 +435,4 @@ const App: React.FC = () => {
     </MuiThemeProvider>
   );
 };
-export default App;
+export default Sentry.withProfiler(App);
