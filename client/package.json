@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.4",
+    "@sentry/react": "^6.19.3",
     "@sentry/tracing": "^6.19.3",
     "dayjs": "^1.11.0",
     "file-saver": "^2.0.5",
