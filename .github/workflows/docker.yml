@@ -81,7 +81,7 @@ jobs:
     concurrency: production
     environment: 
       name: production
-      url: https://notangles.csesoc.unsw.edu.au
+      url: https://notangles.csesoc.app
 
     steps:
       - name: Checkout repository
