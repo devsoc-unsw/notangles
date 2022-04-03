@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
-import { Box } from '@material-ui/core';
-import { CourseData } from '../../interfaces/Course';
-import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
+
+import { AppContext } from '../../context/AppContext';
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { CourseContext } from '../../context/CourseContext';
+import { BaseCellStyleProps, DayCellProps, GridCellProps } from '../../interfaces/StyleProps';
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -10,13 +12,7 @@ const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
-const BaseCell = styled.div<{
-  x: number;
-  y: number;
-  yTo?: number;
-  isEndX?: boolean;
-  isEndY?: boolean;
-}>`
+const BaseCell = styled.div<BaseCellStyleProps>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
@@ -41,9 +37,7 @@ const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const InventoryCell = styled(DayCell)<{
-  y: number;
-}>`
+const InventoryCell = styled(DayCell)<DayCellProps>`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
@@ -54,9 +48,7 @@ const paddingStyle = css`
   padding: 0 ${headerPadding}px;
 `;
 
-const HourCell = styled(GridCell)<{
-  is12HourMode: boolean;
-}>`
+const HourCell = styled(GridCell)<GridCellProps>`
   ${paddingStyle}
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -70,18 +62,6 @@ const ToggleCell = styled(BaseCell)`
   & span {
     grid-column: 1;
     grid-row: 1;
-  }
-`;
-
-const Is12HourModeToggle = styled(Box)`
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.1s;
-  color: ${({ theme }) => theme.palette.primary.main};
-
-  &:hover {
-    color: ${({ theme }) => theme.palette.primary.dark};
   }
 `;
 
@@ -107,78 +87,61 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
     .map((_, i) => generateHour(i + min, is12HourMode));
 };
 
-interface TimetableLayoutProps {
-  days: string[];
-  is12HourMode: boolean;
-  setIs12HourMode(value: boolean): void;
-  selectedCourses: CourseData[];
-}
+export const TimetableLayout: React.FC = () => {
+  const { is12HourMode, days } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
-// beware memo - if a component isn't re-rendering, it could be why
-export const TimetableLayout: React.FC<TimetableLayoutProps> = React.memo(
-  ({ days, is12HourMode, setIs12HourMode, selectedCourses }) => {
-    const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
-    const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
-    const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestClassFinishTime, defaultEndTime) - 1];
-    const hours: string[] = generateHours(hoursRange, is12HourMode);
+  const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
+  const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
+  const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestClassFinishTime, defaultEndTime) - 1];
+  const hours: string[] = generateHours(hoursRange, is12HourMode);
 
-    const dayCells = days.map((day, i) => (
-      <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
-        {day}
-      </DayCell>
-    ));
+  const dayCells = days.map((day, i) => (
+    <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
+      {day}
+    </DayCell>
+  ));
 
-    dayCells.push(
-      <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
-        Unscheduled
-      </InventoryCell>
-    );
+  dayCells.push(
+    <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
+      Unscheduled
+    </InventoryCell>
+  );
 
-    const hourCells = hours.map((hour, i) => (
-      <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
-        {hour}
-      </HourCell>
-    ));
+  const hourCells = hours.map((hour, i) => (
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
+      {hour}
+    </HourCell>
+  ));
 
-    const otherCells = hours.flatMap((_, y) =>
-      days.flatMap((_, x) => (
-        <GridCell
-          key={x * 1000 + y}
-          x={x + 2}
-          y={y + 2}
-          isEndX={x === days.length - 1}
-          isEndY={y === hours.length - 1}
-          id={x === 0 && y === 0 ? 'origin' : undefined}
-        />
-      ))
-    );
+  const otherCells = hours.flatMap((_, y) =>
+    days.flatMap((_, x) => (
+      <GridCell
+        key={x * 1000 + y}
+        x={x + 2}
+        y={y + 2}
+        isEndX={x === days.length - 1}
+        isEndY={y === hours.length - 1}
+        id={x === 0 && y === 0 ? 'origin' : undefined}
+      />
+    ))
+  );
 
-    otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
+  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
 
-    return (
-      <>
-        <ToggleCell key={0} x={1} y={1}>
-          <Is12HourModeToggle component="span" onClick={() => setIs12HourMode(!is12HourMode)}>
-            {`${is12HourMode ? '12' : '24'} h`}
-          </Is12HourModeToggle>
-          {
-            // Invisible guide for the column width for
-            // consistency between 24 and 12 hour time.
-            // Content is something like '10 AM'.
-          }
-          <ColumnWidthGuide>{generateHour(10, true)}</ColumnWidthGuide>
-        </ToggleCell>
-        {dayCells}
-        {hourCells}
-        {otherCells}
-      </>
-    );
-  },
-  (prev, next) =>
-    !(
-      prev.is12HourMode !== next.is12HourMode ||
-      JSON.stringify(prev.days) !== JSON.stringify(next.days) ||
-      prev.selectedCourses.length !== next.selectedCourses.length ||
-      prev.selectedCourses.some((course, i) => course.code !== next.selectedCourses[i].code)
-    )
-);
+  return (
+    <>
+      <ToggleCell key={0} x={1} y={1}>
+        {
+          // Invisible guide for the column width for
+          // consistency between 24 and 12 hour time.
+          // Content is something like '10 AM'.
+        }
+        <ColumnWidthGuide>{generateHour(10, true)}</ColumnWidthGuide>
+      </ToggleCell>
+      {dayCells}
+      {hourCells}
+      {otherCells}
+    </>
+  );
+};

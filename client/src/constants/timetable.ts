@@ -1,21 +1,24 @@
 export const year = '2022';
-const termNumber = 1;
+const termNumber = 2;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;
 
+// 12am on the first day of term, in UTC time. This means that you need to remove some time
+// based on how far ahead we are from UTC. This means that the date is *actually* 1 day before the start of term.
+const daylightSavings = false;
+export const firstMomentOfTerm = `2022-05-29` + (daylightSavings ? `T13:00:00.000Z` : `T14:00:00.000Z`);
+
 export const colors: string[] = [
-  '#009689', // dark green
-  '#9E28AE', // violet
-  '#00963C', // emerald
-  '#683BB5', // purple
-  '#2e89ff', // sapphire
-  '#00BCD4', // turqoise
+  '#137786', // dark cyan
+  '#a843a4', // light purple
+  '#134e86', // light blue
+  '#138652', // light green
+  '#861313', // dark red
+  '#868413', // dark yellow
   '#2e89ff', // dark blue
   '#3323ad', // deep blue
   '#8AC352', // light green
 ];
-
-export const days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;

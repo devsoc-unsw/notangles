@@ -1,28 +1,19 @@
-// https://notangles-server.csesoc.unsw.edu.au/api/terms/2021-T3/courses/
+// https://timetable.csesoc.unsw.edu.au/api/terms/2022-T1/courses/
 
-import { CoursesList } from '../interfaces/CourseOverview';
+import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/CourseOverview';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
 // import TimeoutError from '../interfaces/TimeoutError';
 
-interface FetchedCourse {
-  _id: string;
-  courseCode: string;
-  name: string;
-}
-
 const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
-    id: course._id,
     code: course.courseCode,
     name: course.name,
+    online: course.online,
+    inPerson: course.inPerson,
+    career: course.career,
   }));
-
-interface CoursesListWithDate {
-  lastUpdated: number;
-  courses: CoursesList;
-}
 
 /**
  * Fetches a list of course objects, where each course object contains

@@ -1,26 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import { ClassPeriod, InInventory } from '../../interfaces/Course';
-import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
-import { borderRadius } from '../../constants/theme';
-import { classTranslateY, classHeight } from './DroppedClasses';
 
-const cellStyle = ({
-  classPeriod,
-  x,
-  color,
-  isInventory,
-  earliestStartTime,
-}: {
-  classPeriod: ClassPeriod | InInventory;
-  x: number;
-  y: number;
-  yEnd?: number;
-  color: string;
-  isInventory?: boolean;
-  earliestStartTime: number;
-}) => ({
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+
+import { borderRadius } from '../../constants/theme';
+import { CellProps } from '../../interfaces/PropTypes';
+import { CellStyleProps } from '../../interfaces/StyleProps';
+import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
+import { classHeight, classTranslateY } from './DroppedClasses';
+
+const cellStyle = ({ classPeriod, x, color, isInventory, earliestStartTime }: CellStyleProps) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -37,18 +26,7 @@ const cellStyle = ({
   borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
 });
 
-interface CellProps {
-  classPeriod: ClassPeriod | InInventory;
-  x: number;
-  y: number;
-  earliestStartTime: number;
-  color: string;
-  yEnd?: number;
-  isInventory?: boolean;
-}
-
-// beware memo - if a component isn't re-rendering, it could be why
-const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
+const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const elementCurrent = element.current;
@@ -82,6 +60,6 @@ const Dropzone: React.FC<CellProps> = React.memo(({ classPeriod, x, y, earliestS
       )}
     </div>
   );
-});
+};
 
 export default Dropzone;

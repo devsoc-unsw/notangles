@@ -1,56 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, Box, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import Link from '@material-ui/core/Link';
+import React, { useContext, useEffect } from 'react';
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
-import {
-  CourseData,
-  ClassData,
-  SelectedClasses,
-  ClassTime,
-  ClassPeriod,
-  CourseCode,
-  Activity,
-  InInventory,
-} from './interfaces/Course';
-import { useDrag } from './utils/Drag';
-import Timetable from './components/timetable/Timetable';
-import Navbar from './components/Navbar';
+import Link from '@material-ui/core/Link';
+import { Alert } from '@material-ui/lab';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+
+import getCourseInfo from './api/getCourseInfo';
 import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import getCourseInfo from './api/getCourseInfo';
+import Navbar from './components/Navbar';
+import History from './components/History';
+import Timetable from './components/timetable/Timetable';
+import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { isPreview, term, year } from './constants/timetable';
+import { AppContext } from './context/AppContext';
+import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import storage from './utils/storage';
-import { darkTheme, lightTheme, ThemeType, contentPadding } from './constants/theme';
-import { year, term, isPreview } from './constants/timetable';
+import {
+  Activity,
+  ClassData,
+  ClassPeriod,
+  ClassTime,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+} from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
+import { StyledContentProps } from './interfaces/StyleProps';
+import { useDrag } from './utils/Drag';
+import { downloadIcsFile } from './utils/generateICS';
+import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
     background: ${(props) => props.theme.palette.background.default};
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-
   ::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.palette.background.default};
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.palette.secondary.dark};
   }
@@ -66,19 +68,13 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-
   color: ${(props) => props.theme.palette.text.primary};
 `;
-
-interface StyledContentProps {
-  drawerOpen: boolean;
-}
 
 const getContentWidth = (drawerOpen: boolean) => {
   let contentWidth = '1400px';
@@ -92,11 +88,10 @@ const Content = styled(Box)<StyledContentProps>`
   width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
-
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
-
+SS
   text-align: center;
 `;
 
@@ -108,6 +103,25 @@ const SelectWrapper = styled(Box)`
   padding-top: 20px;
 `;
 
+const AutotimetablerWrapper = styled(Box)`
+  flex: 1;
+`
+const HistoryWrapper = styled(Box)`
+  margin-top: 20px;
+`
+
+const ICSButton = styled(Button)`
+  && {
+    min-width: 250px;
+    margin: auto;
+    background-color: ${(props) => props.theme.palette.primary.main};
+    color: #ffffff;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
+`;
+
 const Footer = styled(Box)`
   text-align: center;
   font-size: 12px;
@@ -115,18 +129,28 @@ const Footer = styled(Box)`
 `;
 
 const App: React.FC = () => {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
-  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
-  const [errorMsg, setErrorMsg] = useState<String>('');
-  const [infoMsg] = useState<String>('Press and hold to drag a class');
-  const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
-  const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = React.useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
-  const [lastUpdated, setLastUpdated] = useState(0);
+  const {
+    is12HourMode,
+    isDarkMode,
+    isSquareEdges,
+    isHideFullClasses,
+    isDefaultUnscheduled,
+    isHideClassInfo,
+    isSortAlphabetic,
+    errorMsg,
+    setErrorMsg,
+    errorVisibility,
+    setErrorVisibility,
+    infoVisibility,
+    setInfoVisibility,
+    isFriendsListOpen,
+    lastUpdated,
+    setLastUpdated,
+    days,
+    setDays,
+  } = useContext(AppContext);
+
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -168,7 +192,9 @@ const App: React.FC = () => {
 
       Object.keys(course.activities).forEach((activity) => {
         // temp until auto timetabling works
-        [prev[course.code][activity]] = course.activities[activity];
+        prev[course.code][activity] = isDefaultUnscheduled
+          ? null
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null; // null for unscheduled
       });
 
       return prev;
@@ -227,10 +253,6 @@ const App: React.FC = () => {
       });
   };
 
-  const handleDrawerOpen = () => {
-    setIsFriendsListOpen(!isFriendsListOpen);
-  };
-
   const handleRemoveCourse = (courseCode: string) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
@@ -249,10 +271,6 @@ const App: React.FC = () => {
     setInfoVisibility(false);
   };
 
-  const handleSetIsLoggedIn = (value: boolean) => {
-    setIsLoggedIn(value);
-  };
-
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
@@ -262,8 +280,24 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    storage.set('isSortAlphabetic', isSortAlphabetic);
+  }, [isSortAlphabetic]);
+
+  useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
+
+  useEffect(() => {
+    storage.set('isHideFullClasses', isHideFullClasses);
+  }, [isHideFullClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
@@ -301,6 +335,15 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
+    if (
+      selectedCourses.some((v) =>
+        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
+      )
+    ) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+    } else if (days.length !== 5) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -334,46 +377,34 @@ const App: React.FC = () => {
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <GlobalStyle />
         <StyledApp>
-          <Navbar
-            setIsDarkMode={setIsDarkMode}
-            isDarkMode={isDarkMode}
-            handleDrawerOpen={handleDrawerOpen}
-            isSquareEdges={isSquareEdges}
-            setIsSquareEdges={setIsSquareEdges}
-          />
-          {isPreview && (
-            <FriendsDrawer isFriendsListOpen={isFriendsListOpen} isLoggedIn={isLoggedIn} setIsLoggedIn={handleSetIsLoggedIn} />
-          )}
+          <Navbar />
+          {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
+                <Grid item xs={12} md={6}>
                   <SelectWrapper>
                     <CourseSelect
-                      selectedCourses={selectedCourses}
                       assignedColors={assignedColors}
                       handleSelect={handleSelectCourse}
                       handleRemove={handleRemoveCourse}
-                      setErrorMsg={setErrorMsg}
-                      setErrorVisibility={setErrorVisibility}
-                      setLastUpdated={handleLastUpdated}
                     />
                   </SelectWrapper>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <Autotimetabler isDarkMode={isDarkMode} />
+                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
+                  <AutotimetablerWrapper>
+                    <Autotimetabler />
+                  </AutotimetablerWrapper>
+                  <HistoryWrapper>
+                    <History />
+                  </HistoryWrapper>
                 </Grid>
               </Grid>
-              <Timetable
-                selectedCourses={selectedCourses}
-                selectedClasses={selectedClasses}
-                assignedColors={assignedColors}
-                is12HourMode={is12HourMode}
-                setIs12HourMode={setIs12HourMode}
-                isSquareEdges={isSquareEdges}
-                clashes={checkClashes()}
-                setInfoVisibility={setInfoVisibility}
-              />
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+              <br />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              <br />
+              <br />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />
@@ -405,7 +436,7 @@ const App: React.FC = () => {
               </Snackbar>
               <Snackbar open={infoVisibility}>
                 <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  {infoMsg}
+                  Press and hold to drag a class
                 </Alert>
               </Snackbar>
             </Content>
