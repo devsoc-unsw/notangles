@@ -1,6 +1,6 @@
 # Notangles
 
-[Notangles](https://notangles.csesoc.unsw.edu.au/) is an interactive drag-and-drop timetable planner designed to help UNSW students plan their ideal weekly timetable.
+[Notangles](https://notangles.csesoc.app/) is an interactive drag-and-drop timetable planner designed to help UNSW students plan their ideal weekly timetable.
 
 
 ## Background and Motivation

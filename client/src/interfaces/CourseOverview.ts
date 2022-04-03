@@ -1,8 +1,10 @@
 export type CoursesList = CourseOverview[];
 export interface CourseOverview {
-  id: string;
   code: string;
   name: string;
+  online: boolean;
+  inPerson: boolean;
+  career: string;
 }
 
 export interface CoursesListWithDate {
@@ -11,7 +13,9 @@ export interface CoursesListWithDate {
 }
 
 export interface FetchedCourse {
-  _id: string;
   courseCode: string;
   name: string;
+  online: boolean;
+  inPerson: boolean;
+  career: string;
 }

@@ -11,6 +11,7 @@ import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/Navbar';
+import History from './components/History';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
@@ -42,24 +43,20 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${(props) => props.theme.palette.background.default};
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-
   ::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.palette.background.default};
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.palette.secondary.dark};
   }
@@ -75,13 +72,11 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
@@ -97,7 +92,6 @@ const Content = styled(Box)<StyledContentProps>`
   width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
-
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
@@ -111,6 +105,25 @@ const SelectWrapper = styled(Box)`
   grid-column: 1 / -1;
   grid-row: 1;
   padding-top: 20px;
+`;
+
+const AutotimetablerWrapper = styled(Box)`
+  flex: 1;
+`
+const HistoryWrapper = styled(Box)`
+  margin-top: 20px;
+`
+
+const ICSButton = styled(Button)`
+  && {
+    min-width: 250px;
+    margin: auto;
+    background-color: ${(props) => props.theme.palette.primary.main};
+    color: #ffffff;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
 `;
 
 const Footer = styled(Box)`
@@ -127,6 +140,7 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    isSortAlphabetic,
     errorMsg,
     setErrorMsg,
     errorVisibility,
@@ -136,6 +150,8 @@ const App: React.FC = () => {
     isFriendsListOpen,
     lastUpdated,
     setLastUpdated,
+    days,
+    setDays,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -269,6 +285,10 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    storage.set('isSortAlphabetic', isSortAlphabetic);
+  }, [isSortAlphabetic]);
+
+  useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
   }, [isSquareEdges]);
 
@@ -320,6 +340,15 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
+    if (
+      selectedCourses.some((v) =>
+        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
+      )
+    ) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+    } else if (days.length !== 5) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -401,7 +430,7 @@ const App: React.FC = () => {
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
+                <Grid item xs={12} md={6}>
                   <SelectWrapper>
                     <CourseSelect
                       assignedColors={assignedColors}
@@ -410,12 +439,20 @@ const App: React.FC = () => {
                     />
                   </SelectWrapper>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <Autotimetabler auto={auto}/>
+                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
+                  <AutotimetablerWrapper>
+                    <Autotimetabler auto={auto}/>
+                  </AutotimetablerWrapper>
+                  <HistoryWrapper>
+                    <History />
+                  </HistoryWrapper>
                 </Grid>
               </Grid>
-              <Button onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>create ICS file</Button>
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+              <br />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+              <br />
+              <br />
               <Footer>
                 While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
                 <br />

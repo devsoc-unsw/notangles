@@ -1,8 +1,10 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useTheme } from '@material-ui/styles';
+import { useMediaQuery } from '@material-ui/core';
 
 import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded } from '@material-ui/icons';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
 
 import Fuse from 'fuse.js';
@@ -17,6 +19,7 @@ import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseSelectProps } from '../interfaces/PropTypes';
 import { CourseContext } from '../context/CourseContext';
+import { ThemeType } from '../constants/theme';
 
 const SEARCH_DELAY = 300;
 
@@ -88,11 +91,9 @@ const StyledChip = styled(Chip).withConfig({
 `;
 
 const StyledOption = styled.span`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: flex;
   align-items: center;
+  max-width: 80%;
 `;
 
 const weakStyle = css`
@@ -106,8 +107,15 @@ const StyledIcon = styled.span`
   ${weakStyle}
 `;
 
+const StyledIconRight = styled(StyledIcon)`
+  margin-right: 0;
+`;
+
 const Weak = styled.span`
   margin-left: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   ${weakStyle}
 `;
 
@@ -116,7 +124,20 @@ const StyledUl = styled.ul`
   margin: 0;
 `;
 
+const RightContainer = styled.div`
+  position: absolute;
+  right: 10px;
+`;
+
+const Career = styled.div`
+  position: absolute;
+  right: 65px;
+  ${weakStyle};
+`;
+
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+  const { isSortAlphabetic } = useContext(AppContext);
+
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
@@ -126,6 +147,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
+
+  useEffect(() => {
+    // Need to convert from the type CourseData to CourseOverview (a simpler version)
+    // Note that CoursesList is a type alias for CourseOverview[]
+
+    const courseCodes = selectedCourses.map((x) => x.code);
+    const courseOverviews = courseCodes
+      .map((code) => coursesList.find((course) => course.code === code))
+      .filter((overview): overview is CourseOverview => overview !== undefined);
+
+    if (courseOverviews.length) {
+      setSelectedValue([...courseOverviews]);
+    } else {
+      // Reuse the old selected value (if it exists)
+      setSelectedValue(selectedValue.length ? [selectedValue[0]] : []);
+    }
+  }, [selectedCourses]);
 
   const setOptions = (newOptions: CoursesList) => {
     listRef?.current?.scrollTo(0);
@@ -144,8 +182,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     // if we have info about the new courses already fetched, update the value now
     // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
     if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
-      setSelectedValue([...selectedValue, ...coursesList.filter((course) => addedCodes.includes(course.code))]);
-    }
+      setSelectedValue([
+        ...selectedValue,
+        ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
+      ]); // the nullish coalesce above was the best way I found to shut ts up.
+    } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
   };
 
   checkExternallyAdded();
@@ -169,6 +210,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
+
+    // sorting results
+    if (isSortAlphabetic) {
+      let lengthQuery = query.length;
+      if (lengthQuery <= 8) {
+        newOptions.sort((a, b) =>
+          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+          a.code < b.code
+            ? -1
+            : 1
+        );
+      }
+    }
 
     setOptions(newOptions);
     return newOptions;
@@ -298,6 +353,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     []
   );
 
+  const theme = useTheme<ThemeType>();
+  const isMedium = useMediaQuery(theme.breakpoints.only('md'));
+  const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
+
   return (
     <StyledSelect>
       <Autocomplete
@@ -322,7 +381,28 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
             </StyledIcon>
             <span>{option.code}</span>
-            <Weak>{option.name}</Weak>
+            <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+            <Career>
+              {option.career === 'Undergraduate'
+                ? 'UGRD'
+                : option.career === 'Postgraduate'
+                ? 'PGRD'
+                : option.career === 'Research'
+                ? 'RSCH'
+                : null}
+            </Career>
+            <RightContainer>
+              {option.online && (
+                <StyledIconRight>
+                  <VideocamOutlined />
+                </StyledIconRight>
+              )}
+              {option.inPerson && (
+                <StyledIconRight>
+                  <PersonOutline />
+                </StyledIconRight>
+              )}
+            </RightContainer>
           </StyledOption>
         )}
         renderInput={(params) => (
@@ -377,4 +457,5 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     </StyledSelect>
   );
 };
+
 export default CourseSelect;
