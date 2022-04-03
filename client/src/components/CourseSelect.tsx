@@ -147,6 +147,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
+  useEffect(() => {
+    // Need to convert from the type CourseData to CourseOverview (a simpler version)
+    // Note that CoursesList is a type alias for CourseOverview[]
+
+    const courseCodes = selectedCourses.map((x) => x.code);
+    const courseOverviews = courseCodes
+      .map((code) => coursesList.find((course) => course.code === code))
+      .filter((overview): overview is CourseOverview => overview !== undefined);
+
+    if (courseOverviews.length) {
+      setSelectedValue([...courseOverviews]);
+    } else {
+      // Reuse the old selected value (if it exists)
+      setSelectedValue(selectedValue.length ? [selectedValue[0]] : []);
+    }
+  }, [selectedCourses]);
+
   const setOptions = (newOptions: CoursesList) => {
     listRef?.current?.scrollTo(0);
     setOptionsState(newOptions);
@@ -156,12 +173,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     const codes = a.map((x) => x.code);
     return b.filter((x) => !codes.includes(x.code));
   };
-
-  useEffect(() => {
-    setSelectedValue([
-      ...selectedCourses.map((x) => x.code).map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
-    ]);
-  }, [selectedCourses]);
 
   const checkExternallyAdded = () => {
     const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
