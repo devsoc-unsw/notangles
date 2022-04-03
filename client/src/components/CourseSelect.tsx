@@ -91,11 +91,9 @@ const StyledChip = styled(Chip).withConfig({
 `;
 
 const StyledOption = styled.span`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: flex;
   align-items: center;
+  max-width: 80%;
 `;
 
 const weakStyle = css`
@@ -115,6 +113,9 @@ const StyledIconRight = styled(StyledIcon)`
 
 const Weak = styled.span`
   margin-left: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   ${weakStyle}
 `;
 
