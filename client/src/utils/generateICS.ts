@@ -52,8 +52,7 @@ export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
         period.time.weeks.map((week) => (
           [period, week] as [ClassPeriod, number])
         )
-      )
-      )
+      ))
     )
   )
 }
@@ -62,7 +61,6 @@ export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
  */
 async function getFirstMomentOfTerm() {
   // i hope that the country and city we live in doesnt need to change
-  const timezone = parseInt((await (await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney")).json()).utc_offset);
-  // IMPORTANT - the date must be the first day of week 1
-  return dayjs(firstDayOfTerm + `T00:00:00.000Z`).subtract(timezone, 'h');
+  const timezoneData = (await (await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney")).json());
+  return dayjs(firstDayOfTerm + `T00:00:00.000Z`).subtract(parseInt(timezoneData.utc_offset), 'h');
 }
