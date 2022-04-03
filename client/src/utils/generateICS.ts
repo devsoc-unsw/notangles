@@ -11,14 +11,16 @@ import { DateArray } from "ics";
  * @param classes global classes data
  * @returns 
  */
-export async function downloadIcsFile(courses: CourseData[], classes: SelectedClasses): Promise<void> {
+export async  function downloadIcsFile(courses: CourseData[], classes: SelectedClasses): Promise<void> {
   if (classes === null) {
     return;
   }
+  const timezoneData = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney").then(response => response.json());
+  const timezone = parseInt(timezoneData.utc_offset);
   const icsFile = getAllEvents(courses, classes).map(async ([period, week]) =>
     createEvent({
-      start: await generateDateArray(period.time.start, period.time.day, week),
-      end: await generateDateArray(period.time.end, period.time.day, week),
+      start: await generateDateArray(timezone, period.time.start, period.time.day, week),
+      end: await generateDateArray(timezone, period.time.end, period.time.day, week),
       title: `${period.class.course.code} ${period.class.activity}`,
       location: period.locations[0]
     })
@@ -26,9 +28,13 @@ export async function downloadIcsFile(courses: CourseData[], classes: SelectedCl
   saveAs(new Blob([(await Promise.all(icsFile)).join("\n")], { type: 'text/ics' }), "notangles.ics");
 }
 
-async function generateDateArray(hour: number, day: number, week: number): Promise<DateArray> {
+async function generateDateArray(timezone: number, hour: number, day: number, week: number): Promise<DateArray> {
   // 0 index days and weeks
-  let currDate = (await getFirstMomentOfTerm()).add(week - 1, 'w').add(day - 1, 'd').add(hour, 'h');
+  let currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
+    .subtract(timezone, 'h')
+    .add(week - 1, 'w')
+    .add(day - 1, 'd')
+    .add(hour, 'h');
   return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 }
 
@@ -56,11 +62,4 @@ export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
     )
   )
 }
-/**
- * @returns the first moment of term in UTC
- */
-async function getFirstMomentOfTerm() {
-  // i hope that the country and city we live in doesnt need to change
-  const timezoneData = (await (await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney")).json());
-  return dayjs(firstDayOfTerm + `T00:00:00.000Z`).subtract(parseInt(timezoneData.utc_offset), 'h');
-}
+
