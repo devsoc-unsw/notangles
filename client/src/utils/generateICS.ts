@@ -11,7 +11,7 @@ import { DateArray } from "ics";
  * @param classes global classes data
  * @returns 
  */
-export async  function downloadIcsFile(courses: CourseData[], classes: SelectedClasses): Promise<void> {
+export async function downloadIcsFile(courses: CourseData[], classes: SelectedClasses): Promise<void> {
   if (classes === null) {
     return;
   }
