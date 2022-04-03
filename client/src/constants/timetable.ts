@@ -5,8 +5,8 @@ export const termName = `Term ${termNumber}`;
 
 // 12am on the first day of term, in UTC time. This means that you need to remove some time
 // based on how far ahead we are from UTC. This means that the date is *actually* 1 day before the start of term.
-const daylightSavings = true;
-export const firstMomentOfTerm = `2022-05-29` + (daylightSavings ? `T00:13:00.000Z` : `T00:14:00.000Z`);
+const daylightSavings = false;
+export const firstMomentOfTerm = `2022-05-29` + (daylightSavings ? `T13:00:00.000Z` : `T14:00:00.000Z`);
 
 export const colors: string[] = [
   '#137786', // dark cyan
