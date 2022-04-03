@@ -374,14 +374,12 @@ const App: React.FC = () => {
   }
 
   const auto = async (values: any) => {
-    console.log(selectedCourses)
     if (selectedCourses && selectedCourses.length) {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
       obj["periodsListSerialized"] = periodsListSerialized.current
       doAutoRequest(obj).then((Rarray) => {
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
-          console.log(day, start)
           const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => c.periods[0].time.day === day && c.periods[0].time.start === start)
           if (k !== undefined) {
             handleSelectClass(k)

@@ -22,6 +22,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { stringify } from 'querystring';
 import { Fragment } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
+import { FormControl, Input, InputAdornment, Slider } from '@material-ui/core';
 const DropdownButton = styled(Button)`
   width: 100%;
   height: 55px;
@@ -97,12 +98,8 @@ interface AutotimetablerProps {
 const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
   const [daysAtUni, setDaysAtUni] = React.useState<string>('off');
-  const [timesOfDay, setTimesOfDay] = React.useState<string | null>('off');
-  const [walkingDistance, setWalkingDistance] = React.useState<string | null>('off');
   const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
-  const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<string | null>('');
-  const [startValue, setStartValue] = React.useState<string>('');
-  const [endValue, setEndValue] = React.useState<string>('');
+  const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<number>(0);
   const [days, setDays] = React.useState<Array<string>>(weekdays)
   const { isDarkMode } = useContext(AppContext);
   const [startTime, setStartTime] = useState<Date|null>(new Date(2022, 0, 0, 9));
@@ -112,7 +109,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
   const doAuto = () => {
-    const ops: Array<string|number|null|undefined> = [startTime?.getHours(), endTime?.getHours(), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), parseInt(breaksBetweenClasses ?? '0'), daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
+    const ops: Array<string|number|null|undefined> = [startTime?.getHours(), endTime?.getHours(), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
     auto(ops)
     setAnchorEl(null);
   }
@@ -169,15 +166,20 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
         <List>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-              </Grid>
+              <Grid item xs={8}></Grid>
 
               <Grid item xs={8}>
                 <ListItemText primary="Earliest start time" />
               </Grid>
 
               <Grid item xs={4}>
-              <TimePicker views={['hours']}   value={startTime} onChange={(e) => {setStartTime(e)}} />
+                <TimePicker
+                  views={['hours']}
+                  value={startTime}
+                  onChange={(e) => {
+                    setStartTime(e);
+                  }}
+                />
               </Grid>
             </Grid>
           </ListItem>
@@ -189,15 +191,13 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
               </Grid>
 
               <Grid item xs={4}>
-              <TimePicker views={['hours']}   value={endTime} onChange={(e) => {setEndTime(e)}} />
-                {/* <TextField
-                  id="outlined-number"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
+                <TimePicker
+                  views={['hours']}
+                  value={endTime}
+                  onChange={(e) => {
+                    setEndTime(e);
                   }}
-                  onChange={(event) => setEndValue(event.target.value)}
-                /> */}
+                />
               </Grid>
             </Grid>
           </ListItem>
@@ -218,13 +218,14 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
               </Grid>
 
               <Grid item xs={4}>
-                <TextField
-                  id="outlined-number"
-                  type="number"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={(event) => setBreaksBetweenClasses(event.target.value)}
+                <Slider
+                  valueLabelDisplay='auto'
+                  valueLabelFormat={(e) => e.toString() + ' hr' + (e === 1 ? '' : 's')}
+                  step={1}
+                  value={breaksBetweenClasses}
+                  onChange={(e, v) => setBreaksBetweenClasses(v as number)}
+                  min={0}
+                  max={5}
                 />
               </Grid>
             </Grid>
@@ -236,26 +237,12 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
             setOptionState={setDaysAtUni}
             optionChoices={['1', '2']}
           />
-
           {/* <DropdownOption
-            optionName=" times"
-            optionState={timesOfDay}
-            setOptionState={setTimesOfDay}
-            optionChoices={['earlier', 'later']}
-          />
-
-          <DropdownOption
-            optionName="Walking distance between classes"
-            optionState={walkingDistance}
-            setOptionState={setWalkingDistance}
-            optionChoices={['least']}
-          />
-          <DropdownOption
             optionName="Friends in classes"
             optionState={friendsInClasses}
             setOptionState={setFriendsInClasses}
             optionChoices={['most']}
-          /> */}
+          />  */}
         </List>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
           <FlashOnIcon />
