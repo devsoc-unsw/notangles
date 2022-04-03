@@ -15,7 +15,8 @@ export async function downloadIcsFile(courses: CourseData[], classes: SelectedCl
   if (classes === null) {
     return;
   }
-  const timezoneData = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney").then(response => response.json());
+  const timezoneFetch = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney");
+  const timezoneData = await timezoneFetch.json();
   const timezone = parseInt(timezoneData.utc_offset);
   const icsFile = getAllEvents(courses, classes).map(async ([period, week]) =>
     createEvent({
