@@ -2,7 +2,11 @@ export const year = '2022';
 const termNumber = 2;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;
-export const firstMomentOfTerm = `2022-05-30T04:00:00.000Z`; // must 12am of the first day, be correct in utc https://www.timestamp-converter.com/
+
+// 12am on the first day of term, in UTC time. This means that you need to remove some time
+// based on how far ahead we are from UTC. This means that the date is *actually* 1 day before the start of term.
+const daylightSavings = true;
+export const firstMomentOfTerm = `2022-05-29` + (daylightSavings ? `T00:13:00.000Z` : `T00:14:00.000Z`);
 
 export const colors: string[] = [
   '#137786', // dark cyan

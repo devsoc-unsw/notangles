@@ -4,7 +4,6 @@ import ReactGA from 'react-ga';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import App from './App';
-import Privacy from './components/Privacy';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 
@@ -29,7 +28,6 @@ const Root: React.FC = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<App />} path="/" />
-          <Route element={<Privacy />} path="/privacy" />
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>
@@ -41,4 +39,4 @@ ReactDOM.render(<Root />, document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-swRegistration.register();
+swRegistration.unregister();

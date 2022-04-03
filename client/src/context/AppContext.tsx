@@ -43,6 +43,9 @@ export interface IAppContext {
   lastUpdated: number;
   setLastUpdated: (newLastUpdated: number) => void;
 
+  isDrag: boolean;
+  setIsDrag: (newIsDrag: boolean) => void;
+  
   days: string[];
   setDays: (newDays: string[]) => void;
 }
@@ -87,6 +90,9 @@ export const AppContext = createContext<IAppContext>({
   lastUpdated: 0,
   setLastUpdated: () => {},
 
+  isDrag: false,
+  setIsDrag: () => {},
+
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => {},
 });
@@ -105,6 +111,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
+  const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
   const initialContext: IAppContext = {
@@ -134,8 +141,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsLoggedIn,
     lastUpdated,
     setLastUpdated,
+    isDrag,
+    setIsDrag,
     days,
-    setDays
+    setDays,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

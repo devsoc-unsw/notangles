@@ -10,6 +10,7 @@ import Autotimetabler from './components/Autotimetabler';
 import CourseSelect from './components/CourseSelect';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/Navbar';
+import History from './components/History';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
@@ -38,24 +39,20 @@ const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background: ${(props) => props.theme.palette.background.default};
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-
   ::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.palette.background.default};
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.palette.secondary.main};
     border-radius: 5px;
     opacity: 0.5;
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.palette.secondary.dark};
   }
@@ -71,13 +68,11 @@ const ContentWrapper = styled(Box)`
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
   transition: background 0.2s, color 0.2s;
-  min-height: 100vh;
+  min-height: 50vh;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-
   color: ${(props) => props.theme.palette.text.primary};
 `;
 
@@ -93,7 +88,6 @@ const Content = styled(Box)<StyledContentProps>`
   width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
-
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
@@ -109,10 +103,16 @@ const SelectWrapper = styled(Box)`
   padding-top: 20px;
 `;
 
+const AutotimetablerWrapper = styled(Box)`
+  flex: 1;
+`
+const HistoryWrapper = styled(Box)`
+  margin-top: 20px;
+`
+
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
-    // width: 20%;
     margin: auto;
     background-color: ${(props) => props.theme.palette.primary.main};
     color: #ffffff;
@@ -147,7 +147,7 @@ const App: React.FC = () => {
     lastUpdated,
     setLastUpdated,
     days,
-    setDays
+    setDays,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -335,10 +335,14 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
-    if (selectedCourses.some((v) => Object.entries(v.activities).some(([a, b]) => b.some(vv => vv.periods.some(vvv => vvv.time.day === 6))))) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])
+    if (
+      selectedCourses.some((v) =>
+        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
+      )
+    ) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
     } else if (days.length !== 5) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
     }
   }, [selectedCourses]);
 
@@ -377,25 +381,28 @@ const App: React.FC = () => {
           {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
-              <div>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={9}>
-                    <SelectWrapper>
-                      <CourseSelect
-                        assignedColors={assignedColors}
-                        handleSelect={handleSelectCourse}
-                        handleRemove={handleRemoveCourse}
-                      />
-                    </SelectWrapper>
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <Autotimetabler />
-                  </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <SelectWrapper>
+                    <CourseSelect
+                      assignedColors={assignedColors}
+                      handleSelect={handleSelectCourse}
+                      handleRemove={handleRemoveCourse}
+                    />
+                  </SelectWrapper>
                 </Grid>
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                <br />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              </div>
+                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
+                  <AutotimetablerWrapper>
+                    <Autotimetabler />
+                  </AutotimetablerWrapper>
+                  <HistoryWrapper>
+                    <History />
+                  </HistoryWrapper>
+                </Grid>
+              </Grid>
+              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+              <br />
+              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
               <br />
               <br />
               <Footer>
