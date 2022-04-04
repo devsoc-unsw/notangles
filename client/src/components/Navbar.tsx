@@ -17,6 +17,7 @@ import { isPreview, term, termName, year } from '../constants/timetable';
 import About from './About';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import Changelog from './Changelog';
 
 const LogoImg = styled.img`
   height: 46px;
@@ -89,6 +90,7 @@ const Navbar: React.FC = () => {
               </Weak>
             </NavbarTitle>
             <About />
+            <Changelog />
             <Privacy />
             <Settings />
           </Toolbar>
