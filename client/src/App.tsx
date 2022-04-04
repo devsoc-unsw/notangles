@@ -346,17 +346,17 @@ const App: React.FC = () => {
     return `${hours} hours`;
   };
 
-
-  const periodsListSerialized = useRef<string[]>([]); 
+  const targetActivities = useRef<ClassData[][]>([]);
+  const periodsListSerialized = useRef<string[]>([]);
   useEffect(() => {
     if (selectedCourses && selectedCourses.length) {
-      const targetClasses = selectedCourses.map((v) =>
-        Object.entries(v.activities)
-          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1]);
+      targetActivities.current = selectedCourses.map((v) =>
+      Object.entries(v.activities)
+        .filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam'))).reduce((a, b) => {return a.concat(b)}).map(([a, b]) => b);
       // a list of [all_periods, in_person_periods, online_periods]
-      periodsListSerialized.current = [JSON.stringify(targetClasses.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetClasses.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetClasses.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
+      periodsListSerialized.current = [JSON.stringify(targetActivities.current.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
+      JSON.stringify(targetActivities.current.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
+      JSON.stringify(targetActivities.current.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
     }
   }, [selectedCourses]) 
 
@@ -384,7 +384,7 @@ const App: React.FC = () => {
       doAutoRequest(obj).then((Rarray) => {
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
-          const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => rightLocation(c) && c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start)
+          const k = targetActivities.current[index].find(c => rightLocation(c) && c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start)
           if (k !== undefined) {
             handleSelectClass(k)
           }

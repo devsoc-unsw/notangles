@@ -47,6 +47,7 @@ export interface ControlsProps {
   assignedColors: Record<string, string>;
   handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
   handleRemoveCourse(courseCode: string): void;
+  auto(value: any, mode: string): void;
 }
 
 export interface TimetableProps {

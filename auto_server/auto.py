@@ -29,7 +29,7 @@ def redlist(lists):
 def sols(start, end, days, gap, maxdays, periods):
 
     gap = gap * 2  # minimum break between classes
-    mxd = maxdays if maxdays else len(days)
+    mxd = min(maxdays, len(days))
 
     newdata = [redlist(l) for l in periods]  # reduces data
 

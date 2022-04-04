@@ -23,7 +23,7 @@ const HistoryWrapper = styled(Box)`
   margin-top: 20px;
 `;
 
-const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse, handleRemoveCourse }) => {
+const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse, handleRemoveCourse, auto }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
@@ -33,7 +33,7 @@ const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse,
       </Grid>
       <Grid item container direction="row" alignItems="center" xs={12} md={6}>
         <AutotimetablerWrapper>
-          <Autotimetabler />
+        <Autotimetabler auto={auto}/>
         </AutotimetablerWrapper>
         <HistoryWrapper>
           <History />
