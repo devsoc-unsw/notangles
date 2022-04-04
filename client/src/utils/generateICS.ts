@@ -15,21 +15,19 @@ export async function downloadIcsFile(courses: CourseData[], classes: SelectedCl
   if (classes === null) {
     return;
   }
-  const timezoneFetch = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney");
-  const timezoneData = await timezoneFetch.json();
-  const timezone = parseInt(timezoneData.utc_offset);
-  const icsFile = getAllEvents(courses, classes).map(async ([period, week]) =>
+  const timezone = await getUtcOffset();
+  const icsFile = getAllEvents(courses, classes).map(([period, week]) =>
     createEvent({
-      start: await generateDateArray(timezone, period.time.start, period.time.day, week),
-      end: await generateDateArray(timezone, period.time.end, period.time.day, week),
+      start: generateDateArray(timezone, period.time.start, period.time.day, week),
+      end: generateDateArray(timezone, period.time.end, period.time.day, week),
       title: `${period.class.course.code} ${period.class.activity}`,
       location: period.locations[0]
     })
-  ).map(async (obj) => (await obj).value);
-  saveAs(new Blob([(await Promise.all(icsFile)).join("\n")], { type: 'text/ics' }), "notangles.ics");
+  ).map((obj) => obj.value);
+  saveAs(new Blob([icsFile.join("\n")], { type: 'text/ics' }), "notangles.ics");
 }
 
-async function generateDateArray(timezone: number, hour: number, day: number, week: number): Promise<DateArray> {
+function generateDateArray(timezone: number, hour: number, day: number, week: number): DateArray {
   // 0 index days and weeks
   let currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
     .subtract(timezone, 'h')
@@ -39,12 +37,18 @@ async function generateDateArray(timezone: number, hour: number, day: number, we
   return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 }
 
+async function getUtcOffset() {
+  const timezoneFetch = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney");
+  const timezoneData = await timezoneFetch.json();
+  return parseInt(timezoneData.utc_offset);
+}
+
 /**
  * @param courses the global course data
  * @param classes the global class data
  * @returns all the extrapolated events that occur in that term
  */
-export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
+export function getAllEvents(courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] {
   // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
   let allClasses = courses.flatMap((course) =>
     Object.keys(course.activities).filter((possibleActivity) => (
@@ -52,12 +56,13 @@ export function getAllEvents(courses: CourseData[], classes: SelectedClasses) {
     ))
       .map((activities) => classes[course.code][activities])
   );
+
   return allClasses.flatMap(
     (classTime) => (
       // this cant actually be null, i just filtered it, ts is dumb
       classTime!.periods.flatMap((period) => (
-        period.time.weeks.map((week) => (
-          [period, week] as [ClassPeriod, number])
+        period.time.weeks.map(
+          (week) => ([period, week] as [ClassPeriod, number])
         )
       ))
     )
