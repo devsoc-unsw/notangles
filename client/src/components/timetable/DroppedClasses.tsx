@@ -261,7 +261,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
     const startDrag = () => {
       timer = null;
-      setIsDrag(true)
+      setIsDrag(true);
       setDragTarget(cardData, event);
       setInfoVisibility(false);
     };
@@ -463,10 +463,13 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
   };
 
   const hasArrows = (c: CardData) =>
-  'time' in c &&
-  c.class.course.activities[c.class.activity].filter(
-    (value) => value.periods.length && value.periods.some(p => isDuplicate(p, c)) && (!isHideFullClasses || (value.enrolments !== value.capacity) || (value.id === c.class.id))
-  ).length > 1;
+    'time' in c &&
+    c.class.course.activities[c.class.activity].filter(
+      (value) =>
+        value.periods.length &&
+        value.periods.some((p) => isDuplicate(p, c)) &&
+        (!isHideFullClasses || value.enrolments !== value.capacity || value.id === c.class.id)
+    ).length > 1;
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);

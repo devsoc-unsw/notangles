@@ -45,7 +45,7 @@ export interface IAppContext {
 
   isDrag: boolean;
   setIsDrag: (newIsDrag: boolean) => void;
-  
+
   days: string[];
   setDays: (newDays: string[]) => void;
 }

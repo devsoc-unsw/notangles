@@ -105,10 +105,10 @@ const SelectWrapper = styled(Box)`
 
 const AutotimetablerWrapper = styled(Box)`
   flex: 1;
-`
+`;
 const HistoryWrapper = styled(Box)`
   margin-top: 20px;
-`
+`;
 
 const ICSButton = styled(Button)`
   && {

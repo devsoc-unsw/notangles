@@ -35,7 +35,7 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
-  const { selectedCourses} = useContext(CourseContext);
+  const { selectedCourses } = useContext(CourseContext);
   const { days } = useContext(AppContext);
 
   return (

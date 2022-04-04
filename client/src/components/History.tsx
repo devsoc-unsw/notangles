@@ -70,7 +70,8 @@ const History: React.FC = () => {
       dontAdd.current = false;
       return; // prevents adding change induced from re/undo click
     }
-    if (actions.current.length > 1 && areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses)) return;
+    if (actions.current.length > 1 && areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses))
+      return;
     if (actions.current.length > actionsPointer.current + 1) {
       // discard remainding redos as we branched off
       actions.current = actions.current.slice(0, actionsPointer.current + 1);
