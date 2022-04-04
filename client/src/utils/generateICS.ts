@@ -11,7 +11,7 @@ import { DateArray } from "ics";
  * @param classes global classes data
  * @returns 
  */
-export async function downloadIcsFile(courses: CourseData[], classes: SelectedClasses): Promise<void> {
+export const downloadIcsFile = async (courses: CourseData[], classes: SelectedClasses): Promise<void> => {
   if (classes === null) {
     return;
   }
@@ -27,9 +27,9 @@ export async function downloadIcsFile(courses: CourseData[], classes: SelectedCl
   saveAs(new Blob([icsFile.join("\n")], { type: 'text/ics' }), "notangles.ics");
 }
 
-function generateDateArray(timezone: number, hour: number, day: number, week: number): DateArray {
+const generateDateArray = (timezone: number, hour: number, day: number, week: number): DateArray => {
   // 0 index days and weeks
-  let currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
+  const currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
     .subtract(timezone, 'h')
     .add(week - 1, 'w')
     .add(day - 1, 'd')
@@ -37,7 +37,7 @@ function generateDateArray(timezone: number, hour: number, day: number, week: nu
   return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 }
 
-async function getUtcOffset() {
+const getUtcOffset = async () => {
   const timezoneFetch = await fetch("http://worldtimeapi.org/api/timezone/Australia/Sydney");
   const timezoneData = await timezoneFetch.json();
   return parseInt(timezoneData.utc_offset);
@@ -48,7 +48,7 @@ async function getUtcOffset() {
  * @param classes the global class data
  * @returns all the extrapolated events that occur in that term
  */
-export function getAllEvents(courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] {
+const getAllEvents = (courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] => {
   // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
   let allClasses = courses.flatMap((course) =>
     Object.keys(course.activities)
