@@ -14,7 +14,7 @@ const PrivacyQuestions = [
       <>
         <p>We collect the following types of information from our users:</p>
         <p>
-          Personal Information You Provide to Us:We may receive and store any information you submit to the Application (or
+          Personal Information You Provide to Us: We may receive and store any information you submit to the Application (or
           otherwise authorize us to obtain – such as, from (for example) your Facebook account). The types of personal information
           collected may include your username, email address, profile picture, friends that are also using the Application, and
           any other information necessary for us to provide the Application services.
