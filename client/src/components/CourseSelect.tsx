@@ -136,8 +136,6 @@ const Career = styled.div`
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
-  const { isSortAlphabetic } = useContext(AppContext);
-
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
@@ -145,30 +143,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { isSortAlphabetic, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
-    // Need to convert from the type CourseData to CourseOverview (a simpler version)
-    // Note that CoursesList is a type alias for CourseOverview[]
+    if (!selectedValue.length) return;
 
-    const courseCodes = selectedCourses.map((x) => x.code);
-    const courseOverviews = courseCodes
-      .map((code) => coursesList.find((course) => course.code === code))
-      .filter((overview): overview is CourseOverview => overview !== undefined);
-
-    if (courseOverviews.length) {
-      setSelectedValue([...courseOverviews]);
-    } else {
-      // Reuse the old selected value (if it exists)
-      setSelectedValue(selectedValue.length ? [selectedValue[0]] : []);
-    }
+    setSelectedValue([
+      ...selectedCourses
+        .map((x) => x.code) // Get the course code of each course
+        .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
+        .filter((overview): overview is CourseOverview => overview !== undefined),
+    ]);
   }, [selectedCourses]);
-
-  const setOptions = (newOptions: CoursesList) => {
-    listRef?.current?.scrollTo(0);
-    setOptionsState(newOptions);
-  };
 
   const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
     const codes = a.map((x) => x.code);
@@ -200,6 +187,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course)
     );
   }
+
+  const setOptions = (newOptions: CoursesList) => {
+    listRef?.current?.scrollTo(0);
+    setOptionsState(newOptions);
+  };
 
   const search = (query: string) => {
     query = query.trim();
