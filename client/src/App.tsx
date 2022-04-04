@@ -1,17 +1,14 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import DateFnsUtils from '@date-io/date-fns';
 
 import getCourseInfo from './api/getCourseInfo';
-import Autotimetabler from './components/Autotimetabler';
-import CourseSelect from './components/CourseSelect';
+import Header from './components/Controls';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
+import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-import History from './components/History';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
@@ -95,41 +92,19 @@ const Content = styled(Box)<StyledContentProps>`
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
-SS
   text-align: center;
 `;
-
-const SelectWrapper = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  padding-top: 20px;
-`;
-
-const AutotimetablerWrapper = styled(Box)`
-  flex: 1;
-`
-const HistoryWrapper = styled(Box)`
-  margin-top: 20px;
-`
 
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
-    margin: auto;
+    margin: 2vh auto;
     background-color: ${(props) => props.theme.palette.primary.main};
     color: #ffffff;
     &:hover {
       background-color: #598dff;
     }
   }
-`;
-
-const Footer = styled(Box)`
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 25px;
 `;
 
 const App: React.FC = () => {
@@ -148,8 +123,6 @@ const App: React.FC = () => {
     infoVisibility,
     setInfoVisibility,
     isFriendsListOpen,
-    lastUpdated,
-    setLastUpdated,
     days,
     setDays,
   } = useContext(AppContext);
@@ -180,10 +153,6 @@ const App: React.FC = () => {
       prev[classData.course.code][classData.activity] = null;
       return prev;
     });
-  };
-
-  const handleLastUpdated = (date: number) => {
-    setLastUpdated(date);
   };
 
   useDrag(handleSelectClass, handleRemoveClass);
@@ -435,54 +404,15 @@ const App: React.FC = () => {
           {isPreview && <FriendsDrawer />}
           <ContentWrapper>
             <Content drawerOpen={isFriendsListOpen}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <SelectWrapper>
-                    <CourseSelect
-                      assignedColors={assignedColors}
-                      handleSelect={handleSelectCourse}
-                      handleRemove={handleRemoveCourse}
-                    />
-                  </SelectWrapper>
-                </Grid>
-                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
-                  <AutotimetablerWrapper>
-                    <Autotimetabler auto={auto}/>
-                  </AutotimetablerWrapper>
-                  <HistoryWrapper>
-                    <History />
-                  </HistoryWrapper>
-                </Grid>
-              </Grid>
+              <Header
+                auto={auto}
+                assignedColors={assignedColors}
+                handleSelectCourse={handleSelectCourse}
+                handleRemoveCourse={handleRemoveCourse}
+              />
               <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <br />
               <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              <br />
-              <br />
-              <Footer>
-                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
-                <br />
-                <br />
-                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-                  Email
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-                  Feedback
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  Source
-                </Link>
-                {lastUpdated !== 0 && (
-                  <>
-                    <br />
-                    <br />
-                    Data last updated {getRelativeTime(lastUpdated)} ago.
-                  </>
-                )}
-              </Footer>
+              <Footer />
               <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert severity="error" onClose={handleErrorClose} variant="filled">
                   {errorMsg}
