@@ -383,8 +383,11 @@ const App: React.FC = () => {
     if (selectedCourses && selectedCourses.length) {
       const targetClasses = selectedCourses.map((v) =>
         Object.entries(v.activities)
-          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1])
-      periodsListSerialized.current = [JSON.stringify(targetClasses.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
+          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1]);
+      // a list of [all_periods, in_person_periods, online_periods]
+      periodsListSerialized.current = [JSON.stringify(targetClasses.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
+      JSON.stringify(targetClasses.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
+      JSON.stringify(targetClasses.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
     }
   }, [selectedCourses]) 
 
@@ -403,13 +406,16 @@ const App: React.FC = () => {
   }
 
   const auto = async (values: any, mode: string) => {
+    const rightLocation = (aClass: ClassData) => {
+      return mode === 'hybrid' || aClass.periods.some(p => p.locations.length && ( (mode === 'online') === ('Online' === p.locations[0])));
+    }
     if (selectedCourses && selectedCourses.length) {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
-      obj["periodsListSerialized"] = periodsListSerialized.current
+      obj["periodsListSerialized"] = periodsListSerialized.current[['hybrid', 'in person', 'online'].findIndex(v => v === mode)]
       doAutoRequest(obj).then((Rarray) => {
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
-          const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => c.periods[0].time.day === day && c.periods[0].time.start === start)
+          const k = Object.entries(selectedCourses[index].activities).filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].find(c => rightLocation(c) && c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start)
           if (k !== undefined) {
             handleSelectClass(k)
           }
