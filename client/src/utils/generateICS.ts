@@ -51,9 +51,10 @@ async function getUtcOffset() {
 export function getAllEvents(courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] {
   // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
   let allClasses = courses.flatMap((course) =>
-    Object.keys(course.activities).filter((possibleActivity) => (
-      classes[course.code] !== null && classes[course.code][possibleActivity] !== null
-    ))
+    Object.keys(course.activities)
+      .filter((possibleActivity) => (
+        classes[course.code] !== null && classes[course.code][possibleActivity] !== null
+      ))
       .map((activities) => classes[course.code][activities])
   );
 
