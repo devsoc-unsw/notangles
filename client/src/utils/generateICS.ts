@@ -40,7 +40,7 @@ const generateDateArray = (timezone: number, hour: number, day: number, week: nu
 };
 
 const getUtcOffset = async () => {
-  const timezoneFetch = await fetch('http://worldtimeapi.org/api/timezone/Australia/Sydney');
+  const timezoneFetch = await fetch('https://worldtimeapi.org/api/timezone/Australia/Sydney');
   const timezoneData = await timezoneFetch.json();
   return parseInt(timezoneData.utc_offset);
 };
