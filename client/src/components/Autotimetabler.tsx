@@ -92,7 +92,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState
 };
 
 interface AutotimetablerProps {
-  auto(value: any): void;
+  auto(value: any, mode: string): void;
 }
 
 const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
@@ -104,13 +104,14 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
   const { isDarkMode } = useContext(AppContext);
   const [startTime, setStartTime] = useState<Date|null>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date|null>(new Date(2022, 0, 0, 21));
+  const [classMode, setClassMode] = useState<string>('hybrid');
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
   const doAuto = () => {
     const ops: Array<string|number|null|undefined> = [startTime?.getHours(), endTime?.getHours(), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
-    auto(ops)
+    auto(ops, classMode)
     setAnchorEl(null);
   }
   const handleClose = () => {
@@ -201,7 +202,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
               </Grid>
             </Grid>
           </ListItem>
-
+                
           <DropdownOption
             optionName="Days"
             optionState={days}
@@ -237,12 +238,13 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
             setOptionState={setDaysAtUni}
             optionChoices={['1', '2']}
           />
-          {/* <DropdownOption
-            optionName="Friends in classes"
-            optionState={friendsInClasses}
-            setOptionState={setFriendsInClasses}
-            optionChoices={['most']}
-          />  */}
+          <DropdownOption
+          optionName='Mode'
+          optionState={classMode}
+          setOptionState={setClassMode}
+          optionChoices={['hybrid', 'in person', 'online']}
+          noOff
+          />
         </List>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
           <FlashOnIcon />

@@ -378,13 +378,13 @@ const App: React.FC = () => {
   };
 
 
-  const periodsListSerialized = useRef(''); 
+  const periodsListSerialized = useRef<string[]>([]); 
   useEffect(() => {
     if (selectedCourses && selectedCourses.length) {
-      periodsListSerialized.current = JSON.stringify(selectedCourses.map((v) =>
+      const targetClasses = selectedCourses.map((v) =>
         Object.entries(v.activities)
-          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1].map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-      ));
+          .filter(([a, b]) => a != 'Lecture' && a != 'Exam')[0][1])
+      periodsListSerialized.current = [JSON.stringify(targetClasses.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
     }
   }, [selectedCourses]) 
 
@@ -402,7 +402,7 @@ const App: React.FC = () => {
     return content.given
   }
 
-  const auto = async (values: any) => {
+  const auto = async (values: any, mode: string) => {
     if (selectedCourses && selectedCourses.length) {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
       obj["periodsListSerialized"] = periodsListSerialized.current
