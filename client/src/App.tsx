@@ -349,14 +349,18 @@ const App: React.FC = () => {
   const targetActivities = useRef<ClassData[][]>([]);
   const periodsListSerialized = useRef<string[]>([]);
   useEffect(() => {
+    console.log(selectedCourses)
     if (selectedCourses && selectedCourses.length) {
       targetActivities.current = selectedCourses.map((v) =>
       Object.entries(v.activities)
         .filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam'))).reduce((a, b) => {return a.concat(b)}).map(([a, b]) => b);
       // a list of [all_periods, in_person_periods, online_periods]
+      const hasMode: Array<[boolean, boolean]> = targetActivities.current.map(a => [a.some(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))), a.some(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0])))])
+      console.log(hasMode)
       periodsListSerialized.current = [JSON.stringify(targetActivities.current.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetActivities.current.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetActivities.current.map((value) => (value.filter(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
+      JSON.stringify(targetActivities.current.map((value, index) => (value.filter(v => !hasMode[index][0] || v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
+      JSON.stringify(targetActivities.current.map((value, index) => (value.filter(v => !hasMode[index][1] || v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
+      console.log(periodsListSerialized.current)
     }
   }, [selectedCourses]) 
 

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -16,7 +16,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import Grid from '@material-ui/core/Grid';
 import { AppContext } from '../context/AppContext';
-import { TimePicker, KeyboardTimePicker } from '@material-ui/pickers'
+import { TimePicker, KeyboardTimePicker } from '@material-ui/pickers';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Tooltip from '@material-ui/core/Tooltip';
 import { stringify } from 'querystring';
@@ -50,12 +50,19 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
 interface DropdownOptionProps {
   optionName: string;
   optionState: string | null | string[];
-  setOptionState(value:any): void;
+  setOptionState(value: any): void;
   optionChoices: string[];
   multiple?: boolean;
   noOff?: boolean;
 }
-const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState, setOptionState, optionChoices, multiple, noOff }) => {
+const DropdownOption: React.FC<DropdownOptionProps> = ({
+  optionName,
+  optionState,
+  setOptionState,
+  optionChoices,
+  multiple,
+  noOff,
+}) => {
   const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
     if (newOption !== null) {
       setOptionState(newOption);
@@ -76,9 +83,11 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({ optionName, optionState
             onChange={handleOptionChange}
             aria-label="option choices"
           >
-            {!noOff && <StyledOptionButtonToggle value="off" aria-label="default">
-              off
-            </StyledOptionButtonToggle>}
+            {!noOff && (
+              <StyledOptionButtonToggle value="off" aria-label="default">
+                off
+              </StyledOptionButtonToggle>
+            )}
             {optionChoices.map((op) => (
               <StyledOptionButtonToggle key={op} value={op} aria-label={op}>
                 {op}
@@ -95,60 +104,57 @@ interface AutotimetablerProps {
   auto(value: any, mode: string): void;
 }
 
-const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
+const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
   const [daysAtUni, setDaysAtUni] = React.useState<string>('off');
-  const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
+  // const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<number>(0);
-  const [days, setDays] = React.useState<Array<string>>(weekdays)
+  const [days, setDays] = React.useState<Array<string>>(weekdays);
   const { isDarkMode } = useContext(AppContext);
-  const [startTime, setStartTime] = useState<Date|null>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date|null>(new Date(2022, 0, 0, 21));
+  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
+  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
   const [classMode, setClassMode] = useState<string>('hybrid');
 
   // for opening popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  
+
   const doAuto = () => {
-    const ops: Array<string|number|null|undefined> = [startTime?.getHours(), endTime?.getHours(), days.map(v => (weekdays.indexOf(v) + 1).toString()).reduce((a,b) => a + b), breaksBetweenClasses, daysAtUni == "off" ? 5 : parseInt(daysAtUni)]
-    auto(ops, classMode)
+    const ops: Array<string | number> = [
+      startTime.getHours(),
+      endTime.getHours(),
+      days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
+      breaksBetweenClasses,
+      daysAtUni == 'off' ? 5 : parseInt(daysAtUni),
+    ];
+    auto(ops, classMode);
     setAnchorEl(null);
-  }
+  };
   const handleClose = () => {
     setAnchorEl(null);
   };
   const open = Boolean(anchorEl);
   const popoverId = open ? 'simple-popover' : undefined;
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // execute autotimetabling
     setAnchorEl(event.currentTarget);
   };
-  const handleFormat = (
-    newFormats: string[],
-  ) => {
+  const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
 
-
   return (
     <div>
-      <Tooltip title="Coming Soon" placement="bottom">
-        <div>
-          <DropdownButton
-            // disabled
-            disableElevation
-            aria-describedby={popoverId}
-            variant="contained"
-            color={isDarkMode ? 'secondary' : 'default'}
-            onClick={handleClick}
-          >
-            <Box ml="10px" flexGrow={1}>
-              Auto-timetable
-            </Box>
-            {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-          </DropdownButton>
-        </div>
-      </Tooltip>
+      <DropdownButton
+        disableElevation
+        aria-describedby={popoverId}
+        variant="contained"
+        color={isDarkMode ? 'secondary' : 'default'}
+        onClick={handleClick}
+      >
+        <Box ml="10px" flexGrow={1}>
+          Auto-timetable
+        </Box>
+        {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+      </DropdownButton>
 
       <Popover
         id={popoverId}
@@ -178,7 +184,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
                   views={['hours']}
                   value={startTime}
                   onChange={(e) => {
-                    setStartTime(e);
+                    if (e) setStartTime(e);
                   }}
                 />
               </Grid>
@@ -196,13 +202,13 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
                   views={['hours']}
                   value={endTime}
                   onChange={(e) => {
-                    setEndTime(e);
+                    if (e) setEndTime(e);
                   }}
                 />
               </Grid>
             </Grid>
           </ListItem>
-                
+
           <DropdownOption
             optionName="Days"
             optionState={days}
@@ -220,7 +226,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
 
               <Grid item xs={4}>
                 <Slider
-                  valueLabelDisplay='auto'
+                  valueLabelDisplay="auto"
                   valueLabelFormat={(e) => e.toString() + ' hr' + (e === 1 ? '' : 's')}
                   step={1}
                   value={breaksBetweenClasses}
@@ -239,11 +245,11 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({auto}) => {
             optionChoices={['1', '2']}
           />
           <DropdownOption
-          optionName='Mode'
-          optionState={classMode}
-          setOptionState={setClassMode}
-          optionChoices={['hybrid', 'in person', 'online']}
-          noOff
+            optionName="Mode"
+            optionState={classMode}
+            setOptionState={setClassMode}
+            optionChoices={['hybrid', 'in person', 'online']}
+            noOff
           />
         </List>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
