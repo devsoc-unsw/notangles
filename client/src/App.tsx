@@ -348,22 +348,46 @@ const App: React.FC = () => {
 
   const targetActivities = useRef<ClassData[][]>([]);
   const periodsListSerialized = useRef<string[]>([]);
-  const [autotimetableStatus, setAutotimetableStatus] = React.useState<null|string>(null);
+  const [autotimetableStatus, setAutotimetableStatus] = React.useState<null | string>(null);
+
+  // caches targetActivities and periodsListSerilized in advance
   useEffect(() => {
-    console.log(selectedCourses)
-    if (selectedCourses && selectedCourses.length) {
-      targetActivities.current = selectedCourses.map((v) =>
-      Object.entries(v.activities)
-        .filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam'))).reduce((a, b) => {return a.concat(b)}).map(([a, b]) => b);
+    if (!selectedCourses || !selectedCourses.length) return;
+    targetActivities.current = selectedCourses
+      .map((v) => Object.entries(v.activities).filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam')))
+      .reduce((a, b) => {
+        return a.concat(b);
+      })
+      .map((a) => a[1])
+      .filter((f) => f.some((c) => c.periods.length));
+
+      // [[hasInPerson, hasOnline], ...]
+      const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
+        a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
+        a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
+      ]);
+      
       // a list of [all_periods, in_person_periods, online_periods]
-      const hasMode: Array<[boolean, boolean]> = targetActivities.current.map(a => [a.some(v => v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))), a.some(v => v.periods.some(p => p.locations.length && ('Online' === p.locations[0])))])
-      console.log(hasMode)
-      periodsListSerialized.current = [JSON.stringify(targetActivities.current.map((value) => (value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetActivities.current.map((value, index) => (value.filter(v => !hasMode[index][0] || v.periods.some(p => p.locations.length && ('Online' !== p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))))),
-      JSON.stringify(targetActivities.current.map((value, index) => (value.filter(v => !hasMode[index][1] || v.periods.some(p => p.locations.length && ('Online' === p.locations[0]))).map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))))];
-      console.log(periodsListSerialized.current)
-    }
-  }, [selectedCourses]) 
+    periodsListSerialized.current = [
+      JSON.stringify(
+        targetActivities.current.map((value) => value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
+      ),
+      JSON.stringify(
+        targetActivities.current.map((value, index) =>
+          value
+            .filter((v) => !hasMode[index][0] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]))
+            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+        )
+      ),
+      JSON.stringify(
+        targetActivities.current.map((value, index) =>
+          value
+            .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+        )
+      ),
+    ];
+  }, [selectedCourses]); 
   
   const doAutoRequest = async (data: any): Promise<number[]> => {
     try {
@@ -385,32 +409,38 @@ const App: React.FC = () => {
       return content.given
     } catch (error) {
       setAutotimetableStatus("Couldn't get response.")
-      console.log(autotimetableStatus)
       return []
     }
   }
 
   const auto = async (values: any, mode: string) => {
     const rightLocation = (aClass: ClassData) => {
-      return mode === 'hybrid' || aClass.periods.some(p => p.locations.length && ( (mode === 'online') === ('Online' === p.locations[0])));
-    }
-    if (selectedCourses && selectedCourses.length) {
-      const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
-      obj["periodsListSerialized"] = periodsListSerialized.current[['hybrid', 'in person', 'online'].findIndex(v => v === mode)]
-      doAutoRequest(obj).then((Rarray) => {
-        console.log(autotimetableStatus)
-        // if (autotimetableStatus === null) {setAutotimetableStatus(Rarray.length ? 'Success!' : 'No timetable found.');}
+      // gives online/inperson variant if mode is online/inperson
+      return (
+        mode === 'hybrid' ||
+        aClass.periods.some((p) => p.locations.length && (mode === 'online') === ('Online' === p.locations[0]))
+      );
+    };
 
-        Rarray.forEach((timeAsNum, index) => {
-          const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
-          const k = targetActivities.current[index].find(c => rightLocation(c) && c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start)
-          if (k !== undefined) {
-            handleSelectClass(k)
-          }
-        })
+    if (!selectedCourses || !selectedCourses.length) return;
+
+    const timetableData: { [k: string]: any } = ['start', 'end', 'days', 'gap', 'maxdays']
+      .map((k, index) => [k, values[index]])
+      .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
+    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(['hybrid', 'in person', 'online'].findIndex((v) => v === mode));
+    doAutoRequest(timetableData).then((Rarray) => {
+
+      Rarray.forEach((timeAsNum, index) => {
+        const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];
+        const k = targetActivities.current[index].find(
+          (c) => c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c)
+        );
+        if (k !== undefined) {
+          handleSelectClass(k);
+        }
       });
-    }
-  }
+    });
+  };
 
 
   return (

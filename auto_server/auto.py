@@ -4,25 +4,27 @@ from ortools.sat.python import cp_model
 '''reduces period data into nicer list'''
 def redlist(lists):
     l = lists
+    # print(l)
     if len(l[0]) == 1:  # for purely single-period classes
-        duration = l[0][0][2] - l[0][0][1]
-        return (duration * 2, list(map(lambda il: il[0][0] * 100 + il[0][1] * 2, l)), False)
-
+        duration = int(l[0][0][2] - l[0][0][1])
+        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1]) * 2, l)), False)
+    # print('l: ' , l , 'l[0]: ', l[0])
     # for classes made of two consecutive periods (we merge into a single period)
     if l[0][0][0] == l[0][1][0]:
-        duration = l[0][1][2] - l[0][0][1]
-        return (duration * 2, list(map(lambda il: il[0][0] * 100 + il[0][1] * 2, l)), False)
+        duration = int(l[0][1][2] - l[0][0][1])
+        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1]) * 2, l)), False)
 
     if l[0][0][1] != l[0][1][0]:  # for classes made up of a pair of periods on different days
         # assumes here that the duration is equivalent for simplicity but should be amended later
-        duration = (l[0][0][2] - l[0][0][1])
-        return (duration * 2, list(map(lambda il: tuple(i[0] * 100 + i[1] * 2 for i in il), l)), True)
+        duration = int(l[0][0][2] - l[0][0][1])
+        return (duration * 2, list(map(lambda il: tuple(i[0] * 100 + int(i[1]) * 2 for i in il), l)), True)
 
     return []  # if i just missed something
 
 '''yields solutions'''
 def sols(start, end, days, gap, maxdays, periods):
-
+    for p in periods:
+        print(p)
     gap, earliest, latest = gap * 2, start * 2, end * 2   # minimum break between classes, earliest start time, latest end time
     mxd = min(maxdays, len(days))
     newdata = [redlist(l) for l in periods]  # reduces data
