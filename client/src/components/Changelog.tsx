@@ -8,30 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Description from '@material-ui/icons/Description';
 import styled from 'styled-components';
-
-const changelog = [
-  {
-    date: '05/03/22',
-    change: 'Added about us modal and settings modal',
-  },
-  {
-    date: '08/03/22',
-    change: 'Added icon to indicate when class is full, updated class colours',
-  },
-  {
-    date: '10/03/22',
-    change: 'Added ability to select between classes running at the same time',
-  },
-  {
-    date: '15/03/22',
-    change: 'Added ICS saving',
-  },
-  {
-    date: '18/03/22',
-    change:
-      'Bumped term number, fixed bug when selecting a course whose classes have no periods e.g. exams, added icons to indicate course delivery mode',
-  },
-];
+import ChangeLogContent from './ChangelogContent';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -86,10 +63,7 @@ const Changelog: React.FC = () => {
           </CloseButton>
         </StyledDialogTitle>
         <DialogContent>
-          <Typography gutterBottom variant="body2">
-            Notangles is an app for UNSW students to build their perfect timetable, even before class registration opens. We have
-            many features on the way, including auto-timetabling, and syncing your timetable with friends.
-          </Typography>
+          <ChangeLogContent />
         </DialogContent>
       </Dialog>
     </>
