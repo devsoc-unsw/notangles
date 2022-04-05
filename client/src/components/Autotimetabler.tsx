@@ -106,7 +106,7 @@ interface AutotimetablerProps {
 
 const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-  const [daysAtUni, setDaysAtUni] = React.useState<string>('off');
+  const [daysAtUni, setDaysAtUni] = React.useState<number>(5);
   // const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<number>(0);
   const [days, setDays] = React.useState<Array<string>>(weekdays);
@@ -124,7 +124,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
       endTime.getHours(),
       days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
       breaksBetweenClasses,
-      daysAtUni == 'off' ? 5 : parseInt(daysAtUni),
+      daysAtUni,
     ];
     auto(ops, classMode);
     setAnchorEl(null);
@@ -153,6 +153,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
         <Box ml="10px" flexGrow={1}>
           Auto-timetable
         </Box>
+        <Box ml="5px"/>
         {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
       </DropdownButton>
 
@@ -238,12 +239,31 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
             </Grid>
           </ListItem>
 
-          <DropdownOption
+          <ListItem>
+            <Grid container spacing={0}>
+              <Grid item xs={8}>
+                <ListItemText primary="Max days of Uni" />
+              </Grid>
+
+              <Grid item xs={4}>
+                <Slider
+                  valueLabelDisplay="auto"
+                  step={1}
+                  value={daysAtUni}
+                  onChange={(e, v) => setDaysAtUni(v as number)}
+                  min={1}
+                  max={5}
+                />
+              </Grid>
+            </Grid>
+          </ListItem>
+            
+          {/* <DropdownOption
             optionName="Max days of Uni"
             optionState={daysAtUni}
             setOptionState={setDaysAtUni}
             optionChoices={['1', '2']}
-          />
+          /> */}
           <DropdownOption
             optionName="Mode"
             optionState={classMode}

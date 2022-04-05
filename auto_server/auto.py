@@ -1,9 +1,7 @@
 from functools import reduce
 from ortools.sat.python import cp_model
 
-# reduces period data
-
-
+'''reduces period data into nicer list'''
 def redlist(lists):
     l = lists
     if len(l[0]) == 1:  # for purely single-period classes
@@ -22,22 +20,17 @@ def redlist(lists):
 
     return []  # if i just missed something
 
-
 '''yields solutions'''
-
-
 def sols(start, end, days, gap, maxdays, periods):
 
-    gap = gap * 2  # minimum break between classes
+    gap, earliest, latest = gap * 2, start * 2, end * 2   # minimum break between classes, earliest start time, latest end time
     mxd = min(maxdays, len(days))
-
     newdata = [redlist(l) for l in periods]  # reduces data
 
     model = cp_model.CpModel()  # start making the constraints model
 
     numCourses = len(newdata)
-    normalClassIndices = list(i for i in range(
-        numCourses) if not newdata[i][2])
+    normalClassIndices = list(i for i in range(numCourses) if not newdata[i][2])
 
     classStartTimes = [model.NewIntVarFromDomain(cp_model.Domain.FromValues(
         newdata[i][1]), 'x%i' % i) for i in normalClassIndices]  # start times
@@ -48,7 +41,6 @@ def sols(start, end, days, gap, maxdays, periods):
     for s in range(numCourses):  # handles classes with two periods across multiple days
         if not newdata[s][2]:
             continue
-        print('shouldntbehere')
         duration, specialperiods, _ = newdata[s]
         specPerIter = range(len(specialperiods))
         # dummy bools we configure for constraints
@@ -63,8 +55,8 @@ def sols(start, end, days, gap, maxdays, periods):
             model.Add(B == specialperiods[i][1]).OnlyEnforceIf(specialBools[i])
 
         specialIntervalVars = reduce(lambda a, b: a + b, [
-            [model.NewOptionalFixedSizeIntervalVar(specialperiods[i][0], duration, specialBools[i], 'spi%i' % i),
-             model.NewOptionalFixedSizeIntervalVar(specialperiods[i][1], duration, specialBools[i], 'sPi%i' % i)]
+            [model.NewOptionalFixedSizeIntervalVar(specialperiods[i][0], duration + gap, specialBools[i], 'spi%i' % i),
+             model.NewOptionalFixedSizeIntervalVar(specialperiods[i][1], duration + gap, specialBools[i], 'sPi%i' % i)]
             for i in specPerIter])  # only one of these will be enforced
 
         model.AddExactlyOne(specialBools)  # ensures a single assignment
@@ -76,35 +68,21 @@ def sols(start, end, days, gap, maxdays, periods):
     daydom = cp_model.Domain.FromValues([int(i) for i in days])
 
     # restricts classes to be no earlier than start
-    late = []
-    if start:
-        earliest = start * 2
-        late = [model.NewFixedSizeIntervalVar(
-            i * 100, earliest, 'l%i' % i) for i in range(1, 6)]
-
-    # restricts classes to go no later than end
-    nolate = []
-    if end:
-        latest = end * 2 + gap
-        nolate = [model.NewFixedSizeIntervalVar(
-            i * 100 + latest, 10, 'l%i' % i) for i in range(1, 6)]
-
+    late = [model.NewFixedSizeIntervalVar(i * 100, earliest, 'l%i' % i) for i in range(1, 6)]
+    nolate = [model.NewFixedSizeIntervalVar(i * 100 + latest + gap, 16, 'l%i' % i) for i in range(1, 6)] # 16 is an arbitrary length
+    
     if mxd == 1:
-        # within domain of permitted days of the week
-        day = model.NewIntVarFromDomain(daydom, 'day')
+        day = model.NewIntVarFromDomain(daydom, 'day') # within domain of permitted days of the week
         for i in classStartTimes:
-            # makes them all on the same day
-            model.AddDivisionEquality(day, i, 100)
+            model.AddDivisionEquality(day, i, 100) # makes them all on the same day
 
     if mxd in [2, 3, 4]:
         Days = [model.NewIntVarFromDomain(daydom, 'day%i' % i) for i in range(
             len(classStartTimes))]  # dummy Day variables
-        dayvars = [model.NewIntVarFromDomain(
-            daydom, 'dv%i' % i) for i in range(mxd)]
+        dayvars = [model.NewIntVarFromDomain(daydom, 'dv%i' % i) for i in range(mxd)]
 
         for i in range(len(classStartTimes)):
-            model.AddDivisionEquality(
-                Days[i],  classStartTimes[i], 100)  # assigns a day
+            model.AddDivisionEquality(Days[i],  classStartTimes[i], 100)  # assigns a day
 
         # for class i in classes, the day of that class, Days[i], equals daysvars[j] for one j
         bools = [[] for _ in range(mxd)]
@@ -119,8 +97,6 @@ def sols(start, end, days, gap, maxdays, periods):
     # makes the periods (and other constraints) not overlap
     model.AddNoOverlap(classIntervals + late + nolate + specialIntervalVars)
 
-    # solution and printing
-
     # Create a solver and solve.
     solver = cp_model.CpSolver()
 
@@ -128,8 +104,8 @@ def sols(start, end, days, gap, maxdays, periods):
     status = solver.Solve(model)
     print('Status = %s' % solver.StatusName(status))
     if solver.StatusName(status) != 'INFEASIBLE':
-        sol = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
-        print(sol)
-        return sol  # List[int]
+        sols = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
+        print(sols)
+        return sols  # List[int]
     else:
-        return [0]
+        return []

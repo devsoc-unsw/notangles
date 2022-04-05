@@ -16,11 +16,12 @@ const SelectWrapper = styled(Box)`
 `;
 
 const AutotimetablerWrapper = styled(Box)`
-  flex: 1;
+  // flex: 1;
 `;
 
 const HistoryWrapper = styled(Box)`
   margin-top: 20px;
+  margin-left: 3px;
 `;
 
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse, handleRemoveCourse, auto }) => {

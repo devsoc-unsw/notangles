@@ -348,6 +348,7 @@ const App: React.FC = () => {
 
   const targetActivities = useRef<ClassData[][]>([]);
   const periodsListSerialized = useRef<string[]>([]);
+  const [autotimetableStatus, setAutotimetableStatus] = React.useState<null|string>(null);
   useEffect(() => {
     console.log(selectedCourses)
     if (selectedCourses && selectedCourses.length) {
@@ -363,19 +364,30 @@ const App: React.FC = () => {
       console.log(periodsListSerialized.current)
     }
   }, [selectedCourses]) 
-
-  const doAutoRequest = async (data: any): Promise<number[]> => {
-    const rawResponse = await fetch('http://localhost:3001/auto', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-    const content = await rawResponse.json();
   
-    return content.given
+  const doAutoRequest = async (data: any): Promise<number[]> => {
+    try {
+      const rawResponse = await fetch('http://localhost:3001/auto', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      const res = rawResponse;
+      if (res.status !== 200) {
+        setAutotimetableStatus("Couldn't get response.")
+        return []
+      }
+      const content = await res.json();
+      setAutotimetableStatus(content.given.length ? 'Success!' : 'No timetable found.')
+      return content.given
+    } catch (error) {
+      setAutotimetableStatus("Couldn't get response.")
+      console.log(autotimetableStatus)
+      return []
+    }
   }
 
   const auto = async (values: any, mode: string) => {
@@ -386,6 +398,9 @@ const App: React.FC = () => {
       const obj: {[k: string]: any} = ['start', 'end', 'days', 'gap', 'maxdays'].map((k, index) => [k, values[index]]).reduce((o, key) => ({ ...o, [key[0]]: key[1]}), {}) 
       obj["periodsListSerialized"] = periodsListSerialized.current[['hybrid', 'in person', 'online'].findIndex(v => v === mode)]
       doAutoRequest(obj).then((Rarray) => {
+        console.log(autotimetableStatus)
+        // if (autotimetableStatus === null) {setAutotimetableStatus(Rarray.length ? 'Success!' : 'No timetable found.');}
+
         Rarray.forEach((timeAsNum, index) => {
           const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2]
           const k = targetActivities.current[index].find(c => rightLocation(c) && c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start)
@@ -425,6 +440,11 @@ const App: React.FC = () => {
               <Snackbar open={infoVisibility}>
                 <Alert severity="info" onClose={handleInfoClose} variant="filled">
                   Press and hold to drag a class
+                </Alert>
+              </Snackbar>
+              <Snackbar open={autotimetableStatus !== null} autoHideDuration={2000} onClose={() => {setAutotimetableStatus(null)}}>
+                <Alert severity={autotimetableStatus === 'Success!' ? 'success' : 'error'} onClose={() => {setAutotimetableStatus(null)}} variant="filled">
+                {autotimetableStatus}
                 </Alert>
               </Snackbar>
             </Content>
