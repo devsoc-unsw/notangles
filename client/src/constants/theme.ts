@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material';
 
+import { adaptV4Theme } from '@mui/material/styles';
+
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
 export const contentPadding = 15;
@@ -91,7 +93,7 @@ const baseTheme = ({
 });
 
 export const lightTheme = createTheme(
-  baseTheme({
+  adaptV4Theme(baseTheme({
     type: 'light',
     background: {
       main: '#fafafa',
@@ -105,11 +107,11 @@ export const lightTheme = createTheme(
     action: {
       disabled: `rgba(0,0,0,0.5)`,
     },
-  })
+  }))
 );
 
 export const darkTheme = createTheme(
-  baseTheme({
+  adaptV4Theme(baseTheme({
     type: 'dark',
     background: {
       main: '#212121',
@@ -123,5 +125,5 @@ export const darkTheme = createTheme(
     action: {
       disabled: `rgba(255,255,255,0.5)`,
     },
-  })
+  }))
 );
