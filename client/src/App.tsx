@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, ThemeProvider as MuiThemeProvider, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Box, Button, ThemeProvider as MuiThemeProvider, Theme, StyledEngineProvider, Snackbar } from '@mui/material';
+import { Alert } from '@mui/material';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -330,37 +330,39 @@ const App: React.FC = () => {
   }, [selectedClasses]);
 
   return (
-    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        <StyledApp>
-          <Navbar />
-          {isPreview && <FriendsDrawer />}
-          <ContentWrapper>
-            <Content drawerOpen={isFriendsListOpen}>
-              <Header
-                assignedColors={assignedColors}
-                handleSelectCourse={handleSelectCourse}
-                handleRemoveCourse={handleRemoveCourse}
-              />
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              <Footer />
-              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                  {errorMsg}
-                </Alert>
-              </Snackbar>
-              <Snackbar open={infoVisibility}>
-                <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  Press and hold to drag a class
-                </Alert>
-              </Snackbar>
-            </Content>
-          </ContentWrapper>
-        </StyledApp>
-      </ThemeProvider>
-    </MuiThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+          <GlobalStyle />
+          <StyledApp>
+            <Navbar />
+            {isPreview && <FriendsDrawer />}
+            <ContentWrapper>
+              <Content drawerOpen={isFriendsListOpen}>
+                <Header
+                  assignedColors={assignedColors}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                  <Alert severity="error" onClose={handleErrorClose} variant="filled">
+                    {errorMsg}
+                  </Alert>
+                </Snackbar>
+                <Snackbar open={infoVisibility}>
+                  <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                    Press and hold to drag a class
+                  </Alert>
+                </Snackbar>
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
+        </ThemeProvider>
+      </MuiThemeProvider>
+    </StyledEngineProvider>
   );
 };
 export default App;

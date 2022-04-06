@@ -1,21 +1,21 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import Popover from '@material-ui/core/Popover';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Popover from '@mui/material/Popover';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import Grid from '@mui/material/Grid';
 import { AppContext } from '../context/AppContext';
 
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 const DropdownButton = styled(Button)`
   width: 100%;
@@ -113,7 +113,7 @@ const Autotimetabler: React.FC = () => {
             disableElevation
             aria-describedby={popoverId}
             variant="contained"
-            color={isDarkMode ? 'secondary' : 'default'}
+            color={isDarkMode ? 'secondary' : 'primary'}
             onClick={handleClick}
           >
             <Box ml="10px" flexGrow={1}>

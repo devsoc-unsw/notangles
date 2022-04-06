@@ -1,22 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import Card from '@material-ui/core/Card';
-import { yellow } from '@material-ui/core/colors';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { Warning } from '@material-ui/icons';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-
 import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
+import { Card, Grid, IconButton } from '@mui/material';
+import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt } from '@mui/icons-material';
+import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import { yellow } from '@mui/material/colors';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-
 import { defaultStartTime } from '../../constants/timetable';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import {
@@ -211,14 +202,14 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
         {percentEnrolled === 1 ? (
           <Warning fontSize="inherit" style={iconWarningStyle} />
         ) : (
-          <PeopleAltIcon fontSize="inherit" style={iconPeopleStyle} />
+          <PeopleAlt fontSize="inherit" style={iconPeopleStyle} />
         )}
         <span>
           {period.class.enrolments}/{period.class.capacity}{' '}
         </span>
       </span>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
-      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      <LocationOn fontSize="inherit" style={iconStyle} />
       {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
     </>
   );
@@ -353,7 +344,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledSideArrow item xs={1}>
             {hasArrows && (
               <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
-                <ArrowLeftIcon />
+                <ArrowLeft />
               </StyledIconShadow>
             )}
           </StyledSideArrow>
@@ -382,7 +373,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledSideArrow item xs={1}>
             {hasArrows && (
               <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
-                <ArrowRightIcon />
+                <ArrowRight />
               </StyledIconShadow>
             )}
           </StyledSideArrow>

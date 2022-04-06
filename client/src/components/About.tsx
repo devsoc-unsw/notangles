@@ -1,16 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import InfoIcon from '@material-ui/icons/Info';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Divider from '@material-ui/core/Divider';
+import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Link, Tooltip, Typography } from '@mui/material';
+import { Close, Info } from '@mui/icons-material';
 
 import useGif from '../assets/how_to_use.gif';
 
@@ -21,7 +12,7 @@ const HowToUseImg = styled.img`
   border-radius: 2%;
 `;
 
-const StyledDialogTitle = styled(MuiDialogTitle)`
+const StyledDialogTitle = styled(DialogTitle)`
   margin: 0;
   padding: 20px;
 `;
@@ -41,7 +32,7 @@ const InfoButton = styled(IconButton)`
   margin-right: 5px;
 `;
 
-const DialogContent = styled(MuiDialogContent)`
+const StyledDialogContent = styled(DialogContent)`
   padding: 20px;
 `;
 
@@ -63,7 +54,7 @@ const About: React.FC = () => {
     <>
       <Tooltip title="About">
         <InfoButton color="inherit" onClick={toggleIsOpen}>
-          <InfoIcon />
+          <Info />
         </InfoButton>
       </Tooltip>
       <Dialog
@@ -74,14 +65,14 @@ const About: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle disableTypography>
+        <StyledDialogTitle>
           <StyledTypography variant="h5">Notangles: no more timetable tangles</StyledTypography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
-            <CloseIcon />
+            <Close />
           </CloseButton>
         </StyledDialogTitle>
         <Divider />
-        <DialogContent>
+        <StyledDialogContent>
           <Typography gutterBottom variant="body2">
             Notangles is an app for UNSW students to build their perfect timetable, even before class registration opens. We have
             many features on the way, including auto-timetabling, and syncing your timetable with friends.
@@ -116,17 +107,10 @@ const About: React.FC = () => {
             </Link>
             .
           </Typography>
-          {/* <FeatList>
-            <li> Drag-and-drop interface </li>
-            <li> Move clutter to the class inventory </li>
-            <li> Dark mode &#x1F60E; </li>
-            <li> Select 12 or 24 hour time </li>
-          </FeatList> */}
           <StyledTypography variant="h6">Future developments</StyledTypography>
           <FeatList>
             <li> Auto-timetabling</li>
             <li> Sync your timetable with friends</li>
-            <li> A mobile app</li>
           </FeatList>
           <StyledTypography variant="h6">About the team</StyledTypography>
           <Typography gutterBottom variant="body2">
@@ -164,7 +148,7 @@ const About: React.FC = () => {
             </Link>
             .
           </Typography>
-        </DialogContent>
+        </StyledDialogContent>
       </Dialog>
     </>
   );

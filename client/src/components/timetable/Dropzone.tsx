@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 
 import { borderRadius } from '../../constants/theme';
 import { CellProps } from '../../interfaces/PropTypes';
@@ -52,9 +50,9 @@ const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, c
     >
       {classPeriod !== null && (
         <>
-          {classPeriod.locations.includes('Online') && <VideocamOutlinedIcon fontSize="large" style={{ color: 'white' }} />}
+          {classPeriod.locations.includes('Online') && <VideocamOutlined fontSize="large" style={{ color: 'white' }} />}
           {classPeriod.locations.some((location) => location !== 'Online') && (
-            <PersonOutlineIcon fontSize="large" style={{ color: 'white' }} />
+            <PersonOutline fontSize="large" style={{ color: 'white' }} />
           )}
         </>
       )}

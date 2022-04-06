@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core';
+import { createTheme } from '@mui/material';
 
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
@@ -6,7 +6,7 @@ export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
-    type: string | undefined;
+    mode: string | undefined;
     primary: {
       main: string;
     };
@@ -41,7 +41,6 @@ export interface ThemeType {
 }
 
 const baseTheme = ({
-  type,
   background,
   border,
   action,
@@ -61,7 +60,6 @@ const baseTheme = ({
   };
 }) => ({
   palette: {
-    type,
     primary: {
       main: '#3a76f8',
     },

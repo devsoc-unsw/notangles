@@ -1,11 +1,7 @@
 import React from 'react';
-import { Theme } from '@material-ui/core';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import styled from 'styled-components';
+import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 
 const PrivacyQuestions = [
   {
@@ -146,7 +142,7 @@ const PrivacyContent: React.FC = () => {
     const { title, content } = privacy;
     return (
       <PrivacyAccordion style={{ margin: 'auto' }}>
-        <PrivacyAccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+        <PrivacyAccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1a-content" id="panel1a-header">
           <PrivacyContentTitle gutterBottom variant="body2">
             {title}
           </PrivacyContentTitle>

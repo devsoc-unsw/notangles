@@ -1,19 +1,11 @@
 import React, { useContext } from 'react';
-
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import SettingsIcon from '@material-ui/icons/Settings';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import Switch from '@material-ui/core/Switch';
-import Divider from '@material-ui/core/Divider';
 import styled from 'styled-components';
+import { Dialog, DialogTitle, Divider, IconButton, Switch, Tooltip, Typography } from '@mui/material';
+import { Close, Settings as SettingsIcon } from '@mui/icons-material';
 
 import { AppContext } from '../context/AppContext';
 
-const StyledDialogTitle = styled(MuiDialogTitle)`
+const StyledDialogTitle = styled(DialogTitle)`
   margin: 0;
   padding: 20px;
 `;
@@ -95,7 +87,7 @@ const Settings: React.FC = () => {
   return (
     <div>
       <Tooltip title="Settings">
-        <IconButton color="inherit" onClick={toggleIsOpen}>
+        <IconButton color="inherit" onClick={toggleIsOpen} size="large">
           <SettingsIcon />
         </IconButton>
       </Tooltip>
@@ -107,10 +99,10 @@ const Settings: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle disableTypography>
+        <StyledDialogTitle>
           <Typography variant="h5">Settings</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
-            <CloseIcon />
+            <Close />
           </CloseButton>
         </StyledDialogTitle>
         <Typography variant="body1">

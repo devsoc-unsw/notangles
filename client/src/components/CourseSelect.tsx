@@ -1,15 +1,11 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useTheme } from '@material-ui/styles';
-import { useMediaQuery } from '@material-ui/core';
-
-import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
-import { Autocomplete } from '@material-ui/lab';
-
 import Fuse from 'fuse.js';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
+import { Autocomplete, Box, Chip, InputAdornment, TextField, Theme, useMediaQuery } from '@mui/material';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
+import { useTheme } from '@mui/styles';
 
 import getCoursesList from '../api/getCoursesList';
 import { AppContext } from '../context/AppContext';
@@ -353,6 +349,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     <StyledSelect>
       <Autocomplete
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
+        getOptionLabel={(option) => option.name}
         multiple
         // autoHighlight
         disableClearable
@@ -366,8 +363,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         // prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        getOptionSelected={(option, value) => option.code === value.code}
-        renderOption={(option) => (
+        isOptionEqualToValue={(option, value) => option.code === value.code}
+        renderOption={(props, option, { selected }) => (
           <StyledOption>
             <StyledIcon>
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}

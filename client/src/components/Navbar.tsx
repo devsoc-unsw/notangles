@@ -1,12 +1,8 @@
 import React, { useContext, useState } from 'react';
-
-import { Typography, useMediaQuery } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
+import { AppBar, IconButton, Toolbar, Typography, useMediaQuery } from '@mui/material';
+import { Menu } from '@mui/icons-material';
+import { StylesProvider, useTheme } from '@mui/styles'; // make styled components styling have priority
 
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
@@ -61,7 +57,7 @@ const Beta = styled.span`
 
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { isFriendsListOpen, setIsFriendsListOpen } = useContext(AppContext);
 
@@ -77,8 +73,8 @@ const Navbar: React.FC = () => {
         <StyledNavBar>
           <Toolbar>
             {isPreview && (
-              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
-                <MenuIcon />
+              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" size="large">
+                <Menu />
               </IconButton>
             )}
             <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />

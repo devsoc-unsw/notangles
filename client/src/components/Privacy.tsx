@@ -1,17 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import SecurityIcon from '@material-ui/icons/Security';
+import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import { Close, Security } from '@mui/icons-material';
+
 import PrivacyContent from './PrivacyContent';
 
-const StyledDialogTitle = styled(MuiDialogTitle)`
+const StyledDialogTitle = styled(DialogTitle)`
   margin: 0;
   padding: 20px;
 `;
@@ -31,7 +25,7 @@ const PrivacyButton = styled(IconButton)`
   margin-right: 5px;
 `;
 
-const DialogContent = styled(MuiDialogContent)`
+const StyledDialogContent = styled(DialogContent)`
   padding: 20px;
 `;
 
@@ -55,7 +49,7 @@ const Privacy: React.FC = () => {
     <>
       <Tooltip title="Privacy">
         <PrivacyButton color="inherit" onClick={toggleIsOpen}>
-          <SecurityIcon />
+          <Security />
         </PrivacyButton>
       </Tooltip>
       <Dialog
@@ -66,14 +60,14 @@ const Privacy: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle disableTypography>
+        <StyledDialogTitle>
           <StyledTypography variant="h5">Application privacy statement</StyledTypography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
-            <CloseIcon />
+            <Close />
           </CloseButton>
         </StyledDialogTitle>
         <Divider />
-        <DialogContent>
+        <StyledDialogContent>
           <StyledDialogBody gutterBottom variant="body2">
             This privacy statement (“Privacy Statement”) applies to the treatment of personally identifiable information submitted
             by, or otherwise obtained from, you in connection with the associated application (“Application”). The Application is
@@ -85,7 +79,7 @@ const Privacy: React.FC = () => {
           <FooterText gutterBottom variant="body2">
             Effective Date: 11<sup>th</sup> October, 2020
           </FooterText>
-        </DialogContent>
+        </StyledDialogContent>
       </Dialog>
     </>
   );

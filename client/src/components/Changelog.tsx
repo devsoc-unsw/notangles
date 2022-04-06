@@ -1,16 +1,11 @@
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import Description from '@material-ui/icons/Description';
 import styled from 'styled-components';
+import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from '@mui/material';
+import { Close, Description } from '@mui/icons-material';
+
 import ChangeLogContent from './ChangelogContent';
 
-const StyledDialogTitle = styled(MuiDialogTitle)`
+const StyledDialogTitle = styled(DialogTitle)`
   margin: 0;
   padding: 20px;
 `;
@@ -30,7 +25,7 @@ const InfoButton = styled(IconButton)`
   margin-right: 5px;
 `;
 
-const DialogContent = styled(MuiDialogContent)`
+const StyledDialogContent = styled(DialogContent)`
   padding: 20px;
 `;
 
@@ -56,15 +51,15 @@ const Changelog: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle disableTypography>
+        <StyledDialogTitle>
           <StyledTypography variant="h5">Changelog</StyledTypography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
-            <CloseIcon />
+            <Close />
           </CloseButton>
         </StyledDialogTitle>
-        <DialogContent>
+        <StyledDialogContent>
           <ChangeLogContent />
-        </DialogContent>
+        </StyledDialogContent>
       </Dialog>
     </>
   );
