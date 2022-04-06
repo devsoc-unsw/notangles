@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
+import { Box, Button, ThemeProvider as MuiThemeProvider, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
