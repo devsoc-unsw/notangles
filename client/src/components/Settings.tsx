@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 
-import { List, ListItemText } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
