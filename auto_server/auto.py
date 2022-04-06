@@ -7,17 +7,17 @@ def redlist(lists):
     # print(l)
     if len(l[0]) == 1:  # for purely single-period classes
         duration = int(l[0][0][2] - l[0][0][1])
-        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1]) * 2, l)), False)
+        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1] * 2), l)), False)
     # print('l: ' , l , 'l[0]: ', l[0])
     # for classes made of two consecutive periods (we merge into a single period)
     if l[0][0][0] == l[0][1][0]:
         duration = int(l[0][1][2] - l[0][0][1])
-        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1]) * 2, l)), False)
+        return (duration * 2, list(map(lambda il: il[0][0] * 100 + int(il[0][1] * 2), l)), False)
 
     if l[0][0][1] != l[0][1][0]:  # for classes made up of a pair of periods on different days
         # assumes here that the duration is equivalent for simplicity but should be amended later
         duration = int(l[0][0][2] - l[0][0][1])
-        return (duration * 2, list(map(lambda il: tuple(i[0] * 100 + int(i[1]) * 2 for i in il), l)), True)
+        return (duration * 2, list(map(lambda il: tuple(i[0] * 100 + int(i[1] * 2) for i in il), l)), True)
 
     return []  # if i just missed something
 
