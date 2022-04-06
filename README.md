@@ -45,6 +45,10 @@ You can then access the client at `localhost:3000` in your favourite web browser
 
 (Start from here) After that, navigate to the `timetable-scraper` repo (which can be found [here](https://github.com/csesoc/timetable-scraper)) and run `npm start` to start the scraper’s server. To update the scraped data, run `npm run scraper`. This command should only need to be run once each term.
 
+### Running the auto-timetabler
+
+For the node server, navigate into `notangles/server`, install packages with `npm i`, then run `npm run start`. While this is running, in another terminal navigate into `notangles/auto_server`, install python packages with `pip install -r requirements.txt`, and start the server with `python server.py`.
+
 ## Documentation
 
 For more information, see our [Confluence space](https://compclub.atlassian.net/wiki/spaces/N/overview?homepageId=2142536957).
