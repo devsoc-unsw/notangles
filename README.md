@@ -31,7 +31,7 @@ Install dependencies by running:
 
 ### Running the front-end
 
-Navigate into `notangles/client`, then run one of the follow commands:
+Navigate into `/client`, then run one of the follow commands:
 
 - `npm start` (if you already have the server running locally; connects to that)
 
@@ -41,13 +41,11 @@ You can then access the client at `localhost:3000` in your favourite web browser
 
 ### Running the back-end
 
-(Skip this for now) Navigate into `notangles/server` and run `docker-compose up`. This runs the server and the database as a bundle.
-
-(Start from here) After that, navigate to the `timetable-scraper` repo (which can be found [here](https://github.com/csesoc/timetable-scraper)) and run `npm start` to start the scraper’s server. To update the scraped data, run `npm run scraper`. This command should only need to be run once each term.
+To start the back-end, navigate into `/server`, install packages with `npm i`, then run `npm run start`. 
 
 ### Running the auto-timetabler
 
-For the node server, navigate into `notangles/server`, install packages with `npm i`, then run `npm run start`. While this is running, in another terminal navigate into `notangles/auto_server`, install python packages with `pip install -r requirements.txt`, and start the server with `python server.py`.
+To start the auto-timetabler, navigate into `/auto_server`, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
 
 ## Documentation
 
