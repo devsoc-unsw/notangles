@@ -5,6 +5,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CloseIcon from '@material-ui/icons/Close';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import Popover from '@material-ui/core/Popover';
@@ -22,8 +23,22 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { stringify } from 'querystring';
 import { Fragment } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
-import { FormControl, IconButton, Input, InputAdornment, Slider, Typography } from '@material-ui/core';
+import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  FormControl,
+  IconButton,
+  Input,
+  InputAdornment,
+  Link,
+  Slider,
+  Typography,
+} from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
+import { Close } from '@material-ui/icons';
 
 const DropdownButton = styled(Button)`
   width: 100%;
@@ -32,7 +47,7 @@ const DropdownButton = styled(Button)`
   margin-top: 20px;
   margin-right: 10px;
   text-transform: none;
-  // padding: 6px 16px 6px 4px !important; 
+  // padding: 6px 16px 6px 4px !important;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -49,9 +64,9 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   height: 32px;
   margin-bottom: 10px;
 `;
- const StyledIconButton = styled(IconButton)`
-  padding-bottom: 0px;
- `
+//  const StyledIconButton = styled(IconButton)`
+//   padding-bottom: 0px;
+//  `
 
 interface DropdownOptionProps {
   optionName: string;
@@ -150,22 +165,21 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
 
   const toggleIsOpenInfo = () => {
     setIsOpenInfo(!isOpenInfo);
-    console.log('hi mom')
   };
 
   return (
-    <div style={{display: 'flex'}}>
+    <div style={{ display: 'flex' }}>
       <DropdownButton
         disableElevation
         aria-describedby={popoverId}
         variant="contained"
         color={isDarkMode ? 'secondary' : 'default'}
         onClick={handleClick}
-        >
-        <Box ml="1px" flexGrow={1} marginTop='3px' >
+      >
+        <Box ml="1px" flexGrow={1} marginTop="3px">
           Auto-timetable
         </Box>
-        <Box ml="5px"/>
+        <Box ml="5px" />
         {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
       </DropdownButton>
 
@@ -182,10 +196,46 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
           vertical: 'top',
           horizontal: 'right',
         }}
+      >
+        <div style={{ display: 'flex' }}>
+          <div style={{ flexGrow: 1 }} />
+          <Button onClick={toggleIsOpenInfo} style={{ transform: `translateY(12px)` }} startIcon={<InfoIcon />}>
+            Info
+          </Button>
+          <div style={{ flexGrow: 1 }} />
+        </div>
+        <Dialog
+          disableScrollLock
+          onClose={toggleIsOpenInfo}
+          aria-labelledby="customized-dialog-title"
+          open={isOpenInfo}
+          fullWidth
+          maxWidth="xs"
         >
-        <StyledIconButton onClick={toggleIsOpenInfo}>
-          <InfoIcon/>
-        </StyledIconButton>
+          <DialogContent>
+            <DialogContentText>
+              <Typography>
+                <p>
+                  Autotimetabler uses a{' '}
+                  <Link href="https://en.wikipedia.org/wiki/Constraint_programming" target="_blank">
+                    constraint programming
+                  </Link>{' '}
+                  algorithm to allocate you classes clashlessly based on the courses and constraints you provide, failing when
+                  there are no clashless solutions.
+                </p>
+                <p>
+                  If a course lacks an <code>ONLINE</code> offering, it&#39;s <code>IN PERSON</code> classes may be scheduled
+                  instead, and vice-versa. <em>Currently</em>, the autotimetabler won't schedule certain types of classes like
+                  Lectures.
+                </p>
+                <p>Autotimetabler may lack full support for certain courses.</p>
+              </Typography>
+              <IconButton style={{ position: 'absolute', right: 10, top: 10 }} aria-label="close" onClick={toggleIsOpenInfo}>
+                <CloseIcon />
+              </IconButton>
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
         <List>
           <ListItem>
             <Grid container spacing={0}>
@@ -272,13 +322,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
               </Grid>
             </Grid>
           </ListItem>
-            
-          {/* <DropdownOption
-            optionName="Max days of Uni"
-            optionState={daysAtUni}
-            setOptionState={setDaysAtUni}
-            optionChoices={['1', '2']}
-          /> */}
           <DropdownOption
             optionName="Mode"
             optionState={classMode}
