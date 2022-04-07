@@ -28,6 +28,18 @@ export interface ThemeType {
   shape: {
     borderRadius: string;
   };
+  breakpoints: {
+    values: {
+      xs: number;
+      sm: number;
+      md: number;
+      lg: number;
+      xl: number;
+    };
+    up: (key: string) => string;
+    down: (key: string) => string;
+    only: (key: string) => string;
+  };
 }
 
 const baseTheme = ({
