@@ -28,18 +28,6 @@ export interface ThemeType {
   shape: {
     borderRadius: string;
   };
-  breakpoints: {
-    values: {
-      xs: number;
-      sm: number;
-      md: number;
-      lg: number;
-      xl: number;
-    };
-    up: (key: string) => string;
-    down: (key: string) => string;
-    only: (key: string) => string;
-  };
 }
 
 const baseTheme = ({
@@ -81,19 +69,10 @@ const baseTheme = ({
   shape: {
     borderRadius,
   },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 768,
-      md: 1024,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
 });
 
 export const lightTheme = createTheme(
-  adaptV4Theme(baseTheme({
+  baseTheme({
     type: 'light',
     background: {
       main: '#fafafa',
@@ -107,11 +86,11 @@ export const lightTheme = createTheme(
     action: {
       disabled: `rgba(0,0,0,0.5)`,
     },
-  }))
+  })
 );
 
 export const darkTheme = createTheme(
-  adaptV4Theme(baseTheme({
+  baseTheme({
     type: 'dark',
     background: {
       main: '#212121',
@@ -125,5 +104,5 @@ export const darkTheme = createTheme(
     action: {
       disabled: `rgba(255,255,255,0.5)`,
     },
-  }))
+  })
 );

@@ -118,7 +118,7 @@ const PrivacyAccordion = styled(Accordion)`
 const PrivacyAccordionSummary = styled(AccordionSummary)<{
   theme: Theme;
 }>`
-  backgroundColor: ${({ theme }) => theme.palette.background.main};,
+  backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
@@ -126,7 +126,7 @@ const PrivacyAccordionSummary = styled(AccordionSummary)<{
 const PrivacyAccordionDetails = styled(AccordionDetails)<{
   theme: Theme;
 }>`
-  backgroundColor: ${({ theme }) => theme.palette.background.main};,
+  backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;

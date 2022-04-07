@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.60",
-    "@material-ui/styles": "^4.11.4",
     "@mui/icons-material": "^5.6.0",
     "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.6.0",
@@ -61,7 +57,7 @@
     ]
   },
   "devDependencies": {
-    "@mui/styled-engine": "npm:@mui/styled-engine-sc",
+    "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
     "@types/file-saver": "^2.0.5",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.21",
@@ -76,7 +72,7 @@
     "prettier": "^2.6.2",
     "typescript": "^4.6.2"
   },
-  "alias": {
-    "@mui/styled-engine": "@mui/styled-engine-sc"
+  "resolutions": {
+    "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { AppContext } from '../../context/AppContext';
 import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
@@ -44,18 +44,14 @@ const InventoryCell = styled(DayCell)<DayCellProps>`
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
-const paddingStyle = css`
-  padding: 0 ${headerPadding}px;
-`;
-
 const HourCell = styled(GridCell)<GridCellProps>`
-  ${paddingStyle}
+  padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
 `;
 
 const ToggleCell = styled(BaseCell)`
-  ${paddingStyle}
+  padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: center;
 
