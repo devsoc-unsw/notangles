@@ -17,7 +17,7 @@ Before you start, make sure that you have the following software installed.
 
 - Git (standard on Linux) or GitHub Desktop
 - Node.js and npm (usually bundled with Node.js)
-- Docker (only needed if you are working on the back-end). [Instructions](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers) if you’re using WSL on Windows.
+- Python
 
 ### Installing
 
