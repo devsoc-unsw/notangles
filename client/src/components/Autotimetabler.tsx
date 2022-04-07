@@ -1,7 +1,23 @@
 import React, { useContext, useState } from 'react';
-import { Box, Button, Grid, List, ListItem, ListItemText, Popover, Slider } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  Grid,
+  IconButton,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+  Popover,
+  Slider,
+  Typography,
+} from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import CloseIcon from '@material-ui/icons/Close';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import InfoIcon from '@material-ui/icons/Info';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -18,6 +34,13 @@ const DropdownButton = styled(Button)`
   margin-top: 20px;
   margin-right: 10px;
   text-transform: none;
+  // padding: 6px 16px 6px 4px !important;
+`;
+
+const InfoContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0 0;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -34,18 +57,6 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   width: 100%;
   height: 32px;
   margin-bottom: 10px;
-`;
-
-const Disclaimer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px 10px;
-`;
-
-const DisclaimerText = styled.div`
-  padding-left: 5px;
 `;
 
 interface DropdownOptionProps {
@@ -149,9 +160,14 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
+  const [isOpenInfo, setIsOpenInfo] = React.useState(false);
+
+  const toggleIsOpenInfo = () => {
+    setIsOpenInfo(!isOpenInfo);
+  };
 
   return (
-    <div>
+    <div style={{ display: 'flex' }}>
       <DropdownButton
         disableElevation
         aria-describedby={popoverId}
@@ -159,7 +175,7 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
         color={isDarkMode ? 'secondary' : 'default'}
         onClick={handleClick}
       >
-        <Box ml="10px" flexGrow={1}>
+        <Box ml="1px" flexGrow={1} marginTop="3px">
           Auto-timetable
         </Box>
         <Box ml="5px" />
@@ -179,6 +195,42 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
           horizontal: 'right',
         }}
       >
+        <InfoContainer style={{ display: 'flex' }}>
+          <Button onClick={toggleIsOpenInfo}>
+            <InfoIcon />
+          </Button>
+        </InfoContainer>
+        <Dialog
+          disableScrollLock
+          onClose={toggleIsOpenInfo}
+          aria-labelledby="customized-dialog-title"
+          open={isOpenInfo}
+          fullWidth
+          maxWidth="xs"
+        >
+          <DialogContent>
+            <DialogContentText>
+              <Typography>
+                <p>
+                  Autotimetabler uses a{' '}
+                  <Link href="https://en.wikipedia.org/wiki/Constraint_programming" target="_blank">
+                    constraint programming
+                  </Link>{' '}
+                  algorithm to allocate your classes clashlessly based on the courses and constraints you provide, failing when
+                  there are no clashless solutions.
+                </p>
+                <p>
+                  If a course lacks an <code>ONLINE</code> offering, its <code>IN PERSON</code> classes may be scheduled instead,
+                  and vice-versa. <em>Currently</em>, the autotimetabler won't schedule certain types of classes like Lectures.
+                </p>
+                <p>Autotimetabler may lack full support for certain courses.</p>
+              </Typography>
+              <IconButton style={{ position: 'absolute', right: 10, top: 10 }} aria-label="close" onClick={toggleIsOpenInfo}>
+                <CloseIcon />
+              </IconButton>
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
         <List>
           <ListItem>
             <Grid container spacing={0}>
@@ -263,10 +315,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
             noOff
           />
         </List>
-        <Disclaimer>
-          <InfoIcon />
-          <DisclaimerText>Autotimetabling does not consider lectures</DisclaimerText>
-        </Disclaimer>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
           <FlashOnIcon />
           GO
