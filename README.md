@@ -33,19 +33,19 @@ Install dependencies by running:
 
 Navigate into `/client`, then run one of the follow commands:
 
-- `npm start` (if you already have the server running locally; connects to that)
+- `npm start` (if you already have the timetable server running locally; connects to that)
 
-- `npm run start:mock` (if you don’t have the server running locally; connects to our real server)
+- `npm run start:mock` (if you don’t have the timetable server running locally; connects to our real server)
 
 You can then access the client at `localhost:3000` in your favourite web browser.
 
 ### Running the back-end
 
-To start the back-end, navigate into `/server`, install packages with `npm i`, then run `npm run start`. 
+Navigate into `/server`, install packages with `npm i`, then run `npm run start`. 
 
 ### Running the auto-timetabler
 
-To start the auto-timetabler, navigate into `/auto_server`, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
+Navigate into `/auto_server`, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
 
 ## Documentation
 
