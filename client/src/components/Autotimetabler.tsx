@@ -22,7 +22,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { stringify } from 'querystring';
 import { Fragment } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
-import { FormControl, Input, InputAdornment, Slider } from '@material-ui/core';
+import { FormControl, IconButton, Input, InputAdornment, Slider, Typography } from '@material-ui/core';
+import InfoIcon from '@material-ui/icons/Info';
+
 const DropdownButton = styled(Button)`
   width: 100%;
   height: 55px;
@@ -30,6 +32,7 @@ const DropdownButton = styled(Button)`
   margin-top: 20px;
   margin-right: 10px;
   text-transform: none;
+  // padding: 6px 16px 6px 4px !important; 
 `;
 
 const ExecuteButton = styled(Button)`
@@ -46,6 +49,9 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   height: 32px;
   margin-bottom: 10px;
 `;
+ const StyledIconButton = styled(IconButton)`
+  padding-bottom: 0px;
+ `
 
 interface DropdownOptionProps {
   optionName: string;
@@ -140,17 +146,23 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
+  const [isOpenInfo, setIsOpenInfo] = React.useState(false);
+
+  const toggleIsOpenInfo = () => {
+    setIsOpenInfo(!isOpenInfo);
+    console.log('hi mom')
+  };
 
   return (
-    <div>
+    <div style={{display: 'flex'}}>
       <DropdownButton
         disableElevation
         aria-describedby={popoverId}
         variant="contained"
         color={isDarkMode ? 'secondary' : 'default'}
         onClick={handleClick}
-      >
-        <Box ml="10px" flexGrow={1}>
+        >
+        <Box ml="1px" flexGrow={1} marginTop='3px' >
           Auto-timetable
         </Box>
         <Box ml="5px"/>
@@ -170,7 +182,10 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
           vertical: 'top',
           horizontal: 'right',
         }}
-      >
+        >
+        <StyledIconButton onClick={toggleIsOpenInfo}>
+          <InfoIcon/>
+        </StyledIconButton>
         <List>
           <ListItem>
             <Grid container spacing={0}>
