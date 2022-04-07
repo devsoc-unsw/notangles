@@ -1,28 +1,16 @@
 import React, { useContext, useState } from 'react';
-import styled from 'styled-components';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import { Box, Button, Grid, List, ListItem, ListItemText, Popover, Slider } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import Popover from '@material-ui/core/Popover';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import InfoIcon from '@material-ui/icons/Info';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import Grid from '@material-ui/core/Grid';
+import { TimePicker } from '@material-ui/pickers';
+import styled from 'styled-components';
+
 import { AppContext } from '../context/AppContext';
-import { TimePicker, KeyboardTimePicker } from '@material-ui/pickers';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import Tooltip from '@material-ui/core/Tooltip';
-import { stringify } from 'querystring';
-import { Fragment } from 'react';
-import DateFnsUtils from '@date-io/date-fns';
-import { FormControl, Input, InputAdornment, Slider } from '@material-ui/core';
+
 const DropdownButton = styled(Button)`
   width: 100%;
   height: 55px;
@@ -41,10 +29,23 @@ const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;
   width: 100%;
 `;
+
 const StyledOptionButtonToggle = styled(ToggleButton)`
   width: 100%;
   height: 32px;
   margin-bottom: 10px;
+`;
+
+const Disclaimer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px 10px;
+`;
+
+const DisclaimerText = styled.div`
+  padding-left: 5px;
 `;
 
 interface DropdownOptionProps {
@@ -55,6 +56,7 @@ interface DropdownOptionProps {
   multiple?: boolean;
   noOff?: boolean;
 }
+
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
   optionState,
@@ -106,17 +108,19 @@ interface AutotimetablerProps {
 
 const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-  const [daysAtUni, setDaysAtUni] = React.useState<number>(5);
-  // const [friendsInClasses, setFriendsInClasses] = React.useState<string | null>('off');
-  const [breaksBetweenClasses, setBreaksBetweenClasses] = React.useState<number>(0);
-  const [days, setDays] = React.useState<Array<string>>(weekdays);
-  const { isDarkMode } = useContext(AppContext);
+
+  const [daysAtUni, setDaysAtUni] = useState<number>(5);
+  // const [friendsInClasses, setFriendsInClasses] = useState<string | null>('off');
+  const [breaksBetweenClasses, setBreaksBetweenClasses] = useState<number>(0);
+  const [days, setDays] = useState<Array<string>>(weekdays);
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
   const [classMode, setClassMode] = useState<string>('hybrid');
 
   // for opening popover
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const { isDarkMode } = useContext(AppContext);
 
   const doAuto = () => {
     const ops: Array<string | number> = [
@@ -129,14 +133,19 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
     auto(ops, classMode);
     setAnchorEl(null);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const open = Boolean(anchorEl);
+
   const popoverId = open ? 'simple-popover' : undefined;
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
@@ -153,10 +162,9 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
         <Box ml="10px" flexGrow={1}>
           Auto-timetable
         </Box>
-        <Box ml="5px"/>
+        <Box ml="5px" />
         {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
       </DropdownButton>
-
       <Popover
         id={popoverId}
         open={open}
@@ -174,12 +182,9 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
         <List>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}></Grid>
-
               <Grid item xs={8}>
                 <ListItemText primary="Earliest start time" />
               </Grid>
-
               <Grid item xs={4}>
                 <TimePicker
                   views={['hours']}
@@ -191,13 +196,11 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
               </Grid>
             </Grid>
           </ListItem>
-
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={8}>
                 <ListItemText primary="Earliest end time" />
               </Grid>
-
               <Grid item xs={4}>
                 <TimePicker
                   views={['hours']}
@@ -209,7 +212,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
               </Grid>
             </Grid>
           </ListItem>
-
           <DropdownOption
             optionName="Days"
             optionState={days}
@@ -218,13 +220,11 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
             multiple={true}
             noOff
           />
-
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={8}>
                 <ListItemText primary="Breaks between classes" />
               </Grid>
-
               <Grid item xs={4}>
                 <Slider
                   valueLabelDisplay="auto"
@@ -238,13 +238,11 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
               </Grid>
             </Grid>
           </ListItem>
-
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={8}>
                 <ListItemText primary="Max days of Uni" />
               </Grid>
-
               <Grid item xs={4}>
                 <Slider
                   valueLabelDisplay="auto"
@@ -257,13 +255,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
               </Grid>
             </Grid>
           </ListItem>
-            
-          {/* <DropdownOption
-            optionName="Max days of Uni"
-            optionState={daysAtUni}
-            setOptionState={setDaysAtUni}
-            optionChoices={['1', '2']}
-          /> */}
           <DropdownOption
             optionName="Mode"
             optionState={classMode}
@@ -272,6 +263,10 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
             noOff
           />
         </List>
+        <Disclaimer>
+          <InfoIcon />
+          <DisclaimerText>Autotimetabling does not consider lectures</DisclaimerText>
+        </Disclaimer>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
           <FlashOnIcon />
           GO

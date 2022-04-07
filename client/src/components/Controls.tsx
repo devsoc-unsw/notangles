@@ -16,7 +16,11 @@ const SelectWrapper = styled(Box)`
 `;
 
 const AutotimetablerWrapper = styled(Box)`
-  // flex: 1;
+  flex: 1;
+
+  ${(props) => props.theme.breakpoints.down('sm')} {
+    flex: none;
+  }
 `;
 
 const HistoryWrapper = styled(Box)`
@@ -27,14 +31,14 @@ const HistoryWrapper = styled(Box)`
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse, handleRemoveCourse, auto }) => {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={8}>
         <SelectWrapper>
           <CourseSelect assignedColors={assignedColors} handleSelect={handleSelectCourse} handleRemove={handleRemoveCourse} />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" xs={12} md={6}>
+      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={4}>
         <AutotimetablerWrapper>
-        <Autotimetabler auto={auto}/>
+          <Autotimetabler auto={auto} />
         </AutotimetablerWrapper>
         <HistoryWrapper>
           <History />
