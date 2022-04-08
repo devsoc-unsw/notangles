@@ -143,36 +143,24 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
-    if (!selectedValue.length) return;
+    if (!selectedCourses.length) {
+      setSelectedValue([])
+      return
+    }
 
-    setSelectedValue([
-      ...selectedCourses
+    setSelectedValue(
+      selectedCourses
         .map((x) => x.code) // Get the course code of each course
         .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
-        .filter((overview): overview is CourseOverview => overview !== undefined),
-    ]);
-  }, [selectedCourses]);
+        .filter((overview): overview is CourseOverview => overview !== undefined)
+    );
+  }, [selectedCourses, coursesList]);
 
-  const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
-    const codes = a.map((x) => x.code);
-    return b.filter((x) => !codes.includes(x.code));
-  };
+  // const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
+  //   const codes = a.map((x) => x.code);
+  //   return b.filter((x) => !codes.includes(x.code));
+  // };
 
-  const checkExternallyAdded = () => {
-    const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
-    const coursesListCodes = coursesList.map((x) => x.code);
-
-    // if we have info about the new courses already fetched, update the value now
-    // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
-    if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
-      setSelectedValue([
-        ...selectedValue,
-        ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
-      ]); // the nullish coalesce above was the best way I found to shut ts up.
-    } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
-  };
-
-  checkExternallyAdded();
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
@@ -196,74 +184,86 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       setOptions(defaultOptions);
       return defaultOptions;
     }
-
+    // console.log(fuzzy)
     const newOptions = fuzzy.search(query).map((result) => result.item);
 
     // sorting results
-    if (isSortAlphabetic) {
-      let lengthQuery = query.length;
-      if (lengthQuery <= 8) {
-        newOptions.sort((a, b) =>
-          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
-          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
-          a.code < b.code
-            ? -1
-            : 1
-        );
-      }
-    }
+    // if (isSortAlphabetic) {
+    //   let lengthQuery = query.length;
+    //   if (lengthQuery <= 8) {
+    //     newOptions.sort((a, b) =>
+    //       a.code.substring(0, lengthQuery) === query.toUpperCase() &&
+    //       b.code.substring(0, lengthQuery) === query.toUpperCase() &&
+    //       a.code < b.code
+    //         ? -1
+    //         : 1
+    //     );
+    //   }
+    // }
+    // newOptions.sort((a, b) => ('' + a.code).localeCompare(b.code))
 
     setOptions(newOptions);
     return newOptions;
   };
 
-  const onChange = (_: any, value: any) => {
-    const before = selectedCourses;
-    const after = value;
+  const onChange = (_: any, value: CoursesList) => {
 
-    // find what was added/removed in the update
-    const added = diffCourses(before, after);
+    // const before = selectedCourses;
+    // const after = value;
+    // console.log('here')
+    // // find what was added/removed in the update
+    // const added = diffCourses(before, after);
 
-    // return before the input value and options are reset
-    if (added.length === 0) return;
+    // // return before the input value and options are reset
+    // if (added.length === 0) return;
 
-    if (searchTimer.current) {
-      // run a search now and cancel the current search timer
-      const newOptions = search(inputValue);
-      clearInterval(searchTimer.current);
-      searchTimer.current = undefined;
+    // if (searchTimer.current) {
+    //   // console.log('here')
+    //   // run a search now and cancel the current search timer
+    //   const newOptions = search(inputValue);
+    //   clearInterval(searchTimer.current);
+    //   searchTimer.current = undefined;
 
-      // revert back to the original value by removing what was added
-      const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
+    //   // revert back to the original value by removing what was added
+    //   const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
 
-      // we need to add something, and our best guess is the top
-      // result of the new search
-      const newSelectedOption = newOptions[0];
+    //   // we need to add something, and our best guess is the top
+    //   // result of the new search
+    //   const newSelectedOption = newOptions[0];
 
-      if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
-        // otherwise, add the new option and call the handler
-        setSelectedValue([...originalValue, newSelectedOption]);
-        handleSelect(newSelectedOption.code);
-      } else {
-        // just revert it back without adding anything
-        setSelectedValue(originalValue);
-        // return before the input value and options are reset
-        return;
-      }
-    } else {
-      handleSelect(added.map((course) => course.code));
-      setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
+    //   if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
+    //     // otherwise, add the new option and call the handler
+    //     setSelectedValue([...originalValue, newSelectedOption]);
+    //     handleSelect(newSelectedOption.code);
+    //   } else {
+    //     // just revert it back without adding anything
+    //     setSelectedValue(originalValue);
+    //     // return before the input value and options are reset
+    //     return;
+    //   }
+    // } else {
+    //   handleSelect(added.map((course) => course.code));
+    //   setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
+    // }
+
+    // setOptions(defaultOptions);
+    // setInputValue('');
+
+
+    if (value.length > selectedValue.length) {
+
+      handleSelect(value[value.length - 1].code);
+      setSelectedValue([...value]);
     }
-
     setOptions(defaultOptions);
     setInputValue('');
+
   };
 
   const fetchCoursesList = async () => {
     try {
       const fetchedCoursesList = await getCoursesList(year, term);
       setCoursesList(fetchedCoursesList.courses);
-      checkExternallyAdded();
       fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
       setLastUpdated(fetchedCoursesList.lastUpdated);
     } catch (e) {
@@ -365,6 +365,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         ListboxComponent={ListboxComponent}
         isOptionEqualToValue={(option, value) => option.code === value.code}
         renderOption={(props, option, { selected }) => (
+          <li {...props}>
           <StyledOption>
             <StyledIcon>
               {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
@@ -393,6 +394,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               )}
             </RightContainer>
           </StyledOption>
+          </li>
         )}
         renderInput={(params) => (
           <StyledTextField

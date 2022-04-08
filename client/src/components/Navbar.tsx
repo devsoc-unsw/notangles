@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(CSESocLogo);
 
   return (
-    <StylesProvider injectFirst>
+    // <StylesProvider injectFirst>
       <NavbarBox>
         <StyledNavBar>
           <Toolbar>
@@ -92,7 +92,7 @@ const Navbar: React.FC = () => {
           </Toolbar>
         </StyledNavBar>
       </NavbarBox>
-    </StylesProvider>
+    // </StylesProvider>
   );
 };
 
