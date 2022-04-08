@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import DateFnsUtils from '@date-io/date-fns';
+import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import getCourseInfo from './api/getCourseInfo';
 import Header from './components/Controls';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Footer from './components/Footer';
+import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
@@ -24,16 +25,14 @@ import {
   CourseCode,
   CourseData,
   InInventory,
-  SelectedClasses,
-  AutoData,
+  SelectedClasses
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
 import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { stringify } from 'querystring';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
@@ -213,7 +212,6 @@ const App: React.FC = () => {
         const addedCourses = result as CourseData[];
         const newSelectedCourses = [...selectedCourses, ...addedCourses].slice(0, 3);
 
-
         setSelectedCourses(newSelectedCourses);
 
         if (!noInit) addedCourses.forEach((course) => initCourse(course));
@@ -330,7 +328,7 @@ const App: React.FC = () => {
         savedClasses[courseCode][activity] = classData ? classData.id : null;
       });
     });
-    
+
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
@@ -361,13 +359,13 @@ const App: React.FC = () => {
       .map((a) => a[1])
       .filter((f) => f.some((c) => c.periods.length));
 
-      // [[hasInPerson, hasOnline], ...]
-      const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
-        a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
-        a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
-      ]);
-      
-      // a list of [all_periods, in_person_periods, online_periods]
+    // [[hasInPerson, hasOnline], ...]
+    const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
+      a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
+      a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
+    ]);
+
+    // a list of [all_periods, in_person_periods, online_periods]
     periodsListSerialized.current = [
       JSON.stringify(
         targetActivities.current.map((value) => value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
@@ -387,31 +385,31 @@ const App: React.FC = () => {
         )
       ),
     ];
-  }, [selectedCourses]); 
-  
+  }, [selectedCourses]);
+
   const doAutoRequest = async (data: any): Promise<number[]> => {
     try {
       const rawResponse = await fetch('http://localhost:3001/auto', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       const res = rawResponse;
       if (res.status !== 200) {
-        setAutotimetableStatus("Couldn't get response.")
-        return []
+        setAutotimetableStatus("Couldn't get response.");
+        return [];
       }
       const content = await res.json();
-      setAutotimetableStatus(content.given.length ? 'Success!' : 'No timetable found.')
-      return content.given
+      setAutotimetableStatus(content.given.length ? 'Success!' : 'No timetable found.');
+      return content.given;
     } catch (error) {
-      setAutotimetableStatus("Couldn't get response.")
-      return []
+      setAutotimetableStatus("Couldn't get response.");
+      return [];
     }
-  }
+  };
 
   const auto = async (values: any, mode: string) => {
     const rightLocation = (aClass: ClassData) => {
@@ -427,9 +425,10 @@ const App: React.FC = () => {
     const timetableData: { [k: string]: any } = ['start', 'end', 'days', 'gap', 'maxdays']
       .map((k, index) => [k, values[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
-    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(['hybrid', 'in person', 'online'].findIndex((v) => v === mode));
+    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(
+      ['hybrid', 'in person', 'online'].findIndex((v) => v === mode)
+    );
     doAutoRequest(timetableData).then((Rarray) => {
-
       Rarray.forEach((timeAsNum, index) => {
         const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];
         const k = targetActivities.current[index].find(
@@ -442,44 +441,55 @@ const App: React.FC = () => {
     });
   };
 
-
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <GlobalStyle />
-        <StyledApp>
-          <Navbar />
-          {isPreview && <FriendsDrawer />}
-          <ContentWrapper>
-            <Content drawerOpen={isFriendsListOpen}>
-              <Header
-                auto={auto}
-                assignedColors={assignedColors}
-                handleSelectCourse={handleSelectCourse}
-                handleRemoveCourse={handleRemoveCourse}
-              />
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              <Footer />
-              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                  {errorMsg}
-                </Alert>
-              </Snackbar>
-              <Snackbar open={infoVisibility}>
-                <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  Press and hold to drag a class
-                </Alert>
-              </Snackbar>
-              <Snackbar open={autotimetableStatus !== null} autoHideDuration={2000} onClose={() => {setAutotimetableStatus(null)}}>
-                <Alert severity={autotimetableStatus === 'Success!' ? 'success' : 'error'} onClose={() => {setAutotimetableStatus(null)}} variant="filled">
-                {autotimetableStatus}
-                </Alert>
-              </Snackbar>
-            </Content>
-          </ContentWrapper>
-        </StyledApp>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <GlobalStyle />
+          <StyledApp>
+            <Navbar />
+            {isPreview && <FriendsDrawer />}
+            <ContentWrapper>
+              <Content drawerOpen={isFriendsListOpen}>
+                <Header
+                  auto={auto}
+                  assignedColors={assignedColors}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
+                  <Alert severity="error" onClose={handleErrorClose} variant="filled">
+                    {errorMsg}
+                  </Alert>
+                </Snackbar>
+                <Snackbar open={infoVisibility}>
+                  <Alert severity="info" onClose={handleInfoClose} variant="filled">
+                    Press and hold to drag a class
+                  </Alert>
+                </Snackbar>
+                <Snackbar
+                  open={autotimetableStatus !== null}
+                  autoHideDuration={2000}
+                  onClose={() => {
+                    setAutotimetableStatus(null);
+                  }}
+                >
+                  <Alert
+                    severity={autotimetableStatus === 'Success!' ? 'success' : 'error'}
+                    onClose={() => {
+                      setAutotimetableStatus(null);
+                    }}
+                    variant="filled"
+                  >
+                    {autotimetableStatus}
+                  </Alert>
+                </Snackbar>
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
         </MuiPickersUtilsProvider>
       </ThemeProvider>
     </MuiThemeProvider>
