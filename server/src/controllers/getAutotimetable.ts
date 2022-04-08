@@ -9,7 +9,7 @@ type AutoData = TimetableConstraints.AsObject
 
 
 export const getAuto = async (req: Request, res: Response) => {
-  var client = new AutoTimetablerClient('localhost:50051', grpc.credentials.createInsecure());
+  var client = new AutoTimetablerClient(`${process.env.AUTO_SERVER_HOSTNAME}:50051`, grpc.credentials.createInsecure());
   const constraints = new TimetableConstraints()
   const data: AutoData = req.body
   constraints.setStart(data.start)
