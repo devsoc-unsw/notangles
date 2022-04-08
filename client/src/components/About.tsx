@@ -148,7 +148,7 @@ const About: React.FC = () => {
             <li>Grace Kan</li>
             <li>Manhua Lu</li>
             <li>Martin Knezevic</li>
-            <li>Maxwell Philips</li>
+            <li>Maxwell Phillips</li>
             <li>Omar Khursheed</li>
             <li>Raiyan Ahmed</li>
             <li>Sijin Soon</li>

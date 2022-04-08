@@ -8,15 +8,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
 
-import { AppContext } from '../context/AppContext';
 import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
 import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
 import { ThemeType } from '../constants/theme';
 import { isPreview, term, termName, year } from '../constants/timetable';
+import { AppContext } from '../context/AppContext';
 
 import About from './About';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import Changelog from './Changelog';
 
 const LogoImg = styled.img`
   height: 46px;
@@ -89,6 +90,7 @@ const Navbar: React.FC = () => {
               </Weak>
             </NavbarTitle>
             <About />
+            <Changelog />
             <Privacy />
             <Settings />
           </Toolbar>
