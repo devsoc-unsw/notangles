@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    name: 'Build (${{ matrix.component }})'
+    name: "Build (${{ matrix.component }})"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -14,10 +14,22 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '17'
+          node-version: "17"
       - name: Install dependencies
         run: npm ci
         working-directory: ${{ matrix.component }}
       - name: Build
         run: npm run build
         working-directory: ${{ matrix.component }}
+  check-auto-tt-deps:
+    name: "Check Dependencies (auto-timetabler-server)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        working-directory: auto_server
