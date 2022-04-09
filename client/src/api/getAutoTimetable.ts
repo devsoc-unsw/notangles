@@ -1,8 +1,9 @@
 import NetworkError from '../interfaces/NetworkError';
+import { API_URL } from './config';
 
 const getAutoTimetable = async (data: any): Promise<number[]> => {
   try {
-    const res = await fetch('http://localhost:3001/auto', {
+    const res = await fetch(`${API_URL.auto}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
