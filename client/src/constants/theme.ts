@@ -8,6 +8,9 @@ export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
+    text: {
+      color: string;
+    }
     mode: string | undefined;
     primary: {
       main: string;
@@ -46,6 +49,7 @@ const baseTheme = ({
   background,
   border,
   action,
+  text,
 }: {
   type: 'light' | 'dark' | undefined;
   background: {
@@ -60,8 +64,14 @@ const baseTheme = ({
   action: {
     disabled: string;
   };
+  text: {
+    primary: string;
+  }
 }) => ({
   palette: {
+    text: {
+      primary: text.primary,
+    },
     primary: {
       main: '#3a76f8',
     },
@@ -98,6 +108,9 @@ export const lightTheme = createTheme(
     action: {
       disabled: `rgba(0,0,0,0.5)`,
     },
+    text: {
+      primary: '#000'
+    },
   })
 );
 
@@ -115,6 +128,9 @@ export const darkTheme = createTheme(
     },
     action: {
       disabled: `rgba(255,255,255,0.5)`,
+    },
+    text: {
+      primary: '#fff'
     },
   })
 );
