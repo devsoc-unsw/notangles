@@ -17,7 +17,7 @@ const AUTOTIMETABLER = 'http://localhost:3001';
 const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.DEV]: { timetable: `${LOCALHOST}/api`, auto: `${LOCALHOST}/auto` },
   [Env.TEST]: { timetable: `${LOCALHOST}/api`, auto: `${LOCALHOST}/auto` },
-  [Env.MOCK]: { timetable: `${TIMETABLE}/api`, auto: `${AUTOTIMETABLER}/auto` },
+  [Env.MOCK]: { timetable: `${TIMETABLE}/api`, auto: `${LOCALHOST}/auto` },
   [Env.PROD]: { timetable: `${TIMETABLE}/api`, auto: `${AUTOTIMETABLER}/auto` },
 });
 
