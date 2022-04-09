@@ -37,11 +37,13 @@ Navigate into `/client`, then run one of the follow commands:
 
 - `npm run start:mock` (if you don’t have the timetable server running locally; connects to our real server)
 
+If you need to test the autotimetabler, both `npm start` and `npm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
+
 You can then access the client at `localhost:3000` in your favourite web browser.
 
 ### Running the back-end
 
-Navigate into `/server`, install packages with `npm i`, then run `npm run start`. 
+Navigate into `/server`, install packages with `npm i`, then run `npm run start`.
 
 ### Running the auto-timetabler
 
