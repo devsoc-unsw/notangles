@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import {
   Box,
   Button,
@@ -23,9 +24,13 @@ import InfoIcon from '@material-ui/icons/Info';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { TimePicker } from '@material-ui/pickers';
-import styled from 'styled-components';
 
+import getAutoTimetable from '../api/getAutoTimetable';
 import { AppContext } from '../context/AppContext';
+import { CourseContext } from '../context/CourseContext';
+import { ClassData } from '../interfaces/Course';
+import NetworkError from '../interfaces/NetworkError';
+import { AutotimetableProps, DropdownOptionProps } from '../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
   width: 100%;
@@ -58,15 +63,6 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   height: 32px;
   margin-bottom: 10px;
 `;
-
-interface DropdownOptionProps {
-  optionName: string;
-  optionState: string | null | string[];
-  setOptionState(value: any): void;
-  optionChoices: string[];
-  multiple?: boolean;
-  noOff?: boolean;
-}
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
@@ -101,9 +97,9 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
                 off
               </StyledOptionButtonToggle>
             )}
-            {optionChoices.map((op) => (
-              <StyledOptionButtonToggle key={op} value={op} aria-label={op}>
-                {op}
+            {optionChoices.map((option) => (
+              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
+                {option}
               </StyledOptionButtonToggle>
             ))}
           </StyledOptionToggle>
@@ -113,11 +109,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   );
 };
 
-interface AutotimetablerProps {
-  auto(value: any, mode: string): void;
-}
-
-const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
+const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 
   const [daysAtUni, setDaysAtUni] = useState<number>(5);
@@ -127,31 +119,68 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
   const [classMode, setClassMode] = useState<string>('hybrid');
+  const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
   // for opening popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const { isDarkMode } = useContext(AppContext);
+  const { isDarkMode, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
-  const doAuto = () => {
-    const ops: Array<string | number> = [
-      startTime.getHours(),
-      endTime.getHours(),
-      days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
-      breaksBetweenClasses,
-      daysAtUni,
+  const targetActivities = useRef<ClassData[][]>([]);
+  const periodsListSerialized = useRef<string[]>([]);
+
+  // caches targetActivities and periodsListSerilized in advance
+  useEffect(() => {
+    if (!selectedCourses || !selectedCourses.length) return;
+
+    targetActivities.current = selectedCourses
+      .map((v) => Object.entries(v.activities).filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam')))
+      .reduce((a, b) => {
+        return a.concat(b);
+      })
+      .map((a) => a[1])
+      .filter((f) => f.some((c) => c.periods.length));
+
+    // [[hasInPerson, hasOnline], ...]
+    const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
+      a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
+      a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
+    ]);
+
+    // a list of [all_periods, in_person_periods, online_periods]
+    periodsListSerialized.current = [
+      JSON.stringify(
+        targetActivities.current.map((value) => value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
+      ),
+      JSON.stringify(
+        targetActivities.current.map((value, index) =>
+          value
+            .filter((v) => !hasMode[index][0] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]))
+            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+        )
+      ),
+      JSON.stringify(
+        targetActivities.current.map((value, index) =>
+          value
+            .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
+        )
+      ),
     ];
-    auto(ops, classMode);
-    setAnchorEl(null);
-  };
+  }, [selectedCourses]);
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const toggleIsOpenInfo = () => {
+    setIsOpenInfo(!isOpenInfo);
   };
 
   const open = Boolean(anchorEl);
 
   const popoverId = open ? 'simple-popover' : undefined;
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -160,10 +189,57 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   const handleFormat = (newFormats: string[]) => {
     setDays(newFormats);
   };
-  const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
-  const toggleIsOpenInfo = () => {
-    setIsOpenInfo(!isOpenInfo);
+  const doAuto = async () => {
+    const autoParams: Array<string | number> = [
+      startTime.getHours(),
+      endTime.getHours(),
+      days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
+      breaksBetweenClasses,
+      daysAtUni,
+    ];
+
+    const rightLocation = (aClass: ClassData) => {
+      // gives online/inperson variant if mode is online/inperson
+      return (
+        classMode === 'hybrid' ||
+        aClass.periods.some((p) => p.locations.length && (classMode === 'online') === ('Online' === p.locations[0]))
+      );
+    };
+
+    if (!selectedCourses || !selectedCourses.length) return;
+
+    const timetableData: { [k: string]: any } = ['start', 'end', 'days', 'gap', 'maxdays']
+      .map((k, index) => [k, autoParams[index]])
+      .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
+
+    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(
+      ['hybrid', 'in person', 'online'].findIndex((v) => v === classMode)
+    );
+
+    try {
+      const res = await getAutoTimetable(timetableData);
+
+      setAutoVisibility(true);
+      setAlertMsg(res.length ? 'Success!' : 'No timetable found.');
+
+      res.forEach((timeAsNum, index) => {
+        const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];
+        const k = targetActivities.current[index].find(
+          (c) => c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c)
+        );
+
+        if (k !== undefined) {
+          handleSelectClass(k);
+        }
+      });
+    } catch (e) {
+      if (e instanceof NetworkError) {
+        setAutoVisibility(true);
+        setAlertMsg("Couldn't get response.");
+      }
+    }
+    setAnchorEl(null);
   };
 
   return (
@@ -324,3 +400,6 @@ const Autotimetabler: React.FC<AutotimetablerProps> = ({ auto }) => {
   );
 };
 export default Autotimetabler;
+function setAlertMsg(arg0: string) {
+  throw new Error('Function not implemented.');
+}

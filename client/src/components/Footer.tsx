@@ -3,17 +3,17 @@ import { Box, Link } from '@material-ui/core';
 import styled from 'styled-components';
 import { AppContext } from '../context/AppContext';
 
+const FooterContainer = styled(Box)`
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 25px;
+
+  & div {
+    margin: 1vh 0;
+  }
+`;
+
 const Footer: React.FC = () => {
-  const FooterContainer = styled(Box)`
-    text-align: center;
-    font-size: 12px;
-    margin-bottom: 25px;
-
-    & div {
-      margin: 1vh 0;
-    }
-  `;
-
   const { lastUpdated } = useContext(AppContext);
 
   // `date`: timestamp in milliseconds

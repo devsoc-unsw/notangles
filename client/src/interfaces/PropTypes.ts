@@ -45,15 +45,28 @@ export interface PeriodMetadataProps {
 
 export interface ControlsProps {
   assignedColors: Record<string, string>;
+  handleSelectClass(classData: ClassData): void;
   handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
   handleRemoveCourse(courseCode: string): void;
-  auto(value: any, mode: string): void;
+}
+
+export interface AutotimetableProps {
+  handleSelectClass(classData: ClassData): void;
 }
 
 export interface TimetableProps {
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
+}
+
+export interface DropdownOptionProps {
+  optionName: string;
+  optionState: string | null | string[];
+  setOptionState(value: any): void;
+  optionChoices: string[];
+  multiple?: boolean;
+  noOff?: boolean;
 }
 
 export interface DroppedClassProps {
