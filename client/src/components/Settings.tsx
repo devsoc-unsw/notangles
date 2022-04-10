@@ -28,7 +28,7 @@ const SettingsItem = styled.div`
 `;
 
 const StyledDivider = styled(Divider)`
-  background-color: ${({ theme }) => theme.palette.secondary.main};
+  // background-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
 const SettingText = styled.div`
