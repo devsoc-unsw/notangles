@@ -346,6 +346,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         multiple
         // autoHighlight
         disableClearable
+        sx={{'& .MuiAutocomplete-popupIndicator': {
+          color: theme.palette.secondary.dark
+        }}}
         disableListWrap
         noOptionsText="No Results"
         selectOnFocus={false}

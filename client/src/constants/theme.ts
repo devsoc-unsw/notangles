@@ -9,7 +9,7 @@ export const contentPadding = 15;
 export interface ThemeType {
   palette: {
     text: {
-      color: string;
+      primary: string;
     };
     mode: string | undefined;
     primary: {
