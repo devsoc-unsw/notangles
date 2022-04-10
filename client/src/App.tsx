@@ -207,7 +207,7 @@ const App: React.FC = () => {
     Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
       .then((result) => {
         const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses].slice(0, 3);
+        const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
         setSelectedCourses(newSelectedCourses);
 
