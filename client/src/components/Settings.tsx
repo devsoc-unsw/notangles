@@ -27,6 +27,10 @@ const SettingsItem = styled.div`
   padding: 1vh 20px;
 `;
 
+const StyledDivider = styled(Divider)`
+  background-color: ${({ theme }) => theme.palette.secondary.main};
+`;
+
 const SettingText = styled.div`
   padding: 1vh 0;
 `;
@@ -68,7 +72,7 @@ const Settings: React.FC = () => {
   const settings = settingsToggles.map((setting) => {
     return (
       <div key={setting.desc}>
-        <Divider />
+        <StyledDivider />
         <SettingsItem>
           <SettingText>{setting['desc']}</SettingText>
           <Switch
@@ -85,7 +89,7 @@ const Settings: React.FC = () => {
   });
 
   return (
-    <div>
+    <>
       <Tooltip title="Settings">
         <IconButton color="inherit" onClick={toggleIsOpen} size="large">
           <SettingsIcon />
@@ -101,7 +105,7 @@ const Settings: React.FC = () => {
       >
         <StyledDialogTitle>
           <Typography variant="h5">Settings</Typography>
-          <CloseButton aria-label="close" onClick={toggleIsOpen}>
+          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
             <Close />
           </CloseButton>
         </StyledDialogTitle>
@@ -109,7 +113,7 @@ const Settings: React.FC = () => {
           <SettingsList>{settings}</SettingsList>
         </Typography>
       </Dialog>
-    </div>
+    </>
   );
 };
 

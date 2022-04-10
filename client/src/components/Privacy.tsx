@@ -62,7 +62,7 @@ const Privacy: React.FC = () => {
       >
         <StyledDialogTitle>
           <StyledTypography variant="h5">Application privacy statement</StyledTypography>
-          <CloseButton aria-label="close" onClick={toggleIsOpen}>
+          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
             <Close />
           </CloseButton>
         </StyledDialogTitle>

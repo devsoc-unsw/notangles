@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 
-const PrivacyQuestions = [
+const privacyQuestions = [
   {
     title: 'What personal information does Notangles collect?',
     content: (
@@ -138,11 +138,14 @@ const PrivacyContentTitle = styled(Typography)`
 `;
 
 const PrivacyContent: React.FC = () => {
-  const PrivacyMap = PrivacyQuestions.map((privacy) => {
-    const { title, content } = privacy;
+  const privacyMap = privacyQuestions.map(({ title, content }, index) => {
     return (
       <PrivacyAccordion style={{ margin: 'auto' }}>
-        <PrivacyAccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1a-content" id="panel1a-header">
+        <PrivacyAccordionSummary
+          expandIcon={<ExpandMore />}
+          aria-controls={`privacyPanel${index}-content`}
+          id={`privacyPanel${index}-header`}
+        >
           <PrivacyContentTitle gutterBottom variant="body2">
             {title}
           </PrivacyContentTitle>
@@ -156,7 +159,7 @@ const PrivacyContent: React.FC = () => {
     );
   });
 
-  return <React.Fragment>{PrivacyMap}</React.Fragment>;
+  return <>{privacyMap}</>;
 };
 
 export default PrivacyContent;

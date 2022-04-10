@@ -10,7 +10,7 @@ export interface ThemeType {
   palette: {
     text: {
       color: string;
-    }
+    };
     mode: string | undefined;
     primary: {
       main: string;
@@ -66,7 +66,7 @@ const baseTheme = ({
   };
   text: {
     primary: string;
-  }
+  };
 }) => ({
   palette: {
     text: {
@@ -98,7 +98,7 @@ export const lightTheme = createTheme(
     type: 'light',
     background: {
       main: '#fafafa',
-      light: '#fff',
+      light: '#ffffff',
       dark: '#f2f2f2',
     },
     border: {
@@ -109,7 +109,7 @@ export const lightTheme = createTheme(
       disabled: `rgba(0,0,0,0.5)`,
     },
     text: {
-      primary: '#000'
+      primary: '#000000',
     },
   })
 );
@@ -130,7 +130,7 @@ export const darkTheme = createTheme(
       disabled: `rgba(255,255,255,0.5)`,
     },
     text: {
-      primary: '#fff'
+      primary: '#ffffff',
     },
   })
 );

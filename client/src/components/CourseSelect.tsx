@@ -3,9 +3,8 @@ import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
-import { Autocomplete, Box, Chip, InputAdornment, TextField, Theme, useMediaQuery } from '@mui/material';
+import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
-import { useTheme } from '@mui/styles';
 
 import getCoursesList from '../api/getCoursesList';
 import { AppContext } from '../context/AppContext';
@@ -49,8 +48,7 @@ const StyledSelect = styled(Box)`
 `;
 
 const StyledTextField = styled(TextField)<{
-  theme: Theme;
-  selectedCourses: CourseData[];
+  $selectedCourses: CourseData[];
 }>`
   .MuiOutlinedInput-root {
     fieldset {
@@ -66,8 +64,8 @@ const StyledTextField = styled(TextField)<{
   }
 
   label {
-    color: ${({ theme, selectedCourses }) =>
-      selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
+    color: ${({ theme, $selectedCourses }) =>
+      $selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
     transition: 0.2s;
   }
 `;
@@ -144,8 +142,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   useEffect(() => {
     if (!selectedCourses.length) {
-      setSelectedValue([])
-      return
+      setSelectedValue([]);
+      return;
     }
 
     setSelectedValue(
@@ -160,7 +158,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   //   const codes = a.map((x) => x.code);
   //   return b.filter((x) => !codes.includes(x.code));
   // };
-
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
@@ -207,7 +204,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   const onChange = (_: any, value: CoursesList) => {
-
     // const before = selectedCourses;
     // const after = value;
     // console.log('here')
@@ -249,15 +245,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     // setOptions(defaultOptions);
     // setInputValue('');
 
-
     if (value.length > selectedValue.length) {
-
       handleSelect(value[value.length - 1].code);
       setSelectedValue([...value]);
     }
     setOptions(defaultOptions);
     setInputValue('');
-
   };
 
   const fetchCoursesList = async () => {
@@ -366,41 +359,41 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         isOptionEqualToValue={(option, value) => option.code === value.code}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
-          <StyledOption>
-            <StyledIcon>
-              {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
-            </StyledIcon>
-            <span>{option.code}</span>
-            <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-            <Career>
-              {option.career === 'Undergraduate'
-                ? 'UGRD'
-                : option.career === 'Postgraduate'
-                ? 'PGRD'
-                : option.career === 'Research'
-                ? 'RSCH'
-                : null}
-            </Career>
-            <RightContainer>
-              {option.online && (
-                <StyledIconRight>
-                  <VideocamOutlined />
-                </StyledIconRight>
-              )}
-              {option.inPerson && (
-                <StyledIconRight>
-                  <PersonOutline />
-                </StyledIconRight>
-              )}
-            </RightContainer>
-          </StyledOption>
+            <StyledOption>
+              <StyledIcon>
+                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
+              </StyledIcon>
+              <span>{option.code}</span>
+              <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+              <Career>
+                {option.career === 'Undergraduate'
+                  ? 'UGRD'
+                  : option.career === 'Postgraduate'
+                  ? 'PGRD'
+                  : option.career === 'Research'
+                  ? 'RSCH'
+                  : null}
+              </Career>
+              <RightContainer>
+                {option.online && (
+                  <StyledIconRight>
+                    <VideocamOutlined />
+                  </StyledIconRight>
+                )}
+                {option.inPerson && (
+                  <StyledIconRight>
+                    <PersonOutline />
+                  </StyledIconRight>
+                )}
+              </RightContainer>
+            </StyledOption>
           </li>
         )}
         renderInput={(params) => (
           <StyledTextField
             {...params}
             autoFocus
-            selectedCourses={selectedCourses}
+            $selectedCourses={selectedCourses}
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
