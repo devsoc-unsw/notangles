@@ -2,7 +2,6 @@
 
 [Notangles](https://notangles.csesoc.app/) is an interactive drag-and-drop timetable planner designed to help UNSW students plan their ideal weekly timetable.
 
-
 ## Background and Motivation
 
 A few weeks before class registration opens, UNSW releases all of their class information at http://timetable.unsw.edu.au/2022. However, the classes and their respective times are formatted in a way that makes it difficult for students trying to plan out their classes before registrations open. Notangles aims to present this information in an easy to visualise and intuitive fashion, allowing students to plan out their timetable by simply dragging and dropping the classes that they are taking.
@@ -19,19 +18,15 @@ Before you start, make sure that you have the following software installed.
 - Node.js and npm (usually bundled with Node.js)
 - Python
 
-### Installing
+### Setup
 
 Clone the repository:
 
 `git clone git@github.com:csesoc/notangles.git`
 
-Install dependencies by running:
-
-`cd client && npm install && cd ..`
-
 ### Running the front-end
 
-Navigate into `/client`, then run one of the follow commands:
+Navigate into `/client`, install packages with `npm i`, then run one of the follow commands:
 
 - `npm start` (if you already have the timetable server running locally; connects to that)
 
@@ -39,15 +34,15 @@ Navigate into `/client`, then run one of the follow commands:
 
 If you need to test the autotimetabler, both `npm start` and `npm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
 
-You can then access the client at `localhost:3000` in your favourite web browser.
+You can then access the client at `http://localhost:3000` in your favourite web browser.
 
 ### Running the back-end
 
-Navigate into `/server`, install packages with `npm i`, then run `npm run start`.
+Navigate into `/server`, install packages with `npm i`, then run `npm start`. The server will be hosted at `http://localhost:3001`
 
 ### Running the auto-timetabler
 
-Navigate into `/auto_server`, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
+Navigate into `/auto_server`, setup a virtual environment, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
 
 ## Documentation
 
