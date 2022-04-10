@@ -1,12 +1,14 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import DateFnsUtils from '@date-io/date-fns';
+import { Box, Button, MuiThemeProvider } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import getCourseInfo from './api/getCourseInfo';
-import Header from './components/Controls';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
+import Alerts from './components/Alerts';
+import Controls from './components/Controls';
 import Footer from './components/Footer';
+import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
@@ -112,9 +114,7 @@ const App: React.FC = () => {
     isDefaultUnscheduled,
     isHideClassInfo,
     isSortAlphabetic,
-    errorMsg,
-    setErrorMsg,
-    errorVisibility,
+    setAlertMsg,
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
@@ -216,7 +216,7 @@ const App: React.FC = () => {
       })
       .catch((e) => {
         if (e instanceof NetworkError) {
-          setErrorMsg(e.message);
+          setAlertMsg(e.message);
           setErrorVisibility(true);
         }
       });
@@ -230,14 +230,6 @@ const App: React.FC = () => {
       delete prev[courseCode];
       return prev;
     });
-  };
-
-  const handleErrorClose = () => {
-    setErrorVisibility(false);
-  };
-
-  const handleInfoClose = () => {
-    setInfoVisibility(false);
   };
 
   useEffect(() => {
@@ -332,33 +324,27 @@ const App: React.FC = () => {
   return (
     <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        <StyledApp>
-          <Navbar />
-          {isPreview && <FriendsDrawer />}
-          <ContentWrapper>
-            <Content drawerOpen={isFriendsListOpen}>
-              <Header
-                assignedColors={assignedColors}
-                handleSelectCourse={handleSelectCourse}
-                handleRemoveCourse={handleRemoveCourse}
-              />
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              <Footer />
-              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                  {errorMsg}
-                </Alert>
-              </Snackbar>
-              <Snackbar open={infoVisibility}>
-                <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  Press and hold to drag a class
-                </Alert>
-              </Snackbar>
-            </Content>
-          </ContentWrapper>
-        </StyledApp>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <GlobalStyle />
+          <StyledApp>
+            <Navbar />
+            {isPreview && <FriendsDrawer />}
+            <ContentWrapper>
+              <Content drawerOpen={isFriendsListOpen}>
+                <Controls
+                  assignedColors={assignedColors}
+                  handleSelectClass={handleSelectClass}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Alerts />
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
+        </MuiPickersUtilsProvider>
       </ThemeProvider>
     </MuiThemeProvider>
   );

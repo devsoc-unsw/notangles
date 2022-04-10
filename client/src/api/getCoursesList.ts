@@ -29,7 +29,7 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
  * const coursesList = await getCoursesList('2020', 'T1')
  */
 const getCoursesList = async (year: string, term: string): Promise<CoursesListWithDate> => {
-  const baseURL = `${API_URL}/terms/${year}-${term}`;
+  const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
     const json = await data.json();

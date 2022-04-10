@@ -7,19 +7,28 @@
     "start": "NODE_ENV=DEV ts-node server.ts",
     "start:production": "NODE_ENV=PROD node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "prettier-format": "prettier 'src/*.ts' 'src/controllers/*.ts' --write",
+    "proto:gen": "./src/proto-gen.sh"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grpc/grpc-js": "^1.5.10",
+    "body-parser": "^1.19.2",
+    "buffer-from": "^1.1.2",
     "express": "^4.17.3",
-    "mongodb": "^4.4.1"
+    "google-protobuf": "^3.20.0-rc.2",
+    "grpc_tools_node_protoc_ts": "^5.3.2",
+    "grpc-tools": "^1.11.2",
+    "minimist": "^1.2.6",
+    "ts-protoc-gen": "^0.15.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.13",
-    "@types/mongodb": "^4.0.7",
-    "@types/node": "^17.0.23",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.0.8",
+    "prettier": "^2.6.2",
+    "ts-node": "^8.2.0",
+    "typescript": "^3.9.10"
   }
 }

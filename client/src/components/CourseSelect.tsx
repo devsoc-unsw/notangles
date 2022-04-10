@@ -143,7 +143,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { isSortAlphabetic, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { isSortAlphabetic, setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
@@ -272,7 +272,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       setLastUpdated(fetchedCoursesList.lastUpdated);
     } catch (e) {
       if (e instanceof NetworkError) {
-        setErrorMsg(e.message);
+        setAlertMsg(e.message);
         setErrorVisibility(true);
       }
     }

@@ -84,8 +84,8 @@ const baseTheme = ({
   breakpoints: {
     values: {
       xs: 0,
-      sm: 768,
-      md: 1024,
+      sm: 600,
+      md: 1080,
       lg: 1200,
       xl: 1536,
     },
