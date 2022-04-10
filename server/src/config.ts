@@ -12,7 +12,7 @@ export const API_CONFIG: Record<Env, Config> = {
     auto: 'localhost:50051',
   },
   [Env.PROD]: {
-    auto: 'localhost:50051',
+    auto: `${process.env.AUTO_SERVER_HOSTNAME}:50051`,
   },
 };
 export const config: Config = API_CONFIG[process.env.NODE_ENV || Env.DEV];
