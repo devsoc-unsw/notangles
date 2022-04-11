@@ -18,7 +18,7 @@ const SelectWrapper = styled(Box)`
 const AutotimetablerWrapper = styled(Box)`
   flex: 1;
 
-  ${(props) => props.theme.breakpoints.down('sm')} {
+  ${({ theme }) => theme.breakpoints.down('sm')} {
     flex: none;
   }
 `;
