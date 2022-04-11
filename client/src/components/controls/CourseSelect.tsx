@@ -11,15 +11,15 @@ import Fuse from 'fuse.js';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import styled, { css } from 'styled-components';
 
-import getCoursesList from '../api/getCoursesList';
-import { AppContext } from '../context/AppContext';
-import { maxAddedCourses, term, year } from '../constants/timetable';
-import { CourseData } from '../interfaces/Course';
-import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
-import NetworkError from '../interfaces/NetworkError';
-import { CourseSelectProps } from '../interfaces/PropTypes';
-import { CourseContext } from '../context/CourseContext';
-import { ThemeType } from '../constants/theme';
+import getCoursesList from '../../api/getCoursesList';
+import { AppContext } from '../../context/AppContext';
+import { maxAddedCourses, term, year } from '../../constants/timetable';
+import { CourseData } from '../../interfaces/Course';
+import { CourseOverview, CoursesList } from '../../interfaces/CourseOverview';
+import NetworkError from '../../interfaces/NetworkError';
+import { CourseSelectProps } from '../../interfaces/PropTypes';
+import { CourseContext } from '../../context/CourseContext';
+import { ThemeType } from '../../constants/theme';
 
 const SEARCH_DELAY = 300;
 

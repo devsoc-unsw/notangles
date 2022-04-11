@@ -6,10 +6,10 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
-import Controls from './components/Controls';
+import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import Navbar from './components/Navbar';
+import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';

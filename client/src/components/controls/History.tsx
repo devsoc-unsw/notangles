@@ -3,9 +3,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Undo from '@material-ui/icons/Undo';
 import Redo from '@material-ui/icons/Redo';
 import Tooltip from '@material-ui/core/Tooltip';
-import { CourseContext } from '../context/CourseContext';
-import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../interfaces/Course';
-import { AppContext } from '../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../../interfaces/Course';
+import { AppContext } from '../../context/AppContext';
 import RestoreIcon from '@material-ui/icons/Restore';
 
 interface Action {

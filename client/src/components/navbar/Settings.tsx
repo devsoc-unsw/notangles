@@ -12,7 +12,7 @@ import Switch from '@material-ui/core/Switch';
 import Divider from '@material-ui/core/Divider';
 import styled from 'styled-components';
 
-import { AppContext } from '../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
