@@ -25,12 +25,12 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { TimePicker } from '@material-ui/pickers';
 
-import getAutoTimetable from '../api/getAutoTimetable';
-import { AppContext } from '../context/AppContext';
-import { CourseContext } from '../context/CourseContext';
-import { ClassData } from '../interfaces/Course';
-import NetworkError from '../interfaces/NetworkError';
-import { AutotimetableProps, DropdownOptionProps } from '../interfaces/PropTypes';
+import getAutoTimetable from '../../api/getAutoTimetable';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { ClassData } from '../../interfaces/Course';
+import NetworkError from '../../interfaces/NetworkError';
+import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
   width: 100%;

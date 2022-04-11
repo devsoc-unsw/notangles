@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import History from './History';
-import { ControlsProps } from '../interfaces/PropTypes';
+import { ControlsProps } from '../../interfaces/PropTypes';
 
 const SelectWrapper = styled(Box)`
   display: flex;

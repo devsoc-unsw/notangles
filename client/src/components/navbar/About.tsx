@@ -12,7 +12,7 @@ import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 
-import useGif from '../assets/how_to_use.gif';
+import useGif from '../../assets/how_to_use.gif';
 
 const HowToUseImg = styled.img`
   display: block;
