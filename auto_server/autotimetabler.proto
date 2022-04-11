@@ -11,7 +11,7 @@ message TimetableConstraints {
 }
 
 message AutoTimetableResponse { 
-    repeated float = 1;
+    repeated float times = 1;
 }
 
 service AutoTimetabler { 

@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 50051
 
-CMD [ "python3", "server.py", "--host=0.0.0.0"]
+CMD [ "python3", "server.py"]

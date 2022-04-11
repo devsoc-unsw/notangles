@@ -30,7 +30,7 @@ def main():
     autotimetabler_pb2_grpc.add_AutoTimetablerServicer_to_server(
         AutoTimetablerServicer(), server
     )
-    server.add_insecure_port("localhost:50051")
+    server.add_insecure_port("0.0.0.0:50051")
     server.start()
     print("Autotimetabling server is running!")
     server.wait_for_termination()
