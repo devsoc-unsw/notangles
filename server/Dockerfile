@@ -19,6 +19,7 @@ COPY package.json package-lock.json ./
 RUN npm install --production
 
 COPY --from=builder /server/dist .
+COPY ./src/proto/*.js ./src/proto/
 
 EXPOSE 3001
 
