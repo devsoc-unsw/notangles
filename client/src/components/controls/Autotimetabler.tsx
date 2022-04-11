@@ -45,7 +45,7 @@ const DropdownButton = styled(Button)`
 const InfoContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  padding: 10px 0 0;
+  padding: 10px 10px 0 0;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -327,7 +327,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={8}>
-                <ListItemText primary="Earliest end time" />
+                <ListItemText primary="Latest end time" />
               </Grid>
               <Grid item xs={4}>
                 <TimePicker
