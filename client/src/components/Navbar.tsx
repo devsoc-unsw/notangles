@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
   return (
     // <StylesProvider injectFirst>
     <NavbarBox>
-      <StyledNavBar>
+      <StyledNavBar enableColorOnDark>
         <Toolbar>
           {isPreview && (
             <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" size="large">
