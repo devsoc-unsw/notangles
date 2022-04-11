@@ -3,7 +3,7 @@ import { Alert } from '@material-ui/lab';
 import { AppContext } from '../context/AppContext';
 import { Snackbar } from '@material-ui/core';
 
-const Alerts = () => {
+const Alerts: React.FC = () => {
   const { alertMsg, errorVisibility, setErrorVisibility, infoVisibility, setInfoVisibility, autoVisibility, setAutoVisibility } =
     useContext(AppContext);
 
