@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card';
 import { yellow } from '@material-ui/core/colors';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import { Warning } from '@material-ui/icons';
+import { Fullscreen, Warning } from '@material-ui/icons';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
@@ -36,6 +36,7 @@ import {
 import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
 import { CourseClassInnerStyleProps, StyledCapacityIndicatorProps, StyledCourseClassProps } from '../../interfaces/StyleProps';
 import { getClassMargin, rowHeight } from './TimetableLayout';
+import { Box } from '@material-ui/core';
 
 export const inventoryMargin = 10;
 
@@ -87,14 +88,18 @@ const transitionName = 'class';
 
 const StyledSideArrow = styled(Grid)`
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  // align-items: center;
+  // align-content: center;
 `;
 
 const StyledIconShadow = styled(IconButton)`
   width: 20px;
   height: 20px;
   color: white;
+  align-self: center
+  margin-right: 100px;
 `;
 
 const StyledCourseClass = styled.div<StyledCourseClassProps>`
@@ -146,7 +151,7 @@ const courseClassInnerStyle = ({ backgroundColor, hasClash, isSquareEdges }: Cou
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  flexDirection: 'column' as 'column',
+  flexDirection: 'row' as 'row',
 
   backgroundColor,
   color: 'white',
@@ -349,15 +354,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           isSquareEdges,
         })}
       >
-        <Grid container>
+        {/* <Box style={{position: 'absolute', }}>
+          <Box/>
+        <IconButton style={{padding: 0}}><Fullscreen></Fullscreen></IconButton>
+        </Box> */}
+        <Grid container style={{height: '100%'}}>
           <StyledSideArrow item xs={1}>
-            {hasArrows && (
-              <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
-                <ArrowLeftIcon />
-              </StyledIconShadow>
-            )}
           </StyledSideArrow>
-          <Grid item xs={10}>
+          <Grid item xs={10} style={{alignSelf: 'center'}}>
             <p style={pStyle}>
               <b>
                 {cardData.class.course.code} {cardData.class.activity}
@@ -379,13 +383,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </p>
             <TouchRipple ref={rippleRef} />
           </Grid>
-          <StyledSideArrow item xs={1}>
-            {hasArrows && (
-              <StyledIconShadow size="small" onClick={() => shiftClasses(1, cardData)}>
-                <ArrowRightIcon />
-              </StyledIconShadow>
-            )}
-          </StyledSideArrow>
+          <Grid item xs={1}>
+            {/* <div style={{marginRight: '100px'}}> */}
+          <StyledIconShadow><Fullscreen style={{paddingRight: '5px', paddingTop: '5px' }}></Fullscreen></StyledIconShadow>
+
+            {/* </div> */}
+          </Grid>
+          {/* <StyledSideArrow item xs={1}> */}
+          {/* </StyledSideArrow> */}
         </Grid>
       </Card>
     </StyledCourseClass>
