@@ -5,17 +5,15 @@ from ortools.sat.python import cp_model
 """reduces period data into nicer list"""
 
 
-def redlist(lists):
-    l = lists
-    # print(l)
-    if len(l[0]) == 1:  # for purely single-period classes
+def redlist(l):
+    # for purely single-period classes
+    if len(l[0]) == 1:
         duration = int(l[0][0][2] - l[0][0][1])
         return (
             duration * 2,
             list(map(lambda il: il[0][0] * 100 + int(il[0][1] * 2), l)),
             False,
         )
-    # print('l: ' , l , 'l[0]: ', l[0])
     # for classes made of two consecutive periods (we merge into a single period)
     if l[0][0][0] == l[0][1][0]:
         duration = int(l[0][1][2] - l[0][0][1])
@@ -24,10 +22,8 @@ def redlist(lists):
             list(map(lambda il: il[0][0] * 100 + int(il[0][1] * 2), l)),
             False,
         )
-
-    if (
-        l[0][0][1] != l[0][1][0]
-    ):  # for classes made up of a pair of periods on different days
+    # for classes made up of a pair of periods on different days
+    if l[0][0][1] != l[0][1][0]:
         # assumes here that the duration is equivalent for simplicity but should be amended later
         duration = int(l[0][0][2] - l[0][0][1])
         return (
@@ -43,13 +39,12 @@ def redlist(lists):
 
 
 def sols(start, end, days, gap, maxdays, periods):
-    for p in periods:
-        print(p)
     gap, earliest, latest = (
         gap * 2,
         start * 2,
         end * 2,
     )  # minimum break between classes, earliest start time, latest end time
+    
     mxd = min(maxdays, len(days))
     newdata = [redlist(l) for l in periods]  # reduces data
 
@@ -64,9 +59,9 @@ def sols(start, end, days, gap, maxdays, periods):
     ]  # start times
     classIntervals = [
         model.NewFixedSizeIntervalVar(
-            classStartTimes[i], newdata[i][0] + gap, "xx%i" % i
+            classStartTimes[i], newdata[normalClassIndices[i]][0] + gap, "xx%i" % i
         )
-        for i in normalClassIndices
+        for i in range(len(normalClassIndices))
     ]  # periods as intervals (corresponds to starttimes)
 
     specialIntervalVars = []
