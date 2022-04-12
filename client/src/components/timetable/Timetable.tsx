@@ -30,8 +30,12 @@ const StyledTimetableScroll = styled(Box)`
   position: relative;
   left: -${contentPadding}px;
   width: calc(100% + ${contentPadding * 2 - (1 / devicePixelRatio) * 2}px);
-  overflow-x: scroll;
+  overflow-x: none;
   overflow-y: hidden;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    overflow-x: scroll;
+  }
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {

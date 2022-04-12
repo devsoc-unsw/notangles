@@ -35,7 +35,7 @@ import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
-    background: ${(props) => props.theme.palette.background.default};
+    background: ${({ theme }) => theme.palette.background.default};
     transition: background 0.2s;
   }
   ::-webkit-scrollbar {
@@ -72,7 +72,7 @@ const ContentWrapper = styled(Box)`
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-  color: ${(props) => props.theme.palette.text.primary};
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const getContentWidth = (drawerOpen: boolean) => {
@@ -97,7 +97,7 @@ const ICSButton = styled(Button)`
   && {
     min-width: 250px;
     margin: 2vh auto;
-    background-color: ${(props) => props.theme.palette.primary.main};
+    background-color: ${({ theme }) => theme.palette.primary.main};
     color: #ffffff;
     &:hover {
       background-color: #598dff;
