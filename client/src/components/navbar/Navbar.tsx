@@ -8,8 +8,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { StylesProvider, useTheme } from '@material-ui/styles'; // make styled components styling have priority
 import styled from 'styled-components';
 
-import CSESocLogo from '../../assets/notangles_one_n_with_grey.png';
-import CSESocLogoTwo from '../../assets/notangles_two_n_with_grey.gif';
+import notanglesLogo from '../../assets/notangles_1.png';
+import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
 import { isPreview, term, termName, year } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
     setIsFriendsListOpen(!isFriendsListOpen);
   };
 
-  const [currLogo, setCurrLogo] = useState(CSESocLogo);
+  const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
   return (
     <StylesProvider injectFirst>
@@ -81,7 +81,11 @@ const Navbar: React.FC = () => {
                 <MenuIcon />
               </IconButton>
             )}
-            <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
+            <LogoImg
+              src={currLogo}
+              onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+              onMouseOut={() => setCurrLogo(notanglesLogo)}
+            />
             <NavbarTitle variant="h6">
               Notangles
               <Weak>
