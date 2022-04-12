@@ -22,6 +22,8 @@ export const getAuto = async (req: Request, res: Response) => {
   client.findBestTimetable(constraints, (err, response) => {
     if (err) {
       console.log('error was found: ' + err);
+      res.status(502).send('An error occurred when handling the request.')
+
     } else {
       res.send(JSON.stringify({ given: response.getTimesList() }));
     }
