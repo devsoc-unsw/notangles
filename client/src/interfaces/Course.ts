@@ -16,7 +16,7 @@ export interface CourseData {
 export interface ClassData {
   id: string;
   course: CourseData;
-  activity: string;
+  activity: Activity;
   enrolments: number;
   capacity: number;
   periods: ClassPeriod[];
@@ -25,7 +25,7 @@ export interface ClassData {
 export interface InventoryPeriod {
   class: {
     course: CourseData;
-    activity: string;
+    activity: Activity;
   };
 }
 

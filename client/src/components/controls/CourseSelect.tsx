@@ -14,7 +14,7 @@ import styled, { css } from 'styled-components';
 import getCoursesList from '../../api/getCoursesList';
 import { AppContext } from '../../context/AppContext';
 import { maxAddedCourses, term, year } from '../../constants/timetable';
-import { CourseData } from '../../interfaces/Course';
+import { CourseCode, CourseData } from '../../interfaces/Course';
 import { CourseOverview, CoursesList } from '../../interfaces/CourseOverview';
 import NetworkError from '../../interfaces/NetworkError';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
@@ -180,7 +180,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
-  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
+  const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
   const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
   if (selectedValue.length) {
     defaultOptions = defaultOptions.filter(

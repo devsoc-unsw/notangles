@@ -222,7 +222,7 @@ const App: React.FC = () => {
       });
   };
 
-  const handleRemoveCourse = (courseCode: string) => {
+  const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => {
