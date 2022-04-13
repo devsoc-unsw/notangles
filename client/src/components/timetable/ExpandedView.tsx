@@ -25,7 +25,7 @@ import { ExpandedViewProps } from '../../interfaces/PropTypes';
 import CloseIcon from '@material-ui/icons/Close';
 import { CardData, isPeriod } from '../../utils/Drag';
 import { styled } from '@material-ui/styles';
-
+import { ClassData } from '../../interfaces/Course';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import {
   AccessTime,
@@ -42,7 +42,6 @@ import { ClassPeriod, ClassTime } from '../../interfaces/Course';
 import { AppContext } from '../../context/AppContext';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
-
 const StyledDialogTitle = styled(MuiDialogTitle)<DialogTitleProps>(({}) => ({
   padding: '8px 12px 8px 24px',
 }));
@@ -53,7 +52,7 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 };
 
 interface LocationDropdownProps {
-  locations: string[];
+  locations: string[][];
   handleChange: any;
   selectedLocation: number;
 }
@@ -77,7 +76,9 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, l
         onChange={handleChange}
       >
         {locations.map((location, index) => (
-          <MenuItem value={index}><Typography>{location}</Typography></MenuItem>
+          <MenuItem value={index}>
+            <Typography>{location[1]}</Typography>
+          </MenuItem>
         ))}
       </Select>
     </FormControl>
@@ -85,37 +86,42 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, l
 };
 
 // TODO: Tidy this up
-const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
+
+
 
 const getSections = (c: ClassPeriod) => {
-    const periodIndex = c.class.periods.findIndex(p => isDuplicate(p, c))
-    if (periodIndex === -1) return ['stuff', 'stuff2'];
-    
-    const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
-    value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c) && (!false || value.enrolments !== value.capacity))
-    );
-    console.log(duplicateClasses)
+  const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
+  // if (periodIndex === -1) return [undefined, undefined]
 
-    return duplicateClasses.map(dc => [dc.section, dc.periods[periodIndex].locations.at(0) ?? 'stuff']);
-  };
+  const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
+    value.periods.some(
+      (v, index) => index === periodIndex && isDuplicate(v, c) && (!false || value.enrolments !== value.capacity)
+    )
+  );
 
-const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, open, handleClose }) => {
+  const sectionsAndLocations = duplicateClasses.map((dc) => ([dc.section, dc.periods[periodIndex].locations.at(0) ?? '']))
+
+  return [duplicateClasses, sectionsAndLocations] as [ClassData[], string[][]];
+};
+
+const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, open, handleClose, handleSelectClass }) => {
   const course = cardData.class.course;
   const { days } = useContext(AppContext);
   const period = isPeriod(cardData) ? cardData : undefined;
-  const [selectedLocation, setSelectedLocation] = useState<number>(0);
-
-  if (!period) return (<></>);
   
-  const sections: any = getSections(period);
-  console.log(sections)
+  if (!period) return <></>;
+  
+  const [duplicateClasses, sectionsAndLocations]: [ClassData[], string[][]] = getSections(period);
+  //   console.log(sections)
+  const [selectedLocation, setSelectedLocation] = useState<number>(sectionsAndLocations.findIndex(sal => sal[1] === period.locations.at(0))); // TODO: make it not zero
 
   const handleLocationChange = (e: any) => {
-    // handleSelectClass(
-    //     newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + dir) % newclasses.length]
-    //   );
-    setSelectedLocation(e.target.value);
+    // setSelectedLocation(e.target.value);
+    handleSelectClass(
+        duplicateClasses[e.target.value]
+        );
   };
   return (
     <Dialog maxWidth="sm" open={open} onClose={() => handleClose(selectedLocation)}>
@@ -145,14 +151,15 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
       </StyledDialogTitle>
       {/* <Divider /> */}
       <DialogContent style={{ paddingBottom: '20px' }}>
-
-        <Grid container direction="column" spacing={2} >
+        <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
             <Grid item>
               <DesktopWindows />
             </Grid>
             <Grid item>
-              <Typography>{cardData.class.activity} ({sections && sections[selectedLocation]})</Typography>
+              <Typography>
+                {cardData.class.activity} ({sectionsAndLocations[selectedLocation][0]})
+              </Typography>
             </Grid>
           </Grid>
 
@@ -165,24 +172,31 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
             </Grid>
           </Grid>
 
-          <Grid item container direction="row" spacing={2} alignItems='center'>
+          <Grid item container direction="row" spacing={2} alignItems="center">
             <Grid item>
               <LocationOn />
             </Grid>
             <Grid item style={{ flexGrow: 1 }}>
-              {period && sections && <LocationDropdown selectedLocation={selectedLocation} locations={period.locations} handleChange={handleLocationChange} />}
+              {period && (
+                <LocationDropdown
+                  selectedLocation={selectedLocation}
+                  locations={sectionsAndLocations}
+                  handleChange={handleLocationChange}
+                />
+              )}
             </Grid>
           </Grid>
 
-          <Grid item container direction="row" spacing={2} alignItems='center'>
+          <Grid item container direction="row" spacing={2} alignItems="center">
             <Grid item>
               <PeopleAltIcon />
             </Grid>
             <Grid item>
-              <Typography>Capacity {period?.class.enrolments} / {period?.class.capacity}</Typography>
+              <Typography>
+                Capacity {period?.class.enrolments} / {period?.class.capacity}
+              </Typography>
             </Grid>
           </Grid>
-
         </Grid>
       </DialogContent>
     </Dialog>

@@ -77,6 +77,7 @@ export interface DroppedClassProps {
   hasClash: boolean;
   shiftClasses(dir: number, cardData: CardData): void;
   hasArrows: boolean;
+  handleSelectClass(classData: ClassData): void;
 }
 
 export interface DroppedClassesProps {
@@ -88,4 +89,5 @@ export interface DroppedClassesProps {
 export interface ExpandedViewProps extends DroppedClassProps {
   open: boolean;
   handleClose: (value: number) => void;
+  handleSelectClass(classData: ClassData): void;
 }

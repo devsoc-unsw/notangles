@@ -238,6 +238,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   hasClash,
   shiftClasses,
   hasArrows,
+  handleSelectClass,
 }) => {
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -407,6 +408,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
         open={open}
         handleClose={handleClose}
+        handleSelectClass={handleSelectClass}
         />
         </>
   );
@@ -506,6 +508,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
+        handleSelectClass={handleSelectClass}
       />
     );
 
