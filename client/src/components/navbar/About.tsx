@@ -62,7 +62,6 @@ const About: React.FC = () => {
       </Typography>
       <StyledTypography variant="h6">Future developments</StyledTypography>
       <FeatList>
-        <li> Auto-timetabling</li>
         <li> Sync your timetable with friends</li>
       </FeatList>
       <StyledTypography variant="h6">About the team</StyledTypography>

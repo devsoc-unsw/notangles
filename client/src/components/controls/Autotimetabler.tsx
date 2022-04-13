@@ -17,7 +17,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-  TextField
+  TextField,
 } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -35,8 +35,7 @@ const DropdownButton = styled(Button)`
     height: 55px;
     margin-top: 20px;
     margin-right: 10px;
-    background-color: ${({ theme }) => theme.palette.primary.main};
-    color: #ffffff;
+    text-align: left;
     &:hover {
       background-color: #598dff;
     }
@@ -63,6 +62,10 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   width: 100%;
   height: 32px;
   margin-bottom: 10px;
+`;
+
+const StyledList = styled(List)`
+  padding: 0 15px;
 `;
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
@@ -125,7 +128,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   // for opening popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const { isDarkMode, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
@@ -307,11 +310,11 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             </DialogContentText>
           </DialogContent>
         </Dialog>
-        <List>
+        <StyledList>
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{alignSelf: 'center'}} primary="Earliest start time" />
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Earliest start time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker
@@ -328,7 +331,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{alignSelf: 'center'}} primary="Latest end time" />
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Latest end time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker
@@ -392,7 +395,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             optionChoices={['hybrid', 'in person', 'online']}
             noOff
           />
-        </List>
+        </StyledList>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
           <FlashOn />
           GO
