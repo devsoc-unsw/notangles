@@ -25,17 +25,27 @@ const Alerts: React.FC = () => {
 
   return (
     <>
-      <Snackbar open={errorVisibility} autoHideDuration={2000} onClose={handleErrorClose}>
+      <Snackbar
+        open={errorVisibility}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={2000}
+        onClose={handleErrorClose}
+      >
         <Alert severity="error" onClose={handleErrorClose} variant="filled">
           {alertMsg}
         </Alert>
       </Snackbar>
-      <Snackbar open={infoVisibility}>
+      <Snackbar open={infoVisibility} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity="info" onClose={handleInfoClose} variant="filled">
           Press and hold to drag a class
         </Alert>
       </Snackbar>
-      <Snackbar open={autoVisibility} autoHideDuration={2000} onClose={handleAutoClose}>
+      <Snackbar
+        open={autoVisibility}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={2000}
+        onClose={handleAutoClose}
+      >
         <Alert severity={getAutoSeverity()} onClose={handleAutoClose} variant="filled">
           {alertMsg}
         </Alert>
