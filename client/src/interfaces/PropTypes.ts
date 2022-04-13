@@ -87,5 +87,5 @@ export interface DroppedClassesProps {
 
 export interface ExpandedViewProps extends DroppedClassProps {
   open: boolean;
-  handleClose: () => void;
+  handleClose: (value: number) => void;
 }

@@ -343,8 +343,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
 
 
-  const handleClose = () => {
+  const handleClose = (value: number) => {
+    console.log(value)
     setOpen(!open);
+    // shiftClasses(value, cardData);
   };
   return (
     <>
@@ -472,10 +474,11 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
       const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
         value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || value.enrolments !== value.capacity))
       );
+      console.log(dir, newclasses)
 
       if (newclasses.length)
         handleSelectClass(
-          newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + newclasses.length + dir) % newclasses.length]
+          newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + dir) % newclasses.length]
         );
     }
   };

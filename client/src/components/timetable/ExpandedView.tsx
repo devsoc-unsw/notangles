@@ -55,7 +55,7 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 interface LocationDropdownProps {
   locations: string[];
   handleChange: any;
-  selectedLocation: string;
+  selectedLocation: number;
 }
 
 const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, locations, handleChange }) => {
@@ -76,25 +76,49 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, l
         inputProps={{ 'aria-label': 'Without label' }}
         onChange={handleChange}
       >
-        {locations.map((l) => (
-          <MenuItem value={l}><Typography>{l}</Typography></MenuItem>
+        {locations.map((location, index) => (
+          <MenuItem value={index}><Typography>{location}</Typography></MenuItem>
         ))}
       </Select>
     </FormControl>
   );
 };
 
-const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose }) => {
+// TODO: Tidy this up
+const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+
+const getSections = (c: ClassPeriod) => {
+    const periodIndex = c.class.periods.findIndex(p => isDuplicate(p, c))
+    if (periodIndex === -1) return ['stuff', 'stuff2'];
+    
+    const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
+    value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c) && (!false || value.enrolments !== value.capacity))
+    );
+    console.log(duplicateClasses)
+
+    return duplicateClasses.map(dc => [dc.section, dc.periods[periodIndex].locations.at(0) ?? 'stuff']);
+  };
+
+const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, open, handleClose }) => {
   const course = cardData.class.course;
   const { days } = useContext(AppContext);
   const period = isPeriod(cardData) ? cardData : undefined;
-  const [selectedLocation, setSelectedLocation] = useState<string>(period?.locations.at(0) ?? '');
+  const [selectedLocation, setSelectedLocation] = useState<number>(0);
+
+  if (!period) return (<></>);
+  
+  const sections: any = getSections(period);
+  console.log(sections)
 
   const handleLocationChange = (e: any) => {
-    setSelectedLocation(e.target.value)
+    // handleSelectClass(
+    //     newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + dir) % newclasses.length]
+    //   );
+    setSelectedLocation(e.target.value);
   };
   return (
-    <Dialog maxWidth="sm" open={open} onClose={() => handleClose()}>
+    <Dialog maxWidth="sm" open={open} onClose={() => handleClose(selectedLocation)}>
       <StyledDialogTitle>
         <Box
           style={{
@@ -113,7 +137,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
           <div style={{ width: '8px' }} />
 
           <div>
-            <IconButton aria-label="close" onClick={() => handleClose()}>
+            <IconButton aria-label="close" onClick={() => handleClose(selectedLocation)}>
               <CloseIcon />
             </IconButton>
           </div>
@@ -128,7 +152,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
               <DesktopWindows />
             </Grid>
             <Grid item>
-              <Typography>{cardData.class.activity}</Typography>
+              <Typography>{cardData.class.activity} ({sections && sections[selectedLocation]})</Typography>
             </Grid>
           </Grid>
 
@@ -146,7 +170,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
               <LocationOn />
             </Grid>
             <Grid item style={{ flexGrow: 1 }}>
-              {period && <LocationDropdown selectedLocation={selectedLocation} locations={period.locations} handleChange={handleLocationChange} />}
+              {period && sections && <LocationDropdown selectedLocation={selectedLocation} locations={period.locations} handleChange={handleLocationChange} />}
             </Grid>
           </Grid>
 
