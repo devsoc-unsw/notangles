@@ -15,7 +15,6 @@ const changelog: Change[] = [
     date: '04/04/22',
     changes: [
       'Arrows to select different class now appear on all instances of a class, not just the first one',
-      'Added API call to automatically determine whether it is DST or not',
     ],
   },
   {
