@@ -16,10 +16,6 @@ import * as swRegistration from './serviceWorkerRegistration';
 Sentry.init({
   dsn: 'https://e4555a736f024545bef4a45873315f6a@o1179870.ingest.sentry.io/6292248',
   integrations: [new BrowserTracing()],
-
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
   tracesSampleRate: 0.6,
 });
 
