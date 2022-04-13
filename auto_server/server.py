@@ -10,6 +10,16 @@ import autotimetabler_pb2_grpc
 
 # python -m grpc_tools.protoc -I../proto --python_out=. --grpc_python_out=. ../proto/autotimetabler.proto
 
+# Inittializing sentry
+import sentry_sdk
+sentry_sdk.init(
+    "https://4befe4d099314fec8e5283e484abf431@o1179870.ingest.sentry.io/6327124",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=0.6
+)
 
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
     def FindBestTimetable(self, request, context):

@@ -3,6 +3,7 @@ import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import DateFnsUtils from '@date-io/date-fns';
 import { Box, Button, MuiThemeProvider } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -349,4 +350,4 @@ const App: React.FC = () => {
     </MuiThemeProvider>
   );
 };
-export default App;
+export default Sentry.withProfiler(App);
