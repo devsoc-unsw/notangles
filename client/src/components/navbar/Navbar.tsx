@@ -30,8 +30,6 @@ const NavbarBox = styled.div`
 `;
 
 const StyledNavBar = styled(AppBar)`
-  background-color: ${({ theme }) => theme.palette.primary.main};
-  position: fixed;
 `;
 
 const NavbarTitle = styled(Typography)`
@@ -62,7 +60,7 @@ const Navbar: React.FC = () => {
 
   return (
     <NavbarBox>
-      <StyledNavBar>
+      <StyledNavBar enableColorOnDark position='fixed'>
         <Toolbar>
           {isPreview && (
             <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
