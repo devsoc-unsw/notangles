@@ -17,6 +17,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  TextField
 } from '@mui/material';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -309,14 +310,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
         <List>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Earliest start time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{alignSelf: 'center'}} primary="Earliest start time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
-                  renderInput={(props) => <></>}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setStartTime(e);
                   }}
@@ -326,14 +327,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Latest end time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{alignSelf: 'center'}} primary="Latest end time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
-                  renderInput={(props) => <></>}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setEndTime(e);
                   }}
