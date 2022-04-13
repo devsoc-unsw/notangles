@@ -12,6 +12,7 @@ export interface DbClass {
   activity: Activity;
   times: DbTimes[];
   courseEnrolment: DbCourseEnrolment;
+  section: string;
 }
 
 export interface DbCourseEnrolment {
@@ -91,6 +92,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
+  console.log(dbCourse)
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
@@ -108,6 +110,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       periods: [],
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
+      section: dbClass.section
     };
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));

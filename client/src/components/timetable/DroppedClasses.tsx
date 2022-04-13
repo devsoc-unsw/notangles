@@ -347,6 +347,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setOpen(!open);
   };
   return (
+    <>
     <StyledCourseClass
       ref={element}
       onMouseDown={onDown}
@@ -356,14 +357,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       y={y}
       earliestStartTime={earliestStartTime}
       isSquareEdges={isSquareEdges}
-    >
+      >
       <Card
         style={courseClassInnerStyle({
           backgroundColor: color,
           hasClash,
           isSquareEdges,
         })}
-      >
+        >
         <Grid container style={{ height: '100%' }}>
           <StyledSideArrow item xs={1}></StyledSideArrow>
           <Grid item xs={10} style={{ alignSelf: 'center' }}>
@@ -378,9 +379,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
                   <></>
                 ) : (
                   <PeriodMetadata period={cardData} />
-                )
-              ) : (
-                <>
+                  )
+                  ) : (
+                    <>
                   {activityMaxPeriods} class
                   {activityMaxPeriods !== 1 && 'es'}
                 </>
@@ -394,17 +395,18 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
                 onMouseLeave={() => setHoverOverStyle(false)}
                 onMouseOver={() => setHoverOverStyle(true)}
                 style={hoverOverStyle ? { color: 'pink' } : {}} // change to whatever styles are desired
-              ></Fullscreen>
+                ></Fullscreen>
             </StyledIconShadow>
           </Grid>
         </Grid>
       </Card>
+    </StyledCourseClass>
       <ExpandedView
         {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
         open={open}
         handleClose={handleClose}
-      />
-    </StyledCourseClass>
+        />
+        </>
   );
 };
 
