@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Menu } from '@mui/icons-material';
+import { Description, Info, Menu, Security } from '@mui/icons-material';
 
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -10,9 +10,10 @@ import { isPreview, term, termName, year } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 
 import About from './About';
+import Changelog from './Changelog';
+import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import Changelog from './Changelog';
 
 const LogoImg = styled.img`
   height: 46px;
@@ -29,6 +30,7 @@ const NavbarBox = styled.div`
 `;
 
 const StyledNavBar = styled(AppBar)`
+  background-color: ${({ theme }) => theme.palette.primary.main};
   position: fixed;
 `;
 
@@ -59,32 +61,40 @@ const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
   return (
-      <NavbarBox>
-        <StyledNavBar>
-          <Toolbar>
-            {isPreview && (
-              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
-                <Menu />
-              </IconButton>
-            )}
-            <LogoImg
-              src={currLogo}
-              onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-              onMouseOut={() => setCurrLogo(notanglesLogo)}
-            />
-            <NavbarTitle variant="h6">
-              Notangles
-              <Weak>
-                {isMobile ? term : termName.concat(', ', year)}
-              </Weak>
-            </NavbarTitle>
-            <About />
-            <Changelog />
-            <Privacy />
-            <Settings />
-          </Toolbar>
-        </StyledNavBar>
-      </NavbarBox>
+    <NavbarBox>
+      <StyledNavBar>
+        <Toolbar>
+          {isPreview && (
+            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
+              <Menu />
+            </IconButton>
+          )}
+          <LogoImg
+            src={currLogo}
+            onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+            onMouseOut={() => setCurrLogo(notanglesLogo)}
+          />
+          <NavbarTitle variant="h6">
+            Notangles
+            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
+          </NavbarTitle>
+          <CustomModal
+            title="About"
+            showIcon={<Info />}
+            description={'Notangles: no more timetable tangles'}
+            content={<About />}
+          />
+          <CustomModal title="Changelog" showIcon={<Description />} description={'Changelog'} content={<Changelog />} />
+          <CustomModal
+            title="Privacy"
+            showIcon={<Security />}
+            description={'Application Privacy Statement'}
+            content={<Privacy />}
+          />
+          <Settings />
+        </Toolbar>
+      </StyledNavBar>
+    </NavbarBox>
   );
 };
 

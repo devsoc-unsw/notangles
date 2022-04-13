@@ -10,10 +10,43 @@ export interface CourseContextProviderProps {
   children: ReactNode;
 }
 
+export interface CustomModalProps {
+  title: string;
+  showIcon: ReactNode;
+  description: string;
+  content: ReactNode;
+}
+
 export interface CourseSelectProps {
   assignedColors: Record<string, string>;
   handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
   handleRemove(courseCode: CourseCode): void;
+}
+
+export interface ControlsProps {
+  assignedColors: Record<string, string>;
+  handleSelectClass(classData: ClassData): void;
+  handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
+  handleRemoveCourse(courseCode: CourseCode): void;
+}
+
+export interface DropdownOptionProps {
+  optionName: string;
+  optionState: string | null | string[];
+  setOptionState(value: any): void;
+  optionChoices: string[];
+  multiple?: boolean;
+  noOff?: boolean;
+}
+
+export interface AutotimetableProps {
+  handleSelectClass(classData: ClassData): void;
+}
+
+export interface TimetableProps {
+  assignedColors: Record<string, string>;
+  clashes: Array<ClassPeriod>;
+  handleSelectClass(classData: ClassData): void;
 }
 
 export interface CellProps {
@@ -41,32 +74,6 @@ export interface DropzonesProps {
 
 export interface PeriodMetadataProps {
   period: ClassPeriod;
-}
-
-export interface ControlsProps {
-  assignedColors: Record<string, string>;
-  handleSelectClass(classData: ClassData): void;
-  handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
-  handleRemoveCourse(courseCode: CourseCode): void;
-}
-
-export interface AutotimetableProps {
-  handleSelectClass(classData: ClassData): void;
-}
-
-export interface TimetableProps {
-  assignedColors: Record<string, string>;
-  clashes: Array<ClassPeriod>;
-  handleSelectClass(classData: ClassData): void;
-}
-
-export interface DropdownOptionProps {
-  optionName: string;
-  optionState: string | null | string[];
-  setOptionState(value: any): void;
-  optionChoices: string[];
-  multiple?: boolean;
-  noOff?: boolean;
 }
 
 export interface DroppedClassProps {

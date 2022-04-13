@@ -1,66 +1,87 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from '@mui/material';
-import { Close, Description } from '@mui/icons-material';
 
-import ChangeLogContent from './ChangelogContent';
+type Change = { date: String; changes: String[] };
 
-const StyledDialogTitle = styled(DialogTitle)`
-  margin: 0;
-  padding: 20px;
+const changelog: Change[] = [
+  {
+    date: '12/04/22',
+    changes: [
+      'Added autotimetabling',
+      'Fixed bug which caused the timetable scrollbar to flash when changing between light and dark mode',
+    ],
+  },
+  {
+    date: '04/04/22',
+    changes: [
+      'Arrows to select different class now appear on all instances of a class, not just the first one',
+      'Added API call to automatically determine whether it is DST or not',
+    ],
+  },
+  {
+    date: '30/03/22',
+    changes: ['Added history (undo, redo, reset)'],
+  },
+  {
+    date: '29/03/22',
+    changes: ['Made privacy page prettier'],
+  },
+  {
+    date: '28/03/22',
+    changes: ['Added icons to differentiate between UG and PG classes'],
+  },
+  {
+    date: '27/03/22',
+    changes: ['Added DST support for ICS generation'],
+  },
+  {
+    date: '26/03/22',
+    changes: ['Added ability to sort search results alphabetically', 'Hid Saturday column if courses had no Saturday classes'],
+  },
+  {
+    date: '18/03/22',
+    changes: ['Bumped term number', 'Added icons to indicate course delivery mode', 'Made ICS save button prettier'],
+  },
+  {
+    date: '15/03/22',
+    changes: ['Added ICS saving'],
+  },
+  {
+    date: '10/03/22',
+    changes: ['Added ability to select between classes running at the same time'],
+  },
+  {
+    date: '08/03/22',
+    changes: ['Added icon to indicate when class is full', 'Updated class colours'],
+  },
+  {
+    date: '05/03/22',
+    changes: ['Added about us modal and settings modal'],
+  },
+];
+
+const ChangeItem = styled.div`
+  padding: 0.5vh 0;
 `;
 
-const StyledTypography = styled(Typography)`
-  margin-top: 10px;
-  margin-bottom: 10px;
+const ChangeTitle = styled.div`
+  font-weight: bold;
+  font-size: 1.1rem;
 `;
 
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-`;
-
-const InfoButton = styled(IconButton)`
-  margin-right: 5px;
-`;
-
-const StyledDialogContent = styled(DialogContent)`
-  padding: 20px;
-`;
-
-const Changelog: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const toggleIsOpen = () => {
-    setIsOpen(!isOpen);
-  };
-
+const Changelog = () => {
   return (
     <>
-      <Tooltip title="Changelog">
-        <InfoButton color="inherit" onClick={toggleIsOpen}>
-          <Description />
-        </InfoButton>
-      </Tooltip>
-      <Dialog
-        disableScrollLock
-        onClose={toggleIsOpen}
-        aria-labelledby="customized-dialog-title"
-        open={isOpen}
-        fullWidth
-        maxWidth="sm"
-      >
-        <StyledDialogTitle>
-          <StyledTypography variant="h5">Changelog</StyledTypography>
-          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
-            <Close />
-          </CloseButton>
-        </StyledDialogTitle>
-        <StyledDialogContent>
-          <ChangeLogContent />
-        </StyledDialogContent>
-      </Dialog>
+      {changelog.map(({ date, changes }, idx) => (
+        <ChangeItem key={idx}>
+          <ChangeTitle>{date}</ChangeTitle>
+          <ul>
+            {changes.map((change, idx) => (
+              <li key={idx}>{change}</li>
+            ))}
+          </ul>
+        </ChangeItem>
+      ))}
     </>
   );
 };
