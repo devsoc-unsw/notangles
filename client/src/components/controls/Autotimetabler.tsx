@@ -29,13 +29,17 @@ import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
-  width: 100%;
-  height: 55px;
-  text-align: left;
-  margin-top: 20px;
-  margin-right: 10px;
-  text-transform: none;
-  // padding: 6px 16px 6px 4px !important;
+  && {
+    width: 100%;
+    height: 55px;
+    margin-top: 20px;
+    margin-right: 10px;
+    background-color: ${({ theme }) => theme.palette.primary.main};
+    color: #ffffff;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
 `;
 
 const InfoContainer = styled.div`
@@ -242,7 +246,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     <div style={{ display: 'flex' }}>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
-          Auto-timetable
+          AUTO-TIMETABLE
         </Box>
         <Box ml="5px" />
         {open ? <ArrowDropUp /> : <ArrowDropDown />}
