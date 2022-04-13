@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { defaultStartTime } from '../../constants/timetable';
-import { ClassPeriod, InInventory } from '../../interfaces/Course';
+import { Activity, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -397,7 +397,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
 
   const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
-  const getInventoryPeriod = (courseCode: string, activity: string) =>
+  const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
     selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
 
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {

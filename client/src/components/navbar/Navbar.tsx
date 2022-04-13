@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 
-import CSESocLogo from '../assets/notangles_one_n_with_grey.png';
-import CSESocLogoTwo from '../assets/notangles_two_n_with_grey.gif';
-import { ThemeType } from '../constants/theme';
-import { isPreview, term, termName, year } from '../constants/timetable';
-import { AppContext } from '../context/AppContext';
+import notanglesLogo from '../../assets/notangles_1.png';
+import notanglesLogoGif from '../../assets/notangles.gif';
+import { ThemeType } from '../../constants/theme';
+import { isPreview, term, termName, year } from '../../constants/timetable';
+import { AppContext } from '../../context/AppContext';
 
 import About from './About';
 import Privacy from './Privacy';
@@ -56,31 +56,35 @@ const Navbar: React.FC = () => {
     setIsFriendsListOpen(!isFriendsListOpen);
   };
 
-  const [currLogo, setCurrLogo] = useState(CSESocLogo);
+  const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
   return (
-    // <StylesProvider injectFirst>
-    <NavbarBox>
-      <StyledNavBar enableColorOnDark>
-        <Toolbar>
-          {isPreview && (
-            <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start" size="large">
-              <Menu />
-            </IconButton>
-          )}
-          <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(CSESocLogoTwo)} onMouseOut={() => setCurrLogo(CSESocLogo)} />
-          <NavbarTitle variant="h6">
-            Notangles
-            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
-          </NavbarTitle>
-          <About />
-          <Changelog />
-          <Privacy />
-          <Settings />
-        </Toolbar>
-      </StyledNavBar>
-    </NavbarBox>
-    // </StylesProvider>
+      <NavbarBox>
+        <StyledNavBar>
+          <Toolbar>
+            {isPreview && (
+              <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
+                <Menu />
+              </IconButton>
+            )}
+            <LogoImg
+              src={currLogo}
+              onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+              onMouseOut={() => setCurrLogo(notanglesLogo)}
+            />
+            <NavbarTitle variant="h6">
+              Notangles
+              <Weak>
+                {isMobile ? term : termName.concat(', ', year)}
+              </Weak>
+            </NavbarTitle>
+            <About />
+            <Changelog />
+            <Privacy />
+            <Settings />
+          </Toolbar>
+        </StyledNavBar>
+      </NavbarBox>
   );
 };
 

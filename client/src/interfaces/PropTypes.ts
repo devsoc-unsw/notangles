@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { CardData } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseData, InInventory } from './Course';
+import { ClassData, ClassPeriod, CourseCode, CourseData, InInventory } from './Course';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -13,7 +13,7 @@ export interface CourseContextProviderProps {
 export interface CourseSelectProps {
   assignedColors: Record<string, string>;
   handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
-  handleRemove(courseCode: string): void;
+  handleRemove(courseCode: CourseCode): void;
 }
 
 export interface CellProps {
@@ -45,14 +45,28 @@ export interface PeriodMetadataProps {
 
 export interface ControlsProps {
   assignedColors: Record<string, string>;
+  handleSelectClass(classData: ClassData): void;
   handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
-  handleRemoveCourse(courseCode: string): void;
+  handleRemoveCourse(courseCode: CourseCode): void;
+}
+
+export interface AutotimetableProps {
+  handleSelectClass(classData: ClassData): void;
 }
 
 export interface TimetableProps {
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
+}
+
+export interface DropdownOptionProps {
+  optionName: string;
+  optionState: string | null | string[];
+  setOptionState(value: any): void;
+  optionChoices: string[];
+  multiple?: boolean;
+  noOff?: boolean;
 }
 
 export interface DroppedClassProps {

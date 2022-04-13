@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Link, Tooltip, Typography } from '@mui/material';
 import { Close, Info } from '@mui/icons-material';
 
-import useGif from '../assets/how_to_use.gif';
+import useGif from '../../assets/how_to_use.gif';
 
 const HowToUseImg = styled.img`
   display: block;

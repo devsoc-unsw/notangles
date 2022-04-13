@@ -1,13 +1,15 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, ThemeProvider as MuiThemeProvider, Theme, StyledEngineProvider, Snackbar } from '@mui/material';
-import { Alert } from '@mui/material';
+import { Box, Button, ThemeProvider as MuiThemeProvider, StyledEngineProvider } from '@mui/material';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
-import Header from './components/Controls';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
+import Alerts from './components/Alerts';
+import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
-import Navbar from './components/Navbar';
+import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
+import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
@@ -33,7 +35,7 @@ import storage from './utils/storage';
 
 const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   body {
-    background: ${(props) => props.theme.palette.background.default};
+    background: ${({ theme }) => theme.palette.background.default};
     transition: background 0.2s;
   }
   ::-webkit-scrollbar {
@@ -70,7 +72,7 @@ const ContentWrapper = styled(Box)`
   display: flex;
   flex-direction: row-reverse;
   justify-content: ${isPreview ? 'flex-start' : 'center'};
-  color: ${(props) => props.theme.palette.text.primary};
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const getContentWidth = (drawerOpen: boolean) => {
@@ -95,7 +97,7 @@ const ICSButton = styled(Button)`
   && {
     min-width: 250px;
     margin: 2vh auto;
-    background-color: ${(props) => props.theme.palette.primary.main};
+    background-color: ${({ theme }) => theme.palette.primary.main};
     color: #ffffff;
     &:hover {
       background-color: #598dff;
@@ -112,9 +114,7 @@ const App: React.FC = () => {
     isDefaultUnscheduled,
     isHideClassInfo,
     isSortAlphabetic,
-    errorMsg,
-    setErrorMsg,
-    errorVisibility,
+    setAlertMsg,
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
@@ -216,13 +216,13 @@ const App: React.FC = () => {
       })
       .catch((e) => {
         if (e instanceof NetworkError) {
-          setErrorMsg(e.message);
+          setAlertMsg(e.message);
           setErrorVisibility(true);
         }
       });
   };
 
-  const handleRemoveCourse = (courseCode: string) => {
+  const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => {
@@ -230,14 +230,6 @@ const App: React.FC = () => {
       delete prev[courseCode];
       return prev;
     });
-  };
-
-  const handleErrorClose = () => {
-    setErrorVisibility(false);
-  };
-
-  const handleInfoClose = () => {
-    setInfoVisibility(false);
   };
 
   useEffect(() => {
@@ -333,33 +325,27 @@ const App: React.FC = () => {
     <StyledEngineProvider injectFirst>
       <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <GlobalStyle />
-          <StyledApp>
-            <Navbar />
-            {isPreview && <FriendsDrawer />}
-            <ContentWrapper>
-              <Content drawerOpen={isFriendsListOpen}>
-                <Header
-                  assignedColors={assignedColors}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-                <Footer />
-                <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                  <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                    {errorMsg}
-                  </Alert>
-                </Snackbar>
-                <Snackbar open={infoVisibility}>
-                  <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                    Press and hold to drag a class
-                  </Alert>
-                </Snackbar>
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <GlobalStyle />
+            <StyledApp>
+              <Navbar />
+              {isPreview && <FriendsDrawer />}
+              <ContentWrapper>
+                <Content drawerOpen={isFriendsListOpen}>
+                  <Controls
+                    assignedColors={assignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                  <Footer />
+                  <Alerts />
+                </Content>
+              </ContentWrapper>
+            </StyledApp>
+          </LocalizationProvider>
         </ThemeProvider>
       </MuiThemeProvider>
     </StyledEngineProvider>

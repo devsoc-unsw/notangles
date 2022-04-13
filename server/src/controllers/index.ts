@@ -1,4 +1,3 @@
-import { getCourse } from './getCourse';
-import { getCourseList } from './getCourseList';
+import { getAuto } from './getAutotimetable';
 
-export { getCourse, getCourseList };
+export { getAuto };

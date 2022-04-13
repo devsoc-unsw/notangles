@@ -6,15 +6,15 @@ import styled, { css } from 'styled-components';
 import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
 
-import getCoursesList from '../api/getCoursesList';
-import { AppContext } from '../context/AppContext';
-import { maxAddedCourses, term, year } from '../constants/timetable';
-import { CourseData } from '../interfaces/Course';
-import { CourseOverview, CoursesList } from '../interfaces/CourseOverview';
-import NetworkError from '../interfaces/NetworkError';
-import { CourseSelectProps } from '../interfaces/PropTypes';
-import { CourseContext } from '../context/CourseContext';
-import { ThemeType } from '../constants/theme';
+import getCoursesList from '../../api/getCoursesList';
+import { AppContext } from '../../context/AppContext';
+import { maxAddedCourses, term, year } from '../../constants/timetable';
+import { CourseCode, CourseData } from '../../interfaces/Course';
+import { CourseOverview, CoursesList } from '../../interfaces/CourseOverview';
+import NetworkError from '../../interfaces/NetworkError';
+import { CourseSelectProps } from '../../interfaces/PropTypes';
+import { CourseContext } from '../../context/CourseContext';
+import { ThemeType } from '../../constants/theme';
 
 const SEARCH_DELAY = 300;
 
@@ -137,7 +137,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { isSortAlphabetic, setErrorMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { isSortAlphabetic, setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
-  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
+  const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
   const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
   if (selectedValue.length) {
     defaultOptions = defaultOptions.filter(
@@ -261,7 +261,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       setLastUpdated(fetchedCoursesList.lastUpdated);
     } catch (e) {
       if (e instanceof NetworkError) {
-        setErrorMsg(e.message);
+        setAlertMsg(e.message);
         setErrorVisibility(true);
       }
     }

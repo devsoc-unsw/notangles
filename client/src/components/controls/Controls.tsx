@@ -5,7 +5,7 @@ import { Box, Grid } from '@mui/material';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import History from './History';
-import { ControlsProps } from '../interfaces/PropTypes';
+import { ControlsProps } from '../../interfaces/PropTypes';
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -17,23 +17,28 @@ const SelectWrapper = styled(Box)`
 
 const AutotimetablerWrapper = styled(Box)`
   flex: 1;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    flex: none;
+  }
 `;
 
 const HistoryWrapper = styled(Box)`
   margin-top: 20px;
+  margin-left: 3px;
 `;
 
-const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectCourse, handleRemoveCourse }) => {
+const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={8}>
         <SelectWrapper>
           <CourseSelect assignedColors={assignedColors} handleSelect={handleSelectCourse} handleRemove={handleRemoveCourse} />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" xs={12} md={6}>
+      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={4}>
         <AutotimetablerWrapper>
-          <Autotimetabler />
+          <Autotimetabler handleSelectClass={handleSelectClass} />
         </AutotimetablerWrapper>
         <HistoryWrapper>
           <History />

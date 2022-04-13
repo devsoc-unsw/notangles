@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { Redo, Restore, Undo } from '@mui/icons-material';
 
-import { AppContext } from '../context/AppContext';
-import { CourseContext } from '../context/CourseContext';
-import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../interfaces/Course';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../../interfaces/Course';
 
 interface Action {
   courses: CourseData[];

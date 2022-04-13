@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Dialog, DialogTitle, Divider, IconButton, Switch, Tooltip, Typography } from '@mui/material';
 import { Close, Settings as SettingsIcon } from '@mui/icons-material';
 
-import { AppContext } from '../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 
 const StyledDialogTitle = styled(DialogTitle)`
   margin: 0;

@@ -1,15 +1,15 @@
-import { CourseData, ClassData, ClassPeriod } from './Course';
+import { Activity, ClassData, ClassPeriod, CourseCode, CourseData } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 
 export interface DbCourse {
-  courseCode: string;
+  courseCode: CourseCode;
   name: string;
   classes: DbClass[];
 }
 
 export interface DbClass {
-  activity: string;
+  activity: Activity;
   times: DbTimes[];
   courseEnrolment: DbCourseEnrolment;
 }
