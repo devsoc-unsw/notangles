@@ -137,7 +137,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { isSortAlphabetic, setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
@@ -181,25 +181,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       setOptions(defaultOptions);
       return defaultOptions;
     }
-    // console.log(fuzzy)
+
     const newOptions = fuzzy.search(query).map((result) => result.item);
-
-    // sorting results
-    // if (isSortAlphabetic) {
-    //   let lengthQuery = query.length;
-    //   if (lengthQuery <= 8) {
-    //     newOptions.sort((a, b) =>
-    //       a.code.substring(0, lengthQuery) === query.toUpperCase() &&
-    //       b.code.substring(0, lengthQuery) === query.toUpperCase() &&
-    //       a.code < b.code
-    //         ? -1
-    //         : 1
-    //     );
-    //   }
-    // }
-    // newOptions.sort((a, b) => ('' + a.code).localeCompare(b.code))
-
     setOptions(newOptions);
+
     return newOptions;
   };
 

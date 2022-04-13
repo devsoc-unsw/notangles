@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { Description, Info, Menu, Security } from '@mui/icons-material';
+import { Description, Info, Menu, Security, Settings as SettingsIcon } from '@mui/icons-material';
 
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -91,7 +91,12 @@ const Navbar: React.FC = () => {
             description={'Application Privacy Statement'}
             content={<Privacy />}
           />
-          <Settings />
+          <CustomModal
+            title="Settings"
+            showIcon={<SettingsIcon />}
+            description={'Settings'}
+            content={<Settings />}
+          />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

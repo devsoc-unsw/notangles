@@ -22,9 +22,6 @@ export interface IAppContext {
   isHideClassInfo: boolean;
   setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
 
-  isSortAlphabetic: boolean;
-  setIsSortAlphabetic: (newIsSortAlphabetic: boolean) => void;
-
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -72,9 +69,6 @@ export const AppContext = createContext<IAppContext>({
   isHideClassInfo: false,
   setIsHideClassInfo: () => {},
 
-  isSortAlphabetic: false,
-  setIsSortAlphabetic: () => {},
-
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -110,7 +104,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
-  const [isSortAlphabetic, setIsSortAlphabetic] = useState<boolean>(storage.get('isSortAlphabetic'));
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
@@ -134,8 +127,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
-    isSortAlphabetic,
-    setIsSortAlphabetic,
     alertMsg,
     setAlertMsg,
     errorVisibility,
