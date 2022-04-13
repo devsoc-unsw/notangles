@@ -84,3 +84,8 @@ export interface DroppedClassesProps {
   clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
 }
+
+export interface ExpandedViewProps extends DroppedClassProps {
+  open: boolean;
+  handleClose: () => void;
+}

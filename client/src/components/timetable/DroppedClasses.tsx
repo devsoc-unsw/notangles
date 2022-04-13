@@ -37,6 +37,7 @@ import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../
 import { CourseClassInnerStyleProps, StyledCapacityIndicatorProps, StyledCourseClassProps } from '../../interfaces/StyleProps';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 import { Box } from '@material-ui/core';
+import ExpandedView from './ExpandedView';
 
 export const inventoryMargin = 10;
 
@@ -336,6 +337,15 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     );
   }
 
+  const [hoverOverStyle, setHoverOverStyle] = useState(false);
+
+  const [open, setOpen] = React.useState(false);
+
+
+
+  const handleClose = () => {
+    setOpen(!open);
+  };
   return (
     <StyledCourseClass
       ref={element}
@@ -354,14 +364,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           isSquareEdges,
         })}
       >
-        {/* <Box style={{position: 'absolute', }}>
-          <Box/>
-        <IconButton style={{padding: 0}}><Fullscreen></Fullscreen></IconButton>
-        </Box> */}
-        <Grid container style={{height: '100%'}}>
-          <StyledSideArrow item xs={1}>
-          </StyledSideArrow>
-          <Grid item xs={10} style={{alignSelf: 'center'}}>
+        <Grid container style={{ height: '100%' }}>
+          <StyledSideArrow item xs={1}></StyledSideArrow>
+          <Grid item xs={10} style={{ alignSelf: 'center' }}>
             <p style={pStyle}>
               <b>
                 {cardData.class.course.code} {cardData.class.activity}
@@ -384,15 +389,21 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             <TouchRipple ref={rippleRef} />
           </Grid>
           <Grid item xs={1}>
-            {/* <div style={{marginRight: '100px'}}> */}
-          <StyledIconShadow><Fullscreen style={{paddingRight: '5px', paddingTop: '5px' }}></Fullscreen></StyledIconShadow>
-
-            {/* </div> */}
+            <StyledIconShadow onClick={() => setOpen(true)}>
+              <Fullscreen
+                onMouseLeave={() => setHoverOverStyle(false)}
+                onMouseOver={() => setHoverOverStyle(true)}
+                style={hoverOverStyle ? { color: 'pink' } : {}} // change to whatever styles are desired
+              ></Fullscreen>
+            </StyledIconShadow>
           </Grid>
-          {/* <StyledSideArrow item xs={1}> */}
-          {/* </StyledSideArrow> */}
         </Grid>
       </Card>
+      <ExpandedView
+        {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
+        open={open}
+        handleClose={handleClose}
+      />
     </StyledCourseClass>
   );
 };
