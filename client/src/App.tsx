@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { Box, Button, ThemeProvider as MuiThemeProvider, StyledEngineProvider } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
@@ -320,7 +320,7 @@ const App: React.FC = () => {
     <StyledEngineProvider injectFirst>
       <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
             <GlobalStyle />
             <StyledApp>
               <Navbar />

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@date-io/dayjs": "^2.13.1",
+    "@date-io/date-fns": "^2.13.1",
     "@mui/icons-material": "^5.6.0",
     "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.6.0",
