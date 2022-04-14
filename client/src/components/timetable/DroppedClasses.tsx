@@ -87,7 +87,9 @@ const StyledIconShadow = styled(IconButton)`
   color: white;
 `;
 
-const StyledCourseClass = styled('div')<{
+const StyledCourseClass = styled('div', {
+  shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
+})<{
   cardData: CardData;
   days: string[];
   y?: number;
@@ -134,7 +136,9 @@ const StyledCourseClass = styled('div')<{
   }
 `;
 
-const StyledCourseClassInner = styled(Card)<{
+const StyledCourseClassInner = styled(Card, {
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges'].includes(prop.toString()),
+})<{
   backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
@@ -192,7 +196,9 @@ const iconWarningStyle = {
   color: yellow[400],
 };
 
-const StyledCapacityIndicator = styled('span')<{
+const StyledCapacityIndicator = styled('span', {
+  shouldForwardProp: (prop) => prop !== 'percentEnrolled',
+})<{
   percentEnrolled: number;
 }>`
   text-overflow: ellipsis;

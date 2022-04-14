@@ -47,7 +47,9 @@ const StyledSelect = styled(Box)`
   text-align: left;
 `;
 
-const StyledTextField = styled(TextField)<{
+const StyledTextField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'selectedCourses',
+})<{
   selectedCourses: CourseData[];
 }>`
   .MuiOutlinedInput-root {
@@ -75,7 +77,9 @@ const StyledInputAdornment = styled(InputAdornment)`
   color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
-const StyledChip = styled(Chip)<{
+const StyledChip = styled(Chip, {
+  shouldForwardProp: (prop) => prop !== 'backgroundColor',
+})<{
   backgroundColor: string;
 }>`
   transition: none !important;

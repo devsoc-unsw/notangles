@@ -13,7 +13,9 @@ import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 
-const StyledTimetable = styled(Box)<{
+const StyledTimetable = styled(Box, {
+  shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
+})<{
   rows: number;
   cols: number;
 }>`

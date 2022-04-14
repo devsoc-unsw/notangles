@@ -11,7 +11,9 @@ const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
-const BaseCell = styled('div')<{
+const BaseCell = styled('div', {
+  shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
+})<{
   x: number;
   y: number;
   yTo?: number;
@@ -49,7 +51,9 @@ const InventoryCell = styled(DayCell)`
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
-const HourCell = styled(GridCell)<{ is12HourMode: boolean }>`
+const HourCell = styled(GridCell, {
+  shouldForwardProp: (prop) => prop !== 'is12HourMode',
+})<{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};

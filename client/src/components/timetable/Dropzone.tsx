@@ -8,7 +8,9 @@ import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { classHeight, classTranslateY } from './DroppedClasses';
 
-const StyledDropzone = styled('div')<{
+const StyledDropzone = styled('div', {
+  shouldForwardProp: (prop) => !['classPeriod', 'x', 'color', 'isInventory', 'earliestStartTime'].includes(prop.toString()),
+})<{
   classPeriod: ClassPeriod | InInventory;
   x: number;
   color: string;

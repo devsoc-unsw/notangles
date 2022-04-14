@@ -58,7 +58,9 @@ const getContentWidth = (drawerOpen: boolean) => {
   return contentWidth;
 };
 
-const Content = styled(Box)<{
+const Content = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'drawerOpen',
+})<{
   drawerOpen: boolean;
 }>`
   width: ${({ drawerOpen }) => getContentWidth(drawerOpen)};
