@@ -124,17 +124,13 @@ const StyledAccordion = styled(Accordion)`
   margin: auto;
 `;
 
-const StyledAccordionSummary = styled(AccordionSummary)<{
-  theme: Theme;
-}>`
+const StyledAccordionSummary = styled(AccordionSummary)`
   backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
-const StyledAccordionDetails = styled(AccordionDetails)<{
-  theme: Theme;
-}>`
+const StyledAccordionDetails = styled(AccordionDetails)`
   backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
