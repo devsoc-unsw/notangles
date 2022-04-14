@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, ThemeProvider as MuiThemeProvider, StyledEngineProvider } from '@mui/material';
+import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { styled } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
-import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
+import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import { isPreview, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
@@ -32,30 +32,6 @@ import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-
-const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
-  body {
-    background: ${({ theme }) => theme.palette.background.default};
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.palette.background.default};
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.palette.secondary.main};
-    border-radius: 5px;
-    opacity: 0.5;
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.palette.secondary.dark};
-  }
-`;
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -316,33 +292,56 @@ const App: React.FC = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const globalStyle = {
+    body: {
+      background: theme.palette.background.default,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar': {
+      width: '10px',
+      height: '10px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: theme.palette.background.default,
+      borderRadius: '5px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: theme.palette.secondary.main,
+      borderRadius: '5px',
+      opacity: 0.5,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: theme.palette.secondary.dark,
+    },
+  };
+
   return (
     <StyledEngineProvider injectFirst>
-      <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <GlobalStyle />
-            <StyledApp>
-              <Navbar />
-              {isPreview && <FriendsDrawer />}
-              <ContentWrapper>
-                <Content drawerOpen={isFriendsListOpen}>
-                  <Controls
-                    assignedColors={assignedColors}
-                    handleSelectClass={handleSelectClass}
-                    handleSelectCourse={handleSelectCourse}
-                    handleRemoveCourse={handleRemoveCourse}
-                  />
-                  <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-                  <Footer />
-                  <Alerts />
-                </Content>
-              </ContentWrapper>
-            </StyledApp>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </MuiThemeProvider>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <GlobalStyles styles={globalStyle} />
+          <StyledApp>
+            <Navbar />
+            {isPreview && <FriendsDrawer />}
+            <ContentWrapper>
+              <Content drawerOpen={isFriendsListOpen}>
+                <Controls
+                  assignedColors={assignedColors}
+                  handleSelectClass={handleSelectClass}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Alerts />
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
+        </LocalizationProvider>
+      </ThemeProvider>
     </StyledEngineProvider>
   );
 };
