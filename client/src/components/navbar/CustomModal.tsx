@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
-import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
 
@@ -60,9 +60,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description,
           </CloseButton>
         </StyledDialogTitle>
         <Divider />
-        <StyledDialogContent>
-          {content}
-        </StyledDialogContent>
+        <StyledDialogContent>{content}</StyledDialogContent>
       </Dialog>
     </>
   );

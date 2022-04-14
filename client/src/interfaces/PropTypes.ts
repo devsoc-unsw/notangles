@@ -49,27 +49,22 @@ export interface TimetableProps {
   handleSelectClass(classData: ClassData): void;
 }
 
-export interface CellProps {
+export interface DropzoneProps {
   classPeriod: ClassPeriod | InInventory;
   x: number;
-  y: number;
   earliestStartTime: number;
   color: string;
-  yEnd?: number;
   isInventory?: boolean;
 }
 
-export interface ClassDropzoneProps {
+export interface DropzoneGroupProps {
   course: CourseData;
   color: string;
   earliestStartTime: number;
 }
 
-interface Theme {}
-
 export interface DropzonesProps {
   assignedColors: Record<string, string>;
-  theme: Theme;
 }
 
 export interface PeriodMetadataProps {

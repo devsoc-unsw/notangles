@@ -1,16 +1,16 @@
 import React, { useContext } from 'react';
-import { Divider, Switch } from '@mui/material';
-import styled from 'styled-components';
+import { Switch } from '@mui/material';
+import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 
-const SettingsItem = styled.div`
+const SettingsItem = styled('div')`
   display: flex;
   justify-content: space-between;
   padding: 1vh 20px;
 `;
 
-const SettingText = styled.div`
+const SettingText = styled('div')`
   padding: 1vh 0;
 `;
 

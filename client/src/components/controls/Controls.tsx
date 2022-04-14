@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Box, Grid } from '@mui/material';
+import { styled } from '@mui/system';
 
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';

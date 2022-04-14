@@ -1,30 +1,39 @@
 import React, { useEffect, useRef } from 'react';
 import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
+import { styled } from '@mui/system';
 
 import { borderRadius } from '../../constants/theme';
-import { CellProps } from '../../interfaces/PropTypes';
-import { CellStyleProps } from '../../interfaces/StyleProps';
+import { DropzoneProps } from '../../interfaces/PropTypes';
+import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { classHeight, classTranslateY } from './DroppedClasses';
 
-const cellStyle = ({ classPeriod, x, color, isInventory, earliestStartTime }: CellStyleProps) => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 50,
-  pointerEvents: 'none' as 'none',
-  gridColumn: x,
-  gridRow: '2 / -1',
-  transform: `translateY(${classPeriod ? classTranslateY(classPeriod, earliestStartTime) : '0'})`,
-  height: isInventory ? '100%' : classHeight(classPeriod),
-  marginBottom: 1 / devicePixelRatio,
-  backgroundColor: color,
-  opacity: 0,
-  transition: `${defaultTransition}, z-index 0s`,
-  borderBottomRightRadius: isInventory ? `${borderRadius}px` : '0px',
-});
+const StyledDropzone = styled('div')<{
+  $classPeriod: ClassPeriod | InInventory;
+  $x: number;
+  $color: string;
+  $isInventory?: boolean;
+  $earliestStartTime: number;
+}>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: none;
+  grid-column: ${({ $x }) => $x};
+  grid-row: 2 / -1;
+  transform: translateY(
+    ${({ $classPeriod, $earliestStartTime }) => ($classPeriod ? classTranslateY($classPeriod, $earliestStartTime) : 0)}
+  );
+  height: ${({ $classPeriod, $isInventory }) => ($isInventory ? '100%' : classHeight($classPeriod))};
+  margin-bottom: ${1 / devicePixelRatio}px;
+  background-color: ${({ $color }) => $color};
+  opacity: 0;
+  transition: ${defaultTransition}, z-index 0s;
+  border-bottom-right-radius: ${({ $isInventory }) => ($isInventory ? borderRadius : 0)}px;
+`;
 
-const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, color, yEnd, isInventory }) => {
+const Dropzone: React.FC<DropzoneProps> = ({ classPeriod, x, earliestStartTime, color, isInventory }) => {
   const element = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const elementCurrent = element.current;
@@ -35,18 +44,14 @@ const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, c
   }, []);
 
   return (
-    <div
+    <StyledDropzone
       ref={element}
       className="dropzone"
-      style={cellStyle({
-        classPeriod,
-        x,
-        y,
-        yEnd,
-        color,
-        isInventory,
-        earliestStartTime,
-      })}
+      $classPeriod={classPeriod}
+      $x={x}
+      $color={color}
+      $isInventory={isInventory}
+      $earliestStartTime={earliestStartTime}
     >
       {classPeriod !== null && (
         <>
@@ -56,7 +61,7 @@ const Dropzone: React.FC<CellProps> = ({ classPeriod, x, y, earliestStartTime, c
           )}
         </>
       )}
-    </div>
+    </StyledDropzone>
   );
 };
 

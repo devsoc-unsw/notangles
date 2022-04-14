@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
-import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 const privacyQuestions = [
   {

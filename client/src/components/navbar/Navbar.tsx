@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
-import styled from 'styled-components';
-import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Description, Info, Menu, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -15,14 +15,14 @@ import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
 
-const LogoImg = styled.img`
+const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
   margin-top: -2px;
   margin-left: ${isPreview ? 9.5 : -11.5}px;
 `;
 
-const NavbarBox = styled.div`
+const NavbarBox = styled('div')`
   flex-grow: 1;
   position: fixed;
   margin-left: 0px;
@@ -30,13 +30,14 @@ const NavbarBox = styled.div`
 `;
 
 const StyledNavBar = styled(AppBar)`
+  background: ${({ theme }) => theme.palette.primary.main};
 `;
 
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
 `;
 
-const Weak = styled.span`
+const Weak = styled('span')`
   font-weight: 300;
   opacity: 0.8;
   margin-left: 15px;
@@ -60,7 +61,7 @@ const Navbar: React.FC = () => {
 
   return (
     <NavbarBox>
-      <StyledNavBar enableColorOnDark position='fixed'>
+      <StyledNavBar enableColorOnDark position="fixed">
         <Toolbar>
           {isPreview && (
             <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} edge="start">
@@ -89,12 +90,7 @@ const Navbar: React.FC = () => {
             description={'Application Privacy Statement'}
             content={<Privacy />}
           />
-          <CustomModal
-            title="Settings"
-            showIcon={<SettingsIcon />}
-            description={'Settings'}
-            content={<Settings />}
-          />
+          <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

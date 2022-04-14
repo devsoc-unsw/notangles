@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import createStyles from '@mui/styles/createStyles';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 import Drawer from '@mui/material/Drawer';
@@ -39,7 +39,7 @@ const StyledLink = styled(Link)`
   margin-left: 10px;
 `;
 
-const StyledListItems = styled.div`
+const StyledListItems = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -50,12 +50,12 @@ const StyledListItemText = styled(ListItemText)`
   text-overflow: ellipsis;
 `;
 
-const DrawerContainer = styled.div`
+const DrawerContainer = styled('div')`
   margin-top: 64px; /* navbar height */
   overflow: auto;
 `;
 
-const LoginComponent = styled.div`
+const LoginComponent = styled('div')`
   text-align: center;
   padding: 20px;
   margin-top: 45%;

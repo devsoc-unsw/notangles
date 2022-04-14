@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
 import { Box, Link } from '@mui/material';
 
 import { AppContext } from '../context/AppContext';

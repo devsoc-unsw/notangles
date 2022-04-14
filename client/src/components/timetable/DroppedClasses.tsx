@@ -4,7 +4,7 @@ import { Card, Grid, IconButton } from '@mui/material';
 import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt } from '@mui/icons-material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { yellow } from '@mui/material/colors';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -25,7 +25,6 @@ import {
   unregisterCard,
 } from '../../utils/Drag';
 import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
-import { CourseClassInnerStyleProps, StyledCapacityIndicatorProps, StyledCourseClassProps } from '../../interfaces/StyleProps';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
@@ -88,23 +87,26 @@ const StyledIconShadow = styled(IconButton)`
   color: white;
 `;
 
-const StyledCourseClass = styled.div<StyledCourseClassProps>`
+const StyledCourseClass = styled('div')<{
+  $cardData: CardData;
+  $days: string[];
+  $y?: number;
+  $earliestStartTime: number;
+  $isSquareEdges: boolean;
+}>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y }) => classTransformStyle(cardData, earliestStartTime, days, y)};
+  transform: ${({ $cardData, $earliestStartTime, $days, $y }) => classTransformStyle($cardData, $earliestStartTime, $days, $y)};
   // position over timetable borders
   width: calc(100% + ${1 / devicePixelRatio}px);
-  height: ${({ cardData }) => classHeight(cardData)};
+  height: ${({ $cardData }) => classHeight($cardData)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
-
-  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-
-  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-
-  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
+  padding: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges)}px;
+  padding-right: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges) + 1 / devicePixelRatio}px;
+  padding-bottom: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges) + ($isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 
   transition: ${defaultTransition}, z-index 0s;
 
@@ -112,7 +114,7 @@ const StyledCourseClass = styled.div<StyledCourseClassProps>`
     & > div {
       opacity: 0;
       transform: scale(${elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getElevatedShadow(isSquareEdges)]};
+      box-shadow: ${({ $isSquareEdges }) => getElevatedShadow($isSquareEdges)};
     }
   }
 
@@ -120,50 +122,53 @@ const StyledCourseClass = styled.div<StyledCourseClassProps>`
     & > div {
       opacity: 1;
       transform: scale(1);
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
+      box-shadow: ${({ $isSquareEdges }) => getDefaultShadow($isSquareEdges)};
     }
   }
 
   &.${transitionName}-leave-active {
     & > div {
       opacity: 0;
-      // transform: scale(${2 - elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
+      box-shadow: ${({ $isSquareEdges }) => getDefaultShadow($isSquareEdges)};
     }
   }
 `;
 
-const courseClassInnerStyle = ({ backgroundColor, hasClash, isSquareEdges }: CourseClassInnerStyleProps) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column' as 'column',
+const StyledCourseClassInner = styled(Card)<{
+  $backgroundColor: string;
+  $hasClash: boolean;
+  $isSquareEdges: boolean;
+}>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-  backgroundColor,
-  color: 'white',
-  fontSize: '0.9rem',
-  borderRadius: isSquareEdges ? '0px' : '7px',
-  transition: `${defaultTransition}, z-index 0s`,
-  backfaceVisibility: 'hidden' as 'hidden',
-  fontSmoothing: 'subpixel-antialiased',
-  border: hasClash ? 'solid red 4px' : 'solid transparent 0px',
-  paddingLeft: 4,
-  paddingRight: 4,
-  paddingTop: 0,
-  paddingBottom: 0,
+  background-color: ${({ $backgroundColor }) => $backgroundColor};
+  color: white;
+  font-size: 0.9rem;
+  border-radius: ${({ $isSquareEdges }) => ($isSquareEdges ? '0px' : '7px')};
+  transition: ${defaultTransition}, z-index 0s;
+  backface-visibility: hidden;
+  font-smoothing: subpixel-antialiased;
+  border: ${({ $hasClash }) => ($hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  paddingleft: 4;
+  paddingright: 4;
+  paddingtop: 0;
+  paddingbottom: 0;
 
-  minWidth: 0,
-  width: '100%',
-  height: '100%',
-  boxSizing: 'border-box' as 'border-box',
-  position: 'relative' as 'relative',
-});
+  minwidth: 0;
+  width: 100%;
+  height: 100%;
+  boxsizing: border-box;
+  position: relative;
+`;
 
 const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
+  overflow: 'hidden',
   textOverflow: 'ellipsis',
 };
 
@@ -187,18 +192,20 @@ const iconWarningStyle = {
   color: yellow[400],
 };
 
-const StyledCapacityIndicator = ({ percentEnrolled }: StyledCapacityIndicatorProps) => ({
-  textOverflow: 'ellipsis',
-  margin: 0,
-  fontWeight: `${percentEnrolled === 1 ? 'bolder' : undefined}`,
-});
+const StyledCapacityIndicator = styled('span')<{
+  $percentEnrolled: number;
+}>`
+  text-overflow: ellipsis;
+  margin: 0;
+  font-weight: ${({ $percentEnrolled }) => ($percentEnrolled === 1 ? 'bolder' : undefined)};
+`;
 
 const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   const percentEnrolled = period.class.enrolments / period.class.capacity;
 
   return (
     <>
-      <span style={StyledCapacityIndicator({ percentEnrolled })}>
+      <StyledCapacityIndicator $percentEnrolled={percentEnrolled}>
         {percentEnrolled === 1 ? (
           <Warning fontSize="inherit" style={iconWarningStyle} />
         ) : (
@@ -207,7 +214,7 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
         <span>
           {period.class.enrolments}/{period.class.capacity}{' '}
         </span>
-      </span>
+      </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
       <LocationOn fontSize="inherit" style={iconStyle} />
       {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
@@ -327,19 +334,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       ref={element}
       onMouseDown={onDown}
       onTouchStart={onDown}
-      cardData={cardData}
-      days={days}
-      y={y}
-      earliestStartTime={earliestStartTime}
-      isSquareEdges={isSquareEdges}
+      $cardData={cardData}
+      $days={days}
+      $y={y}
+      $earliestStartTime={earliestStartTime}
+      $isSquareEdges={isSquareEdges}
     >
-      <Card
-        style={courseClassInnerStyle({
-          backgroundColor: color,
-          hasClash,
-          isSquareEdges,
-        })}
-      >
+      <StyledCourseClassInner $backgroundColor={color} $hasClash={hasClash} $isSquareEdges={isSquareEdges}>
         <Grid container>
           <StyledSideArrow item xs={1}>
             {hasArrows && (
@@ -378,7 +379,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             )}
           </StyledSideArrow>
         </Grid>
-      </Card>
+      </StyledCourseClassInner>
     </StyledCourseClass>
   );
 };

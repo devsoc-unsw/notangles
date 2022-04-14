@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -19,7 +19,7 @@ import {
   Typography,
   TextField,
 } from '@mui/material';
-import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
+import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 
 import getAutoTimetable from '../../api/getAutoTimetable';
@@ -42,7 +42,7 @@ const DropdownButton = styled(Button)`
   }
 `;
 
-const InfoContainer = styled.div`
+const InfoContainer = styled('div')`
   display: flex;
   justify-content: flex-end;
   padding: 10px 10px 0 0;

@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 
+import { styled } from '@mui/system';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import MuiDialogTitle from '@mui/material/DialogTitle';

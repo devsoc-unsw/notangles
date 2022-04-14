@@ -2,9 +2,9 @@
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import styled, { css } from 'styled-components';
-import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
+import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 
 import getCoursesList from '../../api/getCoursesList';
 import { AppContext } from '../../context/AppContext';
@@ -75,58 +75,52 @@ const StyledInputAdornment = styled(InputAdornment)`
   color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
-const StyledChip = styled(Chip).withConfig({
-  shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
-})<{
-  backgroundColor: string;
+const StyledChip = styled(Chip)<{
+  $backgroundColor: string;
 }>`
   transition: none !important;
-  background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
+  background: ${({ $backgroundColor, theme }) => $backgroundColor || theme.palette.secondary.main} !important;
 `;
 
-const StyledOption = styled.span`
+const StyledOption = styled('span')`
   display: flex;
   align-items: center;
   max-width: 80%;
 `;
 
-const weakStyle = css`
-  opacity: 0.6;
-`;
-
-const StyledIcon = styled.span`
+const StyledIcon = styled('span')`
   position: relative;
   top: 3px;
   margin-right: 12px;
-  ${weakStyle}
+  opacity: 0.6;
 `;
 
 const StyledIconRight = styled(StyledIcon)`
   margin-right: 0;
 `;
 
-const Weak = styled.span`
+const Weak = styled('span')`
   margin-left: 7px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  ${weakStyle}
+  opacity: 0.6;
 `;
 
-const StyledUl = styled.ul`
+const StyledUl = styled('ul')`
   padding: 0;
   margin: 0;
 `;
 
-const RightContainer = styled.div`
+const RightContainer = styled('div')`
   position: absolute;
   right: 10px;
 `;
 
-const Career = styled.div`
+const Career = styled('div')`
   position: absolute;
   right: 65px;
-  ${weakStyle};
+  opacity: 0.6; ;
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
@@ -412,7 +406,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <StyledChip
               label={option.code}
               color="primary"
-              backgroundColor={assignedColors[option.code]}
+              $backgroundColor={assignedColors[option.code]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
               onDelete={() => {

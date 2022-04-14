@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
 
 type Change = { date: String; changes: String[] };
 
@@ -13,9 +13,7 @@ const changelog: Change[] = [
   },
   {
     date: '04/04/22',
-    changes: [
-      'Arrows to select different class now appear on all instances of a class, not just the first one',
-    ],
+    changes: ['Arrows to select different class now appear on all instances of a class, not just the first one'],
   },
   {
     date: '30/03/22',
@@ -59,16 +57,16 @@ const changelog: Change[] = [
   },
 ];
 
-const ChangeItem = styled.div`
+const ChangeItem = styled('div')`
   padding: 0.5vh 0;
 `;
 
-const ChangeTitle = styled.div`
+const ChangeTitle = styled('div')`
   font-weight: bold;
   font-size: 1.1rem;
 `;
 
-const Changelog = () => {
+const Changelog: React.FC = () => {
   return (
     <>
       {changelog.map(({ date, changes }, idx) => (

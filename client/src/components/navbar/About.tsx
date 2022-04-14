@@ -1,10 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Link, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 import useGif from '../../assets/how_to_use.gif';
 
-const HowToUseImg = styled.img`
+const HowToUseImg = styled('img')`
   display: block;
   margin: 10px auto 10px;
   width: 100%;
@@ -16,7 +16,7 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 10px;
 `;
 
-const FeatList = styled.ul`
+const FeatList = styled('ul')`
   margin-top: 4px;
   margin-bottom: 6px;
   font-size: 14px;
