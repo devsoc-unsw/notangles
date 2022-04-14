@@ -88,25 +88,25 @@ const StyledIconShadow = styled(IconButton)`
 `;
 
 const StyledCourseClass = styled('div')<{
-  $cardData: CardData;
-  $days: string[];
-  $y?: number;
-  $earliestStartTime: number;
-  $isSquareEdges: boolean;
+  cardData: CardData;
+  days: string[];
+  y?: number;
+  earliestStartTime: number;
+  isSquareEdges: boolean;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ $cardData, $earliestStartTime, $days, $y }) => classTransformStyle($cardData, $earliestStartTime, $days, $y)};
+  transform: ${({ cardData, earliestStartTime, days, y }) => classTransformStyle(cardData, earliestStartTime, days, y)};
   // position over timetable borders
   width: calc(100% + ${1 / devicePixelRatio}px);
-  height: ${({ $cardData }) => classHeight($cardData)};
+  height: ${({ cardData }) => classHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
-  padding: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges)}px;
-  padding-right: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges) + 1 / devicePixelRatio}px;
-  padding-bottom: ${({ $isSquareEdges }) => getClassMargin($isSquareEdges) + ($isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
+  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
+  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
+  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 
   transition: ${defaultTransition}, z-index 0s;
 
@@ -114,7 +114,7 @@ const StyledCourseClass = styled('div')<{
     & > div {
       opacity: 0;
       transform: scale(${elevatedScale});
-      box-shadow: ${({ $isSquareEdges }) => getElevatedShadow($isSquareEdges)};
+      box-shadow: ${({ isSquareEdges }) => getElevatedShadow(isSquareEdges)};
     }
   }
 
@@ -122,36 +122,36 @@ const StyledCourseClass = styled('div')<{
     & > div {
       opacity: 1;
       transform: scale(1);
-      box-shadow: ${({ $isSquareEdges }) => getDefaultShadow($isSquareEdges)};
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
   }
 
   &.${transitionName}-leave-active {
     & > div {
       opacity: 0;
-      box-shadow: ${({ $isSquareEdges }) => getDefaultShadow($isSquareEdges)};
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
   }
 `;
 
 const StyledCourseClassInner = styled(Card)<{
-  $backgroundColor: string;
-  $hasClash: boolean;
-  $isSquareEdges: boolean;
+  backgroundColor: string;
+  hasClash: boolean;
+  isSquareEdges: boolean;
 }>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 
-  background-color: ${({ $backgroundColor }) => $backgroundColor};
+  background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
-  border-radius: ${({ $isSquareEdges }) => ($isSquareEdges ? '0px' : '7px')};
+  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   font-smoothing: subpixel-antialiased;
-  border: ${({ $hasClash }) => ($hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  border: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
   paddingleft: 4;
   paddingright: 4;
   paddingtop: 0;
@@ -193,11 +193,11 @@ const iconWarningStyle = {
 };
 
 const StyledCapacityIndicator = styled('span')<{
-  $percentEnrolled: number;
+  percentEnrolled: number;
 }>`
   text-overflow: ellipsis;
   margin: 0;
-  font-weight: ${({ $percentEnrolled }) => ($percentEnrolled === 1 ? 'bolder' : undefined)};
+  font-weight: ${({ percentEnrolled }) => (percentEnrolled === 1 ? 'bolder' : undefined)};
 `;
 
 const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
@@ -205,7 +205,7 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
 
   return (
     <>
-      <StyledCapacityIndicator $percentEnrolled={percentEnrolled}>
+      <StyledCapacityIndicator percentEnrolled={percentEnrolled}>
         {percentEnrolled === 1 ? (
           <Warning fontSize="inherit" style={iconWarningStyle} />
         ) : (
@@ -334,13 +334,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       ref={element}
       onMouseDown={onDown}
       onTouchStart={onDown}
-      $cardData={cardData}
-      $days={days}
-      $y={y}
-      $earliestStartTime={earliestStartTime}
-      $isSquareEdges={isSquareEdges}
+      cardData={cardData}
+      days={days}
+      y={y}
+      earliestStartTime={earliestStartTime}
+      isSquareEdges={isSquareEdges}
     >
-      <StyledCourseClassInner $backgroundColor={color} $hasClash={hasClash} $isSquareEdges={isSquareEdges}>
+      <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
         <Grid container>
           <StyledSideArrow item xs={1}>
             {hasArrows && (

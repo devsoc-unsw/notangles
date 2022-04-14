@@ -9,28 +9,28 @@ import { defaultTransition, registerDropzone, unregisterDropzone } from '../../u
 import { classHeight, classTranslateY } from './DroppedClasses';
 
 const StyledDropzone = styled('div')<{
-  $classPeriod: ClassPeriod | InInventory;
-  $x: number;
-  $color: string;
-  $isInventory?: boolean;
-  $earliestStartTime: number;
+  classPeriod: ClassPeriod | InInventory;
+  x: number;
+  color: string;
+  isInventory?: boolean;
+  earliestStartTime: number;
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
   pointer-events: none;
-  grid-column: ${({ $x }) => $x};
+  grid-column: ${({ x }) => x};
   grid-row: 2 / -1;
   transform: translateY(
-    ${({ $classPeriod, $earliestStartTime }) => ($classPeriod ? classTranslateY($classPeriod, $earliestStartTime) : 0)}
+    ${({ classPeriod, earliestStartTime }) => (classPeriod ? classTranslateY(classPeriod, earliestStartTime) : 0)}
   );
-  height: ${({ $classPeriod, $isInventory }) => ($isInventory ? '100%' : classHeight($classPeriod))};
+  height: ${({ classPeriod, isInventory }) => (isInventory ? '100%' : classHeight(classPeriod))};
   margin-bottom: ${1 / devicePixelRatio}px;
-  background-color: ${({ $color }) => $color};
+  background-color: ${({ color }) => color};
   opacity: 0;
   transition: ${defaultTransition}, z-index 0s;
-  border-bottom-right-radius: ${({ $isInventory }) => ($isInventory ? borderRadius : 0)}px;
+  border-bottom-right-radius: ${({ isInventory }) => (isInventory ? borderRadius : 0)}px;
 `;
 
 const Dropzone: React.FC<DropzoneProps> = ({ classPeriod, x, earliestStartTime, color, isInventory }) => {
@@ -47,11 +47,11 @@ const Dropzone: React.FC<DropzoneProps> = ({ classPeriod, x, earliestStartTime, 
     <StyledDropzone
       ref={element}
       className="dropzone"
-      $classPeriod={classPeriod}
-      $x={x}
-      $color={color}
-      $isInventory={isInventory}
-      $earliestStartTime={earliestStartTime}
+      classPeriod={classPeriod}
+      x={x}
+      color={color}
+      isInventory={isInventory}
+      earliestStartTime={earliestStartTime}
     >
       {classPeriod !== null && (
         <>

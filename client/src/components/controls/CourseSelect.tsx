@@ -48,7 +48,7 @@ const StyledSelect = styled(Box)`
 `;
 
 const StyledTextField = styled(TextField)<{
-  $selectedCourses: CourseData[];
+  selectedCourses: CourseData[];
 }>`
   .MuiOutlinedInput-root {
     fieldset {
@@ -64,8 +64,8 @@ const StyledTextField = styled(TextField)<{
   }
 
   label {
-    color: ${({ theme, $selectedCourses }) =>
-      $selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
+    color: ${({ theme, selectedCourses }) =>
+      selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
     transition: 0.2s;
   }
 `;
@@ -76,10 +76,10 @@ const StyledInputAdornment = styled(InputAdornment)`
 `;
 
 const StyledChip = styled(Chip)<{
-  $backgroundColor: string;
+  backgroundColor: string;
 }>`
   transition: none !important;
-  background: ${({ $backgroundColor, theme }) => $backgroundColor || theme.palette.secondary.main} !important;
+  background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
 `;
 
 const StyledOption = styled('span')`
@@ -372,7 +372,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           <StyledTextField
             {...params}
             autoFocus
-            $selectedCourses={selectedCourses}
+            selectedCourses={selectedCourses}
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
@@ -406,7 +406,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <StyledChip
               label={option.code}
               color="primary"
-              $backgroundColor={assignedColors[option.code]}
+              backgroundColor={assignedColors[option.code]}
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
               onDelete={() => {

@@ -28,7 +28,6 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
-import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -59,8 +58,10 @@ const getContentWidth = (drawerOpen: boolean) => {
   return contentWidth;
 };
 
-const Content = styled(Box)<StyledContentProps>`
-  width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
+const Content = styled(Box)<{
+  drawerOpen: boolean;
+}>`
+  width: ${({ drawerOpen }) => getContentWidth(drawerOpen)};
   max-width: 100%;
   transition: width 0.2s;
   display: grid;
