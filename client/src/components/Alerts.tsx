@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
-import { Snackbar } from '@mui/material';
-import { Alert } from '@mui/lab';
+import { Alert, Snackbar } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 
 const Alerts: React.FC = () => {
