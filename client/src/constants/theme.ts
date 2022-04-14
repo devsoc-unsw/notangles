@@ -6,9 +6,6 @@ export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
-    text: {
-      primary: string;
-    };
     mode: string | undefined;
     primary: {
       main: string;
@@ -21,9 +18,6 @@ export interface ThemeType {
       main: string;
       dark: string;
       light: string;
-    };
-    action: {
-      disabled: string;
     };
   };
   shape: {
@@ -46,8 +40,6 @@ export interface ThemeType {
 const baseTheme = ({
   background,
   border,
-  action,
-  text,
   mode,
 }: {
   mode: 'light' | 'dark' | undefined;
@@ -60,18 +52,9 @@ const baseTheme = ({
     main: string;
     dark: string;
   };
-  action: {
-    disabled: string;
-  };
-  text: {
-    primary: string;
-  };
 }) => ({
   palette: {
     mode: mode,
-    text: {
-      primary: text.primary,
-    },
     primary: {
       main: '#3a76f8',
     },
@@ -83,9 +66,6 @@ const baseTheme = ({
       main: border.main,
       dark: border.dark,
       light: background.dark,
-    },
-    action: {
-      disabled: action.disabled,
     },
   },
   shape: {
@@ -105,12 +85,6 @@ export const lightTheme = createTheme(
       main: '#bdbdbd',
       dark: '#999999',
     },
-    action: {
-      disabled: `rgba(0,0,0,0.5)`,
-    },
-    text: {
-      primary: '#000000',
-    },
   })
 );
 
@@ -125,12 +99,6 @@ export const darkTheme = createTheme(
     border: {
       main: '#616161',
       dark: '#808080',
-    },
-    action: {
-      disabled: `rgba(255,255,255,0.5)`,
-    },
-    text: {
-      primary: '#ffffff',
     },
   })
 );
