@@ -43,9 +43,7 @@ const DropdownButton = styled(Button)`
 `;
 
 const InfoContainer = styled('div')`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 10px 0 0;
+  padding: 10px 0 0 10px;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -269,7 +267,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           horizontal: 'right',
         }}
       >
-        <InfoContainer style={{ display: 'flex' }}>
+        <InfoContainer>
           <Button onClick={toggleIsOpenInfo}>
             <Info />
           </Button>
