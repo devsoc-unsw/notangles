@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -14,16 +14,13 @@ import {
   ListItemText,
   Popover,
   Slider,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
-} from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import CloseIcon from '@material-ui/icons/Close';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import InfoIcon from '@material-ui/icons/Info';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { TimePicker } from '@material-ui/pickers';
+  TextField,
+} from '@mui/material';
+import { styled } from '@mui/system';
+import { TimePicker } from '@mui/x-date-pickers';
 
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
@@ -33,19 +30,20 @@ import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
-  width: 100%;
-  height: 55px;
-  text-align: left;
-  margin-top: 20px;
-  margin-right: 10px;
-  text-transform: none;
-  // padding: 6px 16px 6px 4px !important;
+  && {
+    width: 100%;
+    height: 55px;
+    margin-top: 20px;
+    margin-right: 10px;
+    text-align: left;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
 `;
 
-const InfoContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 10px 0 0;
+const InfoContainer = styled('div')`
+  padding: 10px 0 0 10px;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -62,6 +60,10 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   width: 100%;
   height: 32px;
   margin-bottom: 10px;
+`;
+
+const StyledList = styled(List)`
+  padding: 0 15px;
 `;
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
@@ -124,7 +126,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   // for opening popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const { isDarkMode, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
@@ -244,18 +246,12 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   return (
     <div style={{ display: 'flex' }}>
-      <DropdownButton
-        disableElevation
-        aria-describedby={popoverId}
-        variant="contained"
-        color={isDarkMode ? 'secondary' : 'default'}
-        onClick={handleClick}
-      >
+      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
-          Auto-timetable
+          AUTO-TIMETABLE
         </Box>
         <Box ml="5px" />
-        {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+        {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
         id={popoverId}
@@ -271,9 +267,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           horizontal: 'right',
         }}
       >
-        <InfoContainer style={{ display: 'flex' }}>
+        <InfoContainer>
           <Button onClick={toggleIsOpenInfo}>
-            <InfoIcon />
+            <Info />
           </Button>
         </InfoContainer>
         <Dialog
@@ -301,22 +297,28 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 </p>
                 <p>Autotimetabler may lack full support for certain courses.</p>
               </Typography>
-              <IconButton style={{ position: 'absolute', right: 10, top: 10 }} aria-label="close" onClick={toggleIsOpenInfo}>
-                <CloseIcon />
+              <IconButton
+                style={{ position: 'absolute', right: 10, top: 10 }}
+                aria-label="close"
+                onClick={toggleIsOpenInfo}
+                size="large"
+              >
+                <Close />
               </IconButton>
             </DialogContentText>
           </DialogContent>
         </Dialog>
-        <List>
+        <StyledList>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Earliest start time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Earliest start time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setStartTime(e);
                   }}
@@ -326,13 +328,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Latest end time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Latest end time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setEndTime(e);
                   }}
@@ -390,16 +393,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             optionChoices={['hybrid', 'in person', 'online']}
             noOff
           />
-        </List>
+        </StyledList>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
-          <FlashOnIcon />
+          <FlashOn />
           GO
         </ExecuteButton>
       </Popover>
     </div>
   );
 };
+
 export default Autotimetabler;
-function setAlertMsg(arg0: string) {
-  throw new Error('Function not implemented.');
-}

@@ -23,7 +23,7 @@ The Notangles client uses
 
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Styled Components](https://www.styled-components.com/)
+- [MUI](https://mui.com/)
 
 ## Logic
 

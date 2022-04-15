@@ -18,7 +18,7 @@ We use GitHub for managing our source code, which you can use mainly with comman
 
 Currently, Notangles is made up of a front-end (the client) and a back-end (the server and scraper).
 
-The client is what runs in a user’s web browser when they visit Notangles. It manages the UI and requests data from the server. It’s written in [TypeScript](https://www.typescriptlang.org/), and uses a UI library called [React](https://reactjs.org/), along with a component library called [Material-UI](https://material-ui.com/) and a styling library called [styled-components](https://styled-components.com/).
+The client is what runs in a user’s web browser when they visit Notangles. It manages the UI and requests data from the server. It’s written in [TypeScript](https://www.typescriptlang.org/), and uses a UI library called [React](https://reactjs.org/), along with a component library called [Material-UI](https://material-ui.com/).
 
 The server fetches data from the database and provides data to the client, and will implement features like logging in and adding friends. It’s also written in TypeScript. The runtime is [Node.js](https://nodejs.org/en/), which is an environment for executing JavaScript outside the browser, such as on a server. It uses a web server framework called [Express](https://expressjs.com/).
 

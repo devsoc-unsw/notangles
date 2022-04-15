@@ -1,23 +1,24 @@
 import React, { useEffect, useContext } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import styled from 'styled-components';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import { styled } from '@mui/system';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
-import Drawer from '@material-ui/core/Drawer';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@mui/material/Drawer';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import IconButton from '@mui/material/IconButton';
 import ProfileSettings from './ProfileSettings';
 import storage from '../../utils/storage';
 import LoggedOutImg from '../../assets/sidebar_cat.svg';
@@ -38,7 +39,7 @@ const StyledLink = styled(Link)`
   margin-left: 10px;
 `;
 
-const StyledListItems = styled.div`
+const StyledListItems = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -49,12 +50,12 @@ const StyledListItemText = styled(ListItemText)`
   text-overflow: ellipsis;
 `;
 
-const DrawerContainer = styled.div`
+const DrawerContainer = styled('div')`
   margin-top: 64px; /* navbar height */
   overflow: auto;
 `;
 
-const LoginComponent = styled.div`
+const LoginComponent = styled('div')`
   text-align: center;
   padding: 20px;
   margin-top: 45%;

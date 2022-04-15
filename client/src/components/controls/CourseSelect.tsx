@@ -1,15 +1,10 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useTheme } from '@material-ui/styles';
-import { useMediaQuery } from '@material-ui/core';
-
-import { Box, Chip, InputAdornment, TextField, Theme } from '@material-ui/core';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@material-ui/icons';
-import { Autocomplete } from '@material-ui/lab';
-
 import Fuse from 'fuse.js';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import styled, { css } from 'styled-components';
+import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
+import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 
 import getCoursesList from '../../api/getCoursesList';
 import { AppContext } from '../../context/AppContext';
@@ -52,8 +47,9 @@ const StyledSelect = styled(Box)`
   text-align: left;
 `;
 
-const StyledTextField = styled(TextField)<{
-  theme: Theme;
+const StyledTextField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'selectedCourses',
+})<{
   selectedCourses: CourseData[];
 }>`
   .MuiOutlinedInput-root {
@@ -81,8 +77,8 @@ const StyledInputAdornment = styled(InputAdornment)`
   color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
-const StyledChip = styled(Chip).withConfig({
-  shouldForwardProp: (prop) => !['backgroundColor'].includes(prop),
+const StyledChip = styled(Chip, {
+  shouldForwardProp: (prop) => prop !== 'backgroundColor',
 })<{
   backgroundColor: string;
 }>`
@@ -90,49 +86,45 @@ const StyledChip = styled(Chip).withConfig({
   background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
 `;
 
-const StyledOption = styled.span`
+const StyledOption = styled('span')`
   display: flex;
   align-items: center;
   max-width: 80%;
 `;
 
-const weakStyle = css`
-  opacity: 0.6;
-`;
-
-const StyledIcon = styled.span`
+const StyledIcon = styled('span')`
   position: relative;
   top: 3px;
   margin-right: 12px;
-  ${weakStyle}
+  opacity: 0.6;
 `;
 
 const StyledIconRight = styled(StyledIcon)`
   margin-right: 0;
 `;
 
-const Weak = styled.span`
+const Weak = styled('span')`
   margin-left: 7px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  ${weakStyle}
+  opacity: 0.6;
 `;
 
-const StyledUl = styled.ul`
+const StyledUl = styled('ul')`
   padding: 0;
   margin: 0;
 `;
 
-const RightContainer = styled.div`
+const RightContainer = styled('div')`
   position: absolute;
   right: 10px;
 `;
 
-const Career = styled.div`
+const Career = styled('div')`
   position: absolute;
   right: 65px;
-  ${weakStyle};
+  opacity: 0.6;
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
@@ -143,40 +135,27 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { isSortAlphabetic, setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
-    if (!selectedValue.length) return;
+    if (!selectedCourses.length) {
+      setSelectedValue([]);
+      return;
+    }
 
-    setSelectedValue([
-      ...selectedCourses
+    setSelectedValue(
+      selectedCourses
         .map((x) => x.code) // Get the course code of each course
         .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
-        .filter((overview): overview is CourseOverview => overview !== undefined),
-    ]);
-  }, [selectedCourses]);
+        .filter((overview): overview is CourseOverview => overview !== undefined)
+    );
+  }, [selectedCourses, coursesList]);
 
-  const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
-    const codes = a.map((x) => x.code);
-    return b.filter((x) => !codes.includes(x.code));
-  };
-
-  const checkExternallyAdded = () => {
-    const addedCodes = diffCourses(selectedValue, selectedCourses).map((x) => x.code);
-    const coursesListCodes = coursesList.map((x) => x.code);
-
-    // if we have info about the new courses already fetched, update the value now
-    // (otherwise, `checkExternallyAdded` will be called later once the data is fetched)
-    if (addedCodes.length > 0 && addedCodes.every((code) => coursesListCodes.includes(code))) {
-      setSelectedValue([
-        ...selectedValue,
-        ...addedCodes.map((code) => coursesList.find((course) => course.code == code) ?? selectedValue[0]),
-      ]); // the nullish coalesce above was the best way I found to shut ts up.
-    } //the if statement above already checks that the code is in courselistcodes so find should never have to return undefined anyway
-  };
-
-  checkExternallyAdded();
+  // const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
+  //   const codes = a.map((x) => x.code);
+  //   return b.filter((x) => !codes.includes(x.code));
+  // };
 
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
@@ -202,63 +181,57 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
-
-    // sorting results
-    if (isSortAlphabetic) {
-      let lengthQuery = query.length;
-      if (lengthQuery <= 8) {
-        newOptions.sort((a, b) =>
-          a.code.substring(0, lengthQuery) === query.toUpperCase() &&
-          b.code.substring(0, lengthQuery) === query.toUpperCase() &&
-          a.code < b.code
-            ? -1
-            : 1
-        );
-      }
-    }
-
     setOptions(newOptions);
+
     return newOptions;
   };
 
-  const onChange = (_: any, value: any) => {
-    const before = selectedCourses;
-    const after = value;
+  const onChange = (_: any, value: CoursesList) => {
+    // const before = selectedCourses;
+    // const after = value;
+    // console.log('here')
+    // // find what was added/removed in the update
+    // const added = diffCourses(before, after);
 
-    // find what was added/removed in the update
-    const added = diffCourses(before, after);
+    // // return before the input value and options are reset
+    // if (added.length === 0) return;
 
-    // return before the input value and options are reset
-    if (added.length === 0) return;
+    // if (searchTimer.current) {
+    //   // console.log('here')
+    //   // run a search now and cancel the current search timer
+    //   const newOptions = search(inputValue);
+    //   clearInterval(searchTimer.current);
+    //   searchTimer.current = undefined;
 
-    if (searchTimer.current) {
-      // run a search now and cancel the current search timer
-      const newOptions = search(inputValue);
-      clearInterval(searchTimer.current);
-      searchTimer.current = undefined;
+    //   // revert back to the original value by removing what was added
+    //   const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
 
-      // revert back to the original value by removing what was added
-      const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
+    //   // we need to add something, and our best guess is the top
+    //   // result of the new search
+    //   const newSelectedOption = newOptions[0];
 
-      // we need to add something, and our best guess is the top
-      // result of the new search
-      const newSelectedOption = newOptions[0];
+    //   if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
+    //     // otherwise, add the new option and call the handler
+    //     setSelectedValue([...originalValue, newSelectedOption]);
+    //     handleSelect(newSelectedOption.code);
+    //   } else {
+    //     // just revert it back without adding anything
+    //     setSelectedValue(originalValue);
+    //     // return before the input value and options are reset
+    //     return;
+    //   }
+    // } else {
+    //   handleSelect(added.map((course) => course.code));
+    //   setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
+    // }
 
-      if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
-        // otherwise, add the new option and call the handler
-        setSelectedValue([...originalValue, newSelectedOption]);
-        handleSelect(newSelectedOption.code);
-      } else {
-        // just revert it back without adding anything
-        setSelectedValue(originalValue);
-        // return before the input value and options are reset
-        return;
-      }
-    } else {
-      handleSelect(added.map((course) => course.code));
-      setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
+    // setOptions(defaultOptions);
+    // setInputValue('');
+
+    if (value.length > selectedValue.length) {
+      handleSelect(value[value.length - 1].code);
+      setSelectedValue([...value]);
     }
-
     setOptions(defaultOptions);
     setInputValue('');
   };
@@ -267,7 +240,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     try {
       const fetchedCoursesList = await getCoursesList(year, term);
       setCoursesList(fetchedCoursesList.courses);
-      checkExternallyAdded();
       fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
       setLastUpdated(fetchedCoursesList.lastUpdated);
     } catch (e) {
@@ -353,6 +325,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     <StyledSelect>
       <Autocomplete
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
+        getOptionLabel={(option) => option.name}
         multiple
         // autoHighlight
         disableClearable
@@ -366,36 +339,38 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         // prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        getOptionSelected={(option, value) => option.code === value.code}
-        renderOption={(option) => (
-          <StyledOption>
-            <StyledIcon>
-              {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
-            </StyledIcon>
-            <span>{option.code}</span>
-            <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-            <Career>
-              {option.career === 'Undergraduate'
-                ? 'UGRD'
-                : option.career === 'Postgraduate'
-                ? 'PGRD'
-                : option.career === 'Research'
-                ? 'RSCH'
-                : null}
-            </Career>
-            <RightContainer>
-              {option.online && (
-                <StyledIconRight>
-                  <VideocamOutlined />
-                </StyledIconRight>
-              )}
-              {option.inPerson && (
-                <StyledIconRight>
-                  <PersonOutline />
-                </StyledIconRight>
-              )}
-            </RightContainer>
-          </StyledOption>
+        isOptionEqualToValue={(option, value) => option.code === value.code}
+        renderOption={(props, option, { selected }) => (
+          <li {...props}>
+            <StyledOption>
+              <StyledIcon>
+                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
+              </StyledIcon>
+              <span>{option.code}</span>
+              <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+              <Career>
+                {option.career === 'Undergraduate'
+                  ? 'UGRD'
+                  : option.career === 'Postgraduate'
+                  ? 'PGRD'
+                  : option.career === 'Research'
+                  ? 'RSCH'
+                  : null}
+              </Career>
+              <RightContainer>
+                {option.online && (
+                  <StyledIconRight>
+                    <VideocamOutlined />
+                  </StyledIconRight>
+                )}
+                {option.inPerson && (
+                  <StyledIconRight>
+                    <PersonOutline />
+                  </StyledIconRight>
+                )}
+              </RightContainer>
+            </StyledOption>
+          </li>
         )}
         renderInput={(params) => (
           <StyledTextField

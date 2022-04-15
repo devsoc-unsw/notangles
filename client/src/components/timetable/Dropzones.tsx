@@ -1,16 +1,14 @@
 import React, { useContext } from 'react';
-import { withTheme } from 'styled-components';
 
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassData, ClassPeriod } from '../../interfaces/Course';
-import { ClassDropzoneProps, DropzonesProps } from '../../interfaces/PropTypes';
-import { timeToPosition } from '../../utils/Drag';
+import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import Dropzone from './Dropzone';
 
-const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestStartTime }) => {
+const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
   const { isHideFullClasses } = useContext(AppContext);
 
   // Deep-ish copy of activities (so we can combine duplicates without affecting original)
@@ -54,7 +52,6 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestSt
 
   Object.keys(newActivities).forEach((activity) => {
     newActivities[activity] = newActivities[activity].filter(
-      // TODO
       (classData) => classData.periods.length !== 0
     );
   });
@@ -68,7 +65,6 @@ const DropzoneGroup: React.FC<ClassDropzoneProps> = ({ course, color, earliestSt
           key={`${classData.id}-${i}`}
           classPeriod={period}
           x={period.time.day + 1}
-          y={timeToPosition(period.time.start, earliestStartTime)}
           color={color}
           earliestStartTime={earliestStartTime}
         />
@@ -98,8 +94,6 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
       key="inventory"
       classPeriod={null} // inventory has no corresponding class period
       x={-2}
-      y={2}
-      yEnd={-1}
       color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
       earliestStartTime={earliestStartTime}
     />
@@ -107,4 +101,4 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   return <>{dropzones}</>;
 };
 
-export default withTheme(Dropzones);
+export default Dropzones;

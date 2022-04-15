@@ -1,22 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import Card from '@material-ui/core/Card';
-import { yellow } from '@material-ui/core/colors';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { Fullscreen, Warning } from '@material-ui/icons';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-
+import React, { MouseEvent, TouchEvent, useContext, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import styled from 'styled-components';
+import { Card, Grid, IconButton } from '@mui/material';
+import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt, Fullscreen } from '@mui/icons-material';
+import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import { yellow } from '@mui/material/colors';
+import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-
 import { defaultStartTime } from '../../constants/timetable';
 import { Activity, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
 import {
@@ -34,9 +25,7 @@ import {
   unregisterCard,
 } from '../../utils/Drag';
 import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
-import { CourseClassInnerStyleProps, StyledCapacityIndicatorProps, StyledCourseClassProps } from '../../interfaces/StyleProps';
 import { getClassMargin, rowHeight } from './TimetableLayout';
-import { Box } from '@material-ui/core';
 import ExpandedView from './ExpandedView';
 
 export const inventoryMargin = 10;
@@ -103,7 +92,15 @@ const StyledIconShadow = styled(IconButton)`
   margin-right: 100px;
 `;
 
-const StyledCourseClass = styled.div<StyledCourseClassProps>`
+const StyledCourseClass = styled('div', {
+  shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
+})<{
+  cardData: CardData;
+  days: string[];
+  y?: number;
+  earliestStartTime: number;
+  isSquareEdges: boolean;
+}>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
@@ -114,11 +111,8 @@ const StyledCourseClass = styled.div<StyledCourseClassProps>`
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
-
   padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-
   padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-
   padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 
   transition: ${defaultTransition}, z-index 0s;
@@ -127,7 +121,7 @@ const StyledCourseClass = styled.div<StyledCourseClassProps>`
     & > div {
       opacity: 0;
       transform: scale(${elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getElevatedShadow(isSquareEdges)]};
+      box-shadow: ${({ isSquareEdges }) => getElevatedShadow(isSquareEdges)};
     }
   }
 
@@ -135,50 +129,47 @@ const StyledCourseClass = styled.div<StyledCourseClassProps>`
     & > div {
       opacity: 1;
       transform: scale(1);
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
   }
 
   &.${transitionName}-leave-active {
     & > div {
       opacity: 0;
-      // transform: scale(${2 - elevatedScale});
-      box-shadow: ${({ theme, isSquareEdges }) => theme.shadows[getDefaultShadow(isSquareEdges)]};
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
   }
 `;
 
-const courseClassInnerStyle = ({ backgroundColor, hasClash, isSquareEdges }: CourseClassInnerStyleProps) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'row' as 'row',
-
-  backgroundColor,
-  color: 'white',
-  fontSize: '0.9rem',
-  borderRadius: isSquareEdges ? '0px' : '7px',
-  transition: `${defaultTransition}, z-index 0s`,
-  backfaceVisibility: 'hidden' as 'hidden',
-  fontSmoothing: 'subpixel-antialiased',
-  border: hasClash ? 'solid red 4px' : 'solid transparent 0px',
-  paddingLeft: 4,
-  paddingRight: 4,
-  paddingTop: 0,
-  paddingBottom: 0,
-
-  minWidth: 0,
-  width: '100%',
-  height: '100%',
-  boxSizing: 'border-box' as 'border-box',
-  position: 'relative' as 'relative',
-});
+const StyledCourseClassInner = styled(Card, {
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges'].includes(prop.toString()),
+})<{
+  backgroundColor: string;
+  hasClash: boolean;
+  isSquareEdges: boolean;
+}>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: ${({ backgroundColor }) => backgroundColor};
+  color: white;
+  font-size: 0.9rem;
+  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
+  transition: ${defaultTransition}, z-index 0s;
+  backface-visibility: hidden;
+  outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  outline-offset: -4px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
 
 const pStyle = {
   width: '100%',
   margin: '0 0',
   whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden', // TODO: Fix this so the tutorial names don't get cut off
+  overflow: 'hidden',
   textOverflow: 'ellipsis',
 };
 
@@ -202,29 +193,33 @@ const iconWarningStyle = {
   color: yellow[400],
 };
 
-const StyledCapacityIndicator = ({ percentEnrolled }: StyledCapacityIndicatorProps) => ({
-  textOverflow: 'ellipsis',
-  margin: 0,
-  fontWeight: `${percentEnrolled === 1 ? 'bolder' : undefined}`,
-});
+const StyledCapacityIndicator = styled('span', {
+  shouldForwardProp: (prop) => prop !== 'percentEnrolled',
+})<{
+  percentEnrolled: number;
+}>`
+  text-overflow: ellipsis;
+  margin: 0;
+  font-weight: ${({ percentEnrolled }) => (percentEnrolled === 1 ? 'bolder' : undefined)};
+`;
 
 const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   const percentEnrolled = period.class.enrolments / period.class.capacity;
 
   return (
     <>
-      <span style={StyledCapacityIndicator({ percentEnrolled })}>
+      <StyledCapacityIndicator percentEnrolled={percentEnrolled}>
         {percentEnrolled === 1 ? (
           <Warning fontSize="inherit" style={iconWarningStyle} />
         ) : (
-          <PeopleAltIcon fontSize="inherit" style={iconPeopleStyle} />
+          <PeopleAlt fontSize="inherit" style={iconPeopleStyle} />
         )}
         <span>
           {period.class.enrolments}/{period.class.capacity}{' '}
         </span>
-      </span>
+      </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
-      <LocationOnIcon fontSize="inherit" style={iconStyle} />
+      <LocationOn fontSize="inherit" style={iconStyle} />
       {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
     </>
   );
@@ -248,32 +243,32 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let rippleStopped = false;
   let ignoreMouse = false;
 
-  const onDown = (oldEvent: any) => {
+  const onDown = (eventDown: any) => {
     if (
-      oldEvent.target.className.baseVal === 'MuiSvgIcon-root' ||
-      oldEvent.target.parentElement.className.baseVal === 'MuiSvgIcon-root'
+      eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
+        eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
 
-    if (!('type' in oldEvent)) return;
-    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
-    if (oldEvent.type.includes('touch')) ignoreMouse = true;
+    if (!('type' in eventDown)) return;
+    if (eventDown.type.includes('mouse') && ignoreMouse) return;
+    if (eventDown.type.includes('touch')) ignoreMouse = true;
 
-    const event = { ...oldEvent };
+    const eventCopy = { ...eventDown };
 
     if ('start' in rippleRef.current) {
       rippleStopped = false;
-      rippleRef.current.start(event);
+      rippleRef.current.start(eventCopy);
     }
 
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(cardData, event);
+      setDragTarget(cardData, eventCopy);
       setInfoVisibility(false);
     };
 
-    if (oldEvent.type.includes('touch')) {
+    if (eventDown.type.includes('touch')) {
       timer = window.setTimeout(startDrag, 500);
     } else {
       startDrag();
@@ -360,17 +355,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       y={y}
       earliestStartTime={earliestStartTime}
       isSquareEdges={isSquareEdges}
-      >
-      <Card
-        style={courseClassInnerStyle({
-          backgroundColor: color,
-          hasClash,
-          isSquareEdges,
-        })}
-        >
-        <Grid container style={{ height: '100%' }}>
-          <StyledSideArrow item xs={1}></StyledSideArrow>
-          <Grid item xs={10} style={{ alignSelf: 'center' }}>
+    >
+      <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
+        <Grid container>
+          {/* <StyledSideArrow item xs={1}>
+            {hasArrows && (
+              <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
+                <ArrowLeft />
+              </StyledIconShadow>
+            )}
+          </StyledSideArrow> */}
+          <Grid item xs={10}>
             <p style={pStyle}>
               <b>
                 {cardData.class.course.code} {cardData.class.activity}
@@ -402,7 +397,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </StyledIconShadow>
           </Grid>
         </Grid>
-      </Card>
+      </StyledCourseClassInner>
     </StyledCourseClass>
       <ExpandedView
         {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
