@@ -1,13 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/system';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import MuiDialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
 
 const StyledDialogTitle = styled(MuiDialogTitle)`
   margin: 0;
@@ -42,7 +42,7 @@ const ProfileSettings: React.FC = () => {
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle disableTypography>
+        <StyledDialogTitle>
           <Typography variant="h5">Profile Settings</Typography>
           <CloseButton aria-label="close" onClick={toggleIsOpen}>
             <CloseIcon />

@@ -1,19 +1,24 @@
 import React, { useContext } from 'react';
-import { Box } from '@material-ui/core';
-import styled from 'styled-components';
+import { Box } from '@mui/material';
+import { styled } from '@mui/system';
 
 import { contentPadding } from '../../constants/theme';
 import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
-import { StyledTimetableProps } from '../../interfaces/StyleProps';
 import { timetableWidth } from '../../utils/Drag';
+
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 
-const StyledTimetable = styled(Box)<StyledTimetableProps>`
+const StyledTimetable = styled(Box, {
+  shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
+})<{
+  rows: number;
+  cols: number;
+}>`
   display: grid;
   min-width: ${timetableWidth}px;
   padding: ${contentPadding}px;

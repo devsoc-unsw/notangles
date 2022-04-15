@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import styled, { css } from 'styled-components';
+import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
-import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
-import { BaseCellStyleProps, DayCellProps, GridCellProps } from '../../interfaces/StyleProps';
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -12,7 +11,15 @@ const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
-const BaseCell = styled.div<BaseCellStyleProps>`
+const BaseCell = styled('div', {
+  shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
+})<{
+  x: number;
+  y: number;
+  yTo?: number;
+  isEndX?: boolean;
+  isEndY?: boolean;
+}>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
   box-shadow: 0 0 0 ${1 / devicePixelRatio}px ${({ theme }) => theme.palette.secondary.main};
@@ -37,25 +44,23 @@ const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
 `;
 
-const InventoryCell = styled(DayCell)<DayCellProps>`
+const InventoryCell = styled(DayCell)`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
-const paddingStyle = css`
+const HourCell = styled(GridCell, {
+  shouldForwardProp: (prop) => prop !== 'is12HourMode',
+})<{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
-`;
-
-const HourCell = styled(GridCell)<GridCellProps>`
-  ${paddingStyle}
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
 `;
 
 const ToggleCell = styled(BaseCell)`
-  ${paddingStyle}
+  padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: center;
 
@@ -65,7 +70,7 @@ const ToggleCell = styled(BaseCell)`
   }
 `;
 
-const ColumnWidthGuide = styled.span`
+const ColumnWidthGuide = styled('span')`
   opacity: 0;
   pointer-events: none;
 `;
