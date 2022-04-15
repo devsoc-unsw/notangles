@@ -165,7 +165,7 @@ const StyledCourseClassInner = styled(Card, {
   minwidth: 0;
   width: 100%;
   height: 100%;
-  boxsizing: 'border-box';
+  boxsizing: border-box;
   position: relative;
 `;
 
