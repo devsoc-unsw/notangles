@@ -5,6 +5,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: '04/04/22',
+    changes: ['Removed ability to sort search results alphabetically', 'Removed "Beta" from logo'],
+  },
+  {
     date: '12/04/22',
     changes: [
       'Added autotimetabling',
