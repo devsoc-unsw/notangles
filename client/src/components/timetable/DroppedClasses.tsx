@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, TouchEvent, useContext, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { Card, Grid, IconButton } from '@mui/material';
 import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt } from '@mui/icons-material';
@@ -237,32 +237,32 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let rippleStopped = false;
   let ignoreMouse = false;
 
-  const onDown = (oldEvent: any) => {
+  const onDown = (eventDown: any) => {
     if (
-      oldEvent.target.className.baseVal === 'MuiSvgIcon-root' ||
-      oldEvent.target.parentElement.className.baseVal === 'MuiSvgIcon-root'
+      eventDown.target.className.baseVal.includes('MuiSvgIcon-root') ||
+      eventDown.target.parentElement.className.baseVal.includes('MuiSvgIcon-root')
     )
       return;
 
-    if (!('type' in oldEvent)) return;
-    if (oldEvent.type.includes('mouse') && ignoreMouse) return;
-    if (oldEvent.type.includes('touch')) ignoreMouse = true;
+    if (!('type' in eventDown)) return;
+    if (eventDown.type.includes('mouse') && ignoreMouse) return;
+    if (eventDown.type.includes('touch')) ignoreMouse = true;
 
-    const event = { ...oldEvent };
+    const eventCopy = { ...eventDown };
 
     if ('start' in rippleRef.current) {
       rippleStopped = false;
-      rippleRef.current.start(event);
+      rippleRef.current.start(eventCopy);
     }
 
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(cardData, event);
+      setDragTarget(cardData, eventCopy);
       setInfoVisibility(false);
     };
 
-    if (oldEvent.type.includes('touch')) {
+    if (eventDown.type.includes('touch')) {
       timer = window.setTimeout(startDrag, 500);
     } else {
       startDrag();
