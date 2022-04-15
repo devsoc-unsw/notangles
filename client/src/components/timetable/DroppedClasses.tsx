@@ -155,7 +155,8 @@ const StyledCourseClassInner = styled(Card, {
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   font-smoothing: subpixel-antialiased;
-  border: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  outline-offset: -4px;
   paddingleft: 4;
   paddingright: 4;
   paddingtop: 0;
@@ -164,7 +165,7 @@ const StyledCourseClassInner = styled(Card, {
   minwidth: 0;
   width: 100%;
   height: 100%;
-  boxsizing: border-box;
+  boxsizing: 'border-box';
   position: relative;
 `;
 
