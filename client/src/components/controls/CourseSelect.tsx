@@ -124,7 +124,7 @@ const RightContainer = styled('div')`
 const Career = styled('div')`
   position: absolute;
   right: 65px;
-  opacity: 0.6; ;
+  opacity: 0.6;
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {

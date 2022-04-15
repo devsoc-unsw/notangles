@@ -147,25 +147,16 @@ const StyledCourseClassInner = styled(Card, {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
-  font-smoothing: subpixel-antialiased;
   outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
   outline-offset: -4px;
-  paddingleft: 4;
-  paddingright: 4;
-  paddingtop: 0;
-  paddingbottom: 0;
-
-  minwidth: 0;
   width: 100%;
   height: 100%;
-  boxsizing: border-box;
   position: relative;
 `;
 
