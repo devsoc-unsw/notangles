@@ -239,9 +239,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   const onDown = (eventDown: any) => {
     if (
-      eventDown.target.className &&
-      (eventDown.target.className.baseVal.includes('MuiSvgIcon-root') ||
-        eventDown.target.parentElement.className.baseVal.includes('MuiSvgIcon-root'))
+      eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
+        eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
 
