@@ -24,7 +24,7 @@
     "react-transition-group": "^4.4.2",
     "react-window": "^1.8.6",
     "web-vitals": "^2.1.4",
-    "workbox-background-sync": "^6.5.1",
+    "workbox-background-sync": "^6.5.3",
     "workbox-broadcast-update": "^6.5.2",
     "workbox-cacheable-response": "^6.5.1",
     "workbox-core": "^6.5.2",
