@@ -8,8 +8,8 @@ import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { defaultStartTime } from '../../constants/timetable';
-import { Activity, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
+import { days, defaultStartTime } from '../../constants/timetable';
+import { Activity, ClassPeriod, ClassTime, CourseCode, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -29,9 +29,87 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
 
-const classTranslateX = (cardData: CardData, days?: string[]) => {
-  if (isPeriod(cardData)) {
-    return `${(cardData.time.day - 1) * 100}%`;
+const sortClashesByTime = (clashes: ClassPeriod[]) => {
+  
+  // Sort clashes by day then time.
+  clashes.sort((a, b) => {
+    if (a.time.day === b.time.day) {
+      return a.time.start - b.time.start;
+    }
+    return a.time.day - b.time.day;
+  })
+
+  // Sort clashes into a list of lists, where each smaller list
+  // represents the day of the week.
+  const res: ClassPeriod[][] = Array(days.length).fill([]);
+  clashes.forEach((clash) => res[clash.time.day].push(clash));
+
+  return res;
+}
+
+const groupClashes = (sortedClashes: ClassPeriod[][]) => {
+  // res is a list of days
+  // Each day has a list of clashes
+  // Each clash is a list of classes which are clashing
+  // A clash may be of length 1, which represents a class with no clashes
+  const res: ClassPeriod[][][] = Array(days.length).fill([]);
+
+  sortedClashes.forEach((dayList, dayIndex) => {
+    dayList.forEach((clash) => {
+      // If there are no clashes in a day,
+      // add a new list of clashes with just that class
+      if (res[dayIndex].length === 0) {
+        res[dayIndex].push([clash]);
+      } else {
+        let hasAdded = false;
+
+        res[dayIndex].forEach((clashes) => {
+          // Clash occurs for two classes A and B when
+          // (StartA <= EndB) and (EndA >= StartB)
+          if (clash.time.start <= clashes[clashes.length - 1].time.end &&
+            clash.time.end >= clashes[0].time.start) {
+            clashes.push(clash);
+            hasAdded = true;
+          }
+        })
+
+        // If we haven't added the clash to any clashes list,
+        // add it to its own list of clashes
+        if (!hasAdded) {
+          res[dayIndex].push([clash]);
+        }
+      }
+    })
+  })
+  return res;
+}
+
+const getCardWidth = (groupedClashes: ClassPeriod[][][], cardData: CardData) => {
+
+  let cardWidth = 100;
+  let clashIndex = 0;
+  
+  if ("time" in cardData) {
+    groupedClashes[cardData.time.day].forEach((clashGroups) => {
+      if (clashGroups.includes(cardData)) {
+        let newList: string[] = []
+        clashGroups.forEach((clashGroup) => {
+          if (newList.indexOf(clashGroup.class.id) === -1) {
+            newList.push(clashGroup.class.id)
+          }
+        })
+        cardWidth = cardWidth / newList.length;
+        clashIndex = newList.indexOf(cardData.class.id)
+        return [cardWidth, newList.indexOf(cardData.class.id)]; // dont think it actually returns from getCardWidth
+      }
+    })
+  }
+  return [cardWidth, clashIndex];
+};
+
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?:number) => {
+  if (isPeriod(cardData) && clashIndex !== undefined && width) {
+    return `${(cardData.time.day - 1) * 100 + clashIndex * width}%`;
   }
   // not a period, so in the inventory
   if (days) {
@@ -70,8 +148,8 @@ export const classHeight = (cardData?: CardData | InInventory) => {
   return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
-export const classTransformStyle = (cardData: CardData, earliestStartTime: number, days?: string[], y?: number) =>
-  `translate(${classTranslateX(cardData, days)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
+export const classTransformStyle = (cardData: CardData, earliestStartTime: number, days?: string[], y?: number, clashIndex?: number, width?:number) =>
+`translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
 
@@ -95,11 +173,13 @@ const StyledCourseClass = styled('div', {
   y?: number;
   earliestStartTime: number;
   isSquareEdges: boolean;
+  clashIndex: number;
+  width: number;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y }) => classTransformStyle(cardData, earliestStartTime, days, y)};
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, width }) => classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, width)};
   // position over timetable borders
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
@@ -137,11 +217,12 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
+  cardWidth: number;
 }>`
   display: flex;
   justify-content: center;
@@ -155,7 +236,7 @@ const StyledCourseClassInner = styled(Card, {
   backface-visibility: hidden;
   outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
   outline-offset: -4px;
-  width: 100%;
+  width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
   position: relative;
 `;
@@ -228,6 +309,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   hasClash,
   shiftClasses,
   hasArrows,
+  cardWidth,
+  clashIndex
 }) => {
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -337,8 +420,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       y={y}
       earliestStartTime={earliestStartTime}
       isSquareEdges={isSquareEdges}
+      clashIndex={clashIndex}
+      width={cardWidth}
     >
-      <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
+      <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges} cardWidth={cardWidth}>
         <Grid container>
           <StyledSideArrow item xs={1}>
             {hasArrows && (
@@ -452,6 +537,34 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     }
   };
 
+  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
+  period1.day === period2.day &&
+  ((period1.end > period2.start && period1.start < period2.end) ||
+    (period2.end > period1.start && period2.start < period1.end));
+
+  const checkClashes = () => {
+    const newClashes: ClassPeriod[] = [];
+
+    const flatPeriods = Object.values(selectedClasses)
+      .flatMap((activities) => Object.values(activities))
+      .flatMap((classData) => (classData ? classData.periods : []));
+
+    flatPeriods.forEach((period1) => {
+      flatPeriods.forEach((period2) => {
+        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+          if (!newClashes.includes(period1)) {
+            newClashes.push(period1);
+          }
+          if (!newClashes.includes(period2)) {
+            newClashes.push(period2);
+          }
+        }
+      });
+    });
+
+    return newClashes;
+  };
+
   const hasArrows = (c: CardData) =>
     'time' in c &&
     c.class.course.activities[c.class.activity].filter(
@@ -465,6 +578,34 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
 
+    const clashes = checkClashes();
+    // loop through clashes and then separate that into the same timeframes.
+    const sortedClashes = sortClashesByTime(checkClashes());
+    const groupedClashes = groupClashes(sortedClashes);
+
+    // Check which clash list it exists in, then calculate the width
+    // of the class card.    
+    let [cardWidth, clashIndex] = getCardWidth(groupedClashes, cardData);
+    
+    /*
+      It goes from chronological order (start of the day to end of the day)
+      1. First class automatically goes to a clash element in the clashes list
+      2. If the next class clashes, it joins that list, if it doesn't then it becomes a new element
+      3. Update the start and end times (this is going to be the very start of the first class in the clashes list, and the end time will be the very end of the last class in the clashes list)
+      Monday: 
+      - clash 1: 9am - 12pm (consisted of 3 classes)
+      - clash 2: 4pm - 7pm (consisted of 2 classes)
+      [
+        [ // day, start, end
+          [class 1, class 2], // clash 1
+          [], // clash 2
+        ],
+        [
+        ],
+        ...
+      ]
+    */
+
     droppedClasses.push(
       <DroppedClass
         key={`${key}`}
@@ -475,6 +616,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}
         hasClash={isPeriod(cardData) ? clashes.includes(cardData) : false}
+        cardWidth={cardWidth}
+        clashIndex={clashIndex}
       />
     );
 

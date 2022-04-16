@@ -79,6 +79,8 @@ export interface DroppedClassProps {
   hasClash: boolean;
   shiftClasses(dir: number, cardData: CardData): void;
   hasArrows: boolean;
+  cardWidth: number;
+  clashIndex: number;
 }
 
 export interface DroppedClassesProps {
