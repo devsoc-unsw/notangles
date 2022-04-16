@@ -250,6 +250,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     )
       return;
 
+    // setFullscreenVisible(false)
+
     if (!('type' in eventDown)) return;
     if (eventDown.type.includes('mouse') && ignoreMouse) return;
     if (eventDown.type.includes('touch')) ignoreMouse = true;
@@ -350,60 +352,66 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   };
   return (
     <>
-    <StyledCourseClass
-      ref={element}
-      onMouseDown={onDown}
-      onTouchStart={onDown}
-      cardData={cardData}
-      days={days}
-      y={y}
-      earliestStartTime={earliestStartTime}
-      isSquareEdges={isSquareEdges}
-      onMouseOver={() => {setFullscreenVisible(true)}}
-      onMouseLeave={() => {setFullscreenVisible(false)}}
-    >
-      <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
-        <Grid container sx={{height: '100%'}} justifyContent='center' alignItems='center'>
-          <Grid item xs={11} > {/*TODO: tweak this number*/}
-            <p style={pStyle}>
-              <b>
-                {cardData.class.course.code} {cardData.class.activity}
-              </b>
-            </p>
-            <p style={pStyleSmall}>
-              {isPeriod(cardData) ? (
-                isHideClassInfo ? (
-                  <></>
-                ) : (
-                  <PeriodMetadata period={cardData} />
-                  )
+      <StyledCourseClass
+        ref={element}
+        onMouseDown={onDown}
+        onTouchStart={onDown}
+        cardData={cardData}
+        days={days}
+        y={y}
+        earliestStartTime={earliestStartTime}
+        isSquareEdges={isSquareEdges}
+        onMouseOver={() => {
+          setFullscreenVisible(true);
+        }}
+        onMouseLeave={() => {
+          setFullscreenVisible(false);
+        }}
+      >
+        <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
+          <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
+            <Grid item xs={11}> {/*TODO: tweak this number*/}
+              <p style={pStyle}>
+                <b>
+                  {cardData.class.course.code} {cardData.class.activity}
+                </b>
+              </p>
+              <p style={pStyleSmall}>
+                {isPeriod(cardData) ? (
+                  isHideClassInfo ? (
+                    <></>
                   ) : (
-                    <>
-                  {activityMaxPeriods} class
-                  {activityMaxPeriods !== 1 && 'es'}
-                </>
-              )}
-            </p>
-            <TouchRipple ref={rippleRef} />
+                    <PeriodMetadata period={cardData} />
+                  )
+                ) : (
+                  <>
+                    {activityMaxPeriods} class
+                    {activityMaxPeriods !== 1 && 'es'}
+                  </>
+                )}
+              </p>
+              <TouchRipple ref={rippleRef} />
+            </Grid>
           </Grid>
-        </Grid>
-        {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
-        {isPeriod(cardData) && fullscreenVisible && (<StyledIconShadow sx={{position: 'absolute', top: 4, right: 4}} onClick={() => setOpen(true)}>
+          {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
+          {isPeriod(cardData) && fullscreenVisible && (
+            <StyledIconShadow sx={{ position: 'absolute', top: 4, right: 4 }} onClick={() => setOpen(true)}>
               <Fullscreen
                 onMouseLeave={() => setHoverOverStyle(false)}
                 onMouseOver={() => setHoverOverStyle(true)}
                 style={hoverOverStyle ? { color: 'pink' } : {}} // TODO: change to whatever styles are desired
-                ></Fullscreen>
-            </StyledIconShadow>)}
-      </StyledCourseClassInner>
-    </StyledCourseClass>
+              ></Fullscreen>
+            </StyledIconShadow>
+          )}
+        </StyledCourseClassInner>
+      </StyledCourseClass>
       <ExpandedView
         {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
         open={open}
         handleClose={handleClose}
         handleSelectClass={handleSelectClass}
-        />
-        </>
+      />
+    </>
   );
 };
 
