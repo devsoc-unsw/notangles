@@ -18,11 +18,12 @@ import {
   MenuItem,
   Modal,
   Select,
+  selectClasses,
   Typography,
 } from '@mui/material';
 import { ExpandedViewProps } from '../../interfaces/PropTypes';
 // import styled from 'styled-components';
-import {Close} from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 import { CardData, isPeriod } from '../../utils/Drag';
 import { styled } from '@mui/styles';
 import { ClassData } from '../../interfaces/Course';
@@ -40,7 +41,7 @@ import {
 } from '@mui/icons-material';
 import { ClassPeriod, ClassTime } from '../../interfaces/Course';
 import { AppContext } from '../../context/AppContext';
-import {PeopleAlt} from '@mui/icons-material';
+import { PeopleAlt } from '@mui/icons-material';
 
 const StyledDialogTitle = styled(MuiDialogTitle)<DialogTitleProps>(({}) => ({
   padding: '8px 12px 8px 24px',
@@ -69,7 +70,7 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, loca
         onChange={handleChange}
       >
         {locations.map((location, index) => (
-          <MenuItem value={index}>
+          <MenuItem value={index} key={index}>
             <Typography>{location[1]}</Typography>
           </MenuItem>
         ))}
@@ -78,9 +79,8 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, loca
   );
 };
 
-const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
-
-
+const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
+  a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
 // TODO: Tidy this up
 
@@ -94,29 +94,38 @@ const getSections = (c: ClassPeriod) => {
     )
   );
 
-  const sectionsAndLocations = duplicateClasses.map((dc) => ([dc.section, dc.periods[periodIndex].locations.at(0) ?? '']))
+  const sectionsAndLocations = duplicateClasses.map((dc) => [dc.section, dc.periods[periodIndex].locations.at(0) ?? '']);
 
   return [duplicateClasses, sectionsAndLocations, periodIndex] as [ClassData[], string[][], number];
 };
 
-const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, open, handleClose, handleSelectClass }) => {
-
+const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose }) => {
   const course = cardData.class.course;
   const { days } = useContext(AppContext);
 
   if (!isPeriod(cardData)) return <></>;
 
   const [period, setPeriod] = useState<ClassPeriod>(cardData);
-  
-  
-  const [duplicateClasses, sectionsAndLocations, periodIndex]: [ClassData[], string[][], number] = getSections(period);
-  const [selectedIndex, setSelectedIndex] = useState<number>(sectionsAndLocations.findIndex(sal => sal[1] === period.locations.at(0)));
+
+  const [duplicateClasses, sectionsAndLocations, periodIndex]: [ClassData[], string[][], number] = getSections(cardData);
+  const [selectedIndex, setSelectedIndex] = useState<number>(
+    sectionsAndLocations.findIndex((sal) => sal[1] === period.locations.at(0))
+  );
+
+  useEffect(() => {
+    if (isPeriod(cardData)) {
+      setPeriod(cardData);
+      const [, tempSandL]: [any, string[][], any] = getSections(cardData); // sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
+      setSelectedIndex(tempSandL.findIndex((sal) => sal[1] === cardData.locations.at(0)));
+    }
+  }, [cardData]);
 
   const handleLocationChange = (e: any) => {
     setSelectedIndex(e.target.value);
-    const newPeriod = duplicateClasses[e.target.value].periods[periodIndex]
-    if (isPeriod(newPeriod)) setPeriod(newPeriod)
+    const newPeriod = duplicateClasses[e.target.value].periods[periodIndex];
+    if (isPeriod(newPeriod)) setPeriod(newPeriod);
   };
+
   return (
     <Dialog maxWidth="sm" open={open} onClose={() => handleClose(duplicateClasses[selectedIndex])}>
       <StyledDialogTitle>
@@ -143,7 +152,6 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
           </div>
         </Box>
       </StyledDialogTitle>
-      {/* <Divider /> */}
       <DialogContent style={{ paddingBottom: '20px' }}>
         <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
@@ -152,7 +160,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
             </Grid>
             <Grid item>
               <Typography>
-                {cardData.class.activity} ({sectionsAndLocations[selectedIndex][0]})
+                {cardData && cardData.class.activity} ({cardData && sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
           </Grid>

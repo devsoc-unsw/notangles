@@ -92,7 +92,6 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
  * const courseInfo = dbCourseToCourseData(json)
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
-  console.log(dbCourse)
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,

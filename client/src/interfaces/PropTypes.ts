@@ -88,8 +88,8 @@ export interface DroppedClassesProps {
   handleSelectClass(classData: ClassData): void;
 }
 
-export interface ExpandedViewProps extends DroppedClassProps {
+export interface ExpandedViewProps {
   open: boolean;
   handleClose: (value: ClassData) => void;
-  handleSelectClass(classData: ClassData): void;
+  cardData: CardData;
 }

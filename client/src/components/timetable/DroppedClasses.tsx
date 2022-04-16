@@ -282,7 +282,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       window.removeEventListener('mousemove', onUp);
       window.removeEventListener('touchmove', onUp);
 
-      if ((timer || !eventUp.type.includes('move')) && 'stop' in rippleRef.current) {
+      if ((timer || !eventUp.type.includes('move')) && rippleRef.current && 'stop' in rippleRef.current) {
         window.removeEventListener('mouseup', onUp);
         window.removeEventListener('touchend', onUp);
 
@@ -345,7 +345,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
 
   const handleClose = (value: ClassData) => {
-    console.log(value)
+    // console.log(value)
     handleSelectClass(value)
     setOpen(!open);
     // shiftClasses(value, cardData);
@@ -406,10 +406,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         </StyledCourseClassInner>
       </StyledCourseClass>
       <ExpandedView
-        {...{ cardData, color, y, earliestStartTime, hasClash, shiftClasses, hasArrows }}
+        cardData={cardData}
         open={open}
         handleClose={handleClose}
-        handleSelectClass={handleSelectClass}
       />
     </>
   );
@@ -477,7 +476,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
       const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
         value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || value.enrolments !== value.capacity))
       );
-      console.log(dir, newclasses)
+      // console.log(dir, newclasses)
 
       if (newclasses.length)
         handleSelectClass(
