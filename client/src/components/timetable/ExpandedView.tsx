@@ -54,11 +54,15 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 
 interface LocationDropdownProps {
   sectionsAndLocations: Array<[Section, Location]>;
-  handleChange(event:SelectChangeEvent<number>): void;
+  handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
 }
 
-const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations: sectionsAndLocations, handleChange }) => {
+const LocationDropdown: React.FC<LocationDropdownProps> = ({
+  selectedIndex,
+  sectionsAndLocations: sectionsAndLocations,
+  handleChange,
+}) => {
   return (
     <FormControl fullWidth>
       <Select
@@ -82,16 +86,16 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sect
 const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
   a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
-
 const getDuplicateClassData = (c: ClassPeriod) => {
   const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
 
   const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
-    value.periods.some(
-      (v, index) => index === periodIndex && isDuplicate(v, c)
-    )
+    value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c))
   );
-  const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [dc.section, dc.periods[periodIndex].locations.at(0) ?? '']);
+  const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [
+    dc.section,
+    dc.periods[periodIndex].locations.at(0) ?? '',
+  ]);
 
   return {
     duplicateClasses: duplicateClasses,
@@ -99,7 +103,6 @@ const getDuplicateClassData = (c: ClassPeriod) => {
     periodIndex: periodIndex,
   } as DuplicateClassData;
 };
-
 
 type Section = string;
 type Location = string;
@@ -119,7 +122,6 @@ becuase otherwise the view will close itself whenever a new item is selected in 
 Currently only intended to be appear on non-unscheduled classCards -- i.e. cardData but technically be of type PeriodData
 */
 const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose }) => {
-
   const { days } = useContext(AppContext);
 
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
@@ -128,19 +130,22 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
 
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
-
-  useEffect(() => { // updates the data when changing to another time slot -- e.g. dragging the card around
+  useEffect(() => {
+    // updates the data when changing to another time slot -- e.g. dragging the card around
     if (!isPeriod(cardData)) return;
 
     setCurrentPeriod(cardData);
     duplicateClassData.current = getDuplicateClassData(cardData); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
-    setSelectedIndex(duplicateClassData.current.sectionsAndLocations.findIndex(([section, ]) => section === cardData.class.section)); // makes selected item in new initial location dropdown the right one
+    setSelectedIndex(
+      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === cardData.class.section)
+    ); // makes selected item in new initial location dropdown the right one
   }, [cardData]);
 
-
-  const handleLocationChange = (e: SelectChangeEvent<number>) => { // updates index and current period when selected with dropdown
+  const handleLocationChange = (e: SelectChangeEvent<number>) => {
+    // updates index and current period when selected with dropdown
     setSelectedIndex(e.target.value as number);
-    const newPeriod = duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
+    const newPeriod =
+      duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
     if (isPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
 
@@ -164,7 +169,10 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
           <div style={{ width: '8px' }} />
 
           <div>
-            <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
+            <IconButton
+              aria-label="close"
+              onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+            >
               <Close />
             </IconButton>
           </div>
@@ -178,7 +186,8 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
             </Grid>
             <Grid item>
               <Typography>
-                {cardData && cardData.class.activity} ({cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
+                {cardData && cardData.class.activity} (
+                {cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
           </Grid>
