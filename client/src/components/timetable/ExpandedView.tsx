@@ -174,11 +174,11 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
         <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
             <Grid item>
-              <DesktopWindows />
+              <DesktopMac />
             </Grid>
             <Grid item>
               <Typography>
-                {cardData && cardData.class.activity} {cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)}
+                {cardData && cardData.class.activity} ({cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
           </Grid>
