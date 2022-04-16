@@ -405,11 +405,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
-      <ExpandedView
+      {isPeriod(cardData) && <ExpandedView
         cardData={cardData}
         open={open}
         handleClose={handleClose}
-      />
+      />}
     </>
   );
 };

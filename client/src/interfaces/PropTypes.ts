@@ -91,5 +91,5 @@ export interface DroppedClassesProps {
 export interface ExpandedViewProps {
   open: boolean;
   handleClose: (value: ClassData) => void;
-  cardData: CardData;
+  cardData: ClassPeriod;
 }
