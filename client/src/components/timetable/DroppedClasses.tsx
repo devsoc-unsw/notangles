@@ -389,13 +389,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             <TouchRipple ref={rippleRef} />
           </Grid>
           <Grid item xs={1} container justifyContent='center'>
-            <StyledIconShadow onClick={() => setOpen(true)}>
+            {isPeriod(cardData) && (<StyledIconShadow onClick={() => setOpen(true)}>
               <Fullscreen
                 onMouseLeave={() => setHoverOverStyle(false)}
                 onMouseOver={() => setHoverOverStyle(true)}
                 style={hoverOverStyle ? { color: 'pink' } : {}} // change to whatever styles are desired
                 ></Fullscreen>
-            </StyledIconShadow>
+            </StyledIconShadow>)}
           </Grid>
         </Grid>
       </StyledCourseClassInner>
