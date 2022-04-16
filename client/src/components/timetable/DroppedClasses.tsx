@@ -9,7 +9,7 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { defaultStartTime } from '../../constants/timetable';
-import { Activity, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
+import { Activity, ClassData, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
 import {
   CardData,
   defaultTransition,
@@ -339,8 +339,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
 
 
-  const handleClose = (value: number) => {
+  const handleClose = (value: ClassData) => {
     console.log(value)
+    handleSelectClass(value)
     setOpen(!open);
     // shiftClasses(value, cardData);
   };

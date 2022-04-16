@@ -90,6 +90,6 @@ export interface DroppedClassesProps {
 
 export interface ExpandedViewProps extends DroppedClassProps {
   open: boolean;
-  handleClose: (value: number) => void;
+  handleClose: (value: ClassData) => void;
   handleSelectClass(classData: ClassData): void;
 }

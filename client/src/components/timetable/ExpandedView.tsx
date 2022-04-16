@@ -53,18 +53,18 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 
 interface LocationDropdownProps {
   locations: string[][];
-  handleChange: any;
-  selectedLocation: number;
+  handleChange(event: any): void;
+  selectedIndex: number;
 }
 
-const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, locations, handleChange }) => {
+const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, locations, handleChange }) => {
   return (
     <FormControl fullWidth>
       <Select
         labelId="simple-select"
         id="simple-select"
         variant="outlined"
-        value={selectedLocation}
+        value={selectedIndex}
         inputProps={{ 'aria-label': 'Without label' }}
         onChange={handleChange}
       >
@@ -96,31 +96,32 @@ const getSections = (c: ClassPeriod) => {
 
   const sectionsAndLocations = duplicateClasses.map((dc) => ([dc.section, dc.periods[periodIndex].locations.at(0) ?? '']))
 
-  return [duplicateClasses, sectionsAndLocations] as [ClassData[], string[][]];
+  return [duplicateClasses, sectionsAndLocations, periodIndex] as [ClassData[], string[][], number];
 };
 
 const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, open, handleClose, handleSelectClass }) => {
+
   const course = cardData.class.course;
   const { days } = useContext(AppContext);
-  const period = isPeriod(cardData) ? cardData : undefined;
+
+  if (!isPeriod(cardData)) return <></>;
+
+  const [period, setPeriod] = useState<ClassPeriod>(cardData);
   
-  if (!period) return <></>;
   
-  const [duplicateClasses, sectionsAndLocations]: [ClassData[], string[][]] = getSections(period);
-  //   console.log(sections)
-  const [selectedLocation, setSelectedLocation] = useState<number>(sectionsAndLocations.findIndex(sal => sal[1] === period.locations.at(0))); // TODO: make it not zero
+  const [duplicateClasses, sectionsAndLocations, periodIndex]: [ClassData[], string[][], number] = getSections(period);
+  const [selectedIndex, setSelectedIndex] = useState<number>(sectionsAndLocations.findIndex(sal => sal[1] === period.locations.at(0)));
 
   const handleLocationChange = (e: any) => {
-    // setSelectedLocation(e.target.value);
-    handleSelectClass(
-        duplicateClasses[e.target.value]
-        );
+    setSelectedIndex(e.target.value);
+    const newPeriod = duplicateClasses[e.target.value].periods[periodIndex]
+    if (isPeriod(newPeriod)) setPeriod(newPeriod)
   };
   return (
-    <Dialog maxWidth="sm" open={open} onClose={() => handleClose(selectedLocation)}>
+    <Dialog maxWidth="sm" open={open} onClose={() => handleClose(duplicateClasses[selectedIndex])}>
       <StyledDialogTitle>
         <Box
-          style={{
+          sx={{
             display: 'flex',
             flexDirection: 'row',
             height: '100%',
@@ -136,7 +137,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
           <div style={{ width: '8px' }} />
 
           <div>
-            <IconButton aria-label="close" onClick={() => handleClose(selectedLocation)}>
+            <IconButton aria-label="close" onClick={() => handleClose(duplicateClasses[selectedIndex])}>
               <Close />
             </IconButton>
           </div>
@@ -151,7 +152,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
             </Grid>
             <Grid item>
               <Typography>
-                {cardData.class.activity} ({sectionsAndLocations[selectedLocation][0]})
+                {cardData.class.activity} ({sectionsAndLocations[selectedIndex][0]})
               </Typography>
             </Grid>
           </Grid>
@@ -170,13 +171,13 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
               <LocationOn />
             </Grid>
             <Grid item style={{ flexGrow: 1 }}>
-              {period && (
+              {
                 <LocationDropdown
-                  selectedLocation={selectedLocation}
+                  selectedIndex={selectedIndex}
                   locations={sectionsAndLocations}
                   handleChange={handleLocationChange}
                 />
-              )}
+              }
             </Grid>
           </Grid>
 
