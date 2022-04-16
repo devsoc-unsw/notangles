@@ -1,7 +1,7 @@
 import React, { MouseEvent, TouchEvent, useContext, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { Card, Grid, IconButton } from '@mui/material';
-import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt, Fullscreen } from '@mui/icons-material';
+import { Box, Button, Card, Grid, IconButton } from '@mui/material';
+import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt, Fullscreen, OpenInFull } from '@mui/icons-material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
@@ -84,13 +84,21 @@ const StyledSideArrow = styled(Grid)`
   // align-content: center;
 `;
 
-const StyledIconShadow = styled(IconButton)`
-  width: 20px;
-  height: 20px;
-  color: white;
-  align-self: center
-  margin-right: 100px;
-`;
+const ExpandButton = styled(Button)({
+  position: 'absolute', top: 3, right: 3,
+  boxShadow: 'none',
+  minWidth: '0px',
+  padding: '0 0',
+  opacity: '40%',
+  borderRadius: '2px',
+  // backgroundColor: 'rgba(155, 155, 155, 0.8)',
+  color: 'whitesmoke',
+  '&:hover': {
+    // backgroundColor: 'rgba(155, 155, 155, 0.8)',
+    // backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    opacity: '100%',
+  },
+});
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
@@ -335,7 +343,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     );
   }
 
-  const [hoverOverStyle, setHoverOverStyle] = useState(false);
 
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
 
@@ -395,13 +402,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           </Grid>
           {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
           {isPeriod(cardData) && fullscreenVisible && (
-            <StyledIconShadow sx={{ position: 'absolute', top: 4, right: 4 }} onClick={() => setOpen(true)}>
-              <Fullscreen
-                onMouseLeave={() => setHoverOverStyle(false)}
-                onMouseOver={() => setHoverOverStyle(true)}
-                style={hoverOverStyle ? { color: 'pink' } : {}} // TODO: change to whatever styles are desired
-              ></Fullscreen>
-            </StyledIconShadow>
+            <ExpandButton  onClick={() => setOpen(true)}>
+              <OpenInFull/>
+            </ExpandButton>
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
