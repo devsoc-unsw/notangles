@@ -357,15 +357,15 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       isSquareEdges={isSquareEdges}
     >
       <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
-        <Grid container>
-          {/* <StyledSideArrow item xs={1}>
-            {hasArrows && (
+        <Grid container sx={{height: '100%'}}>
+          <StyledSideArrow item xs={1}>
+            {/* {hasArrows && (
               <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
                 <ArrowLeft />
               </StyledIconShadow>
-            )}
-          </StyledSideArrow> */}
-          <Grid item xs={10}>
+            )} */}
+          </StyledSideArrow>
+          <Grid item xs={10} alignSelf='center'>
             <p style={pStyle}>
               <b>
                 {cardData.class.course.code} {cardData.class.activity}
@@ -387,7 +387,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </p>
             <TouchRipple ref={rippleRef} />
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1} container justifyContent='center'>
             <StyledIconShadow onClick={() => setOpen(true)}>
               <Fullscreen
                 onMouseLeave={() => setHoverOverStyle(false)}

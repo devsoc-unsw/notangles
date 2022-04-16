@@ -19,14 +19,14 @@ import {
   Modal,
   Select,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { ExpandedViewProps } from '../../interfaces/PropTypes';
 // import styled from 'styled-components';
-import CloseIcon from '@material-ui/icons/Close';
+import {Close} from '@mui/icons-material';
 import { CardData, isPeriod } from '../../utils/Drag';
-import { styled } from '@material-ui/styles';
+import { styled } from '@mui/styles';
 import { ClassData } from '../../interfaces/Course';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogTitle from '@mui/material/DialogTitle';
 import {
   AccessTime,
   AccessTimeOutlined,
@@ -37,10 +37,10 @@ import {
   ExpandMore,
   LocationCity,
   LocationOn,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { ClassPeriod, ClassTime } from '../../interfaces/Course';
 import { AppContext } from '../../context/AppContext';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import {PeopleAlt} from '@mui/icons-material';
 
 const StyledDialogTitle = styled(MuiDialogTitle)<DialogTitleProps>(({}) => ({
   padding: '8px 12px 8px 24px',
@@ -61,16 +61,9 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, l
   return (
     <FormControl fullWidth>
       <Select
-        MenuProps={{
-          getContentAnchorEl: null,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'left',
-          },
-        }}
         labelId="simple-select"
         id="simple-select"
-        variant="standard"
+        variant="outlined"
         value={selectedLocation}
         inputProps={{ 'aria-label': 'Without label' }}
         onChange={handleChange}
@@ -85,11 +78,11 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedLocation, l
   );
 };
 
-// TODO: Tidy this up
 const isDuplicate = (a: ClassPeriod, b: ClassPeriod) => a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
 
 
+// TODO: Tidy this up
 
 const getSections = (c: ClassPeriod) => {
   const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
@@ -144,7 +137,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
 
           <div>
             <IconButton aria-label="close" onClick={() => handleClose(selectedLocation)}>
-              <CloseIcon />
+              <Close />
             </IconButton>
           </div>
         </Box>
@@ -189,7 +182,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ shiftClasses, cardData, ope
 
           <Grid item container direction="row" spacing={2} alignItems="center">
             <Grid item>
-              <PeopleAltIcon />
+              <PeopleAlt />
             </Grid>
             <Grid item>
               <Typography>
