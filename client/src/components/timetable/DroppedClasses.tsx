@@ -234,7 +234,7 @@ const StyledCourseClassInner = styled(Card, {
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
-  outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  outline: solid transparent 0px;
   outline-offset: -4px;
   width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
