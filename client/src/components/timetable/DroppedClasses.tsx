@@ -149,8 +149,8 @@ const StyledCourseClassInner = styled(Card, {
   isSquareEdges: boolean;
 }>`
   display: flex;
-  justify-content: center;
-  align-items: center;
+  // justify-content: center;
+  // align-items: center;
   flex-direction: column;
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
@@ -335,6 +335,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   const [hoverOverStyle, setHoverOverStyle] = useState(false);
 
+  const [fullscreenVisible, setFullscreenVisible] = useState(false);
+
+
   const [open, setOpen] = React.useState(false);
 
 
@@ -356,17 +359,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       y={y}
       earliestStartTime={earliestStartTime}
       isSquareEdges={isSquareEdges}
+      onMouseOver={() => {setFullscreenVisible(true)}}
+      onMouseLeave={() => {setFullscreenVisible(false)}}
     >
       <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
-        <Grid container sx={{height: '100%'}}>
-          <StyledSideArrow item xs={1}>
-            {/* {hasArrows && (
-              <StyledIconShadow size="small" onClick={() => shiftClasses(-1, cardData)}>
-                <ArrowLeft />
-              </StyledIconShadow>
-            )} */}
-          </StyledSideArrow>
-          <Grid item xs={10} alignSelf='center'>
+        <Grid container sx={{height: '100%'}} justifyContent='center' alignItems='center'>
+          <Grid item xs={11} > {/*TODO: tweak this number*/}
             <p style={pStyle}>
               <b>
                 {cardData.class.course.code} {cardData.class.activity}
@@ -388,16 +386,15 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </p>
             <TouchRipple ref={rippleRef} />
           </Grid>
-          <Grid item xs={1} container justifyContent='center'>
-            {isPeriod(cardData) && (<StyledIconShadow onClick={() => setOpen(true)}>
+        </Grid>
+        {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
+        {isPeriod(cardData) && fullscreenVisible && (<StyledIconShadow sx={{position: 'absolute', top: 4, right: 4}} onClick={() => setOpen(true)}>
               <Fullscreen
                 onMouseLeave={() => setHoverOverStyle(false)}
                 onMouseOver={() => setHoverOverStyle(true)}
-                style={hoverOverStyle ? { color: 'pink' } : {}} // change to whatever styles are desired
+                style={hoverOverStyle ? { color: 'pink' } : {}} // TODO: change to whatever styles are desired
                 ></Fullscreen>
             </StyledIconShadow>)}
-          </Grid>
-        </Grid>
       </StyledCourseClassInner>
     </StyledCourseClass>
       <ExpandedView
