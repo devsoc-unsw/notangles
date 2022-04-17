@@ -163,33 +163,35 @@ const StyledCourseClassInner = styled(Card, {
   position: relative;
 `;
 
-const pStyle = {
-  width: '100%',
-  margin: '0 0',
-  whiteSpace: 'nowrap' as 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-};
+const StyledClassName = styled('p')`
+  width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
-const pStyleSmall = {
-  ...pStyle,
-  fontSize: '85%',
-};
+const StyledClassInfo = styled(StyledClassName)`
+  font-size: 85%;
+`;
 
-const iconStyle = {
-  verticalAlign: 'top',
-};
+const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: top;
+  font-size: inherit;
+`;
 
-const iconPeopleStyle = {
-  ...iconStyle,
-  marginRight: '0.2rem',
-};
+const StyledPeopleIcon = styled(PeopleAlt)`
+  vertical-align: top;
+  font-size: inherit;
+  margin-right: 0.2rem;
+`;
 
-const iconWarningStyle = {
-  ...iconStyle,
-  marginRight: '0.2rem',
-  color: yellow[400],
-};
+const StyledWarningIcon = styled(Warning)`
+  vertical-align: top;
+  font-size: inherit;
+  margin-right: 0.2rem;
+  color: ${yellow[400]};
+`;
 
 const StyledCapacityIndicator = styled('span', {
   shouldForwardProp: (prop) => prop !== 'percentEnrolled',
@@ -207,17 +209,11 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   return (
     <>
       <StyledCapacityIndicator percentEnrolled={percentEnrolled}>
-        {percentEnrolled === 1 ? (
-          <Warning fontSize="inherit" style={iconWarningStyle} />
-        ) : (
-          <PeopleAlt fontSize="inherit" style={iconPeopleStyle} />
-        )}
-        <span>
-          {period.class.enrolments}/{period.class.capacity}{' '}
-        </span>
+        {percentEnrolled === 1 ? <StyledWarningIcon /> : <StyledPeopleIcon />}
+        {period.class.enrolments}/{period.class.capacity}{' '}
       </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
-      <LocationOn fontSize="inherit" style={iconStyle} />
+      <StyledLocationIcon />
       {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
     </>
   );
@@ -247,8 +243,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
-
-    // setFullscreenVisible(false)
 
     if (!('type' in eventDown)) return;
     if (eventDown.type.includes('mouse') && ignoreMouse) return;
@@ -355,12 +349,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}
-              <p style={pStyle}>
+              <StyledClassName>
                 <b>
                   {cardData.class.course.code} {cardData.class.activity}
                 </b>
-              </p>
-              <p style={pStyleSmall}>
+              </StyledClassName>
+              <StyledClassInfo>
                 {isPeriod(cardData) ? (
                   isHideClassInfo ? (
                     <></>
@@ -373,7 +367,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
                     {activityMaxPeriods !== 1 && 'es'}
                   </>
                 )}
-              </p>
+              </StyledClassInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
           </Grid>
