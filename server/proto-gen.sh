@@ -16,3 +16,9 @@ protoc \
 --ts_out=./${PROTO_DEST} \
 -I ./ \
 ./*.proto
+
+
+
+
+# npx grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./src/proto --grpc_out=./src/proto -I ./ ./*.proto
+# npx grpc_tools_node_protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --ts_out=./src/proto -I ./ ./autotimetabler.proto

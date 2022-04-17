@@ -11,13 +11,16 @@ export const getAuto = async (req: Request, res: Response) => {
   var client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
   const constraints = new TimetableConstraints();
 
+  console.log(req.body)
+  
+
   const data: AutoData = req.body;
   constraints.setStart(data.start);
   constraints.setEnd(data.end);
   constraints.setDays(data.days);
   constraints.setGap(data.gap);
   constraints.setMaxdays(data.maxdays);
-  constraints.setPeriodsListSerialized(data.periodsListSerialized);
+  // constraints.setPeriodsListSerialized(data.periodInfo);
 
   client.findBestTimetable(constraints, (err, response) => {
     if (err) {

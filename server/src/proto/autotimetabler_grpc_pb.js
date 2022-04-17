@@ -1,7 +1,7 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 'use strict';
-var grpc = require('@grpc/grpc-js');
+var grpc = require('grpc');
 var autotimetabler_pb = require('./autotimetabler_pb.js');
 
 function serialize_AutoTimetableResponse(arg) {
