@@ -14,23 +14,7 @@ import autotimetabler_pb2_grpc
 
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
     def FindBestTimetable(self, request, context):
-        print("Looking for the best timetable!")
-        # autotimetabler_pb2._message.__dict__
-        # print(request)
-        # print('---')
-
-        # data = [
-        #     request.start,
-        #     request.end,
-        #     request.days,
-        #     request.gap,
-        #     request.maxdays,
-        #     request.periodInfo,
-        # ]
-        # print(data)
-        # print('hi' for i in request.PeriodInfo)
-        # print(dir(request))
-
+        print("Finding a timetable")
         return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(request))
 
 
