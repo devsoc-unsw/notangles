@@ -239,7 +239,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
-    timetableData['periodInfo'] = periodInfoPerMode.current[`${classMode}`];
+    timetableData['periodInfoList'] = periodInfoPerMode.current[`${classMode}`];
 
     try {
       const res = await getAutoTimetable(timetableData);

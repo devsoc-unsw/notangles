@@ -5,7 +5,19 @@ import { TimetableConstraints } from '../proto/autotimetabler_pb';
 import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
 import { config } from '../config';
 
-type AutoData = TimetableConstraints.AsObject;
+interface ReqBodyData {
+  start: number;
+  end: number;
+  days: string;
+  gap: number;
+  maxdays: number,
+  periodInfoList: {
+    periodsPerClass: number;
+    periodTimes: Array<number>;
+    durations: Array<number>;
+  }[]
+}
+
 
 export const getAuto = async (req: Request, res: Response) => {
   var client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
@@ -14,13 +26,22 @@ export const getAuto = async (req: Request, res: Response) => {
   console.log(req.body)
   
 
-  const data: AutoData = req.body;
+  const data: ReqBodyData = req.body;
   constraints.setStart(data.start);
   constraints.setEnd(data.end);
   constraints.setDays(data.days);
   constraints.setGap(data.gap);
   constraints.setMaxdays(data.maxdays);
-  // constraints.setPeriodsListSerialized(data.periodInfo);
+  
+  data.periodInfoList.forEach(thisPeriod => {
+    const thisPeriodInfo = new TimetableConstraints.PeriodInfo();
+
+    thisPeriodInfo.setPeriodsperclass(thisPeriod.periodsPerClass)
+    thisPeriodInfo.setPeriodtimesList(thisPeriod.periodTimes)
+    thisPeriodInfo.setDurationsList(thisPeriod.durations)
+    
+    constraints.addPeriodinfo(thisPeriodInfo)
+  })
 
   client.findBestTimetable(constraints, (err, response) => {
     if (err) {

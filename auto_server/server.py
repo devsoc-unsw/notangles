@@ -11,18 +11,27 @@ import autotimetabler_pb2_grpc
 # python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./autotimetabler.proto
 
 
+
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
     def FindBestTimetable(self, request, context):
         print("Looking for the best timetable!")
-        data = [
-            request.start,
-            request.end,
-            request.days,
-            request.gap,
-            request.maxdays,
-            json.loads(request.periods_list_serialized),
-        ]
-        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(*data))
+        # autotimetabler_pb2._message.__dict__
+        # print(request)
+        # print('---')
+
+        # data = [
+        #     request.start,
+        #     request.end,
+        #     request.days,
+        #     request.gap,
+        #     request.maxdays,
+        #     request.periodInfo,
+        # ]
+        # print(data)
+        # print('hi' for i in request.PeriodInfo)
+        # print(dir(request))
+
+        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(request))
 
 
 def main():
