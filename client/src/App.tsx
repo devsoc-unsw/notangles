@@ -137,11 +137,11 @@ const App: React.FC = () => {
 
       prev[course.code] = {};
 
+      // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        // temp until auto timetabling works
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null; // null for unscheduled
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null;
       });
 
       return prev;

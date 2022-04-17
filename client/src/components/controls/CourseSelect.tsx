@@ -182,7 +182,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   const onChange = (_: any, value: CoursesList) => {
-
     if (value.length > selectedValue.length) {
       handleSelect(value[value.length - 1].code);
       setSelectedValue([...value]);
@@ -282,7 +281,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
         multiple
-        // autoHighlight
+        autoHighlight
         disableClearable
         disableListWrap
         noOptionsText="No Results"

@@ -42,7 +42,6 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 
     newActivities[activity].forEach((classData) => {
       classData.periods = classData.periods.filter((period) => {
-        // TODO
         const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
 
         return duplicates[0] === period;
