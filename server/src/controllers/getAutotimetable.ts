@@ -23,9 +23,6 @@ export const getAuto = async (req: Request, res: Response) => {
   var client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
   const constraints = new TimetableConstraints();
 
-  console.log(req.body)
-  
-
   const data: ReqBodyData = req.body;
   constraints.setStart(data.start);
   constraints.setEnd(data.end);
