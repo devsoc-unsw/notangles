@@ -1,13 +1,19 @@
 syntax = "proto3";
 
 
+message PeriodData {
+    int32 periodsPerClass = 1;
+    repeated float periodTimes = 2;
+    repeated float durations = 3;
+}
+
 message TimetableConstraints { 
     int32 start = 1;
     int32 end = 2;
     string days = 3;
     int32 gap = 4;
     int32 maxdays = 5;
-    string periods_list_serialized = 6; 
+    repeated PeriodData = 6;
 }
 
 message AutoTimetableResponse { 

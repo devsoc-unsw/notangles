@@ -167,7 +167,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             periodTimes: value
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2)))
               .reduce((a, b) => a.concat(b)),
-            durations: [],
+            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
       'in person': targetActivities.current.map(
@@ -178,7 +178,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
               .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2)))
               .reduce((a, b) => a.concat(b)),
-            durations: [],
+            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
       'online': targetActivities.current.map(
@@ -189,7 +189,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
               .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2)))
               .reduce((a, b) => a.concat(b)),
-            durations: [],
+            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
     };
