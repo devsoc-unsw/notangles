@@ -1,15 +1,16 @@
-import React, { MouseEvent, TouchEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { Box, Button, Card, Grid, IconButton } from '@mui/material';
-import { Warning, ArrowLeft, ArrowRight, LocationOn, PeopleAlt, Fullscreen, OpenInFull } from '@mui/icons-material';
+import { LocationOn, OpenInFull, PeopleAlt, Warning } from '@mui/icons-material';
+import { Button, Card, Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
 
+import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { defaultStartTime } from '../../constants/timetable';
-import { Activity, ClassData, ClassPeriod, CourseCode, InInventory } from '../../interfaces/Course';
+import { Activity, ClassData, CourseCode, InInventory } from '../../interfaces/Course';
+import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
 import {
   CardData,
   defaultTransition,
@@ -24,9 +25,8 @@ import {
   transitionTime,
   unregisterCard,
 } from '../../utils/Drag';
-import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
-import { getClassMargin, rowHeight } from './TimetableLayout';
 import ExpandedView from './ExpandedView';
+import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
 
@@ -76,29 +76,21 @@ export const classTransformStyle = (cardData: CardData, earliestStartTime: numbe
 
 const transitionName = 'class';
 
-const StyledSideArrow = styled(Grid)`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  // align-items: center;
-  // align-content: center;
-`;
+const ExpandButton = styled(Button)`
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  box-shadow: none;
+  min-width: 0px;
+  padding: 0;
+  opacity: 40%;
+  border-radius: 2px;
+  color: #f5f5f5;
 
-const ExpandButton = styled(Button)({
-  position: 'absolute', top: 3, right: 3,
-  boxShadow: 'none',
-  minWidth: '0px',
-  padding: '0 0',
-  opacity: '40%',
-  borderRadius: '2px',
-  // backgroundColor: 'rgba(155, 155, 155, 0.8)',
-  color: 'whitesmoke',
-  '&:hover': {
-    // backgroundColor: 'rgba(155, 155, 155, 0.8)',
-    // backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    opacity: '100%',
+  &:hover {
+    opacity: 100%;
   },
-});
+`;
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
@@ -157,8 +149,6 @@ const StyledCourseClassInner = styled(Card, {
   isSquareEdges: boolean;
 }>`
   display: flex;
-  // justify-content: center;
-  // align-items: center;
   flex-direction: column;
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
@@ -233,19 +223,19 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   );
 };
 
-const DroppedClass: React.FC<DroppedClassProps> = ({
-  cardData,
-  color,
-  y,
-  earliestStartTime,
-  hasClash,
-  shiftClasses,
-  hasArrows,
-  handleSelectClass,
-}) => {
+const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earliestStartTime, hasClash, handleSelectClass }) => {
+  const [fullscreenVisible, setFullscreenVisible] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+
+  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag } = useContext(AppContext);
+
+  const handleClose = (value: ClassData) => {
+    handleSelectClass(value);
+    setPopupOpen(!popupOpen);
+  };
+
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag } = useContext(AppContext);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -254,7 +244,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const onDown = (eventDown: any) => {
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
-        eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
+      eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
 
@@ -343,20 +333,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     );
   }
 
-
-  const [fullscreenVisible, setFullscreenVisible] = useState(false);
-
-
-  const [open, setOpen] = React.useState(false);
-
-
-
-  const handleClose = (value: ClassData) => {
-    // console.log(value)
-    handleSelectClass(value)
-    setOpen(!open);
-    // shiftClasses(value, cardData);
-  };
   return (
     <>
       <StyledCourseClass
@@ -377,7 +353,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       >
         <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges}>
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
-            <Grid item xs={11}> {/*TODO: tweak this number*/}
+            <Grid item xs={11}>
+              {/*TODO: tweak this number*/}
               <p style={pStyle}>
                 <b>
                   {cardData.class.course.code} {cardData.class.activity}
@@ -402,32 +379,28 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           </Grid>
           {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
           {isPeriod(cardData) && fullscreenVisible && (
-            <ExpandButton  onClick={() => setOpen(true)}>
-              <OpenInFull/>
+            <ExpandButton onClick={() => setPopupOpen(true)}>
+              <OpenInFull />
             </ExpandButton>
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
-      {isPeriod(cardData) && <ExpandedView
-        cardData={cardData}
-        open={open}
-        handleClose={handleClose}
-      />}
+      {isPeriod(cardData) && <ExpandedView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
     </>
   );
 };
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes, handleSelectClass }) => {
+  const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
+
+  const { selectedCourses, selectedClasses } = useContext(CourseContext);
+
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
   const newCards: CardData[] = [];
+
   const keyCounter = useRef(0);
   const inventoryCards = useRef<CardData[]>([]);
-
-  const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
-
-  const { isHideFullClasses } = useContext(AppContext);
-  const { selectedCourses, selectedClasses } = useContext(CourseContext);
 
   const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
@@ -471,32 +444,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     }
   });
 
-  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
-
-  const shiftClasses = (dir: number, c: CardData) => {
-    if ('time' in c) {
-      const newclasses = c.class.course.activities[c.class.activity].filter((value) =>
-        value.periods.some((v) => isDuplicate(v, c) && (!isHideFullClasses || value.enrolments !== value.capacity))
-      );
-      // console.log(dir, newclasses)
-
-      if (newclasses.length)
-        handleSelectClass(
-          newclasses[(newclasses.findIndex((v) => v.id === c.class.id) + dir) % newclasses.length]
-        );
-    }
-  };
-
-  const hasArrows = (c: CardData) =>
-    'time' in c &&
-    c.class.course.activities[c.class.activity].filter(
-      (value) =>
-        value.periods.length &&
-        value.periods.some((p) => isDuplicate(p, c)) &&
-        (!isHideFullClasses || value.enrolments !== value.capacity || value.id === c.class.id)
-    ).length > 1;
-
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
@@ -505,8 +452,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
       <DroppedClass
         key={`${key}`}
         cardData={cardData}
-        shiftClasses={shiftClasses}
-        hasArrows={hasArrows(cardData)}
         color={assignedColors[cardData.class.course.code]}
         y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}

@@ -1,68 +1,60 @@
-import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
-  BoxProps,
   Dialog,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  DialogTitleProps,
-  Divider,
   FormControl,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
-  Modal,
   Select,
   SelectChangeEvent,
-  selectClasses,
   Typography,
 } from '@mui/material';
-import { ExpandedViewProps } from '../../interfaces/PropTypes';
-import { Close } from '@mui/icons-material';
-import { CardData, isPeriod } from '../../utils/Drag';
-import { styled } from '@mui/styles';
-import { ClassData } from '../../interfaces/Course';
-import MuiDialogTitle from '@mui/material/DialogTitle';
-import {
-  AccessTime,
-  AccessTimeOutlined,
-  AccessTimeTwoTone,
-  Computer,
-  DesktopMac,
-  DesktopWindows,
-  ExpandMore,
-  LocationCity,
-  LocationOn,
-} from '@mui/icons-material';
-import { ClassPeriod, ClassTime } from '../../interfaces/Course';
-import { AppContext } from '../../context/AppContext';
-import { PeopleAlt } from '@mui/icons-material';
+import { styled } from '@mui/system';
 
-const StyledDialogTitle = styled(MuiDialogTitle)<DialogTitleProps>(({}) => ({
-  padding: '8px 12px 8px 24px',
-}));
+import { AppContext } from '../../context/AppContext';
+import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Course';
+import { ExpandedViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { isPeriod } from '../../utils/Drag';
+
+const StyledDialogTitle = styled(DialogTitle)`
+  padding: 8px 12px 8px 24px;
+`;
+
+const StyledTitleContainer = styled(Box)`
+  display: flex;
+  flex-rirection: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 20px;
+`;
+
+const StyledDialogContent = styled(DialogContent)`
+  padding-bottom: 20px;
+`;
+
+const StyledDropdownContainer = styled(Grid)`
+  flex-grow: 1;
+`;
 
 const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
+
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
 };
 
-interface LocationDropdownProps {
-  sectionsAndLocations: Array<[Section, Location]>;
-  handleChange(event: SelectChangeEvent<number>): void;
-  selectedIndex: number;
+interface DuplicateClassData {
+  duplicateClasses: ClassData[]; // other classes of the same course running at the same time
+  sectionsAndLocations: Array<[Section, Location]>; // wherein sectionsAndLocations[i] is a tuple of the Section (i.e. the class' "code") and Location for duplicateClasses[i]
+  periodIndex: number; // the relevant index (as classes have multiple periods, i.e. Tut-Labs)
 }
 
-const LocationDropdown: React.FC<LocationDropdownProps> = ({
-  selectedIndex,
-  sectionsAndLocations: sectionsAndLocations,
-  handleChange,
-}) => {
+const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {
   return (
     <FormControl fullWidth>
       <Select
@@ -104,14 +96,6 @@ const getDuplicateClassData = (c: ClassPeriod) => {
   } as DuplicateClassData;
 };
 
-type Section = string;
-type Location = string;
-interface DuplicateClassData {
-  duplicateClasses: ClassData[]; // other classes of the same course running at the same time
-  sectionsAndLocations: Array<[Section, Location]>; // wherein sectionsAndLocations[i] is a tuple of the Section (i.e. the class' "code") and Location for duplicateClasses[i]
-  periodIndex: number; // the relevant index (as classes have multiple periods, i.e. Tut-Labs)
-}
-
 /*
 Displays expanded view of a droppedClass and allows for changing a class to others that occur at the same time period.
 the LocationDropdown shows the different locations and allows the choosing of other classes at this time slot.
@@ -121,14 +105,13 @@ becuase otherwise the view will close itself whenever a new item is selected in 
 
 Currently only intended to be appear on non-unscheduled classCards -- i.e. cardData but technically be of type PeriodData
 */
-const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose }) => {
+const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handleClose }) => {
+  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
+  const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
+
   const { days } = useContext(AppContext);
 
-  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
-
   const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(cardData)); // the relevant data to handle class changing with location dropdown
-
-  const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
@@ -150,35 +133,20 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
   };
 
   return (
-    <Dialog maxWidth="sm" open={open} onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
+    <Dialog
+      maxWidth="sm"
+      open={popupOpen}
+      onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+    >
       <StyledDialogTitle>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            height: '100%',
-            width: '100%',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{}}>
-            {cardData.class.course.code} — {cardData.class.course.name}
-          </div>
-
-          <div style={{ width: '8px' }} />
-
-          <div>
-            <IconButton
-              aria-label="close"
-              onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
-            >
-              <Close />
-            </IconButton>
-          </div>
-        </Box>
+        <StyledTitleContainer>
+          {cardData.class.course.code} — {cardData.class.course.name}
+          <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
+            <Close />
+          </IconButton>
+        </StyledTitleContainer>
       </StyledDialogTitle>
-      <DialogContent style={{ paddingBottom: '20px' }}>
+      <StyledDialogContent>
         <Grid container direction="column" spacing={2}>
           <Grid item container direction="row" spacing={2}>
             <Grid item>
@@ -191,7 +159,6 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
               </Typography>
             </Grid>
           </Grid>
-
           <Grid item container direction="row" spacing={2}>
             <Grid item>
               <AccessTime />
@@ -200,22 +167,18 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
               <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
             </Grid>
           </Grid>
-
           <Grid item container direction="row" spacing={2} alignItems="center">
             <Grid item>
               <LocationOn />
             </Grid>
-            <Grid item style={{ flexGrow: 1 }}>
-              {
-                <LocationDropdown
-                  selectedIndex={selectedIndex}
-                  sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}
-                  handleChange={handleLocationChange}
-                />
-              }
-            </Grid>
+            <StyledDropdownContainer item>
+              <LocationDropdown
+                selectedIndex={selectedIndex}
+                sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}
+                handleChange={handleLocationChange}
+              />
+            </StyledDropdownContainer>
           </Grid>
-
           <Grid item container direction="row" spacing={2} alignItems="center">
             <Grid item>
               <PeopleAlt />
@@ -227,7 +190,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, open, handleClose
             </Grid>
           </Grid>
         </Grid>
-      </DialogContent>
+      </StyledDialogContent>
     </Dialog>
   );
 };
