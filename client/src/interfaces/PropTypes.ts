@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
+import { SelectChangeEvent } from '@mui/material';
 import { CardData } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, InInventory } from './Course';
+import { ClassData, ClassPeriod, CourseCode, CourseData, InInventory, Location, Section } from './Course';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -77,12 +78,23 @@ export interface DroppedClassProps {
   y?: number;
   earliestStartTime: number;
   hasClash: boolean;
-  shiftClasses(dir: number, cardData: CardData): void;
-  hasArrows: boolean;
+  handleSelectClass(classData: ClassData): void;
 }
 
 export interface DroppedClassesProps {
   assignedColors: Record<string, string>;
   clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
+}
+
+export interface ExpandedViewProps {
+  popupOpen: boolean;
+  handleClose: (value: ClassData) => void;
+  cardData: ClassPeriod;
+}
+
+export interface LocationDropdownProps {
+  sectionsAndLocations: Array<[Section, Location]>;
+  handleChange(event: SelectChangeEvent<number>): void;
+  selectedIndex: number;
 }

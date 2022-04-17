@@ -1,6 +1,8 @@
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
+export type Section = string;
+export type Location = string;
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
 
@@ -20,6 +22,7 @@ export interface ClassData {
   enrolments: number;
   capacity: number;
   periods: ClassPeriod[];
+  section: Section;
 }
 
 export interface InventoryPeriod {

@@ -5,7 +5,14 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
-    date: '04/04/22',
+    date: '17/04/22',
+    changes: [
+      'Added expanded class view to see more details about a class',
+      'Moved selecting between classes running at the same time to inside expanded class view',
+    ],
+  },
+  {
+    date: '15/04/22',
     changes: ['Removed ability to sort search results alphabetically', 'Removed "Beta" from logo'],
   },
   {
