@@ -35,7 +35,7 @@
     "workbox-range-requests": "^6.5.3",
     "workbox-routing": "^6.5.1",
     "workbox-strategies": "^6.5.3",
-    "workbox-streams": "^6.5.1"
+    "workbox-streams": "^6.5.3"
   },
   "scripts": {
     "start": "REACT_APP_ENVIRONMENT=development react-scripts start",
