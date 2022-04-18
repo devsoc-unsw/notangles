@@ -1,5 +1,3 @@
-from functools import reduce
-
 from ortools.sat.python import cp_model
 
 def reduePeriodInfo(period):
@@ -76,8 +74,7 @@ def sols(requestData):
 
     classIntervals = [
         model.NewFixedSizeIntervalVar(
-            classStartTimes[i], newPeriodData[normalClassIndices[i]
-                                              ][0] + minGapBetw, f"xx{i}"
+            classStartTimes[i], newPeriodData[normalClassIndices[i]][0] + minGapBetw, f"xx{i}"
         )
         for i in range(len(normalClassIndices))
     ]  # periods as intervals (corresponds to starttimes)
@@ -86,40 +83,35 @@ def sols(requestData):
     for specIndex in range(numCourses):  # handles classes with two+ periods across multiple days
         if not newPeriodData[specIndex][2]:
             continue
-        durations, specialperiods, _ = newPeriodData[specIndex]
-        numSpecPeriodsAsRange = range(len(specialperiods))
+        durations, specialPeriods, _ = newPeriodData[specIndex]
 
         # dummy bools we configure for constraints
-        specialBools = [model.NewBoolVar(f"e{i}") for i in numSpecPeriodsAsRange]
+        specialBools = [model.NewBoolVar(f"e{i}") for i in range(len(specialPeriods))]
 
         # initially set to be 'anything' but will get constrained to be equal to some group of period start times in the next step
         groupStartTimes = [model.NewIntVar(100, 560, f"s{specIndex}{i}") for i in range(len(durations))]
 
-        for i in numSpecPeriodsAsRange:
+        for i, _ in enumerate(specialPeriods):
             for j, _ in enumerate(groupStartTimes):
-                model.Add(groupStartTimes[j] == specialperiods[i][j]).OnlyEnforceIf(specialBools[i])
+                model.Add(groupStartTimes[j] == specialPeriods[i][j]).OnlyEnforceIf(specialBools[i])
 
         specialIntervalVars += [model.NewFixedSizeIntervalVar(
-                        groupStartTimes[j], durations[j] + minGapBetw,f"sI{j}")
-                        for j, _ in enumerate(groupStartTimes)]
+            groupStartTimes[j], durations[j] + minGapBetw,f"sI{j}")
+            for j, _ in enumerate(groupStartTimes)]
 
         # ensures a single assignment of grouped periods
         model.AddExactlyOne(specialBools)
 
         # they can now be added as normal starttimes
-        classStartTimes.insert(specIndex, groupStartTimes[0])
-        for j in range(1, len(groupStartTimes)):
+        classStartTimes.insert(specIndex, groupStartTimes[0]) # first added in place
+        for j in range(1, len(groupStartTimes)): # rest are chucked to the end (preserves og order)
             classStartTimes.append(groupStartTimes[j])
 
     dayDomain = cp_model.Domain.FromValues([int(i) for i in days])
 
     # restricts classes to be no earlier than start
     laterThanArr = [model.NewFixedSizeIntervalVar(i * 100, earliestStartTime, f"l{i}") for i in range(1, 6)]
-    noLaterThanArr = [
-        model.NewFixedSizeIntervalVar(
-            i * 100 + latestEndTime + minGapBetw, 16, f"l{i}")
-        for i in range(1, 6)
-    ]  # 16 is an arbitrary length
+    noLaterThanArr = [model.NewFixedSizeIntervalVar(i * 100 + latestEndTime + minGapBetw, 16, f"l{i}") for i in range(1, 6)]
 
     if maxDays == 1:
         day = model.NewIntVarFromDomain(dayDomain, "day")
@@ -127,7 +119,7 @@ def sols(requestData):
             # makes them all on the same day
             model.AddDivisionEquality(day, i, 100)
 
-    if maxDays in [2, 3, 4]:
+    elif maxDays in [2, 3, 4]:
         classDayTimes = [
             model.NewIntVarFromDomain(dayDomain, f"day{i}")
             for i, _ in enumerate(classStartTimes)
@@ -146,8 +138,6 @@ def sols(requestData):
                 model.Add(classDayTime == possibleDays[i]).OnlyEnforceIf(possibleBools[i])
 
             model.AddBoolOr(possibleBools) # ensures classDayTime == possibleDays[i] for at least one i
-
-
 
     # makes the periods (and other constraints) not overlap
     model.AddNoOverlap(classIntervals + laterThanArr + noLaterThanArr + specialIntervalVars)
