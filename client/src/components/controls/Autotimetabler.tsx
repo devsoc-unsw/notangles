@@ -165,8 +165,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
             periodTimes: value
-              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), [])) // turns all the periods of all the classes of an activity (ClassData[]) into a single list for simpler storage
-              .reduce((a, b) => a.concat(b), []),
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []), // extracts the period's day and start time for all periods of a class for all classes of an activity (classData[]) and then reduces that list of list of lists into a single list
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
