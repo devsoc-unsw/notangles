@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 config();
 
 import express from 'express';
-import passport from 'passport';
+import { auth } from 'express-openid-connect';
 import logger from 'morgan';
 
 // Create a new express application instance
@@ -16,14 +16,10 @@ const port = process.env.PORT || 3000;
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(auth());
 
-// Import routers
-import authRouter from './routers/auth';
-
-// Load the routers
-app.use('/auth', authRouter);
+// Basic route
+app.get('/', (req, res) => res.send('Hello World!'));
 
 // Start the express server
 app.listen(port, () => console.log(`server started at http://localhost:${port}`));
