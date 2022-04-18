@@ -112,12 +112,12 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 };
 
 interface PeriodInfo {
-  periodsPerClass: number;
+  periodsPerClass: number; // i.e. periods.length
   periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
-  durations: Array<number>;
+  durations: Array<number>; // where the ith period has duration[i] in hours
 }
 
-type ClassMode = "hybrid" | "in person" | "online";
+type ClassMode = 'hybrid' | 'in person' | 'online';
 
 const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
@@ -139,7 +139,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   const targetActivities = useRef<ClassData[][]>([]);
 
-  const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({'hybrid': [], 'in person': [], 'online': []});
+  const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
 
   // caches targetActivities and periodInfoPerMode in advance
   useEffect(() => {
@@ -165,9 +165,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
             periodTimes: value
-              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), [])) // turns all the periods of all the classes of an activity (ClassData[]) into a single list for simpler storage
               .reduce((a, b) => a.concat(b), []),
-            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
       'in person': targetActivities.current.map(
@@ -178,7 +178,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
               .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
               .reduce((a, b) => a.concat(b), []),
-            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
       'online': targetActivities.current.map(
@@ -189,11 +189,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
               .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
               .reduce((a, b) => a.concat(b), []),
-            durations: value.at(0)?.periods.map(p => p.time.end - p.time.start) ?? [],
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
     };
-  
   }, [selectedCourses]);
 
   const toggleIsOpenInfo = () => {
