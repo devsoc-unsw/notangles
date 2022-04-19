@@ -153,29 +153,6 @@ const App: React.FC = () => {
     ((period1.end > period2.start && period1.start < period2.end) ||
       (period2.end > period1.start && period2.start < period1.end));
 
-  const checkClashes = () => {
-    const newClashes: ClassPeriod[] = [];
-
-    const flatPeriods = Object.values(selectedClasses)
-      .flatMap((activities) => Object.values(activities))
-      .flatMap((classData) => (classData ? classData.periods : []));
-
-    flatPeriods.forEach((period1) => {
-      flatPeriods.forEach((period2) => {
-        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-          if (!newClashes.includes(period1)) {
-            newClashes.push(period1);
-          }
-          if (!newClashes.includes(period2)) {
-            newClashes.push(period2);
-          }
-        }
-      });
-    });
-
-    return newClashes;
-  };
-
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
@@ -336,7 +313,7 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
                 <Footer />
                 <Alerts />

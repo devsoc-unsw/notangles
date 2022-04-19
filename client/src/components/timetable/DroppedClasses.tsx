@@ -29,80 +29,6 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
 
-const sortClashesByTime = (clashes: ClassPeriod[]) => {  
-  // Sort clashes into a list of lists, where each smaller list
-  // represents the day of the week.
-  const sortedClashes: ClassPeriod[][] = days.map((_, i) => clashes.filter(clash => clash.time.day === i + 1));
-
-  sortedClashes.forEach((clashes) => clashes.sort((a, b) => a.time.start - b.time.start));
-
-  return sortedClashes;
-}
-
-const groupClashes = (sortedClashes: ClassPeriod[][]) => {
-  // res is a list of days
-  // Each day has a list of clashes
-  // Each clash is a list of classes which are clashing
-  const res: ClassPeriod[][][] = Array(days.length).fill([]);
-
-  for (let dayIndex = 0; dayIndex < sortedClashes.length; dayIndex++) {
-    let dayList = sortedClashes[dayIndex];
-    for (let j = 0; j < dayList.length; j++) {
-      let clash = dayList[j];
-      // If there are no clashes in a day,
-      // add a new list of clashes with just that class
-      if (res[dayIndex].length === 0) {
-        res[dayIndex].push([clash]);
-      } else {
-        let hasAdded = false;
-
-        for (let i = 0; i < res[dayIndex].length; i++) {
-          let clashes = res[dayIndex][i];
-            // Clash occurs for two classes A and B when
-            // (StartA <= EndB) and (EndA >= StartB)
-            if (clash.time.start <= clashes[clashes.length - 1].time.end &&
-              clash.time.end >= clashes[0].time.start) {
-              clashes.push(clash);
-              hasAdded = true;
-            }
-        }
-
-        // If we haven't added the clash to any clashes list,
-        // add it to its own list of clashes
-        if (!hasAdded) {
-          res[dayIndex].push([clash]);
-        }
-      }
-    }
-  }
-
-  console.log(res);
-
-  return res;
-}
-
-const getCardWidth = (groupedClashes: ClassPeriod[][][], cardData: CardData) => {
-  let cardWidth = 100;
-  let clashIndex = 0;
-  
-  if ("time" in cardData) {
-    groupedClashes[cardData.time.day].forEach((clashGroups) => {
-      if (clashGroups.includes(cardData)) {
-        let newList: string[] = []
-        clashGroups.forEach((clashGroup) => {
-          if (newList.indexOf(clashGroup.class.id) === -1) {
-            newList.push(clashGroup.class.id)
-          }
-        })
-        cardWidth = cardWidth / newList.length;
-        clashIndex = newList.indexOf(cardData.class.id)
-        return [cardWidth, newList.indexOf(cardData.class.id)]; // dont think it actually returns from getCardWidth
-      }
-    })
-  }
-  return [cardWidth, clashIndex];
-};
-
 const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?:number) => {
   if (isPeriod(cardData) && clashIndex !== undefined && width) {
     return `${(cardData.time.day - 1) * 100 + clashIndex * width}%`;
@@ -463,7 +389,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   );
 };
 
-const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes, handleSelectClass }) => {
+const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
   const newCards: CardData[] = [];
@@ -533,6 +459,15 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     }
   };
 
+  const hasArrows = (c: CardData) =>
+    'time' in c &&
+    c.class.course.activities[c.class.activity].filter(
+      (value) =>
+        value.periods.length &&
+        value.periods.some((p) => isDuplicate(p, c)) &&
+        (!isHideFullClasses || value.enrolments !== value.capacity || value.id === c.class.id)
+    ).length > 1;
+
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
   period1.day === period2.day &&
   ((period1.end > period2.start && period1.start < period2.end) ||
@@ -540,11 +475,11 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
-
+  
     const flatPeriods = Object.values(selectedClasses)
       .flatMap((activities) => Object.values(activities))
       .flatMap((classData) => (classData ? classData.periods : []));
-
+  
     flatPeriods.forEach((period1) => {
       flatPeriods.forEach((period2) => {
         if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
@@ -557,39 +492,91 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
         }
       });
     });
-
+  
     return newClashes;
   };
+  
+  const sortClashesByTime = (clashes: ClassPeriod[]) => {
+    // Sort clashes into a list of lists, where each smaller list
+    // represents the day of the week.
+    const sortedClashes: Record<number, ClassPeriod[]> = days.map((_) => []);
+    clashes.forEach((clash) => sortedClashes[clash.time.day - 1].push(clash));
+    // Object.values(sortedClashes).forEach((clashes) => clashes.sort((a, b) => a.time.start - b.time.start));
+  
+    return sortedClashes;
+  }
+  
+  const groupClashes = (sortedClashes: Record<number, ClassPeriod[]>) => {
+    // groupedClashes is a list of days
+    // Each day has a list of clashes
+    // Each clash is a list of classes which are clashing
+    const groupedClashes: Record<number, ClassPeriod[][]> = days.map((_) => []);
+    
+    Object.entries(sortedClashes).forEach(([day, clashes]) => {
+      const dayInt = parseInt(day);
+      for (const clash of clashes) {
+        if (groupedClashes[dayInt].length === 0) {
+          // If there are no clashes in a day,
+          // add a new list of clashes with just that class
+          groupedClashes[dayInt].push([clash]);
+        } else {
+          let hasAdded = false;
+          
+          for (let i = 0; i < groupedClashes[dayInt].length; i++) {
+            const currGroup = groupedClashes[dayInt][i];
+            // Clash occurs for two classes A and B when
+            // (StartA <= EndB) and (EndA >= StartB)
+            if (clash.time.start <= currGroup[groupClashes.length - 1].time.end &&
+              clash.time.end >= currGroup[0].time.start) {
+                currGroup.push(clash);
+                hasAdded = true;
+              }
+            }
+            
+          // If we haven't added the clash to any clashes list,
+          // add it to its own list of clashes
+          if (!hasAdded) {
+            groupedClashes[dayInt].push([clash]);
+          }
+        }
+      }
+    })
+  
+    return groupedClashes;
+  }
+  
+  const getCardWidth = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: CardData) => {
+    let cardWidth = 100;
+    let clashIndex = 0;
+  
+    if ("time" in cardData) {
+      for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
+        if (clashGroup.includes(cardData)) {
+          return [cardWidth / clashGroup.length, clashGroup.indexOf(cardData)];
+        }
+      }
+    }
+  
+    return [cardWidth, clashIndex];
+  };    
 
-  const hasArrows = (c: CardData) =>
-    'time' in c &&
-    c.class.course.activities[c.class.activity].filter(
-      (value) =>
-        value.periods.length &&
-        value.periods.some((p) => isDuplicate(p, c)) &&
-        (!isHideFullClasses || value.enrolments !== value.capacity || value.id === c.class.id)
-    ).length > 1;
+  const clashes = checkClashes();
+  const sortedClashes = sortClashesByTime(clashes);
+  const groupedClashes = groupClashes(sortedClashes);
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
 
-    const clashes = checkClashes();
-
-    // loop through clashes and then separate that into the same timeframes.
-    const sortedClashes = sortClashesByTime(clashes);
-    const groupedClashes = groupClashes(sortedClashes);
-
-    // Check which clash list it exists in, then calculate the width
-    // of the class card.    
+    // Check which clash list it exists in, then calculate the width of the class card.
     let [cardWidth, clashIndex] = getCardWidth(groupedClashes, cardData);
-    
+
     /*
       It goes from chronological order (start of the day to end of the day)
       1. First class automatically goes to a clash element in the clashes list
       2. If the next class clashes, it joins that list, if it doesn't then it becomes a new element
       3. Update the start and end times (this is going to be the very start of the first class in the clashes list, and the end time will be the very end of the last class in the clashes list)
-      Monday: 
+      Monday:
       - clash 1: 9am - 12pm (consisted of 3 classes)
       - clash 2: 4pm - 7pm (consisted of 2 classes)
       [

@@ -45,7 +45,6 @@ export interface AutotimetableProps {
 
 export interface TimetableProps {
   assignedColors: Record<string, string>;
-  clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
 }
 
@@ -85,6 +84,5 @@ export interface DroppedClassProps {
 
 export interface DroppedClassesProps {
   assignedColors: Record<string, string>;
-  clashes: Array<ClassPeriod>;
   handleSelectClass(classData: ClassData): void;
 }
