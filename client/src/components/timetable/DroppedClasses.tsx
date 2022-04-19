@@ -29,33 +29,26 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
 
-const sortClashesByTime = (clashes: ClassPeriod[]) => {
-  
-  // Sort clashes by day then time.
-  clashes.sort((a, b) => {
-    if (a.time.day === b.time.day) {
-      return a.time.start - b.time.start;
-    }
-    return a.time.day - b.time.day;
-  })
-
+const sortClashesByTime = (clashes: ClassPeriod[]) => {  
   // Sort clashes into a list of lists, where each smaller list
   // represents the day of the week.
-  const res: ClassPeriod[][] = Array(days.length).fill([]);
-  clashes.forEach((clash) => res[clash.time.day].push(clash));
+  const sortedClashes: ClassPeriod[][] = days.map((_, i) => clashes.filter(clash => clash.time.day === i + 1));
 
-  return res;
+  sortedClashes.forEach((clashes) => clashes.sort((a, b) => a.time.start - b.time.start));
+
+  return sortedClashes;
 }
 
 const groupClashes = (sortedClashes: ClassPeriod[][]) => {
   // res is a list of days
   // Each day has a list of clashes
   // Each clash is a list of classes which are clashing
-  // A clash may be of length 1, which represents a class with no clashes
   const res: ClassPeriod[][][] = Array(days.length).fill([]);
 
-  sortedClashes.forEach((dayList, dayIndex) => {
-    dayList.forEach((clash) => {
+  for (let dayIndex = 0; dayIndex < sortedClashes.length; dayIndex++) {
+    let dayList = sortedClashes[dayIndex];
+    for (let j = 0; j < dayList.length; j++) {
+      let clash = dayList[j];
       // If there are no clashes in a day,
       // add a new list of clashes with just that class
       if (res[dayIndex].length === 0) {
@@ -63,15 +56,16 @@ const groupClashes = (sortedClashes: ClassPeriod[][]) => {
       } else {
         let hasAdded = false;
 
-        res[dayIndex].forEach((clashes) => {
-          // Clash occurs for two classes A and B when
-          // (StartA <= EndB) and (EndA >= StartB)
-          if (clash.time.start <= clashes[clashes.length - 1].time.end &&
-            clash.time.end >= clashes[0].time.start) {
-            clashes.push(clash);
-            hasAdded = true;
-          }
-        })
+        for (let i = 0; i < res[dayIndex].length; i++) {
+          let clashes = res[dayIndex][i];
+            // Clash occurs for two classes A and B when
+            // (StartA <= EndB) and (EndA >= StartB)
+            if (clash.time.start <= clashes[clashes.length - 1].time.end &&
+              clash.time.end >= clashes[0].time.start) {
+              clashes.push(clash);
+              hasAdded = true;
+            }
+        }
 
         // If we haven't added the clash to any clashes list,
         // add it to its own list of clashes
@@ -79,13 +73,15 @@ const groupClashes = (sortedClashes: ClassPeriod[][]) => {
           res[dayIndex].push([clash]);
         }
       }
-    })
-  })
+    }
+  }
+
+  console.log(res);
+
   return res;
 }
 
 const getCardWidth = (groupedClashes: ClassPeriod[][][], cardData: CardData) => {
-
   let cardWidth = 100;
   let clashIndex = 0;
   
@@ -579,8 +575,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
     key = key !== undefined ? key : ++keyCounter.current;
 
     const clashes = checkClashes();
+
     // loop through clashes and then separate that into the same timeframes.
-    const sortedClashes = sortClashesByTime(checkClashes());
+    const sortedClashes = sortClashesByTime(clashes);
     const groupedClashes = groupClashes(sortedClashes);
 
     // Check which clash list it exists in, then calculate the width
