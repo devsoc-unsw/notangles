@@ -1,6 +1,7 @@
 import json
 import logging
 from concurrent import futures
+import os
 
 import grpc
 
@@ -13,8 +14,8 @@ import autotimetabler_pb2_grpc
 # Inittializing sentry
 import sentry_sdk
 sentry_sdk.init(
-    "https://4befe4d099314fec8e5283e484abf431@o1179870.ingest.sentry.io/6327124",
-    traces_sample_rate=0.6
+    os.environ["SENTRY_INGEST_AUTOTIMETABLING"],
+    traces_sample_rate=float(os.environ["SENTRY_TRACE_RATE_AUTOTIMETABLING"])
 )
 
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):

@@ -11,6 +11,15 @@ The client has been verified to work with:
 
 In the root client directory `client`, run `npm install` to install all the dependencies.
 
+## Environment Variables
+
+To run this project, you will need the following environment variables:
+
+| Variable                               | Default | Value                                                                  |
+| -------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| `REACT_APP_SENTRY_INGEST_FRONTEND`     | Secret  | The ingest url for sentry SDK to know where to send the monitored data |
+| `REACT_APP_SENTRY_TRACE_RATE_FRONTEND` | 0.6     | Percentage of transactions monitored and sent                          |
+
 ## Running
 
 Use `npm start` to host the Notangles client locally. The client will be hosted on http://localhost:3000.

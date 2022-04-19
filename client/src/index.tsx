@@ -14,9 +14,9 @@ import * as swRegistration from './serviceWorkerRegistration';
 
 // initializing sentry
 Sentry.init({
-  dsn: 'https://e4555a736f024545bef4a45873315f6a@o1179870.ingest.sentry.io/6292248',
+  dsn: process.env.REACT_APP_SENTRY_INGEST_FRONTEND,
   integrations: [new BrowserTracing()],
-  tracesSampleRate: 0.6,
+  tracesSampleRate: Number(process.env.REACT_APP_SENTRY_TRACE_RATE_FRONTEND),
 });
 
 const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;

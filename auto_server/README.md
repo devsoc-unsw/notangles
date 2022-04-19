@@ -15,6 +15,15 @@ Activate the virtual environment by running `source env/bin/activate`
 
 Finally, in your virtual environment, run `python3 -m pip install -r requirements.txt` to install all the dependencies.
 
+## Environment Variables
+
+To run this project, you will need the following environment variables:
+
+| Variable                            | Default | Value                                                                  |
+| ----------------------------------- | ------- | ---------------------------------------------------------------------- |
+| `SENTRY_INGEST_AUTOTIMETABLING`     | Secret  | The ingest url for sentry SDK to know where to send the monitored data |
+| `SENTRY_TRACE_RATE_AUTOTIMETABLING` | 0.6     | Percentage of transactions monitored and sent                          |
+
 ## Running
 
 Run `python3 server.py` to start the autotimetabling server locally.
