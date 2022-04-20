@@ -14,7 +14,7 @@ services:
   database.notangles-db:
     container_name: notangles-database
     restart: always
-    image: mongo:4.4
+    image: mongo:5.0
     ports:
       - "27017:27017"
     volumes:
