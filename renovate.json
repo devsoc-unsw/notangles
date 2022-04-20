@@ -1,7 +1,7 @@
 {
   "extends": ["config:base"],
   "lockFileMaintenance": { "enabled": true, "automerge": true },
-  "prHourlyLimit": 2,
+  "prHourlyLimit": 5,
   "labels": ["dependencies"],
   "packageRules": [
     {
