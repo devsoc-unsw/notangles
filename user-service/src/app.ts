@@ -16,10 +16,22 @@ const port = process.env.PORT || 3000;
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(auth());
+app.use(
+  auth({
+    idpLogout: true,
+    authRequired: false,
+    authorizationParams: {
+      response_type: 'code id_token',
+    },
+  })
+);
 
 // Basic route
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', async (req, res) => {
+  if (!req.oidc.isAuthenticated()) return res.send('Not authenticated');
+  const user = await req.oidc.fetchUserInfo();
+  return res.json(user);
+});
 
 // Start the express server
 app.listen(port, () => console.log(`server started at http://localhost:${port}`));
