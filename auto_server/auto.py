@@ -1,5 +1,7 @@
+from time import sleep
 from ortools.sat.python import cp_model
 
+MAX_UNSATISFIED_CONSTRAINTS = 3
 
 def reducePeriodInfo(period):
     """Reduces the period info into nicer data to work with
@@ -112,23 +114,31 @@ def sols(requestData):
     dayDomain = cp_model.Domain.FromValues([int(i) for i in days])
 
     # restricts classes to be no earlier than start
-    laterThanArr = [model.NewFixedSizeIntervalVar(i * 100, earliestStartTime, f"l{i}") for i in range(1, 6)]
-    noLaterThanArr = [model.NewFixedSizeIntervalVar(i * 100 + latestEndTime + minGapBetw, 16, f"l{i}") for i in range(1, 6)]
 
-    if maxDays == 1:
-        day = model.NewIntVarFromDomain(dayDomain, "day")
-        for i in classStartTimes:
-            # makes them all on the same day
-            model.AddDivisionEquality(day, i, 100)
+    laterThanArr = []
+    noLaterThanArr = []
+    constraintBools = []
+    for i in range(1, 6):
+        newBools = [model.NewBoolVar(''), model.NewBoolVar('')]
+        laterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * 100, earliestStartTime, newBools[0], f'l{i}'))
+        noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * 100 + latestEndTime + minGapBetw, 20, newBools[1], f'nl{i}'))
+        constraintBools += newBools
 
-    elif maxDays in [2, 3, 4]:
+    if maxDays < 5:
         classDayTimes = [
             model.NewIntVarFromDomain(dayDomain, f"day{i}")
             for i in range(len(classStartTimes))
         ]  # constrains ClassStartTimes[i] // 100
 
+        dummyClassDayTimes = [
+            model.NewIntVar(1, 5, f"day{i}")
+            for i in range(len(classStartTimes))
+        ] # allow us to create optional constraints
+
         for i in range(len(classStartTimes)):
-            model.AddDivisionEquality(classDayTimes[i], classStartTimes[i], 100)
+            constraintBools.append(model.NewBoolVar(''))
+            model.AddDivisionEquality(dummyClassDayTimes[i], classStartTimes[i], 100)
+            model.Add(dummyClassDayTimes[i] == classDayTimes[i]).OnlyEnforceIf(constraintBools[-1])
 
         possibleDays = [model.NewIntVarFromDomain(dayDomain, f"dv{i}") for i in range(maxDays)]
 
@@ -144,6 +154,9 @@ def sols(requestData):
     # makes the periods (and other constraints) not overlap
     model.AddNoOverlap(classIntervals + laterThanArr + noLaterThanArr + specialIntervalVars)
 
+    # try to satisfy as many constraints as possible
+    model.Maximize(cp_model.LinearExpr.Sum(constraintBools))
+
     # Create a solver and solve.
     solver = cp_model.CpSolver()
 
@@ -151,7 +164,10 @@ def sols(requestData):
     status = solver.Solve(model)
     print(f"Status = {solver.StatusName(status)}")
 
-    if solver.StatusName(status) != "INFEASIBLE":
+    unsatisfied = len(constraintBools) - solver.ObjectiveValue()
+    print(f"Number constraints unsatisfied: {unsatisfied}")
+
+    if solver.StatusName(status) != "INFEASIBLE" and unsatisfied <= MAX_UNSATISFIED_CONSTRAINTS:
         solutions = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
         print(solutions)
         return solutions  # List[int]
