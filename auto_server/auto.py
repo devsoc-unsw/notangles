@@ -31,7 +31,7 @@ def reducePeriodInfo(period):
 
     # for classes made up of a pair of periods on different days
     return (
-        [map(lambda d: int(d * 2), durations)],
+        list(map(lambda d: int(d * 2), durations)),
         [[int(periodTimes[i + j] * 100 + 2 * periodTimes[i + j + 1]) for j in range(
             0, periodsPerClass * 2, 2)] for i in range(0, len(periodTimes), 2 * periodsPerClass)],
         True,
