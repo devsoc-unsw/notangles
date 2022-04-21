@@ -8,6 +8,12 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react (major)"
     }
   ]
 }
