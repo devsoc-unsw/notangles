@@ -1,5 +1,4 @@
 import React, { createContext, useState } from 'react';
-import { isPreview } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -33,12 +32,6 @@ export interface IAppContext {
 
   autoVisibility: boolean;
   setAutoVisibility: (newAutoVisibility: boolean) => void;
-
-  isFriendsListOpen: boolean;
-  setIsFriendsListOpen: (newIsFriendListOpen: boolean) => void;
-
-  isLoggedIn: boolean;
-  setIsLoggedIn: (newIsLoggedIn: boolean) => void;
 
   lastUpdated: number;
   setLastUpdated: (newLastUpdated: number) => void;
@@ -81,12 +74,6 @@ export const AppContext = createContext<IAppContext>({
   autoVisibility: false,
   setAutoVisibility: () => {},
 
-  isFriendsListOpen: isPreview,
-  setIsFriendsListOpen: () => {},
-
-  isLoggedIn: false,
-  setIsLoggedIn: () => {},
-
   lastUpdated: 0,
   setLastUpdated: () => {},
 
@@ -108,8 +95,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = React.useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
@@ -135,10 +120,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setInfoVisibility,
     autoVisibility,
     setAutoVisibility,
-    isFriendsListOpen,
-    setIsFriendsListOpen,
-    isLoggedIn,
-    setIsLoggedIn,
     lastUpdated,
     setLastUpdated,
     isDrag,

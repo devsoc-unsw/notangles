@@ -8,11 +8,10 @@ import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { isPreview, term, year } from './constants/timetable';
+import { term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -46,24 +45,12 @@ const ContentWrapper = styled(Box)`
   box-sizing: border-box;
   display: flex;
   flex-direction: row-reverse;
-  justify-content: ${isPreview ? 'flex-start' : 'center'};
+  justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const getContentWidth = (drawerOpen: boolean) => {
-  let contentWidth = '1400px';
-  if (isPreview) {
-    contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
-  }
-  return contentWidth;
-};
-
-const Content = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'drawerOpen',
-})<{
-  drawerOpen: boolean;
-}>`
-  width: ${({ drawerOpen }) => getContentWidth(drawerOpen)};
+const Content = styled(Box)`
+  width: 1400px;
   max-width: 100%;
   transition: width 0.2s;
   display: grid;
@@ -96,7 +83,6 @@ const App: React.FC = () => {
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
-    isFriendsListOpen,
     days,
     setDays,
   } = useContext(AppContext);
@@ -327,9 +313,8 @@ const App: React.FC = () => {
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
             <Navbar />
-            {isPreview && <FriendsDrawer />}
             <ContentWrapper>
-              <Content drawerOpen={isFriendsListOpen}>
+              <Content>
                 <Controls
                   assignedColors={assignedColors}
                   handleSelectClass={handleSelectClass}
