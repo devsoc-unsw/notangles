@@ -2,7 +2,7 @@ name: Docker
 on:
   push:
     branches:
-      - "dev"
+      - dev
 
 jobs:
   build-client:
@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: client
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
           platforms: linux/amd64
           file: client/Dockerfile
           build-args: |
@@ -76,7 +76,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ${{ matrix.component }}
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
           platforms: linux/amd64
           file: ${{ matrix.component }}/Dockerfile
           tags: |
@@ -87,6 +87,7 @@ jobs:
     name: Deploy (CD)
     runs-on: ubuntu-latest
     needs: [build-client, build]
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
     concurrency: production
     environment:
       name: production
