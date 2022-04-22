@@ -99,7 +99,7 @@ jobs:
           repository: csesoc/deployment
           token: ${{ secrets.GH_TOKEN }}
       - name: Install yq - portable yaml processor
-        uses: mikefarah/yq@v4.24.2
+        uses: mikefarah/yq@v4.24.5
       - name: Update deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

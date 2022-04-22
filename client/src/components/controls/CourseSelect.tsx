@@ -152,11 +152,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     );
   }, [selectedCourses, coursesList]);
 
-  // const diffCourses = (a: { code: string }[], b: { code: string }[]) => {
-  //   const codes = a.map((x) => x.code);
-  //   return b.filter((x) => !codes.includes(x.code));
-  // };
-
   let defaultOptions = coursesList;
   // show relevant default options based of selected courses (TODO: improve)
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
@@ -187,47 +182,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   const onChange = (_: any, value: CoursesList) => {
-    // const before = selectedCourses;
-    // const after = value;
-    // console.log('here')
-    // // find what was added/removed in the update
-    // const added = diffCourses(before, after);
-
-    // // return before the input value and options are reset
-    // if (added.length === 0) return;
-
-    // if (searchTimer.current) {
-    //   // console.log('here')
-    //   // run a search now and cancel the current search timer
-    //   const newOptions = search(inputValue);
-    //   clearInterval(searchTimer.current);
-    //   searchTimer.current = undefined;
-
-    //   // revert back to the original value by removing what was added
-    //   const originalValue = value.filter((course: CourseOverview) => !added.includes(course));
-
-    //   // we need to add something, and our best guess is the top
-    //   // result of the new search
-    //   const newSelectedOption = newOptions[0];
-
-    //   if (newSelectedOption && !selectedValue.includes(newSelectedOption)) {
-    //     // otherwise, add the new option and call the handler
-    //     setSelectedValue([...originalValue, newSelectedOption]);
-    //     handleSelect(newSelectedOption.code);
-    //   } else {
-    //     // just revert it back without adding anything
-    //     setSelectedValue(originalValue);
-    //     // return before the input value and options are reset
-    //     return;
-    //   }
-    // } else {
-    //   handleSelect(added.map((course) => course.code));
-    //   setSelectedValue([...selectedValue, ...(added as CourseOverview[])]);
-    // }
-
-    // setOptions(defaultOptions);
-    // setInputValue('');
-
     if (value.length > selectedValue.length) {
       handleSelect(value[value.length - 1].code);
       setSelectedValue([...value]);
@@ -327,7 +281,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
         multiple
-        // autoHighlight
+        autoHighlight
         disableClearable
         disableListWrap
         noOptionsText="No Results"

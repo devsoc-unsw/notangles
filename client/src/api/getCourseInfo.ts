@@ -3,7 +3,6 @@ import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
-// import TimeoutError from '../interfaces/TimeoutError';
 
 /**
  * Fetches the information of a specified course

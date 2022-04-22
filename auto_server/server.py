@@ -1,4 +1,3 @@
-import json
 import logging
 from concurrent import futures
 
@@ -8,24 +7,27 @@ import auto
 import autotimetabler_pb2
 import autotimetabler_pb2_grpc
 
-# python -m grpc_tools.protoc -I../proto --python_out=. --grpc_python_out=. ../proto/autotimetabler.proto
+# python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./autotimetabler.proto
+
 
 
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
-    def FindBestTimetable(self, request, context):
-        print("Looking for the best timetable!")
-        data = [
-            request.start,
-            request.end,
-            request.days,
-            request.gap,
-            request.maxdays,
-            json.loads(request.periods_list_serialized),
-        ]
-        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(*data))
+    def FindBestTimetable(self, request, _):
+        """Passes request to auto algorithm.
+
+        Args:
+            request (request): grpc request message
+
+        Returns:
+            [int]: times
+        """
+        print("Finding a timetable")
+        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(request))
 
 
 def main():
+    """launches server
+    """
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     autotimetabler_pb2_grpc.add_AutoTimetablerServicer_to_server(
         AutoTimetablerServicer(), server

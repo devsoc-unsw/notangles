@@ -111,6 +111,14 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   );
 };
 
+interface PeriodInfo {
+  periodsPerClass: number; // i.e. periods.length
+  periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
+  durations: Array<number>; // where the ith period has duration[i] in hours
+}
+
+type ClassMode = 'hybrid' | 'in person' | 'online';
+
 const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 
@@ -120,7 +128,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const [days, setDays] = useState<Array<string>>(weekdays);
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
-  const [classMode, setClassMode] = useState<string>('hybrid');
+  const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
   // for opening popover
@@ -130,9 +138,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
-  const periodsListSerialized = useRef<string[]>([]);
 
-  // caches targetActivities and periodsListSerilized in advance
+  const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
+
+  // caches targetActivities and periodInfoPerMode in advance
   useEffect(() => {
     if (!selectedCourses || !selectedCourses.length) return;
 
@@ -150,26 +159,40 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
     ]);
 
-    // a list of [all_periods, in_person_periods, online_periods]
-    periodsListSerialized.current = [
-      JSON.stringify(
-        targetActivities.current.map((value) => value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
+    periodInfoPerMode.current = {
+      'hybrid': targetActivities.current.map(
+        (value) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []), // extracts the period's day and start time for all periods of a class for all classes of an activity (classData[]) and then reduces that list of list of lists into a single list
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-      JSON.stringify(
-        targetActivities.current.map((value, index) =>
-          value
-            .filter((v) => !hasMode[index][0] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]))
-            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-        )
+      'in person': targetActivities.current.map(
+        (value, index) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []),
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-      JSON.stringify(
-        targetActivities.current.map((value, index) =>
-          value
-            .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
-            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-        )
+      'online': targetActivities.current.map(
+        (value, index) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []),
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-    ];
+    };
   }, [selectedCourses]);
 
   const toggleIsOpenInfo = () => {
@@ -215,9 +238,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
-    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(
-      ['hybrid', 'in person', 'online'].findIndex((v) => v === classMode)
-    );
+    timetableData['periodInfoList'] = periodInfoPerMode.current[`${classMode}`];
 
     try {
       const res = await getAutoTimetable(timetableData);
