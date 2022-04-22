@@ -8,6 +8,8 @@ DAY_MULT = 100 # multipler for the day of the week of classes (e.g. 4 which repr
 MIN_TIME = DAY_MULT
 MAX_TIME = 5 * DAY_MULT + 24 * TIME_MULT
 
+SUIABLE_END_TIME_BUFFER = 26 # a duration in hours that lets end time interval fill the rest of the day
+
 def reducePeriodInfo(period):
     """Reduces the period info into nicer data to work with
 
@@ -126,7 +128,7 @@ def sols(requestData):
     for i in range(1, 6):
         newBools = [model.NewBoolVar(''), model.NewBoolVar('')]
         laterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT, earliestStartTime, newBools[0], f'l{i}')) # extends from the start of the day to the earliest start time
-        noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT + latestEndTime + minGapBetw, (i + 1) * DAY_MULT, newBools[1], f'nl{i}')) # extends from latest end time to the end of the day (i.e. the next day)
+        noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT + latestEndTime + minGapBetw, SUIABLE_END_TIME_BUFFER, newBools[1], f'nl{i}')) # extends from latest end time to the end of the day (i.e. the next day)
         constraintBools += newBools
 
     if maxDays < 5:
