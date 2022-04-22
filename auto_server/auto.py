@@ -3,6 +3,11 @@ from ortools.sat.python import cp_model
 
 MAX_UNSATISFIED_CONSTRAINTS = 3
 
+TIME_MULT = 2 # times of days of classes (e.g. 9, which represents 9:00 AM) and durations (given in hours) all get multiplied this value and int-casted as the model only allows integers
+DAY_MULT = 100 # multipler for the day of the week of classes (e.g. 4 which represents Thursday) so that it can be added to the time of day to represent a class's time in a single number
+MIN_TIME = DAY_MULT
+MAX_TIME = 5 * DAY_MULT + 24 * TIME_MULT
+
 def reducePeriodInfo(period):
     """Reduces the period info into nicer data to work with
 
@@ -17,8 +22,8 @@ def reducePeriodInfo(period):
     # for purely single-period classes
     if periodsPerClass == 1:
         return (
-            int(durations[0] * 2),
-            [int(periodTimes[i] * 100 + 2 * periodTimes[i + 1]) for i in range(0, len(periodTimes), 2)],
+            int(durations[0] * TIME_MULT),
+            [int(periodTimes[i] * DAY_MULT + TIME_MULT * periodTimes[i + 1]) for i in range(0, len(periodTimes), 2)],
             False
         )
 
@@ -26,15 +31,15 @@ def reducePeriodInfo(period):
     # checks if the first and second period are on the same day
     if periodsPerClass == 2 and periodTimes[0] == periodTimes[2] and period:
         return (
-            int((durations[0] + durations[1]) * 2),
-            [int(periodTimes[i] * 100 + 2 * periodTimes[i + 1]) for i in range(0, len(periodTimes), 4)],
+            int((durations[0] + durations[1]) * TIME_MULT),
+            [int(periodTimes[i] * DAY_MULT + TIME_MULT * periodTimes[i + 1]) for i in range(0, len(periodTimes), 4)],
             False,
         )
 
     # for classes made up of a pair of periods on different days
     return (
-        list(map(lambda d: int(d * 2), durations)),
-        [[int(periodTimes[i + j] * 100 + 2 * periodTimes[i + j + 1]) for j in range(
+        list(map(lambda d: int(d * TIME_MULT), durations)),
+        [[int(periodTimes[i + j] * DAY_MULT + TIME_MULT * periodTimes[i + j + 1]) for j in range(
             0, periodsPerClass * 2, 2)] for i in range(0, len(periodTimes), 2 * periodsPerClass)],
         True,
     )
@@ -51,9 +56,9 @@ def sols(requestData):
     """
 
     minGapBetw, earliestStartTime, latestEndTime, days = (
-        requestData.gap * 2,
-        requestData.start * 2,
-        requestData.end * 2,
+        requestData.gap * TIME_MULT,
+        requestData.start * TIME_MULT,
+        requestData.end * TIME_MULT,
         requestData.days,
     )
 
@@ -91,7 +96,7 @@ def sols(requestData):
         specialBools = [model.NewBoolVar(f"e{i}") for i in range(len(specialPeriods))]
 
         # initially set to be 'anything' but will get constrained to be equal to some group of period start times in the next step
-        groupStartTimes = [model.NewIntVar(100, 560, f"s{specIndex}{i}") for i in range(len(durations))]
+        groupStartTimes = [model.NewIntVar(MIN_TIME, MAX_TIME, f"s{specIndex}{i}") for i in range(len(durations))]
 
         for i in range(len(specialPeriods)):
             for j in range(len(groupStartTimes)):
@@ -120,15 +125,15 @@ def sols(requestData):
     constraintBools = []
     for i in range(1, 6):
         newBools = [model.NewBoolVar(''), model.NewBoolVar('')]
-        laterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * 100, earliestStartTime, newBools[0], f'l{i}'))
-        noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * 100 + latestEndTime + minGapBetw, 20, newBools[1], f'nl{i}'))
+        laterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT, earliestStartTime, newBools[0], f'l{i}')) # extends from the start of the day to the earliest start time
+        noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT + latestEndTime + minGapBetw, (i + 1) * DAY_MULT, newBools[1], f'nl{i}')) # extends from latest end time to the end of the day (i.e. the next day)
         constraintBools += newBools
 
     if maxDays < 5:
         classDayTimes = [
             model.NewIntVarFromDomain(dayDomain, f"day{i}")
             for i in range(len(classStartTimes))
-        ]  # constrains ClassStartTimes[i] // 100
+        ]  # constrains ClassStartTimes[i] // DAY_MULT
 
         dummyClassDayTimes = [
             model.NewIntVar(1, 5, f"day{i}")
@@ -137,7 +142,7 @@ def sols(requestData):
 
         for i in range(len(classStartTimes)):
             constraintBools.append(model.NewBoolVar(''))
-            model.AddDivisionEquality(dummyClassDayTimes[i], classStartTimes[i], 100)
+            model.AddDivisionEquality(dummyClassDayTimes[i], classStartTimes[i], DAY_MULT)
             model.Add(dummyClassDayTimes[i] == classDayTimes[i]).OnlyEnforceIf(constraintBools[-1])
 
         possibleDays = [model.NewIntVarFromDomain(dayDomain, f"dv{i}") for i in range(maxDays)]
