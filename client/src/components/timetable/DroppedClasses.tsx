@@ -8,7 +8,7 @@ import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { days, defaultStartTime } from '../../constants/timetable';
+import { defaultStartTime } from '../../constants/timetable';
 import { Activity, ClassData, ClassPeriod, ClassTime, CourseCode, InInventory } from '../../interfaces/Course';
 import { DroppedClassesProps, DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
 
@@ -472,8 +472,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   };
   
   const sortClashesByTime = (clashes: ClassPeriod[]) => {
-    // Sort clashes into a list of lists, where each smaller list
-    // represents the day of the week.
+    const days = useContext(AppContext).days;
+    // Sort clashes to group them according to the days of the week they are in.
     const sortedClashes: Record<number, ClassPeriod[]> = days.map((_) => []);
     clashes.forEach((clash) => sortedClashes[clash.time.day - 1].push(clash));
     // Object.values(sortedClashes).forEach((clashes) => clashes.sort((a, b) => a.time.start - b.time.start));
@@ -482,9 +482,10 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   }
   
   const groupClashes = (sortedClashes: Record<number, ClassPeriod[]>) => {
-    // groupedClashes is a list of days
-    // Each day has a list of clashes
-    // Each clash is a list of classes which are clashing
+    // Clashes are grouped according to their day. Clashes in each day are further separated according to how
+    // many classes a single clash affects so each card can later be split accordingly.
+    
+    const days = useContext(AppContext).days;
     const groupedClashes: Record<number, ClassPeriod[][]> = days.map((_) => []);
     
     Object.entries(sortedClashes).forEach(([day, clashes]) => {
@@ -508,8 +509,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
               }
             }
             
-          // If we haven't added the clash to any clashes list,
-          // add it to its own list of clashes
+          // If we haven't added the clash to any clashes list, add it to its own list of clashes as it
+          // means that it will be a part of a new group of clashes (no other classes that we have grouped
+          // have happened at the same time yet).
           if (!hasAdded) {
             groupedClashes[dayInt].push([clash]);
           }
@@ -521,6 +523,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   }
   
   const getCardWidth = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: CardData) => {
+    // Returns the card width of a clashing class by dividing the default width of a card with how many
+    // clashes there are happening during that time.
     let cardWidth = 100;
     let clashIndex = 0;
   
@@ -543,7 +547,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     let key = cardKeys.get(cardData);
     key = key !== undefined ? key : ++keyCounter.current;
 
-    // Check which clash list it exists in, then calculate the width of the class card.
     let [cardWidth, clashIndex] = getCardWidth(groupedClashes, cardData);
 
     /*

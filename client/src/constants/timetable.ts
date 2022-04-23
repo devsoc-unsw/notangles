@@ -18,8 +18,6 @@ export const colors: string[] = [
   '#8AC352', // light green
 ];
 
-export const days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
 
