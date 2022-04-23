@@ -160,7 +160,7 @@ const StyledCourseClassInner = styled(Card, {
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
-  outline: solid transparent 0px;
+  outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
   outline-offset: -4px;
   width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
@@ -392,6 +392,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
 
+  const days = useContext(AppContext).days;
   const { selectedCourses, selectedClasses } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -472,11 +473,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   };
   
   const sortClashesByTime = (clashes: ClassPeriod[]) => {
-    const days = useContext(AppContext).days;
     // Sort clashes to group them according to the days of the week they are in.
     const sortedClashes: Record<number, ClassPeriod[]> = days.map((_) => []);
     clashes.forEach((clash) => sortedClashes[clash.time.day - 1].push(clash));
-    // Object.values(sortedClashes).forEach((clashes) => clashes.sort((a, b) => a.time.start - b.time.start));
   
     return sortedClashes;
   }
@@ -484,8 +483,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   const groupClashes = (sortedClashes: Record<number, ClassPeriod[]>) => {
     // Clashes are grouped according to their day. Clashes in each day are further separated according to how
     // many classes a single clash affects so each card can later be split accordingly.
-    
-    const days = useContext(AppContext).days;
     const groupedClashes: Record<number, ClassPeriod[][]> = days.map((_) => []);
     
     Object.entries(sortedClashes).forEach(([day, clashes]) => {
