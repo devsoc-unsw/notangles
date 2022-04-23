@@ -125,11 +125,13 @@ def sols(requestData):
     laterThanArr = []
     noLaterThanArr = []
     constraintBools = []
+    constraintWeights = []
     for i in range(1, 6):
         newBools = [model.NewBoolVar(''), model.NewBoolVar('')]
         laterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT, earliestStartTime, newBools[0], f'l{i}')) # extends from the start of the day to the earliest start time
         noLaterThanArr.append(model.NewOptionalFixedSizeIntervalVar(i * DAY_MULT + latestEndTime + minGapBetw, SUIABLE_END_TIME_BUFFER, newBools[1], f'nl{i}')) # extends from latest end time to the end of the day (i.e. the next day)
         constraintBools += newBools
+        constraintWeights += [1, 1]
 
     if maxDays < 5:
         classDayTimes = [
@@ -144,25 +146,28 @@ def sols(requestData):
 
         for i in range(len(classStartTimes)):
             constraintBools.append(model.NewBoolVar(''))
+            constraintWeights.append(2)
             model.AddDivisionEquality(dummyClassDayTimes[i], classStartTimes[i], DAY_MULT)
             model.Add(dummyClassDayTimes[i] == classDayTimes[i]).OnlyEnforceIf(constraintBools[-1])
 
-        possibleDays = [model.NewIntVarFromDomain(dayDomain, f"dv{i}") for i in range(maxDays)]
+        possibleDays = [model.NewIntVar(1, 6, f"dv{i}") for i in range(maxDays)]
 
-        for classDayTime in classDayTimes:
+        for classDayTime in dummyClassDayTimes:
             possibleBools = [model.NewBoolVar('') for _ in possibleDays]
 
             for i in range(len(possibleDays)):
                 model.Add(classDayTime == possibleDays[i]).OnlyEnforceIf(possibleBools[i])
 
             # ensures classDayTime == possibleDays[i] for at least one i
-            model.AddBoolOr(possibleBools)
+            constraintBools.append(model.NewBoolVar(''))
+            constraintWeights.append(1)
+            model.AddBoolOr(possibleBools).OnlyEnforceIf(constraintBools[-1])
 
     # makes the periods (and other constraints) not overlap
     model.AddNoOverlap(classIntervals + laterThanArr + noLaterThanArr + specialIntervalVars)
 
     # try to satisfy as many constraints as possible
-    model.Maximize(cp_model.LinearExpr.Sum(constraintBools))
+    model.Maximize(cp_model.LinearExpr.WeightedSum(constraintBools, constraintWeights))
 
     # Create a solver and solve.
     solver = cp_model.CpSolver()
@@ -171,7 +176,7 @@ def sols(requestData):
     status = solver.Solve(model)
     print(f"Status = {solver.StatusName(status)}")
 
-    unsatisfied = len(constraintBools) - solver.ObjectiveValue()
+    unsatisfied = sum(constraintWeights) - solver.ObjectiveValue()
     print(f"Number constraints unsatisfied: {unsatisfied}")
 
     if solver.StatusName(status) != "INFEASIBLE" and unsatisfied <= MAX_UNSATISFIED_CONSTRAINTS:
