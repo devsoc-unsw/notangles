@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Undo from '@material-ui/icons/Undo';
-import Redo from '@material-ui/icons/Redo';
-import Tooltip from '@material-ui/core/Tooltip';
+import { IconButton, Tooltip } from '@mui/material';
+import { Redo, Restore, Undo } from '@mui/icons-material';
+
+import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../../interfaces/Course';
-import { AppContext } from '../../context/AppContext';
-import RestoreIcon from '@material-ui/icons/Restore';
 
 interface Action {
   courses: CourseData[];
@@ -110,20 +108,20 @@ const History: React.FC = () => {
   return (
     <>
       <Tooltip title="Reset Timetable">
-        <IconButton color="inherit" onClick={() => restoreInitial()}>
-          <RestoreIcon />
+        <IconButton color="inherit" onClick={() => restoreInitial()} size="large">
+          <Restore />
         </IconButton>
       </Tooltip>
       <Tooltip title="Undo (Ctrl+Z)">
         <span>
-          <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)}>
+          <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)} size="large">
             <Undo />
           </IconButton>
         </span>
       </Tooltip>
       <Tooltip title="Redo (Ctrl+Y)">
         <span>
-          <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)}>
+          <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)} size="large">
             <Redo />
           </IconButton>
         </span>

@@ -1,19 +1,18 @@
 import React, { useContext, useEffect } from 'react';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
-import DateFnsUtils from '@date-io/date-fns';
-import { Box, Button, MuiThemeProvider } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import * as Sentry from '@sentry/react';
+import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { styled } from '@mui/system';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
-import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
-import { isPreview, term, year } from './constants/timetable';
+import { contentPadding, darkTheme, lightTheme } from './constants/theme';
+import { term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -29,34 +28,9 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
-import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-
-const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
-  body {
-    background: ${({ theme }) => theme.palette.background.default};
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.palette.background.default};
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.palette.secondary.main};
-    border-radius: 5px;
-    opacity: 0.5;
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.palette.secondary.dark};
-  }
-`;
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -72,20 +46,12 @@ const ContentWrapper = styled(Box)`
   box-sizing: border-box;
   display: flex;
   flex-direction: row-reverse;
-  justify-content: ${isPreview ? 'flex-start' : 'center'};
+  justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const getContentWidth = (drawerOpen: boolean) => {
-  let contentWidth = '1400px';
-  if (isPreview) {
-    contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
-  }
-  return contentWidth;
-};
-
-const Content = styled(Box)<StyledContentProps>`
-  width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
+const Content = styled(Box)`
+  width: 1400px;
   max-width: 100%;
   transition: width 0.2s;
   display: grid;
@@ -114,12 +80,10 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    isSortAlphabetic,
     setAlertMsg,
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
-    isFriendsListOpen,
     days,
     setDays,
   } = useContext(AppContext);
@@ -160,11 +124,11 @@ const App: React.FC = () => {
 
       prev[course.code] = {};
 
+      // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        // temp until auto timetabling works
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null; // null for unscheduled
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null;
       });
 
       return prev;
@@ -240,10 +204,6 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSortAlphabetic', isSortAlphabetic);
-  }, [isSortAlphabetic]);
 
   useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
@@ -322,16 +282,40 @@ const App: React.FC = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const globalStyle = {
+    body: {
+      background: theme.palette.background.default,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar': {
+      width: '10px',
+      height: '10px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: theme.palette.background.default,
+      borderRadius: '5px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: theme.palette.secondary.main,
+      borderRadius: '5px',
+      opacity: 0.5,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: theme.palette.secondary.dark,
+    },
+  };
+
   return (
-    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <GlobalStyle />
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <GlobalStyles styles={globalStyle} />
           <StyledApp>
             <Navbar />
-            {isPreview && <FriendsDrawer />}
             <ContentWrapper>
-              <Content drawerOpen={isFriendsListOpen}>
+              <Content>
                 <Controls
                   assignedColors={assignedColors}
                   handleSelectClass={handleSelectClass}
@@ -345,9 +329,9 @@ const App: React.FC = () => {
               </Content>
             </ContentWrapper>
           </StyledApp>
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </ThemeProvider>
-    </MuiThemeProvider>
+    </StyledEngineProvider>
   );
 };
 export default Sentry.withProfiler(App);

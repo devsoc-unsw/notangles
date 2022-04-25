@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:17.8.0-alpine as builder
+FROM node:18.0.0-alpine as builder
 
 WORKDIR /server
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 
-FROM node:17.8.0-alpine
+FROM node:18.0.0-alpine
 
 WORKDIR /server
 

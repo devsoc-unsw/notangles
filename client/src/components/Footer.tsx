@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { Box, Link } from '@material-ui/core';
-import styled from 'styled-components';
+import { styled } from '@mui/system';
+import { Box, Link } from '@mui/material';
+
 import { AppContext } from '../context/AppContext';
 
 const FooterContainer = styled(Box)`

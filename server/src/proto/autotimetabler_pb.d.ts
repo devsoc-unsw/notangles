@@ -17,8 +17,10 @@ export class TimetableConstraints extends jspb.Message {
     setGap(value: number): TimetableConstraints;
     getMaxdays(): number;
     setMaxdays(value: number): TimetableConstraints;
-    getPeriodsListSerialized(): string;
-    setPeriodsListSerialized(value: string): TimetableConstraints;
+    clearPeriodinfoList(): void;
+    getPeriodinfoList(): Array<TimetableConstraints.PeriodInfo>;
+    setPeriodinfoList(value: Array<TimetableConstraints.PeriodInfo>): TimetableConstraints;
+    addPeriodinfo(value?: TimetableConstraints.PeriodInfo, index?: number): TimetableConstraints.PeriodInfo;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): TimetableConstraints.AsObject;
@@ -37,8 +39,40 @@ export namespace TimetableConstraints {
         days: string,
         gap: number,
         maxdays: number,
-        periodsListSerialized: string,
+        periodinfoList: Array<TimetableConstraints.PeriodInfo.AsObject>,
     }
+
+
+    export class PeriodInfo extends jspb.Message { 
+        getPeriodsperclass(): number;
+        setPeriodsperclass(value: number): PeriodInfo;
+        clearPeriodtimesList(): void;
+        getPeriodtimesList(): Array<number>;
+        setPeriodtimesList(value: Array<number>): PeriodInfo;
+        addPeriodtimes(value: number, index?: number): number;
+        clearDurationsList(): void;
+        getDurationsList(): Array<number>;
+        setDurationsList(value: Array<number>): PeriodInfo;
+        addDurations(value: number, index?: number): number;
+
+        serializeBinary(): Uint8Array;
+        toObject(includeInstance?: boolean): PeriodInfo.AsObject;
+        static toObject(includeInstance: boolean, msg: PeriodInfo): PeriodInfo.AsObject;
+        static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+        static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+        static serializeBinaryToWriter(message: PeriodInfo, writer: jspb.BinaryWriter): void;
+        static deserializeBinary(bytes: Uint8Array): PeriodInfo;
+        static deserializeBinaryFromReader(message: PeriodInfo, reader: jspb.BinaryReader): PeriodInfo;
+    }
+
+    export namespace PeriodInfo {
+        export type AsObject = {
+            periodsperclass: number,
+            periodtimesList: Array<number>,
+            durationsList: Array<number>,
+        }
+    }
+
 }
 
 export class AutoTimetableResponse extends jspb.Message { 

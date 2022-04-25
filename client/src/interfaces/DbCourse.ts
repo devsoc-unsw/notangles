@@ -1,4 +1,4 @@
-import { Activity, ClassData, ClassPeriod, CourseCode, CourseData } from './Course';
+import { Activity, ClassData, ClassPeriod, CourseCode, CourseData, Section } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -12,6 +12,7 @@ export interface DbClass {
   activity: Activity;
   times: DbTimes[];
   courseEnrolment: DbCourseEnrolment;
+  section: Section;
 }
 
 export interface DbCourseEnrolment {
@@ -108,6 +109,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       periods: [],
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
+      section: dbClass.section,
     };
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));

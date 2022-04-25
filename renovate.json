@@ -1,0 +1,19 @@
+{
+  "extends": ["config:base"],
+  "lockFileMaintenance": { "enabled": true, "automerge": true },
+  "prHourlyLimit": 5,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react monorepo with types"
+    }
+  ]
+}

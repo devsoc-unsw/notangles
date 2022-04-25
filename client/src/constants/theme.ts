@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core';
+import { createTheme } from '@mui/material';
 
 export const borderRadius = 10;
 export const inventoryDropzoneOpacity = 0.1;
@@ -6,7 +6,7 @@ export const contentPadding = 15;
 
 export interface ThemeType {
   palette: {
-    type: string | undefined;
+    mode: string | undefined;
     primary: {
       main: string;
     };
@@ -18,9 +18,6 @@ export interface ThemeType {
       main: string;
       dark: string;
       light: string;
-    };
-    action: {
-      disabled: string;
     };
   };
   shape: {
@@ -41,12 +38,11 @@ export interface ThemeType {
 }
 
 const baseTheme = ({
-  type,
   background,
   border,
-  action,
+  mode,
 }: {
-  type: 'light' | 'dark' | undefined;
+  mode: 'light' | 'dark' | undefined;
   background: {
     main: string;
     light: string;
@@ -56,12 +52,9 @@ const baseTheme = ({
     main: string;
     dark: string;
   };
-  action: {
-    disabled: string;
-  };
 }) => ({
   palette: {
-    type,
+    mode: mode,
     primary: {
       main: '#3a76f8',
     },
@@ -74,45 +67,30 @@ const baseTheme = ({
       dark: border.dark,
       light: background.dark,
     },
-    action: {
-      disabled: action.disabled,
-    },
   },
   shape: {
     borderRadius,
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 1080,
-      lg: 1200,
-      xl: 1536,
-    },
   },
 });
 
 export const lightTheme = createTheme(
   baseTheme({
-    type: 'light',
+    mode: 'light',
     background: {
       main: '#fafafa',
-      light: '#fff',
+      light: '#ffffff',
       dark: '#f2f2f2',
     },
     border: {
       main: '#bdbdbd',
       dark: '#999999',
     },
-    action: {
-      disabled: `rgba(0,0,0,0.5)`,
-    },
   })
 );
 
 export const darkTheme = createTheme(
   baseTheme({
-    type: 'dark',
+    mode: 'dark',
     background: {
       main: '#212121',
       light: '#292929',
@@ -121,9 +99,6 @@ export const darkTheme = createTheme(
     border: {
       main: '#616161',
       dark: '#808080',
-    },
-    action: {
-      disabled: `rgba(255,255,255,0.5)`,
     },
   })
 );

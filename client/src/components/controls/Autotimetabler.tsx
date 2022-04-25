@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -14,16 +14,13 @@ import {
   ListItemText,
   Popover,
   Slider,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
-} from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import CloseIcon from '@material-ui/icons/Close';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import InfoIcon from '@material-ui/icons/Info';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { TimePicker } from '@material-ui/pickers';
+  TextField,
+} from '@mui/material';
+import { styled } from '@mui/system';
+import { TimePicker } from '@mui/x-date-pickers';
 
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
@@ -33,19 +30,20 @@ import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
-  width: 100%;
-  height: 55px;
-  text-align: left;
-  margin-top: 20px;
-  margin-right: 10px;
-  text-transform: none;
-  // padding: 6px 16px 6px 4px !important;
+  && {
+    width: 100%;
+    height: 55px;
+    margin-top: 20px;
+    margin-right: 10px;
+    text-align: left;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
 `;
 
-const InfoContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px 10px 0 0;
+const InfoContainer = styled('div')`
+  padding: 10px 0 0 10px;
 `;
 
 const ExecuteButton = styled(Button)`
@@ -62,6 +60,10 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   width: 100%;
   height: 32px;
   margin-bottom: 10px;
+`;
+
+const StyledList = styled(List)`
+  padding: 0 15px;
 `;
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
@@ -109,6 +111,14 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   );
 };
 
+interface PeriodInfo {
+  periodsPerClass: number; // i.e. periods.length
+  periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
+  durations: Array<number>; // where the ith period has duration[i] in hours
+}
+
+type ClassMode = 'hybrid' | 'in person' | 'online';
+
 const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 
@@ -118,19 +128,20 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const [days, setDays] = useState<Array<string>>(weekdays);
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
-  const [classMode, setClassMode] = useState<string>('hybrid');
+  const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
   // for opening popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const { isDarkMode, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
-  const periodsListSerialized = useRef<string[]>([]);
 
-  // caches targetActivities and periodsListSerilized in advance
+  const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
+
+  // caches targetActivities and periodInfoPerMode in advance
   useEffect(() => {
     if (!selectedCourses || !selectedCourses.length) return;
 
@@ -148,26 +159,40 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
     ]);
 
-    // a list of [all_periods, in_person_periods, online_periods]
-    periodsListSerialized.current = [
-      JSON.stringify(
-        targetActivities.current.map((value) => value.map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end])))
+    periodInfoPerMode.current = {
+      'hybrid': targetActivities.current.map(
+        (value) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []), // extracts the period's day and start time for all periods of a class for all classes of an activity (classData[]) and then reduces that list of list of lists into a single list
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-      JSON.stringify(
-        targetActivities.current.map((value, index) =>
-          value
-            .filter((v) => !hasMode[index][0] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]))
-            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-        )
+      'in person': targetActivities.current.map(
+        (value, index) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []),
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-      JSON.stringify(
-        targetActivities.current.map((value, index) =>
-          value
-            .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
-            .map((c) => c.periods.map((p) => [p.time.day, p.time.start, p.time.end]))
-        )
+      'online': targetActivities.current.map(
+        (value, index) =>
+          ({
+            periodsPerClass: value.at(0)?.periods.length ?? 0,
+            periodTimes: value
+              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+              .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
+              .reduce((a, b) => a.concat(b), []),
+            durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
+          } as PeriodInfo)
       ),
-    ];
+    };
   }, [selectedCourses]);
 
   const toggleIsOpenInfo = () => {
@@ -213,9 +238,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
-    timetableData['periodsListSerialized'] = periodsListSerialized.current.at(
-      ['hybrid', 'in person', 'online'].findIndex((v) => v === classMode)
-    );
+    timetableData['periodInfoList'] = periodInfoPerMode.current[`${classMode}`];
 
     try {
       const res = await getAutoTimetable(timetableData);
@@ -244,18 +267,12 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   return (
     <div style={{ display: 'flex' }}>
-      <DropdownButton
-        disableElevation
-        aria-describedby={popoverId}
-        variant="contained"
-        color={isDarkMode ? 'secondary' : 'default'}
-        onClick={handleClick}
-      >
+      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
-          Auto-timetable
+          AUTO-TIMETABLE
         </Box>
         <Box ml="5px" />
-        {open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+        {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
         id={popoverId}
@@ -271,9 +288,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           horizontal: 'right',
         }}
       >
-        <InfoContainer style={{ display: 'flex' }}>
+        <InfoContainer>
           <Button onClick={toggleIsOpenInfo}>
-            <InfoIcon />
+            <Info />
           </Button>
         </InfoContainer>
         <Dialog
@@ -301,22 +318,28 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 </p>
                 <p>Autotimetabler may lack full support for certain courses.</p>
               </Typography>
-              <IconButton style={{ position: 'absolute', right: 10, top: 10 }} aria-label="close" onClick={toggleIsOpenInfo}>
-                <CloseIcon />
+              <IconButton
+                style={{ position: 'absolute', right: 10, top: 10 }}
+                aria-label="close"
+                onClick={toggleIsOpenInfo}
+                size="large"
+              >
+                <Close />
               </IconButton>
             </DialogContentText>
           </DialogContent>
         </Dialog>
-        <List>
+        <StyledList>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Earliest start time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Earliest start time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setStartTime(e);
                   }}
@@ -326,13 +349,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
-                <ListItemText primary="Latest end time" />
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center' }} primary="Latest end time" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
+                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setEndTime(e);
                   }}
@@ -390,16 +414,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             optionChoices={['hybrid', 'in person', 'online']}
             noOff
           />
-        </List>
+        </StyledList>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doAuto}>
-          <FlashOnIcon />
+          <FlashOn />
           GO
         </ExecuteButton>
       </Popover>
     </div>
   );
 };
+
 export default Autotimetabler;
-function setAlertMsg(arg0: string) {
-  throw new Error('Function not implemented.');
-}
