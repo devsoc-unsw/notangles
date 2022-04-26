@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import * as Sentry from '@sentry/react';
 import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -334,4 +334,5 @@ const App: React.FC = () => {
     </StyledEngineProvider>
   );
 };
+
 export default Sentry.withProfiler(App);

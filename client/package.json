@@ -35,8 +35,8 @@
     "workbox-routing": "6.5.3",
     "workbox-strategies": "6.5.3",
     "workbox-streams": "6.5.3",
-    "@sentry/tracing": "^6.19.6",
-    "@sentry/react": "^6.19.6"
+    "@sentry/tracing": "6.19.6",
+    "@sentry/react": "6.19.6"
   },
   "scripts": {
     "start": "REACT_APP_ENVIRONMENT=development react-scripts start",

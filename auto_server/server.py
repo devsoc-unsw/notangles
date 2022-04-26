@@ -1,8 +1,9 @@
-import logging
 from concurrent import futures
+import logging
 import os
 
 import grpc
+import sentry_sdk
 
 import auto
 import autotimetabler_pb2
@@ -10,13 +11,11 @@ import autotimetabler_pb2_grpc
 
 # python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./autotimetabler.proto
 
-
-# Inittializing sentry
-import sentry_sdk
 sentry_sdk.init(
-    os.environ["SENTRY_INGEST_AUTOTIMETABLING"],
-    traces_sample_rate=float(os.environ["SENTRY_TRACE_RATE_AUTOTIMETABLING"])
+    os.environ["SENTRY_INGEST_AUTO_SERVER"],
+    traces_sample_rate=float(os.environ["SENTRY_TRACE_RATE_AUTO_SERVER"]),
 )
+
 
 class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
     def FindBestTimetable(self, request, _):
@@ -33,8 +32,7 @@ class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
 
 
 def main():
-    """launches server
-    """
+    """launches server"""
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     autotimetabler_pb2_grpc.add_AutoTimetablerServicer_to_server(
         AutoTimetablerServicer(), server

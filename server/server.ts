@@ -1,17 +1,18 @@
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+
 import app from './src/app';
-import * as Sentry from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 
 // initializing sentry
 Sentry.init({
-  dsn: process.env.SENTRY_INGEST_SERVER_FRONTEND,
+  dsn: process.env.SENTRY_INGEST_SERVER,
   integrations: [
     // enable HTTP calls tracing
     new Sentry.Integrations.Http({ tracing: true }),
     // enable Express.js middleware tracing
     new Tracing.Integrations.Express({ app }),
   ],
-  tracesSampleRate: Number(process.env.SENTRY_TRACE_RATE_SERVER_FRONTEND),
+  tracesSampleRate: Number(process.env.SENTRY_TRACE_RATE_SERVER),
 });
 
 const server = app.listen(app.get('port'), () => {
