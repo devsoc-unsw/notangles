@@ -17,7 +17,13 @@ Finally, in your virtual environment, run `python3 -m pip install -r requirement
 
 ## Running
 
-Run `python3 server.py` to start the autotimetabling server locally.
+Run `SENTRY_INGEST_AUTO_SERVER='' SENTRY_TRACE_RATE_AUTO_SERVER=0 python3 server.py` to start the autotimetabling server locally.
+
+The `SENTRY_INGEST_AUTO_SERVER` environment variable is the ingest URL for the Sentry SDK to know where to send the monitored data.
+
+The `SENTRY_TRACE_RATE_AUTO_SERVER` environment variable is the percentage of transactions monitored and sent.
+
+The real values of these environment variables are only required when the app is deployed.
 
 ## Tech Stack
 
