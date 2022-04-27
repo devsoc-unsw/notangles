@@ -1,6 +1,7 @@
 from concurrent import futures
 import logging
 import os
+import sys
 
 import grpc
 import sentry_sdk
@@ -9,11 +10,11 @@ import auto
 import autotimetabler_pb2
 import autotimetabler_pb2_grpc
 
-# python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./autotimetabler.proto
+# the command to compile proto file --> python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./autotimetabler.proto
 
 sentry_sdk.init(
-    os.environ["SENTRY_INGEST_AUTO_SERVER"],
-    traces_sample_rate=float(os.environ["SENTRY_TRACE_RATE_AUTO_SERVER"]),
+    os.environ.get("SENTRY_INGEST_AUTO_SERVER"),
+    traces_sample_rate=float(os.environ.get("SENTRY_TRACE_RATE_AUTO_SERVER", '0')),
 )
 
 
