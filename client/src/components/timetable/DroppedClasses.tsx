@@ -145,12 +145,13 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth', 'clashColour'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
   cardWidth: number;
+  clashColour: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -160,7 +161,7 @@ const StyledCourseClassInner = styled(Card, {
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
-  outline: ${({ hasClash }) => (hasClash ? 'solid red 4px' : 'solid transparent 0px')};
+  outline: ${({ hasClash, clashColour }) => (hasClash ? clashColour : 'solid transparent 0px')};
   outline-offset: -4px;
   width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
@@ -223,7 +224,7 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   );
 };
 
-const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earliestStartTime, hasClash, handleSelectClass, cardWidth, clashIndex }) => {
+const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earliestStartTime, hasClash, handleSelectClass, cardWidth, clashIndex, groupedClashes }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
@@ -240,6 +241,25 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
+
+  let clashColour = "solid orange 4px";
+  
+  let numNonPermittedClashes = 0;
+  if ("time" in cardData) {
+    for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
+      if (!clashGroup.includes(cardData)) {
+        continue;
+      }
+      for (const clashClass of clashGroup) {
+        if (!clashClass.class.activity.includes('Lecture')) {
+          numNonPermittedClashes += 1;
+        }
+      }
+      if (numNonPermittedClashes > 1) {
+        clashColour = "solid red 4px";
+      }
+    }
+  }
 
   const onDown = (eventDown: any) => {
     if (
@@ -330,6 +350,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
       ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
     );
   }
+  
 
   return (
     <>
@@ -351,7 +372,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
         clashIndex={clashIndex}
         width={cardWidth}
       >
-        <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges} cardWidth={cardWidth}>
+        <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges} cardWidth={cardWidth} clashColour={clashColour} >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledClassName>
@@ -564,7 +585,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         ...
       ]
     */
-
     droppedClasses.push(
       <DroppedClass
         key={`${key}`}
@@ -576,6 +596,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         cardWidth={cardWidth}
         clashIndex={clashIndex}
         handleSelectClass={handleSelectClass}
+        groupedClashes={groupedClashes}
       />
     );
 

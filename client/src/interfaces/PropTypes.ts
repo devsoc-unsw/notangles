@@ -80,6 +80,7 @@ export interface DroppedClassProps {
   handleSelectClass(classData: ClassData): void;
   cardWidth: number;
   clashIndex: number;
+  groupedClashes: Record<number, ClassPeriod[][]>;
 }
 
 export interface DroppedClassesProps {
