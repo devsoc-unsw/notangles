@@ -26,7 +26,6 @@ const AutotimetablerWrapper = styled(Box)`
 
 const CustomEventsWrapper = styled(Box)`
   flex: 1;
-  padding-top: 20px;
 `;
 
 const HistoryWrapper = styled(Box)`
