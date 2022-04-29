@@ -29,7 +29,8 @@ class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
             [int]: times
         """
         print("Finding a timetable")
-        return autotimetabler_pb2.AutoTimetableResponse(times=auto.sols(request))
+        allocatedTimes, isOptimal = auto.sols(request)
+        return autotimetabler_pb2.AutoTimetableResponse(times=allocatedTimes, optimal=isOptimal)
 
 
 def main():

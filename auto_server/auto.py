@@ -55,6 +55,7 @@ def sols(requestData):
 
     Returns:
         [int]: solutions
+        boolean: optimality
     """
 
     minGapBetw, earliestStartTime, latestEndTime, days = (
@@ -182,6 +183,6 @@ def sols(requestData):
     if solver.StatusName(status) != "INFEASIBLE" and unsatisfied <= MAX_UNSATISFIED_CONSTRAINTS:
         solutions = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
         print(solutions)
-        return solutions  # List[int]
+        return solutions, unsatisfied == 0   # (List[int], boolean)
 
     return []
