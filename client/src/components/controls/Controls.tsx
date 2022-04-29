@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
+import CustomEvents from './CustomEvents';
 import History from './History';
 import { ControlsProps } from '../../interfaces/PropTypes';
 
@@ -23,6 +24,11 @@ const AutotimetablerWrapper = styled(Box)`
   }
 `;
 
+const CustomEventsWrapper = styled(Box)`
+  flex: 1;
+  padding-top: 20px;
+`;
+
 const HistoryWrapper = styled(Box)`
   margin-top: 20px;
   margin-left: 3px;
@@ -37,6 +43,9 @@ const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, 
         </SelectWrapper>
       </Grid>
       <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={4}>
+        <CustomEventsWrapper>
+          <CustomEvents />
+        </CustomEventsWrapper>
         <AutotimetablerWrapper>
           <Autotimetabler handleSelectClass={handleSelectClass} />
         </AutotimetablerWrapper>
