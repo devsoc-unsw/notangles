@@ -46,7 +46,7 @@ export const getAuto = async (req: Request, res: Response) => {
       res.status(502).send('An error occurred when handling the request.')
 
     } else {
-      res.send(JSON.stringify({ given: response.getTimesList() }));
+      res.send(JSON.stringify({ given: response.getTimesList(), optimal: response.getOptimal() }));
     }
   });
 };

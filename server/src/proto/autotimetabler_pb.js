@@ -669,7 +669,8 @@ proto.AutoTimetableResponse.prototype.toObject = function(opt_includeInstance) {
  */
 proto.AutoTimetableResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    timesList: (f = jspb.Message.getRepeatedFloatingPointField(msg, 1)) == null ? undefined : f
+    timesList: (f = jspb.Message.getRepeatedFloatingPointField(msg, 1)) == null ? undefined : f,
+    optimal: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -712,6 +713,10 @@ proto.AutoTimetableResponse.deserializeBinaryFromReader = function(msg, reader) 
         msg.addTimes(values[i]);
       }
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setOptimal(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -745,6 +750,13 @@ proto.AutoTimetableResponse.serializeBinaryToWriter = function(message, writer) 
   if (f.length > 0) {
     writer.writePackedFloat(
       1,
+      f
+    );
+  }
+  f = message.getOptimal();
+  if (f) {
+    writer.writeBool(
+      2,
       f
     );
   }
@@ -785,6 +797,24 @@ proto.AutoTimetableResponse.prototype.addTimes = function(value, opt_index) {
  */
 proto.AutoTimetableResponse.prototype.clearTimesList = function() {
   return this.setTimesList([]);
+};
+
+
+/**
+ * optional bool optimal = 2;
+ * @return {boolean}
+ */
+proto.AutoTimetableResponse.prototype.getOptimal = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.AutoTimetableResponse} returns this
+ */
+proto.AutoTimetableResponse.prototype.setOptimal = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
