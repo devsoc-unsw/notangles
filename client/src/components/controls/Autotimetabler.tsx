@@ -244,7 +244,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       const [results, isOptimal] = await getAutoTimetable(timetableData);
 
       setAutoVisibility(true);
-      setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly.') : 'No timetable found.');
+      setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly') : 'No timetable found');
 
       results.forEach((timeAsNum, index) => {
         const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];

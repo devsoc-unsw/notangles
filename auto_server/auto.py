@@ -4,7 +4,7 @@ from ortools.sat.python import cp_model
 MAX_UNSATISFIED_CONSTRAINTS = 3
 
 TIME_MULT = 2 # times of days of classes (e.g. 9, which represents 9:00 AM) and durations (given in hours) all get multiplied this value and int-casted as the model only allows integers
-DAY_MULT = 100 # multipler for the day of the week of classes (e.g. 4 which represents Thursday) so that it can be added to the time of day to represent a class's time in a single number
+DAY_MULT = 100 # multiplier for the day of the week of classes (e.g. 4 which represents Thursday) so that it can be added to the time of day to represent a class's time in a single number
 MIN_TIME = DAY_MULT
 MAX_TIME = 5 * DAY_MULT + 24 * TIME_MULT
 
