@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
-import { AccessTime, LocationOn } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Popover,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Grid,
-  TextField
-} from '@mui/material';
+import { AccessTime, ArrowDropDown, ArrowDropUp, LocationOn } from '@mui/icons-material';
+import { Box, Button, Popover, List, ListItem, ListItemText, ListItemIcon, Grid, TextField, Slider } from '@mui/material';
 import { styled } from '@mui/system';
 
 const DropdownButton = styled(Button)`
@@ -30,7 +20,12 @@ const StyledList = styled(List)`
   padding: 0 15px;
 `;
 
-const CustomEvents = ({ }) => {
+const ExecuteButton = styled(Button)`
+  width: 100%;
+  border-radius: 0px 0px 5px 5px;
+`;
+
+const CustomEvents = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -41,7 +36,7 @@ const CustomEvents = ({ }) => {
 
   // Function to open popover when Event button is clicked
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
+    setAnchorEl(event.currentTarget);
   };
 
   //Close popover when Event button is clicked again
@@ -56,11 +51,13 @@ const CustomEvents = ({ }) => {
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
+        {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
 
       {/*Code for Popover */}
       {/*Where the popover appears in relation to the button */}
       <Popover
+        // id={popoverId}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -74,36 +71,48 @@ const CustomEvents = ({ }) => {
         }}
       >
         <StyledList>
-          <Grid container spacing={0}>
-            <Grid item xs={7} >
+          <ListItem>
+            <Grid container spacing={0} sx={{ paddingLeft: 9 }}>
+              <TextField id="eventName-basic" label="Add Event Name" variant="standard" />
+            </Grid>
+          </ListItem>
+
+          <ListItem>
+            <Grid container spacing={0} sx={{ paddingLeft: 9 }}>
+              <TextField id="description-basic" label="Add Description" variant="standard" multiline />
+            </Grid>
+          </ListItem>
+
+          <ListItem>
+            <Grid container spacing={0}>
               <ListItem>
-                <ListItemText primary="Event Name" />
+                <ListItemIcon sx={{ paddingTop: 1 }}>
+                  <LocationOn />
+                </ListItemIcon>
+                <TextField id="location-basic" label="Add Location" variant="standard" fullWidth />
               </ListItem>
             </Grid>
-            <Grid item xs={5}>
-              <TextField id="eventName-basic" label="Event Name" variant="standard" />
-            </Grid>
-          </Grid>
-
-          <ListItem>
-            <ListItemIcon>
-              <LocationOn />
-            </ListItemIcon>
-            <ListItemText primary="Location" />
-            <Grid item xs={5}>
-              <TextField id="location-basic" label="Location" variant="standard" />
-            </Grid>
           </ListItem>
 
           <ListItem>
-            <ListItemIcon>
-              <AccessTime />
-            </ListItemIcon>
-            <ListItemText primary="Duration" />
+            <Grid container spacing={0}>
+              <ListItem>
+                <ListItemIcon>
+                  <AccessTime />
+                </ListItemIcon>
+                <ListItemText primary="Select Duration (hours)" />
+              </ListItem>
+              <Slider valueLabelDisplay="auto" step={1} min={0} max={12} />
+            </Grid>
           </ListItem>
+
+          <ListItem></ListItem>
         </StyledList>
+        <ExecuteButton variant="contained" color="primary" disableElevation>
+          CREATE
+        </ExecuteButton>
       </Popover>
-    </div >
+    </div>
   );
 };
 
