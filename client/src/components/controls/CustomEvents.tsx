@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AccessTime, ArrowDropDown, ArrowDropUp, LocationOn } from '@mui/icons-material';
+import { AccessTime, ArrowDropDown, ArrowDropUp, LocationOn, Event, Notes, Add } from '@mui/icons-material';
 import { Box, Button, Popover, List, ListItem, ListItemText, ListItemIcon, Grid, TextField, Slider } from '@mui/material';
 import { styled } from '@mui/system';
+import { TimePicker } from '@mui/x-date-pickers';
 
 const DropdownButton = styled(Button)`
   && {
@@ -25,7 +26,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvents = ({}) => {
+const CustomEvents = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -43,6 +44,10 @@ const CustomEvents = ({}) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  //TimePicker stuff
+  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
+  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
 
   return (
     <div style={{ display: 'flex' }}>
@@ -72,21 +77,31 @@ const CustomEvents = ({}) => {
       >
         <StyledList>
           <ListItem>
-            <Grid container spacing={0} sx={{ paddingLeft: 9 }}>
-              <TextField id="eventName-basic" label="Add Event Name" variant="standard" />
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0} sx={{ paddingLeft: 9 }}>
-              <TextField id="description-basic" label="Add Description" variant="standard" multiline />
+            <Grid container spacing={0}>
+              <ListItem>
+                <ListItemIcon sx={{ alignSelf: 'flex-end' }} >
+                  <Event />
+                </ListItemIcon>
+                <TextField id="eventName-basic" label="Add Event Name" variant="standard" fullWidth />
+              </ListItem>
             </Grid>
           </ListItem>
 
           <ListItem>
             <Grid container spacing={0}>
               <ListItem>
-                <ListItemIcon sx={{ paddingTop: 1 }}>
+                <ListItemIcon sx={{ alignSelf: 'flex-end' }}>
+                  <Notes />
+                </ListItemIcon>
+                <TextField id="description-basic" label="Add Description" variant="standard" multiline fullWidth />
+              </ListItem>
+            </Grid>
+          </ListItem>
+
+          <ListItem>
+            <Grid container spacing={0}>
+              <ListItem>
+                <ListItemIcon sx={{ alignSelf: 'flex-end' }}>
                   <LocationOn />
                 </ListItemIcon>
                 <TextField id="location-basic" label="Add Location" variant="standard" fullWidth />
@@ -96,23 +111,46 @@ const CustomEvents = ({}) => {
 
           <ListItem>
             <Grid container spacing={0}>
-              <ListItem>
-                <ListItemIcon>
-                  <AccessTime />
-                </ListItemIcon>
-                <ListItemText primary="Select Duration (hours)" />
-              </ListItem>
-              <Slider valueLabelDisplay="auto" step={1} min={0} max={12} />
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="Start time" />
+              </Grid>
+              <Grid item xs={5}>
+                <TimePicker
+                  views={['hours']}
+                  value={startTime}
+                  renderInput={(params) => <TextField {...params} />}
+                  onChange={(e) => {
+                    if (e) setStartTime(e);
+                  }}
+                />
+              </Grid>
             </Grid>
           </ListItem>
 
-          <ListItem></ListItem>
+          <ListItem>
+            <Grid container spacing={0}>
+              <Grid item xs={7} container>
+                <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="End time" />
+              </Grid>
+              <Grid item xs={5}>
+                <TimePicker
+                  views={['hours']}
+                  value={endTime}
+                  renderInput={(params) => <TextField {...params} />}
+                  onChange={(e) => {
+                    if (e) setEndTime(e);
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </ListItem>
         </StyledList>
         <ExecuteButton variant="contained" color="primary" disableElevation>
+          <Add />
           CREATE
         </ExecuteButton>
-      </Popover>
-    </div>
+      </Popover >
+    </div >
   );
 };
 
