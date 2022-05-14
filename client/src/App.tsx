@@ -3,6 +3,7 @@ import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '
 import { styled } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -333,4 +334,5 @@ const App: React.FC = () => {
     </StyledEngineProvider>
   );
 };
-export default App;
+
+export default Sentry.withProfiler(App);

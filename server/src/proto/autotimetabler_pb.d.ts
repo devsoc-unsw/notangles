@@ -80,6 +80,8 @@ export class AutoTimetableResponse extends jspb.Message {
     getTimesList(): Array<number>;
     setTimesList(value: Array<number>): AutoTimetableResponse;
     addTimes(value: number, index?: number): number;
+    getOptimal(): boolean;
+    setOptimal(value: boolean): AutoTimetableResponse;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): AutoTimetableResponse.AsObject;
@@ -94,5 +96,6 @@ export class AutoTimetableResponse extends jspb.Message {
 export namespace AutoTimetableResponse {
     export type AsObject = {
         timesList: Array<number>,
+        optimal: boolean,
     }
 }
