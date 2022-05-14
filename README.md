@@ -1,7 +1,6 @@
 # Notangles
 
-[Notangles](https://notangles.csesoc.unsw.edu.au/) is an interactive drag-and-drop timetable planner designed to help UNSW students plan their ideal weekly timetable.
-
+[Notangles](https://notangles.csesoc.app/) is an interactive drag-and-drop timetable planner designed to help UNSW students plan their ideal weekly timetable.
 
 ## Background and Motivation
 
@@ -17,33 +16,33 @@ Before you start, make sure that you have the following software installed.
 
 - Git (standard on Linux) or GitHub Desktop
 - Node.js and npm (usually bundled with Node.js)
-- Docker (only needed if you are working on the back-end). [Instructions](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers) if you’re using WSL on Windows.
+- Python
 
-### Installing
+### Setup
 
 Clone the repository:
 
 `git clone git@github.com:csesoc/notangles.git`
 
-Install dependencies by running:
-
-`cd client && npm install && cd ..`
-
 ### Running the front-end
 
-Navigate into `notangles/client`, then run one of the follow commands:
+Navigate into `/client`, install packages with `npm i`, then run one of the follow commands:
 
-- `npm start` (if you already have the server running locally; connects to that)
+- `npm start` (if you already have the timetable server running locally; connects to that)
 
-- `npm run start:mock` (if you don’t have the server running locally; connects to our real server)
+- `npm run start:mock` (if you don’t have the timetable server running locally; connects to our real server)
 
-You can then access the client at `localhost:3000` in your favourite web browser.
+If you need to test the autotimetabler, both `npm start` and `npm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
+
+You can then access the client at `http://localhost:3000` in your favourite web browser.
 
 ### Running the back-end
 
-(Skip this for now) Navigate into `notangles/server` and run `docker-compose up`. This runs the server and the database as a bundle.
+Navigate into `/server`, install packages with `npm i`, then run `npm start`. The server will be hosted at `http://localhost:3001`
 
-(Start from here) After that, navigate to the `timetable-scraper` repo (which can be found [here](https://github.com/csesoc/timetable-scraper)) and run `npm start` to start the scraper’s server. To update the scraped data, run `npm run scraper`. This command should only need to be run once each term.
+### Running the auto-timetabler
+
+Navigate into `/auto_server`, setup a virtual environment, install the required Python packages with `pip install -r requirements.txt`, then start the server with `python server.py`.
 
 ## Documentation
 

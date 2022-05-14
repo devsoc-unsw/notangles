@@ -3,10 +3,8 @@ const termNumber = 2;
 export const term = `T${termNumber}`;
 export const termName = `Term ${termNumber}`;
 
-// 12am on the first day of term, in UTC time. This means that you need to remove some time
-// based on how far ahead we are from UTC. This means that the date is *actually* 1 day before the start of term.
-const daylightSavings = true;
-export const firstMomentOfTerm = `2022-05-29` + (daylightSavings ? `T00:13:00.000Z` : `T00:14:00.000Z`);
+// first monday of week 1 of the term
+export const firstDayOfTerm = `2022-05-30`;
 
 export const colors: string[] = [
   '#137786', // dark cyan
@@ -24,6 +22,3 @@ export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
 
 export const maxAddedCourses = 8;
-
-// TODO: uncomment below to enable preview mode
-export const isPreview = false; // process.env.REACT_APP_SHOW_PREVIEW === 'true';

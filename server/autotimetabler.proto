@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+
+
+message TimetableConstraints { 
+    message PeriodInfo {
+        int32 periodsPerClass = 1;
+        repeated float periodTimes = 2;
+        repeated float durations = 3;
+    }
+    int32 start = 1;
+    int32 end = 2;
+    string days = 3;
+    int32 gap = 4;
+    int32 maxdays = 5;
+    repeated PeriodInfo periodInfo = 6;
+}
+
+message AutoTimetableResponse { 
+    repeated float times = 1;
+    bool optimal = 2;
+}
+
+service AutoTimetabler { 
+    rpc FindBestTimetable (TimetableConstraints) returns (AutoTimetableResponse);
+}  

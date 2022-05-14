@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:17.8.0-alpine as builder
+FROM node:18.1.0-alpine as builder
 
 WORKDIR /server
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 
-FROM node:17.8.0-alpine
+FROM node:18.1.0-alpine
 
 WORKDIR /server
 
@@ -19,6 +19,7 @@ COPY package.json package-lock.json ./
 RUN npm install --production
 
 COPY --from=builder /server/dist .
+COPY ./src/proto/*.js ./src/proto/
 
 EXPOSE 3001
 

@@ -1,22 +1,16 @@
-import React, { useContext } from 'react';
-import styled from 'styled-components';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { AppContext } from '../context/AppContext';
-import { darkTheme, lightTheme } from '../constants/theme';
-import { Theme } from '@material-ui/core';
+import React from 'react';
+import { ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Theme, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
-const PrivacyQuestions = [
+const privacyQuestions = [
   {
     title: 'What personal information does Notangles collect?',
     content: (
       <>
         <p>We collect the following types of information from our users:</p>
         <p>
-          Personal Information You Provide to Us:We may receive and store any information you submit to the Application (or
+          Personal Information You Provide to Us: We may receive and store any information you submit to the Application (or
           otherwise authorize us to obtain – such as, from (for example) your Facebook account). The types of personal information
           collected may include your username, email address, profile picture, friends that are also using the Application, and
           any other information necessary for us to provide the Application services.
@@ -117,52 +111,74 @@ const PrivacyQuestions = [
   },
 ];
 
-const PrivacyAccordion = styled(Accordion)`
+const StyledDialogBody = styled(Typography)`
+  padding-bottom: 20px;
+`;
+
+const FooterText = styled(Typography)`
+  text-align: right;
+  padding-top: 20px;
+`;
+
+const StyledAccordion = styled(Accordion)`
   margin: auto;
 `;
 
-const PrivacyAccordionSummary = styled(AccordionSummary)<{
-  theme: Theme;
-}>`
-  backgroundColor: ${({ theme }) => theme.palette.background.main};,
+const StyledAccordionSummary = styled(AccordionSummary)`
+  backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
-const PrivacyAccordionDetails = styled(AccordionDetails)<{
-  theme: Theme;
-}>`
-  backgroundColor: ${({ theme }) => theme.palette.background.main};,
+const StyledAccordionDetails = styled(AccordionDetails)`
+  backgroundColor: ${({ theme }) => theme.palette.background.default};,
   color: ${({ theme }) => theme.palette.primary.main};,
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
-const PrivacyContentTitle = styled(Typography)`
+const StyledTitle = styled(Typography)`
   && {
     font-weight: bold;
   }
 `;
 
-const PrivacyContent: React.FC = () => {
-  const PrivacyMap = PrivacyQuestions.map((privacy) => {
-    const { title, content } = privacy;
+const Privacy: React.FC = () => {
+  const privacyMap = privacyQuestions.map(({ title, content }, index) => {
     return (
-      <PrivacyAccordion style={{ margin: 'auto' }}>
-        <PrivacyAccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <PrivacyContentTitle gutterBottom variant="body2">
+      <StyledAccordion style={{ margin: 'auto' }}>
+        <StyledAccordionSummary
+          expandIcon={<ExpandMore />}
+          aria-controls={`privacyPanel${index}-content`}
+          id={`privacyPanel${index}-header`}
+        >
+          <StyledTitle gutterBottom variant="body2">
             {title}
-          </PrivacyContentTitle>
-        </PrivacyAccordionSummary>
-        <PrivacyAccordionDetails>
+          </StyledTitle>
+        </StyledAccordionSummary>
+        <StyledAccordionDetails>
           <Typography gutterBottom variant="body2">
             {content}
           </Typography>
-        </PrivacyAccordionDetails>
-      </PrivacyAccordion>
+        </StyledAccordionDetails>
+      </StyledAccordion>
     );
   });
 
-  return <React.Fragment>{PrivacyMap}</React.Fragment>;
+  return (
+    <>
+      <StyledDialogBody gutterBottom variant="body2">
+        This privacy statement (“Privacy Statement”) applies to the treatment of personally identifiable information submitted by,
+        or otherwise obtained from, you in connection with the associated application (“Application”). The Application is provided
+        by Notangles (and may be provided by Notangles on behalf of a Notangles licensor or partner (“Application Partner”). By
+        using or otherwise accessing the Application, you acknowledge that you accept the practices and policies outlined in this
+        Privacy Statement.
+      </StyledDialogBody>
+      {privacyMap}
+      <FooterText gutterBottom variant="body2">
+        Effective Date: 11<sup>th</sup> October, 2020
+      </FooterText>
+    </>
+  );
 };
 
-export default PrivacyContent;
+export default Privacy;

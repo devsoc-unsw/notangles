@@ -27,11 +27,6 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
-// window.addEventListener('load', () => {
-//   lastScrollX = document.documentElement.scrollLeft;
-//   lastScrollY = document.documentElement.scrollTop;
-// });
-
 const getInventoryPeriod = (cardData: CardData): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
 
 const fromPx = (value: string) => Number(value.split('px')[0]);

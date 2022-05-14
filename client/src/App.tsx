@@ -1,19 +1,18 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, MuiThemeProvider, Snackbar } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import { Alert } from '@material-ui/lab';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { styled } from '@mui/system';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
-import Autotimetabler from './components/Autotimetabler';
-import CourseSelect from './components/CourseSelect';
-import FriendsDrawer, { drawerWidth } from './components/friends/Friends';
-import Navbar from './components/Navbar';
-import History from './components/History';
+import Alerts from './components/Alerts';
+import Controls from './components/controls/Controls';
+import Footer from './components/Footer';
+import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
-import { contentPadding, darkTheme, lightTheme, ThemeType } from './constants/theme';
-import { isPreview, term, year } from './constants/timetable';
+import { contentPadding, darkTheme, lightTheme } from './constants/theme';
+import { term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -29,34 +28,9 @@ import {
   SelectedClasses,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
-import { StyledContentProps } from './interfaces/StyleProps';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-
-const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
-  body {
-    background: ${(props) => props.theme.palette.background.default};
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.palette.background.default};
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.palette.secondary.main};
-    border-radius: 5px;
-    opacity: 0.5;
-    transition: background 0.2s;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.palette.secondary.dark};
-  }
-`;
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -72,60 +46,30 @@ const ContentWrapper = styled(Box)`
   box-sizing: border-box;
   display: flex;
   flex-direction: row-reverse;
-  justify-content: ${isPreview ? 'flex-start' : 'center'};
-  color: ${(props) => props.theme.palette.text.primary};
+  justify-content: center;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const getContentWidth = (drawerOpen: boolean) => {
-  let contentWidth = '1400px';
-  if (isPreview) {
-    contentWidth = drawerOpen ? `calc(100% - ${drawerWidth}px)` : '100%';
-  }
-  return contentWidth;
-};
-
-const Content = styled(Box)<StyledContentProps>`
-  width: ${(props: StyledContentProps) => getContentWidth(props.drawerOpen)};
+const Content = styled(Box)`
+  width: 1400px;
   max-width: 100%;
   transition: width 0.2s;
   display: grid;
   grid-template-rows: min-content min-content auto;
   grid-template-columns: auto;
-SS
   text-align: center;
 `;
-
-const SelectWrapper = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  padding-top: 20px;
-`;
-
-const AutotimetablerWrapper = styled(Box)`
-  flex: 1;
-`
-const HistoryWrapper = styled(Box)`
-  margin-top: 20px;
-`
 
 const ICSButton = styled(Button)`
   && {
     min-width: 250px;
-    margin: auto;
-    background-color: ${(props) => props.theme.palette.primary.main};
+    margin: 2vh auto;
+    background-color: ${({ theme }) => theme.palette.primary.main};
     color: #ffffff;
     &:hover {
       background-color: #598dff;
     }
   }
-`;
-
-const Footer = styled(Box)`
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 25px;
 `;
 
 const App: React.FC = () => {
@@ -136,16 +80,10 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    isSortAlphabetic,
-    errorMsg,
-    setErrorMsg,
-    errorVisibility,
+    setAlertMsg,
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
-    isFriendsListOpen,
-    lastUpdated,
-    setLastUpdated,
     days,
     setDays,
   } = useContext(AppContext);
@@ -178,10 +116,6 @@ const App: React.FC = () => {
     });
   };
 
-  const handleLastUpdated = (date: number) => {
-    setLastUpdated(date);
-  };
-
   useDrag(handleSelectClass, handleRemoveClass);
 
   const initCourse = (course: CourseData) => {
@@ -190,11 +124,11 @@ const App: React.FC = () => {
 
       prev[course.code] = {};
 
+      // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        // temp until auto timetabling works
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null; // null for unscheduled
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null;
       });
 
       return prev;
@@ -247,13 +181,13 @@ const App: React.FC = () => {
       })
       .catch((e) => {
         if (e instanceof NetworkError) {
-          setErrorMsg(e.message);
+          setAlertMsg(e.message);
           setErrorVisibility(true);
         }
       });
   };
 
-  const handleRemoveCourse = (courseCode: string) => {
+  const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     setSelectedClasses((prev) => {
@@ -263,14 +197,6 @@ const App: React.FC = () => {
     });
   };
 
-  const handleErrorClose = () => {
-    setErrorVisibility(false);
-  };
-
-  const handleInfoClose = () => {
-    setInfoVisibility(false);
-  };
-
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
@@ -278,10 +204,6 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isDarkMode', isDarkMode);
   }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSortAlphabetic', isSortAlphabetic);
-  }, [isSortAlphabetic]);
 
   useEffect(() => {
     storage.set('isSquareEdges', isSquareEdges);
@@ -360,90 +282,57 @@ const App: React.FC = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
-  // `date`: timestamp in milliseconds
-  // returns: time in relative format, such as "5 minutes" (ago) or "10 hours" (ago)
-  const getRelativeTime = (date: number): string => {
-    const diff = Date.now() - date;
-    const minutes = Math.round(diff / 60000);
-    if (minutes < 60) {
-      return `${minutes} minutes`;
-    }
-    const hours = Math.round(minutes / 60);
-    return `${hours} hours`;
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const globalStyle = {
+    body: {
+      background: theme.palette.background.default,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar': {
+      width: '10px',
+      height: '10px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: theme.palette.background.default,
+      borderRadius: '5px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: theme.palette.secondary.main,
+      borderRadius: '5px',
+      opacity: 0.5,
+      transition: 'background 0.2s',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: theme.palette.secondary.dark,
+    },
   };
 
   return (
-    <MuiThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        <StyledApp>
-          <Navbar />
-          {isPreview && <FriendsDrawer />}
-          <ContentWrapper>
-            <Content drawerOpen={isFriendsListOpen}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <SelectWrapper>
-                    <CourseSelect
-                      assignedColors={assignedColors}
-                      handleSelect={handleSelectCourse}
-                      handleRemove={handleRemoveCourse}
-                    />
-                  </SelectWrapper>
-                </Grid>
-                <Grid item container direction="row" alignItems="center" xs={12} md={6}>
-                  <AutotimetablerWrapper>
-                    <Autotimetabler />
-                  </AutotimetablerWrapper>
-                  <HistoryWrapper>
-                    <History />
-                  </HistoryWrapper>
-                </Grid>
-              </Grid>
-              <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-              <br />
-              <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-              <br />
-              <br />
-              <Footer>
-                While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.
-                <br />
-                <br />
-                Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-                  Email
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-                  Feedback
-                </Link>
-                &nbsp;&nbsp;•&nbsp;&nbsp;
-                <Link target="_blank" href="https://github.com/csesoc/notangles">
-                  Source
-                </Link>
-                {lastUpdated !== 0 && (
-                  <>
-                    <br />
-                    <br />
-                    Data last updated {getRelativeTime(lastUpdated)} ago.
-                  </>
-                )}
-              </Footer>
-              <Snackbar open={errorVisibility} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert severity="error" onClose={handleErrorClose} variant="filled">
-                  {errorMsg}
-                </Alert>
-              </Snackbar>
-              <Snackbar open={infoVisibility}>
-                <Alert severity="info" onClose={handleInfoClose} variant="filled">
-                  Press and hold to drag a class
-                </Alert>
-              </Snackbar>
-            </Content>
-          </ContentWrapper>
-        </StyledApp>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <GlobalStyles styles={globalStyle} />
+          <StyledApp>
+            <Navbar />
+            <ContentWrapper>
+              <Content>
+                <Controls
+                  assignedColors={assignedColors}
+                  handleSelectClass={handleSelectClass}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Alerts />
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
+        </LocalizationProvider>
       </ThemeProvider>
-    </MuiThemeProvider>
+    </StyledEngineProvider>
   );
 };
-export default App;
+
+export default Sentry.withProfiler(App);

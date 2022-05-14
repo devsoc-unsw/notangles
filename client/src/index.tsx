@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
 import AppContextProvider from './context/AppContext';
@@ -9,6 +11,13 @@ import CourseContextProvider from './context/CourseContext';
 
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
+
+// initializing sentry
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
+  integrations: [new BrowserTracing()],
+  tracesSampleRate: Number(process.env.REACT_APP_SENTRY_TRACE_RATE_CLIENT),
+});
 
 const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
 

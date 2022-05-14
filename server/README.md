@@ -1,23 +1,19 @@
 # Notangles Server
 
-The Notangles server allows other components to interact with the mongoDB database. In particular, it allows the client to read from the database and the scraper to write and update the database.
+The Notangles server allows the client to communicate with the autotimetabling server.
 
 ## Installation
 
-This project has been verified to work with:
+The server has been verified to work with:
 
-- npm:
-  - 6.12.1
-- node:
-  - 12.13.1
+- npm v8.3.1
+- node v16.14.0
 
-While in the project directory `notangles/server`, run:
-`npm install`
+In the root server directory `server`, run `npm install` to install all the dependencies.
 
 ## Running
 
-While in the project directory, run:
-`npm start`
+Run `npm start` to start the server locally. The server will be hosted at http://localhost:3001.
 
 ## Tech Stack
 
@@ -27,45 +23,8 @@ The Notangles server uses:
 - [TypeScript](https://www.typescriptlang.org/)
 - [Express](https://expressjs.com/)
 
-## How it is used
+## API endpoints
 
-The Notangles Server provides 2 API endpoints that are used by the client project. This allows the client project to read information from the mongoDB databbase. In addition, the server defines an API that is used by the Scraper. This API contains functions to read, write and update the database. See `notangles/server/src/database.ts` for more information. For the server project to work, a valid `secret.json` file must be placed `notangles/server/src`. For more information about the `secret.json` file, see the Secret.json section below
+### `POST /auto`
 
-### API endpoints
-
-#### `GET /api/terms/:termId/courses/:courseId/`
-
-termId: is expected to be in yyyy-term format
-
-term format is a capital letter followed by a number ie:- T3 or S1
-
-Returns information about the specific course as a javascript object
-
-#### `GET /api/terms/:termId/courses`
-
-termId: is expected to be in yyyy-term format
-
-term format is a capital letter followed by a number ie:- T3 or S1
-
-Returns a list of all courses that are running in the specified term and year as javascript objects where each element in the list represents a course
-
-### Secret.json
-
-The `secret.json` file located in `notangles/server/src` should contain links to a mongoDB database in the format:
-
-`{`
-`"dev": url`
-`"staging": url`
-`"prod": url`
-`}`
-
-In order to choose which link is to be used, change the last line in `notangles/server/src/config.ts` accordingly. ie:-
-
-- For dev
-  - `export const config: IConfig = allConfig[process.env.NODE_ENV || Env.DEV]`
-- For staging
-  - `export const config: IConfig = allConfig[process.env.NODE_ENV || Env.STAGING]`
-- For prod
-  - `export const config: IConfig = allConfig[process.env.NODE_ENV || Env.PROD]`
-
-Note, anything that uses the server will not work if a valid `secret.json` is not present. Due to the url providing access to the mongoDB database, `secret.json` is git ignored and is not publicly accessible.
+Returns a list of ints that correspond to class times for the inputed data

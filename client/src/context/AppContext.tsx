@@ -1,5 +1,4 @@
 import React, { createContext, useState } from 'react';
-import { isPreview } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -22,11 +21,8 @@ export interface IAppContext {
   isHideClassInfo: boolean;
   setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
 
-  isSortAlphabetic: boolean;
-  setIsSortAlphabetic: (newIsSortAlphabetic: boolean) => void;
-
-  errorMsg: string;
-  setErrorMsg: (newErrorMsg: string) => void;
+  alertMsg: string;
+  setAlertMsg: (newErrorMsg: string) => void;
 
   errorVisibility: boolean;
   setErrorVisibility: (newErrorVisibility: boolean) => void;
@@ -34,18 +30,15 @@ export interface IAppContext {
   infoVisibility: boolean;
   setInfoVisibility: (newInfoVisibility: boolean) => void;
 
-  isFriendsListOpen: boolean;
-  setIsFriendsListOpen: (newIsFriendListOpen: boolean) => void;
-
-  isLoggedIn: boolean;
-  setIsLoggedIn: (newIsLoggedIn: boolean) => void;
+  autoVisibility: boolean;
+  setAutoVisibility: (newAutoVisibility: boolean) => void;
 
   lastUpdated: number;
   setLastUpdated: (newLastUpdated: number) => void;
 
   isDrag: boolean;
   setIsDrag: (newIsDrag: boolean) => void;
-  
+
   days: string[];
   setDays: (newDays: string[]) => void;
 }
@@ -69,11 +62,8 @@ export const AppContext = createContext<IAppContext>({
   isHideClassInfo: false,
   setIsHideClassInfo: () => {},
 
-  isSortAlphabetic: false,
-  setIsSortAlphabetic: () => {},
-
-  errorMsg: '',
-  setErrorMsg: () => {},
+  alertMsg: '',
+  setAlertMsg: () => {},
 
   errorVisibility: false,
   setErrorVisibility: () => {},
@@ -81,11 +71,8 @@ export const AppContext = createContext<IAppContext>({
   infoVisibility: false,
   setInfoVisibility: () => {},
 
-  isFriendsListOpen: isPreview,
-  setIsFriendsListOpen: () => {},
-
-  isLoggedIn: false,
-  setIsLoggedIn: () => {},
+  autoVisibility: false,
+  setAutoVisibility: () => {},
 
   lastUpdated: 0,
   setLastUpdated: () => {},
@@ -104,12 +91,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
-  const [isSortAlphabetic, setIsSortAlphabetic] = useState<boolean>(storage.get('isSortAlphabetic'));
-  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [alertMsg, setAlertMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
-  const [isFriendsListOpen, setIsFriendsListOpen] = useState(isPreview);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [autoVisibility, setAutoVisibility] = React.useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
@@ -127,18 +112,14 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
-    isSortAlphabetic,
-    setIsSortAlphabetic,
-    errorMsg,
-    setErrorMsg,
+    alertMsg,
+    setAlertMsg,
     errorVisibility,
     setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
-    isFriendsListOpen,
-    setIsFriendsListOpen,
-    isLoggedIn,
-    setIsLoggedIn,
+    autoVisibility,
+    setAutoVisibility,
     lastUpdated,
     setLastUpdated,
     isDrag,

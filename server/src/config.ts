@@ -1,29 +1,18 @@
 export enum Env {
   DEV = 'DEV',
-  STAGING = 'STAGING',
   PROD = 'PROD',
 }
 
 interface Config {
-  database: string;
-  scraper: string;
+  auto: string;
 }
 
-export const allConfig: Record<Env, Config> = {
+export const API_CONFIG: Record<Env, Config> = {
   [Env.DEV]: {
-    // database: secret.dev,
-    database: 'mongodb://localhost:27017/',
-    scraper: 'mongodb://localhost:27017',
+    auto: 'localhost:50051',
   },
-
-  [Env.STAGING]: {
-    database: 'mongodb://database.notangles-db:27017/',
-    scraper: 'mongodb://localhost:27017',
-  },
-
   [Env.PROD]: {
-    database: 'mongodb://database.notangles-db:27017/',
-    scraper: 'mongodb://database.notangles-db:27017',
+    auto: `${process.env.AUTO_SERVER_HOSTNAME}:50051`,
   },
 };
-export const config: Config = allConfig[process.env.NODE_ENV || Env.DEV];
+export const config: Config = API_CONFIG[process.env.NODE_ENV || Env.DEV];

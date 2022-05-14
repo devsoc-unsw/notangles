@@ -1,3 +1,5 @@
+import { CourseCode } from './Course';
+
 export type CoursesList = CourseOverview[];
 export interface CourseOverview {
   code: string;
@@ -13,7 +15,7 @@ export interface CoursesListWithDate {
 }
 
 export interface FetchedCourse {
-  courseCode: string;
+  courseCode: CourseCode;
   name: string;
   online: boolean;
   inPerson: boolean;
