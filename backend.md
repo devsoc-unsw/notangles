@@ -14,3 +14,21 @@ Stuff to know:
   - `src/sum` (The example one to look at if you haven't used Nest before.)
   - `src/auth` (Handles authentication with our )
   - `src/auto` (Handles auto-timetabling)
+
+## Running the app
+
+```bash
+`npm run start:dev`
+```
+
+## Enviornment variables Required
+
+```bash
+OAUTH2_CLIENT_ID
+OAUTH2_CLIENT_SECRET
+OIDC_ISSUER_BASE_URL
+OAUTH2_REDIRECT_URI
+OAUTH2_SCOPES
+SESSION_SECRET
+PORT
+```
