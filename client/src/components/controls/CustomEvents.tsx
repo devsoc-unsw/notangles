@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { AccessTime, ArrowDropDown, ArrowDropUp, LocationOn, Event, Notes, Add } from '@mui/icons-material';
-import { Box, Button, Popover, List, ListItem, ListItemText, ListItemIcon, Grid, TextField, Slider } from '@mui/material';
+import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
+import { Box, Button, Grid, List, ListItem, ListItemIcon, ListItemText, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 
@@ -26,7 +26,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvents = ({ }) => {
+const CustomEvent = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -48,6 +48,24 @@ const CustomEvents = ({ }) => {
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
+
+  // Taking in user's input
+  const [eventName, setEventName] = useState('');
+  const [eventNameError, setEventNameError] = useState(false);
+
+  const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const [location, setLocation] = useState('');
+  const [locationError, setLocationError] = useState(false);
+
+  const doCreateEvent = async () => {
+    const eventsParams: Array<string | number> = [eventName, description, location, startTime.getHours(), endTime.getHours()];
+    // eventsParams.preventDefault()
+    setEventNameError(eventName === '');
+    setDescriptionError(description === '');
+    setLocationError(location === '');
+  };
 
   return (
     <div style={{ display: 'flex' }}>
@@ -77,12 +95,20 @@ const CustomEvents = ({ }) => {
       >
         <StyledList>
           <ListItem>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} sx={{ paddingTop: 2 }}>
               <ListItem>
-                <ListItemIcon sx={{ alignSelf: 'flex-end' }} >
+                <ListItemIcon>
                   <Event />
                 </ListItemIcon>
-                <TextField id="eventName-basic" label="Add Event Name" variant="standard" fullWidth />
+                <TextField
+                  id="eventName-basic"
+                  label="Add Event Name"
+                  onChange={(e) => setEventName(e.target.value)}
+                  error={eventNameError}
+                  variant="outlined"
+                  fullWidth
+                  required
+                />
               </ListItem>
             </Grid>
           </ListItem>
@@ -90,10 +116,17 @@ const CustomEvents = ({ }) => {
           <ListItem>
             <Grid container spacing={0}>
               <ListItem>
-                <ListItemIcon sx={{ alignSelf: 'flex-end' }}>
+                <ListItemIcon>
                   <Notes />
                 </ListItemIcon>
-                <TextField id="description-basic" label="Add Description" variant="standard" multiline fullWidth />
+                <TextField
+                  id="description-basic"
+                  label="Add Description (optional)"
+                  onChange={(e) => setDescription(e.target.value)}
+                  variant="outlined"
+                  multiline
+                  fullWidth
+                />
               </ListItem>
             </Grid>
           </ListItem>
@@ -101,20 +134,27 @@ const CustomEvents = ({ }) => {
           <ListItem>
             <Grid container spacing={0}>
               <ListItem>
-                <ListItemIcon sx={{ alignSelf: 'flex-end' }}>
+                <ListItemIcon>
                   <LocationOn />
                 </ListItemIcon>
-                <TextField id="location-basic" label="Add Location" variant="standard" fullWidth />
+                <TextField
+                  id="location-basic"
+                  label="Add Location"
+                  onChange={(e) => setLocation(e.target.value)}
+                  error={locationError}
+                  variant="outlined"
+                  fullWidth
+                  required
+                />
               </ListItem>
             </Grid>
           </ListItem>
 
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="Start time" />
-              </Grid>
-              <Grid item xs={5}>
+              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="Start time" />
+
+              <Grid item xs={6} sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
@@ -128,11 +168,9 @@ const CustomEvents = ({ }) => {
           </ListItem>
 
           <ListItem>
-            <Grid container spacing={0}>
-              <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="End time" />
-              </Grid>
-              <Grid item xs={5}>
+            <Grid container spacing={0} sx={{ paddingBottom: 2 }}>
+              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="End time" />
+              <Grid item xs={6} sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
@@ -145,13 +183,13 @@ const CustomEvents = ({ }) => {
             </Grid>
           </ListItem>
         </StyledList>
-        <ExecuteButton variant="contained" color="primary" disableElevation>
-          <Add />
+        <ExecuteButton variant="contained" color="primary" disableElevation onClick={doCreateEvent}>
+          <Add sx={{ alignSelf: 'center' }} />
           CREATE
         </ExecuteButton>
-      </Popover >
-    </div >
+      </Popover>
+    </div>
   );
 };
 
-export default CustomEvents;
+export default CustomEvent;
