@@ -1,7 +1,7 @@
 import NetworkError from '../interfaces/NetworkError';
 import { API_URL } from './config';
 
-const getAutoTimetable = async (data: any): Promise<number[]> => {
+const getAutoTimetable = async (data: any): Promise<[number[], boolean]> => {
   try {
     const res = await fetch(`${API_URL.auto}`, {
       method: 'POST',
@@ -17,7 +17,7 @@ const getAutoTimetable = async (data: any): Promise<number[]> => {
     }
 
     const content = await res.json();
-    return content.given;
+    return [content.given, content.optimal];
   } catch (error) {
     throw new NetworkError("Couldn't get response");
   }

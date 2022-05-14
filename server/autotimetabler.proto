@@ -18,6 +18,7 @@ message TimetableConstraints {
 
 message AutoTimetableResponse { 
     repeated float times = 1;
+    bool optimal = 2;
 }
 
 service AutoTimetabler { 

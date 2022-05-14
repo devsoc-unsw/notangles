@@ -19,7 +19,9 @@ const Alerts: React.FC = () => {
   };
 
   const getAutoSeverity = () => {
-    return alertMsg === 'Success!' ? 'success' : 'error';
+    if (alertMsg === 'Success!') return 'success';
+    if (alertMsg.startsWith('Could not')) return 'warning';
+    return 'error';
   };
 
   return (
