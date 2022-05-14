@@ -519,9 +519,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
           for (let i = 0; i < groupedClashes[dayInt].length; i++) {
             const currGroup = groupedClashes[dayInt][i];
             // Clash occurs for two classes A and B when
-            // (StartA <= EndB) and (EndA >= StartB)
-            if (clash.time.start <= currGroup[groupClashes.length - 1].time.end &&
-              clash.time.end >= currGroup[0].time.start) {
+            // (StartA < EndB) and (EndA > StartB)
+            if (clash.time.start < currGroup[groupClashes.length - 1].time.end &&
+              clash.time.end > currGroup[0].time.start) {
                 currGroup.push(clash);
                 hasAdded = true;
               }
