@@ -28,7 +28,7 @@ export class AuthController {
   async logout(@Request() req, @Res() res: Response) {
     const id_token = req.user ? req.user.id_token : undefined;
     req.logout();
-    req.session.destroy(async (error: any) => {
+    req.session.destroy(async () => {
       const TrustIssuer = await Issuer.discover(
         `${process.env.OIDC_ISSUER_BASE_URL}/.well-known/openid-configuration`,
       );
