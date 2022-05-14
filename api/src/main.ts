@@ -13,12 +13,11 @@ async function bootstrap() {
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Notangles API')
     .setDescription("An API for CSEProject's Notangles")
-    .setVersion(process.env.npm_package_version || '0.0.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
   SwaggerModule.setup('/api/docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
