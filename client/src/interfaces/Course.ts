@@ -3,8 +3,10 @@ export type Activity = string;
 export type InInventory = null;
 export type Section = string;
 export type Location = string;
+export type EventCode = string;
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
+export type SelectedEvents = Record<EventCode, EventData>;
 
 export interface CourseData {
   code: CourseCode;
@@ -25,6 +27,13 @@ export interface ClassData {
   section: Section;
 }
 
+export interface EventData {
+  name: string;
+  time: EventTime;
+  location: string;
+  description: string;
+}
+
 export interface InventoryPeriod {
   class: {
     course: CourseData;
@@ -38,12 +47,15 @@ export interface ClassPeriod {
   locations: string[];
 }
 
-export interface ClassTime {
+export interface ClassTime extends EventTime {
+  weeks: number[];
+  weeksString: string;
+}
+
+export interface EventTime {
   day: number;
   start: number;
   end: number;
-  weeks: number[];
-  weeksString: string;
 }
 
 export interface AutoData {

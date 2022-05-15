@@ -26,6 +26,7 @@ import {
   CourseData,
   InInventory,
   SelectedClasses,
+  SelectedEvents,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
@@ -88,7 +89,7 @@ const App: React.FC = () => {
     setDays,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, selectedEvents, setSelectedEvents } = useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -250,6 +251,8 @@ const App: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
+
+    setSelectedEvents(storage.get('selectedEvents'));
   }, []);
 
   useUpdateEffect(() => {
@@ -267,6 +270,10 @@ const App: React.FC = () => {
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
     }
   }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    storage.set('selectedEvents', selectedEvents);
+  }, [selectedEvents])
 
   useUpdateEffect(() => {
     const savedClasses: SavedClasses = {};
