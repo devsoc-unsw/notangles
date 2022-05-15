@@ -1,10 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { AutoService } from './auto.service';
 import { AutoDto } from './dtos/auto.dto';
 
 @Controller('auto')
 export class AutoController {
+  constructor(private readonly autoService: AutoService) {}
+
   @Post('/')
   async getAuto(@Body() body: AutoDto): Promise<any> {
-    return null;
+    return this.autoService.getAuto(body);
   }
 }
