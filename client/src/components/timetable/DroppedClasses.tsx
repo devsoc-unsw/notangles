@@ -246,16 +246,20 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
   
   let numNonPermittedClashes = 0;
   if ("time" in cardData) {
+    // Find the clash group that the class is in.
     for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
       if (!clashGroup.includes(cardData)) {
         continue;
       }
+      // Lecture (online or offline) + any class is always a permitted clash.
+      // The only non-permitted clash is like tute + tute or tute + exam etc.
       for (const clashClass of clashGroup) {
         if (!clashClass.class.activity.includes('Lecture')) {
           numNonPermittedClashes += 1;
         }
       }
-      if (numNonPermittedClashes > 1) {
+      if (numNonPermittedClashes > 1 &&
+        clashGroup.filter(clashClass => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id) !== []) {
         clashColour = "solid red 4px";
       }
     }
@@ -466,10 +470,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   });
 
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
-  period1.day === period2.day &&
-  ((period1.end >= period2.start && period1.start <= period2.end) ||
-  (period2.end >= period1.start && period2.start <= period1.end)) &&
-  !(period1.start == period2.start && period1.end == period2.end);
+    period1.day === period2.day &&
+    ((period1.end > period2.start && period1.start < period2.end) ||
+    (period2.end > period1.start && period2.start < period1.end));
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
@@ -480,7 +483,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   
     flatPeriods.forEach((period1) => {
       flatPeriods.forEach((period2) => {
-        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+        if (period1.class.id !== period2.class.id && hasTimeOverlap(period1.time, period2.time)) {
           if (!newClashes.includes(period1)) {
             newClashes.push(period1);
           }
@@ -561,6 +564,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   const clashes = checkClashes();
   const sortedClashes = sortClashesByTime(clashes);
   const groupedClashes = groupClashes(sortedClashes);
+
+  console.log(groupedClashes);
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
