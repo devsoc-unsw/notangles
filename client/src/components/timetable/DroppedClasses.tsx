@@ -467,8 +467,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
 
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
   period1.day === period2.day &&
-  ((period1.end > period2.start && period1.start < period2.end) ||
-    (period2.end > period1.start && period2.start < period1.end));
+  ((period1.end >= period2.start && period1.start <= period2.end) ||
+  (period2.end >= period1.start && period2.start <= period1.end)) &&
+  !(period1.start == period2.start && period1.end == period2.end);
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
