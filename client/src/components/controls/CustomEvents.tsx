@@ -54,17 +54,15 @@ const CustomEvent = ({}) => {
   const [eventNameError, setEventNameError] = useState(false);
 
   const [description, setDescription] = useState('');
-  const [descriptionError, setDescriptionError] = useState(false);
 
   const [location, setLocation] = useState('');
   const [locationError, setLocationError] = useState(false);
 
   const doCreateEvent = async () => {
-    const eventsParams: Array<string | number> = [eventName, description, location, startTime.getHours(), endTime.getHours()];
-    // eventsParams.preventDefault()
     setEventNameError(eventName === '');
-    setDescriptionError(description === '');
     setLocationError(location === '');
+    // Close popover when +Create button clicked.
+    setAnchorEl(null);
   };
 
   return (
