@@ -13,7 +13,7 @@ const defaults: Record<string, any> = {
   selectedClasses: {},
   selectedEvents: {
     'event1': {
-      'name': 'say hi to mom',
+      'name': 'hi mom',
       'time': {
         'day': 3,
         'start': 10,

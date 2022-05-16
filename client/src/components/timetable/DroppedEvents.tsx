@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { LocationOn, OpenInFull, PeopleAlt, Warning } from '@mui/icons-material';
-import { Button, Card, Grid } from '@mui/material';
+import { Button, Card, Grid, ThemeProvider } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
@@ -18,11 +18,10 @@ import {
     getElevatedShadow,
     getDefaultShadow,
     transitionTime,
-    setDragTarget
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
-import { startDragEvent } from '../../utils/Drag_v2';
+import { setDragTarget } from '../../utils/Drag_v2';
 
 export const inventoryMargin = 10;
 
@@ -211,7 +210,7 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
 
     const eventCopy = { ...eventDown };
 
-    if ('start' in rippleRef.current) {
+    if (rippleRef.current && 'start' in rippleRef.current) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -219,8 +218,7 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      // startDragEvent(eventData, eventCopy);
-      setDragTarget(null, eventCopy);
+      setDragTarget(eventData, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -286,7 +284,10 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
 
   return (
    <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown}>
-      <StyledCourseClassInner hasClash={false} backgroundColor={'black'} isSquareEdges={isSquareEdges} >{eventData.name}</StyledCourseClassInner>
+      <StyledCourseClassInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges} >{eventData.name}
+      <b/>
+      {eventData.description}
+      </StyledCourseClassInner>
     </StyledEvent>
   );
 };
@@ -297,7 +298,7 @@ const DroppedEvents: React.FC<{}> = ({}) => {
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
     <div style={{display: 'contents'}}>
-      {Object.entries(selectedEvents).map(([,ev]) => <DroppedEvent eventData={ev}/>)}
+      {Object.entries(selectedEvents).map(([a,ev]) => <DroppedEvent key={a} eventData={ev}/>)}
     </div>
   );
 };
