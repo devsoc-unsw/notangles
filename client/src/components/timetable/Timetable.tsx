@@ -12,6 +12,7 @@ import { timetableWidth } from '../../utils/Drag';
 import DroppedClasses, { inventoryMargin } from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
+import DroppedEvents from './DroppedEvents';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -59,6 +60,7 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSe
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
         <DroppedClasses assignedColors={assignedColors} clashes={clashes} handleSelectClass={handleSelectClass} />
+        <DroppedEvents/>
       </StyledTimetable>
     </StyledTimetableScroll>
   );

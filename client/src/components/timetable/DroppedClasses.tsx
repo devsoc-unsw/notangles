@@ -89,7 +89,7 @@ const ExpandButton = styled(Button)`
 
   &:hover {
     opacity: 100%;
-  },
+  }
 `;
 
 const StyledCourseClass = styled('div', {
