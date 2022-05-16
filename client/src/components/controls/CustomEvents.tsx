@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, Grid, List, ListItem, ListItemIcon, ListItemText, Popover, TextField } from '@mui/material';
+import { Box, Button, Grid, List, ListItem, ListItemIcon, ListItemText, Popover, TextField, ToggleButton,
+  ToggleButtonGroup, } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
+import { CourseContext } from '../../context/CourseContext';
+import { EventData } from '../../interfaces/Course';
+import { DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const DropdownButton = styled(Button)`
   && {
@@ -15,6 +19,62 @@ const DropdownButton = styled(Button)`
       background-color: #598dff;
     }
   }
+`;
+
+const DropdownOption: React.FC<DropdownOptionProps> = ({
+  optionName,
+  optionState,
+  setOptionState,
+  optionChoices,
+  multiple,
+  noOff,
+}) => {
+  const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
+    if (newOption !== null) {
+      setOptionState(newOption);
+    }
+  };
+
+  return (
+    <ListItem key={optionName}>
+      <Grid container spacing={0}>
+        <Grid item xs={12}>
+          <ListItemText primary={optionName} />
+        </Grid>
+        <Grid item xs={12}>
+          <StyledOptionToggle
+            size="small"
+            exclusive={multiple ? false : true}
+            value={optionState}
+            onChange={handleOptionChange}
+            aria-label="option choices"
+          >
+            {!noOff && (
+              <StyledOptionButtonToggle value="off" aria-label="default">
+                off
+              </StyledOptionButtonToggle>
+            )}
+            {optionChoices.map((option) => (
+              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
+                {option}
+              </StyledOptionButtonToggle>
+            ))}
+          </StyledOptionToggle>
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
+};
+
+const StyledOptionToggle = styled(ToggleButtonGroup)`
+  margin-top: 10px;
+  width: 100%;
+`;
+
+const StyledOptionButtonToggle = styled(ToggleButton)`
+  width: 100%;
+  height: 32px;
+  margin-bottom: 10px;
 `;
 
 const StyledList = styled(List)`
@@ -45,6 +105,8 @@ const CustomEvent = ({}) => {
     setAnchorEl(null);
   };
 
+  const {selectedEvents, setSelectedEvents} = useContext(CourseContext)
+
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
@@ -62,6 +124,20 @@ const CustomEvent = ({}) => {
     setEventNameError(eventName === '');
     setLocationError(location === '');
     // Close popover when +Create button clicked.
+    const newEvent: EventData = {
+      name: eventName,
+      time: {
+        day: 1,
+        start: startTime.getHours(),
+        end: endTime.getHours(),
+      },
+      location: location,
+      description: description
+    }
+    setSelectedEvents({
+      ...selectedEvents,
+      'newkey': newEvent
+    })
     setAnchorEl(null);
   };
 
@@ -180,6 +256,7 @@ const CustomEvent = ({}) => {
               </Grid>
             </Grid>
           </ListItem>
+          {/* <DropdownOption /> */}
         </StyledList>
         <ExecuteButton variant="contained" color="primary" disableElevation onClick={doCreateEvent}>
           <Add sx={{ alignSelf: 'center' }} />

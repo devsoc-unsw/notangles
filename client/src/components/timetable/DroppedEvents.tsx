@@ -21,13 +21,18 @@ import {
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
-import { setDragTarget } from '../../utils/Drag_v2';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
 
 export const inventoryMargin = 10;
 
 const classTranslateX = (eventData: EventData, days?: string[]) => {
     return `${(eventData.time.day - 1) * 100}%`;
 };
+
+const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: text-bottom;
+  font-size: inherit;
+`;
 
 const getHeightFactor = (eventData: EventData) => eventData.time.end - eventData.time.start;
 
@@ -141,6 +146,14 @@ const StyledCourseClassInner = styled(Card, {
   width: 100%;
   height: 100%;
   position: relative;
+`;
+
+const StyledEventName = styled('p')`
+  width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const StyledClassName = styled('p')`
@@ -270,12 +283,12 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-    //   registerCard(eventData, elementCurrent);
+      registerCard(eventData, elementCurrent);
     }
 
     return () => {
       if (elementCurrent) {
-        // unregisterCard(eventData, elementCurrent);
+        unregisterCard(eventData, elementCurrent);
       }
     };
   });
@@ -283,10 +296,22 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
 
 
   return (
-   <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown}>
-      <StyledCourseClassInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges} >{eventData.name}
-      <b/>
-      {eventData.description}
+    <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown}>
+      <StyledCourseClassInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges}>
+      <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
+            <Grid item xs={11}>
+              {/*TODO: tweak this number*/}
+              <StyledEventName>
+                <b>
+                  {eventData.name}
+                </b>
+              </StyledEventName>
+              <StyledClassInfo>
+                <StyledLocationIcon/>{eventData.location}
+              </StyledClassInfo>
+              <TouchRipple ref={rippleRef} />
+            </Grid>
+          </Grid>
       </StyledCourseClassInner>
     </StyledEvent>
   );
