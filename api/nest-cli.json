@@ -4,6 +4,7 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["**/*.proto"],
-    "watchAssets": true
+    "watchAssets": true,
+    "plugins": ["@nestjs/swagger"]
   }
 }

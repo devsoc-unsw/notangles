@@ -1,10 +1,10 @@
 import { Body, Controller, OnModuleInit, Post } from '@nestjs/common';
 import { ClientGrpc, Client, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { AutoDto } from './dtos/auto.dto';
+import { TimetableConstraintsDto } from './dtos/auto.dto'
 
 interface AutoService {
-  findBestTimetable(timetableConstraints: AutoDto): Promise<any>;
+  findBestTimetable(timetableConstraints: TimetableConstraintsDto): Promise<any>;
 }
 
 @Controller('auto')
@@ -26,7 +26,7 @@ export class AutoController implements OnModuleInit {
   }
 
   @Post('/')
-  async getAuto(@Body() data: AutoDto): Promise<any> {
+  async getAuto(@Body() data: TimetableConstraintsDto): Promise<any> {
     return this.autoService.findBestTimetable(data);
   }
 }
