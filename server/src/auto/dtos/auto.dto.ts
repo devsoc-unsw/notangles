@@ -1,20 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TimetableConstraints, TimetableConstraints_PeriodInfo } from'./auto';
 
-export class AutoDto {
-  @ApiProperty()
-  readonly start: number;
-  @ApiProperty()
-  readonly end: number;
-  @ApiProperty()
-  readonly days: string;
-  @ApiProperty()
-  readonly gap: number;
-  @ApiProperty()
-  readonly maxdays: number;
-  @ApiProperty()
-  readonly periodInfoList: {
-    readonly periodsPerClass: number;
-    readonly periodTimes: Array<number>;
-    readonly durations: Array<number>;
-  }[];
+export class TimetableConstraintsDto implements TimetableConstraints {
+  start: number;
+  end: number;
+  days: string;
+  gap: number;
+  maxdays: number;
+  periodInfo: PeriodInfoDto[];
+}
+
+export class PeriodInfoDto implements TimetableConstraints_PeriodInfo {
+  periodsPerClass: number;
+  periodTimes: number[];
+  durations: number[];
 }
