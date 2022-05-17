@@ -1,5 +1,5 @@
 import { contentPadding, lightTheme } from '../constants/theme';
-import { ClassData, ClassPeriod, ClassTime, InInventory, InventoryPeriod } from '../interfaces/Course';
+import { ClassData, ClassPeriod, ClassTime, EventTime, InInventory, InventoryPeriod } from '../interfaces/Course';
 import storage from './storage';
 import { EventData } from '../interfaces/Course';
 
@@ -26,7 +26,6 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
-// const getInventoryPeriod = (cardData: EventData): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
@@ -57,52 +56,8 @@ const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 
-// given drag and drop bounding rects, returns intersection area relative to drag area
-const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
-  const left = Math.max(drag.left, drop.left);
-  const right = Math.min(drag.right, drop.right);
-  const bottom = Math.min(drag.bottom, drop.bottom);
-  const top = Math.max(drag.top, drop.top);
-
-  const dragArea = drag.width * drag.height;
-  const intersectionArea = Math.max(0, right - left) * Math.max(0, bottom - top);
-
-  return intersectionArea / dragArea;
-};
-
-const distanceBetween = (e1: Element, e2: Element) => {
-  const r1 = e1.getBoundingClientRect();
-  const r2 = e2.getBoundingClientRect();
-
-  return Math.sqrt((r2.x - r1.x) ** 2 + (r2.y - r1.y) ** 2);
-};
-
-const dropzones = new Map<ClassPeriod | InInventory, HTMLElement>();
 const cards = new Map<EventData, HTMLElement>();
 
-const updateDropzones = () => {
-  // Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
-  //   const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
-
-  //   const isDropTarget =
-  //     (classPeriod && classPeriod === dropTarget) || // is period, and period is drop darget
-  //     (!classPeriod && !isPeriod(dropTarget)); // is inventory, and drop target is inventory class
-
-  //   let opacity = '0';
-
-  //   if (canDrop) {
-  //     if (isDropTarget) {
-  //       opacity = '0.8';
-  //     } else {
-  //       opacity = classPeriod ? '0.5' : '0';
-  //     }
-  //   }
-
-  //   element.style.opacity = opacity;
-  //   element.style.pointerEvents = canDrop ? 'auto' : 'none';
-  //   element.style.zIndex = canDrop ? '700' : '50';
-  // });
-};
 
 const getIsElevated = (cardData: EventData) =>
   dragTarget !== null &&
@@ -139,15 +94,7 @@ const updateCards = () => {
   }
 };
 
-export const registerDropzone = (classPeriod: ClassPeriod | InInventory, element: HTMLElement, isInventory?: boolean) => {
-  dropzones.set(classPeriod, element);
-  if (isInventory) inventoryElement = element;
-};
 
-export const unregisterDropzone = (classPeriod: ClassPeriod | InInventory, isInventory?: boolean) => {
-  dropzones.delete(classPeriod);
-  if (isInventory) inventoryElement = null;
-};
 
 let updateTimeout: number;
 
@@ -162,77 +109,22 @@ export const unregisterCard = (data: EventData, element: HTMLElement) => {
   if (cards.get(data) === element) cards.delete(data);
 };
 
-type ClassHandler = (classData: ClassData) => void;
 
-let selectClass: ClassHandler = () => {};
-let removeClass: ClassHandler = () => {};
-
-export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler) => {
-  selectClass = selectHandler;
-  removeClass = removeHandler;
+export const useEventDrag = (timeHandler: UpdateEventTime) => {
+  eventTimeUpdater = timeHandler;
 };
+
+type UpdateEventTime = (eventTime: EventTime, recordKey: string) => void;
+let eventTimeUpdater: UpdateEventTime = () => {};
 
 const updateDelay = 30;
 let lastUpdate = 0;
-
-let currentClassTime: ClassTime | undefined;
-const setcurrentClassTime = (time: ClassTime | undefined) => {
-  currentClassTime = time;
-};
 
 const updateDropTarget = (now?: boolean) => {
   // Cancel if: no drag happening, or update is too soon (except if now = true)
   if (!dragTarget || !dragElement || (!now && Date.now() - lastUpdate < updateDelay)) return;
 
   lastUpdate = Date.now();
-
-  const dragRect = dragElement.getBoundingClientRect();
-
-  // dropzone with greatest area of intersection
-  // const bestMatch = Array.from(dropzones.entries())
-  //   .filter(([classPeriod]) => dragTarget && checkCanDrop(dragTarget, classPeriod))
-  //   .map(([classPeriod, dropElement]) => {
-  //     let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
-
-  //     // avoid accidental inventory drop and state oscillation when drag area dynamically changes
-  //     if (dropElement === inventoryElement && area < inventoryDropIntersection) area = 0;
-
-  //     return { classPeriod, area };
-  //   })
-  //   .reduce((max, current) => (current.area > max.area ? current : max), {
-  //     classPeriod: undefined,
-  //     area: 0,
-  //   } as {
-  //     classPeriod?: ClassPeriod | InInventory;
-  //     area: number;
-  //   });
-
-  // const { classPeriod, area } = bestMatch;
-  // const result = classPeriod !== undefined && area > 0 ? classPeriod : dragSource;
-  // const newDropTarget = result !== null ? result : getInventoryPeriod(dragTarget);
-
-  // if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
-  //   dropTarget = newDropTarget;
-  //   updateDropzones();
-
-  //   if (isPeriod(newDropTarget)) {
-  //     let newTime = newDropTarget.time;
-  //     if (
-  //       !currentClassTime ||
-  //       newTime.day !== currentClassTime.day ||
-  //       newTime.start !== currentClassTime.start ||
-  //       newTime.end !== currentClassTime.end
-  //     ) {
-  //       setcurrentClassTime(undefined);
-  //       selectClass(newDropTarget.class);
-  //     }
-  //   } else if (isPeriod(dragTarget)) {
-  //     // moved to inventory
-  //     setcurrentClassTime(undefined);
-  //     removeClass(dragTarget.class);
-  //   }
-  // } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
-  // }
 };
 
 export const morphCards = (a: EventData[], b: EventData[]) => {
@@ -330,9 +222,14 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
-export const setDragTarget = (cardData: EventData | null, event?: MouseEvent & TouchEvent) => {
+let eventRecordKey = '';
+
+export const setDragTarget = (cardData: EventData | null, event?: MouseEvent & TouchEvent, recordKey?: string) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
+    if (recordKey) {
+      eventRecordKey = recordKey;
+    }
 
     if (cardData && event && event.currentTarget && scrollElement) {
       const element = event.currentTarget as HTMLElement;
@@ -354,11 +251,6 @@ export const setDragTarget = (cardData: EventData | null, event?: MouseEvent & T
 
       dragElement = element;
       freezeTransform(element);
-      if ('time' in cardData) {
-        // setcurrentClassTime(cardData.time);
-      } else {
-        setcurrentClassTime(undefined);
-      }
       updateDropTarget(true);
     } else {
       dragElement = null;
@@ -369,7 +261,6 @@ export const setDragTarget = (cardData: EventData | null, event?: MouseEvent & T
     dropTarget = cardData;
 
     updateCards();
-    updateDropzones();
   }
 };
 
@@ -459,8 +350,6 @@ const drop = () => {
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
-    console.log('stats', dragElement.getBoundingClientRect(),
-    dragElement.parentElement?.parentElement?.children[1])
 
 
     var dragrect = dragElement.getBoundingClientRect();
@@ -472,10 +361,10 @@ const drop = () => {
       var itemRect = dragElement.parentElement?.parentElement?.children[mid].getBoundingClientRect();
       var [recheight, recwidth] =  [itemRect?.height ?? 10, itemRect?.width ?? 10]
       var [intedx, intedy] = [displacementx/recwidth, displacementy / recheight].map(a => Math.round(a))
-      // console.log(1 + intedx, intedy + 9)
-      dragTarget.time.day = 1 + intedx
-      dragTarget.time.end = dragTarget.time.end - dragTarget.time.start + intedy + 8
-      dragTarget.time.start = intedy + 8
+      if (intedx >= 0 && intedx < 5 && intedy >= 0 && intedy + dragTarget.time.end - dragTarget.time.start  + 8 <= 17 ) {
+        eventTimeUpdater({day: 1 + intedx, start: intedy + 8, end: dragTarget.time.end - dragTarget.time.start + intedy + 8} as EventTime, eventRecordKey)
+      }
+
     }
     style.left = toPx(0);
     style.top = toPx(0);

@@ -196,7 +196,7 @@ const StyledEvent = styled('div', {
 
 
 
-const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
+const DroppedEvent: React.FC<{eventData: EventData; recordKey: string;}> = ({ eventData, recordKey }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
@@ -204,7 +204,6 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
-
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -231,7 +230,7 @@ const DroppedEvent: React.FC<{eventData: EventData;}> = ({ eventData }) => {
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventData, eventCopy);
+      setDragTarget(eventData, eventCopy, recordKey);
       setInfoVisibility(false);
     };
 
@@ -323,7 +322,7 @@ const DroppedEvents: React.FC<{}> = ({}) => {
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
     <div style={{display: 'contents'}}>
-      {Object.entries(selectedEvents).map(([a,ev]) => <DroppedEvent key={a} eventData={ev}/>)}
+      {Object.entries(selectedEvents).map(([a,ev]) => <DroppedEvent recordKey={a} key={a} eventData={ev}/>)}
     </div>
   );
 };

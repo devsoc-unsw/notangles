@@ -12,16 +12,6 @@ const defaults: Record<string, any> = {
   selectedCourses: [],
   selectedClasses: {},
   selectedEvents: {
-    'event1': {
-      'name': 'hi mom',
-      'time': {
-        'day': 3,
-        'start': 10,
-        'end': 12,
-      },
-      'location': "moms house",
-      'description': "go say hi to mom",
-    }
   },
   hasShownInfoMessage: false,
 };
