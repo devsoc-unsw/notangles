@@ -12,21 +12,21 @@ import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassData, CourseCode, EventData, InInventory } from '../../interfaces/Course';
 // import { DroppedEventesProps, DroppedEventProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
 import {
-    timeToPosition,
-    defaultTransition,
-    elevatedScale,
-    getElevatedShadow,
-    getDefaultShadow,
-    transitionTime,
+  timeToPosition,
+  defaultTransition,
+  elevatedScale,
+  getElevatedShadow,
+  getDefaultShadow,
+  transitionTime,
 } from '../../utils/Drag';
-import ExpandedView from './ExpandedClassView';
+import ExpandedEventView from './ExpandedEventView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
 
 export const inventoryMargin = 10;
 
 const classTranslateX = (eventData: EventData, days?: string[]) => {
-    return `${(eventData.time.day - 1) * 100}%`;
+  return `${(eventData.time.day - 1) * 100}%`;
 };
 
 const StyledLocationIcon = styled(LocationOn)`
@@ -42,10 +42,10 @@ export const classTranslateY = (eventData: EventData, earliestStartTime: number)
   // height compared to standard row height
   const heightFactor = getHeightFactor(eventData);
 
-    // number of rows to offset down
-    const offsetRows = timeToPosition(eventData.time.start, earliestStartTime) - 2;
-    // calculate translate percentage (relative to height)
-    result = offsetRows / heightFactor;
+  // number of rows to offset down
+  const offsetRows = timeToPosition(eventData.time.start, earliestStartTime) - 2;
+  // calculate translate percentage (relative to height)
+  result = offsetRows / heightFactor;
 
   return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
 };
@@ -80,7 +80,7 @@ const ExpandButton = styled(Button)`
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) => !['eventData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
-})<{
+}) <{
   eventData: EventData;
   days: string[];
   y?: number;
@@ -127,9 +127,9 @@ const StyledCourseClass = styled('div', {
   }
 `;
 
-const StyledCourseClassInner = styled(Card, {
+const StyledEventInner = styled(Card, {
   shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges'].includes(prop.toString()),
-})<{
+}) <{
   backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
@@ -172,18 +172,18 @@ const StyledClassInfo = styled(StyledClassName)`
 
 
 const StyledEvent = styled('div', {
-    shouldForwardProp: (prop) => !['eventData, isSquareEdges'].includes(prop.toString()),
-  })<{
-    eventData: EventData;
-    // days: string[];
-    // y?: number;
-    // earliestStartTime: number;
-    isSquareEdges: boolean;
-  }>`
+  shouldForwardProp: (prop) => !['eventData, isSquareEdges'].includes(prop.toString()),
+}) <{
+  eventData: EventData;
+  // days: string[];
+  // y?: number;
+  // earliestStartTime: number;
+  isSquareEdges: boolean;
+}>`
     position: relative;
     grid-column: 2;
     grid-row: 2 / -1;
-    transform: ${({eventData}) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 8)})`};
+    transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 8)})`};
     width: calc(100% + ${1 / devicePixelRatio}px);
     height: ${({ eventData }) => classHeight(eventData)};
     box-sizing: border-box;
@@ -193,11 +193,10 @@ const StyledEvent = styled('div', {
     padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
     padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 
-`;  
+`;
 
 
-
-const DroppedEvent: React.FC<{eventData: EventData; recordKey: string;}> = ({ eventData, recordKey }) => {
+const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ eventData, recordKey }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
@@ -209,6 +208,10 @@ const DroppedEvent: React.FC<{eventData: EventData; recordKey: string;}> = ({ ev
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
+
+  const handleClose = () => {
+    setPopupOpen(!popupOpen);
+  };
 
   const onDown = (eventDown: any) => {
     if (
@@ -296,9 +299,16 @@ const DroppedEvent: React.FC<{eventData: EventData; recordKey: string;}> = ({ ev
 
 
   return (
-    <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown}>
-      <StyledCourseClassInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges}>
-      <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
+    <>
+      <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown} onMouseOver={() => {
+        setFullscreenVisible(true);
+      }}
+        onMouseLeave={() => {
+          setFullscreenVisible(false);
+        }}
+      >
+        <StyledEventInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges}>
+          <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}
               <StyledEventName>
@@ -307,23 +317,30 @@ const DroppedEvent: React.FC<{eventData: EventData; recordKey: string;}> = ({ ev
                 </b>
               </StyledEventName>
               <StyledClassInfo>
-                <StyledLocationIcon/>{eventData.location}
+                <StyledLocationIcon />{eventData.location}
               </StyledClassInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
           </Grid>
-      </StyledCourseClassInner>
-    </StyledEvent>
+          {fullscreenVisible && (
+            <ExpandButton onClick={() => setPopupOpen(true)}>
+              <OpenInFull />
+            </ExpandButton>
+          )}
+        </StyledEventInner>
+      </StyledEvent>
+      <ExpandedEventView popupOpen={popupOpen} eventData={eventData} handleClose={handleClose} />
+    </>
   );
 };
 
-const DroppedEvents: React.FC<{}> = ({}) => {
+const DroppedEvents: React.FC<{}> = ({ }) => {
   const { selectedEvents } = useContext(CourseContext);
   return (
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
-    <div style={{display: 'contents'}}>
-      {Object.entries(selectedEvents).map(([a,ev]) => <DroppedEvent recordKey={a} key={a} eventData={ev}/>)}
+    <div style={{ display: 'contents' }}>
+      {Object.entries(selectedEvents).map(([a, ev]) => <DroppedEvent recordKey={a} key={a} eventData={ev} />)}
     </div>
   );
 };
