@@ -32,6 +32,7 @@ const classTranslateX = (eventData: EventData, days?: string[]) => {
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
   font-size: inherit;
+  padding-bottom: 0.1em;
 `;
 
 const getHeightFactor = (eventData: EventData) => eventData.time.end - eventData.time.start;
