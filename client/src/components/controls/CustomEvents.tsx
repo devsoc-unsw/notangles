@@ -97,7 +97,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({}) => {
+const CustomEvent = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -118,34 +118,47 @@ const CustomEvent = ({}) => {
     setAnchorEl(null);
   };
 
+  const handleFormat = (newFormats: string[]) => {
+    setDays(newFormats);
+  };
+
   const { selectedEvents, setSelectedEvents } = useContext(CourseContext);
 
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
+  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 14));
 
   // Taking in user's input
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
 
+  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
+  const [days, setDays] = useState<Array<string>>([]);
+
   const doCreateEvent = async () => {
     setEventName('');
     setLocation('');
+    setDays([]);
+
+    if (startTime.getHours() > endTime.getHours()) {
+      alert("Your End Time is before your Start Time!");
+    }
 
     const newEvent: EventData = {
       name: eventName,
       time: {
-        day: 1, // TODO: Add input for day
+        day: weekdays.indexOf(days.toString()) + 1,
         start: startTime.getHours(),
         end: endTime.getHours(),
       },
       location: location,
       description: description,
     };
+
     setSelectedEvents({
       ...selectedEvents,
-      eventName: newEvent,
+      [eventName]: newEvent,
     });
 
     // Close popover when +Create button clicked.
@@ -251,7 +264,7 @@ const CustomEvent = ({}) => {
           </ListItem>
 
           <ListItem>
-            <Grid container spacing={0} sx={{ paddingBottom: 2 }}>
+            <Grid container spacing={0}>
               <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="End time" />
               <Grid item xs={6} sx={{ paddingRight: 2 }}>
                 <TimePicker
@@ -265,13 +278,21 @@ const CustomEvent = ({}) => {
               </Grid>
             </Grid>
           </ListItem>
-          {/* <DropdownOption /> */}
+          <ListItem>
+            <DropdownOption
+              optionName="Days"
+              optionState={days}
+              setOptionState={handleFormat}
+              optionChoices={weekdays}
+              noOff
+            />
+          </ListItem>
         </StyledList>
         <ExecuteButton
           variant="contained"
           color="primary"
           disableElevation
-          disabled={eventName === '' || location === ''}
+          disabled={eventName === '' || location === '' || days.length === 0}
           onClick={doCreateEvent}
         >
           <Add sx={{ alignSelf: 'center' }} />
