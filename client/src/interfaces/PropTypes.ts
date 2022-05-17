@@ -87,7 +87,7 @@ export interface DroppedClassesProps {
   handleSelectClass(classData: ClassData): void;
 }
 
-export interface ExpandedViewProps {
+export interface ExpandedClassViewProps {
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
   cardData: ClassPeriod;

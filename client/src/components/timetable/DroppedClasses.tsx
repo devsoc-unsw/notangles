@@ -25,7 +25,7 @@ import {
   transitionTime,
   unregisterCard,
 } from '../../utils/Drag';
-import ExpandedView from './ExpandedView';
+import ExpandedClassView from './ExpandedClassView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10;
@@ -379,7 +379,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
-      {isPeriod(cardData) && <ExpandedView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
+      {isPeriod(cardData) && <ExpandedClassView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
     </>
   );
 };

@@ -1,7 +1,18 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, Grid, List, ListItem, ListItemIcon, ListItemText, Popover, TextField, ToggleButton,
-  ToggleButtonGroup, } from '@mui/material';
+import {
+  Box,
+  Button,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { CourseContext } from '../../context/CourseContext';
@@ -95,6 +106,8 @@ const CustomEvent = ({}) => {
   //if trye, the popover is shown, currently set to the same as anchorEL
   const open = Boolean(anchorEl);
 
+  const popoverId = open ? 'simple-popover' : undefined;
+
   // Function to open popover when Event button is clicked
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -105,46 +118,44 @@ const CustomEvent = ({}) => {
     setAnchorEl(null);
   };
 
-  const {selectedEvents, setSelectedEvents} = useContext(CourseContext)
+  const { selectedEvents, setSelectedEvents } = useContext(CourseContext);
 
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
 
   // Taking in user's input
-  const [eventName, setEventName] = useState('');
-  const [eventNameError, setEventNameError] = useState(false);
-
-  const [description, setDescription] = useState('');
-
-  const [location, setLocation] = useState('');
-  const [locationError, setLocationError] = useState(false);
+  const [eventName, setEventName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
 
   const doCreateEvent = async () => {
-    setEventNameError(eventName === '');
-    setLocationError(location === '');
-    // Close popover when +Create button clicked.
+    setEventName('');
+    setLocation('');
+
     const newEvent: EventData = {
       name: eventName,
       time: {
-        day: 1,
+        day: 1, // TODO: Add input for day
         start: startTime.getHours(),
         end: endTime.getHours(),
       },
       location: location,
-      description: description
-    }
+      description: description,
+    };
     setSelectedEvents({
       ...selectedEvents,
-      'newkey': newEvent
-    })
+      eventName: newEvent,
+    });
+
+    // Close popover when +Create button clicked.
     setAnchorEl(null);
   };
 
   return (
     <div style={{ display: 'flex' }}>
       {/* Create Event Button */}
-      <DropdownButton variant="contained" onClick={handleClick}>
+      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
@@ -178,7 +189,6 @@ const CustomEvent = ({}) => {
                   id="eventName-basic"
                   label="Add Event Name"
                   onChange={(e) => setEventName(e.target.value)}
-                  error={eventNameError}
                   variant="outlined"
                   fullWidth
                   required
@@ -215,7 +225,6 @@ const CustomEvent = ({}) => {
                   id="location-basic"
                   label="Add Location"
                   onChange={(e) => setLocation(e.target.value)}
-                  error={locationError}
                   variant="outlined"
                   fullWidth
                   required
@@ -258,7 +267,13 @@ const CustomEvent = ({}) => {
           </ListItem>
           {/* <DropdownOption /> */}
         </StyledList>
-        <ExecuteButton variant="contained" color="primary" disableElevation onClick={doCreateEvent}>
+        <ExecuteButton
+          variant="contained"
+          color="primary"
+          disableElevation
+          disabled={eventName === '' || location === ''}
+          onClick={doCreateEvent}
+        >
           <Add sx={{ alignSelf: 'center' }} />
           CREATE
         </ExecuteButton>

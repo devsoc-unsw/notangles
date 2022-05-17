@@ -19,7 +19,7 @@ import {
     getDefaultShadow,
     transitionTime,
 } from '../../utils/Drag';
-import ExpandedView from './ExpandedView';
+import ExpandedView from './ExpandedClassView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
 

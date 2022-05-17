@@ -17,7 +17,7 @@ import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Course';
-import { ExpandedViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
 import { isPeriod } from '../../utils/Drag';
 
 const StyledDialogTitle = styled(DialogTitle)`
@@ -26,7 +26,7 @@ const StyledDialogTitle = styled(DialogTitle)`
 
 const StyledTitleContainer = styled(Box)`
   display: flex;
-  flex-rirection: row;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   height: 100%;
@@ -105,7 +105,7 @@ becuase otherwise the view will close itself whenever a new item is selected in 
 
 Currently only intended to be appear on non-unscheduled classCards -- i.e. cardData but technically be of type PeriodData
 */
-const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handleClose }) => {
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
@@ -195,4 +195,4 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handle
   );
 };
 
-export default ExpandedView;
+export default ExpandedClassView;
