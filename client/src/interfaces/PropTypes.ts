@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
 import { CardData } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, InInventory, Location, Section } from './Course';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventData, InInventory, Location, Section } from './Course';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -91,6 +91,12 @@ export interface ExpandedClassViewProps {
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
   cardData: ClassPeriod;
+}
+
+export interface ExpandedEventViewProps {
+  popupOpen: boolean;
+  handleClose: () => void;
+  eventData: EventData;
 }
 
 export interface LocationDropdownProps {
