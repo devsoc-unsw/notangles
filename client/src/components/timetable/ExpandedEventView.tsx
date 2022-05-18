@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, Notes, PeopleAlt } from '@mui/icons-material';
 import {
   Box,
@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-
 
 const StyledDialogTitle = styled(DialogTitle)`
   padding: 8px 12px 8px 24px;
@@ -35,15 +34,13 @@ const StyledDialogContent = styled(DialogContent)`
   padding-bottom: 20px;
 `;
 
-const StyledDropdownContainer = styled(Grid)`
-  flex-grow: 1;
-`;
-
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
+  const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
+  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   return (
     <div>
-      <Dialog open={popupOpen}>
+      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen}>
         <StyledDialogTitle>
           <StyledTitleContainer>
             {eventData.name}
@@ -53,62 +50,42 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           </StyledTitleContainer>
         </StyledDialogTitle>
 
-
+        {/* Make the dialog same size everytime */}
         <StyledDialogContent>
-          <Grid item container direction="row" spacing={2}>
-            <Grid item>
-              <Notes />
+          <Grid container direction="column" spacing={2}>
+            <Grid item container direction="row" spacing={2}>
+              <Grid item>
+                <AccessTime />
+              </Grid>
+              <Grid item>
+                <Typography>
+                  {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} - {to24Hour(eventData.time.end)}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography>{eventData.description}</Typography></Grid>
+
+            <Grid item container direction="row" spacing={2}>
+              <Grid item>
+                <Notes />
+              </Grid>
+              <Grid item wrap="wrap">
+                <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
+              </Grid>
+            </Grid>
+
+            <Grid item container direction="row" spacing={2}>
+              <Grid item>
+                <LocationOn />
+              </Grid>
+              <Grid item>
+                <Typography> {eventData.location}</Typography>
+              </Grid>
+            </Grid>
           </Grid>
-
-          <Grid item container direction="row" spacing={2}>
-            <Grid item>
-              <LocationOn />
-            </Grid>
-            <Grid item>
-              <Typography>  {eventData.location}</Typography>
-            </Grid>
-          </Grid>
-
-          {/* <Grid container direction="column" spacing={2}>
-
-          <Grid item container direction="row" spacing={2}>
-            <Grid item>
-              <AccessTime />
-            </Grid>
-            <Grid item>
-              <Typography>{eventData.time}</Typography>
-            </Grid>
-          </Grid> */}
-          {/*
-          <Grid item container direction="row" spacing={2}>
-            <Grid item>
-              <Notes />
-            </Grid>
-            <Grid item>
-              <Typography>{eventData.description}</Typography></Grid>
-          </Grid>
-        </Grid>
-
-        <Grid item container direction="row" spacing={2}>
-          <Grid item>
-            <LocationOn />
-          </Grid>
-          <Grid item>
-            <Typography>  {eventData.location}</Typography>
-          </Grid>
-        </Grid> */}
-
-          {/* </Grid> */}
-
         </StyledDialogContent>
-
-
       </Dialog>
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 export default ExpandedEventView;
