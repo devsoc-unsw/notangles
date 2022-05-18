@@ -260,9 +260,9 @@ const CustomEvent = ({ }) => {
 
           <ListItem>
             <Grid container spacing={0}>
-              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="Start time" />
+              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
 
-              <Grid item xs={6} sx={{ paddingRight: 2 }}>
+              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
@@ -277,8 +277,8 @@ const CustomEvent = ({ }) => {
 
           <ListItem>
             <Grid container spacing={0}>
-              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2 }} primary="End time" />
-              <Grid item xs={6} sx={{ paddingRight: 2 }}>
+              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
+              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
@@ -305,7 +305,12 @@ const CustomEvent = ({ }) => {
           </ListItem>
 
           <ListItem>
-          <ColorPicker defaultValue="#1f7e8c" onChange={(e) => setColor(e)} value={color}/>
+          <Grid container spacing={0}>
+              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Color" />
+              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
+              <ColorPicker defaultValue="#1f7e8c" onChange={(e) => setColor(e)} value={color}/>
+              </Grid>
+            </Grid>
           </ListItem>
         </StyledList>
         <ExecuteButton
