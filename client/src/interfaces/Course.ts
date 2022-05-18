@@ -1,3 +1,5 @@
+import { ColorValue } from "mui-color";
+
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
@@ -32,6 +34,7 @@ export interface EventData {
   time: EventTime;
   location: string;
   description: string;
+  color?: ColorValue;
 }
 
 export interface InventoryPeriod {

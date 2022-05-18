@@ -307,7 +307,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ 
           setFullscreenVisible(false);
         }}
       >
-        <StyledEventInner hasClash={false} backgroundColor={'#1f7e8c'} isSquareEdges={isSquareEdges}>
+        <StyledEventInner hasClash={false} backgroundColor={(eventData.color ?? '#1f7e8c').toString()} isSquareEdges={isSquareEdges}>
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}

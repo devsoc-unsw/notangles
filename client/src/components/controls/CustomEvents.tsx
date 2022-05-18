@@ -19,6 +19,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventData } from '../../interfaces/Course';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
 import { AppContext } from '../../context/AppContext';
+import { ColorPicker, ColorValue } from 'mui-color';
 
 const DropdownButton = styled(Button)`
   && {
@@ -138,6 +139,8 @@ const CustomEvent = ({ }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
   const [days, setDays] = useState<Array<string>>([]);
 
+  const [color, setColor] = useState<ColorValue>('#1f7e8c');
+
   const doCreateEvent = () => {
     if (startTime.getHours() > endTime.getHours()) {
       setAlertMsg('End time is earlier than start time')
@@ -155,6 +158,7 @@ const CustomEvent = ({ }) => {
       },
       location: location,
       description: description,
+      color: color,
     };
 
     setSelectedEvents({
@@ -289,6 +293,7 @@ const CustomEvent = ({ }) => {
               </Grid>
             </Grid>
           </ListItem>
+
           <ListItem>
             <DropdownOption
               optionName="Days"
@@ -297,6 +302,10 @@ const CustomEvent = ({ }) => {
               optionChoices={weekdays}
               noOff
             />
+          </ListItem>
+
+          <ListItem>
+          <ColorPicker defaultValue="#1f7e8c" onChange={(e) => setColor(e)} value={color}/>
           </ListItem>
         </StyledList>
         <ExecuteButton

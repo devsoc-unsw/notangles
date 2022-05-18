@@ -79,7 +79,6 @@ const History: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('hi mom')
     if (isDrag) return;
     if (dontAdd.current) {
       dontAdd.current = false;
