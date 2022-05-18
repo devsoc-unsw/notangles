@@ -36,12 +36,12 @@ const HistoryWrapper = styled(Box)`
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={6.5}>
+      <Grid item xs={12} md={6}>
         <SelectWrapper>
           <CourseSelect assignedColors={assignedColors} handleSelect={handleSelectCourse} handleRemove={handleRemoveCourse} />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={5.5}>
+      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={6}>
         <CustomEventsWrapper>
           <CustomEvents />
         </CustomEventsWrapper>

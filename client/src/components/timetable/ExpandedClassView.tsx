@@ -159,12 +159,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
               </Typography>
             </Grid>
           </Grid>
-          <Grid item container direction="row" spacing={2}>
+          <Grid item container direction="row" spacing={2} wrap='nowrap'>
             <Grid item>
               <AccessTime />
             </Grid>
             <Grid item>
-              <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
+              <Typography >{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
             </Grid>
           </Grid>
           <Grid item container direction="row" spacing={2} alignItems="center">

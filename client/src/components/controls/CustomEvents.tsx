@@ -18,6 +18,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { CourseContext } from '../../context/CourseContext';
 import { EventData } from '../../interfaces/Course';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
+import { AppContext } from '../../context/AppContext';
 
 const DropdownButton = styled(Button)`
   && {
@@ -123,10 +124,11 @@ const CustomEvent = ({ }) => {
   };
 
   const { selectedEvents, setSelectedEvents } = useContext(CourseContext);
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 14));
+  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
 
   // Taking in user's input
   const [eventName, setEventName] = useState<string>('');
@@ -136,14 +138,13 @@ const CustomEvent = ({ }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
   const [days, setDays] = useState<Array<string>>([]);
 
-  const doCreateEvent = async () => {
-    setEventName('');
-    setLocation('');
-    setDays([]);
-
+  const doCreateEvent = () => {
     if (startTime.getHours() > endTime.getHours()) {
-      alert("Your End Time is before your Start Time!");
+      setAlertMsg('End time is earlier than start time')
+      setErrorVisibility(true)
+      return;
     }
+
 
     const newEvent: EventData = {
       name: eventName,
@@ -158,8 +159,12 @@ const CustomEvent = ({ }) => {
 
     setSelectedEvents({
       ...selectedEvents,
-      [eventName]: newEvent,
+      [eventName + Math.floor(Math.random()*9999).toString()]: newEvent,
     });
+
+    setEventName('');
+    setLocation('');
+    setDays([]);
 
     // Close popover when +Create button clicked.
     setAnchorEl(null);
@@ -199,12 +204,13 @@ const CustomEvent = ({ }) => {
                   <Event />
                 </ListItemIcon>
                 <TextField
-                  id="eventName-basic"
+                  id="outlined-required"
                   label="Add Event Name"
                   onChange={(e) => setEventName(e.target.value)}
                   variant="outlined"
                   fullWidth
                   required
+                  defaultValue={eventName}
                 />
               </ListItem>
             </Grid>
@@ -217,12 +223,13 @@ const CustomEvent = ({ }) => {
                   <Notes />
                 </ListItemIcon>
                 <TextField
-                  id="description-basic"
+                  id="outlined-basic"
                   label="Add Description (optional)"
                   onChange={(e) => setDescription(e.target.value)}
                   variant="outlined"
                   multiline
                   fullWidth
+                  defaultValue={description}
                 />
               </ListItem>
             </Grid>
@@ -235,12 +242,13 @@ const CustomEvent = ({ }) => {
                   <LocationOn />
                 </ListItemIcon>
                 <TextField
-                  id="location-basic"
+                  id="outlined-required"
                   label="Add Location"
                   onChange={(e) => setLocation(e.target.value)}
                   variant="outlined"
                   fullWidth
                   required
+                  defaultValue={location}
                 />
               </ListItem>
             </Grid>
@@ -270,7 +278,10 @@ const CustomEvent = ({ }) => {
                 <TimePicker
                   views={['hours']}
                   value={endTime}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => {
+                    const tooEarly = startTime.getHours() >= endTime.getHours();
+                    return (<TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''}/>)
+                  }}
                   onChange={(e) => {
                     if (e) setEndTime(e);
                   }}

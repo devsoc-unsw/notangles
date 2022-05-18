@@ -4,21 +4,24 @@ import { Redo, Restore, Undo } from '@mui/icons-material';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, InInventory, CourseData, SelectedClasses } from '../../interfaces/Course';
+import { Activity, ClassData, InInventory, CourseData, SelectedClasses, SelectedEvents, EventTime } from '../../interfaces/Course';
 
 interface Action {
   courses: CourseData[];
   classes: SelectedClasses;
+  events: SelectedEvents;
 }
 
 type Actions = Action[];
 
+const initialIndex = 2;
+
 const History: React.FC = () => {
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, selectedEvents, setSelectedEvents } = useContext(CourseContext);
   const { isDrag, setIsDrag } = useContext(AppContext);
 
   const actions = useRef<Actions>([]);
-  const actionsPointer = useRef(-1); // set to -1 as it will increment predictably as app starts up
+  const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const dontAdd = useRef(false);
 
   const [disableLeft, setDisableLeft] = useState(true);
@@ -62,32 +65,48 @@ const History: React.FC = () => {
     return true;
   };
 
+  const areIdenticalEvents = (curr: SelectedEvents, next: SelectedEvents) => {
+    const sameTime = (a: EventTime, b: EventTime) => (a.day === b.day && a.start === b.start && a.end === b.end);
+    const cVals = Object.values(curr);
+    const nVals = Object.values(next);
+    if (cVals.length !== nVals.length) return false;
+
+    for (let i = 0; i < cVals.length; i++) {
+      if (!sameTime(cVals[i].time, nVals[i].time)) return false;
+    }
+
+    return true;
+  }
+
   useEffect(() => {
+    console.log('hi mom')
     if (isDrag) return;
     if (dontAdd.current) {
       dontAdd.current = false;
       return; // prevents adding change induced from re/undo click
     }
-    if (actions.current.length > 1 && areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses))
+    if (actions.current.length > 1 && areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) && areIdenticalEvents(actions.current[actionsPointer.current].events, selectedEvents))
       return;
     if (actions.current.length > actionsPointer.current + 1) {
       // discard remainding redos as we branched off
       actions.current = actions.current.slice(0, actionsPointer.current + 1);
     }
-    actions.current.push({ courses: [...selectedCourses], classes: duplicateClasses(selectedClasses) });
+    actions.current.push({ courses: [...selectedCourses], classes: duplicateClasses(selectedClasses), events: {...selectedEvents} });
     incrementActionsPointer(1);
-  }, [selectedClasses, isDrag]);
+  }, [selectedClasses, isDrag, selectedEvents]);
 
   const changeHistory = (direction: number) => {
     incrementActionsPointer(direction);
     dontAdd.current = true;
     setSelectedCourses(actions.current[actionsPointer.current].courses);
     setSelectedClasses(duplicateClasses(actions.current[actionsPointer.current].classes)); // very important to duplicate here again or things will break
+    setSelectedEvents(actions.current[actionsPointer.current].events)
   };
 
   const restoreInitial = () => {
-    setSelectedCourses(actions.current[1].courses);
-    setSelectedClasses(duplicateClasses(actions.current[1].classes));
+    setSelectedCourses(actions.current[initialIndex].courses);
+    setSelectedClasses(duplicateClasses(actions.current[initialIndex].classes));
+    setSelectedEvents(actions.current[initialIndex].events)
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
