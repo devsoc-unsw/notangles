@@ -34,7 +34,7 @@ export interface EventData {
   time: EventTime;
   location: string;
   description: string;
-  color?: ColorValue;
+  color: ColorValue;
 }
 
 export interface InventoryPeriod {

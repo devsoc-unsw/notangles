@@ -22,6 +22,7 @@ import {
 import ExpandedEventView from './ExpandedEventView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
+import { Color, ColorObject } from 'mui-color';
 
 export const inventoryMargin = 10;
 
@@ -128,15 +129,13 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledEventInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges'].includes(prop.toString()),
 }) <{
-  backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
 }>`
   display: flex;
   flex-direction: column;
-  background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
@@ -307,7 +306,9 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ 
           setFullscreenVisible(false);
         }}
       >
-        <StyledEventInner hasClash={false} backgroundColor={(eventData.color ?? '#1f7e8c').toString()} isSquareEdges={isSquareEdges}>
+        <StyledEventInner hasClash={false}
+        sx={(eventData.color as Color)?.css ?? {backgroundColor: eventData.color}}
+        isSquareEdges={isSquareEdges}>
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}
