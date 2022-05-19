@@ -1,7 +1,8 @@
 import React from 'react';
-import { AccessTime, Close, DesktopMac, LocationOn, Notes, PeopleAlt } from '@mui/icons-material';
+import { AccessTime, Close, Delete, DesktopMac, LocationOn, Notes, PeopleAlt } from '@mui/icons-material';
 import {
   Box,
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -34,6 +35,12 @@ const StyledDialogContent = styled(DialogContent)`
   padding-bottom: 20px;
 `;
 
+const ExecuteButton = styled(Button)`
+  width: 100%;
+  border-radius: 0px 0px 5px 5px;
+`;
+
+
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -41,8 +48,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   return (
     <div>
       <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen}
-      maxWidth="sm"
-      onClose={handleClose}
+        maxWidth="sm"
+        onClose={handleClose}
       >
         <StyledDialogTitle>
           <StyledTitleContainer>
@@ -86,6 +93,16 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             </Grid>
           </Grid>
         </StyledDialogContent>
+        <ExecuteButton
+          variant="contained"
+          color="primary"
+          disableElevation
+          onClick={handleClose} //handleRemoveEvent when I can get it working
+        >
+          <Delete sx={{ alignSelf: 'center' }} />
+          DELETE
+        </ExecuteButton>
+
       </Dialog>
     </div>
   );
