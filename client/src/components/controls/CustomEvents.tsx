@@ -309,7 +309,7 @@ const CustomEvent = ({ }) => {
           <Grid container spacing={0}>
               <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Color" />
               <Grid item xs='auto' sx={{ paddingRight: 2 }}>
-              {/* <ColorPicker defaultValue="#1f7e8c" onChange={(e) => setColor(e)} value={color}/> */}
+              <ColorPicker defaultValue="#1f7e8c" onChange={(e) => setColor(e)} value={color}/>
               </Grid>
             </Grid>
           </ListItem>

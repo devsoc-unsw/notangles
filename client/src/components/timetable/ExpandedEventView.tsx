@@ -40,7 +40,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
   return (
     <div>
-      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen}>
+      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen}
+      maxWidth="sm"
+      onClose={handleClose}
+      >
         <StyledDialogTitle>
           <StyledTitleContainer>
             {eventData.name}
@@ -59,7 +62,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
               <Grid item>
                 <Typography>
-                  {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} - {to24Hour(eventData.time.end)}
+                  {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'} {to24Hour(eventData.time.end)}
                 </Typography>
               </Grid>
             </Grid>
