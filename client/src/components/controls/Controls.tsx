@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -6,7 +6,10 @@ import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvents';
 import History from './History';
+import { CourseContext } from '../../context/CourseContext';
 import { ControlsProps } from '../../interfaces/PropTypes';
+
+
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -34,6 +37,7 @@ const HistoryWrapper = styled(Box)`
 `;
 
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>

@@ -20,6 +20,7 @@ import { EventData } from '../../interfaces/Course';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
 import { AppContext } from '../../context/AppContext';
 import { ColorPicker, ColorValue } from 'mui-color';
+import { v4 as uuidv4 } from 'uuid';
 
 const DropdownButton = styled(Button)`
   && {
@@ -99,7 +100,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({}) => {
+const CustomEvent = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -142,6 +143,8 @@ const CustomEvent = ({}) => {
   const [color, setColor] = useState<ColorValue>('#1f7e8c');
 
   const doCreateEvent = () => {
+    const uuid = uuidv4();
+
     if (startTime.getHours() > endTime.getHours()) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
@@ -149,6 +152,7 @@ const CustomEvent = ({}) => {
     }
 
     const newEvent: EventData = {
+      id: uuid,
       name: eventName,
       time: {
         day: weekdays.indexOf(days.toString()) + 1,
@@ -162,7 +166,7 @@ const CustomEvent = ({}) => {
 
     setCreatedEvents({
       ...createdEvents,
-      [eventName + Math.floor(Math.random() * 9999).toString()]: newEvent,
+      [uuid]: newEvent,
     });
 
     setEventName('');

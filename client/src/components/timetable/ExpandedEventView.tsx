@@ -1,21 +1,20 @@
-import React from 'react';
-import { AccessTime, Close, Delete, DesktopMac, LocationOn, Notes, PeopleAlt } from '@mui/icons-material';
+import React, { useContext } from 'react';
+import { AccessTime, Close, Delete, LocationOn, Notes } from '@mui/icons-material';
 import {
   Box,
   Button,
   Dialog,
   DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography,
+  DialogTitle, Grid,
+  IconButton, Typography
 } from '@mui/material';
 import { styled } from '@mui/system';
+import { CourseContext } from '../../context/CourseContext';
+import {
+  EventTime
+} from '../../interfaces/Course';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
+import { useEventDrag } from '../../utils/Drag_v2';
 
 const StyledDialogTitle = styled(DialogTitle)`
   padding: 8px 12px 8px 24px;
@@ -43,6 +42,24 @@ const ExecuteButton = styled(Button)`
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  const updateEventTime = (eventTime: EventTime, eventName: string) => {
+    setCreatedEvents({
+      ...createdEvents,
+      [eventName]: {
+        ...createdEvents[eventName],
+        time: { ...eventTime },
+      },
+    });
+  };
+  useEventDrag(updateEventTime);
+
+  const handleDeleteEvent = (eventName: string) => {
+    const updatedEventData = { ...createdEvents };
+    delete updatedEventData[eventName];
+    setCreatedEvents(updatedEventData);
+  };
 
   return (
     <div>
@@ -93,7 +110,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           variant="contained"
           color="primary"
           disableElevation
-          onClick={handleClose} //handleRemoveEvent when I can get it working
+          onClick={() => handleDeleteEvent(eventData.id)} //handleRemoveEvent when I can get it working
         >
           <Delete sx={{ alignSelf: 'center' }} />
           DELETE

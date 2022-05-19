@@ -14,9 +14,10 @@ import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 import DroppedEvents from './DroppedEvents';
 
+
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
-})<{
+}) <{
   rows: number;
   cols: number;
 }>`
@@ -60,7 +61,7 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSe
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
         <DroppedClasses assignedColors={assignedColors} clashes={clashes} handleSelectClass={handleSelectClass} />
-        <DroppedEvents/>
+        <DroppedEvents />
       </StyledTimetable>
     </StyledTimetableScroll>
   );

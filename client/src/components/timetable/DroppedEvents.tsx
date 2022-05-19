@@ -286,7 +286,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
   );
 };
 
-const DroppedEvents: React.FC<{}> = ({}) => {
+const DroppedEvents: React.FC<{}> = ({ }) => {
   const { createdEvents } = useContext(CourseContext);
   return (
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>

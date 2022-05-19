@@ -24,6 +24,7 @@ import {
   ClassTime,
   CourseCode,
   CourseData,
+  EventData,
   EventTime,
   InInventory,
   SelectedClasses,
@@ -33,7 +34,6 @@ import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { useEventDrag } from './utils/Drag_v2';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -122,22 +122,6 @@ const App: React.FC = () => {
 
   useDrag(handleSelectClass, handleRemoveClass);
 
-  const updateEventTime = (eventTime: EventTime, eventName: string) => {
-    setCreatedEvents({
-      ...createdEvents,
-      [eventName]: {
-        ...createdEvents[eventName],
-        time: { ...eventTime },
-      },
-    });
-  };
-  useEventDrag(updateEventTime);
-
-  const handleDeleteEvent = (eventData: EventData, eventName: string) => {
-    const updatedEventData = { ...eventData };
-    delete updatedEventData[eventName];
-    setCreatedEvents(updatedEventData);
-  };
 
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {

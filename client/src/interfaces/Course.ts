@@ -30,6 +30,7 @@ export interface ClassData {
 }
 
 export interface EventData {
+  id: string;
   name: string;
   time: EventTime;
   location: string;
