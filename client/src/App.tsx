@@ -133,6 +133,12 @@ const App: React.FC = () => {
   };
   useEventDrag(updateEventTime);
 
+  const handleDeleteEvent = (eventData: EventData, eventName: string) => {
+    const updatedEventData = { ...eventData };
+    delete updatedEventData[eventName];
+    setCreatedEvents(updatedEventData);
+  };
+
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {
       const prev = { ...prevRef };
