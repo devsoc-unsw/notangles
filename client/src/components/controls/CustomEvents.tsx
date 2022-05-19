@@ -99,7 +99,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({ }) => {
+const CustomEvent = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -124,7 +124,7 @@ const CustomEvent = ({ }) => {
     setDays(newFormats);
   };
 
-  const { selectedEvents, setSelectedEvents } = useContext(CourseContext);
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   //TimePicker stuff
@@ -143,11 +143,10 @@ const CustomEvent = ({ }) => {
 
   const doCreateEvent = () => {
     if (startTime.getHours() > endTime.getHours()) {
-      setAlertMsg('End time is earlier than start time')
-      setErrorVisibility(true)
+      setAlertMsg('End time is earlier than start time');
+      setErrorVisibility(true);
       return;
     }
-
 
     const newEvent: EventData = {
       name: eventName,
@@ -161,9 +160,9 @@ const CustomEvent = ({ }) => {
       color: color,
     };
 
-    setSelectedEvents({
-      ...selectedEvents,
-      [eventName + Math.floor(Math.random()*9999).toString()]: newEvent,
+    setCreatedEvents({
+      ...createdEvents,
+      [eventName + Math.floor(Math.random() * 9999).toString()]: newEvent,
     });
 
     setEventName('');
@@ -263,7 +262,7 @@ const CustomEvent = ({ }) => {
             <Grid container spacing={0}>
               <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
 
-              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
+              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
@@ -279,13 +278,13 @@ const CustomEvent = ({ }) => {
           <ListItem>
             <Grid container spacing={0}>
               <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
-              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
+              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
                   renderInput={(params) => {
                     const tooEarly = startTime.getHours() >= endTime.getHours();
-                    return (<TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''}/>)
+                    return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
                   }}
                   onChange={(e) => {
                     if (e) setEndTime(e);
@@ -296,20 +295,14 @@ const CustomEvent = ({ }) => {
           </ListItem>
 
           <ListItem>
-            <DropdownOption
-              optionName="Days"
-              optionState={days}
-              setOptionState={handleFormat}
-              optionChoices={weekdays}
-              noOff
-            />
+            <DropdownOption optionName="Days" optionState={days} setOptionState={handleFormat} optionChoices={weekdays} noOff />
           </ListItem>
 
           <ListItem>
-          <Grid container spacing={0}>
+            <Grid container spacing={0}>
               <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Color" />
-              <Grid item xs='auto' sx={{ paddingRight: 2 }}>
-              <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color}/>
+              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
+                <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
               </Grid>
             </Grid>
           </ListItem>

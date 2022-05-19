@@ -11,8 +11,7 @@ const defaults: Record<string, any> = {
   userPicture: '',
   selectedCourses: [],
   selectedClasses: {},
-  selectedEvents: {
-  },
+  createdEvents: {},
   hasShownInfoMessage: false,
 };
 

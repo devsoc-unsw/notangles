@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from 'react';
-import { CourseData, SelectedClasses, SelectedEvents } from '../interfaces/Course';
+import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Course';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
 export interface ICourseContext {
@@ -10,9 +10,8 @@ export interface ICourseContext {
   setSelectedClasses(newSelectedClasses: SelectedClasses): void;
   setSelectedClasses(callback: (oldSelectedClasses: SelectedClasses) => SelectedClasses): void;
 
-  selectedEvents: SelectedEvents; 
-  setSelectedEvents(newSelectedEvents: SelectedEvents): void;
-
+  createdEvents: CreatedEvents;
+  setCreatedEvents: (newCreatedEvents: CreatedEvents) => void;
 }
 
 export const CourseContext = createContext<ICourseContext>({
@@ -22,24 +21,24 @@ export const CourseContext = createContext<ICourseContext>({
   selectedClasses: {},
   setSelectedClasses: () => {},
 
-  selectedEvents: {},
-  setSelectedEvents: () => {},
+  createdEvents: {},
+  setCreatedEvents: () => {},
 });
 
 const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
-  const [selectedEvents, setSelectedEvents] = useState<SelectedEvents>({});
+  const [createdEvents, setCreatedEvents] = useState<CreatedEvents>({});
   const initialContext = useMemo(
     () => ({
       selectedCourses,
       setSelectedCourses,
       selectedClasses,
       setSelectedClasses,
-      selectedEvents,
-      setSelectedEvents,
+      createdEvents,
+      setCreatedEvents,
     }),
-    [selectedCourses, selectedClasses, selectedEvents]
+    [selectedCourses, selectedClasses, createdEvents]
   );
 
   return <CourseContext.Provider value={initialContext}>{children}</CourseContext.Provider>;

@@ -40,17 +40,13 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   return (
     <div>
-      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen}
-        maxWidth="sm"
-        onClose={handleClose}
-      >
+      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen} maxWidth="sm" onClose={handleClose}>
         <StyledDialogTitle>
           <StyledTitleContainer>
             {eventData.name}
@@ -78,7 +74,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               <Grid item>
                 <Notes />
               </Grid>
-              <Grid item wrap="wrap">
+              <Grid item>
                 <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
               </Grid>
             </Grid>
@@ -102,7 +98,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           <Delete sx={{ alignSelf: 'center' }} />
           DELETE
         </ExecuteButton>
-
       </Dialog>
     </div>
   );

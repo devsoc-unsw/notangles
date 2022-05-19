@@ -27,7 +27,7 @@ import {
   EventTime,
   InInventory,
   SelectedClasses,
-  SelectedEvents,
+  CreatedEvents,
 } from './interfaces/Course';
 import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
@@ -91,7 +91,8 @@ const App: React.FC = () => {
     setDays,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, selectedEvents, setSelectedEvents } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+    useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -121,15 +122,15 @@ const App: React.FC = () => {
 
   useDrag(handleSelectClass, handleRemoveClass);
 
-  const updateEventTime = (eventTime: EventTime, recordKey: string) => {
-    setSelectedEvents({
-      ...selectedEvents,
-      [recordKey]: {
-        ...selectedEvents[recordKey],
+  const updateEventTime = (eventTime: EventTime, eventName: string) => {
+    setCreatedEvents({
+      ...createdEvents,
+      [eventName]: {
+        ...createdEvents[eventName],
         time: { ...eventTime },
       },
     });
-  }
+  };
   useEventDrag(updateEventTime);
 
   const initCourse = (course: CourseData) => {
@@ -265,7 +266,7 @@ const App: React.FC = () => {
       setSelectedClasses(newSelectedClasses);
     });
 
-    setSelectedEvents(storage.get('selectedEvents'));
+    setCreatedEvents(storage.get('createdEvents'));
   }, []);
 
   useUpdateEffect(() => {
@@ -285,8 +286,8 @@ const App: React.FC = () => {
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
-    storage.set('selectedEvents', selectedEvents);
-  }, [selectedEvents])
+    storage.set('createdEvents', createdEvents);
+  }, [createdEvents]);
 
   useUpdateEffect(() => {
     const savedClasses: SavedClasses = {};

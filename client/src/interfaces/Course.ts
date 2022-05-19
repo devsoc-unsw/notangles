@@ -1,4 +1,4 @@
-import { ColorValue } from "mui-color";
+import { ColorValue } from 'mui-color';
 
 export type CourseCode = string;
 export type Activity = string;
@@ -8,7 +8,7 @@ export type Location = string;
 export type EventCode = string;
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
-export type SelectedEvents = Record<EventCode, EventData>;
+export type CreatedEvents = Record<EventCode, EventData>;
 
 export interface CourseData {
   code: CourseCode;

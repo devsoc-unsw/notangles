@@ -5,7 +5,7 @@ import { Button, Card, Grid, ThemeProvider } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
-import { SelectedEvents } from '../../interfaces/Course';
+import { CreatedEvents } from '../../interfaces/Course';
 import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -29,12 +29,6 @@ export const inventoryMargin = 10;
 const classTranslateX = (eventData: EventData, days?: string[]) => {
   return `${(eventData.time.day - 1) * 100}%`;
 };
-
-const StyledLocationIcon = styled(LocationOn)`
-  vertical-align: text-bottom;
-  font-size: inherit;
-  padding-bottom: 0.1em;
-`;
 
 const getHeightFactor = (eventData: EventData) => eventData.time.end - eventData.time.start;
 
@@ -79,58 +73,15 @@ const ExpandButton = styled(Button)`
   }
 `;
 
-const StyledCourseClass = styled('div', {
-  shouldForwardProp: (prop) => !['eventData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
-}) <{
-  eventData: EventData;
-  days: string[];
-  y?: number;
-  earliestStartTime: number;
-  isSquareEdges: boolean;
-}>`
-  position: relative;
-  grid-column: 2;
-  grid-row: 2 / -1;
-  transform: ${({ eventData, earliestStartTime, days, y }) => classTransformStyle(eventData, earliestStartTime, days, y)};
-  // position over timetable borders
-  width: calc(100% + ${1 / devicePixelRatio}px);
-  height: ${({ eventData }) => classHeight(eventData)};
-  box-sizing: border-box;
-  z-index: 100;
-  cursor: grab;
-  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
-
-  transition: ${defaultTransition}, z-index 0s;
-
-  &.${transitionName}-enter {
-    & > div {
-      opacity: 0;
-      transform: scale(${elevatedScale});
-      box-shadow: ${({ isSquareEdges }) => getElevatedShadow(isSquareEdges)};
-    }
-  }
-
-  &.${transitionName}-enter-active, &.${transitionName}-leave {
-    & > div {
-      opacity: 1;
-      transform: scale(1);
-      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
-    }
-  }
-
-  &.${transitionName}-leave-active {
-    & > div {
-      opacity: 0;
-      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
-    }
-  }
+const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: text-bottom;
+  font-size: inherit;
+  padding-bottom: 0.1em;
 `;
 
 const StyledEventInner = styled(Card, {
   shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges'].includes(prop.toString()),
-}) <{
+})<{
   hasClash: boolean;
   isSquareEdges: boolean;
 }>`
@@ -168,34 +119,30 @@ const StyledClassInfo = styled(StyledClassName)`
   font-size: 85%;
 `;
 
-
-
 const StyledEvent = styled('div', {
-  shouldForwardProp: (prop) => !['eventData, isSquareEdges'].includes(prop.toString()),
-}) <{
+  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges'].includes(prop.toString()),
+})<{
   eventData: EventData;
   // days: string[];
   // y?: number;
   // earliestStartTime: number;
   isSquareEdges: boolean;
 }>`
-    position: relative;
-    grid-column: 2;
-    grid-row: 2 / -1;
-    transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 8)})`};
-    width: calc(100% + ${1 / devicePixelRatio}px);
-    height: ${({ eventData }) => classHeight(eventData)};
-    box-sizing: border-box;
-    z-index: 100;
-    cursor: grab;
-    padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-    padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-    padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
-
+  position: relative;
+  grid-column: 2;
+  grid-row: 2 / -1;
+  transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 8)})`};
+  width: calc(100% + ${1 / devicePixelRatio}px);
+  height: ${({ eventData }) => classHeight(eventData)};
+  box-sizing: border-box;
+  z-index: 100;
+  cursor: grab;
+  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
+  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
+  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 `;
 
-
-const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ eventData, recordKey }) => {
+const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ eventData, recordKey }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
@@ -295,30 +242,34 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ 
     };
   });
 
-
-
   return (
     <>
-      <StyledEvent eventData={eventData} isSquareEdges={isSquareEdges} ref={element} onMouseDown={onDown} onMouseOver={() => {
-        setFullscreenVisible(true);
-      }}
+      <StyledEvent
+        eventData={eventData}
+        isSquareEdges={isSquareEdges}
+        ref={element}
+        onMouseDown={onDown}
+        onMouseOver={() => {
+          setFullscreenVisible(true);
+        }}
         onMouseLeave={() => {
           setFullscreenVisible(false);
         }}
       >
-        <StyledEventInner hasClash={false}
-        sx={(eventData.color as Color)?.css ?? {backgroundColor: eventData.color}}
-        isSquareEdges={isSquareEdges}>
+        <StyledEventInner
+          hasClash={false}
+          sx={(eventData.color as Color)?.css ?? { backgroundColor: eventData.color }}
+          isSquareEdges={isSquareEdges}
+        >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}
               <StyledEventName>
-                <b>
-                  {eventData.name}
-                </b>
+                <b>{eventData.name}</b>
               </StyledEventName>
               <StyledClassInfo>
-                <StyledLocationIcon />{eventData.location}
+                <StyledLocationIcon />
+                {eventData.location}
               </StyledClassInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
@@ -335,13 +286,15 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string; }> = ({ 
   );
 };
 
-const DroppedEvents: React.FC<{}> = ({ }) => {
-  const { selectedEvents } = useContext(CourseContext);
+const DroppedEvents: React.FC<{}> = ({}) => {
+  const { createdEvents } = useContext(CourseContext);
   return (
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
     <div style={{ display: 'contents' }}>
-      {Object.entries(selectedEvents).map(([a, ev]) => <DroppedEvent recordKey={a} key={a} eventData={ev} />)}
+      {Object.entries(createdEvents).map(([a, ev]) => (
+        <DroppedEvent recordKey={a} key={a} eventData={ev} />
+      ))}
     </div>
   );
 };
