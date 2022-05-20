@@ -12,20 +12,7 @@ export class AuthService {
     constructor(@InjectModel('User') private userModel: Model<userDocument>) {}
 
     async createUser(userInfo: userInterface): Promise<user> {
-        const newUser = new this.userModel({
-            uid: userInfo.uid,
-            google_uid: userInfo.google_uid,
-            zid: userInfo.zid,
-            firstname: userInfo.firstname,
-            lastname: userInfo.lastname,
-            email: userInfo.email,
-            profileURL: userInfo.profileURL,
-            createdAt: userInfo.createdAt,
-            lastLogin: userInfo.lastLogin,
-            loggedIn: userInfo.loggedIn,
-            settings: userInfo.settings,
-            timetable: userInfo.timetable
-        })
+        const newUser = new this.userModel(userInfo);
         console.log("newUser object from auth.service =======\n");
         return newUser.save();
     }

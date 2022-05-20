@@ -52,16 +52,13 @@ export class AuthController {
 
   @Get('/signup')
   async createUsers() {
-    // let response = await this.authService.createUser({
-    //   uid: "google-uid1234XE",
-    //   google_uid: "google-uid",
-    //   zid: "z234567",
-    //   firstname: "John",
-    //   email: "johDoe@gmail.com",
-    // });
-    // google-uid1234XE
-    let response = await this.authService.getUser('google-uid1234XE');
-    if(response){ return "User present! "; }
-    return "User not present!"; 
+    let response = await this.authService.createUser({
+      uid: "test1",
+      google_uid: "test1-uid",
+      zid: "z1",
+      firstname: "test1",
+      email: "test1@gmail.com",
+    });
+    console.log("Response from mongoDB", response);
   }
 }
