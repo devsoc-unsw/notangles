@@ -483,7 +483,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   
     flatPeriods.forEach((period1) => {
       flatPeriods.forEach((period2) => {
-        if (period1.class.id !== period2.class.id && hasTimeOverlap(period1.time, period2.time)) {
+        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
           if (!newClashes.includes(period1)) {
             newClashes.push(period1);
           }
