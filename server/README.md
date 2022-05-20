@@ -1,6 +1,6 @@
 # Notangles Server 💯
 
-The Notangles server allows the client to communicate with the database and the autotimetabling server
+The Notangles server allows the client to communicate with the database and the autotimetabling server.
 
 ## Installation
 
@@ -9,13 +9,13 @@ The Notangles server allows the client to communicate with the database and the 
 
 In the root server directory `server`, run `npm install` to install all the dependencies.
 
-## Running the app
+## Running
 
 Run `npm run start:dev` to start the server locally. The server will be hosted at http://localhost:3001
 
 ## Tech Stack
 
-The Notangles server uses
+The Notangles server uses:
 
 - [Nest.js](https://nestjs.com/)
 - [MongoDb](https://www.mongodb.com/)
@@ -32,7 +32,7 @@ The Notangles server uses
   - `src/auth` (Handles authentication with our )
   - `src/auto` (Handles auto-timetabling)
 
-## Enviornment variables required
+## Environment variables required
 
 Without these environment variables stored in a `.env` file, the server will not run. Check the Deployment Guide on our Confluence to get the values of these environment variables.
 
