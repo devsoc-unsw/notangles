@@ -7,13 +7,13 @@ The Notangles server allows the client to communicate with the database and the 
 - npm v8.8.0
 - node v18.1.0
 
-In the root client directory `server`, run `npm install` to install all the dependencies.
+In the root server directory `server`, run `npm install` to install all the dependencies.
 
 ## Running the app
 
 Run `npm run start:dev` to start the server locally. The server will be hosted at http://localhost:3001
 
-## Tech stack
+## Tech Stack
 
 The Notangles server uses
 
