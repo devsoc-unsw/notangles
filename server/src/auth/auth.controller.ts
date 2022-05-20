@@ -1,11 +1,15 @@
-import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
 import { LoginGuard } from './login.guard';
 import { Issuer } from 'openid-client';
+import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthController {
+
+  constructor(private readonly authService: AuthService) {}
+
   @UseGuards(LoginGuard)
   @Get('/login')
   login() {
@@ -44,5 +48,20 @@ export class AuthController {
         res.redirect('/');
       }
     });
+  }
+
+  @Get('/signup')
+  async createUsers() {
+    // let response = await this.authService.createUser({
+    //   uid: "google-uid1234XE",
+    //   google_uid: "google-uid",
+    //   zid: "z234567",
+    //   firstname: "John",
+    //   email: "johDoe@gmail.com",
+    // });
+    // google-uid1234XE
+    let response = await this.authService.getUser('google-uid1234XE');
+    if(response){ return "User present! "; }
+    return "User not present!"; 
   }
 }

@@ -4,6 +4,8 @@ import { OidcStrategy, buildOpenIdClient } from './oidc.strategy';
 import { SessionSerializer } from './session.serializer';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { userSchema } from './schemas/user.schema';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',
@@ -23,6 +25,8 @@ const OidcStrategyFactory = {
   imports: [
     // Tell Nest to use Passport.
     PassportModule.register({ session: true, defaultStrategy: 'oidc' }),
+    MongooseModule.forRoot('mongodb+srv://oak:DqC8r6Fm46LdmF8v@cluster0.1qaxl.mongodb.net/notangles?retryWrites=true&w=majority'),
+    MongooseModule.forFeature([{ name: "User", schema: userSchema }])
   ],
   controllers: [AuthController],
   providers: [OidcStrategyFactory, SessionSerializer, AuthService],

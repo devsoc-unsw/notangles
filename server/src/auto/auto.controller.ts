@@ -14,7 +14,7 @@ export class AutoController implements OnModuleInit {
     options: {
       url: process.env.AUTO_SERVER_URI || 'localhost:50051',
       package: '',
-      protoPath: join(__dirname, '../auto.proto'),
+      protoPath: join(__dirname, './auto.proto'),
     },
   })
   private readonly client: ClientGrpc;
