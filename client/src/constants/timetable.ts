@@ -1,12 +1,12 @@
-// export let year = '2022';
-// let termNumber = 2;
-// export let term = `T${termNumber}`;
-// export let termName = `Term ${termNumber}`;
-
-export let year = '2022';
+export let year = '0000';
 let termNumber = 1;
 export let term = `T${termNumber}`;
 export let termName = `Term ${termNumber}`;
+
+// let year = '2022';
+// let termNumber = 1;
+// let term = `T${termNumber}`;
+// let termName = `Term ${termNumber}`;
 
 // first monday of week 1 of the term
 export let firstDayOfTerm = `0000-00-00`;
@@ -18,7 +18,7 @@ import { API_URL } from '../api/config';
 export const setAvailableTermDetails = async () => {
   
   try { 
-    const termDateFetch = await fetch(`${API_URL.timetable}/startdate/`);    
+    const termDateFetch = await fetch(`${API_URL.timetable}/startdate/notangles`);    
     const termDateRes = await termDateFetch.text();
 
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
@@ -29,7 +29,7 @@ export const setAvailableTermDetails = async () => {
     }
    
     firstDayOfTerm = termDateRes.replaceAll('/', '-');
-    const termIdFetch = await fetch(`${API_URL.timetable}/availableterm/`);
+    const termIdFetch = await fetch(`${API_URL.timetable}/availableterm/notangles`);
     const termIdRes = await termIdFetch.text();
     if (termIdRes.length === REGULAR_TERM_STR_LEN) {
       // This is not a summer term.
@@ -45,8 +45,13 @@ export const setAvailableTermDetails = async () => {
       termNumber = 0; // This is a summer term.
     }
     console.log([term, termName, year, firstDayOfTerm])
-
-    return [term, termName, year, firstDayOfTerm];
+    
+    return {
+      "term": term,
+      "termName": termName,
+      "year": year,
+      "firstDayOfTerm": firstDayOfTerm
+    }
     } catch (e) {
       console.log('Could not ping timetable scraper!')
     }

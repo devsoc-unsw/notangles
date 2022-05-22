@@ -11,7 +11,7 @@ import CourseContextProvider from './context/CourseContext';
 
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
-
+import { setAvailableTermDetails } from './constants/timetable';
 // initializing sentry
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
@@ -30,9 +30,13 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
   // Trigger page view on the home page
   ReactGA.pageview(window.location.pathname);
 }
+setAvailableTermDetails().then(res => { 
+  ReactDOM.render(<Root />, document.getElementById('root'));
+});
 
 const Root: React.FC = () => (
-  <AppContextProvider>
+  <>
+    <AppContextProvider>
     <CourseContextProvider>
       <BrowserRouter>
         <Routes>
@@ -41,9 +45,11 @@ const Root: React.FC = () => (
       </BrowserRouter>
     </CourseContextProvider>
   </AppContextProvider>
+  </>
+
 );
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

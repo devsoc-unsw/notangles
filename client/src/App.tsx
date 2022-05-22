@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { term, year, setAvailableTermDetails } from './constants/timetable';
+import { term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -72,9 +72,10 @@ const ICSButton = styled(Button)`
   }
 `;
 
+
+
 const App: React.FC = () => {
-  //setAvailableTermDetails();
-  const {
+  const {   
     is12HourMode,
     isDarkMode,
     isSquareEdges,
