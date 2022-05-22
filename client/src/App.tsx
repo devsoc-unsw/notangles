@@ -128,7 +128,7 @@ const App: React.FC = () => {
       Object.keys(course.activities).forEach((activity) => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null;
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ?? null;
       });
 
       return prev;
