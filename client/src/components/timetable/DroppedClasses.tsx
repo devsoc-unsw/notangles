@@ -162,7 +162,7 @@ const StyledCourseClassInner = styled(Card, {
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   outline: ${({ hasClash, clashColour }) => (hasClash ? clashColour : 'solid transparent 0px')};
-  outline-offset: -4px;
+  outline-offset: -3px;
   width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
   position: relative;
@@ -242,7 +242,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
   let rippleStopped = false;
   let ignoreMouse = false;
 
-  let clashColour = "solid orange 4px";
+  let clashColour = "solid orange 3px";
   
   let numNonPermittedClashes = 0;
   if ("time" in cardData) {
@@ -260,7 +260,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
       }
       if (numNonPermittedClashes > 1 &&
         clashGroup.filter(clashClass => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id) !== []) {
-        clashColour = "solid red 4px";
+        clashColour = "solid red 3px";
       }
     }
   }
@@ -496,13 +496,26 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   
     return newClashes;
   };
+
+  const sortClashesByTime = (clashes: Record<number, ClassPeriod[]>) => {
+    // const points = [40, 100, 1, 5, 25, 10];
+    // points.sort(function(a, b){return a - b});
+    for (let i = 0; i < days.length; i++) {
+      clashes[i].sort((a, b) => {
+        let startDiff = a.time.start - b.time.start;
+        if (startDiff !== 0) return startDiff;
+        return a.time.end - b.time.end;
+      });
+    }
+    return clashes;
+  }
   
-  const sortClashesByTime = (clashes: ClassPeriod[]) => {
+  const sortClashesByDay = (clashes: ClassPeriod[]) => {
     // Sort clashes to group them according to the days of the week they are in.
     const sortedClashes: Record<number, ClassPeriod[]> = days.map((_) => []);
     clashes.forEach((clash) => sortedClashes[clash.time.day - 1].push(clash));
   
-    return sortedClashes;
+    return sortClashesByTime(sortedClashes);
   }
   
   const groupClashes = (sortedClashes: Record<number, ClassPeriod[]>) => {
@@ -524,7 +537,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
             const currGroup = groupedClashes[dayInt][i];
             // Clash occurs for two classes A and B when
             // (StartA < EndB) and (EndA > StartB)
-            if (clash.time.start < currGroup[groupClashes.length - 1].time.end &&
+            if (clash.time.start < currGroup[currGroup.length - 1].time.end &&
               clash.time.end > currGroup[0].time.start) {
                 currGroup.push(clash);
                 hasAdded = true;
@@ -553,7 +566,14 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     if ("time" in cardData) {
       for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
         if (clashGroup.includes(cardData)) {
-          return [cardWidth / clashGroup.length, clashGroup.indexOf(cardData)];
+          // Get the length of the clash group according to the unique clash IDs.
+          let uniqueClashIDs: string[] = [];
+          clashGroup.forEach((clash) => {
+            if (!uniqueClashIDs.includes(clash.class.id)) {
+              uniqueClashIDs.push(clash.class.id);
+            }
+          });
+          return [cardWidth / uniqueClashIDs.length, uniqueClashIDs.indexOf(cardData.class.id)];
         }
       }
     }
@@ -562,10 +582,8 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   };    
 
   const clashes = checkClashes();
-  const sortedClashes = sortClashesByTime(clashes);
+  const sortedClashes = sortClashesByDay(clashes);
   const groupedClashes = groupClashes(sortedClashes);
-
-  console.log(groupedClashes);
 
   newCards.forEach((cardData) => {
     let key = cardKeys.get(cardData);
