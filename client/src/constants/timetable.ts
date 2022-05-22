@@ -44,7 +44,7 @@ export const setAvailableTermDetails = async () => {
       term = termIdRes;
       termNumber = 0; // This is a summer term.
     }
-    console.log([term, termName, year, firstDayOfTerm])
+    // console.log([term, termName, year, firstDayOfTerm])
     
     return {
       "term": term,
