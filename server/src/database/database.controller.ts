@@ -1,17 +1,19 @@
-import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Request, SerializeOptions, UseGuards, UseInterceptors } from '@nestjs/common';
 import { LoginGuard } from 'src/auth/login.guard';
+import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseService } from './database.service';
 import { UserSettingsDto, UserTimetableDataDto } from './dtos/database.dto';
 import { Settings, Timetable } from './schemas';
 
+@UseInterceptors(SessionSerializer) // I think?
 @Controller('database')
 export class DatabaseController {
     constructor(private readonly databaseService: DatabaseService) {}
 
     // @UseGuards(<guardhere>)
-    @Get('/settings') // temp stuff till user  stuff is set up
-    async getSettings(@Request() req, @Param('userId') userID: string): Promise<UserSettingsDto> {
-        return this.databaseService.getSettings(userID);
+    @Get('/settings')
+    async getSettings(@Request() req): Promise<UserSettingsDto> {
+        return this.databaseService.getSettings(req.user.userId);
     }
     // @UseGuards(<guardhere>)
     @Post('/createsettings')
@@ -21,8 +23,8 @@ export class DatabaseController {
 
     // @UseGuards(<guardhere>)
     @Get('/timetable')
-    async getTimetable(@Request() req, @Param('userId') userID: string): Promise<UserTimetableDataDto> {
-        return this.databaseService.getTimetable(userID)
+    async getTimetable(@Request() req): Promise<UserTimetableDataDto> {
+        return this.databaseService.getTimetable(req.user.userId)
     }
 
     // @UseGuards(<guardhere>)

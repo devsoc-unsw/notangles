@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Get, Injectable } from '@nestjs/common';
+import { Get, Injectable, SerializeOptions } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserSettingsDto, UserTimetableDataDto } from './dtos/database.dto';
 import {
@@ -9,6 +9,9 @@ import {
   TimetableDocument,
 } from './schemas';
 
+@SerializeOptions({
+    excludePrefixes: ['_'],
+  })
 @Injectable()
 export class DatabaseService {
   constructor(
