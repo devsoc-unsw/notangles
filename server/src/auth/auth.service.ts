@@ -11,14 +11,24 @@ import { user, userDocument, userInterface } from './schemas/user.schema';
 export class AuthService {
     constructor(@InjectModel('User') private userModel: Model<userDocument>) {}
 
-    async createUser(userInfo: userInterface): Promise<user> {
-        const newUser = new this.userModel(userInfo);
-        console.log("newUser object from auth.service =======\n");
-        return newUser.save();
+    async createUser(userInfo: any): Promise<void> {
+        // check if user already exists
+        let alreadyUser = await this.getUser(userInfo.sub);
+        if(!alreadyUser){
+            let newUser = {
+                google_uid: userInfo.sub,
+                firstname: userInfo.given_name,
+                lastname: userInfo.family_name,
+                email: userInfo.email,
+                createdAt: new Date().toISOString().slice(0, 10)
+            };
+            const userAdded = new this.userModel(newUser);
+            userAdded.save();
+        }
     }
 
     async getUser(uidGiven: string): Promise<boolean> {
-        var response = await this.userModel.find({ uid: uidGiven });
+        var response = await this.userModel.find({ google_uid: uidGiven });
         if(response.length === 0){ return false; }
         return true;
     }

@@ -3,26 +3,26 @@ import { Document } from "mongoose";
 
 @Schema()
 export class user {
-    @Prop({ required: true }) uid: string;
-    @Prop({ required: true }) google_uid: string;
-    @Prop({ required: true }) zid: string;
-    @Prop({ required: true }) firstname: string;
-    @Prop({ required: false }) lastname: string;
-    @Prop({ required: true }) email: string;
-    @Prop({ required: false }) profileURL: string;
-    @Prop({ required: false }) createdAt: Date;
-    @Prop({ required: false }) lastLogin: Date;
-    @Prop({ required: false }) loggedIn: Boolean;
-    @Prop({ required: false }) settings: string;
-    @Prop({ required: false }) timetable: string
+    // @Prop({ required: true }) uid: string;
+    @Prop() google_uid: string;
+    // @Prop({ required: true }) zid: string;
+    @Prop() firstname: string;
+    @Prop() lastname: string;
+    @Prop() email: string;
+    @Prop() profileURL: string;
+    @Prop() createdAt: Date;
+    @Prop() lastLogin: Date;
+    @Prop() loggedIn: Boolean;
+    @Prop() settings: string;
+    @Prop() timetable: string
 }
 
 export type userDocument = user & Document;
 export const userSchema = SchemaFactory.createForClass(user);
 export interface userInterface {
-    uid: string;
+    // uid: string;
     google_uid: string;
-    zid: string;
+    // zid: string;
     firstname: string;
     lastname?: string;
     email: string;

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Req, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
 import { LoginGuard } from './login.guard';
@@ -12,7 +12,7 @@ export class AuthController {
 
   @UseGuards(LoginGuard)
   @Get('/login')
-  login() {
+  login(@Request() req) {
     // This function will not be run and instead intercepted by the LoginGuard.
     return;
   }
@@ -24,7 +24,9 @@ export class AuthController {
 
   @UseGuards(LoginGuard)
   @Get('/callback')
-  loginCallback(@Res() res: Response) {
+  loginCallback(@Request() req, @Res() res: Response) {
+    // check if user in DB and create document of user in collection "users" if not
+    // this.authService.createUser(req.user);
     res.redirect('/');
   }
 
@@ -50,15 +52,13 @@ export class AuthController {
     });
   }
 
-  @Get('/signup')
-  async createUsers() {
-    let response = await this.authService.createUser({
-      uid: "test1",
-      google_uid: "test1-uid",
-      zid: "z1",
-      firstname: "test1",
-      email: "test1@gmail.com",
-    });
-    console.log("Response from mongoDB", response);
+  @Post('/signup')
+  async createUsers(@Request() req) {
+    try{
+      let response = await this.authService.createUser(req.body);
+      console.log("Successfully added user.");
+    }catch(e) {
+      console.log("Invalid data given: ", e);
+    }
   }
 }
