@@ -15,7 +15,7 @@ export const downloadIcsFile = async (courses: CourseData[], classes: SelectedCl
   if (classes === null) {
     return;
   }
-  
+
   const timezone = await getUtcOffset();
   const icsFile = getAllEvents(courses, classes)
     .map(([period, week]) =>

@@ -30,26 +30,23 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
   // Trigger page view on the home page
   ReactGA.pageview(window.location.pathname);
 }
-setAvailableTermDetails().then(res => { 
+setAvailableTermDetails().then((res) => {
   ReactDOM.render(<Root />, document.getElementById('root'));
 });
 
 const Root: React.FC = () => (
   <>
     <AppContextProvider>
-    <CourseContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<App />} path="/" />
-        </Routes>
-      </BrowserRouter>
-    </CourseContextProvider>
-  </AppContextProvider>
+      <CourseContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<App />} path="/" />
+          </Routes>
+        </BrowserRouter>
+      </CourseContextProvider>
+    </AppContextProvider>
   </>
-
 );
-
-
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
