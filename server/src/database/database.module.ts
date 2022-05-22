@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common';
+import { Mongoose } from 'mongoose';
+import { DatabaseController } from './database.controller';
+import { DatabaseService } from './database.service';
+import { Model } from 'mongoose';
+import { Injectable } from '@nestjs/common';
+import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+import { UserSettingsSchema, UserTimetableSchema } from './schemas';
+@Module({
+    imports: [MongooseModule.forFeature([{name: 'UserSettings', schema: UserSettingsSchema}, {name: 'UserTimetable', schema: UserTimetableSchema}])],
+    controllers: [DatabaseController],
+    providers: [DatabaseService]
+})
+export class DatabaseModule {}
