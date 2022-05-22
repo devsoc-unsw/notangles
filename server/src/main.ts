@@ -23,7 +23,7 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET, // to sign session id
-      resave: true,
+      resave: false,
       saveUninitialized: false,
     }),
   );
@@ -40,6 +40,8 @@ async function bootstrap() {
   SwaggerModule.setup('/docs', app, document);
 
   await app.listen(process.env.PORT || 3001);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(
+    `Application is running on: http://localhost:${process.env.PORT || 3001}`,
+  );
 }
 bootstrap();
