@@ -33,7 +33,7 @@ export const inventoryMargin = 10;
 
 const borderWidth = 3;
 
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?:number) => {
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
   if (isPeriod(cardData) && clashIndex !== undefined && width) {
     return `${(cardData.time.day - 1) * 100 + clashIndex * width}%`;
   }
@@ -74,8 +74,14 @@ export const classHeight = (cardData?: CardData | InInventory) => {
   return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
-export const classTransformStyle = (cardData: CardData, earliestStartTime: number, days?: string[], y?: number, clashIndex?: number, width?:number) =>
-`translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
+export const classTransformStyle = (
+  cardData: CardData,
+  earliestStartTime: number,
+  days?: string[],
+  y?: number,
+  clashIndex?: number,
+  width?: number
+) => `translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
 const transitionName = 'class';
 
@@ -109,7 +115,8 @@ const StyledCourseClass = styled('div', {
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, width }) => classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, width)};
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, width }) =>
+    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, width)};
   // position over timetable borders
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ cardData }) => classHeight(cardData)};
@@ -147,7 +154,8 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) =>
+    !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth', 'clashColour'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
@@ -226,7 +234,17 @@ const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
   );
 };
 
-const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earliestStartTime, hasClash, handleSelectClass, cardWidth, clashIndex, groupedClashes }) => {
+const DroppedClass: React.FC<DroppedClassProps> = ({
+  cardData,
+  color,
+  y,
+  earliestStartTime,
+  hasClash,
+  handleSelectClass,
+  cardWidth,
+  clashIndex,
+  groupedClashes,
+}) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
@@ -245,9 +263,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
   let ignoreMouse = false;
 
   let clashColour = `solid orange ${borderWidth}px`;
-  
+
   let numNonPermittedClashes = 0;
-  if ("time" in cardData) {
+  if ('time' in cardData) {
     // Find the clash group that the class is in.
     for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
       if (!clashGroup.includes(cardData)) {
@@ -264,15 +282,19 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
         // the weeks of the current clashClass.
         // This is so that two classes with clashing time but different weeks
         // are not supposed to clash (no border).
-        const checkOverlappingWeeks = cardData.time.weeks.some(element => {
+        const checkOverlappingWeeks = cardData.time.weeks.some((element) => {
           return clashClass.time.weeks.indexOf(element) !== -1;
         });
         if (checkOverlappingWeeks && clashClass.class.id !== cardData.class.id) {
           isOverlapped = true;
         }
       }
-      if (numNonPermittedClashes > 1 &&
-        clashGroup.filter(clashClass => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id) !== []) {
+      if (
+        numNonPermittedClashes > 1 &&
+        clashGroup.filter(
+          (clashClass) => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id
+        ) !== []
+      ) {
         clashColour = `solid red ${borderWidth}px`;
       }
       if (!isOverlapped) {
@@ -370,7 +392,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
       ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
     );
   }
-  
 
   return (
     <>
@@ -392,7 +413,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
         clashIndex={clashIndex}
         width={cardWidth}
       >
-        <StyledCourseClassInner backgroundColor={color} hasClash={hasClash} isSquareEdges={isSquareEdges} cardWidth={cardWidth} clashColour={clashColour} >
+        <StyledCourseClassInner
+          backgroundColor={color}
+          hasClash={hasClash}
+          isSquareEdges={isSquareEdges}
+          cardWidth={cardWidth}
+          clashColour={clashColour}
+        >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledClassName>
@@ -488,15 +515,15 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
     period1.day === period2.day &&
     ((period1.end > period2.start && period1.start < period2.end) ||
-    (period2.end > period1.start && period2.start < period1.end));
+      (period2.end > period1.start && period2.start < period1.end));
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
-  
+
     const flatPeriods = Object.values(selectedClasses)
       .flatMap((activities) => Object.values(activities))
       .flatMap((classData) => (classData ? classData.periods : []));
-  
+
     flatPeriods.forEach((period1) => {
       flatPeriods.forEach((period2) => {
         if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
@@ -509,7 +536,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         }
       });
     });
-  
+
     return newClashes;
   };
 
@@ -524,21 +551,21 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
       });
     }
     return clashes;
-  }
-  
+  };
+
   const sortClashesByDay = (clashes: ClassPeriod[]) => {
     // Sort clashes to group them according to the days of the week they are in.
     const sortedClashes: Record<number, ClassPeriod[]> = days.map((_) => []);
     clashes.forEach((clash) => sortedClashes[clash.time.day - 1].push(clash));
-  
+
     return sortClashesByTime(sortedClashes);
-  }
-  
+  };
+
   const groupClashes = (sortedClashes: Record<number, ClassPeriod[]>) => {
     // Clashes are grouped according to their day. Clashes in each day are further separated according to how
     // many classes a single clash affects so each card can later be split accordingly.
     const groupedClashes: Record<number, ClassPeriod[][]> = days.map((_) => []);
-    
+
     Object.entries(sortedClashes).forEach(([day, clashes]) => {
       const dayInt = parseInt(day);
       for (const clash of clashes) {
@@ -548,18 +575,17 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
           groupedClashes[dayInt].push([clash]);
         } else {
           let hasAdded = false;
-          
+
           for (let i = 0; i < groupedClashes[dayInt].length; i++) {
             const currGroup = groupedClashes[dayInt][i];
             // Clash occurs for two classes A and B when
             // (StartA < EndB) and (EndA > StartB)
-            if (clash.time.start < currGroup[currGroup.length - 1].time.end &&
-              clash.time.end > currGroup[0].time.start) {
-                currGroup.push(clash);
-                hasAdded = true;
-              }
+            if (clash.time.start < currGroup[currGroup.length - 1].time.end && clash.time.end > currGroup[0].time.start) {
+              currGroup.push(clash);
+              hasAdded = true;
             }
-            
+          }
+
           // If we haven't added the clash to any clashes list, add it to its own list of clashes as it
           // means that it will be a part of a new group of clashes (no other classes that we have grouped
           // have happened at the same time yet).
@@ -568,18 +594,18 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
           }
         }
       }
-    })
-  
+    });
+
     return groupedClashes;
-  }
-  
+  };
+
   const getCardWidth = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: CardData) => {
     // Returns the card width of a clashing class by dividing the default width of a card with how many
     // clashes there are happening during that time.
     let cardWidth = 100;
     let clashIndex = 0;
-  
-    if ("time" in cardData) {
+
+    if ('time' in cardData) {
       for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
         if (clashGroup.includes(cardData)) {
           // Get the length of the clash group according to the unique clash IDs.
@@ -593,9 +619,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         }
       }
     }
-  
+
     return [cardWidth, clashIndex];
-  };    
+  };
 
   const clashes = checkClashes();
   const sortedClashes = sortClashesByDay(clashes);
