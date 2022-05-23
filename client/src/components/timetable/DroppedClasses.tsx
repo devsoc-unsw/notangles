@@ -102,7 +102,7 @@ const ExpandButton = styled(Button)`
 `;
 
 const StyledCourseClass = styled('div', {
-  shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'width'].includes(prop.toString()),
 })<{
   cardData: CardData;
   days: string[];
