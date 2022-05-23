@@ -1,10 +1,12 @@
 import { Body, Controller, OnModuleInit, Post } from '@nestjs/common';
 import { ClientGrpc, Client, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { TimetableConstraintsDto } from './dtos/auto.dto'
+import { TimetableConstraintsDto } from './dtos/auto.dto';
 
 interface AutoService {
-  findBestTimetable(timetableConstraints: TimetableConstraintsDto): Promise<any>;
+  findBestTimetable(
+    timetableConstraints: TimetableConstraintsDto,
+  ): Promise<any>;
 }
 
 @Controller('auto')
