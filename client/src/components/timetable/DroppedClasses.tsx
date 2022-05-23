@@ -633,25 +633,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
 
     let [cardWidth, clashIndex] = getCardWidth(groupedClashes, cardData);
 
-    /*
-      It goes from chronological order (start of the day to end of the day)
-      1. First class automatically goes to a clash element in the clashes list
-      2. If the next class clashes, it joins that list, if it doesn't then it becomes a new element
-      3. Update the start and end times (this is going to be the very start of the first class in the clashes list, and the end time will be the very end of the last class in the clashes list)
-      Monday:
-      - clash 1: 9am - 12pm (consisted of 3 classes)
-      - clash 2: 4pm - 7pm (consisted of 2 classes)
-      [
-        [ // day, start, end
-          [class 1, class 2], // clash 1
-          [], // clash 2
-        ],
-        [
-        ],
-        ...
-      ]
-    */
-
     droppedClasses.push(
       <DroppedClass
         key={`${key}`}
