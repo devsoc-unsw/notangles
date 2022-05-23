@@ -237,13 +237,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
     setPopupOpen(!popupOpen);
   };
 
-  // Check if two clashes overlap in at least one week.
-  const checkOverlappingWeeks = (clashOne: ClassPeriod, clashTwo: ClassPeriod) => {
-    return clashOne.time.weeks.some(element => {
-      return clashTwo.time.weeks.indexOf(element) !== -1;
-    });
-  }
-
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
 
@@ -260,16 +253,30 @@ const DroppedClass: React.FC<DroppedClassProps> = ({ cardData, color, y, earlies
       if (!clashGroup.includes(cardData)) {
         continue;
       }
+      let isOverlapped = false;
       // Lecture (online or offline) + any class is always a permitted clash.
       // The only non-permitted clash is like tute + tute or tute + exam etc.
       for (const clashClass of clashGroup) {
-        if (!clashClass.class.activity.includes('Lecture') && checkOverlappingWeeks(cardData, clashClass)) {
+        if (!clashClass.class.activity.includes('Lecture')) {
           numNonPermittedClashes += 1;
+        }
+        // Check if the current cardData has weeks that are overlapping with
+        // the weeks of the current clashClass.
+        // This is so that two classes with clashing time but different weeks
+        // are not supposed to clash (no border).
+        const checkOverlappingWeeks = cardData.time.weeks.some(element => {
+          return clashClass.time.weeks.indexOf(element) !== -1;
+        });
+        if (checkOverlappingWeeks && clashClass.class.id !== cardData.class.id) {
+          isOverlapped = true;
         }
       }
       if (numNonPermittedClashes > 1 &&
         clashGroup.filter(clashClass => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id) !== []) {
         clashColour = `solid red ${borderWidth}px`;
+      }
+      if (!isOverlapped) {
+        clashColour = `solid transparent ${borderWidth}px`;
       }
     }
   }
@@ -618,9 +625,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         ...
       ]
     */
-    if ("time" in cardData) {
-      console.log(cardData.time.weeks)
-    }
 
     droppedClasses.push(
       <DroppedClass
