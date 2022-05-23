@@ -23,7 +23,7 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET, // to sign session id
-      resave: true,
+      resave: false,
       saveUninitialized: false,
     }),
   );
