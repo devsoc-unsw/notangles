@@ -7,18 +7,15 @@ The Notangles server allows the client to communicate with the database and the 
 - npm v8.8.0
 - node v18.1.0
 
-````bash
-# unit tests
-$ npm run test
+In the root server directory `server`, run `npm install` to install all the dependencies.
 
-# e2e tests
-$ npm run test:e2e
+## Running
 
 Run `npm run start:dev` to start the server locally. The server will be hosted at http://localhost:3001
 
-## Support
+## Tech Stack
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The Notangles server uses:
 
 - [Nest.js](https://nestjs.com/)
 - [MongoDb](https://www.mongodb.com/)
@@ -47,4 +44,4 @@ OAUTH2_REDIRECT_URI
 OAUTH2_SCOPES
 SESSION_SECRET
 PORT
-````
+```

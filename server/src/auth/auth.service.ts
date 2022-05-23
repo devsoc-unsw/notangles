@@ -9,28 +9,31 @@ import { user, userDocument, userInterface } from './schemas/user.schema';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel('User') private userModel: Model<userDocument>) {}
+  constructor(@InjectModel('User') private userModel: Model<userDocument>) {}
 
-    async createUser(userInfo: any): Promise<void> {
-        // check if user already exists
-        let alreadyUser = await this.getUser(userInfo.sub);
-        if(!alreadyUser){
-            let newUser = {
-                google_uid: userInfo.sub,
-                firstname: userInfo.given_name,
-                lastname: userInfo.family_name,
-                email: userInfo.email,
-                createdAt: new Date().toISOString().slice(0, 10)
-            };
-            const userAdded = new this.userModel(newUser);
-            userAdded.save();
-        }
+  async createUser(userInfo: any): Promise<void> {
+    // check if user already exists
+    let alreadyUser = await this.getUser(userInfo.sub);
+    if (!alreadyUser) {
+      // let newUser = {
+      //     google_uid: userInfo.sub,
+      //     firstname: userInfo.given_name,
+      //     lastname: userInfo.family_name,
+      //     email: userInfo.email,
+      //     createdAt: new Date().toISOString().slice(0, 10)
+      // };
+      // const userAdded = new this.userModel(newUser);
+      // userAdded.save();
+      console.log("User doesn't exist!");
     }
+    console.log('User exists!');
+  }
 
-    async getUser(uidGiven: string): Promise<boolean> {
-        var response = await this.userModel.find({ google_uid: uidGiven });
-        if(response.length === 0){ return false; }
-        return true;
+  async getUser(uidGiven: string): Promise<boolean> {
+    var response = await this.userModel.find({ google_uid: uidGiven });
+    if (response.length === 0) {
+      return false;
     }
-
+    return true;
+  }
 }
