@@ -14,19 +14,18 @@ export class AuthService {
   async createUser(userInfo: any): Promise<void> {
     // check if user already exists
     let alreadyUser = await this.getUser(userInfo.sub);
+    // adding user if user doesn't exists
     if (!alreadyUser) {
-      // let newUser = {
-      //     google_uid: userInfo.sub,
-      //     firstname: userInfo.given_name,
-      //     lastname: userInfo.family_name,
-      //     email: userInfo.email,
-      //     createdAt: new Date().toISOString().slice(0, 10)
-      // };
-      // const userAdded = new this.userModel(newUser);
-      // userAdded.save();
-      console.log("User doesn't exist!");
+      let newUser = {
+        google_uid: userInfo.sub,
+        firstname: userInfo.given_name,
+        lastname: userInfo.family_name,
+        email: userInfo.email,
+        createdAt: new Date().toISOString().slice(0, 10),
+      };
+      const userAdded = new this.userModel(newUser);
+      userAdded.save();
     }
-    console.log('User exists!');
   }
 
   async getUser(uidGiven: string): Promise<boolean> {
