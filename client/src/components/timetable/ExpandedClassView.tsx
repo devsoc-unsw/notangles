@@ -42,7 +42,7 @@ const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
-const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
+const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${(n % 1) * 60 ? String(((n % 1) * 60) >> 0) : '00'}`;
 
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
@@ -159,12 +159,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
               </Typography>
             </Grid>
           </Grid>
-          <Grid item container direction="row" spacing={2} wrap='nowrap'>
+          <Grid item container direction="row" spacing={2} wrap="nowrap">
             <Grid item>
               <AccessTime />
             </Grid>
             <Grid item>
-              <Typography >{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
+              <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
             </Grid>
           </Grid>
           <Grid item container direction="row" spacing={2} alignItems="center">
