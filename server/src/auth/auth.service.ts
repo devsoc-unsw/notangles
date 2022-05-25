@@ -13,9 +13,9 @@ export class AuthService {
 
   async createUser(userInfo: any): Promise<void> {
     // check if user already exists
-    let alreadyUser = await this.getUser(userInfo.sub);
+    let isCurrentUser = await this.getUser(userInfo.sub);
     // adding user if user doesn't exists
-    if (!alreadyUser) {
+    if (!isCurrentUser) {
       let newUser = {
         google_uid: userInfo.sub,
         firstname: userInfo.given_name,
@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   async getUser(uidGiven: string): Promise<boolean> {
-    var response = await this.userModel.find({ google_uid: uidGiven });
+    const response = await this.userModel.find({ google_uid: uidGiven });
     return response.length === 0;
   }
 }
