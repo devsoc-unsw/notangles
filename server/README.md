@@ -13,6 +13,8 @@ In the root server directory `server`, run `npm install` to install all the depe
 
 First, make sure you have started Docker via Docker Desktop on your machine. Then, run `docker-compose up` to start the server locally. The server will be hosted at http://localhost:3001.
 
+To visually inspect the database, install [MongoDB Compass](https://www.mongodb.com/products/compass) and connect to `mongo://localhost:27017`.
+
 ## Tech Stack
 
 The Notangles server uses:
