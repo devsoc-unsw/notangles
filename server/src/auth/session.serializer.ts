@@ -1,5 +1,5 @@
-import { PassportSerializer } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { PassportSerializer } from '@nestjs/passport';
 
 /**
  * Responsible for populating the `req.user` property by serializing the user

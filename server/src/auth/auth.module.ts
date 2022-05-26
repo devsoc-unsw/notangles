@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { OidcStrategy, buildOpenIdClient } from './oidc.strategy';
-import { SessionSerializer } from './session.serializer';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { PassportModule } from '@nestjs/passport';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { buildOpenIdClient, OidcStrategy } from './oidc.strategy';
 import { userSchema } from './schemas/user.schema';
+import { SessionSerializer } from './session.serializer';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',

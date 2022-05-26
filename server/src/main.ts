@@ -1,9 +1,9 @@
 import { NestApplicationOptions } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   // Setup NestJS
@@ -21,7 +21,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Setup Swagger  
+  // Setup Swagger
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Notangles API')
     .setDescription("An API for CSESoc Projects' Notangles")

@@ -1,7 +1,7 @@
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { user, userDocument, userInterface } from './schemas/user.schema';
+import { Model } from 'mongoose';
+import { userDocument } from './schemas/user.schema';
 
 /**
  * TODO: Implement the logic for finding users in the database by their user ID here.
