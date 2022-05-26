@@ -11,7 +11,7 @@ In the root server directory `server`, run `npm install` to install all the depe
 
 ## Running
 
-Run `npm run start:dev` to start the server locally. The server will be hosted at http://localhost:3001
+First, make sure you have started Docker via Docker Desktop on your machine. Then, run `docker-compose up` to start the server locally. The server will be hosted at http://localhost:3001.
 
 ## Tech Stack
 
@@ -19,6 +19,7 @@ The Notangles server uses:
 
 - [Nest.js](https://nestjs.com/)
 - [MongoDb](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
 
 ## Stuff to know
 
