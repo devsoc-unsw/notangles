@@ -5,16 +5,7 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
 
-import { existsSync } from 'fs';
-
 async function bootstrap() {
-  // Check that a file called .env exists in the root of the project
-  // If not, then exit the process
-  if (!existsSync('.env')) {
-    console.error('No .env file found. Please create one.');
-    process.exit(1);
-  }
-
   // Setup NestJS
   const appOptions: NestApplicationOptions = { cors: true };
   const app = await NestFactory.create(AppModule, appOptions);
@@ -30,10 +21,10 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Setup Swagger
+  // Setup Swagger  
   const swaggerOptions = new DocumentBuilder()
     .setTitle('Notangles API')
-    .setDescription("An API for CSEProject's Notangles")
+    .setDescription("An API for CSESoc Projects' Notangles")
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
