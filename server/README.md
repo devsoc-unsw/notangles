@@ -35,14 +35,4 @@ The Notangles server uses:
 
 ## Environment variables required
 
-Without these environment variables stored in a `.env` file, the server will not run. Check the Deployment Guide on our Confluence to get the values of these environment variables.
-
-```bash
-OAUTH2_CLIENT_ID
-OAUTH2_CLIENT_SECRET
-OIDC_ISSUER_BASE_URL
-OAUTH2_REDIRECT_URI
-OAUTH2_SCOPES
-SESSION_SECRET
-PORT
-```
+Please check the Vault for the contents of the `.env` file and copy it into a file called `.env` in `/server`. Without these environment variables, the server will not run.
