@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, LocationOn, Notes } from '@mui/icons-material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
@@ -16,6 +15,9 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
+import { TimePicker } from '@mui/x-date-pickers';
+import { ColorBox, ColorPicker, ColorValue } from 'mui-color';
+import PaletteIcon from '@mui/icons-material/Palette';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Course';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
@@ -49,21 +51,22 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isChanged, setIsChanged] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
-  const [newName, setNewName] = useState(eventData.name);
-  const [newLocation, setNewLocation] = useState(eventData.location);
-  const [newDescription, setNewDescription] = useState(eventData.description);
-  const [openSaveModal, setOpenSaveModal] = useState(false);
-  const [openVertMenu, setOpenVertMenu] = useState(false);
-  const [anchorVertMenu, setAnchorVertMenu] = useState(null);
+  const [newName, setNewName] = useState<string>(eventData.name);
+  const [newStartTime, setNewStartTime] = useState<number>(eventData.time.start);
+  const [newEndTime, setNewEndTime] = useState<number>(eventData.time.end);
+  const [newLocation, setNewLocation] = useState<string>(eventData.location);
+  const [newDescription, setNewDescription] = useState<string>(eventData.description);
+  const [newColor, setNewColor] = useState<ColorValue>('#1f7e8c');
 
-  const updateEventTime = (eventTime: EventTime, eventName: string) => {
+  const updateEventTime = (eventTime: EventTime, id: string) => {
     setCreatedEvents({
       ...createdEvents,
-      [eventName]: {
-        ...createdEvents[eventName],
+      [id]: {
+        ...createdEvents[id],
         time: { ...eventTime },
       },
     });
@@ -71,46 +74,51 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
+    console.log({ newStartTime });
+    const newEventTime = {
+      day: 1,
+      start: newStartTime,
+      end: 15,
+    };
+
+    // updateEventTime(newEventTime, id);
+
     setCreatedEvents({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
         name: newName,
-        // TODO: input for time
+        // TODO: Fix time, weird produced output
+        // TODO: select day
+        // time: newEventTime,
+
         location: newLocation,
         description: newDescription,
-        // TODO: inptu for color
+        // color: 'red',
+        // TODO: input for color
       },
     });
     setIsEditing(false);
   };
 
-  const handleDiscard = (id: string) => {
+  const handleDiscardChangesDialog = (id: string) => {
     handleClose();
-    setOpenSaveModal(false);
+    setOpenSaveDialog(false);
     setIsEditing(false);
     setNewName(eventData.name);
     setNewLocation(eventData.location);
     setNewDescription(eventData.description);
   };
 
-  const handleEditDeleteMenu = (e: any) => {
-    setAnchorVertMenu(e.currentTarget);
-    setOpenVertMenu(true);
-  };
-
-  const handleCloseEditDeleteMenu = () => {
-    setAnchorVertMenu(null);
-    setOpenVertMenu(false);
-  };
-
   const handleCloseDialog = () => {
     // Another dialog to alert user changes have not been saved when in isEditing mode
     if (isEditing && isChanged) {
-      setOpenSaveModal(true);
+      setOpenSaveDialog(true);
     } else {
       handleClose();
     }
+
+    setIsEditing(false);
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -122,19 +130,23 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   return (
     <div>
       <Dialog PaperProps={{ sx: { minWidth: 600 } }} open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
-        <Dialog PaperProps={{ sx: { width: '35%', height: '20%' } }} open={openSaveModal} onClose={() => setOpenSaveModal(false)}>
+        <Dialog
+          PaperProps={{ sx: { width: '35%', height: '20%' } }}
+          open={openSaveDialog}
+          onClose={() => setOpenSaveDialog(false)}
+        >
           <StyledTitleContainer>
             <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
           </StyledTitleContainer>
           <Box display="flex" justifyContent="flex-end" alignItems="flex-end">
             <Button
               onClick={() => {
-                setOpenSaveModal(false);
+                setOpenSaveDialog(false);
               }}
             >
               Cancel
             </Button>
-            <Button onClick={() => handleDiscard(eventData.id)}>Discard</Button>
+            <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
           </Box>
         </Dialog>
 
@@ -144,6 +156,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             {isEditing ? (
               <TextField
                 variant="standard"
+                required
                 value={newName}
                 onChange={(e) => {
                   setIsChanged(true);
@@ -153,24 +166,27 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             ) : (
               <div>{eventData.name}</div>
             )}
-            {isEditing ? <Button onClick={() => handleUpdateEvent(eventData.id)}>Save Changes</Button> : <div></div>}
-
-            <IconButton onClick={handleEditDeleteMenu}>
-              <MoreVertIcon />
-            </IconButton>
-
-            <Menu anchorEl={anchorVertMenu} open={openVertMenu} onClose={handleCloseEditDeleteMenu}>
-              <MenuItem>
-                <Button onClick={() => setIsEditing(true)}>
-                  <EditIcon />
-                  Edit Event
+            <Box>
+              {isEditing ? (
+                <Button onClick={() => handleUpdateEvent(eventData.id)} disabled={newName === '' || newLocation === ''}>
+                  Save Changes
                 </Button>
-              </MenuItem>
-            </Menu>
+              ) : (
+                <div></div>
+              )}
 
-            <IconButton aria-label="close" onClick={handleCloseDialog}>
-              <Close />
-            </IconButton>
+              <IconButton onClick={() => setIsEditing(true)}>
+                <EditIcon />
+              </IconButton>
+
+              <IconButton onClick={() => handleDeleteEvent(eventData.id)}>
+                <Delete />
+              </IconButton>
+
+              <IconButton aria-label="close" onClick={handleCloseDialog}>
+                <Close />
+              </IconButton>
+            </Box>
           </StyledTitleContainer>
         </StyledDialogTitle>
 
@@ -183,13 +199,24 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
               <Grid item>
                 {/* How should we allow users to change time? Use time picker? */}
-                <Typography>
-                  {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'} {to24Hour(eventData.time.end)}
-                </Typography>
+                {isEditing ? (
+                  <TimePicker
+                    views={['hours']}
+                    value={newStartTime}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={(e) => {
+                      if (e) setNewStartTime(e);
+                    }}
+                  />
+                ) : (
+                  <Typography>
+                    {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'} {to24Hour(eventData.time.end)}
+                  </Typography>
+                )}
               </Grid>
             </Grid>
 
-            {String(eventData.description).length > 0 && (
+            {(String(eventData.description).length > 0 || isEditing) && (
               <Grid item container direction="row" spacing={2}>
                 <Grid item>
                   <Notes />
@@ -215,23 +242,37 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
               <Grid item>
                 {isEditing ? (
-                  <TextField variant="standard" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} multiline />
+                  <TextField required variant="standard" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
                 ) : (
                   <Typography> {eventData.location}</Typography>
                 )}
               </Grid>
             </Grid>
+
+            <Grid item container direction="row" spacing={2}>
+              {isEditing ? (
+                <Grid item>
+                  {/* TODO: ColorPicker breaks everything rn */}
+                  {/* <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} /> */}
+                </Grid>
+              ) : (
+                <Grid
+                  item
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    paddingLeft: '10px',
+                    paddingRight: '10px',
+                  }}
+                >
+                  <Box bgcolor={`${newColor}`} sx={{ width: 25, height: 25, borderRadius: '5px' }}></Box>
+                  <Typography sx={{ paddingLeft: '15px' }}>Current color is {newColor}</Typography>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         </StyledDialogContent>
-        <ExecuteButton
-          variant="contained"
-          color="primary"
-          disableElevation
-          onClick={() => handleDeleteEvent(eventData.id)}
-        >
-          <Delete sx={{ alignSelf: 'center' }} />
-          DELETE
-        </ExecuteButton>
       </Dialog>
     </div>
   );
