@@ -9,7 +9,8 @@ import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
 
-import DroppedClasses, { inventoryMargin } from './DroppedClasses';
+import DroppedClasses from './DroppedClasses';
+import { inventoryMargin } from './DroppedClass';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 

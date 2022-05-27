@@ -6,7 +6,7 @@ import { borderRadius } from '../../constants/theme';
 import { DropzoneProps } from '../../interfaces/PropTypes';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
-import { classHeight, classTranslateY } from './DroppedClasses';
+import { classHeight, classTranslateY } from './DroppedClass';
 
 const StyledDropzone = styled('div', {
   shouldForwardProp: (prop) => !['classPeriod', 'x', 'color', 'isInventory', 'earliestStartTime'].includes(prop.toString()),
