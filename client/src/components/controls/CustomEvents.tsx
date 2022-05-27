@@ -156,8 +156,8 @@ const CustomEvent = ({ }) => {
       name: eventName,
       time: {
         day: weekdays.indexOf(days.toString()) + 1,
-        start: startTime.getHours(),
-        end: endTime.getHours(),
+        start: startTime.getHours() + startTime.getMinutes() / 60,
+        end: endTime.getHours() + endTime.getMinutes() / 60,
       },
       location: location,
       description: description,

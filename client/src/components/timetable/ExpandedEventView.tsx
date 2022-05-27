@@ -47,7 +47,20 @@ const ExecuteButton = styled(Button)`
 `;
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
-  const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
+  const to24Hour1 = (n: number) => `${String((n / 1) >> 0)}:${(n % 1) * 60 ? String(((n % 1) * 60) >> 0) : '00'}`;
+
+  const to24Hour = (n: number) => {
+    let result = `${String((n / 1) >> 0)}:`
+    if ((n % 1) * 60) {
+      if ((n % 1) * 60 < 10) {
+        result += "0"
+      }
+      result += `${String(((n % 1) * 60) >> 0)}`
+    } else {
+      result += "00"
+    }
+    return result
+  }
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
