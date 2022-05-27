@@ -44,16 +44,20 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-// const StyledModal = styled(Modal)`
-//   display: 'flex';
-//   width: 400;
-//   background-color: 'white';
-// `;
-
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
+
+  const [newName, setNewName] = useState(eventData.name);
+  const [newLocation, setNewLocation] = useState(eventData.location);
+  const [newDescription, setNewDescription] = useState(eventData.description);
+  const [openSaveModal, setOpenSaveModal] = useState(false);
+  const [openVertMenu, setOpenVertMenu] = useState(false);
+  const [anchorVertMenu, setAnchorVertMenu] = useState(null);
 
   const updateEventTime = (eventTime: EventTime, eventName: string) => {
     setCreatedEvents({
@@ -66,55 +70,19 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   };
   useEventDrag(updateEventTime);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isChanged, setIsChanged] = useState(false);
-
-  const [newName, setNewName] = useState(eventData.name);
-  const [newLocation, setNewLocation] = useState(eventData.location);
-  const [newDescription, setNewDescription] = useState(eventData.description);
-  const [openSaveModal, setOpenSaveModal] = useState(false);
-  const [openVertMenu, setOpenVertMenu] = useState(false);
-  const [anchorVertMenu, setAnchorVertMenu] = useState(null);
-
-  const handleEdit = () => {
-    setIsEditing(true);
-    // console.log("Hello")
-    //  console.log( {THECREATEDEVENTOBJECT: createdEvents[id]} )
-
-    // When pressing on pencil icon, text becomes inputfields... in edit mode.
-
-    // Make text an input box when hovering over the text
-    // Send new inputted text to the handleEditSave func
-  };
-
   const handleUpdateEvent = (id: string) => {
     setCreatedEvents({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
         name: newName,
-        // time
+        // TODO: input for time
         location: newLocation,
         description: newDescription,
-        // color
+        // TODO: inptu for color
       },
     });
     setIsEditing(false);
-  };
-
-  const handleCloseDialog = () => {
-    // Another dialog to alert user changes have not been saved when in isEditing mode
-    if (isEditing && isChanged) {
-      setOpenSaveModal(true);
-    } else {
-      handleClose();
-    }
-  };
-
-  const handleDeleteEvent = (id: string) => {
-    const updatedEventData = { ...createdEvents };
-    delete updatedEventData[id];
-    setCreatedEvents(updatedEventData);
   };
 
   const handleDiscard = (id: string) => {
@@ -134,6 +102,21 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const handleCloseEditDeleteMenu = () => {
     setAnchorVertMenu(null);
     setOpenVertMenu(false);
+  };
+
+  const handleCloseDialog = () => {
+    // Another dialog to alert user changes have not been saved when in isEditing mode
+    if (isEditing && isChanged) {
+      setOpenSaveModal(true);
+    } else {
+      handleClose();
+    }
+  };
+
+  const handleDeleteEvent = (id: string) => {
+    const updatedEventData = { ...createdEvents };
+    delete updatedEventData[id];
+    setCreatedEvents(updatedEventData);
   };
 
   return (
@@ -158,7 +141,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
         <StyledDialogTitle>
           <StyledTitleContainer>
             {/* Show input box when in edit mode */}
-
             {isEditing ? (
               <TextField
                 variant="standard"
@@ -179,7 +161,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
             <Menu anchorEl={anchorVertMenu} open={openVertMenu} onClose={handleCloseEditDeleteMenu}>
               <MenuItem>
-                <Button onClick={handleEdit}>
+                <Button onClick={() => setIsEditing(true)}>
                   <EditIcon />
                   Edit Event
                 </Button>
@@ -245,7 +227,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           variant="contained"
           color="primary"
           disableElevation
-          onClick={() => handleDeleteEvent(eventData.id)} //handleRemoveEvent when I can get it working
+          onClick={() => handleDeleteEvent(eventData.id)}
         >
           <Delete sx={{ alignSelf: 'center' }} />
           DELETE
