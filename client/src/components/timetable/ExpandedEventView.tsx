@@ -63,7 +63,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
   return (
     <div>
-      <Dialog PaperProps={{ sx: { width: '50%', height: '35%' } }} open={popupOpen} maxWidth="sm" onClose={handleClose}>
+      <Dialog PaperProps={{ sx: { minWidth: 600 } }} open={popupOpen} maxWidth="sm" onClose={handleClose}>
+
         <StyledDialogTitle>
           <StyledTitleContainer>
             {eventData.name}
@@ -87,14 +88,16 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
             </Grid>
 
-            <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                <Notes />
-              </Grid>
-              <Grid item>
-                <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
-              </Grid>
-            </Grid>
+            {String(eventData.description).length > 0 &&
+              <Grid item container direction="row" spacing={2}>
+                <Grid item>
+                  <Notes />
+                </Grid>
+                <Grid item>
+                  <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
+                </Grid>
+              </Grid>}
+
 
             <Grid item container direction="row" spacing={2}>
               <Grid item>
