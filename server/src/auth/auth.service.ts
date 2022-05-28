@@ -30,6 +30,6 @@ export class AuthService {
 
   async getUser(uidGiven: string): Promise<boolean> {
     const response = await this.userModel.find({ google_uid: uidGiven });
-    return response.length === 0;
+    return response.length !== 0;
   }
 }
