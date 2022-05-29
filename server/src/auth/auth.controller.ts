@@ -1,10 +1,13 @@
 import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
+import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   @UseGuards(LoginGuard)
   @Get('/login')
   login() {
