@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -17,7 +17,7 @@ export class AuthController {
 
   @Get('/user')
   user(@Request() req) {
-    return req.user;
+    return this.authService.getUser(req.user === undefined ? null : req.user.userinfo.sub);
   }
 
   @UseGuards(LoginGuard)
