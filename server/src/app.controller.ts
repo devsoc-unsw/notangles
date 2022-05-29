@@ -9,10 +9,10 @@ export class AppController {
   getHello(@Request() req): string {
     if (req.user) {
       return (
-        'Hello, ' + req.user.userinfo.name + '! <a href="/auth/logout">Logout</a>'
+        'Hello, ' + req.user.userinfo.name + '! <a href="/logout">Logout</a>'
       );
     } else {
-      return this.appService.getHello() + ' <a href="/auth/login">Login</a>';
+      return this.appService.getHello() + ' <a href="/login">Login</a>';
     }
   }
 }

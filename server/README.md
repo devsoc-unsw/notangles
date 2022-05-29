@@ -13,6 +13,8 @@ In the root server directory `server`, run `npm install` to install all the depe
 
 First, make sure you have started Docker via Docker Desktop on your machine. Then, run `docker-compose up` to start the server locally. The server will be hosted at http://localhost:3001.
 
+Whenever changes are made to any of the typescript files, make sure to run `docker-compose up --build` to rebuild the corresponding javascript files.
+
 To visually inspect the database, install [MongoDB Compass](https://www.mongodb.com/products/compass) and connect to `mongo://localhost:27017`.
 
 ## Tech Stack
