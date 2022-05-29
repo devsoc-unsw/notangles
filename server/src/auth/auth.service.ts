@@ -12,24 +12,24 @@ export class AuthService {
   constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
   async createUser(userInfo: any): Promise<void> {
-    // check if user already exists
     let isCurrentUser = await this.getUser(userInfo.sub);
-    // adding user if user doesn't exists
+
     if (isCurrentUser === null) {
-      let newUser = {
+      const newUser = {
         google_uid: userInfo.sub,
         firstname: userInfo.given_name,
         lastname: userInfo.family_name,
         email: userInfo.email,
         createdAt: new Date().toISOString().slice(0, 10),
       };
+
       const userAdded = new this.userModel(newUser);
       userAdded.save();
     }
   }
 
-  async getUser(uidGiven: string): Promise<Array<UserInterface> | null> {
+  async getUser(uidGiven: string): Promise<UserInterface | null> {
     const response = await this.userModel.find({ google_uid: uidGiven });
-    return response.length !== 0 ? response : null;
+    return response.length !== 0 ? response.at(0) : null;
   }
 }
