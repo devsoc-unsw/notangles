@@ -17,9 +17,11 @@ export class user {
   @Prop() timetable: string;
 }
 
-export type userDocument = user & Document;
 export const userSchema = SchemaFactory.createForClass(user);
-export interface userInterface {
+
+export type UserDocument = user & Document;
+
+export interface UserInterface {
   // uid: string;
   google_uid: string;
   // zid: string;

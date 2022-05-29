@@ -4,6 +4,7 @@ services:
     container_name: notangles-server
     image: notangles-server
     environment:
+      DATABASE_URL: ${DATABASE_URL}
       OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
       OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
       OIDC_ISSUER_BASE_URL: ${OIDC_ISSUER_BASE_URL}
