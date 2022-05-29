@@ -17,7 +17,7 @@ export class AuthController {
 
   @Get('/user')
   user(@Request() req) {
-    return req.user;
+    return this.authService.getUser(req.user === undefined ? null : req.user.userinfo.sub);
   }
 
   @UseGuards(LoginGuard)
