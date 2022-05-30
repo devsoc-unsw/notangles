@@ -26,7 +26,7 @@ ENV REACT_APP_SENTRY_TRACE_RATE_CLIENT=$SENTRY_TRACE_RATE_CLIENT
 RUN npm run build
 
 # nginx state for serving content
-FROM nginx:1.21.6-alpine
+FROM nginx:1.22.0-alpine
 # Set working directory to nginx asset directory
 WORKDIR /usr/share/nginx/html
 # Remove default nginx static assets
