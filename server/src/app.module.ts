@@ -14,7 +14,7 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     SumModule,
     AutoModule,
-    MongooseModule.forRoot(process.env.MONGO_URL),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     DatabaseModule,
   ],
   controllers: [AppController],
