@@ -1,10 +1,13 @@
-import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
 
+import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 
-@Controller()
+@Controller('user')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   @UseGuards(LoginGuard)
   @Get('/login')
   login() {
@@ -13,8 +16,8 @@ export class AuthController {
   }
 
   @Get('/user')
-  user(@Request() req) {
-    return req.user;
+  user(@Req() req: Request) {
+    return this.authService.getUser(req.query.userID as string);
   }
 
   @UseGuards(LoginGuard)
@@ -24,7 +27,7 @@ export class AuthController {
   }
 
   @Get('/logout')
-  async logout(@Request() req, @Res() res: Response) {
+  async logout(@Req() req: Request, @Res() res: Response) {
     req.session.destroy(() => {
       res.clearCookie('connect.sid');
       res.redirect('/');

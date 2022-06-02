@@ -11,14 +11,19 @@ In the root server directory `server`, run `npm install` to install all the depe
 
 ## Running
 
-Run `npm run start:dev` to start the server locally. The server will be hosted at http://localhost:3001
+First, make sure you have started Docker via Docker Desktop on your machine. Then, run `docker-compose up` to start the server locally. The server will be hosted at http://localhost:3001.
+
+Whenever changes are made to any of the Typescript files, make sure to kill the current running instance and run `docker-compose up --build` to rebuild the corresponding Javascript files and restart the server.
+
+To visually inspect the database, install [MongoDB Compass](https://www.mongodb.com/products/compass) and connect to `mongo://localhost:27017`.
 
 ## Tech Stack
 
 The Notangles server uses:
 
 - [Nest.js](https://nestjs.com/)
-- [MongoDb](https://www.mongodb.com/)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
 
 ## Stuff to know
 
@@ -34,14 +39,4 @@ The Notangles server uses:
 
 ## Environment variables required
 
-Without these environment variables stored in a `.env` file, the server will not run. Check the Deployment Guide on our Confluence to get the values of these environment variables.
-
-```bash
-OAUTH2_CLIENT_ID
-OAUTH2_CLIENT_SECRET
-OIDC_ISSUER_BASE_URL
-OAUTH2_REDIRECT_URI
-OAUTH2_SCOPES
-SESSION_SECRET
-PORT
-```
+Please check the Vault for the contents of the `.env` file and copy it into a file called `.env` in `/server`. Without these environment variables, the server will not run.

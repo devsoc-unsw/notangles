@@ -1,5 +1,5 @@
 import { Body, Controller, OnModuleInit, Post } from '@nestjs/common';
-import { ClientGrpc, Client, Transport } from '@nestjs/microservices';
+import { Client, ClientGrpc, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { TimetableConstraintsDto } from './dtos/auto.dto';
 
