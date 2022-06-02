@@ -160,7 +160,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     ]);
 
     periodInfoPerMode.current = {
-      'hybrid': targetActivities.current.map(
+      hybrid: targetActivities.current.map(
         (value) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
@@ -181,7 +181,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
-      'online': targetActivities.current.map(
+      online: targetActivities.current.map(
         (value, index) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
