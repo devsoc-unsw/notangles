@@ -30,6 +30,8 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
   // Trigger page view on the home page
   ReactGA.pageview(window.location.pathname);
 }
+
+// Automate term details.
 setAvailableTermDetails().then((res) => {
   ReactDOM.render(<Root />, document.getElementById('root'));
 });

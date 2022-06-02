@@ -9,21 +9,23 @@ export let firstDayOfTerm = `0000-00-00`;
 const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
+import timeoutPromise from '../utils/timeoutPromise';
 
 export const setAvailableTermDetails = async () => {
   try {
-    const termDateFetch = await fetch(`${API_URL.timetable}/startdate/notangles`);
+    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
+    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
 
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
-    console.log(termDateRes);
+
     let matched = termDateRes.match(regexp);
     if (matched != null) {
       year = matched[3];
     }
 
     firstDayOfTerm = termDateRes.replaceAll('/', '-');
-    const termIdFetch = await fetch(`${API_URL.timetable}/availableterm/notangles`);
+
     const termIdRes = await termIdFetch.text();
     if (termIdRes.length === REGULAR_TERM_STR_LEN) {
       // This is not a summer term.
@@ -57,7 +59,6 @@ export const colors: string[] = [
   '#868413', // dark yellow
   '#2e89ff', // dark blue
   '#3323ad', // deep blue
-  '#8AC352', // light green
 ];
 
 export const defaultStartTime: number = 9;
