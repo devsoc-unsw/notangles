@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { ColorBox, ColorPicker, ColorValue } from 'mui-color';
+import { Color, ColorBox, ColorPicker, ColorValue } from 'mui-color';
 import PaletteIcon from '@mui/icons-material/Palette';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Course';
@@ -123,7 +123,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
   const [newLocation, setNewLocation] = useState<string>(eventData.location);
   const [newDescription, setNewDescription] = useState<string>(eventData.description);
-  const [newColor, setNewColor] = useState<ColorValue>('#1f7e8c');
+  const [newColor, setNewColor] = useState<ColorValue>(eventData.color);
 
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
@@ -378,8 +378,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     paddingRight: '10px',
                   }}
                 >
-                  <Box bgcolor={`${newColor}`} sx={{ width: 25, height: 25, borderRadius: '5px' }}></Box>
-                  <Typography sx={{ paddingLeft: '15px' }}>Current colour is {newColor}</Typography>
+                  <Box
+                    sx={{
+                      width: 25,
+                      height: 25,
+                      borderRadius: '5px',
+                      ...((eventData.color as Color)?.css ?? { backgroundColor: eventData.color }), // <-- do this to add the color to the css;
+                    }}
+                  ></Box>
+                  <Typography sx={{ paddingLeft: '15px' }}>Current colour is {"**it's not a string so it will break if you try put it here directly**"}</Typography>
                 </Grid>
               )}
             </Grid>
