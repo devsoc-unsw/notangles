@@ -140,7 +140,7 @@ const CustomEvent = ({ }) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
   const [days, setDays] = useState<Array<string>>([]);
 
-  const [color, setColor] = useState<ColorValue>('#1f7e8c');
+  const [color, setColor] = useState<ColorValue>('#1F7E8C');
 
   const doCreateEvent = () => {
     const uuid = uuidv4();
