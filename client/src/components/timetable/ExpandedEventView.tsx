@@ -123,7 +123,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
   const [newLocation, setNewLocation] = useState<string>(eventData.location);
   const [newDescription, setNewDescription] = useState<string>(eventData.description);
-  const [newColor, setNewColor] = useState<ColorValue>(eventData.color);
+  const [newColor, setNewColor] = useState<ColorValue>(eventData.color as Color);
 
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
@@ -142,12 +142,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
+    console.log(eventData.color);
     const newEventTime = {
       day: weekdaysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours(),
       end: newEndTime.getHours(),
     };
-    console.log(newEventTime);
 
     updateEventTime(newEventTime, id);
 
@@ -163,7 +163,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
         location: newLocation,
         description: newDescription,
-        // color: newColor,
+        color: newColor,
         // TODO: input for color
       },
     });
@@ -196,6 +196,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
+
+  const defaultEventColor = '#1F7E8C';
 
   return (
     <div>
@@ -365,7 +367,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               {isEditing ? (
                 <Grid item>
                   {/* TODO: ColorPicker breaks everything rn */}
-                  {/* <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} /> */}
+                  <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} />
                 </Grid>
               ) : (
                 <Grid
@@ -386,7 +388,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                       ...((eventData.color as Color)?.css ?? { backgroundColor: eventData.color }), // <-- do this to add the color to the css;
                     }}
                   ></Box>
-                  <Typography sx={{ paddingLeft: '15px' }}>Current colour is {"**it's not a string so it will break if you try put it here directly**"}</Typography>
+                  <Typography sx={{ paddingLeft: '15px' }}>
+                    Current colour is{' '}
+                    {eventData.color === defaultEventColor ? defaultEventColor : `#${(eventData.color as Color).hex}`}
+                  </Typography>
                 </Grid>
               )}
             </Grid>
