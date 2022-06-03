@@ -9,9 +9,13 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  ListItem,
+  ListItemText,
   Menu,
   MenuItem,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -20,6 +24,7 @@ import { ColorBox, ColorPicker, ColorValue } from 'mui-color';
 import PaletteIcon from '@mui/icons-material/Palette';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Course';
+import { DropdownOptionProps } from '../../interfaces/PropTypes';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { useEventDrag } from '../../utils/Drag_v2';
 
@@ -46,9 +51,65 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
+const StyledOptionToggle = styled(ToggleButtonGroup)`
+  margin-top: 10px;
+  width: 100%;
+`;
+
+const StyledOptionButtonToggle = styled(ToggleButton)`
+  width: 100%;
+  height: 32px;
+  margin-bottom: 10px;
+`;
+
+const DropdownOption: React.FC<DropdownOptionProps> = ({
+  optionName,
+  optionState,
+  setOptionState,
+  optionChoices,
+  multiple,
+  noOff,
+}) => {
+  const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
+    if (newOption !== null) {
+      setOptionState(newOption);
+    }
+  };
+
+  return (
+    <ListItem key={optionName}>
+      <Grid container spacing={0}>
+        <Grid item xs={12}>
+          <ListItemText primary={optionName} />
+        </Grid>
+        <Grid item xs={12}>
+          <StyledOptionToggle
+            size="small"
+            exclusive={multiple ? false : true}
+            value={optionState}
+            onChange={handleOptionChange}
+            aria-label="option choices"
+          >
+            {!noOff && (
+              <StyledOptionButtonToggle value="off" aria-label="default">
+                off
+              </StyledOptionButtonToggle>
+            )}
+            {optionChoices.map((option) => (
+              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
+                {option}
+              </StyledOptionButtonToggle>
+            ))}
+          </StyledOptionToggle>
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
+};
+
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
-  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -56,11 +117,18 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(eventData.name);
-  const [newStartTime, setNewStartTime] = useState<number>(eventData.time.start);
-  const [newEndTime, setNewEndTime] = useState<number>(eventData.time.end);
+  const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
+  const [newDays, setNewDays] = useState<Array<string>>([]);
+  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.start));
+  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
   const [newLocation, setNewLocation] = useState<string>(eventData.location);
   const [newDescription, setNewDescription] = useState<string>(eventData.description);
   const [newColor, setNewColor] = useState<ColorValue>('#1f7e8c');
+
+  const handleFormat = (newFormats: string[]) => {
+    setNewDays(newFormats);
+    setIsChanged(true);
+  };
 
   const updateEventTime = (eventTime: EventTime, id: string) => {
     setCreatedEvents({
@@ -74,23 +142,22 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
-    console.log({ newStartTime });
     const newEventTime = {
-      day: 1,
-      start: newStartTime,
-      end: 15,
+      day: weekdaysShort.indexOf(newDays.toString()) + 1,
+      start: newStartTime.getHours(),
+      end: newEndTime.getHours(),
     };
+    console.log(newEventTime);
 
-    // updateEventTime(newEventTime, id);
+    updateEventTime(newEventTime, id);
 
     setCreatedEvents({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
         name: newName,
-        // TODO: Fix time, weird produced output
         // TODO: select day
-        // time: newEventTime,
+        time: newEventTime,
 
         location: newLocation,
         description: newDescription,
@@ -119,6 +186,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     }
 
     setIsEditing(false);
+    setIsChanged(false);
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -142,6 +210,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             <Button
               onClick={() => {
                 setOpenSaveDialog(false);
+                setIsEditing(true);
               }}
             >
               Cancel
@@ -200,18 +269,48 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               <Grid item>
                 {/* How should we allow users to change time? Use time picker? */}
                 {isEditing ? (
-                  <TimePicker
-                    views={['hours']}
-                    value={newStartTime}
-                    renderInput={(params) => <TextField {...params} />}
-                    onChange={(e) => {
-                      if (e) setNewStartTime(e);
-                    }}
-                  />
+                  <>
+                    <ListItem>
+                      {/* TODO: Have the highlighted day as the current day of event */}
+                      <DropdownOption
+                        optionName="Days"
+                        optionState={newDays}
+                        setOptionState={handleFormat}
+                        optionChoices={weekdaysShort}
+                        noOff
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
+                      <TimePicker
+                        views={['hours']}
+                        value={newStartTime}
+                        renderInput={(params) => <TextField {...params} />}
+                        onChange={(e) => {
+                          setIsChanged(true);
+                          if (e) setNewStartTime(e);
+                        }}
+                      />
+
+                      <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
+                      <TimePicker
+                        views={['hours']}
+                        value={newEndTime}
+                        renderInput={(params) => <TextField {...params} />}
+                        onChange={(e) => {
+                          setIsChanged(true);
+                          if (e) setNewEndTime(e);
+                        }}
+                      />
+                    </ListItem>
+                  </>
                 ) : (
-                  <Typography>
-                    {weekdays[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'} {to24Hour(eventData.time.end)}
-                  </Typography>
+                  <>
+                    <Typography>
+                      {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
+                      {to24Hour(eventData.time.end)}
+                    </Typography>
+                  </>
                 )}
               </Grid>
             </Grid>
@@ -227,7 +326,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                       variant="standard"
                       value={newDescription}
                       multiline
-                      onChange={(e) => setNewDescription(e.target.value)}
+                      onChange={(e) => {
+                        setIsChanged(true);
+                        setNewDescription(e.target.value);
+                      }}
                     />
                   ) : (
                     <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
@@ -242,7 +344,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
               <Grid item>
                 {isEditing ? (
-                  <TextField required variant="standard" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
+                  <TextField
+                    required
+                    variant="standard"
+                    value={newLocation}
+                    onChange={(e) => {
+                      setIsChanged(true);
+                      setNewLocation(e.target.value);
+                    }}
+                  />
                 ) : (
                   <Typography> {eventData.location}</Typography>
                 )}
