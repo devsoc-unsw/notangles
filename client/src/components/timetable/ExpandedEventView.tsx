@@ -109,17 +109,17 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => {
-    let result = `${String((n / 1) >> 0)}:`
+    let result = `${String((n / 1) >> 0)}:`;
     if ((n % 1) * 60) {
       if ((n % 1) * 60 < 10) {
-        result += "0"
+        result += '0';
       }
-      result += `${String(((n % 1) * 60) >> 0)}`
+      result += `${String(((n % 1) * 60) >> 0)}`;
     } else {
-      result += "00"
+      result += '00';
     }
-    return result
-  }
+    return result;
+  };
   const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -153,7 +153,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
-    console.log(eventData.color);
     const newEventTime = {
       day: weekdaysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours(),
@@ -208,7 +207,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     setCreatedEvents(updatedEventData);
   };
 
-  const defaultEventColor = '#1F7E8C';
+  const isHex = (color: string): boolean => {
+    var hexReg = /^#([0-9a-f]{3}){1,2}$/i;
+    return hexReg.test(color);
+  };
 
   return (
     <div>
@@ -400,8 +402,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     }}
                   ></Box>
                   <Typography sx={{ paddingLeft: '15px' }}>
-                    Current colour is{' '}
-                    {eventData.color === defaultEventColor ? defaultEventColor : `#${(eventData.color as Color).hex}`}
+                    Current colour is {(eventData.color as Color)?.hex ?? `${eventData.color}`}
+                    {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
                   </Typography>
                 </Grid>
               )}
