@@ -118,7 +118,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
   const [newName, setNewName] = useState<string>(eventData.name);
   const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-  const [newDays, setNewDays] = useState<Array<string>>([]);
+  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[eventData.time.day - 1]]);
   const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.start));
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
   const [newLocation, setNewLocation] = useState<string>(eventData.location);
@@ -151,6 +151,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
     updateEventTime(newEventTime, id);
 
+    // TODO: set so redo button, changes back to the edited changes of event.
+
     setCreatedEvents({
       ...createdEvents,
       [id]: {
@@ -161,7 +163,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
         location: newLocation,
         description: newDescription,
-        // color: 'red',
+        // color: newColor,
         // TODO: input for color
       },
     });
@@ -244,7 +246,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                 <div></div>
               )}
 
-              <IconButton onClick={() => setIsEditing(true)}>
+              <IconButton onClick={() => setIsEditing(true)} disabled={isEditing}>
                 <EditIcon />
               </IconButton>
 
@@ -377,7 +379,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                   }}
                 >
                   <Box bgcolor={`${newColor}`} sx={{ width: 25, height: 25, borderRadius: '5px' }}></Box>
-                  <Typography sx={{ paddingLeft: '15px' }}>Current color is {newColor}</Typography>
+                  <Typography sx={{ paddingLeft: '15px' }}>Current colour is {newColor}</Typography>
                 </Grid>
               )}
             </Grid>
