@@ -259,8 +259,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let ignoreMouse = false;
 
   let clashColour = `solid orange ${borderWidth}px`;
+  let nonPermittedClashes = new Set();
 
-  let numNonPermittedClashes = 0;
   if ('time' in cardData) {
     // Find the clash group that the class is in.
     for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
@@ -271,8 +271,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       // Lecture (online or offline) + any class is always a permitted clash.
       // The only non-permitted clash is like tute + tute or tute + exam etc.
       for (const clashClass of clashGroup) {
-        if (!clashClass.class.activity.includes('Lecture')) {
-          numNonPermittedClashes += 1;
+        if (!clashClass.class.activity.includes('Lecture') && !nonPermittedClashes.has(clashClass.class.id)) {
+          nonPermittedClashes.add(clashClass.class.id)
         }
         // Check if the current cardData has weeks that are overlapping with
         // the weeks of the current clashClass.
@@ -286,7 +286,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }
       }
       if (
-        numNonPermittedClashes > 1 &&
+        nonPermittedClashes.size > 1 &&
         clashGroup.filter(
           (clashClass) => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id
         ) !== []
