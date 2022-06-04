@@ -9,6 +9,7 @@ import { DroppedClassesProps } from '../../interfaces/PropTypes';
 import { CardData, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
 import DroppedClass, { transitionName } from './DroppedClass';
 import { v4 as uuidv4 } from 'uuid';
+import { notEqual } from 'assert';
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
@@ -75,24 +76,25 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
 
   const checkClashes = () => {
     const newClashes: ClassPeriod[] = [];
+    let currSelectedClasses = Object.values(selectedClasses);
+    if (currSelectedClasses !== null) {
+      const flatPeriods = currSelectedClasses
+        .flatMap((activities) => Object.values(activities))
+        .flatMap((classData) => (classData ? classData.periods : []));
 
-    const flatPeriods = Object.values(selectedClasses)
-      .flatMap((activities) => Object.values(activities))
-      .flatMap((classData) => (classData ? classData.periods : []));
-
-    flatPeriods.forEach((period1) => {
-      flatPeriods.forEach((period2) => {
-        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-          if (!newClashes.includes(period1)) {
-            newClashes.push(period1);
+      flatPeriods.forEach((period1) => {
+        flatPeriods.forEach((period2) => {
+          if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
+            if (!newClashes.includes(period1)) {
+              newClashes.push(period1);
+            }
+            if (!newClashes.includes(period2)) {
+              newClashes.push(period2);
+            }
           }
-          if (!newClashes.includes(period2)) {
-            newClashes.push(period2);
-          }
-        }
+        });
       });
-    });
-
+    }
     return newClashes;
   };
 

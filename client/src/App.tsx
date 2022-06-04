@@ -20,7 +20,6 @@ import useUpdateEffect from './hooks/useUpdateEffect';
 import {
   Activity,
   ClassData,
-  ClassPeriod,
   ClassTime,
   CourseCode,
   CourseData,
