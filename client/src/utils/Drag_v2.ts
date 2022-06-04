@@ -346,23 +346,48 @@ window.addEventListener(
   { passive: false }
 );
 
+
+let numDays: number = 5; // update me reactively!!!
+let latestEndTime: number = 18; // update me reactively!!!
+let earliestStartTime: number = 9; // update me reactively!!!
+
 const drop = () => {
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
 
-
+    var gridChildren = dragElement.parentElement?.parentElement?.children
     var dragrect = dragElement.getBoundingClientRect();
-    var baserect = dragElement.parentElement?.parentElement?.children[1].getBoundingClientRect()
-    if (baserect && dragTarget) {
+    
+    if (gridChildren && dragTarget) {
+
+
+      var baserect = gridChildren[1].getBoundingClientRect()
+      
+      // x and y displacement of the drag target from the start-point of the grid
       var displacementx = dragrect.x - baserect.x
       var displacementy = dragrect.y - (baserect.y + baserect.height + 1)
-      var mid = Math.floor((dragElement.parentElement?.parentElement?.children.length ?? 0) / 2)
-      var itemRect = dragElement.parentElement?.parentElement?.children[mid].getBoundingClientRect();
-      var [recheight, recwidth] =  [itemRect?.height ?? 10, itemRect?.width ?? 10]
-      var [intedx, intedy] = [displacementx/recwidth, displacementy / recheight].map(a => Math.round(a))
-      if (intedx >= 0 && intedx < 5 && intedy >= 0 && intedy + dragTarget.time.end - dragTarget.time.start  + 8 <= 17 ) {
-        eventTimeUpdater({day: 1 + intedx, start: intedy + 8, end: dragTarget.time.end - dragTarget.time.start + intedy + 8} as EventTime, eventRecordKey)
+
+
+      var itemRect = gridChildren[gridChildren.length - 5].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
+      var [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)] // grid coords of drag target when released
+
+      console.log('xy', colIndex, rowIndex)
+
+      const eventLength = dragTarget.time.end - dragTarget.time.start;
+
+      // ensure we released inside the grid
+      if (colIndex >= 0 && colIndex < numDays &&
+          rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
+
+        eventTimeUpdater(
+          {
+            day: 1 + colIndex,
+            start: rowIndex + earliestStartTime,
+            end: eventLength + rowIndex + earliestStartTime,
+          } as EventTime,
+          eventRecordKey
+        );
       }
 
     }
