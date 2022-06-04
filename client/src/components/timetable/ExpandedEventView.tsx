@@ -306,7 +306,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                           if (e) setNewStartTime(e);
                         }}
                       />
-
+                    </ListItem>
+                    <ListItem>
                       <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
                       <TimePicker
                         views={['hours']}
