@@ -62,6 +62,15 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   margin-bottom: 10px;
 `;
 
+const StyledDialogButtons = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-right: 5px;
+`;
+
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
   optionState,
@@ -168,13 +177,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
       [id]: {
         ...createdEvents[id],
         name: newName,
-        // TODO: select day
         time: newEventTime,
-
         location: newLocation,
         description: newDescription,
         color: newColor,
-        // TODO: input for color
       },
     });
     setIsEditing(false);
@@ -214,16 +220,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
   return (
     <div>
-      <Dialog PaperProps={{ sx: { minWidth: 600 } }} open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
-        <Dialog
-          PaperProps={{ sx: { width: '35%', height: '20%' } }}
-          open={openSaveDialog}
-          onClose={() => setOpenSaveDialog(false)}
-        >
+      <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+        <Dialog maxWidth="sm" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
           <StyledTitleContainer>
             <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
           </StyledTitleContainer>
-          <Box display="flex" justifyContent="flex-end" alignItems="flex-end">
+          <StyledDialogButtons>
             <Button
               onClick={() => {
                 setOpenSaveDialog(false);
@@ -233,7 +235,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               Cancel
             </Button>
             <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
-          </Box>
+          </StyledDialogButtons>
         </Dialog>
 
         <StyledDialogTitle>
@@ -276,13 +278,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           </StyledTitleContainer>
         </StyledDialogTitle>
 
-        {/* Make the dialog same size everytime */}
         <StyledDialogContent>
           <Grid container direction="column" spacing={2}>
             <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                <AccessTime />
-              </Grid>
               <Grid item>
                 {/* How should we allow users to change time? Use time picker? */}
                 {isEditing ? (
@@ -322,12 +320,17 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     </ListItem>
                   </>
                 ) : (
-                  <>
-                    <Typography>
-                      {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
-                      {to24Hour(eventData.time.end)}
-                    </Typography>
-                  </>
+                  <Grid item container direction="row" spacing={2}>
+                    <Grid item>
+                      <AccessTime />
+                    </Grid>
+                    <Grid item>
+                      <Typography>
+                        {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
+                        {to24Hour(eventData.time.end)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 )}
               </Grid>
             </Grid>
