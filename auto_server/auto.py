@@ -185,4 +185,4 @@ def sols(requestData):
         print(solutions)
         return solutions, unsatisfied == 0   # (List[int], boolean)
 
-    return []
+    return [], False
