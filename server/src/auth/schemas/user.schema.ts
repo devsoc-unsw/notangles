@@ -1,8 +1,64 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import {
+  UserSettingsDto,
+  UserTimetablesDto,
+} from 'src/database/dtos/database.dto';
+
+export type SettingsDocument = Settings & Document;
 
 @Schema()
-export class user {
+export class Settings {
+  // @Prop({unique: true, required: true})
+  // userID: string;
+
+  @Prop({ unique: true, required: true })
+  is12HourMode: boolean;
+
+  @Prop({ unique: true, required: true })
+  isDarkMode: boolean;
+
+  @Prop({ unique: true, required: true })
+  isSquareEdges: boolean;
+
+  @Prop({ unique: true, required: true })
+  isHideFullClasses: boolean;
+
+  @Prop({ unique: true, required: true })
+  isDefaultUnscheduled: boolean;
+
+  @Prop({ unique: true, required: true })
+  isHideClassInfo: boolean;
+}
+
+export const UserSettingsSchema = SchemaFactory.createForClass(Settings);
+
+export type TimetableDocument = Timetable & Document;
+
+@Schema()
+export class Timetable {
+  // @Prop({unique: true, required: true })
+  // userID: string;
+
+  @Prop([String])
+  selectedCourses: string[];
+
+  @Prop(
+    raw({
+      type: Map,
+      of: raw({
+        type: Map,
+        of: String,
+      }),
+    }),
+  )
+  selectedClasses: Record<string, Record<string, string>>;
+}
+
+export const UserTimetableSchema = SchemaFactory.createForClass(Timetable);
+
+@Schema()
+export class User {
   // @Prop({ required: true }) uid: string;
   @Prop() google_uid: string;
   // @Prop({ required: true }) zid: string;
@@ -13,13 +69,14 @@ export class user {
   @Prop() createdAt: Date;
   @Prop() lastLogin: Date;
   @Prop() loggedIn: Boolean;
-  @Prop() settings: string;
-  @Prop() timetable: string;
+
+  @Prop({ type: UserSettingsSchema }) settings: UserSettingsDto;
+  @Prop({ type: UserTimetableSchema }) timetable: UserTimetablesDto;
 }
 
-export const userSchema = SchemaFactory.createForClass(user);
+export const userSchema = SchemaFactory.createForClass(User);
 
-export type UserDocument = user & Document;
+export type UserDocument = User & Document;
 
 export interface UserInterface {
   // uid: string;
@@ -32,6 +89,6 @@ export interface UserInterface {
   createdAt?: Date;
   lastLogin?: Date;
   loggedIn?: Boolean;
-  settings?: string;
-  timetable?: string;
+  settings: UserSettingsDto;
+  timetable: UserTimetablesDto;
 }

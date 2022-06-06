@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { SumModule } from './sum/sum.module';
 import { AutoModule } from './auto/auto.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { AutoModule } from './auto/auto.module';
     AuthModule,
     SumModule,
     AutoModule,
+    MongooseModule.forRoot(process.env.DATABASE_URL),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
