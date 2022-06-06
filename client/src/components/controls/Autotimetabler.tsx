@@ -160,7 +160,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     ]);
 
     periodInfoPerMode.current = {
-      'hybrid': targetActivities.current.map(
+      hybrid: targetActivities.current.map(
         (value) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
@@ -181,7 +181,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
           } as PeriodInfo)
       ),
-      'online': targetActivities.current.map(
+      online: targetActivities.current.map(
         (value, index) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
@@ -241,12 +241,12 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     timetableData['periodInfoList'] = periodInfoPerMode.current[`${classMode}`];
 
     try {
-      const res = await getAutoTimetable(timetableData);
+      const [results, isOptimal] = await getAutoTimetable(timetableData);
 
       setAutoVisibility(true);
-      setAlertMsg(res.length ? 'Success!' : 'No timetable found.');
+      setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly') : 'No timetable found');
 
-      res.forEach((timeAsNum, index) => {
+      results.forEach((timeAsNum, index) => {
         const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];
         const k = targetActivities.current[index].find(
           (c) => c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c)

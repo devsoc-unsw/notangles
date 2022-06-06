@@ -20,7 +20,7 @@ const useColorMapper = (courseCodes: string[]): Record<string, string> => {
     const newAssignedColors: Record<string, string> = {};
 
     courseCodes.forEach((item) => {
-      const color = item in assignedColors ? assignedColors[item] : colors.find((c) => !takenColors.has(c));
+      const color = colors.find((c) => !takenColors.has(c));
       newAssignedColors[item] = color || defaultColor;
       if (color) {
         takenColors.add(color);

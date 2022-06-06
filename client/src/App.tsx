@@ -3,6 +3,7 @@ import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '
 import { styled } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -26,7 +27,6 @@ import {
   InInventory,
   SelectedClasses,
 } from './interfaces/Course';
-import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -79,8 +79,6 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    setAlertMsg,
-    setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
     days,
@@ -127,7 +125,9 @@ const App: React.FC = () => {
       Object.keys(course.activities).forEach((activity) => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity) ?? null;
+          : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -168,22 +168,21 @@ const App: React.FC = () => {
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-    Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
-      .then((result) => {
-        const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+    Promise.all(
+      codes.map((code) =>
+        getCourseInfo(year, term, code).catch((err) => {
+          return err;
+        })
+      )
+    ).then((result) => {
+      const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
+      const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-        setSelectedCourses(newSelectedCourses);
+      setSelectedCourses(newSelectedCourses);
 
-        if (!noInit) addedCourses.forEach((course) => initCourse(course));
-        if (callback) callback(newSelectedCourses);
-      })
-      .catch((e) => {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-          setErrorVisibility(true);
-        }
-      });
+      if (!noInit) addedCourses.forEach((course) => initCourse(course));
+      if (callback) callback(newSelectedCourses);
+    });
   };
 
   const handleRemoveCourse = (courseCode: CourseCode) => {
@@ -333,4 +332,5 @@ const App: React.FC = () => {
     </StyledEngineProvider>
   );
 };
-export default App;
+
+export default Sentry.withProfiler(App);
