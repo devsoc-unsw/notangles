@@ -17,7 +17,7 @@ import { User, UserDocument } from 'src/auth/schemas/user.schema';
 export class DatabaseService {
   constructor(
     @InjectModel('UserSettings') private settingsModel: Model<SettingsDocument>,
-    @InjectModel('UserTimetable') private timetabelModel: Model<TimetableDocument>,
+    @InjectModel('UserTimetable') private timetableModel: Model<TimetableDocument>,
     @InjectModel('User') private userModel: Model<UserDocument>
   ) {}
 
@@ -50,7 +50,7 @@ export class DatabaseService {
   async createTimetable(timetableData: UserTimetableDataDto, userID: string): Promise<Timetable> {
     return this.userModel.findOneAndUpdate(
       { google_uid: userID },
-      { $set: { timetable: new this.settingsModel(timetableData) } },
+      { $set: { timetable: new this.timetableModel(timetableData) } },
     );
   }
 }

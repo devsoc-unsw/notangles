@@ -5,7 +5,7 @@ import { DatabaseService } from './database.service';
 import { UserSettingsDto, UserTimetableDataDto } from './dtos/database.dto';
 import { Settings, Timetable } from './schemas';
 
-@UseInterceptors(SessionSerializer) // I think?
+// @UseInterceptors(SessionSerializer) // I think? (uncomment me when i work)
 @Controller('database')
 export class DatabaseController {
     constructor(private readonly databaseService: DatabaseService) {}
@@ -13,23 +13,23 @@ export class DatabaseController {
     // @UseGuards(<guardhere>)
     @Get('/settings')
     async getSettings(@Request() req): Promise<UserSettingsDto> {
-        return this.databaseService.getSettings(req.user.userId);
+        return this.databaseService.getSettings(req?.user?.userId ?? "dummy-id");
     }
     // @UseGuards(<guardhere>)
     @Post('/createsettings')
     async createSettings(@Request() req, @Body() body: UserSettingsDto): Promise<Settings> {
-        return this.databaseService.createSettings(body, req.user.userId)
+        return this.databaseService.createSettings(body, req?.user?.userId ?? "dummy-id")
     }
 
     // @UseGuards(<guardhere>)
     @Get('/timetable')
     async getTimetable(@Request() req): Promise<UserTimetableDataDto> {
-        return this.databaseService.getTimetable(req.user.userId)
+        return this.databaseService.getTimetable(req?.user?.userId ?? "dummy-id")
     }
 
     // @UseGuards(<guardhere>)
     @Post('/createtimetable')
     async createTimetable(@Request() req, @Body() body: UserTimetableDataDto): Promise<Timetable> {
-        return this.databaseService.createTimetable(body, req.user.userId)
+        return this.databaseService.createTimetable(body, req?.user?.userId ?? "dummy-id")
     }
 }
