@@ -1,8 +1,9 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { UserSettingsDto, UserTimetableDataDto } from 'src/database/dtos/database.dto';
-
-
+import {
+  UserSettingsDto,
+  UserTimetablesDto,
+} from 'src/database/dtos/database.dto';
 
 export type SettingsDocument = Settings & Document;
 
@@ -10,28 +11,27 @@ export type SettingsDocument = Settings & Document;
 export class Settings {
   // @Prop({unique: true, required: true})
   // userID: string;
-  
-  @Prop({unique: true, required: true})
+
+  @Prop({ unique: true, required: true })
   is12HourMode: boolean;
 
-  @Prop({unique: true, required: true})
+  @Prop({ unique: true, required: true })
   isDarkMode: boolean;
-  
-  @Prop({unique: true, required: true})
+
+  @Prop({ unique: true, required: true })
   isSquareEdges: boolean;
-  
-  @Prop({unique: true, required: true})
+
+  @Prop({ unique: true, required: true })
   isHideFullClasses: boolean;
-  
-  @Prop({unique: true, required: true})
+
+  @Prop({ unique: true, required: true })
   isDefaultUnscheduled: boolean;
-  
-  @Prop({unique: true, required: true})
+
+  @Prop({ unique: true, required: true })
   isHideClassInfo: boolean;
 }
 
 export const UserSettingsSchema = SchemaFactory.createForClass(Settings);
-
 
 export type TimetableDocument = Timetable & Document;
 
@@ -39,25 +39,23 @@ export type TimetableDocument = Timetable & Document;
 export class Timetable {
   // @Prop({unique: true, required: true })
   // userID: string;
-  
+
   @Prop([String])
   selectedCourses: string[];
-  
-  
-  @Prop(raw({
-    type: Map,
-    of: raw({
+
+  @Prop(
+    raw({
       type: Map,
-      of: String
-    })
-  }))
+      of: raw({
+        type: Map,
+        of: String,
+      }),
+    }),
+  )
   selectedClasses: Record<string, Record<string, string>>;
 }
 
 export const UserTimetableSchema = SchemaFactory.createForClass(Timetable);
-
-
-
 
 @Schema()
 export class User {
@@ -73,7 +71,7 @@ export class User {
   @Prop() loggedIn: Boolean;
 
   @Prop({ type: UserSettingsSchema }) settings: UserSettingsDto;
-  @Prop({ type: UserTimetableSchema }) timetable: UserTimetableDataDto;
+  @Prop({ type: UserTimetableSchema }) timetable: UserTimetablesDto;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
@@ -92,5 +90,5 @@ export interface UserInterface {
   lastLogin?: Date;
   loggedIn?: Boolean;
   settings: UserSettingsDto;
-  timetable: UserTimetableDataDto;
+  timetable: UserTimetablesDto;
 }
