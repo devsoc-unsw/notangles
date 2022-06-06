@@ -5,8 +5,8 @@ export type SettingsDocument = Settings & Document;
 
 @Schema()
 export class Settings {
-  @Prop({unique: true, required: true})
-  userID: string;
+  // @Prop({unique: true, required: true})
+  // userID: string;
 
   @Prop({unique: true, required: true})
   is12HourMode: boolean;
@@ -34,8 +34,8 @@ export type TimetableDocument = Timetable & Document;
 
 @Schema()
 export class Timetable {
-  @Prop({unique: true, required: true })
-  userID: string;
+  // @Prop({unique: true, required: true })
+  // userID: string;
 
   @Prop([String])
   selectedCourses: string[];

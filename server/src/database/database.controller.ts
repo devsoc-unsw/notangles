@@ -17,8 +17,8 @@ export class DatabaseController {
     }
     // @UseGuards(<guardhere>)
     @Post('/createsettings')
-    async createSettings(@Body() body: UserSettingsDto): Promise<Settings> {
-        return this.databaseService.createSettings(body)
+    async createSettings(@Request() req, @Body() body: UserSettingsDto): Promise<Settings> {
+        return this.databaseService.createSettings(body, req.user.userId)
     }
 
     // @UseGuards(<guardhere>)
@@ -29,7 +29,7 @@ export class DatabaseController {
 
     // @UseGuards(<guardhere>)
     @Post('/createtimetable')
-    async createTimetable(@Body() body: UserTimetableDataDto): Promise<Timetable> {
-        return this.databaseService.createTimetable(body)
+    async createTimetable(@Request() req, @Body() body: UserTimetableDataDto): Promise<Timetable> {
+        return this.databaseService.createTimetable(body, req.user.userId)
     }
 }

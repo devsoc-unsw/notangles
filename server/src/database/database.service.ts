@@ -8,7 +8,7 @@ import {
   Timetable,
   TimetableDocument,
 } from './schemas';
-import { UserDocument } from 'src/auth/schemas/user.schema';
+import { User, UserDocument } from 'src/auth/schemas/user.schema';
 
 @SerializeOptions({
     excludePrefixes: ['_'],
@@ -21,31 +21,36 @@ export class DatabaseService {
     @InjectModel('User') private userModel: Model<UserDocument>
   ) {}
 
-  async createSettings(SettingsDto: UserSettingsDto): Promise<Settings> {
-    const userID = 'some-user-id';
+  async createSettings(SettingsDto: UserSettingsDto, userID: string): Promise<Settings> {
     return this.userModel.findOneAndUpdate(
       { google_uid: userID },
       { $set: { settings: new this.settingsModel(SettingsDto) } },
     );
 
-    const createdSettings = new this.settingsModel(SettingsDto);
-    return createdSettings.save();
+    // const createdSettings = new this.settingsModel(SettingsDto);
+    // return createdSettings.save();
   }
 
   async getSettings(userID: string): Promise<Settings> {
-    return this.settingsModel
-      .findOne({
-        userID,
-      })
-      .exec();
+    return this.userModel
+      .findOne({ google_uid: userID })
+      .select('settings')
+      .exec()
+      .then((r) => r.settings);
   }
 
   async getTimetable(userID: string): Promise<Timetable> {
-    return this.timetabelModel.findOne({ userID }).exec();
+    return this.userModel
+      .findOne({ google_uid: userID })
+      .select('timetable')
+      .exec()
+      .then((r) => r.timetable);
   }
 
-  async createTimetable(timetableData: UserTimetableDataDto): Promise<Timetable> {
-    const createdTimetable = new this.timetabelModel(timetableData);
-    return createdTimetable.save();
+  async createTimetable(timetableData: UserTimetableDataDto, userID: string): Promise<Timetable> {
+    return this.userModel.findOneAndUpdate(
+      { google_uid: userID },
+      { $set: { timetable: new this.settingsModel(timetableData) } },
+    );
   }
 }
