@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ReactGA from 'react-ga-r18';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
@@ -18,18 +17,6 @@ Sentry.init({
   integrations: [new BrowserTracing()],
   tracesSampleRate: Number(process.env.REACT_APP_SENTRY_TRACE_RATE_CLIENT),
 });
-
-const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
-
-if (GOOGLE_ANALYTICS_ID !== undefined) {
-  ReactGA.initialize(GOOGLE_ANALYTICS_ID, {
-    // Debug messages in the browser console
-    debug: process.env.NODE_ENV === 'development',
-  });
-
-  // Trigger page view on the home page
-  ReactGA.pageview(window.location.pathname);
-}
 
 const Root: React.FC = () => (
   <AppContextProvider>
