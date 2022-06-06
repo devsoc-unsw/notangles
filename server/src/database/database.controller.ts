@@ -11,7 +11,7 @@ import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseService } from './database.service';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
 
-@UseInterceptors(SessionSerializer) // I think?
+// @UseInterceptors(SessionSerializer) // I think? (uncomment me when i work)
 @Controller('database')
 export class DatabaseController {
   constructor(private readonly databaseService: DatabaseService) {}

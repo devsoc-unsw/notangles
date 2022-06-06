@@ -17,9 +17,8 @@ import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
 export class DatabaseService {
   constructor(
     @InjectModel('UserSettings') private settingsModel: Model<SettingsDocument>,
-    @InjectModel('UserTimetable')
-    private timetableModel: Model<TimetableDocument>,
-    @InjectModel('User') private userModel: Model<UserDocument>,
+    @InjectModel('UserTimetable') private timetableModel: Model<TimetableDocument>,
+    @InjectModel('User') private userModel: Model<UserDocument>
   ) {}
 
   async createSettings(
