@@ -335,7 +335,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
-              if (event.key === 'Backspace') {
+              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === "z" || event.key === "y"))) {
                 event.stopPropagation();
               }
             }}
