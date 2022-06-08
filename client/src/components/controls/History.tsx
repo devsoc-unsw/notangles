@@ -91,7 +91,8 @@ const History: React.FC = () => {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (!event.ctrlKey) return;
+    if (!event.ctrlKey || !(event.key === 'z' || event.key === 'y')) return;
+    event.preventDefault();
     if (event.key === 'z' && actionsPointer.current > 1) {
       changeHistory(-1);
     }
