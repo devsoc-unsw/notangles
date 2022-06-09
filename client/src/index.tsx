@@ -31,10 +31,8 @@ if (GOOGLE_ANALYTICS_ID !== undefined) {
   ReactGA.pageview(window.location.pathname);
 }
 
-// Automate term details.
-setAvailableTermDetails().then((res) => {
-  ReactDOM.render(<Root />, document.getElementById('root'));
-});
+// // Automate term details.
+// setAvailableTermDetails().then((res) => {});
 
 const Root: React.FC = () => (
   <>
@@ -50,6 +48,7 @@ const Root: React.FC = () => (
   </>
 );
 
+ReactDOM.render(<Root />, document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { term, year } from './constants/timetable';
+import { setAvailableTermDetails, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -72,10 +72,8 @@ const ICSButton = styled(Button)`
   }
 `;
 
-
-
-const App: React.FC = () => {
-  const {   
+const FrontPage: React.FC = () => {
+  const {
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -228,9 +226,6 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-
-
-
   useEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
@@ -340,6 +335,17 @@ const App: React.FC = () => {
       </ThemeProvider>
     </StyledEngineProvider>
   );
+};
+
+const App: React.FC = () => {
+  const [termDataReceived, setTermDataReceived] = React.useState(false);
+  const getTermDataReceived = (termDataReceived: boolean) => {
+    setTermDataReceived(termDataReceived);
+  };
+
+  setAvailableTermDetails().then(() => getTermDataReceived(true));
+
+  return <>{termDataReceived ? <FrontPage /> : <></>}</>;
 };
 
 export default Sentry.withProfiler(App);
