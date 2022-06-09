@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { term, year } from './constants/timetable';
+import { defaultEndTime, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -89,6 +89,8 @@ const App: React.FC = () => {
     setInfoVisibility,
     days,
     setDays,
+    latestEventTime,
+    setLatestEventTime,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -134,8 +136,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
@@ -266,19 +268,22 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
-    if (
-      selectedCourses.some((v) =>
-        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
-      )
-    ) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
-    } else if (days.length !== 5) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
     storage.set('createdEvents', createdEvents);
+    Object.entries(createdEvents).forEach((event) => {
+      if (event[1].time.day === 6) {
+        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+      } else if (event[1].time.day === 7) {
+        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+      }
+
+      if (event[1].time.end > defaultEndTime) {
+        setLatestEventTime(event[1].time.end);
+      }
+    }
+    );
   }, [createdEvents]);
 
   useUpdateEffect(() => {

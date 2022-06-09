@@ -81,7 +81,7 @@ const StyledLocationIcon = styled(LocationOn)`
 
 const StyledEventInner = styled(Card, {
   shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges'].includes(prop.toString()),
-})<{
+}) <{
   hasClash: boolean;
   isSquareEdges: boolean;
 }>`
@@ -121,7 +121,7 @@ const StyledClassInfo = styled(StyledClassName)`
 
 const StyledEvent = styled('div', {
   shouldForwardProp: (prop) => !['eventData', 'isSquareEdges'].includes(prop.toString()),
-})<{
+}) <{
   eventData: EventData;
   // days: string[];
   // y?: number;

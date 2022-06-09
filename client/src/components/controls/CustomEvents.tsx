@@ -126,6 +126,7 @@ const CustomEvent = ({ }) => {
   };
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { latestEventTime, setLatestEventTime } = useContext(AppContext);
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   //TimePicker stuff
@@ -137,7 +138,7 @@ const CustomEvent = ({ }) => {
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
 
-  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
+  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
   const [days, setDays] = useState<Array<string>>([]);
 
   const [color, setColor] = useState<ColorValue>('#1F7E8C');
@@ -163,11 +164,16 @@ const CustomEvent = ({ }) => {
       description: description,
       color: color,
     };
+    console.log(String(weekdays.indexOf(days.toString()) + 1))
 
     setCreatedEvents({
       ...createdEvents,
       [uuid]: newEvent,
     });
+
+    if (endTime.getHours() > latestEventTime) {
+      setLatestEventTime(endTime.getHours());
+    }
 
     setEventName('');
     setLocation('');
