@@ -62,6 +62,15 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
   margin-bottom: 10px;
 `;
 
+const StyledDialogButtons = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-right: 5px;
+`;
+
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
   optionState,
@@ -109,17 +118,17 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
   const to24Hour = (n: number) => {
-    let result = `${String((n / 1) >> 0)}:`
+    let result = `${String((n / 1) >> 0)}:`;
     if ((n % 1) * 60) {
       if ((n % 1) * 60 < 10) {
-        result += "0"
+        result += '0';
       }
-      result += `${String(((n % 1) * 60) >> 0)}`
+      result += `${String(((n % 1) * 60) >> 0)}`;
     } else {
-      result += "00"
+      result += '00';
     }
-    return result
-  }
+    return result;
+  };
   const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -153,7 +162,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
-    console.log(eventData.color);
     const newEventTime = {
       day: weekdaysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours(),
@@ -169,13 +177,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
       [id]: {
         ...createdEvents[id],
         name: newName,
-        // TODO: select day
         time: newEventTime,
-
         location: newLocation,
         description: newDescription,
         color: newColor,
-        // TODO: input for color
       },
     });
     setIsEditing(false);
@@ -208,20 +213,19 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     setCreatedEvents(updatedEventData);
   };
 
-  const defaultEventColor = '#1F7E8C';
+  const isHex = (color: string): boolean => {
+    var hexReg = /^#([0-9a-f]{3}){1,2}$/i;
+    return hexReg.test(color);
+  };
 
   return (
     <div>
-      <Dialog PaperProps={{ sx: { minWidth: 600 } }} open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
-        <Dialog
-          PaperProps={{ sx: { width: '35%', height: '20%' } }}
-          open={openSaveDialog}
-          onClose={() => setOpenSaveDialog(false)}
-        >
+      <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+        <Dialog maxWidth="sm" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
           <StyledTitleContainer>
             <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
           </StyledTitleContainer>
-          <Box display="flex" justifyContent="flex-end" alignItems="flex-end">
+          <StyledDialogButtons>
             <Button
               onClick={() => {
                 setOpenSaveDialog(false);
@@ -231,7 +235,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               Cancel
             </Button>
             <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
-          </Box>
+          </StyledDialogButtons>
         </Dialog>
 
         <StyledDialogTitle>
@@ -274,13 +278,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           </StyledTitleContainer>
         </StyledDialogTitle>
 
-        {/* Make the dialog same size everytime */}
         <StyledDialogContent>
           <Grid container direction="column" spacing={2}>
             <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                <AccessTime />
-              </Grid>
               <Grid item>
                 {/* How should we allow users to change time? Use time picker? */}
                 {isEditing ? (
@@ -306,7 +306,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                           if (e) setNewStartTime(e);
                         }}
                       />
-
+                    </ListItem>
+                    <ListItem>
                       <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
                       <TimePicker
                         views={['hours']}
@@ -320,12 +321,17 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     </ListItem>
                   </>
                 ) : (
-                  <>
-                    <Typography>
-                      {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
-                      {to24Hour(eventData.time.end)}
-                    </Typography>
-                  </>
+                  <Grid item container direction="row" spacing={2}>
+                    <Grid item>
+                      <AccessTime />
+                    </Grid>
+                    <Grid item>
+                      <Typography>
+                        {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
+                        {to24Hour(eventData.time.end)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 )}
               </Grid>
             </Grid>
@@ -400,8 +406,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     }}
                   ></Box>
                   <Typography sx={{ paddingLeft: '15px' }}>
-                    Current colour is{' '}
-                    {eventData.color === defaultEventColor ? defaultEventColor : `#${(eventData.color as Color).hex}`}
+                    Current colour is {(eventData.color as Color)?.hex ?? `${eventData.color}`}
+                    {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
                   </Typography>
                 </Grid>
               )}

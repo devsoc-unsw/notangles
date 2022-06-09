@@ -120,18 +120,18 @@ const StyledClassInfo = styled(StyledClassName)`
 `;
 
 const StyledEvent = styled('div', {
-  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges'].includes(prop.toString()), // add earliestStartTime to this list
 }) <{
   eventData: EventData;
   // days: string[];
   // y?: number;
-  // earliestStartTime: number;
+  // earliestStartTime: number; uncomment me!!!
   isSquareEdges: boolean;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 8)})`};
+  transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 9)})`}; // change 9 to earliestStartTime
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ eventData }) => classHeight(eventData)};
   box-sizing: border-box;
@@ -247,6 +247,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
       <StyledEvent
         eventData={eventData}
         isSquareEdges={isSquareEdges}
+        /*earliestStartTime={earliestStartTime} <-- uncomment me after DroppedEvent gets access to earliestStartTime*/
         ref={element}
         onMouseDown={onDown}
         onMouseOver={() => {
