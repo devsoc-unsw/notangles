@@ -40,9 +40,13 @@ const generateDateArray = (timezone: number, hour: number, day: number, week: nu
 };
 
 const getUtcOffset = async () => {
-  const timezoneFetch = await fetch('https://worldtimeapi.org/api/timezone/Australia/Sydney');
-  const timezoneData = await timezoneFetch.json();
-  return parseInt(timezoneData.utc_offset);
+  try {
+    const timezoneFetch = await fetch('https://worldtimeapi.org/api/timezone/Australia/Sydney');
+    const timezoneData = await timezoneFetch.json();
+    return parseInt(timezoneData.utc_offset);
+  } catch (e) {
+    return 10; // AEST is GMT+10
+  }
 };
 
 /**

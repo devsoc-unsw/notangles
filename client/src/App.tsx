@@ -26,7 +26,6 @@ import {
   InInventory,
   SelectedClasses,
 } from './interfaces/Course';
-import NetworkError from './interfaces/NetworkError';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -79,8 +78,6 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    setAlertMsg,
-    setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
     days,
@@ -147,22 +144,21 @@ const App: React.FC = () => {
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-    Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
-      .then((result) => {
-        const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+    Promise.all(
+      codes.map((code) =>
+        getCourseInfo(year, term, code).catch((err) => {
+          return err;
+        })
+      )
+    ).then((result) => {
+      const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
+      const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-        setSelectedCourses(newSelectedCourses);
+      setSelectedCourses(newSelectedCourses);
 
-        if (!noInit) addedCourses.forEach((course) => initCourse(course));
-        if (callback) callback(newSelectedCourses);
-      })
-      .catch((e) => {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-          setErrorVisibility(true);
-        }
-      });
+      if (!noInit) addedCourses.forEach((course) => initCourse(course));
+      if (callback) callback(newSelectedCourses);
+    });
   };
 
   const handleRemoveCourse = (courseCode: CourseCode) => {
