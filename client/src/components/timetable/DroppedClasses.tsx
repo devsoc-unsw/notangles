@@ -47,7 +47,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     });
   });
 
-  // clear any inventory cards which no longer exist
+  // Clear any inventory cards which no longer exist
   inventoryCards.current = inventoryCards.current.filter((card) => newCards.includes(card));
 
   const prevCardKeys = new Map(cardKeys);
@@ -153,7 +153,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   };
 
   const getCardWidth = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: CardData) => {
-    // Returns the card width of a clashing class by dividing the default width of a card with how many
+    // Returns the width of the card of a clashing class by dividing the default width of a card with how many
     // clashes there are happening during that time.
     let cardWidth = 100;
     let clashIndex = 0;
@@ -204,10 +204,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     cardKeys.set(cardData, key);
   });
 
-  // shallow copy
   prevCards.current = [...newCards];
 
-  // sort by key to prevent disruptions to transitions
+  // Sort by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
 
   cardKeys.forEach((_, cardData) => {

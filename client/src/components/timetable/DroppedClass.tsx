@@ -24,22 +24,49 @@ import {
 import ExpandedView from './ExpandedView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
-export const inventoryMargin = 10;
-
+export const inventoryMargin = 10; // Gap between inventory column and main timetable
 const borderWidth = 3;
 
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
-  if (isPeriod(cardData) && clashIndex !== undefined && width) {
-    const widthRatio = 100 / width;
-    const microOffset = width !== 100 ? (widthRatio * borderWidth) / 2 : borderWidth / 4;
+// Note for whoever is working on this file next (sorry):
+// The more classes there are clashing with each other, the more the edge of the last class card
+// will extend into the next day. It looks fine with two clashing classes and is acceptable for three
+// But it is quite obvious for four. But it's not like anyone is going to have four clashing classes.
+// Right? :)
+// This could potentially be solved by not adding 1 / devicePixelRatio to the width of StyledCourseClass
+// But then you'd have to alter the calculations in classTranslateX, so...
 
-    return `${Math.round((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio + microOffset}%`;
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
+  // This cardData is for a scheduled class
+  if (isPeriod(cardData) && clashIndex !== undefined && width) {
+    // This effectively gives the number of clashes in the group
+    const widthRatio = 100 / width;
+
+    // Without this, all class cards are offset to the right slightly
+    // This is probably because 1 / devicePixelRatio is added to the width of StyledCourseClass
+    // 1 / devicePixelRatio refers to the width of a timetable border
+
+    // If width === 100 then the class is not clashing with any other class. So we can shift its card back by
+    // 1 / devicePixelRatio to ensure that the card is perfectly centered due to the width of StyledCourseClass
+    // being (width + 1 / devicePixelRatio)%
+
+    // Don't ask why the else condition works
+    const microOffset = width === 100 ? 1 / devicePixelRatio : widthRatio * ((2 * widthRatio) / devicePixelRatio);
+
+    // (cardData.time.day - 1) * 100 moves the class card to the correct day column
+    // as all cards are spawned at the Monday 9am cell
+    // Then, clashIndex * width shifts the card to the right so that all clashing classes
+    // are (basically) evenly distributed in a particular timetable cell
+
+    // The reason for multiplying by widthRatio is because translating a card x% will only translate
+    // a card of half the width x/2% and so on. Namely, widthRatio is compensating for the shorter distance
+    // that the card is being translated by due to its smaller width.
+    return `${((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio - microOffset}%`;
   }
 
-  // not a period, so in the inventory
+  // This cardData is for an unscheduled class, i.e. it belongs in the inventory
+  // 5 / devicePixelRatio refers to the five timetable borders between Monday and the Unscheduled column
   if (days) {
-    // `1 / devicePixelRatio` refers to the width of a timetable border
-    return `calc(${days.length * 100}% + ${Math.round(inventoryMargin + 1 / devicePixelRatio + borderWidth * 2)}px)`;
+    return `calc(${days.length * 100}% + ${inventoryMargin - 5 / devicePixelRatio}px)`;
   }
 
   return 0;
@@ -50,16 +77,20 @@ const getHeightFactor = (cardData?: CardData | InInventory) =>
 
 export const classTranslateY = (cardData: CardData, earliestStartTime: number, y?: number) => {
   let result = 0;
-  // height compared to standard row height
+
+  // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
   if (isPeriod(cardData)) {
-    // number of rows to offset down
+    // This cardData is for a scheduled class
+    // The number of rows to offset down
     const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
-    // calculate translate percentage (relative to height)
+
+    // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;
   } else if (y) {
-    // not a period, so in the inventory
+    // This cardData is for an unscheduled class, i.e. it belongs in the inventory
+    // Use the specified y-value
     result = y;
   }
 
@@ -75,8 +106,8 @@ export const classTransformStyle = (
   width?: number
 ) => `translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
 
-export const classHeight = (cardData?: CardData | InInventory) => {
-  // height compared to standard row height
+export const getClassHeight = (cardData?: CardData | InInventory) => {
+  // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
   return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
@@ -117,8 +148,9 @@ const StyledCourseClass = styled('div', {
   grid-row: 2 / -1;
   transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth }) =>
     classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth)};
-  width: ${({ cardWidth }) => cardWidth}%;
-  height: ${({ cardData }) => classHeight(cardData)};
+  width: ${({ cardWidth }) =>
+    cardWidth + 1 / devicePixelRatio}%; // So the card hitbox extends all the way to the timetable border
+  height: ${({ cardData }) => getClassHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
@@ -170,9 +202,12 @@ const StyledCourseClassInner = styled(Card, {
   backface-visibility: hidden;
   outline: ${({ hasClash, clashColour }) => (hasClash ? clashColour : 'solid transparent 0px')};
   outline-offset: -${borderWidth}px;
-  height: 100%;
-  width: 100%;
   position: relative;
+  height: 100%;
+  // If there is a clash, we want the cards to be as wide as possible so width remains at 100%
+  // Otherwise, take a small slice off the left and right edges, equivalent to the width
+  // of a timetable border from each side so it looks less packed
+  width: ${({ hasClash }) => `calc(100% - ${hasClash ? 0 : 2 / devicePixelRatio}px)`};
 `;
 
 const StyledClassName = styled('p')`
@@ -440,7 +475,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               <TouchRipple ref={rippleRef} />
             </Grid>
           </Grid>
-          {/*TODO: improve the look-and-feel of the fullscreen button; maybe surround with a solid box/square to cover content underneath for legibility */}
           {isPeriod(cardData) && fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <OpenInFull />
