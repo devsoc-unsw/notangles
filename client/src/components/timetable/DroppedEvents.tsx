@@ -120,18 +120,18 @@ const StyledClassInfo = styled(StyledClassName)`
 `;
 
 const StyledEvent = styled('div', {
-  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges'].includes(prop.toString()), // add earliestStartTime to this list
-}) <{
+  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges', 'earliestStartTime'].includes(prop.toString()), // add earliestStartTime to this list
+}) < {
   eventData: EventData;
   // days: string[];
   // y?: number;
-  // earliestStartTime: number; uncomment me!!!
+  earliestStartTime: number;
   isSquareEdges: boolean;
-}>`
+}> `
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ eventData }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, 9)})`}; // change 9 to earliestStartTime
+  transform: ${({ eventData, earliestStartTime }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, earliestStartTime)})`}; // change 9 to earliestStartTime
   width: calc(100% + ${1 / devicePixelRatio}px);
   height: ${({ eventData }) => classHeight(eventData)};
   box-sizing: border-box;
@@ -146,7 +146,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag } = useContext(AppContext);
+  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag, earliestStartTime } = useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -247,7 +247,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
       <StyledEvent
         eventData={eventData}
         isSquareEdges={isSquareEdges}
-        /*earliestStartTime={earliestStartTime} <-- uncomment me after DroppedEvent gets access to earliestStartTime*/
+        earliestStartTime={earliestStartTime} // <-- uncomment me after DroppedEvent gets access to earliestStartTime*/
         ref={element}
         onMouseDown={onDown}
         onMouseOver={() => {

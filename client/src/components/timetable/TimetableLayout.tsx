@@ -95,12 +95,11 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 export const TimetableLayout: React.FC = () => {
   const { is12HourMode, days } = useContext(AppContext);
   const { selectedCourses, createdEvents } = useContext(CourseContext);
-  const { latestEventTime } = useContext(AppContext);
-
+  const { earliestStartTime, latestEventTime } = useContext(AppContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
-  const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestEventTime, latestClassFinishTime, defaultEndTime) - 1];
+  const hoursRange = [Math.min(earliestStartTime, earliestClassStartTime, defaultStartTime), Math.max(latestEventTime, latestClassFinishTime, defaultEndTime) - 1];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
 

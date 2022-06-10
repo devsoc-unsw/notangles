@@ -2,6 +2,8 @@ import { contentPadding, lightTheme } from '../constants/theme';
 import { ClassData, ClassPeriod, ClassTime, EventTime, InInventory, InventoryPeriod } from '../interfaces/Course';
 import storage from './storage';
 import { EventData } from '../interfaces/Course';
+import { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
 export const timetableWidth = 1100;
 export const transitionTime = 350;
@@ -26,7 +28,6 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
-
 const fromPx = (value: string) => Number(value.split('px')[0]);
 const toPx = (value: number) => `${value}px`;
 
@@ -43,10 +44,7 @@ const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
 
-export const checkCanDrop = (a: EventData | null, b: EventData | null) =>
-  a === null ||
-  b === null ||
-  a === b
+export const checkCanDrop = (a: EventData | null, b: EventData | null) => a === null || b === null || a === b;
 
 const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
@@ -58,10 +56,7 @@ const unfreezeTransform = (element: HTMLElement) => {
 
 const cards = new Map<EventData, HTMLElement>();
 
-
-const getIsElevated = (cardData: EventData) =>
-  dragTarget !== null &&
-  (cardData === dragTarget);
+const getIsElevated = (cardData: EventData) => dragTarget !== null && cardData === dragTarget;
 
 const initialZIndex = 100;
 const initialElevatedZIndex = 750;
@@ -94,8 +89,6 @@ const updateCards = () => {
   }
 };
 
-
-
 let updateTimeout: number;
 
 export const registerCard = (data: EventData, element: HTMLElement) => {
@@ -108,7 +101,6 @@ export const registerCard = (data: EventData, element: HTMLElement) => {
 export const unregisterCard = (data: EventData, element: HTMLElement) => {
   if (cards.get(data) === element) cards.delete(data);
 };
-
 
 export const useEventDrag = (timeHandler: UpdateEventTime) => {
   eventTimeUpdater = timeHandler;
@@ -346,40 +338,38 @@ window.addEventListener(
   { passive: false }
 );
 
-
 let numDays: number = 5; // update me reactively!!!
-let latestEndTime: number = 18; // update me reactively!!!
+let latestEndTime: number = 17; // update me reactively!!!
 let earliestStartTime: number = 9; // update me reactively!!!
 
 const drop = () => {
+  // const { days, latestEventTime } = useContext(AppContext);
+  // const numDays: number = days.length; // update me reactively!!!
+  // const latestEndTime: number = Math.ceil(latestEventTime); // update me reactively!!!
+
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
 
-    var gridChildren = dragElement.parentElement?.parentElement?.children
+    var gridChildren = dragElement.parentElement?.parentElement?.children;
     var dragrect = dragElement.getBoundingClientRect();
-    
+
     if (gridChildren && dragTarget) {
+      var baserect = gridChildren[1].getBoundingClientRect();
 
-
-      var baserect = gridChildren[1].getBoundingClientRect()
-      
       // x and y displacement of the drag target from the start-point of the grid
-      var displacementx = dragrect.x - baserect.x
-      var displacementy = dragrect.y - (baserect.y + baserect.height + 1)
-
+      var displacementx = dragrect.x - baserect.x;
+      var displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
       var itemRect = gridChildren[gridChildren.length - 5].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
-      var [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)] // grid coords of drag target when released
+      var [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)]; // grid coords of drag target when released
 
-      console.log('xy', colIndex, rowIndex)
+      console.log('xy', colIndex, rowIndex);
 
       const eventLength = dragTarget.time.end - dragTarget.time.start;
 
       // ensure we released inside the grid
-      if (colIndex >= 0 && colIndex < numDays &&
-          rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
-
+      if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
         eventTimeUpdater(
           {
             day: 1 + colIndex,
@@ -389,11 +379,10 @@ const drop = () => {
           eventRecordKey
         );
       }
-
     }
     style.left = toPx(0);
     style.top = toPx(0);
-    
+
     document.documentElement.style.cursor = 'default';
     unfreezeTransform(dragElement);
   }

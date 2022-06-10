@@ -42,6 +42,9 @@ export interface IAppContext {
   days: string[];
   setDays: (newDays: string[]) => void;
 
+  earliestStartTime: number;
+  setEarliestStartTime: (newEarliestStartTime: number) => void;
+
   latestEventTime: number;
   setLatestEventTime: (newLatestEventTime: number) => void;
 }
@@ -86,6 +89,9 @@ export const AppContext = createContext<IAppContext>({
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => { },
 
+  earliestStartTime: 9,
+  setEarliestStartTime: () => { },
+
   latestEventTime: 17,
   setLatestEventTime: () => { },
 });
@@ -104,6 +110,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [earliestStartTime, setEarliestStartTime] = useState(9);
   const [latestEventTime, setLatestEventTime] = useState(17);
 
   const initialContext: IAppContext = {
@@ -133,6 +140,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDrag,
     days,
     setDays,
+    earliestStartTime,
+    setEarliestStartTime,
     latestEventTime,
     setLatestEventTime,
   };
