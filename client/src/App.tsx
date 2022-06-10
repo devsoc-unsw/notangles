@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultEndTime, term, year } from './constants/timetable';
+import { defaultEndTime, defaultStartTime, term, year } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -86,6 +86,8 @@ const App: React.FC = () => {
     setInfoVisibility,
     days,
     setDays,
+    earliestEventTime,
+    setEarliestEventTime,
     latestEventTime,
     setLatestEventTime,
   } = useContext(AppContext);
@@ -121,7 +123,6 @@ const App: React.FC = () => {
 
   useDrag(handleSelectClass, handleRemoveClass);
 
-
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {
       const prev = { ...prevRef };
@@ -133,8 +134,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -275,11 +276,14 @@ const App: React.FC = () => {
         setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
       }
 
+      if (event[1].time.start < defaultStartTime) {
+        setEarliestEventTime(event[1].time.start);
+      }
+
       if (event[1].time.end > defaultEndTime) {
         setLatestEventTime(event[1].time.end);
       }
-    }
-    );
+    });
   }, [createdEvents]);
 
   useUpdateEffect(() => {

@@ -42,52 +42,58 @@ export interface IAppContext {
   days: string[];
   setDays: (newDays: string[]) => void;
 
+  earliestEventTime: number;
+  setEarliestEventTime: (newEarliestEventTime: number) => void;
+
   latestEventTime: number;
   setLatestEventTime: (newLatestEventTime: number) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
   is12HourMode: false,
-  setIs12HourMode: () => { },
+  setIs12HourMode: () => {},
 
   isDarkMode: false,
-  setIsDarkMode: () => { },
+  setIsDarkMode: () => {},
 
   isSquareEdges: false,
-  setIsSquareEdges: () => { },
+  setIsSquareEdges: () => {},
 
   isHideFullClasses: false,
-  setIsHideFullClasses: () => { },
+  setIsHideFullClasses: () => {},
 
   isDefaultUnscheduled: false,
-  setIsDefaultUnscheduled: () => { },
+  setIsDefaultUnscheduled: () => {},
 
   isHideClassInfo: false,
-  setIsHideClassInfo: () => { },
+  setIsHideClassInfo: () => {},
 
   alertMsg: '',
-  setAlertMsg: () => { },
+  setAlertMsg: () => {},
 
   errorVisibility: false,
-  setErrorVisibility: () => { },
+  setErrorVisibility: () => {},
 
   infoVisibility: false,
-  setInfoVisibility: () => { },
+  setInfoVisibility: () => {},
 
   autoVisibility: false,
-  setAutoVisibility: () => { },
+  setAutoVisibility: () => {},
 
   lastUpdated: 0,
-  setLastUpdated: () => { },
+  setLastUpdated: () => {},
 
   isDrag: false,
-  setIsDrag: () => { },
+  setIsDrag: () => {},
 
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-  setDays: () => { },
+  setDays: () => {},
+
+  earliestEventTime: 9,
+  setEarliestEventTime: () => {},
 
   latestEventTime: 17,
-  setLatestEventTime: () => { },
+  setLatestEventTime: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -104,6 +110,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [earliestEventTime, setEarliestEventTime] = useState(9);
   const [latestEventTime, setLatestEventTime] = useState(17);
 
   const initialContext: IAppContext = {
@@ -133,6 +140,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDrag,
     days,
     setDays,
+    earliestEventTime,
+    setEarliestEventTime,
     latestEventTime,
     setLatestEventTime,
   };

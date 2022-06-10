@@ -100,7 +100,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({ }) => {
+const CustomEvent = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -126,6 +126,7 @@ const CustomEvent = ({ }) => {
   };
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { earliestEventTime, setEarliestEventTime } = useContext(AppContext);
   const { latestEventTime, setLatestEventTime } = useContext(AppContext);
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
@@ -146,7 +147,7 @@ const CustomEvent = ({ }) => {
   const doCreateEvent = () => {
     const uuid = uuidv4();
 
-    if (startTime.getHours() > endTime.getHours()) {
+    if (startTime.getHours() >= endTime.getHours()) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
       return;
@@ -164,12 +165,16 @@ const CustomEvent = ({ }) => {
       description: description,
       color: color,
     };
-    console.log(String(weekdays.indexOf(days.toString()) + 1))
+    console.log(String(weekdays.indexOf(days.toString()) + 1));
 
     setCreatedEvents({
       ...createdEvents,
       [uuid]: newEvent,
     });
+
+    if (startTime.getHours() < earliestEventTime) {
+      setEarliestEventTime(startTime.getHours());
+    }
 
     if (endTime.getHours() > latestEventTime) {
       setLatestEventTime(endTime.getHours());

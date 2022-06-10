@@ -13,7 +13,7 @@ export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : c
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-}) <{
+})<{
   x: number;
   y: number;
   yTo?: number;
@@ -53,7 +53,7 @@ const InventoryCell = styled(DayCell)`
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-}) <{ is12HourMode: boolean }>`
+})<{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -93,17 +93,19 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days } = useContext(AppContext);
+  const { is12HourMode, days, earliestEventTime, latestEventTime } = useContext(AppContext);
   const { selectedCourses, createdEvents } = useContext(CourseContext);
-  const { latestEventTime } = useContext(AppContext);
-
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
-  const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestEventTime, latestClassFinishTime, defaultEndTime) - 1];
+  const hoursRange = [
+    Math.min(earliestEventTime, earliestClassStartTime, defaultStartTime),
+    Math.max(latestEventTime, latestClassFinishTime, defaultEndTime) - 1,
+  ];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
-
+  console.log(hours);
+  
   const dayCells = days.map((day, i) => (
     <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
       {day}

@@ -46,11 +46,6 @@ const StyledDialogContent = styled(DialogContent)`
   padding-bottom: 20px;
 `;
 
-const ExecuteButton = styled(Button)`
-  width: 100%;
-  border-radius: 0px 0px 5px 5px;
-`;
-
 const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;
   width: 100%;
@@ -129,7 +124,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     }
     return result;
   };
-  const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -137,7 +132,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(eventData.name);
-  const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
+  const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
   const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[eventData.time.day - 1]]);
   const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.start));
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
