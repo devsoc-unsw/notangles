@@ -31,15 +31,15 @@ const borderWidth = 3;
 const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
   if (isPeriod(cardData) && clashIndex !== undefined && width) {
     const widthRatio = 100 / width;
-    const microOffset = width !== 100 ? widthRatio * borderWidth : borderWidth / 8;
+    const microOffset = width !== 100 ? (widthRatio * borderWidth) / 2 : borderWidth / 4;
 
-    return `${Math.round((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio - microOffset}%`;
+    return `${Math.round((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio + microOffset}%`;
   }
 
   // not a period, so in the inventory
   if (days) {
     // `1 / devicePixelRatio` refers to the width of a timetable border
-    return `calc(${days.length * 100}% + ${Math.round(inventoryMargin + 1 / devicePixelRatio)}px)`;
+    return `calc(${days.length * 100}% + ${Math.round(inventoryMargin + 1 / devicePixelRatio + borderWidth * 2)}px)`;
   }
 
   return 0;
@@ -117,7 +117,7 @@ const StyledCourseClass = styled('div', {
   grid-row: 2 / -1;
   transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth }) =>
     classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth)};
-  width: ${({ cardWidth }) => cardWidth + devicePixelRatio / 2}%;
+  width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ cardData }) => classHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
