@@ -8,8 +8,6 @@ import { Activity, ClassPeriod, ClassTime, CourseCode } from '../../interfaces/C
 import { DroppedClassesProps } from '../../interfaces/PropTypes';
 import { CardData, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
 import DroppedClass, { transitionName } from './DroppedClass';
-import { v4 as uuidv4 } from 'uuid';
-import { notEqual } from 'assert';
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
@@ -33,7 +31,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     Object.entries(activities).forEach(([activity, classData]) => {
       if (classData) {
         classData.periods.forEach((classPeriod) => {
-          classPeriod.class.id = uuidv4();
           newCards.push(classPeriod);
         });
       } else {
@@ -49,8 +46,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
       }
     });
   });
-
-  console.log(newCards);
 
   // clear any inventory cards which no longer exist
   inventoryCards.current = inventoryCards.current.filter((card) => newCards.includes(card));

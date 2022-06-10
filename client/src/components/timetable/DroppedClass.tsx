@@ -30,12 +30,16 @@ const borderWidth = 3;
 
 const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
   if (isPeriod(cardData) && clashIndex !== undefined && width) {
-    return `${(cardData.time.day - 1) * 100 + clashIndex * width}%`;
+    const widthRatio = 100 / width;
+    const microOffset = width !== 100 ? widthRatio * borderWidth : borderWidth / 8;
+
+    return `${Math.round((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio - microOffset}%`;
   }
+
   // not a period, so in the inventory
   if (days) {
     // `1 / devicePixelRatio` refers to the width of a timetable border
-    return `calc(${days.length * 100}% + ${inventoryMargin + 1 / devicePixelRatio}px)`;
+    return `calc(${days.length * 100}% + ${Math.round(inventoryMargin + 1 / devicePixelRatio)}px)`;
   }
 
   return 0;
@@ -62,13 +66,6 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
   return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
 };
 
-export const classHeight = (cardData?: CardData | InInventory) => {
-  // height compared to standard row height
-  const heightFactor = getHeightFactor(cardData);
-
-  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
-};
-
 export const classTransformStyle = (
   cardData: CardData,
   earliestStartTime: number,
@@ -77,6 +74,13 @@ export const classTransformStyle = (
   clashIndex?: number,
   width?: number
 ) => `translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
+
+export const classHeight = (cardData?: CardData | InInventory) => {
+  // height compared to standard row height
+  const heightFactor = getHeightFactor(cardData);
+
+  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
+};
 
 export const transitionName = 'class';
 
@@ -98,7 +102,7 @@ const ExpandButton = styled(Button)`
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) =>
-    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'width'].includes(prop.toString()),
+    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth'].includes(prop.toString()),
 })<{
   cardData: CardData;
   days: string[];
@@ -106,15 +110,14 @@ const StyledCourseClass = styled('div', {
   earliestStartTime: number;
   isSquareEdges: boolean;
   clashIndex: number;
-  width: number;
+  cardWidth: number;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, width }) =>
-    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, width)};
-  // position over timetable borders
-  width: calc(100% + ${1 / devicePixelRatio}px);
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth }) =>
+    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth)};
+  width: ${({ cardWidth }) => cardWidth + devicePixelRatio / 2}%;
   height: ${({ cardData }) => classHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
@@ -150,13 +153,11 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) =>
-    !['backgroundColor', 'hasClash', 'isSquareEdges', 'cardWidth', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'clashColour'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
   isSquareEdges: boolean;
-  cardWidth: number;
   clashColour: string;
 }>`
   display: flex;
@@ -169,8 +170,8 @@ const StyledCourseClassInner = styled(Card, {
   backface-visibility: hidden;
   outline: ${({ hasClash, clashColour }) => (hasClash ? clashColour : 'solid transparent 0px')};
   outline-offset: -${borderWidth}px;
-  width: ${({ cardWidth }) => cardWidth}%;
   height: 100%;
+  width: 100%;
   position: relative;
 `;
 
@@ -272,7 +273,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       // The only non-permitted clash is like tute + tute or tute + exam etc.
       for (const clashClass of clashGroup) {
         if (!clashClass.class.activity.includes('Lecture') && !nonPermittedClashes.has(clashClass.class.id)) {
-          nonPermittedClashes.add(clashClass.class.id)
+          nonPermittedClashes.add(clashClass.class.id);
         }
         // Check if the current cardData has weeks that are overlapping with
         // the weeks of the current clashClass.
@@ -407,13 +408,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           setFullscreenVisible(false);
         }}
         clashIndex={clashIndex}
-        width={cardWidth}
+        cardWidth={cardWidth}
       >
         <StyledCourseClassInner
           backgroundColor={color}
           hasClash={hasClash}
           isSquareEdges={isSquareEdges}
-          cardWidth={cardWidth}
           clashColour={clashColour}
         >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
