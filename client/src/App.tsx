@@ -84,6 +84,7 @@ const App: React.FC = () => {
     isHideClassInfo,
     infoVisibility,
     setInfoVisibility,
+    days,
     setDays,
     setEarliestStartTime,
     latestEventTime,
@@ -268,7 +269,7 @@ const App: React.FC = () => {
   useUpdateEffect(() => {
     storage.set('createdEvents', createdEvents);
     Object.entries(createdEvents).forEach((event) => {
-      if (event[1].time.day === 6) {
+      if (event[1].time.day === 6 && days.length != 7) {
         setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
       } else if (event[1].time.day === 7) {
         setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
