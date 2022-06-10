@@ -86,6 +86,7 @@ const App: React.FC = () => {
     setInfoVisibility,
     setDays,
     setEarliestStartTime,
+    latestEventTime,
     setLatestEventTime,
   } = useContext(AppContext);
 
@@ -119,7 +120,6 @@ const App: React.FC = () => {
   };
 
   useDrag(handleSelectClass, handleRemoveClass);
-
 
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {
@@ -281,8 +281,7 @@ const App: React.FC = () => {
       if (event[1].time.end > defaultEndTime) {
         setLatestEventTime(event[1].time.end);
       }
-    }
-    );
+    });
   }, [createdEvents]);
 
   useUpdateEffect(() => {

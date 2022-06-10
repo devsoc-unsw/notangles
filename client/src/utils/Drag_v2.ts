@@ -364,7 +364,7 @@ const drop = () => {
       var itemRect = gridChildren[gridChildren.length - 5].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
       var [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)]; // grid coords of drag target when released
 
-      console.log('xy', colIndex, rowIndex);
+      // console.log('xy', colIndex, rowIndex)
 
       const eventLength = dragTarget.time.end - dragTarget.time.start;
 
