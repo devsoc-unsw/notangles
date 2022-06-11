@@ -46,6 +46,22 @@ export const timeToPosition = (time: number, earliestStartTime: number) => time 
 
 export const checkCanDrop = (a: EventData | null, b: EventData | null) => a === null || b === null || a === b;
 
+// type EventHandler = (eventData: EventData) => void;
+
+// let numDaysHandler: EventHandler = () => {};
+// let earliestStartTimeHandler: EventHandler = () => {};
+// let latestEventTimeHandler: EventHandler = () => {};
+
+let numDays: number; // update me reactively!!!
+let latestEndTime: number; // update me reactively!!!
+let earliestStartTime: number; // update me reactively!!!
+
+export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEventTimeHandler: number) => {
+  numDays = numDaysHandler;
+  earliestStartTime = earliestStartTimeHandler;
+  latestEndTime = latestEventTimeHandler;
+};
+
 const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
 };
@@ -338,10 +354,6 @@ window.addEventListener(
   { passive: false }
 );
 
-let numDays: number = 5; // update me reactively!!!
-let latestEndTime: number = 17; // update me reactively!!!
-let earliestStartTime: number = 9; // update me reactively!!!
-
 const drop = () => {
   // const { days, latestEventTime } = useContext(AppContext);
   // const numDays: number = days.length; // update me reactively!!!
@@ -372,12 +384,14 @@ const drop = () => {
       if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
         eventTimeUpdater(
           {
+            
             day: 1 + colIndex,
             start: rowIndex + earliestStartTime,
             end: eventLength + rowIndex + earliestStartTime,
           } as EventTime,
           eventRecordKey
         );
+        // console.log(earliestStartTime);
       }
     }
     style.left = toPx(0);

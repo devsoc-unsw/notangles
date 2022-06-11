@@ -165,7 +165,6 @@ const CustomEvent = ({}) => {
       description: description,
       color: color,
     };
-    console.log(String(weekdays.indexOf(days.toString()) + 1));
 
     setCreatedEvents({
       ...createdEvents,

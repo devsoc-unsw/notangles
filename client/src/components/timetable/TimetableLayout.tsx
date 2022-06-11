@@ -103,8 +103,6 @@ export const TimetableLayout: React.FC = () => {
     Math.max(latestEventTime, latestClassFinishTime, defaultEndTime) - 1];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
-  console.log(hours);
-
   const dayCells = days.map((day, i) => (
     <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
       {day}

@@ -31,6 +31,7 @@ import {
   CreatedEvents,
 } from './interfaces/Course';
 import { useDrag } from './utils/Drag';
+import { dropzoneRange } from './utils/Drag_v2';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
@@ -86,6 +87,7 @@ const App: React.FC = () => {
     setInfoVisibility,
     days,
     setDays,
+    earliestStartTime,
     setEarliestStartTime,
     latestEventTime,
     setLatestEventTime,
@@ -119,6 +121,15 @@ const App: React.FC = () => {
       return prev;
     });
   };
+
+
+  console.log("days:" + days.length);
+  console.log("earlyTime: " + earliestStartTime);
+  console.log("latestTime: " + latestEventTime);
+
+  dropzoneRange(days.length, earliestStartTime, latestEventTime);
+
+
 
   useDrag(handleSelectClass, handleRemoveClass);
 
@@ -275,11 +286,11 @@ const App: React.FC = () => {
         setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
       }
 
-      if (event[1].time.start < defaultStartTime) {
+      if (event[1].time.start < earliestStartTime) {
         setEarliestStartTime(event[1].time.start);
       }
 
-      if (event[1].time.end > defaultEndTime) {
+      if (event[1].time.end > latestEventTime) {
         setLatestEventTime(event[1].time.end);
       }
     });
