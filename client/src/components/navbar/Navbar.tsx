@@ -30,10 +30,12 @@ const NavbarBox = styled('div')`
 
 const StyledNavBar = styled(AppBar)`
   background: ${({ theme }) => theme.palette.primary.main};
+  z-index: 1201;
 `;
 
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
+  z-index: 1201;
 `;
 
 const Weak = styled('span')`
@@ -44,6 +46,7 @@ const Weak = styled('span')`
   vertical-align: middle;
   position: relative;
   bottom: 1px;
+  z-index: 1201;
 `;
 
 const Navbar: React.FC = () => {
