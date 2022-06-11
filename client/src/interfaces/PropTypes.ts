@@ -76,11 +76,10 @@ export interface DroppedClassProps {
   color: string;
   y?: number;
   earliestStartTime: number;
-  hasClash: boolean;
   handleSelectClass(classData: ClassData): void;
   cardWidth: number;
   clashIndex: number;
-  groupedClashes: Record<number, ClassPeriod[][]>;
+  clashColour: string;
 }
 
 export interface DroppedClassesProps {

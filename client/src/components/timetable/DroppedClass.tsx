@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { LocationOn, OpenInFull, PeopleAlt, Warning } from '@mui/icons-material';
+import { OpenInFull } from '@mui/icons-material';
 import { Button, Card, Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
 import { ClassData, InInventory } from '../../interfaces/Course';
-import { DroppedClassProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
+import { DroppedClassProps } from '../../interfaces/PropTypes';
 
 import {
   CardData,
@@ -22,10 +21,11 @@ import {
   unregisterCard,
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedView';
+import PeriodMetadata from './PeriodMetadata';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
-const borderWidth = 3;
+export const borderWidth = 3;
 
 // Note for whoever is working on this file next (sorry):
 // The more classes there are clashing with each other, the more the edge of the last class card
@@ -200,7 +200,7 @@ const StyledCourseClassInner = styled(Card, {
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
-  outline: ${({ hasClash, clashColour }) => (hasClash ? clashColour : 'solid transparent 0px')};
+  outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
   outline-offset: -${borderWidth}px;
   position: relative;
   height: 100%;
@@ -222,60 +222,15 @@ const StyledClassInfo = styled(StyledClassName)`
   font-size: 85%;
 `;
 
-const StyledLocationIcon = styled(LocationOn)`
-  vertical-align: top;
-  font-size: inherit;
-`;
-
-const StyledPeopleIcon = styled(PeopleAlt)`
-  vertical-align: top;
-  font-size: inherit;
-  margin-right: 0.2rem;
-`;
-
-const StyledWarningIcon = styled(Warning)`
-  vertical-align: top;
-  font-size: inherit;
-  margin-right: 0.2rem;
-  color: ${yellow[400]};
-`;
-
-const StyledCapacityIndicator = styled('span', {
-  shouldForwardProp: (prop) => prop !== 'percentEnrolled',
-})<{
-  percentEnrolled: number;
-}>`
-  text-overflow: ellipsis;
-  margin: 0;
-  font-weight: ${({ percentEnrolled }) => (percentEnrolled === 1 ? 'bolder' : undefined)};
-`;
-
-const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
-  const percentEnrolled = period.class.enrolments / period.class.capacity;
-
-  return (
-    <>
-      <StyledCapacityIndicator percentEnrolled={percentEnrolled}>
-        {percentEnrolled === 1 ? <StyledWarningIcon /> : <StyledPeopleIcon />}
-        {period.class.enrolments}/{period.class.capacity}{' '}
-      </StyledCapacityIndicator>
-      ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
-      <StyledLocationIcon />
-      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
-    </>
-  );
-};
-
 const DroppedClass: React.FC<DroppedClassProps> = ({
   cardData,
   color,
   y,
   earliestStartTime,
-  hasClash,
   handleSelectClass,
   cardWidth,
   clashIndex,
-  groupedClashes,
+  clashColour,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -293,47 +248,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
-
-  let clashColour = `solid orange ${borderWidth}px`;
-  let nonPermittedClashes = new Set();
-
-  if ('time' in cardData) {
-    // Find the clash group that the class is in.
-    for (const clashGroup of groupedClashes[cardData.time.day - 1]) {
-      if (!clashGroup.includes(cardData)) {
-        continue;
-      }
-      let isOverlapped = false;
-      // Lecture (online or offline) + any class is always a permitted clash.
-      // The only non-permitted clash is like tute + tute or tute + exam etc.
-      for (const clashClass of clashGroup) {
-        if (!clashClass.class.activity.includes('Lecture') && !nonPermittedClashes.has(clashClass.class.id)) {
-          nonPermittedClashes.add(clashClass.class.id);
-        }
-        // Check if the current cardData has weeks that are overlapping with
-        // the weeks of the current clashClass.
-        // This is so that two classes with clashing time but different weeks
-        // are not supposed to clash (no border).
-        const checkOverlappingWeeks = cardData.time.weeks.some((element) => {
-          return clashClass.time.weeks.indexOf(element) !== -1;
-        });
-        if (checkOverlappingWeeks && clashClass.class.id !== cardData.class.id) {
-          isOverlapped = true;
-        }
-      }
-      if (
-        nonPermittedClashes.size > 1 &&
-        clashGroup.filter(
-          (clashClass) => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id
-        ).length
-      ) {
-        clashColour = `solid red ${borderWidth}px`;
-      }
-      if (!isOverlapped) {
-        clashColour = `solid transparent ${borderWidth}px`;
-      }
-    }
-  }
 
   const onDown = (eventDown: any) => {
     if (
@@ -447,7 +361,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       >
         <StyledCourseClassInner
           backgroundColor={color}
-          hasClash={hasClash}
+          hasClash={clashColour !== 'transparent'}
           isSquareEdges={isSquareEdges}
           clashColour={clashColour}
         >
