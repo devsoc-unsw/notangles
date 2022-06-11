@@ -12,7 +12,7 @@ import DroppedClass, { transitionName } from './DroppedClass';
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
 
-  const days = useContext(AppContext).days;
+  const { days } = useContext(AppContext);
   const { selectedCourses, selectedClasses } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -189,11 +189,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         clashColour = 'transparent';
       }
 
-      return [
-        cardWidth / uniqueClashIDs.length,
-        uniqueClashIDs.indexOf(cardData.class.id),
-        clashColour,
-      ];
+      return [cardWidth / uniqueClashIDs.length, uniqueClashIDs.indexOf(cardData.class.id), clashColour];
     }
 
     return defaultValues;
