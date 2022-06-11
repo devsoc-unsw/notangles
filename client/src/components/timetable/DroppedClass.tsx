@@ -325,7 +325,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         nonPermittedClashes.size > 1 &&
         clashGroup.filter(
           (clashClass) => !clashClass.class.activity.includes('Lecture') && clashClass.class.id !== clashGroup[0].class.id
-        ) !== []
+        ).length
       ) {
         clashColour = `solid red ${borderWidth}px`;
       }
