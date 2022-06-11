@@ -31,7 +31,7 @@ const StyledCapacityIndicator = styled('span', {
   font-weight: ${({ percentEnrolled }) => (percentEnrolled === 1 ? 'bolder' : undefined)};
 `;
 
-const PeriodMetadata = ({ period }: PeriodMetadataProps) => {
+const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
   const percentEnrolled = period.class.enrolments / period.class.capacity;
 
   return (
