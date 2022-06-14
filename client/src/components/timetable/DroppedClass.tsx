@@ -164,11 +164,10 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'clashColour'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
-  isSquareEdges: boolean;
   clashColour: string;
 }>`
   display: flex;
@@ -338,7 +337,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           square={isSquareEdges}
           backgroundColor={color}
           hasClash={clashColour !== 'transparent'}
-          isSquareEdges={isSquareEdges}
           clashColour={clashColour}
         >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
