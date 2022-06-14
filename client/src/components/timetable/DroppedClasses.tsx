@@ -197,20 +197,20 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
 
   // handles getting width of a cell in the grid
   const myRef = React.useRef<HTMLDivElement>(null);
-  const [recWidth, setRecWidth] = useState(0);
+  const [cellWidth, setCellWidth] = useState(0);
   useLayoutEffect(() => {
-    function updateRecWidth() {
+    const updateCellWidth = () => {
       if (myRef.current) {
         const gridChildren = (myRef.current as unknown as HTMLDivElement).parentElement?.children;
 
         if (gridChildren) {
-          setRecWidth(gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect().width);
+          setCellWidth(gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect().width);
         }
       }
-    }
-    window.addEventListener('resize', updateRecWidth);
-    updateRecWidth();
-    return () => window.removeEventListener('resize', updateRecWidth);
+    };
+    window.addEventListener('resize', updateCellWidth);
+    updateCellWidth();
+    return () => window.removeEventListener('resize', updateCellWidth);
   }, []);
 
   const clashes = getClashes();
@@ -234,7 +234,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         clashIndex={clashIndex as number}
         clashColour={clashColour as string}
         handleSelectClass={handleSelectClass}
-        recWidth={recWidth}
+        cellWidth={cellWidth}
       />
     );
 

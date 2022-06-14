@@ -27,13 +27,13 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
 export const borderWidth = 3;
 
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number, recWidth?: number) => {
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
   // This cardData is for a scheduled class
-  if (isPeriod(cardData) && clashIndex !== undefined && width && recWidth) {
+  if (isPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
     // This effectively gives the number of clashes in the group
     const widthRatio = 100 / width;
 
-    return `${(recWidth + 1) * (cardData.time.day - 1) + clashIndex * (recWidth / widthRatio)}px`;
+    return `${(cellWidth + 1) * (cardData.time.day - 1) + clashIndex * (cellWidth / widthRatio)}px`;
   }
 
   // This cardData is for an unscheduled class, i.e. it belongs in the inventory
@@ -77,9 +77,9 @@ export const classTransformStyle = (
   y?: number,
   clashIndex?: number,
   width?: number,
-  recWidth: number = 0
+  cellWidth: number = 0
 ) =>
-  `translate(${classTranslateX(cardData, days, clashIndex, width, recWidth)}, ${classTranslateY(
+  `translate(${classTranslateX(cardData, days, clashIndex, width, cellWidth)}, ${classTranslateY(
     cardData,
     earliestStartTime,
     y
@@ -112,7 +112,7 @@ const ExpandButton = styled(Button)`
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) =>
-    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'recWidth'].includes(
+    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
 })<{
@@ -123,13 +123,13 @@ const StyledCourseClass = styled('div', {
   isSquareEdges: boolean;
   clashIndex: number;
   cardWidth: number;
-  recWidth: number;
+  cellWidth: number;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth, recWidth }) =>
-    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth, recWidth)};
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
   width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ cardData }) => getClassHeight(cardData)};
   box-sizing: border-box;
@@ -205,7 +205,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   cardWidth,
   clashIndex,
   clashColour,
-  recWidth,
+  cellWidth: cellWidth,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -332,7 +332,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }}
         clashIndex={clashIndex}
         cardWidth={cardWidth}
-        recWidth={recWidth}
+        cellWidth={cellWidth}
       >
         <StyledCourseClassInner
           square={isSquareEdges}
