@@ -80,6 +80,7 @@ export interface DroppedClassProps {
   cardWidth: number;
   clashIndex: number;
   clashColour: string;
+  recWidth: number; // width of a grid cell
 }
 
 export interface DroppedClassesProps {

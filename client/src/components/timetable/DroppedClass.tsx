@@ -27,28 +27,19 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
 export const borderWidth = 3;
 
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number, recWidth?: number) => {
   // This cardData is for a scheduled class
-  if (isPeriod(cardData) && clashIndex !== undefined && width) {
+  if (isPeriod(cardData) && clashIndex !== undefined && width && recWidth) {
     // This effectively gives the number of clashes in the group
     const widthRatio = 100 / width;
 
-    // "undoes" the width transformation calculated in the StyledCourseClass css as to get the original width as a percent of the modified width (as translate acts on the modified width)
-    const ogWidth = (100 * widthRatio) / (1 + (widthRatio * 1.1) / (100 * devicePixelRatio));
-
-    // ${term1}% + ${term2}px - ${term3}px, where:
-    // term1 puts card to the right DotW in the grid and shifts it to be `clashIndex`th position in it's grid item,
-    // term2 shifts by the grid borders of lengths
-    // term3 subtracts the extra padding for each clashing class (3 * clashIndex) and slightly spreads them out (by subtracting clashIndex from the "average" clash index)
-    return `calc(${(cardData.time.day - 1) * ogWidth + clashIndex * 100}% + ${cardData.time.day - 1}px - ${
-      (3 * clashIndex + 2 * ((widthRatio - 1) / 2 - clashIndex)) / (1.1 * devicePixelRatio)
-    }px)`;
+    return `${(recWidth + 1) * (cardData.time.day - 1) + clashIndex * (recWidth / widthRatio)}px`;
   }
 
   // This cardData is for an unscheduled class, i.e. it belongs in the inventory
   // 5 / devicePixelRatio refers to the five timetable borders between Monday and the Unscheduled column
   if (days) {
-    return `calc(${days.length * 100}% + ${inventoryMargin - 5 / devicePixelRatio}px)`;
+    return `calc(${days.length * 100}% + ${days.length + 1 + inventoryMargin}px)`;
   }
 
   return 0;
@@ -76,7 +67,7 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
     result = y;
   }
 
-  return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
+  return `calc(${result * 100}% + ${result}px)`;
 };
 
 export const classTransformStyle = (
@@ -85,14 +76,20 @@ export const classTransformStyle = (
   days?: string[],
   y?: number,
   clashIndex?: number,
-  width?: number
-) => `translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
+  width?: number,
+  recWidth: number = 0
+) =>
+  `translate(${classTranslateX(cardData, days, clashIndex, width, recWidth)}, ${classTranslateY(
+    cardData,
+    earliestStartTime,
+    y
+  )})`;
 
 export const getClassHeight = (cardData?: CardData | InInventory) => {
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
-  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
+  return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
 };
 
 export const transitionName = 'class';
@@ -115,7 +112,9 @@ const ExpandButton = styled(Button)`
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) =>
-    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth'].includes(prop.toString()),
+    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'recWidth'].includes(
+      prop.toString()
+    ),
 })<{
   cardData: CardData;
   days: string[];
@@ -124,24 +123,22 @@ const StyledCourseClass = styled('div', {
   isSquareEdges: boolean;
   clashIndex: number;
   cardWidth: number;
+  recWidth: number;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth }) =>
-    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth)};
-  width: ${({ cardWidth }) =>
-    cardWidth + 1.1 / devicePixelRatio}%; // So the card hitbox extends all the way to the timetable border
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth, recWidth }) =>
+    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth, recWidth)};
+  width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ cardData }) => getClassHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
-  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
-
+  padding: 1px;
   transition: ${defaultTransition}, z-index 0s;
 
+  /* uncomment me whoever decides to fix <CSSTransition> 
   &.${transitionName}-enter {
     & > div {
       opacity: 0;
@@ -163,7 +160,7 @@ const StyledCourseClass = styled('div', {
       opacity: 0;
       box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
-  }
+  } */
 `;
 
 const StyledCourseClassInner = styled(Card, {
@@ -179,17 +176,12 @@ const StyledCourseClassInner = styled(Card, {
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
-  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
   outline-offset: -${borderWidth}px;
   position: relative;
   height: 100%;
-  // If there is a clash, we want the cards to be as wide as possible so width remains at 100%
-  // Otherwise, take a small slice off the left and right edges, equivalent to the width
-  // of a timetable border from each side so it looks less packed
-  width: ${({ hasClash }) => `calc(100% - ${hasClash ? 0 : 2 / devicePixelRatio}px)`};
 `;
 
 const StyledClassName = styled('p')`
@@ -213,6 +205,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   cardWidth,
   clashIndex,
   clashColour,
+  recWidth,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -230,7 +223,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
-
   const onDown = (eventDown: any) => {
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
@@ -340,8 +332,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }}
         clashIndex={clashIndex}
         cardWidth={cardWidth}
+        recWidth={recWidth}
       >
         <StyledCourseClassInner
+          square={isSquareEdges}
           backgroundColor={color}
           hasClash={clashColour !== 'transparent'}
           isSquareEdges={isSquareEdges}
