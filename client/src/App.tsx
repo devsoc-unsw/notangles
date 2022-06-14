@@ -17,15 +17,7 @@ import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import {
-  Activity,
-  ClassData,
-  ClassTime,
-  CourseCode,
-  CourseData,
-  InInventory,
-  SelectedClasses,
-} from './interfaces/Course';
+import { Activity, ClassData, ClassTime, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Course';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -208,7 +200,7 @@ const App: React.FC = () => {
           if (classId) {
             const result = newSelectedCourses
               .find((x) => x.code === courseCode)
-              ?.activities[activity].find((x) => x.id === classId);
+              ?.activities[activity].find((x) => x.section === classId);
 
             if (result) classData = result;
           }
@@ -244,7 +236,7 @@ const App: React.FC = () => {
       savedClasses[courseCode] = {};
       Object.keys(selectedClasses[courseCode]).forEach((activity) => {
         const classData = selectedClasses[courseCode][activity];
-        savedClasses[courseCode][activity] = classData ? classData.id : null;
+        savedClasses[courseCode][activity] = classData ? classData.section : null;
       });
     });
 
