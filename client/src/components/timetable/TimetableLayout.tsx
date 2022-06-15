@@ -22,13 +22,14 @@ const BaseCell = styled('div', {
 }>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
-  box-shadow: 0 0 0 1px ${({ theme }) => theme.palette.secondary.main};
   background: ${({ theme }) => theme.palette.background.default};
-  z-index: 0;
+  z-index: 10;
   transition: background 0.2s, box-shadow 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  outline: solid ${({ theme }) => theme.palette.secondary.main} 1px;
+  outline-offset: -0.5px;
 
   border-top-left-radius: ${({ theme, x, y }) => (x === 1 && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 1 && isEndY ? theme.shape.borderRadius : 0)}px;
