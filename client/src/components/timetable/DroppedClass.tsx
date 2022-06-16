@@ -33,14 +33,14 @@ const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: numbe
     const numClashing = 100 / width;
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
-    // cellWidth / numClashing gives the width of this card in px, so we shift it extra by it's width times the index it's in in the clash group
+    // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
     return `${(cellWidth + 1) * (cardData.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
-    // p.s. the reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
+    // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
   // This cardData is for an unscheduled class, i.e. it belongs in the inventory
   if (days) {
-    // shifts by this cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
+    // This shifts by the cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
     // plus the margin seperating the days of the week from unscheduled section
     return `calc(${days.length * 100}% + ${days.length + 1 + inventoryMargin}px)`;
   }
@@ -141,7 +141,7 @@ const StyledCourseClass = styled('div', {
   padding: 1px;
   transition: ${defaultTransition}, z-index 0s;
 
-  /* uncomment me whoever decides to fix <CSSTransition> 
+  /* uncomment me whoever decides to fix <CSSTransition>
   &.${transitionName}-enter {
     & > div {
       opacity: 0;
