@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import { defaultStartTime } from '../../constants/timetable';
@@ -195,6 +195,24 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     return defaultValues;
   };
 
+  // handles getting width of a cell in the grid
+  const myRef = React.useRef<HTMLDivElement>(null);
+  const [cellWidth, setCellWidth] = useState(0);
+  useLayoutEffect(() => {
+    const updateCellWidth = () => {
+      if (myRef.current) {
+        const gridChildren = (myRef.current as unknown as HTMLDivElement).parentElement?.children;
+
+        if (gridChildren) {
+          setCellWidth(gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect().width);
+        }
+      }
+    };
+    window.addEventListener('resize', updateCellWidth);
+    updateCellWidth();
+    return () => window.removeEventListener('resize', updateCellWidth);
+  }, []);
+
   const clashes = getClashes();
   const sortedClashes = sortClashesByDay(clashes);
   const groupedClashes = groupClashes(sortedClashes);
@@ -216,6 +234,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         clashIndex={clashIndex as number}
         clashColour={clashColour as string}
         handleSelectClass={handleSelectClass}
+        cellWidth={cellWidth}
       />
     );
 
@@ -235,7 +254,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
 
   return (
     <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
-      <>{droppedClasses}</>
+      <div ref={myRef}>{droppedClasses}</div>
     </CSSTransition>
   );
 };
