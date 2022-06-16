@@ -26,7 +26,6 @@ const StyledDialogTitle = styled(DialogTitle)`
 
 const StyledTitleContainer = styled(Box)`
   display: flex;
-  flex-rirection: row;
   justify-content: space-between;
   align-items: center;
   height: 100%;
@@ -42,7 +41,7 @@ const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
-const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${String(n % 1)}0`;
+const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${(n % 1) * 60 ? String(((n % 1) * 60) >> 0) : '00'}`;
 
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');

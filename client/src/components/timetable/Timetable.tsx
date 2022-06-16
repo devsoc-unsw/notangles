@@ -9,7 +9,8 @@ import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
 
-import DroppedClasses, { inventoryMargin } from './DroppedClasses';
+import DroppedClasses from './DroppedClasses';
+import { inventoryMargin } from './DroppedClass';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 
@@ -43,7 +44,7 @@ const StyledTimetableScroll = styled(Box)`
   }
 `;
 
-const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
+const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { selectedCourses } = useContext(CourseContext);
   const { days } = useContext(AppContext);
 
@@ -58,7 +59,7 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSe
       >
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
-        <DroppedClasses assignedColors={assignedColors} clashes={clashes} handleSelectClass={handleSelectClass} />
+        <DroppedClasses assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
       </StyledTimetable>
     </StyledTimetableScroll>
   );

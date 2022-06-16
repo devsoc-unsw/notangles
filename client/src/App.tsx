@@ -17,17 +17,7 @@ import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import {
-  Activity,
-  ClassData,
-  ClassPeriod,
-  ClassTime,
-  CourseCode,
-  CourseData,
-  InInventory,
-  SelectedClasses,
-} from './interfaces/Course';
-import NetworkError from './interfaces/NetworkError';
+import { Activity, ClassData, ClassTime, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Course';
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -80,8 +70,6 @@ const App: React.FC = () => {
     isHideFullClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    setAlertMsg,
-    setErrorVisibility,
     infoVisibility,
     setInfoVisibility,
     days,
@@ -137,56 +125,27 @@ const App: React.FC = () => {
     });
   };
 
-  const hasTimeOverlap = (period1: ClassTime, period2: ClassTime) =>
-    period1.day === period2.day &&
-    ((period1.end > period2.start && period1.start < period2.end) ||
-      (period2.end > period1.start && period2.start < period1.end));
-
-  const checkClashes = () => {
-    const newClashes: ClassPeriod[] = [];
-
-    const flatPeriods = Object.values(selectedClasses)
-      .flatMap((activities) => Object.values(activities))
-      .flatMap((classData) => (classData ? classData.periods : []));
-
-    flatPeriods.forEach((period1) => {
-      flatPeriods.forEach((period2) => {
-        if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
-          if (!newClashes.includes(period1)) {
-            newClashes.push(period1);
-          }
-          if (!newClashes.includes(period2)) {
-            newClashes.push(period2);
-          }
-        }
-      });
-    });
-
-    return newClashes;
-  };
-
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-    Promise.all(codes.map((code) => getCourseInfo(year, term, code)))
-      .then((result) => {
-        const addedCourses = result as CourseData[];
-        const newSelectedCourses = [...selectedCourses, ...addedCourses];
+    Promise.all(
+      codes.map((code) =>
+        getCourseInfo(year, term, code).catch((err) => {
+          return err;
+        })
+      )
+    ).then((result) => {
+      const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
+      const newSelectedCourses = [...selectedCourses, ...addedCourses];
 
-        setSelectedCourses(newSelectedCourses);
+      setSelectedCourses(newSelectedCourses);
 
-        if (!noInit) addedCourses.forEach((course) => initCourse(course));
-        if (callback) callback(newSelectedCourses);
-      })
-      .catch((e) => {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-          setErrorVisibility(true);
-        }
-      });
+      if (!noInit) addedCourses.forEach((course) => initCourse(course));
+      if (callback) callback(newSelectedCourses);
+    });
   };
 
   const handleRemoveCourse = (courseCode: CourseCode) => {
@@ -241,7 +200,7 @@ const App: React.FC = () => {
           if (classId) {
             const result = newSelectedCourses
               .find((x) => x.code === courseCode)
-              ?.activities[activity].find((x) => x.id === classId);
+              ?.activities[activity].find((x) => x.section === classId);
 
             if (result) classData = result;
           }
@@ -277,7 +236,7 @@ const App: React.FC = () => {
       savedClasses[courseCode] = {};
       Object.keys(selectedClasses[courseCode]).forEach((activity) => {
         const classData = selectedClasses[courseCode][activity];
-        savedClasses[courseCode][activity] = classData ? classData.id : null;
+        savedClasses[courseCode][activity] = classData ? classData.section : null;
       });
     });
 
@@ -324,7 +283,7 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
                 <Footer />
                 <Alerts />

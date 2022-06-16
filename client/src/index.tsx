@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import ReactGA from 'react-ga';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
@@ -19,18 +18,6 @@ Sentry.init({
   tracesSampleRate: Number(process.env.REACT_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
-const GOOGLE_ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
-
-if (GOOGLE_ANALYTICS_ID !== undefined) {
-  ReactGA.initialize(GOOGLE_ANALYTICS_ID, {
-    // Debug messages in the browser console
-    debug: process.env.NODE_ENV === 'development',
-  });
-
-  // Trigger page view on the home page
-  ReactGA.pageview(window.location.pathname);
-}
-
 const Root: React.FC = () => (
   <AppContextProvider>
     <CourseContextProvider>
@@ -43,7 +30,8 @@ const Root: React.FC = () => (
   </AppContextProvider>
 );
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root')!);
+root.render(<Root />);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
