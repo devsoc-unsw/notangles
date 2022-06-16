@@ -1,17 +1,15 @@
-export let year = '0000';
-let termNumber = 1;
-export let term = `T${termNumber}`;
-export let termName = `Term ${termNumber}`;
-
-// first monday of week 1 of the term
-export let firstDayOfTerm = `0000-00-00`;
-
 const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
+import { TermDataPromise } from '../context/TermDataContext';
 import timeoutPromise from '../utils/timeoutPromise';
-
-export const setAvailableTermDetails = async () => {
+// TermDataPromise
+export const setAvailableTermDetails: TermDataPromise = async () => {
+  let year = '0000';
+  let termNumber = 1;
+  let term = `T${termNumber}`;
+  let termName = `Term ${termNumber}`;
+  let firstDayOfTerm = `0000-00-00`;
   try {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
@@ -42,6 +40,7 @@ export const setAvailableTermDetails = async () => {
     return {
       term: term,
       termName: termName,
+      termNumber: termNumber,
       year: year,
       firstDayOfTerm: firstDayOfTerm,
     };

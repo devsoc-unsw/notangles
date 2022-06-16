@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
@@ -6,13 +6,13 @@ import { styled } from '@mui/system';
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
-import { term, termName, year } from '../../constants/timetable';
 
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import { TermDataContext } from '../../context/TermDataContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -63,7 +63,11 @@ const Navbar: React.FC = () => {
           />
           <NavbarTitle variant="h6">
             Notangles
-            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
+            <Weak>
+              {isMobile
+                ? useContext(TermDataContext)!.term
+                : useContext(TermDataContext)!.termName.concat(', ', useContext(TermDataContext)!.year)}
+            </Weak>
           </NavbarTitle>
           <CustomModal
             title="About"

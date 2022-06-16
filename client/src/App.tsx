@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -12,11 +12,12 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { setAvailableTermDetails, term, year } from './constants/timetable';
+import { setAvailableTermDetails } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
+
 import {
   Activity,
   ClassData,
@@ -30,6 +31,7 @@ import {
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { initialTermDataContext, TermDataContext, TermDataType } from './context/TermDataContext';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -71,7 +73,7 @@ const ICSButton = styled(Button)`
   }
 `;
 
-const FrontPage: React.FC = () => {
+const App: React.FC = () => {
   const {
     is12HourMode,
     isDarkMode,
@@ -162,15 +164,19 @@ const FrontPage: React.FC = () => {
     return newClashes;
   };
 
+  let termDataValue: TermDataType = useContext(TermDataContext);
+  const [termData, setTermData] = useState(termDataValue);
+
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
+
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(year, term, code).catch((err) => {
+        getCourseInfo(termData!.year, termData!.term, code).catch((err) => {
           return err;
         })
       )
@@ -194,6 +200,13 @@ const FrontPage: React.FC = () => {
       return prev;
     });
   };
+
+  useEffect(() => {
+    const fetchTermData = async () => {
+      setTermData(await setAvailableTermDetails());
+    };
+    fetchTermData();
+  }, []);
 
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
@@ -222,14 +235,13 @@ const FrontPage: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
 
       Object.keys(savedClasses).forEach((courseCode) => {
         newSelectedClasses[courseCode] = {};
-
         Object.keys(savedClasses[courseCode]).forEach((activity) => {
           const classId = savedClasses[courseCode][activity];
           let classData: ClassData | null = null;
@@ -248,7 +260,7 @@ const FrontPage: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
-  }, []);
+  }, [termData]);
 
   useUpdateEffect(() => {
     storage.set(
@@ -306,42 +318,33 @@ const FrontPage: React.FC = () => {
   };
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <GlobalStyles styles={globalStyle} />
-          <StyledApp>
-            <Navbar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={assignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-                <Footer />
-                <Alerts />
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </LocalizationProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <TermDataContext.Provider value={termData}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <GlobalStyles styles={globalStyle} />
+            <StyledApp>
+              <Navbar />
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={assignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                  <Footer />
+                  <Alerts />
+                </Content>
+              </ContentWrapper>
+            </StyledApp>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </TermDataContext.Provider>
   );
-};
-
-const App: React.FC = () => {
-  const [termDataReceived, setTermDataReceived] = React.useState(false);
-  const getTermDataReceived = (termDataReceived: boolean) => {
-    setTermDataReceived(termDataReceived);
-  };
-
-  setAvailableTermDetails().then(() => getTermDataReceived(true));
-
-  return <>{termDataReceived ? <FrontPage /> : <></>}</>;
 };
 
 export default Sentry.withProfiler(App);

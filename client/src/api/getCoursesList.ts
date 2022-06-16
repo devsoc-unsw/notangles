@@ -32,7 +32,6 @@ const getCoursesList = async (year: string, term: string): Promise<CoursesListWi
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
     const json = await data.json();
-    console.log(baseURL, json);
     if (data.status === 400) {
       throw new NetworkError('Internal server error');
     }

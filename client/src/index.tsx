@@ -10,6 +10,7 @@ import CourseContextProvider from './context/CourseContext';
 
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
+
 // initializing sentry
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
