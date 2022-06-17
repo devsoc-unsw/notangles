@@ -11,6 +11,7 @@ services:
       OAUTH2_REDIRECT_URI: ${OAUTH2_REDIRECT_URI}
       OAUTH2_SCOPES: ${OAUTH2_SCOPES}
       SESSION_SECRET: ${SESSION_SECRET}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       PORT: ${PORT}
     restart: always
     build: .

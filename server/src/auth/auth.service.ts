@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserInterface } from './schemas/user.schema';
-
+import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class AuthService {
@@ -10,9 +10,8 @@ export class AuthService {
 
   async createUser(userInfo: any): Promise<void> {
     let isCurrentUser = await this.getUser(userInfo.sub);
-
     if (isCurrentUser === null) {
-      console.log("NEW USER!");
+      console.log("new User!");
       const newUser = {
         google_uid: userInfo.sub,
         firstname: userInfo.given_name,
@@ -20,7 +19,6 @@ export class AuthService {
         email: userInfo.email,
         createdAt: new Date().toISOString().slice(0, 10),
       };
-
       const userAdded = new this.userModel(newUser);
       userAdded.save();
       await this.sendEmail(userInfo.email);
@@ -33,14 +31,14 @@ export class AuthService {
   }
 
   async sendEmail(userEmail: string): Promise<any> {
-    const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    console.log("Send: ", process.env.SENDGRID_API_KEY)
     const msg = {
       to: userEmail,
       from: 'notangles@csesoc.org.au',
       subject: 'Notangles',
-      text: 'Welcome to Notangles.',
-      html: '<strong>Some message hear!</strong>',
+      text: 'Welcome to Notangles!',
+      html: '<strong>Some message here!</strong>',
     }
     sgMail
     .send(msg)
@@ -48,7 +46,7 @@ export class AuthService {
       console.log('Email sent!');
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error occured: ", error);
     })
   }
 }
