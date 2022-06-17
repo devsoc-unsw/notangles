@@ -92,7 +92,7 @@ export const AppContext = createContext<IAppContext>({
   earliestStartTime: 9,
   setEarliestStartTime: () => { },
 
-  latestEndTime: 17,
+  latestEndTime: 18,
   setLatestEndTime: () => {},
 });
 
@@ -111,7 +111,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   const [earliestStartTime, setEarliestStartTime] = useState(9);
-  const [latestEndTime, setLatestEndTime] = useState(17);
+  const [latestEndTime, setLatestEndTime] = useState(18);
 
   const initialContext: IAppContext = {
     is12HourMode,

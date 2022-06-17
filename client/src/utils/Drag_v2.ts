@@ -349,7 +349,7 @@ window.addEventListener(
 );
 
 const drop = () => {
-  
+
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
@@ -382,7 +382,6 @@ const drop = () => {
           } as EventTime,
           eventRecordKey
         );
-        // console.log(earliestStartTime);
       }
     }
     style.left = toPx(0);
