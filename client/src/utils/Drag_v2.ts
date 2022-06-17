@@ -46,20 +46,14 @@ export const timeToPosition = (time: number, earliestStartTime: number) => time 
 
 export const checkCanDrop = (a: EventData | null, b: EventData | null) => a === null || b === null || a === b;
 
-// type EventHandler = (eventData: EventData) => void;
+let numDays: number;
+let latestEndTime: number;
+let earliestStartTime: number;
 
-// let numDaysHandler: EventHandler = () => {};
-// let earliestStartTimeHandler: EventHandler = () => {};
-// let latestEventTimeHandler: EventHandler = () => {};
-
-let numDays: number; // update me reactively!!!
-let latestEndTime: number; // update me reactively!!!
-let earliestStartTime: number; // update me reactively!!!
-
-export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEventTimeHandler: number) => {
+export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEndTimeHandler: number) => {
   numDays = numDaysHandler;
   earliestStartTime = earliestStartTimeHandler;
-  latestEndTime = latestEventTimeHandler;
+  latestEndTime = latestEndTimeHandler;
 };
 
 const freezeTransform = (element: HTMLElement) => {
@@ -355,10 +349,7 @@ window.addEventListener(
 );
 
 const drop = () => {
-  // const { days, latestEventTime } = useContext(AppContext);
-  // const numDays: number = days.length; // update me reactively!!!
-  // const latestEndTime: number = Math.ceil(latestEventTime); // update me reactively!!!
-
+  
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;

@@ -45,8 +45,8 @@ export interface IAppContext {
   earliestStartTime: number;
   setEarliestStartTime: (newEarliestStartTime: number) => void;
 
-  latestEventTime: number;
-  setLatestEventTime: (newLatestEventTime: number) => void;
+  latestEndTime: number;
+  setLatestEndTime: (newLatestEndTime: number) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -92,8 +92,8 @@ export const AppContext = createContext<IAppContext>({
   earliestStartTime: 9,
   setEarliestStartTime: () => { },
 
-  latestEventTime: 17,
-  setLatestEventTime: () => {},
+  latestEndTime: 17,
+  setLatestEndTime: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -111,7 +111,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   const [earliestStartTime, setEarliestStartTime] = useState(9);
-  const [latestEventTime, setLatestEventTime] = useState(17);
+  const [latestEndTime, setLatestEndTime] = useState(17);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -142,8 +142,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setDays,
     earliestStartTime,
     setEarliestStartTime,
-    latestEventTime,
-    setLatestEventTime,
+    latestEndTime,
+    setLatestEndTime,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

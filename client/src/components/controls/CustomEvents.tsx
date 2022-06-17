@@ -128,7 +128,7 @@ const CustomEvent = ({}) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setErrorVisibility, setAlertMsg,
     earliestStartTime, setEarliestStartTime,
-    latestEventTime, setLatestEventTime } = useContext(AppContext);
+    latestEndTime, setLatestEndTime } = useContext(AppContext);
 
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
@@ -175,8 +175,8 @@ const CustomEvent = ({}) => {
       setEarliestStartTime(startTime.getHours());
     }
 
-    if (endTime.getHours() > latestEventTime) {
-      setLatestEventTime(endTime.getHours());
+    if (endTime.getHours() > latestEndTime) {
+      setLatestEndTime(endTime.getHours());
     }
 
     setEventName('');

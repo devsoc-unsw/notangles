@@ -89,8 +89,8 @@ const App: React.FC = () => {
     setDays,
     earliestStartTime,
     setEarliestStartTime,
-    latestEventTime,
-    setLatestEventTime,
+    latestEndTime,
+    setLatestEndTime,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -122,14 +122,7 @@ const App: React.FC = () => {
     });
   };
 
-
-  console.log("days:" + days.length);
-  console.log("earlyTime: " + earliestStartTime);
-  console.log("latestTime: " + latestEventTime);
-
-  dropzoneRange(days.length, earliestStartTime, latestEventTime);
-
-
+  dropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   useDrag(handleSelectClass, handleRemoveClass);
 
@@ -144,8 +137,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -290,8 +283,8 @@ const App: React.FC = () => {
         setEarliestStartTime(event[1].time.start);
       }
 
-      if (event[1].time.end > latestEventTime) {
-        setLatestEventTime(event[1].time.end);
+      if (event[1].time.end > latestEndTime) {
+        setLatestEndTime(event[1].time.end);
       }
     });
   }, [createdEvents]);
