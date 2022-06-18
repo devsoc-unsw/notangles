@@ -25,7 +25,6 @@ const OidcStrategyFactory = {
   imports: [
     // Tell Nest to use Passport.
     PassportModule.register({ session: true, defaultStrategy: 'oidc' }),
-    // MongooseModule.forRoot(`${process.env.DATABASE_URL}/Users`),
     MongooseModule.forFeature([{ name: 'User', schema: userSchema }]),
   ],
   controllers: [AuthController],
