@@ -11,7 +11,6 @@ export class AuthService {
   async createUser(userInfo: any): Promise<void> {
     let isCurrentUser = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
-      console.log("new User!");
       const newUser = {
         google_uid: userInfo.sub,
         firstname: userInfo.given_name,
@@ -21,6 +20,7 @@ export class AuthService {
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
+      // sending onboarding email
       await this.sendEmail(userInfo.email);
     }
   }
@@ -32,7 +32,6 @@ export class AuthService {
 
   async sendEmail(userEmail: string): Promise<any> {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    console.log("Send: ", process.env.SENDGRID_API_KEY)
     const msg = {
       to: userEmail,
       from: 'notangles@csesoc.org.au',
