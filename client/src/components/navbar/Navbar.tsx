@@ -12,7 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import { TermDataContext } from '../../context/TermDataContext';
+import { AppContext } from '../../context/AppContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -49,7 +49,7 @@ const Weak = styled('span')`
 const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const { term, termName, year } = useContext(AppContext);
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
   return (
@@ -63,11 +63,7 @@ const Navbar: React.FC = () => {
           />
           <NavbarTitle variant="h6">
             Notangles
-            <Weak>
-              {isMobile
-                ? useContext(TermDataContext)!.term
-                : useContext(TermDataContext)!.termName.concat(', ', useContext(TermDataContext)!.year)}
-            </Weak>
+            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
           <CustomModal
             title="About"

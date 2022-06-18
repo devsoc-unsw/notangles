@@ -1,10 +1,9 @@
 const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
-import { TermDataPromise } from '../context/TermDataContext';
 import timeoutPromise from '../utils/timeoutPromise';
 // TermDataPromise
-export const setAvailableTermDetails: TermDataPromise = async () => {
+export const setAvailableTermDetails = async () => {
   let year = '0000';
   let termNumber = 1;
   let term = `T${termNumber}`;

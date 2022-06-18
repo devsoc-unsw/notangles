@@ -15,11 +15,11 @@ import NetworkError from '../../interfaces/NetworkError';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
 import { CourseContext } from '../../context/CourseContext';
 import { ThemeType } from '../../constants/theme';
-import { TermDataContext } from '../../context/TermDataContext';
+
 import useUpdateEffect from '../../hooks/useUpdateEffect';
 
 const SEARCH_DELAY = 300;
-
+const INVALID_YEAR_FORMAT = '0000';
 interface SearchOptions {
   threshold: number;
   keys: {
@@ -136,11 +136,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
-  const year = useContext(TermDataContext)!.year;
-  const term = useContext(TermDataContext)!.term;
-  const { setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+
+  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
-  const termData = useContext(TermDataContext);
+
   useEffect(() => {
     if (!selectedCourses.length) {
       setSelectedValue([]);
@@ -195,7 +194,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const fetchCoursesList = async () => {
     try {
-      if (year !== '0000') {
+      if (year !== INVALID_YEAR_FORMAT) {
         const fetchedCoursesList = await getCoursesList(year, term);
         setCoursesList(fetchedCoursesList.courses);
         fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);

@@ -31,7 +31,6 @@ import {
 import { useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { initialTermDataContext, TermDataContext, TermDataType } from './context/TermDataContext';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -82,9 +81,16 @@ const App: React.FC = () => {
     isDefaultUnscheduled,
     isHideClassInfo,
     infoVisibility,
-    setInfoVisibility,
     days,
+    term,
+    year,
+    setInfoVisibility,
     setDays,
+    setTerm,
+    setYear,
+    setFirstDayOfTerm,
+    setTermName,
+    setTermNumber,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -164,9 +170,6 @@ const App: React.FC = () => {
     return newClashes;
   };
 
-  let termDataValue: TermDataType = useContext(TermDataContext);
-  const [termData, setTermData] = useState(termDataValue);
-
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
@@ -176,7 +179,7 @@ const App: React.FC = () => {
 
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(termData!.year, termData!.term, code).catch((err) => {
+        getCourseInfo(year, term, code).catch((err) => {
           return err;
         })
       )
@@ -203,7 +206,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchTermData = async () => {
-      setTermData(await setAvailableTermDetails());
+      const termData = await setAvailableTermDetails();
+      if (termData !== undefined) {
+        const { term, termName, termNumber, firstDayOfTerm, year } = termData;
+        setTerm(term);
+        setTermName(termName);
+        setTermNumber(termNumber);
+        setYear(year);
+        setFirstDayOfTerm(firstDayOfTerm);
+      }
     };
     fetchTermData();
   }, []);
@@ -260,7 +271,7 @@ const App: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
-  }, [termData]);
+  }, []);
 
   useUpdateEffect(() => {
     storage.set(
@@ -318,32 +329,30 @@ const App: React.FC = () => {
   };
 
   return (
-    <TermDataContext.Provider value={termData}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <GlobalStyles styles={globalStyle} />
-            <StyledApp>
-              <Navbar />
-              <ContentWrapper>
-                <Content>
-                  <Controls
-                    assignedColors={assignedColors}
-                    handleSelectClass={handleSelectClass}
-                    handleSelectCourse={handleSelectCourse}
-                    handleRemoveCourse={handleRemoveCourse}
-                  />
-                  <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
-                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
-                  <Footer />
-                  <Alerts />
-                </Content>
-              </ContentWrapper>
-            </StyledApp>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </TermDataContext.Provider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <GlobalStyles styles={globalStyle} />
+          <StyledApp>
+            <Navbar />
+            <ContentWrapper>
+              <Content>
+                <Controls
+                  assignedColors={assignedColors}
+                  handleSelectClass={handleSelectClass}
+                  handleSelectCourse={handleSelectCourse}
+                  handleRemoveCourse={handleRemoveCourse}
+                />
+                <Timetable assignedColors={assignedColors} clashes={checkClashes()} handleSelectClass={handleSelectClass} />
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <Footer />
+                <Alerts />
+              </Content>
+            </ContentWrapper>
+          </StyledApp>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 

@@ -6,7 +6,6 @@ import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import History from './History';
 import { ControlsProps } from '../../interfaces/PropTypes';
-import { TermDataContext } from '../../context/TermDataContext';
 
 const SelectWrapper = styled(Box)`
   display: flex;

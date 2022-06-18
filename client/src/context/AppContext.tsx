@@ -41,6 +41,21 @@ export interface IAppContext {
 
   days: string[];
   setDays: (newDays: string[]) => void;
+
+  term: string;
+  setTerm: (newTerm: string) => void;
+
+  termName: string;
+  setTermName: (newTermName: string) => void;
+
+  termNumber: Number;
+  setTermNumber: (newTermNumber: Number) => void;
+
+  year: string;
+  setYear: (newYear: string) => void;
+
+  firstDayOfTerm: string;
+  setFirstDayOfTerm: (newFirstDayOfTerm: string) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -82,6 +97,21 @@ export const AppContext = createContext<IAppContext>({
 
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => {},
+
+  term: `T0`,
+  setTerm: () => {},
+
+  termName: `Term 0`,
+  setTermName: () => {},
+
+  termNumber: 0,
+  setTermNumber: () => {},
+
+  year: '0000',
+  setYear: () => {},
+
+  firstDayOfTerm: '0000-00-00',
+  setFirstDayOfTerm: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -94,10 +124,16 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
-  const [autoVisibility, setAutoVisibility] = React.useState<boolean>(false);
+  const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
+  const [termNumber, setTermNumber] = useState<Number>(0);
+
   const [lastUpdated, setLastUpdated] = useState(0);
   const [isDrag, setIsDrag] = useState(false);
   const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [term, setTerm] = useState(`T0`);
+  const [termName, setTermName] = useState(`Term 0`);
+  const [year, setYear] = useState('0000');
+  const [firstDayOfTerm, setFirstDayOfTerm] = useState('0000-00-00');
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -126,6 +162,16 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDrag,
     days,
     setDays,
+    term,
+    setTerm,
+    termName,
+    setTermName,
+    termNumber,
+    setTermNumber,
+    year,
+    setYear,
+    firstDayOfTerm,
+    setFirstDayOfTerm,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
