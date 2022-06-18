@@ -20,7 +20,6 @@ export class AuthService {
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
-      // sending onboarding email
       await this.sendEmail(userInfo.email);
     }
   }
