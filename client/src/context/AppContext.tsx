@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+import { defaultEndTime, defaultStartTime } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -89,10 +90,10 @@ export const AppContext = createContext<IAppContext>({
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => {},
 
-  earliestStartTime: 9,
-  setEarliestStartTime: () => { },
+  earliestStartTime: defaultStartTime,
+  setEarliestStartTime: () => {},
 
-  latestEndTime: 17,
+  latestEndTime: defaultEndTime,
   setLatestEndTime: () => {},
 });
 

@@ -14,10 +14,9 @@ import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 import DroppedEvents from './DroppedEvents';
 
-
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
-}) <{
+})<{
   rows: number;
   cols: number;
 }>`
@@ -46,18 +45,11 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, clashes, handleSelectClass }) => {
-  const { selectedCourses } = useContext(CourseContext);
-  const { days } = useContext(AppContext);
+  const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
 
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
-      <StyledTimetable
-        cols={days.length}
-        rows={
-          Math.max(...selectedCourses.map((course) => course.latestFinishTime), defaultEndTime) -
-          Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime)
-        }
-      >
+      <StyledTimetable cols={days.length} rows={latestEndTime - earliestStartTime}>
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
         <DroppedClasses assignedColors={assignedColors} clashes={clashes} handleSelectClass={handleSelectClass} />

@@ -278,16 +278,25 @@ const App: React.FC = () => {
       } else if (event[1].time.day === 7) {
         setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
       }
-
-      if (event[1].time.start < earliestStartTime) {
-        setEarliestStartTime(event[1].time.start);
-      }
-
-      if (event[1].time.end > latestEndTime) {
-        setLatestEndTime(event[1].time.end);
-      }
     });
   }, [createdEvents]);
+
+  useUpdateEffect(() => {
+    setEarliestStartTime(
+      Math.min(
+        ...selectedCourses.map((course) => course.earliestStartTime),
+        ...Object.entries(createdEvents).map(([_, val]) => val.time.start),
+        defaultStartTime
+      )
+    );
+    setLatestEndTime(
+      Math.max(
+        ...selectedCourses.map((course) => course.latestFinishTime),
+        ...Object.entries(createdEvents).map(([_, val]) => val.time.end),
+        defaultEndTime
+      )
+    );
+  }, [createdEvents, selectedCourses]);
 
   useUpdateEffect(() => {
     const savedClasses: SavedClasses = {};
