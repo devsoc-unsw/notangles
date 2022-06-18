@@ -134,7 +134,8 @@ export const TimetableLayout: React.FC = () => {
     ))
   );
 
-  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
+  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2}
+    yTo={hourCells.length + 2} isEndX isEndY />);
 
   return (
     <>
