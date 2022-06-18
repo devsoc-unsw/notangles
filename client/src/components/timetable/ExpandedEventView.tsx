@@ -39,7 +39,7 @@ const StyledTitleContainer = styled(Box)`
   align-items: center;
   height: 100%;
   width: 100%;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 `;
 
 const StyledDialogContent = styled(DialogContent)`
@@ -235,7 +235,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
         <StyledDialogTitle>
           <StyledTitleContainer>
-            {/* Show input box when in edit mode */}
             {isEditing ? (
               <TextField
                 variant="standard"
@@ -277,19 +276,56 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           <Grid container direction="column" spacing={2}>
             <Grid item container direction="row" spacing={2}>
               <Grid item>
-                {/* How should we allow users to change time? Use time picker? */}
+                {(String(eventData.description).length > 0 || isEditing) && (
+                  <Grid item container direction="row" spacing={2}>
+                    <Grid item>
+                      <Notes />
+                    </Grid>
+                    <Grid item>
+                      {isEditing ? (
+                        <TextField
+                          variant="standard"
+                          value={newDescription}
+                          multiline
+                          onChange={(e) => {
+                            setIsChanged(true);
+                            setNewDescription(e.target.value);
+                          }}
+                        />
+                      ) : (
+                        <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
+                      )}
+                    </Grid>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+
+            <Grid item container direction="row" spacing={2}>
+              <Grid item>
+                <LocationOn />
+              </Grid>
+              <Grid item>
+                {isEditing ? (
+                  <TextField
+                    required
+                    variant="standard"
+                    value={newLocation}
+                    onChange={(e) => {
+                      setIsChanged(true);
+                      setNewLocation(e.target.value);
+                    }}
+                  />
+                ) : (
+                  <Typography> {eventData.location}</Typography>
+                )}
+              </Grid>
+            </Grid>
+
+            <Grid item container direction="row" spacing={2}>
+              <Grid item>
                 {isEditing ? (
                   <>
-                    <ListItem>
-                      {/* TODO: Have the highlighted day as the current day of event */}
-                      <DropdownOption
-                        optionName="Days"
-                        optionState={newDays}
-                        setOptionState={handleFormat}
-                        optionChoices={weekdaysShort}
-                        noOff
-                      />
-                    </ListItem>
                     <ListItem>
                       <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
                       <TimePicker
@@ -314,6 +350,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                         }}
                       />
                     </ListItem>
+                    <ListItem>
+                      <DropdownOption
+                        optionName="Days"
+                        optionState={newDays}
+                        setOptionState={handleFormat}
+                        optionChoices={weekdaysShort}
+                        noOff
+                      />
+                    </ListItem>
                   </>
                 ) : (
                   <Grid item container direction="row" spacing={2}>
@@ -331,54 +376,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               </Grid>
             </Grid>
 
-            {(String(eventData.description).length > 0 || isEditing) && (
-              <Grid item container direction="row" spacing={2}>
-                <Grid item>
-                  <Notes />
-                </Grid>
-                <Grid item>
-                  {isEditing ? (
-                    <TextField
-                      variant="standard"
-                      value={newDescription}
-                      multiline
-                      onChange={(e) => {
-                        setIsChanged(true);
-                        setNewDescription(e.target.value);
-                      }}
-                    />
-                  ) : (
-                    <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
-                  )}
-                </Grid>
-              </Grid>
-            )}
-
-            <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                <LocationOn />
-              </Grid>
-              <Grid item>
-                {isEditing ? (
-                  <TextField
-                    required
-                    variant="standard"
-                    value={newLocation}
-                    onChange={(e) => {
-                      setIsChanged(true);
-                      setNewLocation(e.target.value);
-                    }}
-                  />
-                ) : (
-                  <Typography> {eventData.location}</Typography>
-                )}
-              </Grid>
-            </Grid>
-
             <Grid item container direction="row" spacing={2}>
               {isEditing ? (
                 <Grid item>
-                  {/* TODO: ColorPicker breaks everything rn */}
                   <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} />
                 </Grid>
               ) : (
@@ -401,7 +401,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     }}
                   ></Box>
                   <Typography sx={{ paddingLeft: '15px' }}>
-                    Current colour is {(eventData.color as Color)?.hex ?? `${eventData.color}`}
+                    {(eventData.color as Color)?.hex ?? `${eventData.color}`}
                     {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
                   </Typography>
                 </Grid>
