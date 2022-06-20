@@ -127,13 +127,13 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
   const [termNumber, setTermNumber] = useState<Number>(0);
 
-  const [lastUpdated, setLastUpdated] = useState(0);
-  const [isDrag, setIsDrag] = useState(false);
-  const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-  const [term, setTerm] = useState(`T0`);
-  const [termName, setTermName] = useState(`Term 0`);
-  const [year, setYear] = useState('0000');
-  const [firstDayOfTerm, setFirstDayOfTerm] = useState('0000-00-00');
+  const [lastUpdated, setLastUpdated] = useState<Number>(0);
+  const [isDrag, setIsDrag] = useState<Boolean>(false);
+  const [days, setDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [term, setTerm] = useState<string>(`T0`);
+  const [termName, setTermName] = useState<string>(`Term 0`);
+  const [year, setYear] = useState<string>('0000');
+  const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>('0000-00-00');
 
   const initialContext: IAppContext = {
     is12HourMode,
