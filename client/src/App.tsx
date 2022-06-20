@@ -78,6 +78,7 @@ const App: React.FC = () => {
     setDays,
     setTerm,
     setYear,
+    firstDayOfTerm,
     setFirstDayOfTerm,
     setTermName,
     setTermNumber,
@@ -208,7 +209,7 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
@@ -306,7 +307,9 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                  save to calendar
+                </ICSButton>
                 <Footer />
                 <Alerts />
               </Content>

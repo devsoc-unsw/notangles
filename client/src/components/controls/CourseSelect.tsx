@@ -16,10 +16,9 @@ import { CourseSelectProps } from '../../interfaces/PropTypes';
 import { CourseContext } from '../../context/CourseContext';
 import { ThemeType } from '../../constants/theme';
 
-import useUpdateEffect from '../../hooks/useUpdateEffect';
-
 const SEARCH_DELAY = 300;
 const INVALID_YEAR_FORMAT = '0000';
+
 interface SearchOptions {
   threshold: number;
   keys: {

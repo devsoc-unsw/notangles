@@ -11,6 +11,7 @@ export const getAvailableTermDetails = async () => {
   let term = `T${termNumber}`;
   let termName = `Term ${termNumber}`;
   let firstDayOfTerm = `0000-00-00`;
+
   try {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
@@ -23,7 +24,8 @@ export const getAvailableTermDetails = async () => {
       year = matched[3];
     }
 
-    firstDayOfTerm = termDateRes.replaceAll('/', '-');
+    const termDateSplit = termDateRes.split('/');
+    firstDayOfTerm = termDateSplit.reverse().join('-');
 
     const termIdRes = await termIdFetch.text();
     if (termIdRes.length === REGULAR_TERM_STR_LEN) {

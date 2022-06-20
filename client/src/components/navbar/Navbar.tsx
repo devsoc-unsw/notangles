@@ -6,13 +6,13 @@ import { styled } from '@mui/system';
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
+import { AppContext } from '../../context/AppContext';
 
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import { AppContext } from '../../context/AppContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -50,10 +50,10 @@ const Weak = styled('span')`
 `;
 
 const Navbar: React.FC = () => {
+  const [currLogo, setCurrLogo] = useState(notanglesLogo);
+  const { term, termName, year } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { term, termName, year } = useContext(AppContext);
-  const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
   return (
     <NavbarBox>
