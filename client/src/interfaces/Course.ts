@@ -19,6 +19,7 @@ export interface ClassData {
   id: string;
   course: CourseData;
   activity: Activity;
+  status: string;
   enrolments: number;
   capacity: number;
   periods: ClassPeriod[];

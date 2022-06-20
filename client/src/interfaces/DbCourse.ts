@@ -12,6 +12,7 @@ export interface DbCourse {
 export interface DbClass {
   activity: Activity;
   times: DbTimes[];
+  status: string;
   courseEnrolment: DbCourseEnrolment;
   section: Section;
 }
@@ -107,9 +108,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       id: uuidv4(),
       course: courseData,
       activity: dbClass.activity,
-      periods: [],
+      status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
+      periods: [],
       section: dbClass.section,
     };
 
