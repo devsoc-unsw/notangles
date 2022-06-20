@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
@@ -30,7 +30,9 @@ const Root: React.FC = () => (
   </AppContextProvider>
 );
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root')!);
+root.render(<Root />);
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
