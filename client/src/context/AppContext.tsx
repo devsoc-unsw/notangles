@@ -48,8 +48,8 @@ export interface IAppContext {
   termName: string;
   setTermName: (newTermName: string) => void;
 
-  termNumber: Number;
-  setTermNumber: (newTermNumber: Number) => void;
+  termNumber: number;
+  setTermNumber: (newTermNumber: number) => void;
 
   year: string;
   setYear: (newYear: string) => void;
