@@ -125,11 +125,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
-  const [termNumber, setTermNumber] = useState<Number>(0);
-
-  const [lastUpdated, setLastUpdated] = useState<Number>(0);
+  const [lastUpdated, setLastUpdated] = useState<number>(0);
   const [isDrag, setIsDrag] = useState<Boolean>(false);
   const [days, setDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  const [termNumber, setTermNumber] = useState<number>(0);
   const [term, setTerm] = useState<string>(`T0`);
   const [termName, setTermName] = useState<string>(`Term 0`);
   const [year, setYear] = useState<string>('0000');
