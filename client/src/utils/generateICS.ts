@@ -1,11 +1,11 @@
 import { createEvent } from 'ics';
 
 import dayjs from 'dayjs';
-import { CourseData, SelectedClasses, ClassPeriod } from '../interfaces/Course';
 import { saveAs } from 'file-saver';
 import { DateArray } from 'ics';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
+import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Course';
 
 /**
  * makes a request to download an ICS file which corresponds to the data the user input
@@ -34,7 +34,8 @@ export const downloadIcsFile = async (courses: CourseData[], classes: SelectedCl
 
 const generateDateArray = (timezone: number, hour: number, day: number, week: number): DateArray => {
   // 0 index days and weeks
-  const currDate = dayjs(useContext(AppContext)!.firstDayOfTerm + `T00:00:00.000Z`)
+  const { firstDayOfTerm } = useContext(AppContext);
+  const currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
     .subtract(timezone, 'h')
     .add(week - 1, 'w')
     .add(day - 1, 'd')

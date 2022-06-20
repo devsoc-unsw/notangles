@@ -19,17 +19,15 @@ Sentry.init({
 });
 
 const Root: React.FC = () => (
-  <>
-    <AppContextProvider>
-      <CourseContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<App />} path="/" />
-          </Routes>
-        </BrowserRouter>
-      </CourseContextProvider>
-    </AppContextProvider>
-  </>
+  <AppContextProvider>
+    <CourseContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<App />} path="/" />
+        </Routes>
+      </BrowserRouter>
+    </CourseContextProvider>
+  </AppContextProvider>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));

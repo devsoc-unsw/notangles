@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { setAvailableTermDetails } from './constants/timetable';
+import { getAvailableTermDetails } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -206,7 +206,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchTermData = async () => {
-      const termData = await setAvailableTermDetails();
+      const termData = await getAvailableTermDetails();
       if (termData !== undefined) {
         const { term, termName, termNumber, firstDayOfTerm, year } = termData;
         setTerm(term);

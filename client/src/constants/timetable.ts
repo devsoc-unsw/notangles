@@ -2,8 +2,10 @@ const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
 import timeoutPromise from '../utils/timeoutPromise';
-// TermDataPromise
-export const setAvailableTermDetails = async () => {
+
+export const getAvailableTermDetails = async () => {
+  // These are invalid term strings that are initially set
+  // and the api will replace them with valid ones and return them.
   let year = '0000';
   let termNumber = 1;
   let term = `T${termNumber}`;
