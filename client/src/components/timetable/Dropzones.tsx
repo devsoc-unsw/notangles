@@ -9,7 +9,7 @@ import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import Dropzone from './Dropzone';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
-  const { isHideFullClasses } = useContext(AppContext);
+  const { isShowOnlyOpenClasses } = useContext(AppContext);
 
   const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
     a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
@@ -28,10 +28,10 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
     });
   });
 
-  // Hide full classes if setting is toggled on
-  if (isHideFullClasses) {
+  // Show only open classes if setting is toggled on
+  if (isShowOnlyOpenClasses) {
     Object.keys(newActivities).forEach((activity) => {
-      newActivities[activity] = newActivities[activity].filter((classData) => classData.enrolments !== classData.capacity);
+      newActivities[activity] = newActivities[activity].filter((classData) => classData.status === "Open");
     });
   }
 
