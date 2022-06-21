@@ -8,7 +8,7 @@ import { styled } from '@mui/system';
 
 import getCoursesList from '../../api/getCoursesList';
 import { AppContext } from '../../context/AppContext';
-import { maxAddedCourses, term, year } from '../../constants/timetable';
+import { maxAddedCourses } from '../../constants/timetable';
 import { CourseCode, CourseData } from '../../interfaces/Course';
 import { CourseOverview, CoursesList } from '../../interfaces/CourseOverview';
 import NetworkError from '../../interfaces/NetworkError';
@@ -17,6 +17,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { ThemeType } from '../../constants/theme';
 
 const SEARCH_DELAY = 300;
+const INVALID_YEAR_FORMAT = '0000';
 
 interface SearchOptions {
   threshold: number;
@@ -135,7 +136,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { setAlertMsg, setErrorVisibility, setLastUpdated } = useContext(AppContext);
+  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   useEffect(() => {
@@ -192,10 +193,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const fetchCoursesList = async () => {
     try {
-      const fetchedCoursesList = await getCoursesList(year, term);
-      setCoursesList(fetchedCoursesList.courses);
-      fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
-      setLastUpdated(fetchedCoursesList.lastUpdated);
+      if (year !== INVALID_YEAR_FORMAT) {
+        const fetchedCoursesList = await getCoursesList(year, term);
+        setCoursesList(fetchedCoursesList.courses);
+        fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
+
+        setLastUpdated(fetchedCoursesList.lastUpdated);
+      }
     } catch (e) {
       if (e instanceof NetworkError) {
         setAlertMsg(e.message);
@@ -206,7 +210,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   useEffect(() => {
     fetchCoursesList();
-  }, []);
+  }, [year]);
 
   useEffect(() => {
     setOptions(defaultOptions);
@@ -335,7 +339,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event: any) => {
-              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === "z" || event.key === "y"))) {
+              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === 'z' || event.key === 'y'))) {
                 event.stopPropagation();
               }
             }}

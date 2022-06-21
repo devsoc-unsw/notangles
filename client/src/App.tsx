@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { term, year } from './constants/timetable';
+import { getAvailableTermDetails } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -71,9 +71,17 @@ const App: React.FC = () => {
     isDefaultUnscheduled,
     isHideClassInfo,
     infoVisibility,
-    setInfoVisibility,
     days,
+    term,
+    year,
+    setInfoVisibility,
     setDays,
+    setTerm,
+    setYear,
+    firstDayOfTerm,
+    setFirstDayOfTerm,
+    setTermName,
+    setTermNumber,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -131,6 +139,7 @@ const App: React.FC = () => {
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
+
     Promise.all(
       codes.map((code) =>
         getCourseInfo(year, term, code).catch((err) => {
@@ -157,6 +166,21 @@ const App: React.FC = () => {
       return prev;
     });
   };
+
+  useEffect(() => {
+    const fetchTermData = async () => {
+      const termData = await getAvailableTermDetails();
+      if (termData !== undefined) {
+        const { term, termName, termNumber, firstDayOfTerm, year } = termData;
+        setTerm(term);
+        setTermName(termName);
+        setTermNumber(termNumber);
+        setYear(year);
+        setFirstDayOfTerm(firstDayOfTerm);
+      }
+    };
+    fetchTermData();
+  }, []);
 
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
@@ -192,7 +216,6 @@ const App: React.FC = () => {
 
       Object.keys(savedClasses).forEach((courseCode) => {
         newSelectedClasses[courseCode] = {};
-
         Object.keys(savedClasses[courseCode]).forEach((activity) => {
           const classId = savedClasses[courseCode][activity];
           let classData: ClassData | null = null;
@@ -284,7 +307,9 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                  save to calendar
+                </ICSButton>
                 <Footer />
                 <Alerts />
               </Content>
