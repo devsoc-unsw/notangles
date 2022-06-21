@@ -22,23 +22,25 @@ const StyledWarningIcon = styled(Warning)`
 `;
 
 const StyledCapacityIndicator = styled('span', {
-  shouldForwardProp: (prop) => prop !== 'percentEnrolled',
+  shouldForwardProp: (prop) => prop !== 'classStatus',
 })<{
-  percentEnrolled: number;
+  classStatus: string;
 }>`
   text-overflow: ellipsis;
   margin: 0;
-  font-weight: ${({ percentEnrolled }) => (percentEnrolled === 1 ? 'bolder' : undefined)};
+  font-weight: ${({ classStatus }) => (classStatus !== "Open" ? 'bolder' : undefined)};
 `;
 
 const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
-  const percentEnrolled = period.class.enrolments / period.class.capacity;
+
+  const classStatus = period.class.status;
 
   return (
     <>
-      <StyledCapacityIndicator percentEnrolled={percentEnrolled}>
-        {percentEnrolled === 1 ? <StyledWarningIcon /> : <StyledPeopleIcon />}
-        {period.class.enrolments}/{period.class.capacity}{' '}
+      <StyledCapacityIndicator classStatus={classStatus}>
+        {classStatus !== "Open" ? <StyledWarningIcon /> : <StyledPeopleIcon />}
+        {classStatus === "On Hold" ? "On Hold " : `${period.class.enrolments}/${period.class.capacity} ` }
+        
       </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
       <StyledLocationIcon />

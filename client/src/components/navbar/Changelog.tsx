@@ -5,10 +5,12 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: '21/06/22',
+    changes: ['Option to hide full classes changed to hide all non-open classes (both full and on-hold)'],
+  },
+  {
     date: '11/06/22',
-    changes: [
-      'Clashing classes are now displayed side by side instead of stacked on top of each other',
-    ],
+    changes: ['Clashing classes are now displayed side by side instead of stacked on top of each other'],
   },
   {
     date: '17/04/22',

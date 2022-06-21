@@ -67,7 +67,7 @@ const App: React.FC = () => {
     is12HourMode,
     isDarkMode,
     isSquareEdges,
-    isHideFullClasses,
+    isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
     infoVisibility,
@@ -195,8 +195,8 @@ const App: React.FC = () => {
   }, [isSquareEdges]);
 
   useEffect(() => {
-    storage.set('isHideFullClasses', isHideFullClasses);
-  }, [isHideFullClasses]);
+    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
+  }, [isShowOnlyOpenClasses]);
 
   useEffect(() => {
     storage.set('isDefaultUnscheduled', isDefaultUnscheduled);

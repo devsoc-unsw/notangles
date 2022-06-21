@@ -12,8 +12,8 @@ export interface IAppContext {
   isSquareEdges: boolean;
   setIsSquareEdges: (newIsSquareEdges: boolean) => void;
 
-  isHideFullClasses: boolean;
-  setIsHideFullClasses: (newIsHideFullClasses: boolean) => void;
+  isShowOnlyOpenClasses: boolean;
+  setisShowOnlyOpenClasses: (newisShowOnlyOpenClasses: boolean) => void;
 
   isDefaultUnscheduled: boolean;
   setIsDefaultUnscheduled: (newIsDefaultUnscheduled: boolean) => void;
@@ -68,8 +68,8 @@ export const AppContext = createContext<IAppContext>({
   isSquareEdges: false,
   setIsSquareEdges: () => {},
 
-  isHideFullClasses: false,
-  setIsHideFullClasses: () => {},
+  isShowOnlyOpenClasses: false,
+  setisShowOnlyOpenClasses: () => {},
 
   isDefaultUnscheduled: false,
   setIsDefaultUnscheduled: () => {},
@@ -118,7 +118,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
-  const [isHideFullClasses, setIsHideFullClasses] = useState<boolean>(storage.get('isHideFullClasses'));
+  const [isShowOnlyOpenClasses, setisShowOnlyOpenClasses] = useState<boolean>(storage.get('isShowOnlyOpenClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [alertMsg, setAlertMsg] = useState<string>('');
@@ -141,8 +141,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDarkMode,
     isSquareEdges,
     setIsSquareEdges,
-    isHideFullClasses,
-    setIsHideFullClasses,
+    isShowOnlyOpenClasses,
+    setisShowOnlyOpenClasses,
     isDefaultUnscheduled,
     setIsDefaultUnscheduled,
     isHideClassInfo,
