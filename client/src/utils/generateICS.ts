@@ -1,9 +1,8 @@
-import { createEvent } from 'ics';
-import { firstDayOfTerm } from '../constants/timetable';
 import dayjs from 'dayjs';
-import { CourseData, SelectedClasses, ClassPeriod } from '../interfaces/Course';
 import { saveAs } from 'file-saver';
-import { DateArray } from 'ics';
+import { createEvents, DateArray } from 'ics';
+
+import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Course';
 
 /**
  * makes a request to download an ICS file which corresponds to the data the user input
@@ -11,25 +10,26 @@ import { DateArray } from 'ics';
  * @param classes global classes data
  * @returns
  */
-export const downloadIcsFile = async (courses: CourseData[], classes: SelectedClasses): Promise<void> => {
+export const downloadIcsFile = async (courses: CourseData[], classes: SelectedClasses, firstDayOfTerm: string): Promise<void> => {
   if (classes === null) {
     return;
   }
+
   const timezone = await getUtcOffset();
-  const icsFile = getAllEvents(courses, classes)
-    .map(([period, week]) =>
-      createEvent({
-        start: generateDateArray(timezone, period.time.start, period.time.day, week),
-        end: generateDateArray(timezone, period.time.end, period.time.day, week),
-        title: `${period.class.course.code} ${period.class.activity}`,
-        location: period.locations[0],
-      })
-    )
-    .map((obj) => obj.value);
-  saveAs(new Blob([icsFile.join('\n')], { type: 'text/ics' }), 'notangles.ics');
+  const events = getAllEvents(courses, classes).map(([period, week]) => {
+    return {
+      start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
+      end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
+      title: `${period.class.course.code} ${period.class.activity}`,
+      location: period.locations[0],
+    };
+  });
+
+  const icsFile = createEvents(events);
+  saveAs(new Blob([icsFile.value as BlobPart], { type: 'text/ics' }), 'notangles.ics');
 };
 
-const generateDateArray = (timezone: number, hour: number, day: number, week: number): DateArray => {
+const generateDateArray = (firstDayOfTerm: string, timezone: number, hour: number, day: number, week: number): DateArray => {
   // 0 index days and weeks
   const currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
     .subtract(timezone, 'h')
