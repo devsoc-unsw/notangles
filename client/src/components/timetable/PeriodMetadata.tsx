@@ -39,7 +39,7 @@ const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
     <>
       <StyledCapacityIndicator classStatus={classStatus}>
         {classStatus !== "Open" ? <StyledWarningIcon /> : <StyledPeopleIcon />}
-        {classStatus !== "On Hold" ? `${period.class.enrolments}/${period.class.capacity} ` : "On Hold "}
+        {classStatus === "On Hold" ? "On Hold " : `${period.class.enrolments}/${period.class.capacity} ` }
         
       </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />

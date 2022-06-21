@@ -3,7 +3,7 @@ export type Activity = string;
 export type InInventory = null;
 export type Section = string;
 export type Location = string;
-export type Status = "Open" | "Full" | "On Hold" | "Closed" | "Tentative";
+export type Status = "Open" | "Full" | "On Hold";
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
 
