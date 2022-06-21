@@ -31,7 +31,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   // Show only open classes if setting is toggled on
   if (isShowOnlyOpenClasses) {
     Object.keys(newActivities).forEach((activity) => {
-      newActivities[activity] = newActivities[activity].filter((classData) => classData.status === "Open");
+      newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
     });
   }
 
