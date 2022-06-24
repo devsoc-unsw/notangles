@@ -139,7 +139,6 @@ const App: React.FC = () => {
     callback?: (_selectedCourses: CourseData[]) => void
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
-
     Promise.all(
       codes.map((code) =>
         getCourseInfo(year, term, code).catch((err) => {
@@ -209,7 +208,7 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
@@ -234,7 +233,7 @@ const App: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
-  }, []);
+  }, [year]);
 
   useUpdateEffect(() => {
     storage.set(
