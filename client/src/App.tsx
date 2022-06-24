@@ -137,8 +137,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
@@ -286,14 +286,16 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, val]) => val.time.start),
-        defaultStartTime
+        defaultStartTime,
+        earliestStartTime
       )
     );
     setLatestEndTime(
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, val]) => val.time.end),
-        defaultEndTime
+        defaultEndTime,
+        latestEndTime
       )
     );
   }, [createdEvents, selectedCourses]);
