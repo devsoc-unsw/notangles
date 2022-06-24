@@ -388,6 +388,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
   const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
 
   const { selectedCourses, selectedClasses } = useContext(CourseContext);
+  const { earliestStartTime } = useContext(AppContext);
 
   const droppedClasses: JSX.Element[] = [];
   const prevCards = useRef<CardData[]>([]);
@@ -395,8 +396,6 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, clashes
 
   const keyCounter = useRef(0);
   const inventoryCards = useRef<CardData[]>([]);
-
-  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
   const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
     selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
