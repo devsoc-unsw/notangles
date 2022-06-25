@@ -349,7 +349,6 @@ window.addEventListener(
 );
 
 const drop = () => {
-
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
@@ -364,7 +363,7 @@ const drop = () => {
       var displacementx = dragrect.x - baserect.x;
       var displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
-      var itemRect = gridChildren[gridChildren.length - 5].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
+      var itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
       var [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)]; // grid coords of drag target when released
 
       // console.log('xy', colIndex, rowIndex)
@@ -375,7 +374,6 @@ const drop = () => {
       if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
         eventTimeUpdater(
           {
-            
             day: 1 + colIndex,
             start: rowIndex + earliestStartTime,
             end: eventLength + rowIndex + earliestStartTime,
