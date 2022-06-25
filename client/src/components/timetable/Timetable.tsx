@@ -25,7 +25,7 @@ const StyledTimetable = styled(Box, {
   padding: ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
-  grid-gap: ${1 / devicePixelRatio}px;
+  grid-gap: 1px;
   grid-template:
     auto repeat(${({ rows }) => rows}, 1fr)
     / auto repeat(${({ cols }) => cols}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);

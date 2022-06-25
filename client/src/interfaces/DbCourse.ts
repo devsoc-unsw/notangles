@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Activity, ClassData, ClassPeriod, CourseCode, CourseData, Section } from './Course';
+import { Activity, ClassData, ClassPeriod, CourseCode, CourseData, Section, Status } from './Course';
 
 // List of the interfaces and types that are used in the scraper
 
@@ -12,6 +12,7 @@ export interface DbCourse {
 export interface DbClass {
   activity: Activity;
   times: DbTimes[];
+  status: Status;
   courseEnrolment: DbCourseEnrolment;
   section: Section;
 }
@@ -107,9 +108,10 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       id: uuidv4(),
       course: courseData,
       activity: dbClass.activity,
-      periods: [],
+      status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,
       capacity: dbClass.courseEnrolment.capacity,
+      periods: [],
       section: dbClass.section,
     };
 

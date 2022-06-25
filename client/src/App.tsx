@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { term, year } from './constants/timetable';
+import { getAvailableTermDetails } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -67,13 +67,21 @@ const App: React.FC = () => {
     is12HourMode,
     isDarkMode,
     isSquareEdges,
-    isHideFullClasses,
+    isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
     infoVisibility,
-    setInfoVisibility,
     days,
+    term,
+    year,
+    setInfoVisibility,
     setDays,
+    setTerm,
+    setYear,
+    firstDayOfTerm,
+    setFirstDayOfTerm,
+    setTermName,
+    setTermNumber,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
@@ -159,6 +167,21 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchTermData = async () => {
+      const termData = await getAvailableTermDetails();
+      if (termData !== undefined) {
+        const { term, termName, termNumber, firstDayOfTerm, year } = termData;
+        setTerm(term);
+        setTermName(termName);
+        setTermNumber(termNumber);
+        setYear(year);
+        setFirstDayOfTerm(firstDayOfTerm);
+      }
+    };
+    fetchTermData();
+  }, []);
+
+  useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
 
@@ -171,8 +194,8 @@ const App: React.FC = () => {
   }, [isSquareEdges]);
 
   useEffect(() => {
-    storage.set('isHideFullClasses', isHideFullClasses);
-  }, [isHideFullClasses]);
+    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
+  }, [isShowOnlyOpenClasses]);
 
   useEffect(() => {
     storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
@@ -185,14 +208,13 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
 
       Object.keys(savedClasses).forEach((courseCode) => {
         newSelectedClasses[courseCode] = {};
-
         Object.keys(savedClasses[courseCode]).forEach((activity) => {
           const classId = savedClasses[courseCode][activity];
           let classData: ClassData | null = null;
@@ -211,7 +233,7 @@ const App: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
-  }, []);
+  }, [year]);
 
   useUpdateEffect(() => {
     storage.set(
@@ -284,7 +306,9 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses)}>save to calendar</ICSButton>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                  save to calendar
+                </ICSButton>
                 <Footer />
                 <Alerts />
               </Content>

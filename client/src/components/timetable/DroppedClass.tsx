@@ -27,46 +27,22 @@ import { getClassMargin, rowHeight } from './TimetableLayout';
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
 export const borderWidth = 3;
 
-// Note for whoever is working on this file next (sorry):
-// The more classes there are clashing with each other, the more the edge of the last class card
-// will extend into the next day. It looks fine with two clashing classes and is acceptable for three
-// But it is quite obvious for four. But it's not like anyone is going to have four clashing classes.
-// Right? :)
-// This could potentially be solved by not adding 1 / devicePixelRatio to the width of StyledCourseClass
-// But then you'd have to alter the calculations in classTranslateX, so...
-
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number) => {
+const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
   // This cardData is for a scheduled class
-  if (isPeriod(cardData) && clashIndex !== undefined && width) {
-    // This effectively gives the number of clashes in the group
-    const widthRatio = 100 / width;
+  if (isPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
+    const numClashing = 100 / width;
 
-    // Without this, all class cards are offset to the right slightly
-    // This is probably because 1 / devicePixelRatio is added to the width of StyledCourseClass
-    // 1 / devicePixelRatio refers to the width of a timetable border
-
-    // If width === 100 then the class is not clashing with any other class. So we can shift its card back by
-    // 1 / devicePixelRatio to ensure that the card is perfectly centered due to the width of StyledCourseClass
-    // being (width + 1 / devicePixelRatio)%
-
-    // Don't ask why the else condition works
-    const microOffset = width === 100 ? 1 / devicePixelRatio : widthRatio * ((2 * widthRatio) / devicePixelRatio);
-
-    // (cardData.time.day - 1) * 100 moves the class card to the correct day column
-    // as all cards are spawned at the Monday 9am cell
-    // Then, clashIndex * width shifts the card to the right so that all clashing classes
-    // are (basically) evenly distributed in a particular timetable cell
-
-    // The reason for multiplying by widthRatio is because translating a card x% will only translate
-    // a card of half the width x/2% and so on. Namely, widthRatio is compensating for the shorter distance
-    // that the card is being translated by due to its smaller width.
-    return `${((cardData.time.day - 1) * 100 + clashIndex * width) * widthRatio - microOffset}%`;
+    // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
+    // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
+    return `${(cellWidth + 1) * (cardData.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
+    // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
   // This cardData is for an unscheduled class, i.e. it belongs in the inventory
-  // 5 / devicePixelRatio refers to the five timetable borders between Monday and the Unscheduled column
   if (days) {
-    return `calc(${days.length * 100}% + ${inventoryMargin - 5 / devicePixelRatio}px)`;
+    // This shifts by the cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
+    // plus the margin seperating the days of the week from unscheduled section
+    return `calc(${days.length * 100}% + ${days.length + 1 + inventoryMargin}px)`;
   }
 
   return 0;
@@ -94,7 +70,7 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
     result = y;
   }
 
-  return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
+  return `calc(${result * 100}% + ${result}px)`;
 };
 
 export const classTransformStyle = (
@@ -103,14 +79,20 @@ export const classTransformStyle = (
   days?: string[],
   y?: number,
   clashIndex?: number,
-  width?: number
-) => `translate(${classTranslateX(cardData, days, clashIndex, width)}, ${classTranslateY(cardData, earliestStartTime, y)})`;
+  width?: number,
+  cellWidth: number = 0
+) =>
+  `translate(${classTranslateX(cardData, days, clashIndex, width, cellWidth)}, ${classTranslateY(
+    cardData,
+    earliestStartTime,
+    y
+  )})`;
 
 export const getClassHeight = (cardData?: CardData | InInventory) => {
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
-  return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
+  return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
 };
 
 export const transitionName = 'class';
@@ -133,7 +115,9 @@ const ExpandButton = styled(Button)`
 
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) =>
-    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth'].includes(prop.toString()),
+    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
+      prop.toString()
+    ),
 })<{
   cardData: CardData;
   days: string[];
@@ -142,24 +126,22 @@ const StyledCourseClass = styled('div', {
   isSquareEdges: boolean;
   clashIndex: number;
   cardWidth: number;
+  cellWidth: number;
 }>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth }) =>
-    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth)};
-  width: ${({ cardWidth }) =>
-    cardWidth + 1 / devicePixelRatio}%; // So the card hitbox extends all the way to the timetable border
+  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
+  width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ cardData }) => getClassHeight(cardData)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
-  padding: ${({ isSquareEdges }) => getClassMargin(isSquareEdges)}px;
-  padding-right: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + 1 / devicePixelRatio}px;
-  padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
-
+  padding: 1px;
   transition: ${defaultTransition}, z-index 0s;
 
+  /* uncomment me whoever decides to fix <CSSTransition>
   &.${transitionName}-enter {
     & > div {
       opacity: 0;
@@ -181,15 +163,14 @@ const StyledCourseClass = styled('div', {
       opacity: 0;
       box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
     }
-  }
+  } */
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'isSquareEdges', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'clashColour'].includes(prop.toString()),
 })<{
   backgroundColor: string;
   hasClash: boolean;
-  isSquareEdges: boolean;
   clashColour: string;
 }>`
   display: flex;
@@ -197,17 +178,12 @@ const StyledCourseClassInner = styled(Card, {
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
-  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : '7px')};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
   outline-offset: -${borderWidth}px;
   position: relative;
   height: 100%;
-  // If there is a clash, we want the cards to be as wide as possible so width remains at 100%
-  // Otherwise, take a small slice off the left and right edges, equivalent to the width
-  // of a timetable border from each side so it looks less packed
-  width: ${({ hasClash }) => `calc(100% - ${hasClash ? 0 : 2 / devicePixelRatio}px)`};
 `;
 
 const StyledClassName = styled('p')`
@@ -231,6 +207,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   cardWidth,
   clashIndex,
   clashColour,
+  cellWidth: cellWidth,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -248,7 +225,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
-
   const onDown = (eventDown: any) => {
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
@@ -358,11 +334,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }}
         clashIndex={clashIndex}
         cardWidth={cardWidth}
+        cellWidth={cellWidth}
       >
         <StyledCourseClassInner
+          square={isSquareEdges}
           backgroundColor={color}
           hasClash={clashColour !== 'transparent'}
-          isSquareEdges={isSquareEdges}
           clashColour={clashColour}
         >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
