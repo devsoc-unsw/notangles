@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, LocationOn, Notes } from '@mui/icons-material';
+import { AccessTime, Close, Delete, Event, LocationOn, Notes } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
   Button,
@@ -10,6 +11,7 @@ import {
   Grid,
   IconButton,
   ListItem,
+  ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
@@ -214,136 +216,148 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
   };
 
   return (
-    <div>
-      <Dialog open={popupOpen} PaperProps={{ sx: { width: '35%' } }} maxWidth="sm" onClose={handleCloseDialog}>
-        <Dialog maxWidth="sm" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
-          <StyledTitleContainer>
-            <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
-          </StyledTitleContainer>
-          <StyledDialogButtons>
-            <Button
-              onClick={() => {
-                setOpenSaveDialog(false);
-                setIsEditing(true);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
-          </StyledDialogButtons>
-        </Dialog>
+    <Dialog open={popupOpen} maxWidth="xs" onClose={handleCloseDialog}>
+      <Dialog maxWidth="sm" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
+        <StyledTitleContainer>
+          <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
+        </StyledTitleContainer>
+        <StyledDialogButtons>
+          <Button
+            onClick={() => {
+              setOpenSaveDialog(false);
+              setIsEditing(true);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
+        </StyledDialogButtons>
+      </Dialog>
 
-        <StyledDialogTitle>
-          <StyledTitleContainer>
+      <StyledDialogTitle>
+        <StyledTitleContainer>
+          {isEditing ? <></> : <Box>{eventData.name}</Box>}
+
+          <Box width="100%" display="flex" justifyContent="flex-end" alignItems="flex-end">
             {isEditing ? (
-              <TextField sx={{ paddingRight: 2 }}
-                variant="standard"
-                required
-                value={newName}
-                onChange={(e) => {
-                  setIsChanged(true);
-                  setNewName(e.target.value);
-                }}
-              />
+              <IconButton onClick={() => handleUpdateEvent(eventData.id)} disabled={newName === '' || newLocation === ''}>
+                <SaveIcon />
+              </IconButton>
             ) : (
-              <div>{eventData.name}</div>
+              <div></div>
             )}
-            <Box>
-              {isEditing ? (
-                <Button onClick={() => handleUpdateEvent(eventData.id)} disabled={newName === '' || newLocation === ''}>
-                  Save Changes
-                </Button>
-              ) : (
-                <div></div>
-              )}
 
-              <IconButton onClick={() => setIsEditing(true)} disabled={isEditing}>
-                <EditIcon />
-              </IconButton>
+            <IconButton onClick={() => setIsEditing(true)} disabled={isEditing}>
+              <EditIcon />
+            </IconButton>
 
-              <IconButton onClick={() => handleDeleteEvent(eventData.id)}>
-                <Delete />
-              </IconButton>
+            <IconButton onClick={() => handleDeleteEvent(eventData.id)}>
+              <Delete />
+            </IconButton>
 
-              <IconButton aria-label="close" onClick={handleCloseDialog}>
-                <Close />
-              </IconButton>
-            </Box>
-          </StyledTitleContainer>
-        </StyledDialogTitle>
+            <IconButton aria-label="close" onClick={handleCloseDialog}>
+              <Close />
+            </IconButton>
+          </Box>
+        </StyledTitleContainer>
+      </StyledDialogTitle>
 
-        <StyledDialogContent>
-          <Grid container direction="column" spacing={2}>
-            <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                {(String(eventData.description).length > 0 || isEditing) && (
-                  <Grid item container direction="row" spacing={2}>
-                    <Grid item>
-                      {isEditing ? (
-                        <ListItem>
-                          <Notes />
-                          <TextField
-                            sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }}
-                            variant="standard"
-                            value={newDescription}
-                            multiline
-                            onChange={(e) => {
-                              setIsChanged(true);
-                              setNewDescription(e.target.value);
-                            }}
-                          />
-                        </ListItem>
-                      ) : (
-                        <Grid item container direction="row" spacing={2}>
-                          <Grid item>
-                            <Notes />
-                          </Grid>
-                          <Grid item>
-                            <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
-                          </Grid>
-                        </Grid>
-                      )}
+      <StyledDialogContent>
+        <Grid container direction="column" spacing={2}>
+          <Grid item>
+            {isEditing ? (
+              <ListItem>
+                <ListItemIcon>
+                  <Event />
+                </ListItemIcon>
+                <TextField
+                  id="outlined-required"
+                  required
+                  variant="outlined"
+                  value={newName}
+                  onChange={(e) => {
+                    setIsChanged(true);
+                    setNewName(e.target.value);
+                  }}
+                />
+              </ListItem>
+            ) : (
+              <div></div>
+            )}
+          </Grid>
+
+          <Grid item>
+            {(String(eventData.description).length > 0 || isEditing) && (
+              <Grid item container direction="row" spacing={2}>
+                <Grid item>
+                  {isEditing ? (
+                    <ListItem>
+                      <ListItemIcon>
+                        <Notes />
+                      </ListItemIcon>
+
+                      <TextField
+                        id="outlined-required"
+                        variant="outlined"
+                        value={newDescription}
+                        multiline
+                        onChange={(e) => {
+                          setIsChanged(true);
+                          setNewDescription(e.target.value);
+                        }}
+                      />
+                    </ListItem>
+                  ) : (
+                    <Grid item container direction="row" spacing={2}>
+                      <Grid item>
+                        <Notes />
+                      </Grid>
+                      <Grid item>
+                        <Typography> {eventData.description}</Typography>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                )}
+                  )}
+                </Grid>
               </Grid>
-            </Grid>
+            )}
+          </Grid>
+
+          <Grid item container direction="row" spacing={2}>
+            {isEditing ? (
+              <Grid item>
+                <ListItem>
+                  <ListItemIcon>
+                    <LocationOn />
+                  </ListItemIcon>
+
+                  <TextField
+                    id="outlined-required"
+                    required
+                    variant="outlined"
+                    value={newLocation}
+                    onChange={(e) => {
+                      setIsChanged(true);
+                      setNewLocation(e.target.value);
+                    }}
+                  />
+                </ListItem>
+              </Grid>
+            ) : (
+              <Grid item container direction="row" spacing={2}>
+                <Grid item>
+                  <LocationOn />
+                </Grid>
+                <Grid item>
+                  <Typography> {eventData.location}</Typography>
+                </Grid>
+              </Grid>
+            )}
 
             <Grid item container direction="row" spacing={2}>
-
-
               {isEditing ? (
                 <Grid item>
                   <ListItem>
-                    <LocationOn />
-                    <TextField fullWidth={true} sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }}
-                      required
-                      variant="standard"
-                      value={newLocation}
-                      onChange={(e) => {
-                        setIsChanged(true);
-                        setNewLocation(e.target.value);
-                      }}
-                    />
-                  </ListItem>
-                </Grid>
-              ) : (
-                <Grid item container direction="row" spacing={2}>
-                  <Grid item>
-                    <LocationOn />
-                  </Grid>
-                  <Grid item>
-                    <Typography> {eventData.location}</Typography>
-                  </Grid>
-                </Grid>
-              )}
-            </Grid>
-
-            <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                {isEditing ? (
-                  <>
-                    <ListItem>
+                    <Grid container spacing={0}>
                       <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
                       <TimePicker
                         views={['hours']}
@@ -354,43 +368,44 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                           if (e) setNewStartTime(e);
                         }}
                       />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
-                      <TimePicker
-                        views={['hours']}
-                        value={newEndTime}
-                        renderInput={(params) => <TextField {...params} />}
-                        onChange={(e) => {
-                          setIsChanged(true);
-                          if (e) setNewEndTime(e);
-                        }}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <DropdownOption
-                        optionName="Days"
-                        optionState={newDays}
-                        setOptionState={handleFormat}
-                        optionChoices={weekdaysShort}
-                        noOff
-                      />
-                    </ListItem>
-                  </>
-                ) : (
-                  <Grid item container direction="row" spacing={2}>
-                    <Grid item>
-                      <AccessTime />
                     </Grid>
-                    <Grid item>
-                      <Typography>
-                        {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
-                        {to24Hour(eventData.time.end)}
-                      </Typography>
-                    </Grid>
+                  </ListItem>
+
+                  <ListItem>
+                    <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
+                    <TimePicker
+                      views={['hours']}
+                      value={newEndTime}
+                      renderInput={(params) => <TextField {...params} />}
+                      onChange={(e) => {
+                        setIsChanged(true);
+                        if (e) setNewEndTime(e);
+                      }}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <DropdownOption
+                      optionName="Days"
+                      optionState={newDays}
+                      setOptionState={handleFormat}
+                      optionChoices={weekdaysShort}
+                      noOff
+                    />
+                  </ListItem>
+                </Grid>
+              ) : (
+                <Grid item container direction="row" spacing={2}>
+                  <Grid item>
+                    <AccessTime />
                   </Grid>
-                )}
-              </Grid>
+                  <Grid item>
+                    <Typography>
+                      {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
+                      {to24Hour(eventData.time.end)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
 
             <Grid item container direction="row" spacing={2}>
@@ -426,9 +441,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               )}
             </Grid>
           </Grid>
-        </StyledDialogContent>
-      </Dialog>
-    </div>
+        </Grid>
+      </StyledDialogContent>
+    </Dialog>
   );
 };
 
