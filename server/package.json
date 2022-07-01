@@ -24,7 +24,7 @@
     "@grpc/grpc-js": "1.6.7",
     "@grpc/proto-loader": "^0.6.13",
     "@nestjs/common": "^8.0.0",
-    "@nestjs/config": "^2.0.0",
+    "@nestjs/config": "^2.1.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/microservices": "^8.4.5",
     "@nestjs/mongoose": "^9.0.3",
@@ -38,7 +38,11 @@
     "express-session": "^1.17.3",
     "mongodb": "^4.6.0",
     "mongoose": "^6.3.4",
+<<<<<<< Updated upstream
     "openid-client": "^5.1.6",
+=======
+    "openid-client": "^5.1.7",
+>>>>>>> Stashed changes
     "passport": "^0.5.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
