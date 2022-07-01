@@ -13,7 +13,7 @@ import { DatabaseModule } from './database/database.module';
     ConfigModule.forRoot(), // so that we can pull in config
     AuthModule,
     SumModule,
-    AutoModule,
+    // AutoModule,
     MongooseModule.forRoot(`${process.env.DATABASE_URL}`),
     DatabaseModule,
   ],

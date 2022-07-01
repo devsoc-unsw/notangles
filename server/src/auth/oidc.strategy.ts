@@ -14,11 +14,11 @@ import { AuthService } from './auth.service';
  */
 export const buildOpenIdClient = async () => {
   const TrustIssuer = await Issuer.discover(
-    `${process.env.OIDC_ISSUER_BASE_URL}/.well-known/openid-configuration`,
+    `${process.env.AUTHORIZATION_URL}/.well-known/openid-configuration`,
   );
   const client = new TrustIssuer.Client({
-    client_id: process.env.OAUTH2_CLIENT_ID,
-    client_secret: process.env.OAUTH2_CLIENT_SECRET,
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
   });
   return client;
 };
@@ -33,8 +33,8 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
     super({
       client: client,
       params: {
-        redirect_uri: process.env.OAUTH2_REDIRECT_URI,
-        scope: process.env.OAUTH2_SCOPES,
+        redirect_uri: process.env.REDIRECT_URI,
+        scope: process.env.SCOPES,
       },
       passReqToCallback: false,
       usePKCE: false,
