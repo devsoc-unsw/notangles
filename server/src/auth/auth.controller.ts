@@ -1,16 +1,11 @@
-<<<<<<< Updated upstream
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
-=======
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
->>>>>>> Stashed changes
 import { LoginGuard } from './login.guard';
 
 @Controller('auth')
 export class AuthController {
-<<<<<<< Updated upstream
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LoginGuard)
@@ -20,15 +15,15 @@ export class AuthController {
     return;
   }
 
+  @UseGuards(LoginGuard)
+  @Get('/token')
+  async getToken(@Req() req: Request) {
+    return req.user;
+  }
+
   @Get('/user')
   user(@Req() req: Request) {
     return this.authService.getUser(req.query.userID as string);
-=======
-  @Get('token')
-  @UseGuards(LoginGuard)
-  async token(@Req() req): Promise<any> {
-    return req.user;
->>>>>>> Stashed changes
   }
 
   @UseGuards(LoginGuard)

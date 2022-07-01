@@ -7,7 +7,6 @@ import {
   TokenSet,
   UserinfoResponse,
 } from 'openid-client';
-import { AuthService } from './auth.service';
 
 /**
  * Builder for the OIDC client.
@@ -29,11 +28,11 @@ export const buildOpenIdClient = async () => {
 export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
   client: Client;
 
-  constructor(private readonly authService: AuthService, client: Client) {
+  constructor(client: Client) {
     super({
       client: client,
       params: {
-        redirect_uri: process.env.REDIRECT_URI,
+        redirect_uri: process.env.REDIRECT_URL,
         scope: process.env.SCOPES,
       },
       passReqToCallback: false,

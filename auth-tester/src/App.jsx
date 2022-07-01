@@ -2,23 +2,10 @@ import { useState } from 'react';
 import './App.css';
 import { useEffect } from 'react';
 
-const buildURL = () => {
-  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  const params = new URLSearchParams('');
-  params.set('response_type', 'code');
-  params.set('client_id', '255102332142-ubcqeee66fs66mibr62o4eaouf2rjcjl.apps.googleusercontent.com');
-  params.set('scope', 'openid email');
-  params.set('redirect_uri', 'http://localhost:3000');
-  params.set('state', '12345');
-
-  url.search = params.toString();
-  return url.toString();
-};
-
 function App() {
-  const [authCode, setAuthCode] = useState(null);
-  const [state, setState] = useState(null);
-  const [response, setResponse] = useState(null);
+  const [authCode, setAuthCode] = useState('');
+  const [state, setState] = useState('');
+  const [response, setResponse] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -62,7 +49,7 @@ function App() {
         )}
         <section className="authentication">
           <div>
-            <a className="App-link" href={buildURL()}>
+            <a className="App-link" href={`/auth/login`}>
               Authenticate with Google
             </a>
           </div>
@@ -81,9 +68,7 @@ function App() {
           </div>
           <div className="results">
             <label htmlFor="response">Response: </label>
-            <textarea name="response" disabled>
-              {response}
-            </textarea>
+            <pre className={`response-box`}>{JSON.stringify(response, null, 2)}</pre>
           </div>
         </section>
       </main>

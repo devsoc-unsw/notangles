@@ -38,11 +38,7 @@
     "express-session": "^1.17.3",
     "mongodb": "^4.6.0",
     "mongoose": "^6.3.4",
-<<<<<<< Updated upstream
     "openid-client": "^5.1.6",
-=======
-    "openid-client": "^5.1.7",
->>>>>>> Stashed changes
     "passport": "^0.5.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

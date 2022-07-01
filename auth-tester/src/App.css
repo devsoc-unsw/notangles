@@ -2,6 +2,13 @@
   text-align: center;
 }
 
+.response-box {
+  text-align: start;
+  max-width: 50vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .App-logo {
   height: 20vmin;
   pointer-events: none;
