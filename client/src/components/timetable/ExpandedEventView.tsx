@@ -156,7 +156,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
         time: { ...eventTime },
       },
     });
+
+    // Updates the time that appears in the TimePicker boxes when in edit mode.
+    setNewDays([weekdaysShort[eventTime.day - 1]]);
+    setNewStartTime(new Date(2022, 0, 0, eventTime.start));
+    setNewEndTime(new Date(2022, 0, 0, eventTime.end));
   };
+  
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
@@ -167,8 +173,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     };
 
     updateEventTime(newEventTime, id);
-
-    // TODO: set so redo button, changes back to the edited changes of event.
 
     setCreatedEvents({
       ...createdEvents,
