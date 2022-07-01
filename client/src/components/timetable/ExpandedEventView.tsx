@@ -215,7 +215,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
   return (
     <div>
-      <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+      <Dialog open={popupOpen} PaperProps={{ sx: { width: '35%' } }} maxWidth="sm" onClose={handleCloseDialog}>
         <Dialog maxWidth="sm" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
           <StyledTitleContainer>
             <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
@@ -236,7 +236,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
         <StyledDialogTitle>
           <StyledTitleContainer>
             {isEditing ? (
-              <TextField
+              <TextField sx={{ paddingRight: 2 }}
                 variant="standard"
                 required
                 value={newName}
@@ -279,21 +279,29 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                 {(String(eventData.description).length > 0 || isEditing) && (
                   <Grid item container direction="row" spacing={2}>
                     <Grid item>
-                      <Notes />
-                    </Grid>
-                    <Grid item>
                       {isEditing ? (
-                        <TextField
-                          variant="standard"
-                          value={newDescription}
-                          multiline
-                          onChange={(e) => {
-                            setIsChanged(true);
-                            setNewDescription(e.target.value);
-                          }}
-                        />
+                        <ListItem>
+                          <Notes />
+                          <TextField
+                            sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }}
+                            variant="standard"
+                            value={newDescription}
+                            multiline
+                            onChange={(e) => {
+                              setIsChanged(true);
+                              setNewDescription(e.target.value);
+                            }}
+                          />
+                        </ListItem>
                       ) : (
-                        <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
+                        <Grid item container direction="row" spacing={2}>
+                          <Grid item>
+                            <Notes />
+                          </Grid>
+                          <Grid item>
+                            <Typography style={{ wordWrap: 'break-word' }}>{eventData.description}</Typography>
+                          </Grid>
+                        </Grid>
                       )}
                     </Grid>
                   </Grid>
@@ -302,24 +310,33 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             </Grid>
 
             <Grid item container direction="row" spacing={2}>
-              <Grid item>
-                <LocationOn />
-              </Grid>
-              <Grid item>
-                {isEditing ? (
-                  <TextField
-                    required
-                    variant="standard"
-                    value={newLocation}
-                    onChange={(e) => {
-                      setIsChanged(true);
-                      setNewLocation(e.target.value);
-                    }}
-                  />
-                ) : (
-                  <Typography> {eventData.location}</Typography>
-                )}
-              </Grid>
+
+
+              {isEditing ? (
+                <Grid item>
+                  <ListItem>
+                    <LocationOn />
+                    <TextField fullWidth={true} sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }}
+                      required
+                      variant="standard"
+                      value={newLocation}
+                      onChange={(e) => {
+                        setIsChanged(true);
+                        setNewLocation(e.target.value);
+                      }}
+                    />
+                  </ListItem>
+                </Grid>
+              ) : (
+                <Grid item container direction="row" spacing={2}>
+                  <Grid item>
+                    <LocationOn />
+                  </Grid>
+                  <Grid item>
+                    <Typography> {eventData.location}</Typography>
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
 
             <Grid item container direction="row" spacing={2}>
@@ -378,33 +395,34 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
             <Grid item container direction="row" spacing={2}>
               {isEditing ? (
-                <Grid item>
+                <ListItem sx={{ paddingLeft: 3 }}>
                   <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} />
-                </Grid>
+                </ListItem>
               ) : (
-                <Grid
-                  item
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    paddingLeft: '10px',
-                    paddingRight: '10px',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 25,
-                      height: 25,
-                      borderRadius: '5px',
-                      ...((eventData.color as Color)?.css ?? { backgroundColor: eventData.color }), // <-- do this to add the color to the css;
-                    }}
-                  ></Box>
-                  <Typography sx={{ paddingLeft: '15px' }}>
-                    {(eventData.color as Color)?.hex ?? `${eventData.color}`}
-                    {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
-                  </Typography>
-                </Grid>
+                <> </>
+                // <Grid
+                //   item
+                //   sx={{
+                //     display: 'flex',
+                //     flexDirection: 'row',
+                //     justifyContent: 'flex-end',
+                //     paddingLeft: '10px',
+                //     paddingRight: '10px',
+                //   }}
+                // >
+                //   <Box
+                //     sx={{
+                //       width: 25,
+                //       height: 25,
+                //       borderRadius: '5px',
+                //       ...((eventData.color as Color)?.css ?? { backgroundColor: eventData.color }), // <-- do this to add the color to the css;
+                //     }}
+                //   ></Box>
+                //   <Typography sx={{ paddingLeft: '15px' }}>
+                //     {(eventData.color as Color)?.hex ?? `${eventData.color}`}
+                //     {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
+                //   </Typography>
+                // </Grid>
               )}
             </Grid>
           </Grid>

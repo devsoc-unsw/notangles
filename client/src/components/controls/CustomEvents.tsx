@@ -96,11 +96,12 @@ const StyledList = styled(List)`
 `;
 
 const ExecuteButton = styled(Button)`
+  height: 40px;
   width: 100%;
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({}) => {
+const CustomEvent = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -321,7 +322,7 @@ const CustomEvent = ({}) => {
             </Grid>
           </ListItem>
         </StyledList>
-        <ExecuteButton
+        <ExecuteButton sx={{ marginTop: 2 }}
           variant="contained"
           color="primary"
           disableElevation
