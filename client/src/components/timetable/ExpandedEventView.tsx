@@ -68,6 +68,7 @@ const StyledDialogButtons = styled(Box)`
   padding-right: 5px;
 `;
 
+
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
   optionState,
@@ -270,7 +271,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                 <ListItemIcon>
                   <Event />
                 </ListItemIcon>
-                <TextField
+                <TextField fullWidth={true}
                   id="outlined-required"
                   required
                   variant="outlined"
@@ -288,7 +289,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
           <Grid item>
             {(String(eventData.description).length > 0 || isEditing) && (
-              <Grid item container direction="row" spacing={2}>
+              <Grid item container direction="column" spacing={2}>
                 <Grid item>
                   {isEditing ? (
                     <ListItem>
@@ -296,7 +297,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                         <Notes />
                       </ListItemIcon>
 
-                      <TextField
+                      <TextField fullWidth={true}
                         id="outlined-required"
                         variant="outlined"
                         value={newDescription}
@@ -322,7 +323,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             )}
           </Grid>
 
-          <Grid item container direction="row" spacing={2}>
+          <Grid item container direction="column" spacing={2}>
             {isEditing ? (
               <Grid item>
                 <ListItem>
@@ -330,7 +331,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     <LocationOn />
                   </ListItemIcon>
 
-                  <TextField
+                  <TextField fullWidth={true}
                     id="outlined-required"
                     required
                     variant="outlined"
@@ -357,22 +358,20 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
               {isEditing ? (
                 <Grid item>
                   <ListItem>
-                    <Grid container spacing={0}>
-                      <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
-                      <TimePicker
-                        views={['hours']}
-                        value={newStartTime}
-                        renderInput={(params) => <TextField {...params} />}
-                        onChange={(e) => {
-                          setIsChanged(true);
-                          if (e) setNewStartTime(e);
-                        }}
-                      />
-                    </Grid>
+                    <ListItemText sx={{ alignSelf: 'center', paddingRight: 2 }} primary="Start time" />
+                    <TimePicker
+                      views={['hours']}
+                      value={newStartTime}
+                      renderInput={(params) => <TextField {...params} />}
+                      onChange={(e) => {
+                        setIsChanged(true);
+                        if (e) setNewStartTime(e);
+                      }}
+                    />
                   </ListItem>
 
                   <ListItem>
-                    <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
+                    <ListItemText sx={{ alignSelf: 'center', paddingRight: 2 }} primary="End time" />
                     <TimePicker
                       views={['hours']}
                       value={newEndTime}
@@ -383,7 +382,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                       }}
                     />
                   </ListItem>
-                  <ListItem>
+                  <ListItem disablePadding={true}>
                     <DropdownOption
                       optionName="Days"
                       optionState={newDays}
@@ -410,7 +409,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
             <Grid item container direction="row" spacing={2}>
               {isEditing ? (
-                <ListItem sx={{ paddingLeft: 3 }}>
+                <ListItem>
+                  <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Color" />
                   <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} />
                 </ListItem>
               ) : (
