@@ -6,6 +6,7 @@ export type InInventory = null;
 export type Section = string;
 export type Location = string;
 export type EventCode = string;
+export type Status = "Open" | "Full" | "On Hold";
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
 export type CreatedEvents = Record<EventCode, EventData>;
@@ -23,6 +24,7 @@ export interface ClassData {
   id: string;
   course: CourseData;
   activity: Activity;
+  status: Status;
   enrolments: number;
   capacity: number;
   periods: ClassPeriod[];
