@@ -162,7 +162,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     setNewStartTime(new Date(2022, 0, 0, eventTime.start));
     setNewEndTime(new Date(2022, 0, 0, eventTime.end));
   };
-  
+
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
@@ -241,7 +241,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {isEditing ? <></> : <Box>{eventData.name}</Box>}
+          {isEditing ? <></> : <Box sx={{ paddingTop: 1 }}>{eventData.name}</Box>}
 
           <Box width="100%" display="flex" justifyContent="flex-end" alignItems="flex-end">
             {isEditing ? (
@@ -249,7 +249,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                 <SaveIcon />
               </IconButton>
             ) : (
-              <div></div>
+              <div> </div>
             )}
 
             <IconButton onClick={() => setIsEditing(true)} disabled={isEditing}>
@@ -269,8 +269,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
       <StyledDialogContent>
         <Grid container direction="column" spacing={2}>
-          <Grid item>
-            {isEditing ? (
+
+          {isEditing ? (
+            <Grid item>
               <ListItem>
                 <ListItemIcon>
                   <Event />
@@ -286,10 +287,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                   }}
                 />
               </ListItem>
-            ) : (
-              <div></div>
-            )}
-          </Grid>
+            </Grid>
+          ) : (
+            <></>
+          )}
+
 
           <Grid item>
             {(String(eventData.description).length > 0 || isEditing) && (
