@@ -3,10 +3,10 @@ import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 import { styled } from '@mui/system';
 
 import { borderRadius } from '../../constants/theme';
-import { DropzoneProps } from '../../interfaces/PropTypes';
 import { ClassPeriod, InInventory } from '../../interfaces/Course';
+import { DropzoneProps } from '../../interfaces/PropTypes';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
-import { getClassHeight, classTranslateY } from './DroppedClass';
+import { classTranslateY, getClassHeight } from './DroppedClass';
 
 const StyledDropzone = styled('div', {
   shouldForwardProp: (prop) => !['classPeriod', 'x', 'color', 'isInventory', 'earliestStartTime'].includes(prop.toString()),
