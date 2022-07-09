@@ -25,7 +25,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Course';
+import { ClassData, ClassPeriod } from '../../interfaces/Course';
 import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
@@ -151,7 +151,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
         return a.concat(b);
       })
       .map((a) => a[1])
-      .filter((f) => f.some((c) => c.periods.length));
+      .filter((f) => f.some((c) => c.periods.length))
+      .map((classArray) => classArray.filter((c) => c.periods.length)); // filter out classes with no periods
 
     // [[hasInPerson, hasOnline], ...]
     const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
