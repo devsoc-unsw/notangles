@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import { defaultStartTime } from '../../constants/timetable';

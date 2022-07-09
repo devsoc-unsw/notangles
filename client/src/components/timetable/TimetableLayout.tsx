@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { styled } from '@mui/system';
 
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 
 export const rowHeight = 60;
 const classMargin = 1;

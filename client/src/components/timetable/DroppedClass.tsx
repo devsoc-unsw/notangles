@@ -8,6 +8,7 @@ import { AppContext } from '../../context/AppContext';
 import { ClassData, InInventory } from '../../interfaces/Course';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 
+import { borderRadius } from '../../constants/theme';
 import {
   CardData,
   defaultTransition,
@@ -22,7 +23,7 @@ import {
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { getClassMargin, rowHeight } from './TimetableLayout';
+import { rowHeight } from './TimetableLayout';
 
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
 export const borderWidth = 3;
@@ -167,8 +168,9 @@ const StyledCourseClass = styled('div', {
 `;
 
 const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColor', 'hasClash', 'clashColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) => !['isSquareEdges', 'backgroundColor', 'hasClash', 'clashColour'].includes(prop.toString()),
 })<{
+  isSquareEdges: boolean;
   backgroundColor: string;
   hasClash: boolean;
   clashColour: string;
@@ -178,6 +180,7 @@ const StyledCourseClassInner = styled(Card, {
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: white;
   font-size: 0.9rem;
+  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : `${borderRadius}px`)};
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
@@ -337,7 +340,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         cellWidth={cellWidth}
       >
         <StyledCourseClassInner
-          square={isSquareEdges}
+          isSquareEdges={isSquareEdges}
           backgroundColor={color}
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
