@@ -11,7 +11,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography,
+  Typography
 } from '@mui/material';
 import { styled } from '@mui/system';
 

@@ -39,12 +39,8 @@ const About: React.FC = () => {
         <Link href="https://crossangles.app/" target="_blank">
           Crossangles
         </Link>
-        , it was created by&nbsp;
-        <Link href="https://www.csesoc.unsw.edu.au/teams/software-projects/" target="_blank">
-          CSESoc Projects
-        </Link>
-        &nbsp;– a place for student-led projects where you can learn something new, and make some friends along the way. Notangles
-        is free and <Link href="https://github.com/csesoc/notangles">open-source</Link>.
+        , it was created by CSESoc Projects – a place for student-led projects where you can learn something new, and make some
+        friends along the way. Notangles is free and <Link href="https://github.com/csesoc/notangles">open-source</Link>.
       </Typography>
       <StyledTypography variant="h6">How it works</StyledTypography>
       <Typography gutterBottom variant="body2">
