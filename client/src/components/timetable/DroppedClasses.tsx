@@ -145,15 +145,15 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     return groupedClashes;
   };
 
-  const getClashInfo = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: ClassCard) => {
+  const getClashInfo = (groupedClashes: Record<number, ClassPeriod[][]>, classCard: ClassCard) => {
     let cardWidth = 100;
     let clashIndex = 0;
     let clashColour = 'orange';
 
     const defaultValues = [cardWidth, clashIndex, 'transparent'];
 
-    if ('time' in cardData) {
-      const clashGroup = groupedClashes[cardData.time.day - 1].find((group) => group.includes(cardData));
+    if ('time' in classCard) {
+      const clashGroup = groupedClashes[classCard.time.day - 1].find((group) => group.includes(classCard));
       if (!clashGroup) return defaultValues;
 
       // Get the length of the clash group according to the unique clash IDs.
@@ -170,13 +170,13 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
           nonLecturePeriods.add(clash.class.id);
         }
 
-        // Check if the current cardData has weeks that are overlapping with
+        // Check if the current classCard has weeks that are overlapping with
         // the weeks of the current clash.
         // This is so that two classes with clashing time but different weeks
         // are not supposed to clash (no border).
-        const hasOverlappingWeeks = cardData.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
+        const hasOverlappingWeeks = classCard.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
 
-        if (hasOverlappingWeeks && clash.class.id !== cardData.class.id) {
+        if (hasOverlappingWeeks && clash.class.id !== classCard.class.id) {
           isOverlapped = true;
         }
       });
@@ -187,7 +187,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         clashColour = 'transparent';
       }
 
-      return [cardWidth / uniqueClashIDs.length, uniqueClashIDs.indexOf(cardData.class.id), clashColour];
+      return [cardWidth / uniqueClashIDs.length, uniqueClashIDs.indexOf(classCard.class.id), clashColour];
     }
 
     return defaultValues;
@@ -215,18 +215,18 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   const sortedClashes = sortClashesByDay(clashes);
   const groupedClashes = groupClashes(sortedClashes);
 
-  newCards.forEach((cardData) => {
-    let key = cardKeys.get(cardData);
+  newCards.forEach((classCard) => {
+    let key = cardKeys.get(classCard);
     key = key !== undefined ? key : ++keyCounter.current;
 
-    const [cardWidth, clashIndex, clashColour] = getClashInfo(groupedClashes, cardData);
+    const [cardWidth, clashIndex, clashColour] = getClashInfo(groupedClashes, classCard);
 
     droppedClasses.push(
       <DroppedClass
         key={key}
-        cardData={cardData}
-        color={assignedColors[cardData.class.course.code]}
-        y={cardData.type === 'inventory' ? inventoryCards.current.indexOf(cardData) : undefined}
+        classCard={classCard}
+        color={assignedColors[classCard.class.course.code]}
+        y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
         earliestStartTime={earliestStartTime}
         cardWidth={cardWidth as number}
         clashIndex={clashIndex as number}
@@ -236,7 +236,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
       />
     );
 
-    cardKeys.set(cardData, key);
+    cardKeys.set(classCard, key);
   });
 
   prevCards.current = [...newCards];
@@ -244,9 +244,9 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
   // Sort by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
 
-  cardKeys.forEach((_, cardData) => {
-    if (!newCards.includes(cardData)) {
-      cardKeys.delete(cardData);
+  cardKeys.forEach((_, classCard) => {
+    if (!newCards.includes(classCard)) {
+      cardKeys.delete(classCard);
     }
   });
 

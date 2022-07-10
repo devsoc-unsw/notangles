@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { OpenInFull } from '@mui/icons-material';
-import { Button, Card, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 
+import { inventoryMargin } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { ClassData, InInventory } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
-
-import { borderRadius } from '../../constants/theme';
 import {
   ClassCard,
   defaultTransition,
@@ -19,27 +18,25 @@ import {
   registerCard,
   setDragTarget,
   timeToPosition,
-  unregisterCard,
+  unregisterCard
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
+import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from './shared_styles/DroppedCardStyles';
 import { rowHeight } from './TimetableLayout';
 
-export const inventoryMargin = 10; // Gap between inventory column and main timetable
-export const borderWidth = 3;
-
-const classTranslateX = (cardData: ClassCard, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
-  // This cardData is for a scheduled class
-  if (isScheduledPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
+const classTranslateX = (classCard: ClassCard, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
+  // This classCard is for a scheduled class
+  if (isScheduledPeriod(classCard) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
     // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
-    return `${(cellWidth + 1) * (cardData.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
+    return `${(cellWidth + 1) * (classCard.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
-  // This cardData is for an unscheduled class, i.e. it belongs in the inventory
+  // This classCard is for an unscheduled class, i.e. it belongs in the inventory
   if (days) {
     // This shifts by the cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
     // plus the margin seperating the days of the week from unscheduled section
@@ -49,24 +46,24 @@ const classTranslateX = (cardData: ClassCard, days?: string[], clashIndex?: numb
   return 0;
 };
 
-const getHeightFactor = (cardData?: ClassCard | InInventory) =>
-  cardData && isScheduledPeriod(cardData) ? cardData.time.end - cardData.time.start : 1;
+const getHeightFactor = (classCard?: ClassCard | InInventory) =>
+  classCard && isScheduledPeriod(classCard) ? classCard.time.end - classCard.time.start : 1;
 
-export const classTranslateY = (cardData: ClassCard, earliestStartTime: number, y?: number) => {
+export const classTranslateY = (classCard: ClassCard, earliestStartTime: number, y?: number) => {
   let result = 0;
 
   // The height of the card in hours relative to the default height of one (hour)
-  const heightFactor = getHeightFactor(cardData);
+  const heightFactor = getHeightFactor(classCard);
 
-  if (isScheduledPeriod(cardData)) {
-    // This cardData is for a scheduled class
+  if (isScheduledPeriod(classCard)) {
+    // This classCard is for a scheduled class
     // The number of rows to offset down
-    const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
+    const offsetRows = timeToPosition(classCard.time.start, earliestStartTime) - 2;
 
     // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;
   } else if (y) {
-    // This cardData is for an unscheduled class, i.e. it belongs in the inventory
+    // This classCard is for an unscheduled class, i.e. it belongs in the inventory
     // Use the specified y-value
     result = y;
   }
@@ -75,7 +72,7 @@ export const classTranslateY = (cardData: ClassCard, earliestStartTime: number, 
 };
 
 export const classTransformStyle = (
-  cardData: ClassCard,
+  classCard: ClassCard,
   earliestStartTime: number,
   days?: string[],
   y?: number,
@@ -83,44 +80,28 @@ export const classTransformStyle = (
   width?: number,
   cellWidth: number = 0
 ) =>
-  `translate(${classTranslateX(cardData, days, clashIndex, width, cellWidth)}, ${classTranslateY(
-    cardData,
+  `translate(${classTranslateX(classCard, days, clashIndex, width, cellWidth)}, ${classTranslateY(
+    classCard,
     earliestStartTime,
     y
   )})`;
 
-export const getClassHeight = (cardData?: ClassCard | InInventory) => {
+export const getClassHeight = (classCard?: ClassCard | InInventory) => {
   // The height of the card in hours relative to the default height of one (hour)
-  const heightFactor = getHeightFactor(cardData);
+  const heightFactor = getHeightFactor(classCard);
 
   return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
 };
 
 export const transitionName = 'class';
 
-const ExpandButton = styled(Button)`
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  box-shadow: none;
-  min-width: 0px;
-  padding: 0;
-  opacity: 40%;
-  border-radius: 2px;
-  color: #f5f5f5;
-
-  &:hover {
-    opacity: 100%;
-  }
-`;
-
 const StyledCourseClass = styled('div', {
   shouldForwardProp: (prop) =>
-    !['cardData', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
+    !['classCard', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
 })<{
-  cardData: ClassCard;
+  classCard: ClassCard;
   days: string[];
   y?: number;
   earliestStartTime: number;
@@ -132,10 +113,10 @@ const StyledCourseClass = styled('div', {
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
-    classTransformStyle(cardData, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
+  transform: ${({ classCard, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(classCard, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
   width: ${({ cardWidth }) => cardWidth}%;
-  height: ${({ cardData }) => getClassHeight(cardData)};
+  height: ${({ classCard }) => getClassHeight(classCard)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
@@ -167,42 +148,16 @@ const StyledCourseClass = styled('div', {
   } */
 `;
 
-const StyledCourseClassInner = styled(Card, {
-  shouldForwardProp: (prop) => !['isSquareEdges', 'backgroundColor', 'hasClash', 'clashColour'].includes(prop.toString()),
+const StyledCourseClassInner = styled(StyledCardInner, {
+  shouldForwardProp: (prop) => prop !== 'backgroundColor',
 })<{
-  isSquareEdges: boolean;
   backgroundColor: string;
-  hasClash: boolean;
-  clashColour: string;
 }>`
-  display: flex;
-  flex-direction: column;
   background-color: ${({ backgroundColor }) => backgroundColor};
-  color: white;
-  font-size: 0.9rem;
-  border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : `${borderRadius}px`)};
-  transition: ${defaultTransition}, z-index 0s;
-  backface-visibility: hidden;
-  outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
-  outline-offset: -${borderWidth}px;
-  position: relative;
-  height: 100%;
-`;
-
-const StyledClassName = styled('p')`
-  width: 100%;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const StyledClassInfo = styled(StyledClassName)`
-  font-size: 85%;
 `;
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
-  cardData,
+  classCard,
   color,
   y,
   earliestStartTime,
@@ -249,7 +204,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(cardData, eventCopy);
+      setDragTarget(classCard, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -301,20 +256,20 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(cardData, elementCurrent);
+      registerCard(classCard, elementCurrent);
     }
 
     return () => {
       if (elementCurrent) {
-        unregisterCard(cardData, elementCurrent);
+        unregisterCard(classCard, elementCurrent);
       }
     };
   });
 
   let activityMaxPeriods = 0;
-  if (cardData.type === 'inventory') {
+  if (classCard.type === 'inventory') {
     activityMaxPeriods = Math.max(
-      ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
+      ...classCard.class.course.activities[classCard.class.activity].map((classData) => classData.periods.length)
     );
   }
 
@@ -324,7 +279,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         ref={element}
         onMouseDown={onDown}
         onTouchStart={onDown}
-        cardData={cardData}
+        classCard={classCard}
         days={days}
         y={y}
         earliestStartTime={earliestStartTime}
@@ -347,17 +302,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
-              <StyledClassName>
+              <StyledCardName>
                 <b>
-                  {cardData.class.course.code} {cardData.class.activity}
+                  {classCard.class.course.code} {classCard.class.activity}
                 </b>
-              </StyledClassName>
-              <StyledClassInfo>
-                {cardData.type === 'class' ? (
+              </StyledCardName>
+              <StyledCardInfo>
+                {classCard.type === 'class' ? (
                   isHideClassInfo ? (
                     <></>
                   ) : (
-                    <PeriodMetadata period={cardData} />
+                    <PeriodMetadata period={classCard} />
                   )
                 ) : (
                   <>
@@ -365,18 +320,18 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
                     {activityMaxPeriods !== 1 && 'es'}
                   </>
                 )}
-              </StyledClassInfo>
+              </StyledCardInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
           </Grid>
-          {cardData.type === 'class' && fullscreenVisible && (
+          {classCard.type === 'class' && fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <OpenInFull />
             </ExpandButton>
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
-      {cardData.type === 'class' && <ExpandedView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
+      {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
     </>
   );
 };

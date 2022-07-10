@@ -67,26 +67,26 @@ ExpandedView keeps an interenal reference of the currently selected class/period
 each change to this internal reference. Instead the new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent. This is done
 becuase otherwise the view will close itself whenever a new item is selected in the locations dropdown.
 
-Currently only intended to be appear on non-unscheduled classCards -- i.e. cardData but technically be of type PeriodData
+Currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically be of type PeriodData
 */
-const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOpen, handleClose }) => {
-  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
+  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days } = useContext(AppContext);
 
-  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(cardData)); // the relevant data to handle class changing with location dropdown
+  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(classPeriod)); // the relevant data to handle class changing with location dropdown
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
-    if (!isScheduledPeriod(cardData)) return;
+    if (!isScheduledPeriod(classPeriod)) return;
 
-    setCurrentPeriod(cardData);
-    duplicateClassData.current = getDuplicateClassData(cardData); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
+    setCurrentPeriod(classPeriod);
+    duplicateClassData.current = getDuplicateClassData(classPeriod); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
     setSelectedIndex(
-      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === cardData.class.section)
+      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === classPeriod.class.section)
     ); // makes selected item in new initial location dropdown the right one
-  }, [cardData]);
+  }, [classPeriod]);
 
   const handleLocationChange = (e: SelectChangeEvent<number>) => {
     // updates index and current period when selected with dropdown
@@ -104,7 +104,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
     >
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {cardData.class.course.code} — {cardData.class.course.name}
+          {classPeriod.class.course.code} — {classPeriod.class.course.name}
           <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
             <Close />
           </IconButton>
@@ -118,8 +118,8 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
             </Grid>
             <Grid item>
               <Typography>
-                {cardData && cardData.class.activity} (
-                {cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
+                {classPeriod && classPeriod.class.activity} (
+                {classPeriod && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
           </Grid>

@@ -2,14 +2,12 @@ import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
 
-import { contentPadding } from '../../constants/theme';
-import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
 
-import { inventoryMargin } from './DroppedClass';
 import DroppedClasses from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
@@ -46,7 +44,6 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
-  const { selectedCourses } = useContext(CourseContext);
   const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
 
   return (

@@ -72,7 +72,7 @@ export interface PeriodMetadataProps {
 }
 
 export interface DroppedClassProps {
-  cardData: ClassCard;
+  classCard: ClassCard;
   color: string;
   y?: number;
   earliestStartTime: number;
@@ -89,15 +89,15 @@ export interface DroppedClassesProps {
 }
 
 export interface ExpandedClassViewProps {
+  classPeriod: ClassPeriod;
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
-  cardData: ClassPeriod;
 }
 
 export interface ExpandedEventViewProps {
+  eventPeriod: EventPeriod;
   popupOpen: boolean;
   handleClose: () => void;
-  eventPeriod: EventPeriod;
 }
 
 export interface LocationDropdownProps {
