@@ -15,7 +15,7 @@ export const getElevatedShadow = (_: boolean) => 24;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
-export const isPeriod = (data: ClassCard | null): data is ClassPeriod =>
+export const isScheduledPeriod = (data: ClassCard | null): data is ClassPeriod =>
   data !== null && (data as ClassPeriod).time !== undefined;
 
 let dragTarget: ClassCard | EventPeriod | null = null;
@@ -62,7 +62,7 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) =>
   a === b ||
   (a.class.course.code === b.class.course.code &&
     a.class.activity === b.class.activity &&
-    (!isPeriod(a) || !isPeriod(b) || a.time.end - a.time.start === b.time.end - b.time.start));
+    (!isScheduledPeriod(a) || !isScheduledPeriod(b) || a.time.end - a.time.start === b.time.end - b.time.start));
 
 export const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
@@ -104,7 +104,7 @@ const updateDropzones = () => {
 
     const isDropTarget =
       (classPeriod && classPeriod === dropTarget) || // is period, and period is drop darget
-      (!classPeriod && !isPeriod(dropTarget)); // is inventory, and drop target is inventory class
+      (!classPeriod && !isScheduledPeriod(dropTarget)); // is inventory, and drop target is inventory class
 
     let opacity = '0';
 
@@ -125,8 +125,8 @@ const updateDropzones = () => {
 const getIsElevated = (cardData: ClassCard | EventPeriod) => {
   if (cardData.type !== 'event' && dragTarget?.type !== 'event') {
     const isMatchingClasses =
-      isPeriod(cardData) &&
-      isPeriod(dragTarget) &&
+      isScheduledPeriod(cardData) &&
+      isScheduledPeriod(dragTarget) &&
       cardData.class.course.code === dragTarget.class.course.code &&
       cardData.class.activity === dragTarget.class.activity;
 
@@ -215,7 +215,7 @@ const updateDelay = 30;
 let lastUpdate = 0;
 
 let currentClassTime: ClassTime | undefined;
-const setcurrentClassTime = (time: ClassTime | undefined) => {
+const setCurrentClassTime = (time: ClassTime | undefined) => {
   currentClassTime = time;
 };
 
@@ -257,7 +257,7 @@ const updateDropTarget = (now?: boolean) => {
     dropTarget = newDropTarget;
     updateDropzones();
 
-    if (isPeriod(newDropTarget)) {
+    if (isScheduledPeriod(newDropTarget)) {
       let newTime = newDropTarget.time;
       if (
         !currentClassTime ||
@@ -265,12 +265,12 @@ const updateDropTarget = (now?: boolean) => {
         newTime.start !== currentClassTime.start ||
         newTime.end !== currentClassTime.end
       ) {
-        setcurrentClassTime(undefined);
+        setCurrentClassTime(undefined);
         selectClass(newDropTarget.class);
       }
-    } else if (isPeriod(dragTarget)) {
+    } else if (isScheduledPeriod(dragTarget)) {
       // moved to inventory
-      setcurrentClassTime(undefined);
+      setCurrentClassTime(undefined);
       removeClass(dragTarget.class);
     }
   } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
@@ -291,7 +291,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
 
   from.forEach((fromCard: ClassCard | EventPeriod, i: number) => {
     if (result[i]) return;
-    if (fromCard.type !== 'event' && !isPeriod(fromCard)) return;
+    if (fromCard.type !== 'event' && !isScheduledPeriod(fromCard)) return;
 
     let match: ClassCard | EventPeriod | null = null;
 
@@ -304,7 +304,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
         const closest = (to as ClassPeriod[])
           .filter((toCard) => checkCanDrop(fromCard, toCard))
           .map((toCard) => {
-            const element = isPeriod(toCard) ? dropzones.get(toCard) : undefined;
+            const element = isScheduledPeriod(toCard) ? dropzones.get(toCard) : undefined;
             const distance = element ? distanceBetween(fromElement, element) : Infinity;
             return { toCard, distance };
           })
@@ -409,9 +409,9 @@ export const setDragTarget = (
 
       if (cardData.type !== 'event') {
         if ('time' in cardData) {
-          setcurrentClassTime(cardData.time);
+          setCurrentClassTime(cardData.time);
         } else {
-          setcurrentClassTime(undefined);
+          setCurrentClassTime(undefined);
         }
       }
     } else {

@@ -15,7 +15,7 @@ import {
   elevatedScale,
   getDefaultShadow,
   getElevatedShadow,
-  isPeriod,
+  isScheduledPeriod,
   registerCard,
   setDragTarget,
   timeToPosition,
@@ -30,7 +30,7 @@ export const borderWidth = 3;
 
 const classTranslateX = (cardData: ClassCard, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
   // This cardData is for a scheduled class
-  if (isPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
+  if (isScheduledPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
@@ -50,7 +50,7 @@ const classTranslateX = (cardData: ClassCard, days?: string[], clashIndex?: numb
 };
 
 const getHeightFactor = (cardData?: ClassCard | InInventory) =>
-  cardData && isPeriod(cardData) ? cardData.time.end - cardData.time.start : 1;
+  cardData && isScheduledPeriod(cardData) ? cardData.time.end - cardData.time.start : 1;
 
 export const classTranslateY = (cardData: ClassCard, earliestStartTime: number, y?: number) => {
   let result = 0;
@@ -58,7 +58,7 @@ export const classTranslateY = (cardData: ClassCard, earliestStartTime: number, 
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
-  if (isPeriod(cardData)) {
+  if (isScheduledPeriod(cardData)) {
     // This cardData is for a scheduled class
     // The number of rows to offset down
     const offsetRows = timeToPosition(cardData.time.start, earliestStartTime) - 2;
@@ -312,7 +312,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   });
 
   let activityMaxPeriods = 0;
-  if (!isPeriod(cardData)) {
+  if (cardData.type === 'inventory') {
     activityMaxPeriods = Math.max(
       ...cardData.class.course.activities[cardData.class.activity].map((classData) => classData.periods.length)
     );
@@ -353,7 +353,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
                 </b>
               </StyledClassName>
               <StyledClassInfo>
-                {isPeriod(cardData) ? (
+                {cardData.type === 'class' ? (
                   isHideClassInfo ? (
                     <></>
                   ) : (
@@ -369,14 +369,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               <TouchRipple ref={rippleRef} />
             </Grid>
           </Grid>
-          {isPeriod(cardData) && fullscreenVisible && (
+          {cardData.type === 'class' && fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <OpenInFull />
             </ExpandButton>
           )}
         </StyledCourseClassInner>
       </StyledCourseClass>
-      {isPeriod(cardData) && <ExpandedView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
+      {cardData.type === 'class' && <ExpandedView cardData={cardData} popupOpen={popupOpen} handleClose={handleClose} />}
     </>
   );
 };

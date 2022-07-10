@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassPeriod, ClassTime, CourseCode } from '../../interfaces/Periods';
 import { DroppedClassesProps } from '../../interfaces/PropTypes';
-import { ClassCard, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
+import { ClassCard, morphCards, transitionTime } from '../../utils/Drag';
 import DroppedClass, { transitionName } from './DroppedClass';
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
@@ -226,7 +226,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
         key={key}
         cardData={cardData}
         color={assignedColors[cardData.class.course.code]}
-        y={!isPeriod(cardData) ? inventoryCards.current.indexOf(cardData) : undefined}
+        y={cardData.type === 'inventory' ? inventoryCards.current.indexOf(cardData) : undefined}
         earliestStartTime={earliestStartTime}
         cardWidth={cardWidth as number}
         clashIndex={clashIndex as number}

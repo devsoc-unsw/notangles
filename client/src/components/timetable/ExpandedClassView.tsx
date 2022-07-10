@@ -18,7 +18,7 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
-import { isPeriod } from '../../utils/Drag';
+import { isScheduledPeriod } from '../../utils/Drag';
 
 const StyledDialogTitle = styled(DialogTitle)`
   padding: 8px 12px 8px 24px;
@@ -115,7 +115,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
-    if (!isPeriod(cardData)) return;
+    if (!isScheduledPeriod(cardData)) return;
 
     setCurrentPeriod(cardData);
     duplicateClassData.current = getDuplicateClassData(cardData); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
@@ -129,7 +129,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ cardData, popupOp
     setSelectedIndex(e.target.value as number);
     const newPeriod =
       duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
-    if (isPeriod(newPeriod)) setCurrentPeriod(newPeriod);
+    if (isScheduledPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
 
   return (
