@@ -4,7 +4,15 @@ import { Redo, Restore, Undo } from '@mui/icons-material';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, InInventory, CourseData, SelectedClasses, CreatedEvents, EventTime } from '../../interfaces/Periods';
+import {
+  Activity,
+  ClassData,
+  InInventory,
+  CourseData,
+  SelectedClasses,
+  CreatedEvents,
+  EventTime,
+} from '../../interfaces/Periods';
 
 interface Action {
   courses: CourseData[];

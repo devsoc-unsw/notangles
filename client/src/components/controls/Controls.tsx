@@ -9,8 +9,6 @@ import History from './History';
 import { CourseContext } from '../../context/CourseContext';
 import { ControlsProps } from '../../interfaces/PropTypes';
 
-
-
 const SelectWrapper = styled(Box)`
   display: flex;
   flex-direction: row;
@@ -37,7 +35,6 @@ const HistoryWrapper = styled(Box)`
 `;
 
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>

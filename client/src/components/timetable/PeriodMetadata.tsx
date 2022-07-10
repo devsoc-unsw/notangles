@@ -28,19 +28,17 @@ const StyledCapacityIndicator = styled('span', {
 }>`
   text-overflow: ellipsis;
   margin: 0;
-  font-weight: ${({ classStatus }) => (classStatus !== "Open" ? 'bolder' : undefined)};
+  font-weight: ${({ classStatus }) => (classStatus !== 'Open' ? 'bolder' : undefined)};
 `;
 
 const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
-
   const classStatus = period.class.status;
 
   return (
     <>
       <StyledCapacityIndicator classStatus={classStatus}>
-        {classStatus !== "Open" ? <StyledWarningIcon /> : <StyledPeopleIcon />}
-        {classStatus === "On Hold" ? "On Hold " : `${period.class.enrolments}/${period.class.capacity} ` }
-
+        {classStatus !== 'Open' ? <StyledWarningIcon /> : <StyledPeopleIcon />}
+        {classStatus === 'On Hold' ? 'On Hold ' : `${period.class.enrolments}/${period.class.capacity} `}
       </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
       <StyledLocationIcon />

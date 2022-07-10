@@ -13,7 +13,7 @@ export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : c
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-}) <{
+})<{
   x: number;
   y: number;
   yTo?: number;
@@ -54,7 +54,7 @@ const InventoryCell = styled(DayCell)`
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-}) <{ is12HourMode: boolean }>`
+})<{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -101,7 +101,8 @@ export const TimetableLayout: React.FC = () => {
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
   const hoursRange = [
     Math.min(earliestStartTime, earliestClassStartTime, defaultStartTime),
-    Math.max(latestEndTime, latestClassFinishTime, defaultEndTime) - 1];
+    Math.max(latestEndTime, latestClassFinishTime, defaultEndTime) - 1,
+  ];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (
@@ -135,8 +136,7 @@ export const TimetableLayout: React.FC = () => {
     ))
   );
 
-  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2}
-    yTo={-1} isEndX isEndY />);
+  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
 
   return (
     <>
