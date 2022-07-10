@@ -31,7 +31,7 @@ import {
   CreatedEvents,
 } from './interfaces/Periods';
 import { useDrag } from './utils/Drag';
-import { dropzoneRange } from './utils/Drag';
+import { setDropzoneRange } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
@@ -130,7 +130,7 @@ const App: React.FC = () => {
     });
   };
 
-  dropzoneRange(days.length, earliestStartTime, latestEndTime);
+  setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   useDrag(handleSelectClass, handleRemoveClass);
 

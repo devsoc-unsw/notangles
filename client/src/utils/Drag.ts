@@ -32,7 +32,7 @@ let numDays: number;
 let latestEndTime: number;
 let earliestStartTime: number;
 
-export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEndTimeHandler: number) => {
+export const setDropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEndTimeHandler: number) => {
   numDays = numDaysHandler;
   earliestStartTime = earliestStartTimeHandler;
   latestEndTime = latestEndTimeHandler;
