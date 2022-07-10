@@ -1,11 +1,8 @@
-import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import {
   Box,
   Button,
   Dialog,
-  DialogContent,
-  DialogTitle,
   Grid,
   IconButton,
   ListItem,
@@ -19,29 +16,14 @@ import {
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Color, ColorPicker, ColorValue } from 'mui-color';
+import React, { useContext, useState } from 'react';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { DropdownOptionProps, ExpandedEventViewProps } from '../../interfaces/PropTypes';
+import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
-
-const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 12px 8px 24px;
-`;
-
-const StyledTitleContainer = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding-bottom: 10px;
-`;
-
-const StyledDialogContent = styled(DialogContent)`
-  padding-bottom: 20px;
-`;
+import { StyledTitleContainer, StyledDialogContent, StyledDialogTitle } from './shared_styles/ExpandedViewStyles';
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;
@@ -125,19 +107,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newColor, setNewColor] = useState<ColorValue>(color as Color);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-
-  const to24Hour = (n: number) => {
-    let result = `${String((n / 1) >> 0)}:`;
-    if ((n % 1) * 60) {
-      if ((n % 1) * 60 < 10) {
-        result += '0';
-      }
-      result += `${String(((n % 1) * 60) >> 0)}`;
-    } else {
-      result += '00';
-    }
-    return result;
-  };
 
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);

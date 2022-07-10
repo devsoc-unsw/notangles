@@ -1,58 +1,22 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography,
-} from '@mui/material';
+import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
-import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Periods';
+import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
-
-const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 12px 8px 24px;
-`;
-
-const StyledTitleContainer = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding-bottom: 20px;
-`;
-
-const StyledDialogContent = styled(DialogContent)`
-  padding-bottom: 20px;
-`;
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from './shared_styles/ExpandedViewStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
-const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${(n % 1) * 60 ? String(((n % 1) * 60) >> 0) : '00'}`;
-
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
 };
-
-interface DuplicateClassData {
-  duplicateClasses: ClassData[]; // other classes of the same course running at the same time
-  sectionsAndLocations: Array<[Section, Location]>; // wherein sectionsAndLocations[i] is a tuple of the Section (i.e. the class' "code") and Location for duplicateClasses[i]
-  periodIndex: number; // the relevant index (as classes have multiple periods, i.e. Tut-Labs)
-}
 
 const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {
   return (
