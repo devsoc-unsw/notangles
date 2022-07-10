@@ -25,7 +25,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Periods';
+import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
@@ -110,12 +110,6 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
     </ListItem>
   );
 };
-
-interface PeriodInfo {
-  periodsPerClass: number; // i.e. periods.length
-  periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
-  durations: Array<number>; // where the ith period has duration[i] in hours
-}
 
 type ClassMode = 'hybrid' | 'in person' | 'online';
 

@@ -1,24 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { IconButton, Tooltip } from '@mui/material';
 import { Redo, Restore, Undo } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import {
-  Activity,
-  ClassData,
-  InInventory,
-  CourseData,
-  SelectedClasses,
-  CreatedEvents,
-  EventTime,
-} from '../../interfaces/Periods';
-
-interface Action {
-  courses: CourseData[];
-  classes: SelectedClasses;
-  events: CreatedEvents;
-}
+import { Action, Activity, ClassData, CreatedEvents, EventTime, InInventory, SelectedClasses } from '../../interfaces/Periods';
 
 type Actions = Action[];
 
