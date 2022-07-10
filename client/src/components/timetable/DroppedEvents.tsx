@@ -2,13 +2,12 @@ import { LocationOn, OpenInFull } from '@mui/icons-material';
 import { Button, Card, Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
+import { Color } from 'mui-color';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod } from '../../interfaces/Course';
-import { Color } from 'mui-color';
-import { defaultTransition, timeToPosition } from '../../utils/Drag';
-import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
+import { EventPeriod } from '../../interfaces/Periods';
+import { defaultTransition, registerCard, setDragTarget, timeToPosition, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
 
@@ -111,8 +110,6 @@ const StyledEvent = styled('div', {
   shouldForwardProp: (prop) => !['eventPeriod', 'isSquareEdges', 'earliestStartTime'].includes(prop.toString()), // add earliestStartTime to this list
 })<{
   eventPeriod: EventPeriod;
-  // days: string[];
-  // y?: number;
   earliestStartTime: number;
   isSquareEdges: boolean;
 }>`

@@ -21,9 +21,9 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { Color, ColorPicker, ColorValue } from 'mui-color';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
-import { EventTime } from '../../interfaces/Course';
+import { EventTime } from '../../interfaces/Periods';
 import { DropdownOptionProps, ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { useEventDrag } from '../../utils/Drag_v2';
+import { useEventDrag } from '../../utils/Drag';
 
 const StyledDialogTitle = styled(DialogTitle)`
   padding: 8px 12px 8px 24px;
@@ -171,6 +171,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setCreatedEvents({
       ...createdEvents,
       [id]: {
+        type: 'event',
         event: {
           id: id,
           name: newName,

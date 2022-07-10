@@ -3,7 +3,7 @@ import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 import { styled } from '@mui/system';
 
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod, InInventory } from '../../interfaces/Course';
+import { ClassPeriod, InInventory } from '../../interfaces/Periods';
 import { DropzoneProps } from '../../interfaces/PropTypes';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { classTranslateY, getClassHeight } from './DroppedClass';

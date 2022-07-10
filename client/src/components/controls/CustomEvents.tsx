@@ -16,7 +16,7 @@ import {
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod } from '../../interfaces/Course';
+import { EventPeriod } from '../../interfaces/Periods';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
 import { AppContext } from '../../context/AppContext';
 import { ColorPicker, ColorValue } from 'mui-color';
@@ -154,6 +154,7 @@ const CustomEvent = ({}) => {
     }
 
     const newEvent: EventPeriod = {
+      type: 'event',
       event: {
         id: uuid,
         name: eventName,

@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from 'react';
-import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Course';
+import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
 export interface ICourseContext {

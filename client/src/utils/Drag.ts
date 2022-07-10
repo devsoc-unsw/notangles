@@ -1,5 +1,5 @@
 import { contentPadding, lightTheme } from '../constants/theme';
-import { ClassData, ClassPeriod, ClassTime, EventData, InInventory, InventoryPeriod } from '../interfaces/Course';
+import { ClassData, ClassPeriod, ClassTime, EventPeriod, EventTime, InInventory, InventoryPeriod } from '../interfaces/Periods';
 import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
@@ -15,17 +15,28 @@ export const getElevatedShadow = (_: boolean) => 24;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
-export const isPeriod = (data: ClassCard | null): data is ClassPeriod => data !== null && (data as ClassPeriod).time !== undefined;
+export const isPeriod = (data: ClassCard | null): data is ClassPeriod =>
+  data !== null && (data as ClassPeriod).time !== undefined;
 
-let dragTarget: ClassCard | null = null;
+let dragTarget: ClassCard | EventPeriod | null = null;
+let dropTarget: ClassCard | EventPeriod | null = null;
 let dragSource: ClassCard | null = null;
-let dropTarget: ClassCard | null = null;
 let dragElement: HTMLElement | null = null;
 let inventoryElement: HTMLElement | null = null;
 let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
+
+let numDays: number;
+let latestEndTime: number;
+let earliestStartTime: number;
+
+export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEndTimeHandler: number) => {
+  numDays = numDaysHandler;
+  earliestStartTime = earliestStartTimeHandler;
+  latestEndTime = latestEndTimeHandler;
+};
 
 const getInventoryPeriod = (cardData: ClassCard): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
 
@@ -82,10 +93,13 @@ const distanceBetween = (e1: Element, e2: Element) => {
 };
 
 const dropzones = new Map<ClassPeriod | InInventory, HTMLElement>();
-const cards = new Map<ClassCard, HTMLElement>();
+const classCards = new Map<ClassCard, HTMLElement>();
+const eventCards = new Map<EventPeriod, HTMLElement>();
 
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
+    if (dropTarget?.type === 'event') return;
+
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
     const isDropTarget =
@@ -108,14 +122,19 @@ const updateDropzones = () => {
   });
 };
 
-const getIsElevated = (cardData: ClassCard) =>
-  dragTarget !== null &&
-  (cardData === dragTarget ||
-    (isPeriod(cardData) &&
+const getIsElevated = (cardData: ClassCard | EventPeriod) => {
+  if (cardData.type !== 'event' && dragTarget?.type !== 'event') {
+    const isMatchingClasses =
+      isPeriod(cardData) &&
       isPeriod(dragTarget) &&
       cardData.class.course.code === dragTarget.class.course.code &&
-      cardData.class.activity === dragTarget.class.activity));
+      cardData.class.activity === dragTarget.class.activity;
 
+    return dragTarget !== null && (cardData === dragTarget || isMatchingClasses);
+  } else {
+    return dragTarget !== null && cardData === dragTarget;
+  }
+};
 const initialZIndex = 100;
 const initialElevatedZIndex = 750;
 const elevatedZIndexOffset = initialElevatedZIndex - initialZIndex;
@@ -123,7 +142,7 @@ let zIndex = initialZIndex;
 
 const getElevatedZIndex = () => String(zIndex++ + elevatedZIndexOffset);
 
-const updateCards = () => {
+const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
 
@@ -159,25 +178,37 @@ export const unregisterDropzone = (classPeriod: ClassPeriod | InInventory, isInv
 
 let updateTimeout: number;
 
-export const registerCard = (data: ClassCard, element: HTMLElement) => {
-  cards.set(data, element);
+export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
+  data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
+
   // delays update until consecutive `registerCard` calls have concluded
+  const cards = data.type === 'event' ? eventCards : classCards;
   clearTimeout(updateTimeout);
-  updateTimeout = window.setTimeout(() => updateCards(), 0);
+  updateTimeout = window.setTimeout(() => updateCards(cards), 0);
 };
 
-export const unregisterCard = (data: ClassCard, element: HTMLElement) => {
-  if (cards.get(data) === element) cards.delete(data);
+export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
+  if (data.type === 'event') {
+    if (eventCards.get(data) === element) eventCards.delete(data);
+  } else {
+    if (classCards.get(data) === element) classCards.delete(data);
+  }
 };
 
 type ClassHandler = (classData: ClassData) => void;
+type EventTimetHandler = (eventTime: EventTime, recordKey: string) => void;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
+let updateEventTime: EventTimetHandler = () => {};
 
 export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler) => {
   selectClass = selectHandler;
   removeClass = removeHandler;
+};
+
+export const useEventDrag = (eventTimetHandler: EventTimetHandler) => {
+  updateEventTime = eventTimetHandler;
 };
 
 const updateDelay = 30;
@@ -194,11 +225,13 @@ const updateDropTarget = (now?: boolean) => {
 
   lastUpdate = Date.now();
 
+  if (dragTarget.type === 'event') return;
+
   const dragRect = dragElement.getBoundingClientRect();
 
   // dropzone with greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
-    .filter(([classPeriod]) => dragTarget && checkCanDrop(dragTarget, classPeriod))
+    .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
@@ -214,6 +247,7 @@ const updateDropTarget = (now?: boolean) => {
       classPeriod?: ClassPeriod | InInventory;
       area: number;
     });
+  1;
 
   const { classPeriod, area } = bestMatch;
   const result = classPeriod !== undefined && area > 0 ? classPeriod : dragSource;
@@ -243,11 +277,11 @@ const updateDropTarget = (now?: boolean) => {
   }
 };
 
-export const morphCards = (a: ClassCard[], b: ClassCard[]) => {
+export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | EventPeriod[]) => {
   const from = [...a];
   let to = [...b];
 
-  const result: (ClassCard | null)[] = Array(from.length).fill(null);
+  const result: (ClassCard | EventPeriod | null)[] = Array(from.length).fill(null);
 
   if (dragTarget && dropTarget && dragTarget !== dropTarget && from.includes(dragTarget) && to.includes(dropTarget)) {
     to = to.filter((cardData) => cardData !== dropTarget);
@@ -255,18 +289,19 @@ export const morphCards = (a: ClassCard[], b: ClassCard[]) => {
     dragTarget = dropTarget;
   }
 
-  from.forEach((fromCard: ClassCard, i: number) => {
-    if (result[i] || !isPeriod(fromCard)) return;
+  from.forEach((fromCard: ClassCard | EventPeriod, i: number) => {
+    if (result[i]) return;
+    if (fromCard.type !== 'event' && !isPeriod(fromCard)) return;
 
-    let match: ClassCard | null = null;
+    let match: ClassCard | EventPeriod | null = null;
 
     if (to.includes(fromCard)) {
       match = fromCard;
-    } else {
+    } else if (fromCard.type !== 'event') {
       const fromElement = dropzones.get(fromCard);
 
       if (fromElement) {
-        const closest = to
+        const closest = (to as ClassPeriod[])
           .filter((toCard) => checkCanDrop(fromCard, toCard))
           .map((toCard) => {
             const element = isPeriod(toCard) ? dropzones.get(toCard) : undefined;
@@ -338,9 +373,17 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
-export const setDragTarget = (cardData: ClassCard | null, event?: MouseEvent & TouchEvent) => {
+let eventRecordKey = '';
+
+export const setDragTarget = (
+  cardData: ClassCard | EventPeriod | null,
+  event?: MouseEvent & TouchEvent,
+  evRecordKey?: string
+) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
+
+    if (evRecordKey) eventRecordKey = evRecordKey;
 
     if (cardData && event && event.currentTarget && scrollElement) {
       const element = event.currentTarget as HTMLElement;
@@ -362,22 +405,29 @@ export const setDragTarget = (cardData: ClassCard | null, event?: MouseEvent & T
 
       dragElement = element;
       freezeTransform(element);
-      if ('time' in cardData) {
-        setcurrentClassTime(cardData.time);
-      } else {
-        setcurrentClassTime(undefined);
-      }
       updateDropTarget(true);
+
+      if (cardData.type !== 'event') {
+        if ('time' in cardData) {
+          setcurrentClassTime(cardData.time);
+        } else {
+          setcurrentClassTime(undefined);
+        }
+      }
     } else {
       dragElement = null;
     }
 
     dragTarget = cardData;
-    dragSource = cardData;
     dropTarget = cardData;
+    if (cardData?.type !== 'event') dragSource = cardData;
 
-    updateCards();
-    updateDropzones();
+    if (cardData?.type !== 'event') {
+      updateCards(classCards);
+      updateDropzones();
+    } else {
+      updateCards(eventCards);
+    }
   }
 };
 
@@ -469,6 +519,38 @@ const drop = () => {
     style.transition = defaultTransition;
     style.left = toPx(0);
     style.top = toPx(0);
+
+    if (dragTarget?.type === 'event') {
+      // Snap an event to the nearest grid cell and update its time accordingly
+      const gridChildren = dragElement.parentElement?.parentElement?.children;
+      const dragrect = dragElement.getBoundingClientRect();
+
+      if (gridChildren && dragTarget) {
+        const baserect = gridChildren[1].getBoundingClientRect();
+
+        // x and y displacement of the drag target from the start-point of the grid
+        const displacementx = dragrect.x - baserect.x;
+        const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
+
+        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
+        const [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)]; // grid coords of drag target when released
+
+        const eventLength = dragTarget.time.end - dragTarget.time.start;
+
+        // ensure we released inside the grid
+        if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
+          updateEventTime(
+            {
+              day: 1 + colIndex,
+              start: rowIndex + earliestStartTime,
+              end: eventLength + rowIndex + earliestStartTime,
+            } as EventTime,
+            eventRecordKey
+          );
+        }
+      }
+    }
+
     document.documentElement.style.cursor = 'default';
     unfreezeTransform(dragElement);
   }

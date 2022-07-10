@@ -16,7 +16,7 @@ import {
 import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
-import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Course';
+import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
 import { isPeriod } from '../../utils/Drag';
 

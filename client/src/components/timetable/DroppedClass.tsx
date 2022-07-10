@@ -5,7 +5,7 @@ import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
-import { ClassData, InInventory } from '../../interfaces/Course';
+import { ClassData, InInventory } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 
 import { borderRadius } from '../../constants/theme';

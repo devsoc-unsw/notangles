@@ -1,10 +1,9 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
-import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassPeriod, ClassTime, CourseCode } from '../../interfaces/Course';
+import { Activity, ClassPeriod, ClassTime, CourseCode } from '../../interfaces/Periods';
 import { DroppedClassesProps } from '../../interfaces/PropTypes';
 import { ClassCard, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
 import DroppedClass, { transitionName } from './DroppedClass';
@@ -58,7 +57,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
       const cardKey = prevCardKeys.get(prevCard);
 
       if (cardKey) {
-        cardKeys.set(morphCard, cardKey);
+        cardKeys.set(morphCard as ClassCard, cardKey);
       }
     }
   });

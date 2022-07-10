@@ -1,7 +1,7 @@
 import { SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
 import { ClassCard } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Course';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
 export interface AppContextProviderProps {
   children: ReactNode;

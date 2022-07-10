@@ -29,9 +29,9 @@ import {
   InInventory,
   SelectedClasses,
   CreatedEvents,
-} from './interfaces/Course';
+} from './interfaces/Periods';
 import { useDrag } from './utils/Drag';
-import { dropzoneRange } from './utils/Drag_v2';
+import { dropzoneRange } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 

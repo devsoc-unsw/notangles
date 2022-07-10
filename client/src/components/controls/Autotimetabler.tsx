@@ -25,7 +25,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Course';
+import { ClassData } from '../../interfaces/Periods';
 import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
 
