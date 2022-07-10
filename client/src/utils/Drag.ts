@@ -8,7 +8,7 @@ export const timetableWidth = 1100;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
-const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
+export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
 export const elevatedScale = 1.1;
 export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3);
 export const getElevatedShadow = (_: boolean) => 24;
@@ -30,15 +30,15 @@ let lastScrollY = 0;
 const getInventoryPeriod = (cardData: CardData): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
-const toPx = (value: number) => `${value}px`;
+export const toPx = (value: number) => `${value}px`;
 
-const setShadow = (element: HTMLElement, elevated: boolean) => {
+export const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
   const isSquareEdges = storage.get('isSquareEdges');
   element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };
 
-const moveElement = (element: HTMLElement, dx: number, dy: number) => {
+export const moveElement = (element: HTMLElement, dx: number, dy: number) => {
   element.style.left = toPx(fromPx(element.style.left) + dx);
   element.style.top = toPx(fromPx(element.style.top) + dy);
 };
@@ -53,11 +53,11 @@ export const checkCanDrop = (a: CardData | null, b: CardData | null) =>
     a.class.activity === b.class.activity &&
     (!isPeriod(a) || !isPeriod(b) || a.time.end - a.time.start === b.time.end - b.time.start));
 
-const freezeTransform = (element: HTMLElement) => {
+export const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
 };
 
-const unfreezeTransform = (element: HTMLElement) => {
+export const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 

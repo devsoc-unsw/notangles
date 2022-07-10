@@ -1,50 +1,25 @@
-import { contentPadding, lightTheme } from '../constants/theme';
-import { ClassData, ClassPeriod, ClassTime, EventTime, InInventory, InventoryPeriod } from '../interfaces/Course';
-import storage from './storage';
-import { EventData } from '../interfaces/Course';
-import { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-
-export const timetableWidth = 1100;
-export const transitionTime = 350;
-const heightTransitionTime = 150;
-export const defaultTransition = `all ${transitionTime}ms`;
-const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
-export const elevatedScale = 1.1;
-export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3);
-export const getElevatedShadow = (_: boolean) => 24;
-// intersection area with inventory required to drop
-const inventoryDropIntersection = 0.5;
-
-// export const isPeriod = (data: EventData | null): data is ClassPeriod => data !== null
+import { contentPadding } from '../constants/theme';
+import { EventData, EventTime } from '../interfaces/Course';
+import {
+  defaultTransition,
+  elevatedScale,
+  freezeTransform,
+  moveElement,
+  moveTransition,
+  setShadow,
+  timetableWidth,
+  toPx,
+  unfreezeTransform,
+} from './Drag';
 
 let dragTarget: EventData | null = null;
 let dragSource: EventData | null = null;
 let dropTarget: EventData | null = null;
 let dragElement: HTMLElement | null = null;
-let inventoryElement: HTMLElement | null = null;
 let lastX = 0;
 let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
-
-const fromPx = (value: string) => Number(value.split('px')[0]);
-const toPx = (value: number) => `${value}px`;
-
-const setShadow = (element: HTMLElement, elevated: boolean) => {
-  // shadows are the same for light and dark theme
-  const isSquareEdges = storage.get('isSquareEdges');
-  element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
-};
-
-const moveElement = (element: HTMLElement, dx: number, dy: number) => {
-  element.style.left = toPx(fromPx(element.style.left) + dx);
-  element.style.top = toPx(fromPx(element.style.top) + dy);
-};
-
-export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
-
-export const checkCanDrop = (a: EventData | null, b: EventData | null) => a === null || b === null || a === b;
 
 let numDays: number;
 let latestEndTime: number;
@@ -54,14 +29,6 @@ export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: 
   numDays = numDaysHandler;
   earliestStartTime = earliestStartTimeHandler;
   latestEndTime = latestEndTimeHandler;
-};
-
-const freezeTransform = (element: HTMLElement) => {
-  element.style.transform = getComputedStyle(element).getPropertyValue('transform');
-};
-
-const unfreezeTransform = (element: HTMLElement) => {
-  element.style.removeProperty('transform');
 };
 
 const cards = new Map<EventData, HTMLElement>();
@@ -149,29 +116,7 @@ export const morphCards = (a: EventData[], b: EventData[]) => {
     if (to.includes(fromCard)) {
       match = fromCard;
     } else {
-      // const fromElement = dropzones.get(fromCard);
       return;
-      // if (fromElement) {
-      //   const closest = to
-      //     .filter((toCard) => checkCanDrop(fromCard, toCard))
-      //     .map((toCard) => {
-      //       const element = isPeriod(toCard) ? dropzones.get(toCard) : undefined;
-      //       const distance = element ? distanceBetween(fromElement, element) : Infinity;
-      //       return { toCard, distance };
-      //     })
-      //     .reduce((min, current) => (current.distance < min.distance ? current : min), {
-      //       toCard: undefined,
-      //       distance: Infinity,
-      //     } as {
-      //       toCard?: EventData;
-      //       distance: number;
-      //     });
-
-      //   const { toCard } = closest;
-      //   match = toCard || null;
-      // } else {
-      //   return;
-      // }
     }
 
     // remove from `to` array if match was found
