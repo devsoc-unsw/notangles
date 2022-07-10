@@ -10,7 +10,7 @@ import { DroppedClassProps } from '../../interfaces/PropTypes';
 
 import { borderRadius } from '../../constants/theme';
 import {
-  CardData,
+  ClassCard,
   defaultTransition,
   elevatedScale,
   getDefaultShadow,
@@ -28,7 +28,7 @@ import { rowHeight } from './TimetableLayout';
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
 export const borderWidth = 3;
 
-const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
+const classTranslateX = (cardData: ClassCard, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
   // This cardData is for a scheduled class
   if (isPeriod(cardData) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
@@ -49,10 +49,10 @@ const classTranslateX = (cardData: CardData, days?: string[], clashIndex?: numbe
   return 0;
 };
 
-const getHeightFactor = (cardData?: CardData | InInventory) =>
+const getHeightFactor = (cardData?: ClassCard | InInventory) =>
   cardData && isPeriod(cardData) ? cardData.time.end - cardData.time.start : 1;
 
-export const classTranslateY = (cardData: CardData, earliestStartTime: number, y?: number) => {
+export const classTranslateY = (cardData: ClassCard, earliestStartTime: number, y?: number) => {
   let result = 0;
 
   // The height of the card in hours relative to the default height of one (hour)
@@ -75,7 +75,7 @@ export const classTranslateY = (cardData: CardData, earliestStartTime: number, y
 };
 
 export const classTransformStyle = (
-  cardData: CardData,
+  cardData: ClassCard,
   earliestStartTime: number,
   days?: string[],
   y?: number,
@@ -89,7 +89,7 @@ export const classTransformStyle = (
     y
   )})`;
 
-export const getClassHeight = (cardData?: CardData | InInventory) => {
+export const getClassHeight = (cardData?: ClassCard | InInventory) => {
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(cardData);
 
@@ -120,7 +120,7 @@ const StyledCourseClass = styled('div', {
       prop.toString()
     ),
 })<{
-  cardData: CardData;
+  cardData: ClassCard;
   days: string[];
   y?: number;
   earliestStartTime: number;

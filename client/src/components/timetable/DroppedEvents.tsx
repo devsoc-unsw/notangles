@@ -1,59 +1,47 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
-import { LocationOn, OpenInFull, PeopleAlt, Warning } from '@mui/icons-material';
-import { Button, Card, Grid, ThemeProvider } from '@mui/material';
+import { LocationOn, OpenInFull } from '@mui/icons-material';
+import { Button, Card, Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
-import { CreatedEvents } from '../../interfaces/Course';
-import { defaultStartTime } from '../../constants/timetable';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, CourseCode, EventData, InInventory } from '../../interfaces/Course';
-// import { DroppedEventesProps, DroppedEventProps, PeriodMetadataProps } from '../../interfaces/PropTypes';
-import {
-  timeToPosition,
-  defaultTransition,
-  elevatedScale,
-  getElevatedShadow,
-  getDefaultShadow,
-  transitionTime,
-} from '../../utils/Drag';
+import { EventPeriod } from '../../interfaces/Course';
+import { Color } from 'mui-color';
+import { defaultTransition, timeToPosition } from '../../utils/Drag';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
 import ExpandedEventView from './ExpandedEventView';
 import { getClassMargin, rowHeight } from './TimetableLayout';
-import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag_v2';
-import { Color, ColorObject } from 'mui-color';
 
 export const inventoryMargin = 10;
 
-const classTranslateX = (eventData: EventData, days?: string[]) => {
-  return `${(eventData.time.day - 1) * 100}%`;
+const classTranslateX = (eventPeriod: EventPeriod, days?: string[]) => {
+  return `${(eventPeriod.time.day - 1) * 100}%`;
 };
 
-const getHeightFactor = (eventData: EventData) => eventData.time.end - eventData.time.start;
+const getHeightFactor = (eventPeriod: EventPeriod) => eventPeriod.time.end - eventPeriod.time.start;
 
-export const classTranslateY = (eventData: EventData, earliestStartTime: number) => {
+export const classTranslateY = (eventPeriod: EventPeriod, earliestStartTime: number) => {
   let result = 0;
   // height compared to standard row height
-  const heightFactor = getHeightFactor(eventData);
+  const heightFactor = getHeightFactor(eventPeriod);
 
   // number of rows to offset down
-  const offsetRows = timeToPosition(eventData.time.start, earliestStartTime) - 2;
+  const offsetRows = timeToPosition(eventPeriod.time.start, earliestStartTime) - 2;
   // calculate translate percentage (relative to height)
   result = offsetRows / heightFactor;
 
   return `calc(${result * 100}% + ${result / devicePixelRatio}px)`;
 };
 
-export const classHeight = (eventData: EventData) => {
+export const classHeight = (eventPeriod: EventPeriod) => {
   // height compared to standard row height
-  const heightFactor = getHeightFactor(eventData);
+  const heightFactor = getHeightFactor(eventPeriod);
 
   return `${rowHeight * heightFactor + (heightFactor - 1) / devicePixelRatio}px`;
 };
 
-export const classTransformStyle = (eventData: EventData, earliestStartTime: number, days?: string[], y?: number) =>
-  `translate(${classTranslateX(eventData, days)}, ${classTranslateY(eventData, earliestStartTime)})`;
+export const classTransformStyle = (eventPeriod: EventPeriod, earliestStartTime: number, days?: string[], y?: number) =>
+  `translate(${classTranslateX(eventPeriod, days)}, ${classTranslateY(eventPeriod, earliestStartTime)})`;
 
 const transitionName = 'class';
 
@@ -81,7 +69,7 @@ const StyledLocationIcon = styled(LocationOn)`
 
 const StyledEventInner = styled(Card, {
   shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges'].includes(prop.toString()),
-}) <{
+})<{
   hasClash: boolean;
   isSquareEdges: boolean;
 }>`
@@ -120,20 +108,24 @@ const StyledClassInfo = styled(StyledClassName)`
 `;
 
 const StyledEvent = styled('div', {
-  shouldForwardProp: (prop) => !['eventData', 'isSquareEdges', 'earliestStartTime'].includes(prop.toString()), // add earliestStartTime to this list
-}) < {
-  eventData: EventData;
+  shouldForwardProp: (prop) => !['eventPeriod', 'isSquareEdges', 'earliestStartTime'].includes(prop.toString()), // add earliestStartTime to this list
+})<{
+  eventPeriod: EventPeriod;
   // days: string[];
   // y?: number;
   earliestStartTime: number;
   isSquareEdges: boolean;
-}> `
+}>`
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ eventData, earliestStartTime }) => `translate(${(eventData.time.day - 1) * 100}%, ${classTranslateY(eventData, earliestStartTime)})`}; // change 9 to earliestStartTime
+  transform: ${({ eventPeriod, earliestStartTime }) =>
+    `translate(${(eventPeriod.time.day - 1) * 100}%, ${classTranslateY(
+      eventPeriod,
+      earliestStartTime
+    )})`}; // change 9 to earliestStartTime
   width: calc(100% + ${1 / devicePixelRatio}px);
-  height: ${({ eventData }) => classHeight(eventData)};
+  height: ${({ eventPeriod }) => classHeight(eventPeriod)};
   box-sizing: border-box;
   z-index: 100;
   cursor: grab;
@@ -142,11 +134,11 @@ const StyledEvent = styled('div', {
   padding-bottom: ${({ isSquareEdges }) => getClassMargin(isSquareEdges) + (isSquareEdges ? 0 : 1 / devicePixelRatio)}px;
 `;
 
-const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ eventData, recordKey }) => {
+const DroppedEvent: React.FC<{ eventPeriod: EventPeriod; recordKey: string }> = ({ eventPeriod, recordKey }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, setIsDrag, earliestStartTime } = useContext(AppContext);
+  const { setInfoVisibility, isSquareEdges, setIsDrag, earliestStartTime } = useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -180,7 +172,7 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventData, eventCopy, recordKey);
+      setDragTarget(eventPeriod, eventCopy, recordKey);
       setInfoVisibility(false);
     };
 
@@ -232,12 +224,12 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(eventData, elementCurrent);
+      registerCard(eventPeriod, elementCurrent);
     }
 
     return () => {
       if (elementCurrent) {
-        unregisterCard(eventData, elementCurrent);
+        unregisterCard(eventPeriod, elementCurrent);
       }
     };
   });
@@ -245,9 +237,9 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
   return (
     <>
       <StyledEvent
-        eventData={eventData}
+        eventPeriod={eventPeriod}
         isSquareEdges={isSquareEdges}
-        earliestStartTime={earliestStartTime} // <-- uncomment me after DroppedEvent gets access to earliestStartTime*/
+        earliestStartTime={earliestStartTime}
         ref={element}
         onMouseDown={onDown}
         onMouseOver={() => {
@@ -259,18 +251,18 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
       >
         <StyledEventInner
           hasClash={false}
-          sx={(eventData.color as Color)?.css ?? { backgroundColor: eventData.color }}
           isSquareEdges={isSquareEdges}
+          sx={(eventPeriod.event.color as Color)?.css ?? { backgroundColor: eventPeriod.event.color }}
         >
           <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               {/*TODO: tweak this number*/}
               <StyledEventName>
-                <b>{eventData.name}</b>
+                <b>{eventPeriod.event.name}</b>
               </StyledEventName>
               <StyledClassInfo>
                 <StyledLocationIcon />
-                {eventData.location}
+                {eventPeriod.event.location}
               </StyledClassInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
@@ -282,19 +274,19 @@ const DroppedEvent: React.FC<{ eventData: EventData; recordKey: string }> = ({ e
           )}
         </StyledEventInner>
       </StyledEvent>
-      <ExpandedEventView popupOpen={popupOpen} eventData={eventData} handleClose={handleClose} />
+      <ExpandedEventView popupOpen={popupOpen} eventPeriod={eventPeriod} handleClose={handleClose} />
     </>
   );
 };
 
-const DroppedEvents: React.FC<{}> = ({ }) => {
+const DroppedEvents: React.FC<{}> = ({}) => {
   const { createdEvents } = useContext(CourseContext);
   return (
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
     <div style={{ display: 'contents' }}>
       {Object.entries(createdEvents).map(([a, ev]) => (
-        <DroppedEvent recordKey={a} key={a} eventData={ev} />
+        <DroppedEvent recordKey={a} key={a} eventPeriod={ev} />
       ))}
     </div>
   );

@@ -1,8 +1,8 @@
 import { contentPadding, lightTheme } from '../constants/theme';
-import { ClassData, ClassPeriod, ClassTime, InInventory, InventoryPeriod } from '../interfaces/Course';
+import { ClassData, ClassPeriod, ClassTime, EventData, InInventory, InventoryPeriod } from '../interfaces/Course';
 import storage from './storage';
 
-export type CardData = ClassPeriod | InventoryPeriod;
+export type ClassCard = ClassPeriod | InventoryPeriod;
 
 export const timetableWidth = 1100;
 export const transitionTime = 350;
@@ -15,11 +15,11 @@ export const getElevatedShadow = (_: boolean) => 24;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
-export const isPeriod = (data: CardData | null): data is ClassPeriod => data !== null && (data as ClassPeriod).time !== undefined;
+export const isPeriod = (data: ClassCard | null): data is ClassPeriod => data !== null && (data as ClassPeriod).time !== undefined;
 
-let dragTarget: CardData | null = null;
-let dragSource: CardData | null = null;
-let dropTarget: CardData | null = null;
+let dragTarget: ClassCard | null = null;
+let dragSource: ClassCard | null = null;
+let dropTarget: ClassCard | null = null;
 let dragElement: HTMLElement | null = null;
 let inventoryElement: HTMLElement | null = null;
 let lastX = 0;
@@ -27,7 +27,7 @@ let lastY = 0;
 let lastScrollX = 0;
 let lastScrollY = 0;
 
-const getInventoryPeriod = (cardData: CardData): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
+const getInventoryPeriod = (cardData: ClassCard): InventoryPeriod => cardData.class.course.inventoryData[cardData.class.activity];
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 export const toPx = (value: number) => `${value}px`;
@@ -45,7 +45,7 @@ export const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
 
-export const checkCanDrop = (a: CardData | null, b: CardData | null) =>
+export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) =>
   a === null ||
   b === null ||
   a === b ||
@@ -82,7 +82,7 @@ const distanceBetween = (e1: Element, e2: Element) => {
 };
 
 const dropzones = new Map<ClassPeriod | InInventory, HTMLElement>();
-const cards = new Map<CardData, HTMLElement>();
+const cards = new Map<ClassCard, HTMLElement>();
 
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
@@ -108,7 +108,7 @@ const updateDropzones = () => {
   });
 };
 
-const getIsElevated = (cardData: CardData) =>
+const getIsElevated = (cardData: ClassCard) =>
   dragTarget !== null &&
   (cardData === dragTarget ||
     (isPeriod(cardData) &&
@@ -159,14 +159,14 @@ export const unregisterDropzone = (classPeriod: ClassPeriod | InInventory, isInv
 
 let updateTimeout: number;
 
-export const registerCard = (data: CardData, element: HTMLElement) => {
+export const registerCard = (data: ClassCard, element: HTMLElement) => {
   cards.set(data, element);
   // delays update until consecutive `registerCard` calls have concluded
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => updateCards(), 0);
 };
 
-export const unregisterCard = (data: CardData, element: HTMLElement) => {
+export const unregisterCard = (data: ClassCard, element: HTMLElement) => {
   if (cards.get(data) === element) cards.delete(data);
 };
 
@@ -243,11 +243,11 @@ const updateDropTarget = (now?: boolean) => {
   }
 };
 
-export const morphCards = (a: CardData[], b: CardData[]) => {
+export const morphCards = (a: ClassCard[], b: ClassCard[]) => {
   const from = [...a];
   let to = [...b];
 
-  const result: (CardData | null)[] = Array(from.length).fill(null);
+  const result: (ClassCard | null)[] = Array(from.length).fill(null);
 
   if (dragTarget && dropTarget && dragTarget !== dropTarget && from.includes(dragTarget) && to.includes(dropTarget)) {
     to = to.filter((cardData) => cardData !== dropTarget);
@@ -255,10 +255,10 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
     dragTarget = dropTarget;
   }
 
-  from.forEach((fromCard: CardData, i: number) => {
+  from.forEach((fromCard: ClassCard, i: number) => {
     if (result[i] || !isPeriod(fromCard)) return;
 
-    let match: CardData | null = null;
+    let match: ClassCard | null = null;
 
     if (to.includes(fromCard)) {
       match = fromCard;
@@ -277,7 +277,7 @@ export const morphCards = (a: CardData[], b: CardData[]) => {
             toCard: undefined,
             distance: Infinity,
           } as {
-            toCard?: CardData;
+            toCard?: ClassCard;
             distance: number;
           });
 
@@ -338,7 +338,7 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
-export const setDragTarget = (cardData: CardData | null, event?: MouseEvent & TouchEvent) => {
+export const setDragTarget = (cardData: ClassCard | null, event?: MouseEvent & TouchEvent) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
 

@@ -16,7 +16,7 @@ import {
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { CourseContext } from '../../context/CourseContext';
-import { EventData } from '../../interfaces/Course';
+import { EventPeriod } from '../../interfaces/Course';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
 import { AppContext } from '../../context/AppContext';
 import { ColorPicker, ColorValue } from 'mui-color';
@@ -101,7 +101,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({ }) => {
+const CustomEvent = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -127,9 +127,8 @@ const CustomEvent = ({ }) => {
   };
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setErrorVisibility, setAlertMsg,
-    earliestStartTime, setEarliestStartTime,
-    latestEndTime, setLatestEndTime } = useContext(AppContext);
+  const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
+    useContext(AppContext);
 
   //TimePicker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
@@ -154,17 +153,19 @@ const CustomEvent = ({ }) => {
       return;
     }
 
-    const newEvent: EventData = {
-      id: uuid,
-      name: eventName,
+    const newEvent: EventPeriod = {
+      event: {
+        id: uuid,
+        name: eventName,
+        location: location,
+        description: description,
+        color: color,
+      },
       time: {
         day: weekdays.indexOf(days.toString()) + 1,
         start: startTime.getHours() + startTime.getMinutes() / 60,
         end: endTime.getHours() + endTime.getMinutes() / 60,
       },
-      location: location,
-      description: description,
-      color: color,
     };
 
     setCreatedEvents({
@@ -322,7 +323,8 @@ const CustomEvent = ({ }) => {
             </Grid>
           </ListItem>
         </StyledList>
-        <ExecuteButton sx={{ marginTop: 2 }}
+        <ExecuteButton
+          sx={{ marginTop: 2 }}
           variant="contained"
           color="primary"
           disableElevation

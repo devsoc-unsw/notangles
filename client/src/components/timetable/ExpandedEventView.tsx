@@ -1,7 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, Event, LocationOn, Notes } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -13,21 +11,18 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Menu,
-  MenuItem,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-  Typography,
+  Typography
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Color, ColorBox, ColorPicker, ColorValue } from 'mui-color';
-import PaletteIcon from '@mui/icons-material/Palette';
+import { Color, ColorPicker, ColorValue } from 'mui-color';
+import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Course';
-import { DropdownOptionProps } from '../../interfaces/PropTypes';
-import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
+import { DropdownOptionProps, ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { useEventDrag } from '../../utils/Drag_v2';
 
 const StyledDialogTitle = styled(DialogTitle)`
@@ -67,7 +62,6 @@ const StyledDialogButtons = styled(Box)`
   padding-bottom: 5px;
   padding-right: 5px;
 `;
-
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
   optionName,
@@ -114,7 +108,24 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   );
 };
 
-const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupOpen, handleClose }) => {
+const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
+  const { name, location, description, color } = eventPeriod.event;
+  const { day, start, end } = eventPeriod.time;
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
+
+  const [newName, setNewName] = useState<string>(name);
+  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[day - 1]]);
+  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, start));
+  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end));
+  const [newLocation, setNewLocation] = useState<string>(location);
+  const [newDescription, setNewDescription] = useState<string>(description);
+  const [newColor, setNewColor] = useState<ColorValue>(color as Color);
+
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
   const to24Hour = (n: number) => {
     let result = `${String((n / 1) >> 0)}:`;
     if ((n % 1) * 60) {
@@ -127,21 +138,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     }
     return result;
   };
-  const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isChanged, setIsChanged] = useState<boolean>(false);
-  const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
-
-  const [newName, setNewName] = useState<string>(eventData.name);
-  const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[eventData.time.day - 1]]);
-  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.start));
-  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, eventData.time.end));
-  const [newLocation, setNewLocation] = useState<string>(eventData.location);
-  const [newDescription, setNewDescription] = useState<string>(eventData.description);
-  const [newColor, setNewColor] = useState<ColorValue>(eventData.color as Color);
 
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
@@ -172,19 +168,20 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
       end: newEndTime.getHours(),
     };
 
-    updateEventTime(newEventTime, id);
-
     setCreatedEvents({
       ...createdEvents,
       [id]: {
-        ...createdEvents[id],
-        name: newName,
+        event: {
+          id: id,
+          name: newName,
+          location: newLocation,
+          description: newDescription,
+          color: newColor,
+        },
         time: newEventTime,
-        location: newLocation,
-        description: newDescription,
-        color: newColor,
       },
     });
+
     setIsEditing(false);
   };
 
@@ -192,9 +189,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
     handleClose();
     setOpenSaveDialog(false);
     setIsEditing(false);
-    setNewName(eventData.name);
-    setNewLocation(eventData.location);
-    setNewDescription(eventData.description);
+    setNewName(name);
+    setNewLocation(location);
+    setNewDescription(description);
   };
 
   const handleCloseDialog = () => {
@@ -235,28 +232,28 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
           >
             Cancel
           </Button>
-          <Button onClick={() => handleDiscardChangesDialog(eventData.id)}>Discard</Button>
+          <Button onClick={() => handleDiscardChangesDialog(eventPeriod.event.id)}>Discard</Button>
         </StyledDialogButtons>
       </Dialog>
 
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {isEditing ? <></> : <Box sx={{ paddingTop: 1 }}>{eventData.name}</Box>}
+          {isEditing ? <></> : <Box sx={{ paddingTop: 1 }}>{name}</Box>}
 
           <Box width="100%" display="flex" justifyContent="flex-end" alignItems="flex-end">
             {isEditing ? (
-              <IconButton onClick={() => handleUpdateEvent(eventData.id)} disabled={newName === '' || newLocation === ''}>
-                <SaveIcon />
+              <IconButton onClick={() => handleUpdateEvent(eventPeriod.event.id)} disabled={newName === '' || newLocation === ''}>
+                <Save />
               </IconButton>
             ) : (
               <div> </div>
             )}
 
             <IconButton onClick={() => setIsEditing(true)} disabled={isEditing}>
-              <EditIcon />
+              <Edit />
             </IconButton>
 
-            <IconButton onClick={() => handleDeleteEvent(eventData.id)}>
+            <IconButton onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
               <Delete />
             </IconButton>
 
@@ -269,14 +266,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
 
       <StyledDialogContent>
         <Grid container direction="column" spacing={2}>
-
           {isEditing ? (
             <Grid item>
               <ListItem>
                 <ListItemIcon>
                   <Event />
                 </ListItemIcon>
-                <TextField fullWidth={true}
+                <TextField
+                  fullWidth={true}
                   id="outlined-required"
                   required
                   variant="outlined"
@@ -292,9 +289,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
             <></>
           )}
 
-
           <Grid item>
-            {(String(eventData.description).length > 0 || isEditing) && (
+            {(String(description).length > 0 || isEditing) && (
               <Grid item container direction="column" spacing={2}>
                 <Grid item>
                   {isEditing ? (
@@ -303,7 +299,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                         <Notes />
                       </ListItemIcon>
 
-                      <TextField fullWidth={true}
+                      <TextField
+                        fullWidth={true}
                         id="outlined-required"
                         variant="outlined"
                         value={newDescription}
@@ -320,7 +317,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                         <Notes />
                       </Grid>
                       <Grid item>
-                        <Typography> {eventData.description}</Typography>
+                        <Typography> {description}</Typography>
                       </Grid>
                     </Grid>
                   )}
@@ -337,7 +334,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                     <LocationOn />
                   </ListItemIcon>
 
-                  <TextField fullWidth={true}
+                  <TextField
+                    fullWidth={true}
                     id="outlined-required"
                     required
                     variant="outlined"
@@ -355,7 +353,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                   <LocationOn />
                 </Grid>
                 <Grid item>
-                  <Typography> {eventData.location}</Typography>
+                  <Typography> {location}</Typography>
                 </Grid>
               </Grid>
             )}
@@ -405,8 +403,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                   </Grid>
                   <Grid item>
                     <Typography>
-                      {weekdaysLong[eventData.time.day - 1]} {to24Hour(eventData.time.start)} {'\u2013'}{' '}
-                      {to24Hour(eventData.time.end)}
+                      {weekdaysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -421,29 +418,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventData, popupO
                 </ListItem>
               ) : (
                 <> </>
-                // <Grid
-                //   item
-                //   sx={{
-                //     display: 'flex',
-                //     flexDirection: 'row',
-                //     justifyContent: 'flex-end',
-                //     paddingLeft: '10px',
-                //     paddingRight: '10px',
-                //   }}
-                // >
-                //   <Box
-                //     sx={{
-                //       width: 25,
-                //       height: 25,
-                //       borderRadius: '5px',
-                //       ...((eventData.color as Color)?.css ?? { backgroundColor: eventData.color }), // <-- do this to add the color to the css;
-                //     }}
-                //   ></Box>
-                //   <Typography sx={{ paddingLeft: '15px' }}>
-                //     {(eventData.color as Color)?.hex ?? `${eventData.color}`}
-                //     {/* {(eventData.color as Color)?.hex ?? (isHex(eventData.color.toString()) ? '#' : '') + `${eventData.color}`} */}
-                //   </Typography>
-                // </Grid>
               )}
             </Grid>
           </Grid>

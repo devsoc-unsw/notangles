@@ -6,10 +6,10 @@ export type InInventory = null;
 export type Section = string;
 export type Location = string;
 export type EventCode = string;
-export type Status = "Open" | "Full" | "On Hold";
+export type Status = 'Open' | 'Full' | 'On Hold';
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
-export type CreatedEvents = Record<EventCode, EventData>;
+export type CreatedEvents = Record<EventCode, EventPeriod>;
 
 export interface CourseData {
   code: CourseCode;
@@ -34,10 +34,15 @@ export interface ClassData {
 export interface EventData {
   id: string;
   name: string;
-  time: EventTime;
   location: string;
   description: string;
   color: ColorValue;
+}
+
+export interface ClassPeriod {
+  class: ClassData;
+  time: ClassTime;
+  locations: string[];
 }
 
 export interface InventoryPeriod {
@@ -47,21 +52,20 @@ export interface InventoryPeriod {
   };
 }
 
-export interface ClassPeriod {
-  class: ClassData;
-  time: ClassTime;
-  locations: string[];
-}
-
-export interface ClassTime extends EventTime {
-  weeks: number[];
-  weeksString: string;
+export interface EventPeriod {
+  event: EventData;
+  time: EventTime;
 }
 
 export interface EventTime {
   day: number;
   start: number;
   end: number;
+}
+
+export interface ClassTime extends EventTime {
+  weeks: number[];
+  weeksString: string;
 }
 
 export interface AutoData {

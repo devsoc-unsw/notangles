@@ -6,22 +6,22 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassPeriod, ClassTime, CourseCode } from '../../interfaces/Course';
 import { DroppedClassesProps } from '../../interfaces/PropTypes';
-import { CardData, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
+import { ClassCard, isPeriod, morphCards, transitionTime } from '../../utils/Drag';
 import DroppedClass, { transitionName } from './DroppedClass';
 
 const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleSelectClass }) => {
-  const [cardKeys] = useState<Map<CardData, number>>(new Map<CardData, number>());
+  const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
 
   const { days } = useContext(AppContext);
   const { selectedCourses, selectedClasses } = useContext(CourseContext);
   const { earliestStartTime } = useContext(AppContext);
 
   const droppedClasses: JSX.Element[] = [];
-  const prevCards = useRef<CardData[]>([]);
-  const newCards: CardData[] = [];
+  const prevCards = useRef<ClassCard[]>([]);
+  const newCards: ClassCard[] = [];
 
   const keyCounter = useRef(0);
-  const inventoryCards = useRef<CardData[]>([]);
+  const inventoryCards = useRef<ClassCard[]>([]);
 
   const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
     selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
@@ -146,7 +146,7 @@ const DroppedClasses: React.FC<DroppedClassesProps> = ({ assignedColors, handleS
     return groupedClashes;
   };
 
-  const getClashInfo = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: CardData) => {
+  const getClashInfo = (groupedClashes: Record<number, ClassPeriod[][]>, cardData: ClassCard) => {
     let cardWidth = 100;
     let clashIndex = 0;
     let clashColour = 'orange';

@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
-import { CardData } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventData, InInventory, Location, Section } from './Course';
+import { ReactNode } from 'react';
+import { ClassCard } from '../utils/Drag';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Course';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -72,7 +72,7 @@ export interface PeriodMetadataProps {
 }
 
 export interface DroppedClassProps {
-  cardData: CardData;
+  cardData: ClassCard;
   color: string;
   y?: number;
   earliestStartTime: number;
@@ -97,7 +97,7 @@ export interface ExpandedClassViewProps {
 export interface ExpandedEventViewProps {
   popupOpen: boolean;
   handleClose: () => void;
-  eventData: EventData;
+  eventPeriod: EventPeriod;
 }
 
 export interface LocationDropdownProps {

@@ -1,5 +1,5 @@
 import { contentPadding } from '../constants/theme';
-import { EventData, EventTime } from '../interfaces/Course';
+import { EventPeriod, EventTime } from '../interfaces/Course';
 import {
   defaultTransition,
   elevatedScale,
@@ -12,9 +12,9 @@ import {
   unfreezeTransform,
 } from './Drag';
 
-let dragTarget: EventData | null = null;
-let dragSource: EventData | null = null;
-let dropTarget: EventData | null = null;
+let dragTarget: EventPeriod | null = null;
+let dragSource: EventPeriod | null = null;
+let dropTarget: EventPeriod | null = null;
 let dragElement: HTMLElement | null = null;
 let lastX = 0;
 let lastY = 0;
@@ -31,9 +31,9 @@ export const dropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: 
   latestEndTime = latestEndTimeHandler;
 };
 
-const cards = new Map<EventData, HTMLElement>();
+const cards = new Map<EventPeriod, HTMLElement>();
 
-const getIsElevated = (cardData: EventData) => dragTarget !== null && cardData === dragTarget;
+const getIsElevated = (cardData: EventPeriod) => dragTarget !== null && cardData === dragTarget;
 
 const initialZIndex = 100;
 const initialElevatedZIndex = 750;
@@ -68,14 +68,14 @@ const updateCards = () => {
 
 let updateTimeout: number;
 
-export const registerCard = (data: EventData, element: HTMLElement) => {
+export const registerCard = (data: EventPeriod, element: HTMLElement) => {
   cards.set(data, element);
   // delays update until consecutive `registerCard` calls have concluded
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => updateCards(), 0);
 };
 
-export const unregisterCard = (data: EventData, element: HTMLElement) => {
+export const unregisterCard = (data: EventPeriod, element: HTMLElement) => {
   if (cards.get(data) === element) cards.delete(data);
 };
 
@@ -96,11 +96,11 @@ const updateDropTarget = (now?: boolean) => {
   lastUpdate = Date.now();
 };
 
-export const morphCards = (a: EventData[], b: EventData[]) => {
+export const morphCards = (a: EventPeriod[], b: EventPeriod[]) => {
   const from = [...a];
   let to = [...b];
 
-  const result: (EventData | null)[] = Array(from.length).fill(null);
+  const result: (EventPeriod | null)[] = Array(from.length).fill(null);
 
   if (dragTarget && dropTarget && dragTarget !== dropTarget && from.includes(dragTarget) && to.includes(dropTarget)) {
     to = to.filter((cardData) => cardData !== dropTarget);
@@ -108,10 +108,10 @@ export const morphCards = (a: EventData[], b: EventData[]) => {
     dragTarget = dropTarget;
   }
 
-  from.forEach((fromCard: EventData, i: number) => {
+  from.forEach((fromCard: EventPeriod, i: number) => {
     if (result[i]) return;
 
-    let match: EventData | null = null;
+    let match: EventPeriod | null = null;
 
     if (to.includes(fromCard)) {
       match = fromCard;
@@ -171,7 +171,7 @@ window.addEventListener('scroll', onScroll, { passive: false });
 
 let eventRecordKey = '';
 
-export const setDragTarget = (cardData: EventData | null, event?: MouseEvent & TouchEvent, recordKey?: string) => {
+export const setDragTarget = (cardData: EventPeriod | null, event?: MouseEvent & TouchEvent, recordKey?: string) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
     if (recordKey) {
