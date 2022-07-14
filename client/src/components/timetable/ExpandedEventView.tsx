@@ -23,7 +23,7 @@ import { EventTime } from '../../interfaces/Periods';
 import { DropdownOptionProps, ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
-import { StyledTitleContainer, StyledDialogContent, StyledDialogTitle } from './shared_styles/ExpandedViewStyles';
+import { StyledTitleContainer, StyledDialogContent, StyledDialogTitle } from '../../styles/ExpandedViewStyles';
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;

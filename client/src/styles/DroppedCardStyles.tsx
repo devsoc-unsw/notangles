@@ -1,7 +1,7 @@
 import { styled } from '@mui/system';
 import { Button, Card } from '@mui/material';
-import { borderRadius, borderWidth } from '../../../constants/theme';
-import { defaultTransition } from '../../../utils/Drag';
+import { borderRadius, borderWidth } from '../constants/theme';
+import { defaultTransition } from '../utils/Drag';
 
 export const ExpandButton = styled(Button)`
   position: absolute;

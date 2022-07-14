@@ -9,7 +9,7 @@ import { AppContext } from '../../context/AppContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { registerCard, setDragTarget, timeToPosition, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
-import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from './shared_styles/DroppedCardStyles';
+import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
 import { rowHeight } from './TimetableLayout';
 
 const classTranslateX = (eventPeriod: EventPeriod) => {

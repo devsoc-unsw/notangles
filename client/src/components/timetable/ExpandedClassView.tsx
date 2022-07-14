@@ -8,7 +8,7 @@ import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '.
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from './shared_styles/ExpandedViewStyles';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;

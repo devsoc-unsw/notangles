@@ -22,7 +22,7 @@ import {
 } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from './shared_styles/DroppedCardStyles';
+import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
 import { rowHeight } from './TimetableLayout';
 
 const classTranslateX = (classCard: ClassCard, days?: string[], clashIndex?: number, width?: number, cellWidth?: number) => {
