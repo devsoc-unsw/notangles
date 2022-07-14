@@ -8,14 +8,13 @@ import { CourseContext } from '../../context/CourseContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
 
-import DroppedClasses from './DroppedClasses';
+import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
-import DroppedEvents from './DroppedEvents';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
-})<{
+}) <{
   rows: number;
   cols: number;
 }>`
@@ -51,8 +50,8 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
       <StyledTimetable cols={days.length} rows={latestEndTime - earliestStartTime}>
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
-        <DroppedClasses assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-        <DroppedEvents />
+        <DroppedCards assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+        {/* <DroppedClasses assignedColors={assignedColors} handleSelectClass={handleSelectClass} /> */}
       </StyledTimetable>
     </StyledTimetableScroll>
   );

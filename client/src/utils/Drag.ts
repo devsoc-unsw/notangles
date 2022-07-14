@@ -15,7 +15,7 @@ export const getElevatedShadow = (_: boolean) => 24;
 // intersection area with inventory required to drop
 const inventoryDropIntersection = 0.5;
 
-export const isScheduledPeriod = (data: ClassCard | null): data is ClassPeriod =>
+export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod =>
   data !== null && (data as ClassPeriod).time !== undefined;
 
 let dragTarget: ClassCard | EventPeriod | null = null;
@@ -373,17 +373,17 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
-let eventRecordKey = '';
+let eventId = '';
 
 export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   event?: MouseEvent & TouchEvent,
-  evRecordKey?: string
+  givenEventId?: string
 ) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
 
-    if (evRecordKey) eventRecordKey = evRecordKey;
+    if (givenEventId) eventId = givenEventId;
 
     if (cardData && event && event.currentTarget && scrollElement) {
       const element = event.currentTarget as HTMLElement;
@@ -408,7 +408,7 @@ export const setDragTarget = (
       updateDropTarget(true);
 
       if (cardData.type !== 'event') {
-        if ('time' in cardData) {
+        if (cardData.type === 'class') {
           setCurrentClassTime(cardData.time);
         } else {
           setCurrentClassTime(undefined);
@@ -545,7 +545,7 @@ const drop = () => {
               start: rowIndex + earliestStartTime,
               end: eventLength + rowIndex + earliestStartTime,
             } as EventTime,
-            eventRecordKey
+            eventId
           );
         }
       }

@@ -9,37 +9,10 @@ import { AppContext } from '../../context/AppContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { registerCard, setDragTarget, timeToPosition, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
-import { ExpandButton, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
+import { classTransformStyle, ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
 import { rowHeight } from './TimetableLayout';
-
-const classTranslateX = (eventPeriod: EventPeriod) => {
-  return `${(eventPeriod.time.day - 1) * 100}%`;
-};
-
-const getHeightFactor = (eventPeriod: EventPeriod) => eventPeriod.time.end - eventPeriod.time.start;
-
-const classTranslateY = (eventPeriod: EventPeriod, earliestStartTime: number) => {
-  let result = 0;
-  // height compared to standard row height
-  const heightFactor = getHeightFactor(eventPeriod);
-
-  // number of rows to offset down
-  const offsetRows = timeToPosition(eventPeriod.time.start, earliestStartTime) - 2;
-  // calculate translate percentage (relative to height)
-  result = offsetRows / heightFactor;
-
-  return `calc(${result * 100}% + ${result}px)`;
-};
-
-const classTransformStyle = (eventPeriod: EventPeriod, earliestStartTime: number) =>
-  `translate(${classTranslateX(eventPeriod)}, ${classTranslateY(eventPeriod, earliestStartTime)})`;
-
-const getClassHeight = (eventPeriod: EventPeriod) => {
-  // height compared to standard row height
-  const heightFactor = getHeightFactor(eventPeriod);
-
-  return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
-};
+import { DroppedEventProps } from '../../interfaces/PropTypes';
+import { getClassHeight, getHeightFactor, classTranslateX, classTranslateY } from '../../utils/translateCard';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -47,30 +20,11 @@ const StyledLocationIcon = styled(LocationOn)`
   padding-bottom: 0.1em;
 `;
 
-const StyledEvent = styled('div', {
-  shouldForwardProp: (prop) => !['eventPeriod', 'isSquareEdges', 'earliestStartTime'].includes(prop.toString()), // add earliestStartTime to this list
-})<{
-  eventPeriod: EventPeriod;
-  earliestStartTime: number;
-  isSquareEdges: boolean;
-}>`
-  position: relative;
-  grid-column: 2;
-  grid-row: 2 / -1;
-  transform: ${({ eventPeriod, earliestStartTime }) => classTransformStyle(eventPeriod, earliestStartTime)};
-  width: calc(100% + ${1 / devicePixelRatio}px);
-  height: ${({ eventPeriod }) => getClassHeight(eventPeriod)};
-  box-sizing: border-box;
-  z-index: 100;
-  cursor: grab;
-  padding: 1px;
-`;
-
-const DroppedEvent: React.FC<{ eventPeriod: EventPeriod; recordKey: string }> = ({ eventPeriod, recordKey }) => {
+const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, setIsDrag, earliestStartTime } = useContext(AppContext);
+  const { setInfoVisibility, isSquareEdges, days, earliestStartTime, setIsDrag } = useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -104,7 +58,7 @@ const DroppedEvent: React.FC<{ eventPeriod: EventPeriod; recordKey: string }> = 
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventPeriod, eventCopy, recordKey);
+      setDragTarget(eventPeriod, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -168,10 +122,14 @@ const DroppedEvent: React.FC<{ eventPeriod: EventPeriod; recordKey: string }> = 
 
   return (
     <>
-      <StyledEvent
-        eventPeriod={eventPeriod}
-        isSquareEdges={isSquareEdges}
+      <StyledCard
+        card={eventPeriod}
+        days={days}
         earliestStartTime={earliestStartTime}
+        isSquareEdges={isSquareEdges}
+        cardWidth={cardWidth}
+        clashIndex={clashIndex}
+        cellWidth={cellWidth}
         ref={element}
         onMouseDown={onDown}
         onMouseOver={() => {
@@ -206,7 +164,7 @@ const DroppedEvent: React.FC<{ eventPeriod: EventPeriod; recordKey: string }> = 
             </ExpandButton>
           )}
         </StyledCardInner>
-      </StyledEvent>
+      </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>
   );

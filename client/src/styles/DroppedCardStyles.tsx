@@ -1,7 +1,26 @@
 import { styled } from '@mui/system';
 import { Button, Card } from '@mui/material';
 import { borderRadius, borderWidth } from '../constants/theme';
-import { defaultTransition } from '../utils/Drag';
+import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
+import { EventPeriod } from '../interfaces/Periods';
+import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
+
+export const transitionName = 'class';
+
+export const classTransformStyle = (
+  card: ClassCard | EventPeriod,
+  earliestStartTime: number,
+  days?: string[],
+  y?: number,
+  clashIndex?: number,
+  width?: number,
+  cellWidth: number = 0
+) =>
+  `translate(${classTranslateX(card, days, clashIndex, width, cellWidth)}, ${classTranslateY(
+    card,
+    earliestStartTime,
+    y
+  )})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -17,6 +36,59 @@ export const ExpandButton = styled(Button)`
   &:hover {
     opacity: 100%;
   }
+`;
+
+export const StyledCard = styled('div', {
+  shouldForwardProp: (prop) =>
+    !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
+      prop.toString()
+    ),
+}) <{
+  card: ClassCard | EventPeriod;
+  days: string[];
+  y?: number;
+  earliestStartTime: number;
+  isSquareEdges: boolean;
+  clashIndex: number;
+  cardWidth: number;
+  cellWidth: number;
+}>`
+  position: relative;
+  grid-column: 2;
+  grid-row: 2 / -1;
+  transform: ${({ card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
+  width: ${({ cardWidth }) => cardWidth}%;
+  height: ${({ card }) => getClassHeight(card)};
+  box-sizing: border-box;
+  z-index: 100;
+  cursor: grab;
+  padding: 1px;
+  transition: ${defaultTransition}, z-index 0s;
+
+  /* uncomment me whoever decides to fix <CSSTransition>
+  &.${transitionName}-enter {
+    & > div {
+      opacity: 0;
+      transform: scale(${elevatedScale});
+      box-shadow: ${({ isSquareEdges }) => getElevatedShadow(isSquareEdges)};
+    }
+  }
+
+  &.${transitionName}-enter-active, &.${transitionName}-leave {
+    & > div {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
+    }
+  }
+
+  &.${transitionName}-leave-active {
+    & > div {
+      opacity: 0;
+      box-shadow: ${({ isSquareEdges }) => getDefaultShadow(isSquareEdges)};
+    }
+  } */
 `;
 
 export const StyledCardInner = styled(Card, {

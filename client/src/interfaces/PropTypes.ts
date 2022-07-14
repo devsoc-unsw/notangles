@@ -75,7 +75,6 @@ export interface DroppedClassProps {
   classCard: ClassCard;
   color: string;
   y?: number;
-  earliestStartTime: number;
   handleSelectClass(classData: ClassData): void;
   cardWidth: number;
   clashIndex: number;
@@ -83,7 +82,15 @@ export interface DroppedClassProps {
   cellWidth: number; // width of a grid cell
 }
 
-export interface DroppedClassesProps {
+export interface DroppedEventProps {
+  eventId: string;
+  eventPeriod: EventPeriod;
+  cardWidth: number;
+  clashIndex: number;
+  cellWidth: number; // width of a grid cell
+}
+
+export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
 }
