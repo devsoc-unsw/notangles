@@ -20,19 +20,27 @@ import { parseJSON } from 'date-fns';
 
 const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]): number[] => {
   for (let k = 0; k < dbClassWeeks.length; k++) {
+    // characters in the array are either '-',',' or a number from 0-9.
     if (dbClassWeeks[k] == '-') {
+      // CASE 1: weeks are in a range, so we must add all the numbers within this range here
+      // weeks are a one digit number
       let maximum: number = parseInt(dbClassWeeks[k + 1]);
       if (k + 1 < dbClassWeeks.length - 1 && dbClassWeeks[k + 2] != ',' && dbClassWeeks[k + 2] != '-') {
+        // weeks are a two digit number
         maximum = parseInt(dbClassWeeks[k + 1] + dbClassWeeks[k + 2]);
       }
       while (dbClassTimesList[dbClassTimesList.length - 1] < maximum - 1) {
+        // as this is a range, we need to add all the numbers between the range
         dbClassTimesList.push(dbClassTimesList[dbClassTimesList.length - 1] + 1);
       }
     } else if (dbClassWeeks[k] != ',' && dbClassWeeks[k] != '-') {
+      // CASE 2: if this is not the middle of a range or a comma, we can just add the week as it is
       if (k < dbClassWeeks.length - 1 && dbClassWeeks[k + 1] != ',' && dbClassWeeks[k + 1] != '-') {
+        // this week is a two digit number and the two digits must be added together
         dbClassTimesList.push(parseInt(dbClassWeeks[k] + dbClassWeeks[k + 1]));
         k++;
       } else {
+        // this week is not a two digit number so we just add the one digit to it
         dbClassTimesList.push(parseInt(dbClassWeeks[k]));
       }
     }
@@ -45,8 +53,8 @@ const sortUnique = (arr: number[]): number[] => {
   arr = arr.sort(function (a, b) {
     return a * 1 - b * 1;
   });
-  var ret = [arr[0]];
-  for (var i = 1; i < arr.length; i++) {
+  let ret = [arr[0]];
+  for (let i = 1; i < arr.length; i++) {
     if (arr[i - 1] !== arr[i]) {
       ret.push(arr[i]);
     }
