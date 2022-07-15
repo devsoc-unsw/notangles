@@ -4,13 +4,13 @@ import { styled } from '@mui/system';
 
 import { contentPadding } from '../../constants/theme';
 import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
-import { CourseContext } from '../../context/CourseContext';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
 
-import DroppedClasses from './DroppedClasses';
 import { inventoryMargin } from './DroppedClass';
+import DroppedClasses from './DroppedClasses';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
 
