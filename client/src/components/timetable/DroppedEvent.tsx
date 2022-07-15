@@ -6,13 +6,10 @@ import { styled } from '@mui/system';
 import { Color } from 'mui-color';
 
 import { AppContext } from '../../context/AppContext';
-import { EventPeriod } from '../../interfaces/Periods';
-import { registerCard, setDragTarget, timeToPosition, unregisterCard } from '../../utils/Drag';
-import ExpandedEventView from './ExpandedEventView';
-import { classTransformStyle, ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
-import { rowHeight } from './TimetableLayout';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
-import { getClassHeight, getHeightFactor, classTranslateX, classTranslateY } from '../../utils/translateCard';
+import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
+import ExpandedEventView from './ExpandedEventView';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;

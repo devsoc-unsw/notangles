@@ -4,32 +4,17 @@ import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 
-import { inventoryMargin } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { ClassData, InInventory } from '../../interfaces/Periods';
+import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
-import {
-  ClassCard,
-  defaultTransition,
-  elevatedScale,
-  getDefaultShadow,
-  getElevatedShadow,
-  isScheduledPeriod,
-  registerCard,
-  setDragTarget,
-  timeToPosition,
-  unregisterCard
-} from '../../utils/Drag';
+import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { rowHeight } from './TimetableLayout';
-import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
-import { getHeightFactor, classTranslateX, classTranslateY} from '../../utils/translateCard';
-
 
 const StyledCourseClassInner = styled(StyledCardInner, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
-}) <{
+})<{
   backgroundColor: string;
 }>`
   background-color: ${({ backgroundColor }) => backgroundColor};

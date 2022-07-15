@@ -14,7 +14,7 @@ import { TimetableLayout } from './TimetableLayout';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
-}) <{
+})<{
   rows: number;
   cols: number;
 }>`

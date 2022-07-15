@@ -15,12 +15,7 @@ export const classTransformStyle = (
   clashIndex?: number,
   width?: number,
   cellWidth: number = 0
-) =>
-  `translate(${classTranslateX(card, days, clashIndex, width, cellWidth)}, ${classTranslateY(
-    card,
-    earliestStartTime,
-    y
-  )})`;
+) => `translate(${classTranslateX(card, days, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -43,7 +38,7 @@ export const StyledCard = styled('div', {
     !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
-}) <{
+})<{
   card: ClassCard | EventPeriod;
   days: string[];
   y?: number;
