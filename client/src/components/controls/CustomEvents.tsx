@@ -1,12 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import {
-  Box,
-  Button, ListItem,
-  ListItemIcon,
-  Popover,
-  TextField
-} from '@mui/material';
+import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { ColorPicker, ColorValue } from 'mui-color';
@@ -37,7 +31,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({ }) => {
+const CustomEvent = ({}) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not

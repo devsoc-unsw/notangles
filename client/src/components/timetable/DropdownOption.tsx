@@ -1,7 +1,7 @@
 import React from 'react';
-import { ListItem, Grid, ListItemText, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ListItem, Grid, ListItemText, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/system';
-import { DropdownOptionProps } from "../../interfaces/PropTypes";
+import { DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;
@@ -15,48 +15,48 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
 `;
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
-    optionName,
-    optionState,
-    setOptionState,
-    optionChoices,
-    multiple,
-    noOff,
+  optionName,
+  optionState,
+  setOptionState,
+  optionChoices,
+  multiple,
+  noOff,
 }) => {
-    const handleOptionChange = (newOption: string | null) => {
-        if (newOption !== null) {
-            setOptionState(newOption);
-        }
-    };
+  const handleOptionChange = (newOption: string | null) => {
+    if (newOption !== null) {
+      setOptionState(newOption);
+    }
+  };
 
-    return (
-        <ListItem key={optionName}>
-            <Grid container spacing={0}>
-                <Grid item xs={12}>
-                    <ListItemText primary={optionName} />
-                </Grid>
-                <Grid item xs={12}>
-                    <StyledOptionToggle
-                        size="small"
-                        exclusive={multiple ? false : true}
-                        value={optionState}
-                        onChange={() => handleOptionChange}
-                        aria-label="option choices"
-                    >
-                        {!noOff && (
-                            <StyledOptionButtonToggle value="off" aria-label="default">
-                                off
-                            </StyledOptionButtonToggle>
-                        )}
-                        {optionChoices.map((option) => (
-                            <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
-                                {option}
-                            </StyledOptionButtonToggle>
-                        ))}
-                    </StyledOptionToggle>
-                </Grid>
-            </Grid>
-        </ListItem>
-    );
+  return (
+    <ListItem key={optionName}>
+      <Grid container spacing={0}>
+        <Grid item xs={12}>
+          <ListItemText primary={optionName} />
+        </Grid>
+        <Grid item xs={12}>
+          <StyledOptionToggle
+            size="small"
+            exclusive={multiple ? false : true}
+            value={optionState}
+            onChange={() => handleOptionChange}
+            aria-label="option choices"
+          >
+            {!noOff && (
+              <StyledOptionButtonToggle value="off" aria-label="default">
+                off
+              </StyledOptionButtonToggle>
+            )}
+            {optionChoices.map((option) => (
+              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
+                {option}
+              </StyledOptionButtonToggle>
+            ))}
+          </StyledOptionToggle>
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
 };
 
 export default DropdownOption;

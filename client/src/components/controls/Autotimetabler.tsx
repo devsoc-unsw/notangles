@@ -53,7 +53,7 @@ const StyledList = styled(List)`
 
 const StyledDatePickerLabel = styled(ListItemText)`
   align-self: center;
-`
+`;
 
 const ExecuteButton = styled(Button)`
   width: 100%;
