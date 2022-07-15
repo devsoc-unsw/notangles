@@ -1,5 +1,5 @@
 import { styled } from '@mui/system';
-import { Button, Card } from '@mui/material';
+import { Button, Card, Grid } from '@mui/material';
 import { borderRadius, borderWidth } from '../constants/theme';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { EventPeriod } from '../interfaces/Periods';

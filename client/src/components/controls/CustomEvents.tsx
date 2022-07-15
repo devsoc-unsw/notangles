@@ -2,25 +2,20 @@ import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import {
   Box,
-  Button,
-  Grid,
-  List,
-  ListItem,
+  Button, ListItem,
   ListItemIcon,
-  ListItemText,
   Popover,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
+  TextField
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod } from '../../interfaces/Periods';
-import { DropdownOptionProps } from '../../interfaces/PropTypes';
-import { AppContext } from '../../context/AppContext';
 import { ColorPicker, ColorValue } from 'mui-color';
 import { v4 as uuidv4 } from 'uuid';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { EventPeriod } from '../../interfaces/Periods';
+import { StyledList, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
   && {
@@ -35,73 +30,14 @@ const DropdownButton = styled(Button)`
   }
 `;
 
-const DropdownOption: React.FC<DropdownOptionProps> = ({
-  optionName,
-  optionState,
-  setOptionState,
-  optionChoices,
-  multiple,
-  noOff,
-}) => {
-  const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
-    if (newOption !== null) {
-      setOptionState(newOption);
-    }
-  };
-
-  return (
-    <ListItem key={optionName}>
-      <Grid container spacing={0}>
-        <Grid item xs={12}>
-          <ListItemText primary={optionName} />
-        </Grid>
-        <Grid item xs={12}>
-          <StyledOptionToggle
-            size="small"
-            exclusive={multiple ? false : true}
-            value={optionState}
-            onChange={handleOptionChange}
-            aria-label="option choices"
-          >
-            {!noOff && (
-              <StyledOptionButtonToggle value="off" aria-label="default">
-                off
-              </StyledOptionButtonToggle>
-            )}
-            {optionChoices.map((option) => (
-              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
-                {option}
-              </StyledOptionButtonToggle>
-            ))}
-          </StyledOptionToggle>
-        </Grid>
-      </Grid>
-    </ListItem>
-  );
-};
-
-const StyledOptionToggle = styled(ToggleButtonGroup)`
-  margin-top: 10px;
-  width: 100%;
-`;
-
-const StyledOptionButtonToggle = styled(ToggleButton)`
-  width: 100%;
-  height: 32px;
-  margin-bottom: 10px;
-`;
-
-const StyledList = styled(List)`
-  padding: 0 15px;
-`;
-
 const ExecuteButton = styled(Button)`
+  margin-top: 16px;
   height: 40px;
   width: 100%;
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({}) => {
+const CustomEvent = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -130,7 +66,7 @@ const CustomEvent = ({}) => {
   const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
 
-  //TimePicker stuff
+  // Time picker stuff
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
 
@@ -193,7 +129,6 @@ const CustomEvent = ({}) => {
 
   return (
     <div style={{ display: 'flex' }}>
-      {/* Create Event Button */}
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
@@ -201,10 +136,8 @@ const CustomEvent = ({}) => {
         {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
 
-      {/*Code for Popover */}
-      {/*Where the popover appears in relation to the button */}
+      {/* Where the popover appears in relation to the button */}
       <Popover
-        // id={popoverId}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -218,121 +151,87 @@ const CustomEvent = ({}) => {
         }}
       >
         <StyledList>
+          <StyledListItem>
+            <ListItemIcon>
+              <Event />
+            </ListItemIcon>
+            <TextField
+              id="outlined-required"
+              label="Add Event Name"
+              onChange={(e) => setEventName(e.target.value)}
+              variant="outlined"
+              fullWidth
+              required
+              defaultValue={eventName}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <ListItemIcon>
+              <Notes />
+            </ListItemIcon>
+            <TextField
+              id="outlined-basic"
+              label="Add Description (optional)"
+              onChange={(e) => setDescription(e.target.value)}
+              variant="outlined"
+              multiline
+              fullWidth
+              defaultValue={description}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <ListItemIcon>
+              <LocationOn />
+            </ListItemIcon>
+            <TextField
+              id="outlined-required"
+              label="Add Location"
+              onChange={(e) => setLocation(e.target.value)}
+              variant="outlined"
+              fullWidth
+              required
+              defaultValue={location}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <StyledListItemText primary="Start time" />
+            <TimePicker
+              views={['hours']}
+              value={startTime}
+              renderInput={(params) => <TextField {...params} />}
+              onChange={(e) => {
+                if (e) setStartTime(e);
+              }}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <StyledListItemText primary="End time" />
+            <TimePicker
+              views={['hours']}
+              value={endTime}
+              renderInput={(params) => {
+                const tooEarly = startTime.getHours() >= endTime.getHours();
+                return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
+              }}
+              onChange={(e) => {
+                if (e) setEndTime(e);
+              }}
+            />
+          </StyledListItem>
+          <DropdownOption optionName="Days" optionState={days} setOptionState={handleFormat} optionChoices={weekdays} noOff />
           <ListItem>
-            <Grid container spacing={0} sx={{ paddingTop: 2 }}>
-              <ListItem>
-                <ListItemIcon>
-                  <Event />
-                </ListItemIcon>
-                <TextField
-                  id="outlined-required"
-                  label="Add Event Name"
-                  onChange={(e) => setEventName(e.target.value)}
-                  variant="outlined"
-                  fullWidth
-                  required
-                  defaultValue={eventName}
-                />
-              </ListItem>
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0}>
-              <ListItem>
-                <ListItemIcon>
-                  <Notes />
-                </ListItemIcon>
-                <TextField
-                  id="outlined-basic"
-                  label="Add Description (optional)"
-                  onChange={(e) => setDescription(e.target.value)}
-                  variant="outlined"
-                  multiline
-                  fullWidth
-                  defaultValue={description}
-                />
-              </ListItem>
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0}>
-              <ListItem>
-                <ListItemIcon>
-                  <LocationOn />
-                </ListItemIcon>
-                <TextField
-                  id="outlined-required"
-                  label="Add Location"
-                  onChange={(e) => setLocation(e.target.value)}
-                  variant="outlined"
-                  fullWidth
-                  required
-                  defaultValue={location}
-                />
-              </ListItem>
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0}>
-              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Start time" />
-
-              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
-                <TimePicker
-                  views={['hours']}
-                  value={startTime}
-                  renderInput={(params) => <TextField {...params} />}
-                  onChange={(e) => {
-                    if (e) setStartTime(e);
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0}>
-              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="End time" />
-              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
-                <TimePicker
-                  views={['hours']}
-                  value={endTime}
-                  renderInput={(params) => {
-                    const tooEarly = startTime.getHours() >= endTime.getHours();
-                    return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
-                  }}
-                  onChange={(e) => {
-                    if (e) setEndTime(e);
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </ListItem>
-
-          <ListItem>
-            <DropdownOption optionName="Days" optionState={days} setOptionState={handleFormat} optionChoices={weekdays} noOff />
-          </ListItem>
-
-          <ListItem>
-            <Grid container spacing={0}>
-              <ListItemText sx={{ alignSelf: 'center', paddingLeft: 2, paddingRight: 2 }} primary="Color" />
-              <Grid item xs="auto" sx={{ paddingRight: 2 }}>
-                <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
-              </Grid>
-            </Grid>
+            <StyledListItemText primary="Color" />
+            <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
           </ListItem>
         </StyledList>
         <ExecuteButton
-          sx={{ marginTop: 2 }}
           variant="contained"
           color="primary"
           disableElevation
           disabled={eventName === '' || location === '' || days.length === 0}
           onClick={doCreateEvent}
         >
-          <Add sx={{ alignSelf: 'center' }} />
+          <Add />
           CREATE
         </ExecuteButton>
       </Popover>

@@ -1,14 +1,13 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-
 import { AppContext } from '../../context/AppContext';
 import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;

@@ -28,6 +28,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import NetworkError from '../../interfaces/NetworkError';
 import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
+import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
   && {
@@ -46,70 +47,18 @@ const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
 `;
 
-const ExecuteButton = styled(Button)`
-  width: 100%;
-  border-radius: 0px 0px 5px 5px;
-`;
-
-const StyledOptionToggle = styled(ToggleButtonGroup)`
-  margin-top: 10px;
-  width: 100%;
-`;
-
-const StyledOptionButtonToggle = styled(ToggleButton)`
-  width: 100%;
-  height: 32px;
-  margin-bottom: 10px;
-`;
-
 const StyledList = styled(List)`
   padding: 0 15px;
 `;
 
-const DropdownOption: React.FC<DropdownOptionProps> = ({
-  optionName,
-  optionState,
-  setOptionState,
-  optionChoices,
-  multiple,
-  noOff,
-}) => {
-  const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
-    if (newOption !== null) {
-      setOptionState(newOption);
-    }
-  };
+const StyledDatePickerLabel = styled(ListItemText)`
+  align-self: center;
+`
 
-  return (
-    <ListItem key={optionName}>
-      <Grid container spacing={0}>
-        <Grid item xs={12}>
-          <ListItemText primary={optionName} />
-        </Grid>
-        <Grid item xs={12}>
-          <StyledOptionToggle
-            size="small"
-            exclusive={multiple ? false : true}
-            value={optionState}
-            onChange={handleOptionChange}
-            aria-label="option choices"
-          >
-            {!noOff && (
-              <StyledOptionButtonToggle value="off" aria-label="default">
-                off
-              </StyledOptionButtonToggle>
-            )}
-            {optionChoices.map((option) => (
-              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
-                {option}
-              </StyledOptionButtonToggle>
-            ))}
-          </StyledOptionToggle>
-        </Grid>
-      </Grid>
-    </ListItem>
-  );
-};
+const ExecuteButton = styled(Button)`
+  width: 100%;
+  border-radius: 0px 0px 5px 5px;
+`;
 
 type ClassMode = 'hybrid' | 'in person' | 'online';
 
@@ -327,7 +276,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center' }} primary="Earliest start time" />
+                <StyledDatePickerLabel primary="Earliest start time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker
@@ -344,7 +293,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center' }} primary="Latest end time" />
+                <StyledDatePickerLabel primary="Latest end time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker

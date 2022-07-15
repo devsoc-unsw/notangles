@@ -107,6 +107,13 @@ export interface ExpandedEventViewProps {
   handleClose: () => void;
 }
 
+export interface DiscardDialogProps {
+  openSaveDialog: boolean;
+  handleDiscardChanges: () => void;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenSaveDialog: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export interface LocationDropdownProps {
   sectionsAndLocations: Array<[Section, Location]>;
   handleChange(event: SelectChangeEvent<number>): void;
