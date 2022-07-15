@@ -21,36 +21,38 @@ import { parseJSON } from 'date-fns';
 const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]): number[] => {
   for (let k = 0; k < dbClassWeeks.length; k++) {
     if (dbClassWeeks[k] == '-') {
-      let maximum: number = parseInt(dbClassWeeks[k + 1])
+      let maximum: number = parseInt(dbClassWeeks[k + 1]);
       if (k + 1 < dbClassWeeks.length - 1 && dbClassWeeks[k + 2] != ',' && dbClassWeeks[k + 2] != '-') {
-        maximum = parseInt(dbClassWeeks[k + 1] + dbClassWeeks[k + 2])
+        maximum = parseInt(dbClassWeeks[k + 1] + dbClassWeeks[k + 2]);
       }
       while (dbClassTimesList[dbClassTimesList.length - 1] < maximum - 1) {
-        dbClassTimesList.push(dbClassTimesList[dbClassTimesList.length - 1] + 1)
+        dbClassTimesList.push(dbClassTimesList[dbClassTimesList.length - 1] + 1);
       }
     } else if (dbClassWeeks[k] != ',' && dbClassWeeks[k] != '-') {
       if (k < dbClassWeeks.length - 1 && dbClassWeeks[k + 1] != ',' && dbClassWeeks[k + 1] != '-') {
-        dbClassTimesList.push(parseInt(dbClassWeeks[k] + dbClassWeeks[k + 1]))
+        dbClassTimesList.push(parseInt(dbClassWeeks[k] + dbClassWeeks[k + 1]));
         k++;
       } else {
-        dbClassTimesList.push(parseInt(dbClassWeeks[k]))
+        dbClassTimesList.push(parseInt(dbClassWeeks[k]));
       }
     }
   }
-  return dbClassTimesList
-}
+  return dbClassTimesList;
+};
 
 const sortUnique = (arr: number[]): number[] => {
   if (arr.length === 0) return arr;
-  arr = arr.sort(function (a, b) { return a*1 - b*1; });
+  arr = arr.sort(function (a, b) {
+    return a * 1 - b * 1;
+  });
   var ret = [arr[0]];
   for (var i = 1; i < arr.length; i++) {
-    if (arr[i-1] !== arr[i]) {
+    if (arr[i - 1] !== arr[i]) {
       ret.push(arr[i]);
     }
   }
   return ret;
-}
+};
 
 const getCourseInfo = async (year: string, term: string, courseCode: CourseCode): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
@@ -64,56 +66,53 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
       if ('times' in dbClass && dbClass.times.length > 1) {
         for (let i = 0; i < dbClass.times.length - 1; i += 1) {
           for (let j = i + 1; j < dbClass.times.length; j += 1) {
-            let dbClassTimesOne = dbClass.times[i]
-            let dbClassTimesTwo = dbClass.times[j]
-            if (dbClassTimesOne.day == dbClassTimesTwo.day
-              && dbClassTimesOne.location == dbClassTimesTwo.location
-              && dbClassTimesOne.time.start == dbClassTimesTwo.time.start
-              && dbClassTimesOne.time.end == dbClassTimesTwo.time.end) {
-              let dbClassTimesList: number[] = []
+            let dbClassTimesOne = dbClass.times[i];
+            let dbClassTimesTwo = dbClass.times[j];
+            if (
+              dbClassTimesOne.day == dbClassTimesTwo.day &&
+              dbClassTimesOne.location == dbClassTimesTwo.location &&
+              dbClassTimesOne.time.start == dbClassTimesTwo.time.start &&
+              dbClassTimesOne.time.end == dbClassTimesTwo.time.end
+            ) {
+              let dbClassTimesList: number[] = [];
 
-              dbClassTimesList = convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList)
-              dbClassTimesList = convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList)
+              dbClassTimesList = convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
+              dbClassTimesList = convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
 
-              dbClassTimesList = sortUnique(dbClassTimesList)
+              dbClassTimesList = sortUnique(dbClassTimesList);
 
-              let newWeeks: string = ''
-              let rangeStart = false
+              let newWeeks: string = '';
+              let rangeStart = false;
 
               for (let k = 0; k < dbClassTimesList.length; k++) {
                 if (k == 0 || k == dbClassTimesList.length - 1) {
-                  newWeeks += dbClassTimesList[k]
+                  newWeeks += dbClassTimesList[k];
                 } else if (rangeStart) {
                   // add the start of the range
-                  newWeeks += dbClassTimesList[k]
-                  rangeStart = false
+                  newWeeks += dbClassTimesList[k];
+                  rangeStart = false;
                 }
 
                 while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
                   // keep iterating until you reach the end of the range (numbers stop being consecutive)
-                  k++
+                  k++;
                 }
                 if (!rangeStart) {
                   // add the end of the range (last consecutive number)
-                  newWeeks += '-' + dbClassTimesList[k]
+                  newWeeks += '-' + dbClassTimesList[k];
                   if (k !== dbClassTimesList.length - 1) {
                     // if this isn't the last week, we will need to add more weeks
-                    newWeeks += ','
+                    newWeeks += ',';
                   }
                   // get ready to add the end of the range
-                  rangeStart = true
+                  rangeStart = true;
                 }
               }
-              dbClassTimesOne.weeks = newWeeks
-              dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1)
+              dbClassTimesOne.weeks = newWeeks;
+              dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
             }
           }
         }
-
-
-
-
-
       }
     });
     if (!json) {
