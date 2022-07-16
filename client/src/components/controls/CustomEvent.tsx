@@ -1,16 +1,16 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, Grid, ListItem, ListItemButton, ListItemIcon, Popover, TextField } from '@mui/material';
+import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { ColorPicker, ColorValue } from 'mui-color';
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { StyledControlsButton, StyledList } from '../../styles/DroppedCardStyles';
 import { EventPeriod } from '../../interfaces/Periods';
-import { StyledList, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import DropdownOption from '../timetable/DropdownOption';
-import { Chrome, Colorful, ColorResult, Sketch } from '@uiw/react-color';
+import { Colorful } from '@uiw/react-color';
 
 const DropdownButton = styled(Button)`
   && {
@@ -36,13 +36,13 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({ }) => {
-  // for opening popover
+const CustomEvent: React.FC = () => {
+  // For opening popover
 
-  //anchorEL sets position of the popover, useState to see if popover should show or not
+  // anchorEl sets position of the popover, useState to see if popover should show or not
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  //if trye, the popover is shown, currently set to the same as anchorEL
+  // The popover is shown, currently set to the same as anchorEl
   const open = Boolean(anchorEl);
 
   const popoverId = open ? 'simple-popover' : undefined;
@@ -146,7 +146,7 @@ const CustomEvent = ({ }) => {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <StyledControlsButton>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
@@ -248,23 +248,18 @@ const CustomEvent = ({ }) => {
             <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
           </ListItem> */}
 
-          <Box
-            m={1}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <ColorButton variant="contained" onClick={handleColorClick}>Choose Color</ColorButton>
-            {showPicker &&
+          <Box m={1} display="flex" justifyContent="center" alignItems="center">
+            <ColorButton variant="contained" onClick={handleColorClick}>
+              Choose Color
+            </ColorButton>
+            {showPicker && (
               <>
                 <ListItem alignItems="flex-start">
                   <Colorful onChange={(e) => setColor(e.hex)} color={color} />
                 </ListItem>
-              </>}
+              </>
+            )}
           </Box>
-
-
-
         </StyledList>
         <ExecuteButton
           variant="contained"
@@ -277,7 +272,7 @@ const CustomEvent = ({ }) => {
           CREATE
         </ExecuteButton>
       </Popover>
-    </div>
+    </StyledControlsButton>
   );
 };
 

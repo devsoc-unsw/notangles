@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+
 import { AppContext } from '../../context/AppContext';
 import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';

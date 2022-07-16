@@ -1,5 +1,6 @@
-import { SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
+import { SelectChangeEvent } from '@mui/material';
+
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 

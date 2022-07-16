@@ -268,6 +268,13 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     storage.set('createdEvents', createdEvents);
+    Object.values(createdEvents).forEach((event) => {
+      if (event.time.day === 6 && days.length !== 7) {
+        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+      } else if (event.time.day === 7) {
+        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+      }
+    });
   }, [createdEvents]);
 
   useUpdateEffect(() => {

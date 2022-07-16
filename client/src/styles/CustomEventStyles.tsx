@@ -1,9 +1,5 @@
-import { List, ListItem, ListItemText } from '@mui/material';
+import { ListItem, ListItemText } from '@mui/material';
 import { styled } from '@mui/system';
-
-export const StyledList = styled(List)`
-  padding: 24px 15px 0;
-`;
 
 export const StyledListItem = styled(ListItem)`
   padding-top: 8px;

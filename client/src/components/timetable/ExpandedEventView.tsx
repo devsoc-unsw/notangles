@@ -3,6 +3,7 @@ import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from 
 import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Color, ColorPicker, ColorValue } from 'mui-color';
+
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';

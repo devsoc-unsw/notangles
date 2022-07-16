@@ -1,6 +1,7 @@
 import { LocationOn, PeopleAlt, Warning } from '@mui/icons-material';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
+
 import { PeriodMetadataProps } from '../../interfaces/PropTypes';
 
 const StyledLocationIcon = styled(LocationOn)`

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Dialog } from '@mui/material';
 import { styled } from '@mui/system';
+
 import { DiscardDialogProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 

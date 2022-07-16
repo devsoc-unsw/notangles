@@ -4,10 +4,8 @@ import { styled } from '@mui/system';
 
 import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import { timetableWidth } from '../../utils/Drag';
-
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
@@ -51,7 +49,6 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
         <DroppedCards assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-        {/* <DroppedClasses assignedColors={assignedColors} handleSelectClass={handleSelectClass} /> */}
       </StyledTimetable>
     </StyledTimetableScroll>
   );

@@ -9,13 +9,10 @@ import {
   Grid,
   IconButton,
   Link,
-  List,
   ListItem,
   ListItemText,
   Popover,
   Slider,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
   TextField,
 } from '@mui/material';
@@ -25,9 +22,10 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { StyledControlsButton, StyledList } from '../../styles/DroppedCardStyles';
 import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import NetworkError from '../../interfaces/NetworkError';
-import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
+import { AutotimetableProps } from '../../interfaces/PropTypes';
 import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
@@ -45,10 +43,6 @@ const DropdownButton = styled(Button)`
 
 const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
-`;
-
-const StyledList = styled(List)`
-  padding: 0 15px;
 `;
 
 const StyledDatePickerLabel = styled(ListItemText)`
@@ -209,7 +203,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <StyledControlsButton>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           AUTO-TIMETABLE
@@ -363,7 +357,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           GO
         </ExecuteButton>
       </Popover>
-    </div>
+    </StyledControlsButton>
   );
 };
 

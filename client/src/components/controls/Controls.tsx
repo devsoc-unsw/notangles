@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
-import CustomEvents from './CustomEvents';
+import CustomEvents from './CustomEvent';
 import History from './History';
-import { CourseContext } from '../../context/CourseContext';
 import { ControlsProps } from '../../interfaces/PropTypes';
 
 const SelectWrapper = styled(Box)`

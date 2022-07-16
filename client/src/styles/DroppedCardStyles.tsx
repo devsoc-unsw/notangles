@@ -1,5 +1,6 @@
 import { styled } from '@mui/system';
-import { Button, Card, Grid } from '@mui/material';
+import { Button, Card, List } from '@mui/material';
+
 import { borderRadius, borderWidth } from '../constants/theme';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { EventPeriod } from '../interfaces/Periods';
@@ -31,6 +32,10 @@ export const ExpandButton = styled(Button)`
   &:hover {
     opacity: 100%;
   }
+`;
+
+export const StyledControlsButton = styled('div')`
+  display: flex;
 `;
 
 export const StyledCard = styled('div', {
@@ -116,4 +121,8 @@ export const StyledCardName = styled('p')`
 
 export const StyledCardInfo = styled(StyledCardName)`
   font-size: 85%;
+`;
+
+export const StyledList = styled(List)`
+  padding: 24px 15px 12px;
 `;

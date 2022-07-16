@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+
 import { defaultEndTime, defaultStartTime } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
@@ -49,6 +50,7 @@ export interface IAppContext {
 
   latestEndTime: number;
   setLatestEndTime: (newLatestEndTime: number) => void;
+
   term: string;
   setTerm: (newTerm: string) => void;
 

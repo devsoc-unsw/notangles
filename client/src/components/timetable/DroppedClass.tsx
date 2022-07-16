@@ -172,11 +172,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
-                  isHideClassInfo ? (
-                    <></>
-                  ) : (
-                    <PeriodMetadata period={classCard} />
-                  )
+                  !isHideClassInfo && <PeriodMetadata period={classCard} />
                 ) : (
                   <>
                     {activityMaxPeriods} class
