@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
+import { Box, Button, Grid, ListItem, ListItemButton, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { ColorPicker, ColorValue } from 'mui-color';
@@ -10,6 +10,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { StyledList, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import DropdownOption from '../timetable/DropdownOption';
+import { Chrome, Colorful, ColorResult, Sketch } from '@uiw/react-color';
 
 const DropdownButton = styled(Button)`
   && {
@@ -24,6 +25,10 @@ const DropdownButton = styled(Button)`
   }
 `;
 
+const ColorButton = styled(Button)`
+  text-transform: none;
+`;
+
 const ExecuteButton = styled(Button)`
   margin-top: 16px;
   height: 40px;
@@ -31,7 +36,7 @@ const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
-const CustomEvent = ({}) => {
+const CustomEvent = ({ }) => {
   // for opening popover
 
   //anchorEL sets position of the popover, useState to see if popover should show or not
@@ -45,6 +50,10 @@ const CustomEvent = ({}) => {
   // Function to open popover when Event button is clicked
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setShowPicker(!showPicker);
   };
 
   //Close popover when Event button is clicked again
@@ -72,7 +81,12 @@ const CustomEvent = ({}) => {
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
   const [days, setDays] = useState<Array<string>>([]);
 
-  const [color, setColor] = useState<ColorValue>('#1F7E8C');
+  // const [color, setColor] = useState<ColorValue>('#1F7E8C');
+
+  // const [color, setColor] = useState<ColorResult>('#1F7E8C');
+
+  const [color, setColor] = useState('#1F7E8C');
+  const [showPicker, setShowPicker] = useState<boolean>(false);
 
   const doCreateEvent = () => {
     const uuid = uuidv4();
@@ -213,10 +227,28 @@ const CustomEvent = ({}) => {
             />
           </StyledListItem>
           <DropdownOption optionName="Days" optionState={days} setOptionState={handleFormat} optionChoices={weekdays} noOff />
-          <ListItem>
+          {/* <ListItem>
             <StyledListItemText primary="Color" />
             <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
-          </ListItem>
+          </ListItem> */}
+
+          <Box
+            m={1}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <ColorButton variant="contained" onClick={handleColorClick}>Choose Color</ColorButton>
+            {showPicker &&
+              <>
+                <ListItem alignItems="flex-start">
+                  <Colorful onChange={(e) => setColor(e.hex)} color={color} />
+                </ListItem>
+              </>}
+          </Box>
+
+
+
         </StyledList>
         <ExecuteButton
           variant="contained"
