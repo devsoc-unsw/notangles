@@ -22,7 +22,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
     multiple,
     noOff,
 }) => {
-    const handleOptionChange = (newOption: string | null) => {
+    const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
         if (newOption !== null) {
             setOptionState(newOption);
         }
@@ -39,7 +39,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
                         size="small"
                         exclusive={multiple ? false : true}
                         value={optionState}
-                        onChange={() => handleOptionChange}
+                        onChange={handleOptionChange}
                         aria-label="option choices"
                     >
                         {!noOff && (
