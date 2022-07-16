@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, CourseCode } from '../../interfaces/Periods';
@@ -78,7 +78,10 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     window.addEventListener('resize', updateCellWidth);
     updateCellWidth();
     return () => window.removeEventListener('resize', updateCellWidth);
-  }, []);
+  }, [days]);
+  // useEffect(() => {
+  //   updateCellWidth();
+  // }, [])
 
   const clashes = findClashes(selectedClasses, createdEvents, days);
 
