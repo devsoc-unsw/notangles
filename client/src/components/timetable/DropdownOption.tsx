@@ -1,7 +1,7 @@
 import React from 'react';
-import { ListItem, Grid, ListItemText, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ListItem, Grid, ListItemText, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/system';
-import { DropdownOptionProps } from "../../interfaces/PropTypes";
+import { DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
   margin-top: 10px;
@@ -15,12 +15,12 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
 `;
 
 const DropdownOption: React.FC<DropdownOptionProps> = ({
-    optionName,
-    optionState,
-    setOptionState,
-    optionChoices,
-    multiple,
-    noOff,
+  optionName,
+  optionState,
+  setOptionState,
+  optionChoices,
+  multiple,
+  noOff,
 }) => {
     const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
         if (newOption !== null) {

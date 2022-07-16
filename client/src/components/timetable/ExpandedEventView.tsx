@@ -1,13 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import {
-  Dialog,
-  Grid,
-  IconButton,
-  ListItem,
-  ListItemIcon, TextField,
-  Typography
-} from '@mui/material';
+import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Color, ColorPicker, ColorValue } from 'mui-color';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
@@ -120,12 +113,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
-      {isEditing ?
+      {isEditing ? (
         <>
           <StyledDialogTitle>
             <StyledTitleContainer>
               <Grid container justifyContent="flex-end" alignItems="center">
-                <IconButton onClick={() => handleUpdateEvent(eventPeriod.event.id)} disabled={newName === '' || newLocation === ''}>
+                <IconButton
+                  onClick={() => handleUpdateEvent(eventPeriod.event.id)}
+                  disabled={newName === '' || newLocation === ''}
+                >
                   <Save />
                 </IconButton>
                 <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
@@ -227,7 +223,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             </ListItem>
           </StyledDialogContent>
         </>
-        :
+      ) : (
         <>
           <DiscardDialog
             openSaveDialog={openSaveDialog}
@@ -252,13 +248,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             </StyledTitleContainer>
           </StyledDialogTitle>
           <StyledDialogContent>
-            {description.length > 0 &&
-              (<StyledListItem>
+            {description.length > 0 && (
+              <StyledListItem>
                 <ListItemIcon>
                   <Notes />
                 </ListItemIcon>
                 <Typography>{description}</Typography>
-              </StyledListItem>)}
+              </StyledListItem>
+            )}
             <StyledListItem>
               <ListItemIcon>
                 <LocationOn />
@@ -274,8 +271,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               </Typography>
             </StyledListItem>
           </StyledDialogContent>
-        </>}
-    </Dialog >
+        </>
+      )}
+    </Dialog>
   );
 };
 
