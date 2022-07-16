@@ -114,6 +114,8 @@ const App: React.FC = () => {
 
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
 
+  const daysOfTheWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
@@ -266,13 +268,6 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     storage.set('createdEvents', createdEvents);
-    Object.entries(createdEvents).forEach((event) => {
-      if (event[1].time.day === 6 && days.length != 7) {
-        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
-      } else if (event[1].time.day === 7) {
-        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-      }
-    });
   }, [createdEvents]);
 
   useUpdateEffect(() => {
@@ -290,6 +285,18 @@ const App: React.FC = () => {
         ...Object.entries(createdEvents).map(([_, val]) => val.time.end),
         defaultEndTime,
         latestEndTime
+      )
+    );
+    setDays(
+      daysOfTheWeek.slice(
+        0,
+        Math.max(
+          ...selectedCourses.flatMap((course) =>
+            Object.entries(course.activities).flatMap(([_, cs]) => cs.flatMap((c) => c.periods.map((p) => p.time.day)))
+          ),
+          ...Object.entries(createdEvents).map(([_, val]) => val.time.day),
+          5 // default
+        )
       )
     );
   }, [createdEvents, selectedCourses]);
