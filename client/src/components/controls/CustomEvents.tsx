@@ -53,10 +53,11 @@ const CustomEvent = ({}) => {
   };
 
   const handleFormat = (newFormats: string[]) => {
-    setDays(newFormats);
+    setEventDAys(newFormats);
   };
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { setDays } = useContext(AppContext);
   const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
 
@@ -70,7 +71,7 @@ const CustomEvent = ({}) => {
   const [location, setLocation] = useState<string>('');
 
   const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-  const [days, setDays] = useState<Array<string>>([]);
+  const [eventDays, setEventDAys] = useState<Array<string>>([]);
 
   const [color, setColor] = useState<ColorValue>('#1F7E8C');
 
@@ -93,7 +94,7 @@ const CustomEvent = ({}) => {
         color: color,
       },
       time: {
-        day: weekdays.indexOf(days.toString()) + 1,
+        day: weekdays.indexOf(eventDays.toString()) + 1,
         start: startTime.getHours() + startTime.getMinutes() / 60,
         end: endTime.getHours() + endTime.getMinutes() / 60,
       },
@@ -112,10 +113,19 @@ const CustomEvent = ({}) => {
       setLatestEndTime(endTime.getHours());
     }
 
+    // this updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
+    if (weekdays.indexOf(eventDays.toString()) == 5) {
+      const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+      setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
+    } else if (weekdays.indexOf(eventDays.toString()) == 6) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+    }
+
     setEventName('');
     setLocation('');
     setDescription('');
-    setDays([]);
+    setEventDAys([]);
 
     // Close popover when +Create button clicked.
     setAnchorEl(null);
@@ -212,7 +222,13 @@ const CustomEvent = ({}) => {
               }}
             />
           </StyledListItem>
-          <DropdownOption optionName="Days" optionState={days} setOptionState={handleFormat} optionChoices={weekdays} noOff />
+          <DropdownOption
+            optionName="Days"
+            optionState={eventDays}
+            setOptionState={handleFormat}
+            optionChoices={weekdays}
+            noOff
+          />
           <ListItem>
             <StyledListItemText primary="Color" />
             <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
@@ -222,7 +238,7 @@ const CustomEvent = ({}) => {
           variant="contained"
           color="primary"
           disableElevation
-          disabled={eventName === '' || location === '' || days.length === 0}
+          disabled={eventName === '' || location === '' || eventDays.length === 0}
           onClick={doCreateEvent}
         >
           <Add />

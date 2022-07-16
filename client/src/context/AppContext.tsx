@@ -41,7 +41,8 @@ export interface IAppContext {
   setIsDrag: (newIsDrag: boolean) => void;
 
   days: string[];
-  setDays: (newDays: string[]) => void;
+  setDays(newDays: string[]): void;
+  setDays(callback: (prevDays: string[]) => string[]): void;
 
   earliestStartTime: number;
   setEarliestStartTime: (newEarliestStartTime: number) => void;
