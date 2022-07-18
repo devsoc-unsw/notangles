@@ -1,5 +1,5 @@
 import { styled } from '@mui/system';
-import { Button, Card, List } from '@mui/material';
+import { Button, Card, Grid, List } from '@mui/material';
 
 import { borderRadius, borderWidth } from '../constants/theme';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
@@ -107,6 +107,10 @@ export const StyledCardInner = styled(Card, {
   position: relative;
 `;
 
+export const StyledCardInnerGrid = styled(Grid)`
+  height: 100%;
+`;
+
 export const StyledCardName = styled('p')`
   width: 100%;
   margin: 0;
@@ -120,5 +124,5 @@ export const StyledCardInfo = styled(StyledCardName)`
 `;
 
 export const StyledList = styled(List)`
-  padding: 24px 15px 12px;
+  padding: 12px 15px;
 `;

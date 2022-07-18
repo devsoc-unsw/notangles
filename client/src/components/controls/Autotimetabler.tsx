@@ -12,7 +12,9 @@ import {
   ListItem,
   ListItemText,
   Popover,
-  Slider, TextField, Typography
+  Slider,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -42,6 +44,12 @@ const DropdownButton = styled(Button)`
 
 const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
+`;
+
+const StyledIconButton = styled(IconButton)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
 `;
 
 const StyledDatePickerLabel = styled(ListItemText)`
@@ -254,14 +262,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 </p>
                 <p>Autotimetabler may lack full support for certain courses.</p>
               </Typography>
-              <IconButton
-                style={{ position: 'absolute', right: 10, top: 10 }}
-                aria-label="close"
-                onClick={toggleIsOpenInfo}
-                size="large"
-              >
+              <StyledIconButton aria-label="close" onClick={toggleIsOpenInfo} size="large">
                 <Close />
-              </IconButton>
+              </StyledIconButton>
             </DialogContentText>
           </DialogContent>
         </Dialog>

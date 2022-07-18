@@ -7,7 +7,14 @@ import { Color } from 'mui-color';
 
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
-import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
+import {
+  ExpandButton,
+  StyledCard,
+  StyledCardInfo,
+  StyledCardInner,
+  StyledCardInnerGrid,
+  StyledCardName,
+} from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
 
@@ -142,9 +149,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           clashColour={'none'}
           sx={(eventPeriod.event.color as Color)?.css ?? { backgroundColor: eventPeriod.event.color }}
         >
-          <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
+          <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
-              {/*TODO: tweak this number*/}
               <StyledCardName>
                 <b>{eventPeriod.event.name}</b>
               </StyledCardName>
@@ -154,7 +160,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
               </StyledCardInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
-          </Grid>
+          </StyledCardInnerGrid>
           {fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <OpenInFull />

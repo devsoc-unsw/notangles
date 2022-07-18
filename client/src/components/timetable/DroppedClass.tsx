@@ -7,7 +7,7 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
-import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardName } from '../../styles/DroppedCardStyles';
+import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardInnerGrid, StyledCardName } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
@@ -163,7 +163,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
         >
-          <Grid container sx={{ height: '100%' }} justifyContent="center" alignItems="center">
+          <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
                 <b>
@@ -182,7 +182,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               </StyledCardInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
-          </Grid>
+          </StyledCardInnerGrid>
           {classCard.type === 'class' && fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <OpenInFull />

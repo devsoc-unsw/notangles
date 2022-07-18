@@ -43,6 +43,10 @@ const searchOptions: SearchOptions = {
 
 let fuzzy = new Fuse<CourseOverview>([], searchOptions);
 
+const ListboxContainer = styled('div')`
+  overflow: hidden;
+`;
+
 const StyledSelect = styled(Box)`
   width: 100%;
   text-align: left;
@@ -252,7 +256,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         });
 
       return (
-        <div ref={ref} style={{ overflow: 'hidden' }}>
+        <ListboxContainer ref={ref}>
           <OuterElementContext.Provider value={other}>
             <VariableSizeList
               ref={listRef}
@@ -269,7 +273,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {Row}
             </VariableSizeList>
           </OuterElementContext.Provider>
-        </div>
+        </ListboxContainer>
       );
     }),
     []
