@@ -6,7 +6,7 @@ import {
   Request,
   UseInterceptors,
 } from '@nestjs/common';
-import { Timetable, Settings } from 'src/auth/schemas/user.schema';
+import { Timetable, Settings } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseService } from './database.service';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';

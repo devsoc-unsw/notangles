@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument, UserInterface } from './schemas/user.schema';
+import { UserDocument, UserInterface } from '../schemas/user.schema';
 import * as sgMail from '@sendgrid/mail';
 
 @Injectable()

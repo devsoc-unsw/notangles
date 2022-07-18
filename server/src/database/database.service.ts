@@ -7,7 +7,7 @@ import {
   Timetable,
   TimetableDocument,
   UserDocument,
-} from '../auth/schemas/user.schema';
+} from '../schemas/user.schema';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
 
 @SerializeOptions({

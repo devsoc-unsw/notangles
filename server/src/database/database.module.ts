@@ -4,7 +4,7 @@ import {
   userSchema,
   UserSettingsSchema,
   UserTimetableSchema,
-} from 'src/auth/schemas/user.schema';
+} from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseController } from './database.controller';
 import { DatabaseService } from './database.service';
