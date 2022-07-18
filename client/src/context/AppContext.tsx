@@ -43,7 +43,7 @@ export interface IAppContext {
 
   days: string[];
   setDays(newDays: string[]): void;
-  setDays(callback: (prevDays: string[]) => string[]): void;
+  setDays(callback: (oldDays: string[]) => string[]): void;
 
   earliestStartTime: number;
   setEarliestStartTime: (newEarliestStartTime: number) => void;

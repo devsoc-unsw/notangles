@@ -3,14 +3,16 @@ import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/
 import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
+import { Colorful } from '@uiw/react-color';
 import { v4 as uuidv4 } from 'uuid';
+
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { StyledControlsButton, StyledList } from '../../styles/DroppedCardStyles';
 import { EventPeriod } from '../../interfaces/Periods';
+import { StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
-import { Colorful } from '@uiw/react-color';
 
 const DropdownButton = styled(Button)`
   && {
@@ -56,7 +58,7 @@ const CustomEvent: React.FC = () => {
     setShowPicker(!showPicker);
   };
 
-  //Close popover when Event button is clicked again
+  // Close popover when Event button is clicked again
   const handleClose = () => {
     setAnchorEl(null);
   };

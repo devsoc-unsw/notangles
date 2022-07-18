@@ -34,10 +34,6 @@ export const ExpandButton = styled(Button)`
   }
 `;
 
-export const StyledControlsButton = styled('div')`
-  display: flex;
-`;
-
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
     !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(

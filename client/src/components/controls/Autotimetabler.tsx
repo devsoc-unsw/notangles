@@ -12,9 +12,7 @@ import {
   ListItem,
   ListItemText,
   Popover,
-  Slider,
-  Typography,
-  TextField,
+  Slider, TextField, Typography
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -22,10 +20,11 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { StyledControlsButton, StyledList } from '../../styles/DroppedCardStyles';
-import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import NetworkError from '../../interfaces/NetworkError';
+import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import { AutotimetableProps } from '../../interfaces/PropTypes';
+import { StyledControlsButton } from '../../styles/ControlStyles';
+import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
