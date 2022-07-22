@@ -230,7 +230,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                   width: 35,
                   height: 35,
                   borderRadius: '5px',
-                  ...{ backgroundColor: color },
+                  ...{ backgroundColor: newColor },
                 }}
               ></Box>
               <ListItem>
