@@ -41,6 +41,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   // Close color picker popover
   const handleCloseColorPicker = () => {
+    handleCloseDialog();
     setColorPickerAnchorEl(null);
   };
 
@@ -98,6 +99,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setNewName(name);
     setNewLocation(location);
     setNewDescription(description);
+    setNewColor(color);
   };
 
   const handleCloseDialog = () => {
@@ -257,7 +259,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                   }}
                 >
                   <ListItem alignItems="flex-start">
-                    <Colorful onChange={(e) => setNewColor(e.hex)} color={newColor} />
+                    <Colorful
+                      color={newColor}
+                      onChange={(e) => {
+                        setIsChanged(true);
+                        setNewColor(e.hex);
+                      }}
+                    />
                   </ListItem>
                   <ListItem>
                     <TextField
@@ -266,6 +274,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                       variant="outlined"
                       value={newColor}
                       onChange={(e) => {
+                        setIsChanged(true);
                         setNewColor(e.target.value);
                       }}
                     />
