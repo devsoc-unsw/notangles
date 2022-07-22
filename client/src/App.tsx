@@ -302,6 +302,7 @@ const App: React.FC = () => {
             Object.entries(course.activities).flatMap(([_, cs]) => cs.flatMap((c) => c.periods.map((p) => p.time.day)))
           ),
           ...Object.entries(createdEvents).map(([_, val]) => val.time.day),
+          days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
           5 // default
         )
       )

@@ -3,7 +3,7 @@ import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/
 import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Colorful } from '@uiw/react-color';
+import { Colorful, EditableInput } from '@uiw/react-color';
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -78,7 +78,7 @@ const CustomEvent: React.FC = () => {
   const [location, setLocation] = useState<string>('');
   const [eventDays, setEventDAys] = useState<Array<string>>([]);
 
-  const [color, setColor] = useState('#1F7E8C');
+  const [color, setColor] = useState<string>('#1F7E8C');
   const [showPicker, setShowPicker] = useState<boolean>(false);
 
   const doCreateEvent = () => {
@@ -246,12 +246,22 @@ const CustomEvent: React.FC = () => {
             </ColourButton>
             {showPicker && (
               <>
-                <ListItem alignItems="flex-start">
+                <ListItem>
                   <Colorful onChange={(e) => setColor(e.hex)} color={color} />
                 </ListItem>
               </>
             )}
           </Box>
+          {showPicker && (
+            <ListItem>
+              <EditableInput
+                placement="left"
+                label="Hex: "
+                value={color}
+                onChange={(e) => setColor(e.target.value)} color={color}
+              />
+            </ListItem>
+          )}
         </StyledList>
         <ExecuteButton
           variant="contained"

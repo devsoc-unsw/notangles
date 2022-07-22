@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import { Box, Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Colorful } from '@uiw/react-color';
+import { Colorful, EditableInput } from '@uiw/react-color';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
@@ -235,6 +235,16 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 </>
               )}
             </Box>
+            {showPicker && (
+              <ListItem>
+                <EditableInput
+                  placement="left"
+                  label="Hex: "
+                  value={color}
+                  onChange={(e) => setNewColor(e.target.value)} color={newColor}
+                />
+              </ListItem>
+            )}
           </StyledDialogContent>
         </>
       ) : (
