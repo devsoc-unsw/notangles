@@ -1,14 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
+import { Box, Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Color, ColorPicker, ColorValue } from 'mui-color';
-
+import { Colorful } from '@uiw/react-color';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ColourButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
@@ -29,9 +28,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end));
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
-  const [newColor, setNewColor] = useState<ColorValue>(color as Color);
+  const [newColor, setNewColor] = useState<string>(color);
+  const [showPicker, setShowPicker] = useState<boolean>(false);
+
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setShowPicker(!showPicker);
+  };
 
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
@@ -218,10 +223,18 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 noOff
               />
             </ListItem>
-            <ListItem>
-              <StyledListItemText primary="Color" />
-              <ColorPicker defaultValue="" value={newColor} onChange={(e) => setNewColor(e)} />
-            </ListItem>
+            <Box m={1} display="flex" justifyContent="center" alignItems="center">
+              <ColourButton variant="contained" onClick={handleColorClick}>
+                Choose Color
+              </ColourButton>
+              {showPicker && (
+                <>
+                  <ListItem alignItems="flex-start">
+                    <Colorful onChange={(e) => setNewColor(e.hex)} color={newColor} />
+                  </ListItem>
+                </>
+              )}
+            </Box>
           </StyledDialogContent>
         </>
       ) : (

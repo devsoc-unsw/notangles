@@ -3,8 +3,6 @@ import { LocationOn, OpenInFull } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
-import { Color } from 'mui-color';
-
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
@@ -147,7 +145,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          sx={(eventPeriod.event.color as Color)?.css ?? { backgroundColor: eventPeriod.event.color }}
+          sx={{ backgroundColor: eventPeriod.event.color }}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

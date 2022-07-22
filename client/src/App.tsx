@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultStartTime, defaultEndTime, getAvailableTermDetails } from './constants/timetable';
+import { defaultStartTime, defaultEndTime, getAvailableTermDetails, weekdaysLong } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -147,8 +147,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
@@ -295,7 +295,7 @@ const App: React.FC = () => {
       )
     );
     setDays(
-      daysOfTheWeek.slice(
+      weekdaysLong.slice(
         0,
         Math.max(
           ...selectedCourses.flatMap((course) =>

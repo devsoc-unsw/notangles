@@ -5,14 +5,14 @@ import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
 import { v4 as uuidv4 } from 'uuid';
-
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ColourButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
+import { weekdaysShort } from '../../constants/timetable';
 
 const DropdownButton = styled(Button)`
   && {
@@ -27,12 +27,8 @@ const DropdownButton = styled(Button)`
   }
 `;
 
-const ColorButton = styled(Button)`
-  text-transform: none;
-`;
-
 const ExecuteButton = styled(Button)`
-  margin-top: 16px;
+  margin-top: 4px;
   height: 40px;
   width: 100%;
   border-radius: 0px 0px 5px 5px;
@@ -80,13 +76,7 @@ const CustomEvent: React.FC = () => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-
-  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
   const [eventDays, setEventDAys] = useState<Array<string>>([]);
-
-  // const [color, setColor] = useState<ColorValue>('#1F7E8C');
-
-  // const [color, setColor] = useState<ColorResult>('#1F7E8C');
 
   const [color, setColor] = useState('#1F7E8C');
   const [showPicker, setShowPicker] = useState<boolean>(false);
@@ -110,7 +100,7 @@ const CustomEvent: React.FC = () => {
         color: color,
       },
       time: {
-        day: weekdays.indexOf(eventDays.toString()) + 1,
+        day: weekdaysShort.indexOf(eventDays.toString()) + 1,
         start: startTime.getHours() + startTime.getMinutes() / 60,
         end: endTime.getHours() + endTime.getMinutes() / 60,
       },
@@ -130,11 +120,11 @@ const CustomEvent: React.FC = () => {
     }
 
     // this updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
-    if (weekdays.indexOf(eventDays.toString()) == 5) {
+    if (weekdaysShort.indexOf(eventDays.toString()) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
       setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (weekdays.indexOf(eventDays.toString()) == 6) {
+    } else if (weekdaysShort.indexOf(eventDays.toString()) == 6) {
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 
@@ -242,18 +232,18 @@ const CustomEvent: React.FC = () => {
             optionName="Days"
             optionState={eventDays}
             setOptionState={handleFormat}
-            optionChoices={weekdays}
+            optionChoices={weekdaysShort}
             noOff
           />
-          {/* <ListItem>
-            <StyledListItemText primary="Color" />
-            <ColorPicker defaultValue="" onChange={(e) => setColor(e)} value={color} />
-          </ListItem> */}
-
-          <Box m={1} display="flex" justifyContent="center" alignItems="center">
-            <ColorButton variant="contained" onClick={handleColorClick}>
-              Choose Color
-            </ColorButton>
+          <Box
+            m={1}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <ColourButton variant="contained" onClick={handleColorClick}>
+              Choose Colour
+            </ColourButton>
             {showPicker && (
               <>
                 <ListItem alignItems="flex-start">
