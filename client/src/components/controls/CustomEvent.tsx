@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
+import { Box, Button, Dialog, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful, EditableInput } from '@uiw/react-color';
@@ -37,12 +37,16 @@ const ExecuteButton = styled(Button)`
 const CustomEvent: React.FC = () => {
   // For opening popover
 
+  // popover for Color Picker
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
+  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+
   // anchorEl sets position of the popover, useState to see if popover should show or not
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   // The popover is shown, currently set to the same as anchorEl
   const open = Boolean(anchorEl);
-
   const popoverId = open ? 'simple-popover' : undefined;
 
   // Function to open popover when Event button is clicked
@@ -51,7 +55,12 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setShowPicker(!showPicker);
+    setColorPickerAnchorEl(event.currentTarget);
+  };
+
+  // Close color picker popover
+  const handleCloseColorPicker = () => {
+    setColorPickerAnchorEl(null);
   };
 
   // Close popover when Event button is clicked again
@@ -80,6 +89,7 @@ const CustomEvent: React.FC = () => {
 
   const [color, setColor] = useState<string>('#1F7E8C');
   const [showPicker, setShowPicker] = useState<boolean>(false);
+  const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
 
   const doCreateEvent = () => {
     const uuid = uuidv4();
@@ -135,6 +145,7 @@ const CustomEvent: React.FC = () => {
 
     // Close popover when +Create button clicked.
     setAnchorEl(null);
+    setColorPickerAnchorEl(null);
   };
 
   return (
@@ -235,30 +246,64 @@ const CustomEvent: React.FC = () => {
             optionChoices={weekdaysShort}
             noOff
           />
-          <Box
-            m={1}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <ColourButton variant="contained" onClick={handleColorClick}>
-              Choose Colour
-            </ColourButton>
-            {showPicker && (
-              <>
-                <ListItem>
+          <StyledListItem>
+            <Box
+              sx={{
+                width: 35,
+                height: 35,
+                borderRadius: '5px',
+                ...{ backgroundColor: color },
+              }}
+            ></Box>
+            <ListItem>
+              <Button
+                disableElevation
+                variant="outlined"
+                size="small"
+                aria-describedby={colorPickerPopoverId}
+                onClick={handleColorClick}
+              >
+                Choose Colour
+              </Button>
+              <Popover
+                open={openColorPickerPopover}
+                anchorEl={colorPickerAnchorEl}
+                onClose={handleCloseColorPicker}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <ListItem alignItems="flex-start">
                   <Colorful onChange={(e) => setColor(e.hex)} color={color} />
                 </ListItem>
-              </>
-            )}
-          </Box>
+                <ListItem alignItems="flex-start">
+                  <TextField
+                    id="outlined-required"
+                    label="Hex (optional)"
+                    variant="outlined"
+                    value={color}
+                    onChange={(e) => {
+                      setColor(e.target.value);
+                    }}
+                  />
+                </ListItem>
+              </Popover>
+            </ListItem>
+          </StyledListItem>
+
           {showPicker && (
             <ListItem>
               <EditableInput
                 placement="left"
                 label="Hex: "
                 value={color}
-                onChange={(e) => setColor(e.target.value)} color={color}
+                onChange={(e) => setColor(e.target.value)}
+                color={color}
               />
             </ListItem>
           )}
