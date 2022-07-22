@@ -1,5 +1,5 @@
 import { CourseCode, CourseData } from '../interfaces/Course';
-import { DbCourse, dbCourseToCourseData } from '../interfaces/DbCourse';
+import { DbCourse, DbTimes, dbCourseToCourseData } from '../interfaces/DbCourse';
 import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
@@ -48,9 +48,16 @@ const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]): n
   return dbClassTimesList;
 };
 
+const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): boolean => {
+  return (dbClassTimesOne.day == dbClassTimesTwo.day &&
+  dbClassTimesOne.location == dbClassTimesTwo.location &&
+  dbClassTimesOne.time.start == dbClassTimesTwo.time.start &&
+  dbClassTimesOne.time.end == dbClassTimesTwo.time.end)
+}
+
 const sortUnique = (arr: number[]): number[] => {
   if (arr.length === 0) return arr;
-  arr = arr.sort(function (a, b) {
+  arr = arr.sort((a, b) => {
     return a * 1 - b * 1;
   });
   let ret = [arr[0]];
@@ -71,17 +78,13 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
     }
     const json: DbCourse = await data.json();
     json.classes.forEach((dbClass) => {
+      // loop through each class and search for another identical class
       if ('times' in dbClass && dbClass.times.length > 1) {
         for (let i = 0; i < dbClass.times.length - 1; i += 1) {
           for (let j = i + 1; j < dbClass.times.length; j += 1) {
             let dbClassTimesOne = dbClass.times[i];
             let dbClassTimesTwo = dbClass.times[j];
-            if (
-              dbClassTimesOne.day == dbClassTimesTwo.day &&
-              dbClassTimesOne.location == dbClassTimesTwo.location &&
-              dbClassTimesOne.time.start == dbClassTimesTwo.time.start &&
-              dbClassTimesOne.time.end == dbClassTimesTwo.time.end
-            ) {
+            if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
               let dbClassTimesList: number[] = [];
 
               dbClassTimesList = convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
@@ -123,6 +126,7 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
         }
       }
     });
+
     if (!json) {
       throw new NetworkError('Internal server error');
     }
