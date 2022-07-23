@@ -75,7 +75,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
-  // for opening popover
+  // anchorEl sets position of the Autotimetabling popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const { setAutoVisibility, setAlertMsg } = useContext(AppContext);

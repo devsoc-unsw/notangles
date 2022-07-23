@@ -9,7 +9,7 @@ import { weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
-import { StyledControlsButton } from '../../styles/ControlStyles';
+import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
@@ -35,32 +35,31 @@ const ExecuteButton = styled(Button)`
 `;
 
 const CustomEvent: React.FC = () => {
-  // For opening popover
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
+    useContext(AppContext);
+
+  // anchorEl sets position of the Custom Event popover
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const open = Boolean(anchorEl); // Whether the popover is shown
+  const popoverId = open ? 'simple-popover' : undefined;
 
   // popover for Color Picker
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
 
-  // anchorEl sets position of the popover, useState to see if popover should show or not
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [eventName, setEventName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
+  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
+  const [eventDays, setEventDAys] = useState<Array<string>>([]);
+  const [color, setColor] = useState<string>('#1F7E8C');
 
-  // The popover is shown, currently set to the same as anchorEl
-  const open = Boolean(anchorEl);
-  const popoverId = open ? 'simple-popover' : undefined;
-
-  // Function to open popover when Event button is clicked
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  // Open popover when Event button is clicked
+  const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-  };
-
-  const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setColorPickerAnchorEl(event.currentTarget);
-  };
-
-  // Close color picker popover
-  const handleCloseColorPicker = () => {
-    setColorPickerAnchorEl(null);
   };
 
   // Close popover when Event button is clicked again
@@ -68,28 +67,17 @@ const CustomEvent: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleOpenColourPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setColorPickerAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseColourPicker = () => {
+    setColorPickerAnchorEl(null);
+  };
+
   const handleFormat = (newFormats: string[]) => {
     setEventDAys(newFormats);
   };
-
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setDays } = useContext(AppContext);
-  const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
-
-  // Time picker stuff
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
-
-  // Taking in user's input
-  const [eventName, setEventName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  const [eventDays, setEventDAys] = useState<Array<string>>([]);
-
-  const [color, setColor] = useState<string>('#1F7E8C');
-  const [showPicker, setShowPicker] = useState<boolean>(false);
-  const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
 
   const doCreateEvent = () => {
     const uuid = uuidv4();
@@ -129,7 +117,7 @@ const CustomEvent: React.FC = () => {
       setLatestEndTime(endTime.getHours());
     }
 
-    // this updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
+    // This updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
     if (weekdaysShort.indexOf(eventDays.toString()) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -143,14 +131,14 @@ const CustomEvent: React.FC = () => {
     setDescription('');
     setEventDAys([]);
 
-    // Close popover when +Create button clicked.
+    // Close popover when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
   };
 
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
+      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
@@ -247,29 +235,22 @@ const CustomEvent: React.FC = () => {
             noOff
           />
           <Box m={1} display="flex" justifyContent="center" alignItems="center">
-            <Box
-              sx={{
-                width: 35,
-                height: 35,
-                borderRadius: '5px',
-                ...{ backgroundColor: color },
-              }}
-            ></Box>
-            <Box sx={{ paddingLeft: 2 }}>
+            <ColourIndicatorBox backgroundColour={color} />
+            <StyledButtonContainer>
               <Button
                 disableElevation
                 variant="contained"
                 size="small"
                 aria-describedby={colorPickerPopoverId}
-                onClick={handleColorClick}
+                onClick={handleOpenColourPicker}
               >
                 Choose Colour
               </Button>
-            </Box>
+            </StyledButtonContainer>
             <Popover
               open={openColorPickerPopover}
               anchorEl={colorPickerAnchorEl}
-              onClose={handleCloseColorPicker}
+              onClose={handleCloseColourPicker}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'left',

@@ -149,9 +149,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
-              <StyledCardName>
-                <b>{eventPeriod.event.name}</b>
-              </StyledCardName>
+              <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               <StyledCardInfo>
                 <StyledLocationIcon />
                 {eventPeriod.event.location}

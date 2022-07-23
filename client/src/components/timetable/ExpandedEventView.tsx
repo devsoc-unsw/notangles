@@ -2,13 +2,15 @@ import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Colorful, EditableInput } from '@uiw/react-color';
+import { Colorful } from '@uiw/react-color';
+
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { ColourButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ColourIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
@@ -110,7 +112,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const handleCloseDialog = () => {
-    // Another dialog to alert user changes have not been saved when in isEditing mode
+    // Another dialog to alert user that changes have not been saved when in isEditing mode
     if (isEditing && isChanged) {
       setOpenSaveDialog(true);
     } else {
@@ -237,15 +239,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               />
             </ListItem>
             <Box m={1} display="flex" justifyContent="center" alignItems="center">
-              <Box
-                sx={{
-                  width: 35,
-                  height: 35,
-                  borderRadius: '5px',
-                  ...{ backgroundColor: newColor },
-                }}
-              ></Box>
-              <Box sx={{ paddingLeft: 2 }}>
+              <ColourIndicatorBox backgroundColour={newColor} />
+              <StyledButtonContainer>
                 <Button
                   disableElevation
                   variant="contained"
@@ -255,7 +250,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 >
                   Edit Colour
                 </Button>
-              </Box>
+              </StyledButtonContainer>
               <Popover
                 open={openColorPickerPopover}
                 anchorEl={colorPickerAnchorEl}

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -12,26 +12,13 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultStartTime, defaultEndTime, getAvailableTermDetails, weekdaysLong } from './constants/timetable';
+import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import {
-  Activity,
-  ClassData,
-  ClassPeriod,
-  ClassTime,
-  CourseCode,
-  CourseData,
-  EventData,
-  EventTime,
-  InInventory,
-  SelectedClasses,
-  CreatedEvents,
-} from './interfaces/Periods';
-import { useDrag } from './utils/Drag';
-import { setDropzoneRange } from './utils/Drag';
+import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
@@ -112,6 +99,8 @@ const App: React.FC = () => {
     storage.set('hasShownInfoMessage', true);
   }
 
+  setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
 
   const handleSelectClass = (classData: ClassData) => {
@@ -129,8 +118,6 @@ const App: React.FC = () => {
       return prev;
     });
   };
-
-  setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   useDrag(handleSelectClass, handleRemoveClass);
 
@@ -268,7 +255,7 @@ const App: React.FC = () => {
     storage.set('createdEvents', createdEvents);
   }, [createdEvents]);
 
-  const getLatestDoTW = (courses: CourseData[]) => {
+  const getLatestDotW = (courses: CourseData[]) => {
     let maxDay: number = 5;
     for (let i = 0; i < courses.length; i++) {
       const activities = Object.values(courses[i].activities);
@@ -306,7 +293,7 @@ const App: React.FC = () => {
       weekdaysLong.slice(
         0,
         Math.max(
-          getLatestDoTW(selectedCourses),
+          getLatestDotW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
           days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
           5 // default

@@ -5,7 +5,14 @@ import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { AppContext } from '../../context/AppContext';
 import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
-import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardInnerGrid, StyledCardName } from '../../styles/DroppedCardStyles';
+import {
+  ExpandButton,
+  StyledCard,
+  StyledCardInfo,
+  StyledCardInner,
+  StyledCardInnerGrid,
+  StyledCardName,
+} from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
@@ -156,9 +163,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
-                <b>
-                  {classCard.class.course.code} {classCard.class.activity}
-                </b>
+                {classCard.class.course.code} {classCard.class.activity}
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
