@@ -58,7 +58,11 @@ const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): bo
 const sortUnique = (arr: number[]): number[] => {
   if (arr.length === 0) return arr;
   arr = arr.sort((a, b) => {
-    return a * 1 - b * 1;
+    // sorting numbers in ascending order
+    // CASE 1: neg value - a will be ordered before b.
+    // CASE 2: 0 - ordering of a and b won’t change.
+    // CASE 3: pos value - b will be ordered before a.
+    return a - b;
   });
   let ret = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
