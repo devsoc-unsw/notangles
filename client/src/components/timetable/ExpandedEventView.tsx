@@ -43,7 +43,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   // Close color picker popover
   const handleCloseColorPicker = () => {
-    handleCloseDialog();
     setColorPickerAnchorEl(null);
   };
 
@@ -237,7 +236,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 noOff
               />
             </ListItem>
-            <ListItem>
+            <Box m={1} display="flex" justifyContent="center" alignItems="center">
               <Box
                 sx={{
                   width: 35,
@@ -246,53 +245,53 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                   ...{ backgroundColor: newColor },
                 }}
               ></Box>
-              <ListItem>
+              <Box sx={{ paddingLeft: 2 }}>
                 <Button
                   disableElevation
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   aria-describedby={colorPickerPopoverId}
                   onClick={handleColorClick}
                 >
                   Edit Colour
                 </Button>
-                <Popover
-                  open={openColorPickerPopover}
-                  anchorEl={colorPickerAnchorEl}
-                  onClose={handleCloseColorPicker}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                >
-                  <ListItem alignItems="flex-start">
-                    <Colorful
-                      color={newColor}
-                      onChange={(e) => {
-                        setIsChanged(true);
-                        setNewColor(e.hex);
-                      }}
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <TextField
-                      id="outlined-required"
-                      label="Hex (optional)"
-                      variant="outlined"
-                      value={newColor}
-                      onChange={(e) => {
-                        setIsChanged(true);
-                        setNewColor(e.target.value);
-                      }}
-                    />
-                  </ListItem>
-                </Popover>
-              </ListItem>
-            </ListItem>
+              </Box>
+              <Popover
+                open={openColorPickerPopover}
+                anchorEl={colorPickerAnchorEl}
+                onClose={handleCloseColorPicker}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <ListItem alignItems="flex-start">
+                  <Colorful
+                    color={newColor}
+                    onChange={(e) => {
+                      setIsChanged(true);
+                      setNewColor(e.hex);
+                    }}
+                  />
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    id="outlined-required"
+                    label="Hex (optional)"
+                    variant="outlined"
+                    value={newColor}
+                    onChange={(e) => {
+                      setIsChanged(true);
+                      setNewColor(e.target.value);
+                    }}
+                  />
+                </ListItem>
+              </Popover>
+            </Box>
           </StyledDialogContent>
         </>
       ) : (
