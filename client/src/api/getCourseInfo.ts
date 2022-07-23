@@ -1,9 +1,8 @@
+import { API_URL } from './config';
 import { CourseCode, CourseData } from '../interfaces/Course';
 import { DbCourse, DbTimes, dbCourseToCourseData } from '../interfaces/DbCourse';
-import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
-import { parseJSON } from 'date-fns';
 
 /**
  * Fetches the information of a specified course
