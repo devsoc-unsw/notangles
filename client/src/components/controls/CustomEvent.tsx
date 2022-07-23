@@ -222,7 +222,13 @@ const CustomEvent: React.FC = () => {
               value={endTime}
               renderInput={(params) => {
                 const tooEarly = startTime.getHours() >= endTime.getHours();
-                return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'Before start time' : ''} />;
+                return (
+                  <TextField
+                    {...params}
+                    error={params.error || tooEarly}
+                    label={tooEarly ? 'End time must be after start time' : ''}
+                  />
+                );
               }}
               onChange={(e) => {
                 if (e) setEndTime(e);

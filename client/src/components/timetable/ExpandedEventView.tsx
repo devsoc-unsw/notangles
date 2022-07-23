@@ -222,7 +222,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 value={newEndTime}
                 renderInput={(params) => {
                   const tooEarly = newStartTime.getHours() >= newEndTime.getHours();
-                  return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'Before start time' : ''} />;
+                  return (
+                    <TextField
+                      {...params}
+                      error={params.error || tooEarly}
+                      label={tooEarly ? 'End time must be after start time' : ''}
+                    />
+                  );
                 }}
                 onChange={(e) => {
                   setIsChanged(true);
