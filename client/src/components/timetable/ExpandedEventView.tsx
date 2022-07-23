@@ -106,7 +106,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setNewName(name);
     setNewLocation(location);
     setNewDescription(description);
-    setNewColor(color);
+    setNewColor(color.toString());
   };
 
   const handleCloseDialog = () => {
@@ -219,7 +219,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 value={newEndTime}
                 renderInput={(params) => {
                   const tooEarly = newStartTime.getHours() >= newEndTime.getHours();
-                  return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
+                  return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'Before start time' : ''} />;
                 }}
                 onChange={(e) => {
                   setIsChanged(true);
@@ -281,7 +281,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 <ListItem>
                   <TextField
                     id="outlined-required"
-                    label="Hex (optional)"
+                    label="Hex"
                     variant="outlined"
                     value={newColor}
                     onChange={(e) => {

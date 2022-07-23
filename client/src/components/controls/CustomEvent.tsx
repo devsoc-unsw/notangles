@@ -1,18 +1,18 @@
 import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, Dialog, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
+import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Colorful, EditableInput } from '@uiw/react-color';
+import { Colorful } from '@uiw/react-color';
 import { v4 as uuidv4 } from 'uuid';
+import { weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
-import { ColourButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
-import { weekdaysShort } from '../../constants/timetable';
 
 const DropdownButton = styled(Button)`
   && {
@@ -71,7 +71,7 @@ const CustomEvent: React.FC = () => {
   const handleFormat = (newFormats: string[]) => {
     setEventDAys(newFormats);
   };
-  
+
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setDays } = useContext(AppContext);
   const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
@@ -232,7 +232,7 @@ const CustomEvent: React.FC = () => {
               value={endTime}
               renderInput={(params) => {
                 const tooEarly = startTime.getHours() >= endTime.getHours();
-                return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
+                return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'Before start time' : ''} />;
               }}
               onChange={(e) => {
                 if (e) setEndTime(e);
