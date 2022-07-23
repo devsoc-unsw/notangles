@@ -145,7 +145,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          sx={{ backgroundColor: eventPeriod.event.color }}
+          backgroundColor={eventPeriod.event.color}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

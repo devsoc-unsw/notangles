@@ -39,7 +39,7 @@ export const StyledCard = styled('div', {
     !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
-})<{
+}) <{
   card: ClassCard | EventPeriod;
   days: string[];
   y?: number;
@@ -88,11 +88,12 @@ export const StyledCard = styled('div', {
 `;
 
 export const StyledCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour'].includes(prop.toString()),
-})<{
+  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColor'].includes(prop.toString()),
+}) <{
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;
+  backgroundColor: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -105,24 +106,25 @@ export const StyledCardInner = styled(Card, {
   outline-offset: -4px;
   height: 100%;
   position: relative;
+  background-color: ${({ backgroundColor }) => backgroundColor};
 `;
 
 export const StyledCardInnerGrid = styled(Grid)`
-  height: 100%;
+height: 100 %;
 `;
 
 export const StyledCardName = styled('p')`
-  width: 100%;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+width: 100 %;
+margin: 0;
+white - space: nowrap;
+overflow: hidden;
+text - overflow: ellipsis;
 `;
 
 export const StyledCardInfo = styled(StyledCardName)`
-  font-size: 85%;
+font - size: 85 %;
 `;
 
 export const StyledList = styled(List)`
-  padding: 12px 15px;
+padding: 12px 15px;
 `;
