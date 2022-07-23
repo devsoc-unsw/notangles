@@ -81,7 +81,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     return () => window.removeEventListener('resize', updateCellWidth);
   }, [days]);
 
-  const clashes = findClashes(selectedClasses, createdEvents, days);
+  const clashes = findClashes(selectedClasses, createdEvents);
 
   classCards.forEach((classCard) => {
     let key = cardKeys.get(classCard);

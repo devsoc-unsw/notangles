@@ -1,3 +1,4 @@
+import { weekdaysLong } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
@@ -72,15 +73,15 @@ const sortClashesByTime = (clashDays: Record<number, (ClassPeriod | EventPeriod)
 };
 
 // Group clashes according to the days of the week they are in.
-const sortClashesByDay = (days: string[], clashes: (ClassPeriod | EventPeriod)[]) => {
-  const clashDays: Record<number, (ClassPeriod | EventPeriod)[]> = days.map((_) => []);
+const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
+  const clashDays: Record<number, (ClassPeriod | EventPeriod)[]> = weekdaysLong.map((_) => []);
   clashes.forEach((clash) => clashDays[clash.time.day - 1].push(clash));
 
   return sortClashesByTime(clashDays);
 };
 
-const groupClashes = (days: string[], sortedClashes: Record<number, (ClassPeriod | EventPeriod)[]>) => {
-  const groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]> = days.map((_) => []);
+const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[]>) => {
+  const groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]> = weekdaysLong.map((_) => []);
 
   Object.entries(sortedClashes).forEach(([day, clashes]) => {
     const dayInt = parseInt(day);
@@ -114,10 +115,10 @@ const groupClashes = (days: string[], sortedClashes: Record<number, (ClassPeriod
   return groupedClashes;
 };
 
-export const findClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents, days: string[]) => {
+export const findClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents) => {
   const clashes = getClashes(selectedClasses, createdEvents);
-  const sortedClashes = sortClashesByDay(days, clashes);
-  const groupedClashes = groupClashes(days, sortedClashes);
+  const sortedClashes = sortClashesByDay(clashes);
+  const groupedClashes = groupClashes(sortedClashes);
 
   return groupedClashes;
 };
