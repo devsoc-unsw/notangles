@@ -71,7 +71,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
-    if (newStartTime.getHours() >= newEndTime.getHours()) {
+    if (newStartTime.getHours() + newStartTime.getMinutes() / 60 >=
+      newEndTime.getHours() + newEndTime.getMinutes() / 60) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
       return;
@@ -79,8 +80,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
     const newEventTime = {
       day: weekdaysShort.indexOf(newDays.toString()) + 1,
-      start: newStartTime.getHours(),
-      end: newEndTime.getHours(),
+      start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
+      end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
 
     setCreatedEvents({

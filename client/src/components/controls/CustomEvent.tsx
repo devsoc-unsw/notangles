@@ -82,7 +82,8 @@ const CustomEvent: React.FC = () => {
   const doCreateEvent = () => {
     const uuid = uuidv4();
 
-    if (startTime.getHours() >= endTime.getHours()) {
+    if ((startTime.getHours() + startTime.getMinutes() / 60 >=
+      endTime.getHours() + endTime.getMinutes() / 60)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
       return;
