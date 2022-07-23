@@ -114,8 +114,6 @@ const App: React.FC = () => {
 
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
 
-  const daysOfTheWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
