@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { OpenInFull } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { styled } from '@mui/system';
-
 import { AppContext } from '../../context/AppContext';
 import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
@@ -11,14 +9,6 @@ import { ExpandButton, StyledCard, StyledCardInfo, StyledCardInner, StyledCardIn
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-
-const StyledCourseClassInner = styled(StyledCardInner, {
-  shouldForwardProp: (prop) => prop !== 'backgroundColor',
-})<{
-  backgroundColor: string;
-}>`
-  background-color: ${({ backgroundColor }) => backgroundColor};
-`;
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -157,9 +147,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         cardWidth={cardWidth}
         cellWidth={cellWidth}
       >
-        <StyledCourseClassInner
+        <StyledCardInner
           isSquareEdges={isSquareEdges}
-          backgroundColor={color}
+          backgroundColour={color}
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
         >
@@ -188,7 +178,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               <OpenInFull />
             </ExpandButton>
           )}
-        </StyledCourseClassInner>
+        </StyledCardInner>
       </StyledCard>
       {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
     </>
