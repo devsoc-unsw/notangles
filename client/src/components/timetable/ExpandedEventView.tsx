@@ -16,6 +16,7 @@ import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import { areValidEventTimes } from '../../utils/areValidEventTimes';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -71,8 +72,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
-    if (newStartTime.getHours() + newStartTime.getMinutes() / 60 >=
-      newEndTime.getHours() + newEndTime.getMinutes() / 60) {
+    if (!areValidEventTimes(newStartTime, newEndTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
       return;
