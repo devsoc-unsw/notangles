@@ -246,7 +246,7 @@ const CustomEvent: React.FC = () => {
             optionChoices={weekdaysShort}
             noOff
           />
-          <StyledListItem>
+          <Box m={1} display="flex" justifyContent="center" alignItems="center">
             <Box
               sx={{
                 width: 35,
@@ -255,58 +255,46 @@ const CustomEvent: React.FC = () => {
                 ...{ backgroundColor: color },
               }}
             ></Box>
-            <ListItem>
+            <Box sx={{ paddingLeft: 2 }}>
               <Button
                 disableElevation
-                variant="outlined"
+                variant="contained"
                 size="small"
                 aria-describedby={colorPickerPopoverId}
                 onClick={handleColorClick}
               >
                 Choose Colour
               </Button>
-              <Popover
-                open={openColorPickerPopover}
-                anchorEl={colorPickerAnchorEl}
-                onClose={handleCloseColorPicker}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-              >
-                <ListItem alignItems="flex-start">
-                  <Colorful onChange={(e) => setColor(e.hex)} color={color} />
-                </ListItem>
-                <ListItem alignItems="flex-start">
-                  <TextField
-                    id="outlined-required"
-                    label="Hex (optional)"
-                    variant="outlined"
-                    value={color}
-                    onChange={(e) => {
-                      setColor(e.target.value);
-                    }}
-                  />
-                </ListItem>
-              </Popover>
-            </ListItem>
-          </StyledListItem>
-
-          {showPicker && (
-            <ListItem>
-              <EditableInput
-                placement="left"
-                label="Hex: "
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                color={color}
-              />
-            </ListItem>
-          )}
+            </Box>
+            <Popover
+              open={openColorPickerPopover}
+              anchorEl={colorPickerAnchorEl}
+              onClose={handleCloseColorPicker}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <ListItem alignItems="flex-start">
+                <Colorful onChange={(e) => setColor(e.hex)} color={color} />
+              </ListItem>
+              <ListItem alignItems="flex-start">
+                <TextField
+                  id="outlined-required"
+                  label="Hex"
+                  variant="outlined"
+                  value={color}
+                  onChange={(e) => {
+                    setColor(e.target.value);
+                  }}
+                />
+              </ListItem>
+            </Popover>
+          </Box>
         </StyledList>
         <ExecuteButton
           variant="contained"
