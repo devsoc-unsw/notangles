@@ -67,3 +67,6 @@ export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
 
 export const maxAddedCourses = 8;
+
+export const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];

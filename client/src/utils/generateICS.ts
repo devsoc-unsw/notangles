@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 import { createEvents, DateArray } from 'ics';
 
-import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Course';
+import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Periods';
 
 /**
  * makes a request to download an ICS file which corresponds to the data the user input

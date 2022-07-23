@@ -1,8 +1,9 @@
-import { API_URL } from './config';
-import { CourseCode, CourseData } from '../interfaces/Course';
-import { DbCourse, DbTimes, dbCourseToCourseData } from '../interfaces/DbCourse';
+import { DbCourse, DbTimes } from '../interfaces/Database';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseCode, CourseData } from '../interfaces/Periods';
+import { dbCourseToCourseData } from '../utils/DbCourse';
 import timeoutPromise from '../utils/timeoutPromise';
+import { API_URL } from './config';
 
 /**
  * Fetches the information of a specified course

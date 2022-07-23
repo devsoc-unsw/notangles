@@ -9,15 +9,12 @@ import {
   Grid,
   IconButton,
   Link,
-  List,
   ListItem,
   ListItemText,
   Popover,
   Slider,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
   TextField,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -25,9 +22,12 @@ import { TimePicker } from '@mui/x-date-pickers';
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Course';
 import NetworkError from '../../interfaces/NetworkError';
-import { AutotimetableProps, DropdownOptionProps } from '../../interfaces/PropTypes';
+import { ClassData, PeriodInfo } from '../../interfaces/Periods';
+import { AutotimetableProps } from '../../interfaces/PropTypes';
+import { StyledControlsButton } from '../../styles/ControlStyles';
+import { StyledList } from '../../styles/DroppedCardStyles';
+import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
   && {
@@ -46,76 +46,20 @@ const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
 `;
 
+const StyledIconButton = styled(IconButton)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+`;
+
+const StyledDatePickerLabel = styled(ListItemText)`
+  align-self: center;
+`;
+
 const ExecuteButton = styled(Button)`
   width: 100%;
   border-radius: 0px 0px 5px 5px;
 `;
-
-const StyledOptionToggle = styled(ToggleButtonGroup)`
-  margin-top: 10px;
-  width: 100%;
-`;
-
-const StyledOptionButtonToggle = styled(ToggleButton)`
-  width: 100%;
-  height: 32px;
-  margin-bottom: 10px;
-`;
-
-const StyledList = styled(List)`
-  padding: 0 15px;
-`;
-
-const DropdownOption: React.FC<DropdownOptionProps> = ({
-  optionName,
-  optionState,
-  setOptionState,
-  optionChoices,
-  multiple,
-  noOff,
-}) => {
-  const handleOptionChange = (event: React.MouseEvent<HTMLElement>, newOption: string | null) => {
-    if (newOption !== null) {
-      setOptionState(newOption);
-    }
-  };
-
-  return (
-    <ListItem key={optionName}>
-      <Grid container spacing={0}>
-        <Grid item xs={12}>
-          <ListItemText primary={optionName} />
-        </Grid>
-        <Grid item xs={12}>
-          <StyledOptionToggle
-            size="small"
-            exclusive={multiple ? false : true}
-            value={optionState}
-            onChange={handleOptionChange}
-            aria-label="option choices"
-          >
-            {!noOff && (
-              <StyledOptionButtonToggle value="off" aria-label="default">
-                off
-              </StyledOptionButtonToggle>
-            )}
-            {optionChoices.map((option) => (
-              <StyledOptionButtonToggle key={option} value={option} aria-label={option}>
-                {option}
-              </StyledOptionButtonToggle>
-            ))}
-          </StyledOptionToggle>
-        </Grid>
-      </Grid>
-    </ListItem>
-  );
-};
-
-interface PeriodInfo {
-  periodsPerClass: number; // i.e. periods.length
-  periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
-  durations: Array<number>; // where the ith period has duration[i] in hours
-}
 
 type ClassMode = 'hybrid' | 'in person' | 'online';
 
@@ -131,7 +75,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
-  // for opening popover
+  // anchorEl sets position of the Autotimetabling popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
@@ -266,7 +210,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <StyledControlsButton>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           AUTO-TIMETABLE
@@ -318,14 +262,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 </p>
                 <p>Autotimetabler may lack full support for certain courses.</p>
               </Typography>
-              <IconButton
-                style={{ position: 'absolute', right: 10, top: 10 }}
-                aria-label="close"
-                onClick={toggleIsOpenInfo}
-                size="large"
-              >
+              <StyledIconButton aria-label="close" onClick={toggleIsOpenInfo} size="large">
                 <Close />
-              </IconButton>
+              </StyledIconButton>
             </DialogContentText>
           </DialogContent>
         </Dialog>
@@ -333,7 +272,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center' }} primary="Earliest start time" />
+                <StyledDatePickerLabel primary="Earliest start time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker
@@ -350,7 +289,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           <ListItem>
             <Grid container spacing={0}>
               <Grid item xs={7} container>
-                <ListItemText sx={{ alignSelf: 'center' }} primary="Latest end time" />
+                <StyledDatePickerLabel primary="Latest end time" />
               </Grid>
               <Grid item xs={5}>
                 <TimePicker
@@ -420,7 +359,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           GO
         </ExecuteButton>
       </Popover>
-    </div>
+    </StyledControlsButton>
   );
 };
 
