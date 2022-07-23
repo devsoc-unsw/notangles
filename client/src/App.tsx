@@ -145,8 +145,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -266,20 +266,13 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     storage.set('createdEvents', createdEvents);
-    Object.values(createdEvents).forEach((event) => {
-      if (event.time.day === 6 && days.length !== 7) {
-        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
-      } else if (event.time.day === 7) {
-        setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-      }
-    });
   }, [createdEvents]);
 
   useUpdateEffect(() => {
     setEarliestStartTime(
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
-        ...Object.entries(createdEvents).map(([_, val]) => val.time.start),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
         defaultStartTime,
         earliestStartTime
       )
@@ -287,7 +280,7 @@ const App: React.FC = () => {
     setLatestEndTime(
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
-        ...Object.entries(createdEvents).map(([_, val]) => val.time.end),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
         defaultEndTime,
         latestEndTime
       )
@@ -296,10 +289,19 @@ const App: React.FC = () => {
       weekdaysLong.slice(
         0,
         Math.max(
-          ...selectedCourses.flatMap((course) =>
-            Object.entries(course.activities).flatMap(([_, cs]) => cs.flatMap((c) => c.periods.map((p) => p.time.day)))
+          // latest Dotw of any class or event
+          // flatmaps to un-nest the days
+          ...selectedCourses.flatMap(
+            (
+              course // flatmaps from an array of days of courses
+            ) =>
+              Object.entries(course.activities).flatMap(
+                (
+                  [_, classDataArr] // flatmaps from an array of days of activites
+                ) => classDataArr.flatMap((classData) => classData.periods.map((period) => period.time.day)) // flatmaps from an array of days of classes
+              )
           ),
-          ...Object.entries(createdEvents).map(([_, val]) => val.time.day),
+          ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
           days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
           5 // default
         )
