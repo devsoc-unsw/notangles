@@ -4,6 +4,7 @@ import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover,
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful, EditableInput } from '@uiw/react-color';
 import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
+import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
@@ -34,6 +35,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -68,6 +70,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   useEventDrag(updateEventTime);
 
   const handleUpdateEvent = (id: string) => {
+    if (newStartTime.getHours() >= newEndTime.getHours()) {
+      setAlertMsg('End time is earlier than start time');
+      setErrorVisibility(true);
+      return;
+    }
+
     const newEventTime = {
       day: weekdaysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours(),
@@ -210,7 +218,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <TimePicker
                 views={['hours']}
                 value={newEndTime}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => {
+                  const tooEarly = newStartTime.getHours() >= newEndTime.getHours();
+                  return <TextField {...params} error={params.error || tooEarly} label={tooEarly ? 'before start time' : ''} />;
+                }}
                 onChange={(e) => {
                   setIsChanged(true);
                   if (e) setNewEndTime(e);

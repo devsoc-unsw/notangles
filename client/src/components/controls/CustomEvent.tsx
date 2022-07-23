@@ -71,7 +71,7 @@ const CustomEvent: React.FC = () => {
   const handleFormat = (newFormats: string[]) => {
     setEventDAys(newFormats);
   };
-
+  
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setDays } = useContext(AppContext);
   const { setErrorVisibility, setAlertMsg, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
