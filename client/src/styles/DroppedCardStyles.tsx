@@ -89,7 +89,7 @@ export const StyledCard = styled('div', {
 
 export const StyledCardInner = styled(Card, {
   shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
-})<{
+}) <{
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;
@@ -110,21 +110,21 @@ export const StyledCardInner = styled(Card, {
 `;
 
 export const StyledCardInnerGrid = styled(Grid)`
-height: 100 %;
+  height: 100%;
 `;
 
 export const StyledCardName = styled('p')`
-width: 100 %;
-margin: 0;
-white - space: nowrap;
-overflow: hidden;
-text - overflow: ellipsis;
+  width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const StyledCardInfo = styled(StyledCardName)`
-font - size: 85 %;
+  font-size: 85%;
 `;
 
 export const StyledList = styled(List)`
-padding: 12px 15px;
+  padding: 12px 15px;
 `;
