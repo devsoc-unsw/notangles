@@ -268,6 +268,22 @@ const App: React.FC = () => {
     storage.set('createdEvents', createdEvents);
   }, [createdEvents]);
 
+  const getLatestDoTW = (courses: CourseData[]) => {
+    let maxDay: number = 5;
+    for (let i = 0; i < courses.length; i++) {
+      const activities = Object.values(courses[i].activities);
+      for (let j = 0; j < activities.length; j++) {
+        for (let k = 0; k < activities[j].length; k++) {
+          const classData = activities[j][k];
+          for (let l = 0; l < classData.periods.length; l++) {
+            maxDay = Math.max(maxDay, classData.periods[l].time.day);
+          }
+        }
+      }
+    }
+    return maxDay;
+  };
+
   useUpdateEffect(() => {
     setEarliestStartTime(
       Math.min(
@@ -285,22 +301,12 @@ const App: React.FC = () => {
         latestEndTime
       )
     );
+
     setDays(
       weekdaysLong.slice(
         0,
         Math.max(
-          // latest Dotw of any class or event
-          // flatmaps to un-nest the days
-          ...selectedCourses.flatMap(
-            (
-              course // flatmaps from an array of days of courses
-            ) =>
-              Object.entries(course.activities).flatMap(
-                (
-                  [_, classDataArr] // flatmaps from an array of days of activites
-                ) => classDataArr.flatMap((classData) => classData.periods.map((period) => period.time.day)) // flatmaps from an array of days of classes
-              )
-          ),
+          getLatestDoTW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
           days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
           5 // default
