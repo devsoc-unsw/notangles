@@ -523,7 +523,7 @@ const drop = () => {
     if (dragTarget?.type === 'event') {
       // Snap an event to the nearest grid cell and update its time accordingly
       const gridChildren = dragElement.parentElement?.parentElement?.children;
-      const dragrect = dragElement.getBoundingClientRect();
+      const dragrect = dragElement.children[0].getBoundingClientRect();
 
       if (gridChildren && dragTarget) {
         const baserect = gridChildren[1].getBoundingClientRect();
