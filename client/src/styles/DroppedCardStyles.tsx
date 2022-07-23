@@ -88,12 +88,12 @@ export const StyledCard = styled('div', {
 `;
 
 export const StyledCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColor'].includes(prop.toString()),
-}) <{
+  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
+})<{
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;
-  backgroundColor: string;
+  backgroundColour: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -106,7 +106,7 @@ export const StyledCardInner = styled(Card, {
   outline-offset: -4px;
   height: 100%;
   position: relative;
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  background-color: ${({ backgroundColour }) => backgroundColour};
 `;
 
 export const StyledCardInnerGrid = styled(Grid)`

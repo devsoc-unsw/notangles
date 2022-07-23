@@ -149,7 +149,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       >
         <StyledCardInner
           isSquareEdges={isSquareEdges}
-          backgroundColor={color}
+          backgroundColour={color}
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
         >
