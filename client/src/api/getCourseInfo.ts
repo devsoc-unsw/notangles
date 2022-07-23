@@ -18,7 +18,7 @@ import { parseJSON } from 'date-fns';
  * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
 
-const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]): number[] => {
+const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) => {
   for (let k = 0; k < dbClassWeeks.length; k++) {
     // characters in the array are either '-',',' or a number from 0-9.
     if (dbClassWeeks[k] == '-') {
@@ -45,7 +45,6 @@ const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]): n
       }
     }
   }
-  return dbClassTimesList;
 };
 
 const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): boolean => {
@@ -91,8 +90,8 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
             if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
               let dbClassTimesList: number[] = [];
 
-              dbClassTimesList = convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
-              dbClassTimesList = convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
+              convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
+              convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
 
               dbClassTimesList = sortUnique(dbClassTimesList);
 
