@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 import { createEvents, DateArray } from 'ics';
+import type {
+  ClassPeriod, CourseData, CreatedEvents, EventPeriod, SelectedClasses
+} from '../interfaces/Periods';
 
-import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Periods';
 
 /**
  * makes a request to download an ICS file which corresponds to the data the user input
@@ -10,22 +12,27 @@ import { ClassPeriod, CourseData, SelectedClasses } from '../interfaces/Periods'
  * @param classes global classes data
  * @returns
  */
-export const downloadIcsFile = async (courses: CourseData[], classes: SelectedClasses, firstDayOfTerm: string): Promise<void> => {
+export const downloadIcsFile = async (courses: CourseData[], createdEvents: CreatedEvents, classes: SelectedClasses, firstDayOfTerm: string): Promise<void> => {
   if (classes === null) {
     return;
   }
 
   const timezone = await getUtcOffset();
-  const events = getAllEvents(courses, classes).map(([period, week]) => {
-    return {
-      start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
-      end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
-      title: `${period.class.course.code} ${period.class.activity}`,
-      location: period.locations[0],
-    };
-  });
+  const formattedClassEvents = getClassEvents(courses, classes).map(([period, week]) => ({
+    start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
+    end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
+    title: `${period.class.course.code} ${period.class.activity}`,
+    location: period.locations[0],
+  }));
 
-  const icsFile = createEvents(events);
+  const formattedCreatedEvents = getCreatedEvents(createdEvents).map(([period, week]) => ({
+    start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
+    end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
+    title: period.event.name,
+    location: period.event.location,
+  }))
+
+  const icsFile = createEvents(formattedClassEvents.concat(formattedCreatedEvents));
   saveAs(new Blob([icsFile.value as BlobPart], { type: 'text/ics' }), 'notangles.ics');
 };
 
@@ -54,9 +61,9 @@ const getUtcOffset = async () => {
  * @param classes the global class data
  * @returns all the extrapolated events that occur in that term
  */
-const getAllEvents = (courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] => {
+const getClassEvents = (courses: CourseData[], classes: SelectedClasses): [ClassPeriod, number][] => {
   // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
-  let allClasses = courses.flatMap((course) =>
+  const allClasses = courses.flatMap((course) =>
     Object.keys(course.activities)
       .filter((possibleActivity) => classes[course.code] !== null && classes[course.code][possibleActivity] !== null)
       .map((activities) => classes[course.code][activities])
@@ -64,6 +71,19 @@ const getAllEvents = (courses: CourseData[], classes: SelectedClasses): [ClassPe
 
   return allClasses.flatMap((classTime) =>
     // this cant actually be null, i just filtered it, ts is dumb
-    classTime!.periods.flatMap((period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number]))
+    classTime!
+      .periods
+      .flatMap(
+          (period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number]
+        )
+      )
   );
 };
+
+const getCreatedEvents = (createdEvents: CreatedEvents): [EventPeriod, number][] => {
+  // assume that we are ignoring week 6!
+  return Object.entries(createdEvents)
+    .flatMap(
+      ([_, period]) => [1, 2, 3, 4, 5, 7, 8, 9, 10].map((week) => [period, week] as [EventPeriod, number])
+    )
+}
