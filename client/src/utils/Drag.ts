@@ -56,13 +56,19 @@ export const moveElement = (element: HTMLElement, dx: number, dy: number) => {
 
 export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
 
+const equalDur = (p1: ClassPeriod, p2: ClassPeriod) => p1.time.end - p1.time.start === p2.time.end - p2.time.start;
+
 export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) =>
   a === null ||
   b === null ||
   a === b ||
   (a.class.course.code === b.class.course.code &&
     a.class.activity === b.class.activity &&
-    (!isScheduledPeriod(a) || !isScheduledPeriod(b) || a.time.end - a.time.start === b.time.end - b.time.start));
+    (!isScheduledPeriod(a) ||
+      !isScheduledPeriod(b) ||
+      equalDur(a, b) ||
+      a.class.periods.indexOf(a) === b.class.periods.indexOf(b) ||
+      a.class.periods.every((p, i) => i === 0 || equalDur(p, a.class.periods[i - 1]))));
 
 export const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
