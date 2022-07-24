@@ -9,8 +9,8 @@ import { styled } from '@mui/system';
 import getCoursesList from '../../api/getCoursesList';
 import { AppContext } from '../../context/AppContext';
 import { maxAddedCourses } from '../../constants/timetable';
-import { CourseCode, CourseData } from '../../interfaces/Course';
-import { CourseOverview, CoursesList } from '../../interfaces/CourseOverview';
+import { CourseCode, CourseData } from '../../interfaces/Periods';
+import { CourseOverview, CoursesList } from '../../interfaces/Courses';
 import NetworkError from '../../interfaces/NetworkError';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
 import { CourseContext } from '../../context/CourseContext';
@@ -42,6 +42,10 @@ const searchOptions: SearchOptions = {
 };
 
 let fuzzy = new Fuse<CourseOverview>([], searchOptions);
+
+const ListboxContainer = styled('div')`
+  overflow: hidden;
+`;
 
 const StyledSelect = styled(Box)`
   width: 100%;
@@ -252,7 +256,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         });
 
       return (
-        <div ref={ref} style={{ overflow: 'hidden' }}>
+        <ListboxContainer ref={ref}>
           <OuterElementContext.Provider value={other}>
             <VariableSizeList
               ref={listRef}
@@ -269,7 +273,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               {Row}
             </VariableSizeList>
           </OuterElementContext.Provider>
-        </div>
+        </ListboxContainer>
       );
     }),
     []

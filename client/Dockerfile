@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:18.4.0-alpine as builder
+FROM node:18.6.0-alpine as builder
 
 # Set the current working directory inside the container
 WORKDIR /app
@@ -26,7 +26,7 @@ ENV REACT_APP_SENTRY_TRACE_RATE_CLIENT=$SENTRY_TRACE_RATE_CLIENT
 RUN npm run build
 
 # nginx state for serving content
-FROM nginx:1.23.0-alpine
+FROM nginx:1.23.1-alpine
 # Set working directory to nginx asset directory
 WORKDIR /usr/share/nginx/html
 # Remove default nginx static assets
