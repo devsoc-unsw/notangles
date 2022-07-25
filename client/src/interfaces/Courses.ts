@@ -1,4 +1,4 @@
-import { CourseCode } from './Course';
+import { CourseCode } from './Periods';
 
 export type CoursesList = CourseOverview[];
 export interface CourseOverview {

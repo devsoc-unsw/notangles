@@ -1,57 +1,21 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography
-} from '@mui/material';
+import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-
 import { AppContext } from '../../context/AppContext';
-import { ClassData, ClassPeriod, ClassTime, Location, Section } from '../../interfaces/Course';
-import { ExpandedViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
-import { isPeriod } from '../../utils/Drag';
-
-const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 12px 8px 24px;
-`;
-
-const StyledTitleContainer = styled(Box)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding-bottom: 20px;
-`;
-
-const StyledDialogContent = styled(DialogContent)`
-  padding-bottom: 20px;
-`;
+import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
+import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { to24Hour } from '../../utils/convertTo24Hour';
+import { isScheduledPeriod } from '../../utils/Drag';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
-const to24Hour = (n: number) => `${String((n / 1) >> 0)}:${(n % 1) * 60 ? String(((n % 1) * 60) >> 0) : '00'}`;
-
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
 };
-
-interface DuplicateClassData {
-  duplicateClasses: ClassData[]; // other classes of the same course running at the same time
-  sectionsAndLocations: Array<[Section, Location]>; // wherein sectionsAndLocations[i] is a tuple of the Section (i.e. the class' "code") and Location for duplicateClasses[i]
-  periodIndex: number; // the relevant index (as classes have multiple periods, i.e. Tut-Labs)
-}
 
 const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {
   return (
@@ -102,33 +66,33 @@ ExpandedView keeps an interenal reference of the currently selected class/period
 each change to this internal reference. Instead the new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent. This is done
 becuase otherwise the view will close itself whenever a new item is selected in the locations dropdown.
 
-Currently only intended to be appear on non-unscheduled classCards -- i.e. cardData but technically be of type PeriodData
+Currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically be of type PeriodData
 */
-const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handleClose }) => {
-  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(cardData); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when cardData changes.
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
+  const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days } = useContext(AppContext);
 
-  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(cardData)); // the relevant data to handle class changing with location dropdown
+  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(classPeriod)); // the relevant data to handle class changing with location dropdown
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
-    if (!isPeriod(cardData)) return;
+    if (!isScheduledPeriod(classPeriod)) return;
 
-    setCurrentPeriod(cardData);
-    duplicateClassData.current = getDuplicateClassData(cardData); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
+    setCurrentPeriod(classPeriod);
+    duplicateClassData.current = getDuplicateClassData(classPeriod); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
     setSelectedIndex(
-      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === cardData.class.section)
+      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === classPeriod.class.section)
     ); // makes selected item in new initial location dropdown the right one
-  }, [cardData]);
+  }, [classPeriod]);
 
   const handleLocationChange = (e: SelectChangeEvent<number>) => {
     // updates index and current period when selected with dropdown
     setSelectedIndex(e.target.value as number);
     const newPeriod =
       duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
-    if (isPeriod(newPeriod)) setCurrentPeriod(newPeriod);
+    if (isScheduledPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
 
   return (
@@ -139,7 +103,7 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handle
     >
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {cardData.class.course.code} — {cardData.class.course.name}
+          {classPeriod.class.course.code} — {classPeriod.class.course.name}
           <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
             <Close />
           </IconButton>
@@ -153,12 +117,12 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handle
             </Grid>
             <Grid item>
               <Typography>
-                {cardData && cardData.class.activity} (
-                {cardData && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
+                {classPeriod && classPeriod.class.activity} (
+                {classPeriod && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
           </Grid>
-          <Grid item container direction="row" spacing={2}>
+          <Grid item container direction="row" spacing={2} wrap="nowrap">
             <Grid item>
               <AccessTime />
             </Grid>
@@ -194,4 +158,4 @@ const ExpandedView: React.FC<ExpandedViewProps> = ({ cardData, popupOpen, handle
   );
 };
 
-export default ExpandedView;
+export default ExpandedClassView;

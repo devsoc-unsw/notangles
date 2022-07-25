@@ -4,7 +4,7 @@ import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, ClassPeriod } from '../../interfaces/Course';
+import { Activity, ClassData, ClassPeriod } from '../../interfaces/Periods';
 import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import Dropzone from './Dropzone';
 

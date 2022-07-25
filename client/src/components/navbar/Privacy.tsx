@@ -145,7 +145,7 @@ const StyledTitle = styled(Typography)`
 const Privacy: React.FC = () => {
   const privacyMap = privacyQuestions.map(({ title, content }, index) => {
     return (
-      <StyledAccordion style={{ margin: 'auto' }}>
+      <StyledAccordion>
         <StyledAccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls={`privacyPanel${index}-content`}
