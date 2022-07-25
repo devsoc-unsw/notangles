@@ -357,7 +357,7 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
                   save to calendar
                 </ICSButton>
                 <Footer />
