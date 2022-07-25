@@ -95,7 +95,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
         return a.concat(b);
       })
       .map((a) => a[1])
-      .filter((f) => f.some((c) => c.periods.length));
+      .filter((f) => f.some((c) => c.periods.length))
+      .map((classArray) => classArray.filter((c) => c.periods.length)); // filter out classes with no periods
 
     // [[hasInPerson, hasOnline], ...]
     const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
@@ -144,15 +145,14 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   };
 
   const open = Boolean(anchorEl);
-
   const popoverId = open ? 'simple-popover' : undefined;
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleFormat = (newFormats: string[]) => {
