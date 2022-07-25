@@ -79,10 +79,8 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 };
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { isDarkMode } = useContext(AppContext);
+  const { isDarkMode, earliestStartTime } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
-
-  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
   const dropzones = selectedCourses.map((course) => (
     <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
