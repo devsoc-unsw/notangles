@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { LocationOn, OpenInFull } from '@mui/icons-material';
+import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
@@ -159,7 +159,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           </StyledCardInnerGrid>
           {fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
-              <OpenInFull />
+              <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
         </StyledCardInner>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { OpenInFull } from '@mui/icons-material';
+import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { AppContext } from '../../context/AppContext';
@@ -180,7 +180,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           </StyledCardInnerGrid>
           {classCard.type === 'class' && fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
-              <OpenInFull />
+              <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
         </StyledCardInner>
