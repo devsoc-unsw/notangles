@@ -21,8 +21,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@sentry/node": "7.4.1",
-    "@sentry/tracing": "7.4.1",
     "@grpc/grpc-js": "1.6.7",
     "@grpc/proto-loader": "^0.6.13",
     "@nestjs/common": "^8.0.0",
@@ -31,9 +29,11 @@
     "@nestjs/microservices": "^8.4.5",
     "@nestjs/mongoose": "^9.0.3",
     "@nestjs/passport": "^8.2.1",
-    "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/platform-express": "^8.4.7",
     "@nestjs/swagger": "^5.2.1",
     "@sendgrid/mail": "^7.7.0",
+    "@sentry/node": "7.4.1",
+    "@sentry/tracing": "7.4.1",
     "@types/passport": "^1.0.7",
     "express-session": "^1.17.3",
     "mongodb": "^4.6.0",

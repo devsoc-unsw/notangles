@@ -37,6 +37,24 @@ The Notangles server uses:
   - `src/auth` (Handles authentication with our )
   - `src/auto` (Handles auto-timetabling)
 
+## Auth Module
+
+The auth module handles authentication with our backend.
+We use a OAuth2.0 flow to authenticate with Google, and access the user's profile via OpenID.
+
+This pretty much consists of redirecting the user to /auth/login, which will redirect the user to Google's login page.
+Google takes over, then redirects the user to where we tell them (which will be the frontend but we haven't set that up yet).
+When the user gets redirected back to our frontend, the query parameters will include a `code` and `state` parameter which we process on the frontend.
+From the frontend, we then make a request to the backend to exchange the `code` for an access token.
+
+With the above steps we have completed authentication with Google, and we can now make requests to the backend.
+By making a request to /auth/token we can get a JWT token which we can use to make authenticated requests to our backend, as well as some user info.
+This is the main token we will be using in the future, so it should be stored in local storage.
+
+For more details on the auth module, see the below sequence diagram and refer to the logic of the example frontend inside of the `auth-tester` folder in this repo.
+
+[![Auth Module Sequence Diagram](assets/Notangles.png))
+
 ## Environment variables required
 
 Please check the Vault for the contents of the `.env` file and copy it into a file called `.env` in `/server`. Without these environment variables, the server will not run.
