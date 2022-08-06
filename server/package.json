@@ -34,8 +34,6 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^5.2.1",
     "@sendgrid/mail": "^7.7.0",
-    "@sentry/node": "7.2.0",
-    "@sentry/tracing": "7.2.0",
     "@types/passport": "^1.0.7",
     "express-session": "^1.17.3",
     "mongodb": "^4.6.0",
