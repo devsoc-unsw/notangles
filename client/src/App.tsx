@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong } from './constants/timetable';
+import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -70,6 +70,8 @@ const App: React.FC = () => {
     isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    setAlertMsg,
+    setErrorVisibility,
     infoVisibility,
     days,
     term,
@@ -106,7 +108,14 @@ const App: React.FC = () => {
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = classData;
+
+      try {
+        prev[classData.course.code][classData.activity] = classData;
+      } catch(err) {
+        setAlertMsg(unknownErrorMessage);
+        setErrorVisibility(true);
+      }
+
       return prev;
     });
   };
@@ -227,11 +236,18 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-            const result = newSelectedCourses
+
+            try {
+              let result = undefined;
+              result = newSelectedCourses
               .find((x) => x.code === courseCode)
               ?.activities[activity].find((x) => x.section === classId);
+              if (result) classData = result;
+            } catch(err) {
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
+            }
 
-            if (result) classData = result;
           }
 
           newSelectedClasses[courseCode][activity] = classData;

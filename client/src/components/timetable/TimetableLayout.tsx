@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { unknownErrorMessage } from '../../constants/timetable'
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -86,11 +87,21 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
 };
 
 const generateHours = (range: number[], is12HourMode: boolean): string[] => {
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
   // Fill an array with hour strings according to the range
-  return Array(max - min + 1)
+  try {
+    return Array(max - min + 1)
     .fill(0)
     .map((_, i) => generateHour(i + min, is12HourMode));
+  } catch(err) {
+    setAlertMsg(unknownErrorMessage);
+    setErrorVisibility(true);
+
+    return Array(defaultEndTime - defaultStartTime + 1)
+    .fill(0)
+    .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+  }
 };
 
 export const TimetableLayout: React.FC = () => {

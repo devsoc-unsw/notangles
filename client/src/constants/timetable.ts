@@ -70,3 +70,5 @@ export const maxAddedCourses = 8;
 
 export const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page'
