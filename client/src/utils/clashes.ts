@@ -1,4 +1,6 @@
-import { weekdaysLong } from '../constants/timetable';
+import { useContext } from 'react';
+import { weekdaysLong, unknownErrorMessage } from '../constants/timetable';
+import { AppContext } from '../context/AppContext';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
@@ -124,6 +126,9 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
 };
 
 export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>, card: ClassCard | EventPeriod) => {
+
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  
   let cardWidth = 100;
   let clashIndex = 0;
   let clashColour = 'orange';
@@ -131,7 +136,15 @@ export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | Event
   const defaultValues = [cardWidth, clashIndex, 'transparent'];
 
   if (card.type !== 'inventory') {
-    const clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
+    let clashGroup = undefined;
+
+    try {
+      clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
+    } catch(err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
+
     if (!clashGroup) return defaultValues;
 
     // Get the length of the clash group according to the unique clash IDs.
