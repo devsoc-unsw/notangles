@@ -4,6 +4,7 @@ import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
+import storage from '../utils/storage';
 
 /**
  * Fetches the information of a specified course
@@ -77,7 +78,13 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));
     if (data.status === 400) {
-      throw new NetworkError('Internal server error');
+      const selectedCourses = storage.get('selectedCourses');
+      if (selectedCourses.includes(courseCode)) {
+        delete selectedCourses[courseCode];
+        storage.set('selectedCourses', selectedCourses);
+      } else {
+        throw new NetworkError('Internal server error');
+      }
     }
     const json: DbCourse = await data.json();
     json.classes.forEach((dbClass) => {
