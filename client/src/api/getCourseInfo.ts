@@ -2,9 +2,9 @@ import { DbCourse, DbTimes } from '../interfaces/Database';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
+import storage from '../utils/storage';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
-import storage from '../utils/storage';
 
 /**
  * Fetches the information of a specified course
