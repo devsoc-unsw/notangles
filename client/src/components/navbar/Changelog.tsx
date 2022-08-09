@@ -5,6 +5,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: '09/08/22',
+    changes: ['Added setting toggle to hide exam classes'],
+  },
+  {
     date: '26/07/22',
     changes: ['Changed icon to open expanded view'],
   },
