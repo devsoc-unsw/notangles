@@ -103,7 +103,7 @@ export const StyledCardInner = styled(Card, {
   transition: ${defaultTransition}, z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
-  outline-offset: -4px;
+  outline-offset: -3px;
   height: 100%;
   position: relative;
   background-color: ${({ backgroundColour }) => backgroundColour};

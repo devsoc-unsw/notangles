@@ -35,7 +35,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
     });
   }
 
-  // Hide exam classes if setting is toggled on
+  // Hide exam classes dropzones if isHideExamClasses setting is toggled on
   if (isHideExamClasses) {
     if ('Exam' in newActivities) {
       delete newActivities['Exam'];
