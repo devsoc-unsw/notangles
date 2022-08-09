@@ -164,7 +164,7 @@ const App: React.FC = () => {
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
       const newSelectedCourses = [...selectedCourses, ...addedCourses];
-
+      
       setSelectedCourses(newSelectedCourses);
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
