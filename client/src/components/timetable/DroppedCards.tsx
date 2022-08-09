@@ -12,7 +12,7 @@ import DroppedEvent from './DroppedEvent';
 const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
 
-  const { days } = useContext(AppContext);
+  const { isHideExamClasses, days } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -29,6 +29,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
 
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
+      // Filter out exam classes if isHideExamClasses setting is toggled on
+      if (isHideExamClasses && activity === 'Exam') return;
       if (classData) {
         classData.periods.forEach((classPeriod) => {
           classCards.push(classPeriod);
