@@ -70,6 +70,7 @@ const App: React.FC = () => {
     isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    isHideExamClasses,
     setAlertMsg,
     setErrorVisibility,
     infoVisibility,
@@ -220,6 +221,10 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isHideClassInfo', isHideClassInfo);
   }, [isHideClassInfo]);
+
+  useEffect(() => {
+    storage.set('isHideExamClasses', isHideExamClasses);
+  }, [isHideExamClasses]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
