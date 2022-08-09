@@ -106,6 +106,8 @@ const History: React.FC = () => {
   };
 
   const restoreInitial = () => {
+    if (!actions.current[initialIndex]) return;
+
     setSelectedCourses(actions.current[initialIndex].courses);
     setSelectedClasses(duplicateClasses(actions.current[initialIndex].classes));
     setCreatedEvents(actions.current[initialIndex].events);
