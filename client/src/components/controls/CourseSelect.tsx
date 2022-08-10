@@ -348,8 +348,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               }
               // Delete the latest selected course if user backspace.
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
-                  setSelectedValue(selectedValue.slice(selectedValue.length - 1));
-                  handleRemove(selectedValue[selectedValue.length - 1].code);
+                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                handleRemove(selectedValue[selectedValue.length - 1].code);
               }
             }}
             InputLabelProps={{
