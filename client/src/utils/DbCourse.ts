@@ -174,6 +174,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     };
   });
 
+  // console.log(courseData);
+
   return courseData;
 };
 

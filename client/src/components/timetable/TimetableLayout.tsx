@@ -78,6 +78,8 @@ const ColumnWidthGuide = styled('span')`
 `;
 
 const generateHour = (n: number, is12HourMode: boolean): string => {
+  // Convert the hour from negative to positive.
+  n = ((n % 24) + 24) % 24;
   if (is12HourMode) {
     const period = n < 12 ? 'am' : 'pm';
     if (n > 12) n -= 12;
@@ -91,9 +93,15 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
   const [min, max] = range;
   // Fill an array with hour strings according to the range
   try {
-    return Array(max - min + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + min, is12HourMode));
+    if (min < max) {
+      return Array(max - min + 1)
+      .fill(0)
+      .map((_, i) => generateHour(i + min, is12HourMode));
+    } else {
+      return Array(((24 - min) + max) + 1)
+      .fill(0)
+      .map((_, i) => generateHour(i + min, is12HourMode));
+    }
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
@@ -105,10 +113,9 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
 };
 
 export const TimetableLayout: React.FC = () => {
+  
   const { is12HourMode, days, earliestStartTime, latestEndTime } = useContext(AppContext);
 
-  console.log(earliestStartTime, defaultStartTime);
-  console.log(latestEndTime, defaultEndTime);
   const hoursRange = [
     Math.min(earliestStartTime, defaultStartTime),
     Math.max(latestEndTime, defaultEndTime) - 1,

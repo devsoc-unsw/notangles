@@ -118,6 +118,7 @@ export const AppContext = createContext<IAppContext>({
 
   latestEndTime: defaultEndTime,
   setLatestEndTime: () => {},
+
   term: `T0`,
   setTerm: () => {},
 
@@ -154,8 +155,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termName, setTermName] = useState<string>(`Term 0`);
   const [year, setYear] = useState<string>('0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>('0000-00-00');
-  const [earliestStartTime, setEarliestStartTime] = useState(9);
-  const [latestEndTime, setLatestEndTime] = useState(18);
+  const [earliestStartTime, setEarliestStartTime] = useState(defaultStartTime);
+  const [latestEndTime, setLatestEndTime] = useState(defaultEndTime);
 
   const initialContext: IAppContext = {
     is12HourMode,

@@ -72,17 +72,16 @@ export const getTimeZoneOffset = (): number => {
   // const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
   const offset = sydDate.getHours() - localDate.getHours();
 
-  return 14;
+  return offset;
 }
 
 export const getLocalTime = (time: number): number => {
   const offset = getTimeZoneOffset();
-  
-  if (time - offset < 0) {
-    return 24 + (time - offset);
-  } else {
-    return time - offset;
+  let newTime = time - offset;
+  if (newTime < 0) {
+    newTime = ((newTime % 24) + 24) % 24;
   }
+  return newTime;
 }
 
 export const defaultStartTime: number = getLocalTime(9);
