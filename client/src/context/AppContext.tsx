@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 
-import { defaultEndTime, defaultStartTime } from '../constants/timetable';
+import { defaultStartTime, defaultEndTime } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 

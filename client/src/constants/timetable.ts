@@ -1,5 +1,6 @@
 const REGULAR_TERM_STR_LEN = 2;
 
+import { off } from 'process';
 import { API_URL } from '../api/config';
 import timeoutPromise from '../utils/timeoutPromise';
 
@@ -63,8 +64,29 @@ export const colors: string[] = [
   '#3323ad', // deep blue
 ];
 
-export const defaultStartTime: number = 9;
-export const defaultEndTime: number = 18;
+// Calculate the hours difference between the user's timezone and the Australian timezone.
+export const getTimeZoneOffset = (): number => {
+  
+  const localDate = new Date();
+  const sydDate = new Date(localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" }));
+  // const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
+  const offset = sydDate.getHours() - localDate.getHours();
+
+  return 14;
+}
+
+export const getLocalTime = (time: number): number => {
+  const offset = getTimeZoneOffset();
+  
+  if (time - offset < 0) {
+    return 24 + (time - offset);
+  } else {
+    return time - offset;
+  }
+}
+
+export const defaultStartTime: number = getLocalTime(9);
+export const defaultEndTime: number = getLocalTime(18);
 
 export const maxAddedCourses = 8;
 

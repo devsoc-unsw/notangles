@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 import { DbTimes, DbCourse } from '../interfaces/Database';
+import { getTimeZoneOffset } from '../constants/timetable';
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
@@ -30,6 +31,28 @@ const enumerateWeeks = (weeks: string): number[] =>
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
   });
 
+const convertToLocalDayTime = (day: number, start: number, end: number): number[] => {
+  const offset = getTimeZoneOffset();
+  
+  let newDay = day;
+  let newStart = start - offset;
+  let newEnd = end - offset;
+
+  // If the new start time is negative, then the class is in the previous day.
+  // E.g. Converting from Sydney to New York time:
+  // Tuesday 9 - 12 AEST -> Monday 19 - 22 EDT
+  // Tuesday 13 - 16 AEST -> Monday 23 - 26 EDT
+  if (newStart < 0) {
+    newDay = newDay === 1 ? 7 : newDay - 1;
+    newStart = newStart % 24;
+    newEnd = newEnd % 24;
+    // newStart = ((newStart % 24) + 24) % 24;
+    // newEnd = ((newEnd % 24) + 24) % 24;
+  }
+
+  return [newDay, newStart, newEnd];
+}
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -39,18 +62,31 @@ const enumerateWeeks = (weeks: string): number[] =>
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
-  type: 'class',
-  class: classData,
-  locations: [locationShorten(dbTimes.location)],
-  time: {
-    day: weekdayToNumber(dbTimes.day),
-    start: timeToNumber(dbTimes.time.start),
-    end: timeToNumber(dbTimes.time.end),
-    weeks: enumerateWeeks(dbTimes.weeks),
-    weeksString: dbTimes.weeks.replace(/,/g, ', '),
-  },
-});
+const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => {
+
+  // Get the day, start and end time of the class.
+  let day = weekdayToNumber(dbTimes.day);
+  let start = timeToNumber(dbTimes.time.start);
+  let end = timeToNumber(dbTimes.time.end);
+
+  // Convert to local day time.
+  [day, start, end] = convertToLocalDayTime(day, start, end);
+
+  const classPeriod: ClassPeriod = {
+    type: 'class',
+    class: classData,
+    locations: [locationShorten(dbTimes.location)],
+    time: {
+      day: day,
+      start: start,
+      end: end,
+      weeks: enumerateWeeks(dbTimes.weeks),
+      weeksString: dbTimes.weeks.replace(/,/g, ', '),
+    },
+  }
+
+  return classPeriod;
+};
 
 /**
  * An adapter that formats a DBCourse object to a CourseData object
@@ -140,3 +176,4 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
   return courseData;
 };
+

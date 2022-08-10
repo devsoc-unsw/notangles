@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
+import { defaultStartTime, defaultEndTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
