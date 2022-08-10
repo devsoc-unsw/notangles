@@ -346,6 +346,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               if (event.key === 'Backspace' || (event.ctrlKey && (event.key === 'z' || event.key === 'y'))) {
                 event.stopPropagation();
               }
+              if (event.key === 'Backspace' && inputValue === '') {
+                if (selectedValue.length > 0) {
+                  setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                  handleRemove(selectedValue[selectedValue.length - 1].code);
+                }
+              }
             }}
             InputLabelProps={{
               ...params.InputLabelProps,
