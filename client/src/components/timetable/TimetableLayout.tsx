@@ -3,7 +3,6 @@ import { styled } from '@mui/system';
 
 import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
 import { unknownErrorMessage } from '../../constants/timetable'
 
 export const rowHeight = 60;
@@ -78,7 +77,7 @@ const ColumnWidthGuide = styled('span')`
 `;
 
 const generateHour = (n: number, is12HourMode: boolean): string => {
-  // Convert the hour from negative to positive.
+  // Convert the hour to be in the 24 hrs range.
   n = ((n % 24) + 24) % 24;
   if (is12HourMode) {
     const period = n < 12 ? 'am' : 'pm';
@@ -106,10 +105,15 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
-
-    return Array(defaultEndTime - defaultStartTime + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+    if (defaultStartTime < defaultEndTime) {
+      return Array(defaultEndTime - defaultStartTime + 1)
+      .fill(0)
+      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+    } else {
+      return Array(((24 - defaultStartTime) + defaultEndTime) + 1)
+      .fill(0)
+      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+    }
   }
 };
 

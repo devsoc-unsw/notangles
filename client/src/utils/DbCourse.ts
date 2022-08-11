@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 import { DbTimes, DbCourse } from '../interfaces/Database';

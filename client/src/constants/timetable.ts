@@ -1,8 +1,9 @@
 const REGULAR_TERM_STR_LEN = 2;
 
-import { off } from 'process';
+import { useContext } from 'react';
 import { API_URL } from '../api/config';
 import timeoutPromise from '../utils/timeoutPromise';
+import { AppContext } from '../context/AppContext';
 
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
@@ -66,7 +67,7 @@ export const colors: string[] = [
 
 // Calculate the hours difference between the user's timezone and the Australian timezone.
 export const getTimeZoneOffset = (): number => {
-  
+
   const localDate = new Date();
   const sydDate = new Date(localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" }));
   const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
@@ -74,6 +75,7 @@ export const getTimeZoneOffset = (): number => {
   return offset;
 }
 
+// Get the local time based on the calculated offset.
 export const getLocalTime = (time: number): number => {
   const offset = getTimeZoneOffset();
   let newTime = time - offset;
