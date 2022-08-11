@@ -91,6 +91,7 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
 const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalTimezone: boolean): string[] => {
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
+
   // Fill an array with hour strings according to the range
   try {
     if (min < max) {
@@ -98,9 +99,9 @@ const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalT
       .fill(0)
       .map((_, i) => generateHour(i + min, is12HourMode));
     } else {
-      return Array(((24 - min) + max) + 1)
+      return Array(24)
       .fill(0)
-      .map((_, i) => generateHour(i + min, is12HourMode));
+      .map((_, i) => generateHour(i + 0, is12HourMode));
     }
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
@@ -122,8 +123,8 @@ export const TimetableLayout: React.FC = () => {
   const { is12HourMode, days, earliestStartTime, latestEndTime, isConvertToLocalTimezone } = useContext(AppContext);
 
   const hoursRange = [
-    Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone)),
-    Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1,
+    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
+    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
   ];
   const hours: string[] = generateHours(hoursRange, is12HourMode, isConvertToLocalTimezone);
 

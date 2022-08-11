@@ -1,8 +1,8 @@
-import { useContext } from 'react';
+import { cloneDeep } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
-import { DbTimes, DbCourse } from '../interfaces/Database';
 import { getTimeZoneOffset } from '../constants/timetable';
+import { DbCourse, DbTimes } from '../interfaces/Database';
+import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
@@ -122,6 +122,33 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
+    const periods: ClassPeriod[] = [];
+
+    // Loop through each class: if there is a class that spans over midnight, split it up.
+    classData.periods.forEach((period) => {
+    
+      if (period.time.start > period.time.end) {
+
+        // The first period is from the start time to midnight.
+        const firstPeriod = cloneDeep(period);
+        firstPeriod.time.end = 24;
+
+        // The second period is from midnight to the end time, and is on the next day.
+        const secondPeriod = cloneDeep(period);
+        secondPeriod.time.day = secondPeriod.time.day === 7 ? 1 : secondPeriod.time.day + 1;
+        secondPeriod.time.start = 0;
+
+        // Remove the original period and add the two new periods.
+        periods.push(firstPeriod);
+        periods.push(secondPeriod);
+      } else {
+        periods.push(period);
+      }
+    });
+
+    classData.periods = periods;
+
+    // Update the earliest start time and latest finish time of the course.
     classData.periods.forEach((period) => {
 
       // If a class ends at 0, it means it ends at 24 or midnight.
