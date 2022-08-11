@@ -69,8 +69,7 @@ export const getTimeZoneOffset = (): number => {
   
   const localDate = new Date();
   const sydDate = new Date(localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" }));
-  // const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
-  const offset = sydDate.getHours() - localDate.getHours();
+  const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
 
   return offset;
 }

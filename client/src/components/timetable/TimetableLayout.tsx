@@ -82,6 +82,7 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
   n = ((n % 24) + 24) % 24;
   if (is12HourMode) {
     const period = n < 12 ? 'am' : 'pm';
+    if (n === 0) n = 12;
     if (n > 12) n -= 12;
     return `${n} ${period}`;
   }
