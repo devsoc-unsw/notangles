@@ -122,28 +122,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
-    for (let index = 0; index < classData.periods.length; index++) {
-      if (classData.periods[index].time.start > classData.periods[index].time.end) {
-
-        // Only deep clone the time object since we want the class and locations to be updated.
-        const newPeriod: ClassPeriod = {
-          type: 'class',
-          class: classData,
-          locations: classData.periods[index].locations,
-          time: cloneDeep(classData.periods[index].time),
-        };
-
-        // The second period is from midnight to the end time, and is on the next day.
-        newPeriod.time.day = newPeriod.time.day === 7 ? 1 : newPeriod.time.day + 1;
-        newPeriod.time.start = 0;
- 
-        classData.periods.push(newPeriod);
-
-        // Change the original period to end at midnight.
-        classData.periods[index].time.end = 24;
-      }
-    }
-
     // Update the earliest start time and latest finish time of the course.
     classData.periods.forEach((period) => {
 
@@ -156,6 +134,29 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
       if (period.time.start < courseData.earliestStartTime) {
         courseData.earliestStartTime = Math.floor(period.time.start);
+      }
+    });
+
+    // Split a class up in two if it spans over midnight.
+    classData.periods.forEach((period) => {
+      if (period.time.start > period.time.end) {
+        
+        // Only deep clone the time object since we want the class and locations to be updated.
+        const newPeriod: ClassPeriod = {
+          type: 'class',
+          class: classData,
+          locations: period.locations,
+          time: cloneDeep(period.time),
+        };
+
+        // The second period is from midnight to the end time, and is on the next day.
+        newPeriod.time.day = newPeriod.time.day === 7 ? 1 : newPeriod.time.day + 1;
+        newPeriod.time.start = 0;
+ 
+        classData.periods.push(newPeriod);
+
+        // Change the original period to end at midnight.
+        period.time.end = 24;
       }
     });
 
