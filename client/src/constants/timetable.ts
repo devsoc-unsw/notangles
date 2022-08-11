@@ -66,18 +66,20 @@ export const colors: string[] = [
 ];
 
 // Calculate the hours difference between the user's timezone and the Australian timezone.
-export const getTimeZoneOffset = (): number => {
+export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => {
+
+  if (!isConvertToLocalTimezone) return 0;
 
   const localDate = new Date();
   const sydDate = new Date(localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" }));
   const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
 
-  return offset;
+  return 14;
 }
 
 // Get the local time based on the calculated offset.
-export const getLocalTime = (time: number): number => {
-  const offset = getTimeZoneOffset();
+export const getLocalTime = (isConvertToLocalTimezone: boolean, time: number): number => {
+  const offset = getTimeZoneOffset(isConvertToLocalTimezone);
   let newTime = time - offset;
   if (newTime < 0) {
     newTime = ((newTime % 24) + 24) % 24;
@@ -85,8 +87,13 @@ export const getLocalTime = (time: number): number => {
   return newTime;
 }
 
-export const defaultStartTime: number = getLocalTime(9);
-export const defaultEndTime: number = getLocalTime(18);
+export const getDefaultStartTime = (isConvertToLocalTimezone: boolean): number => {
+  return getLocalTime(isConvertToLocalTimezone, 9);
+}
+
+export const getDefaultEndTime = (isConvertToLocalTimezone: boolean): number => {
+  return getLocalTime(isConvertToLocalTimezone, 18);
+}
 
 export const maxAddedCourses = 8;
 

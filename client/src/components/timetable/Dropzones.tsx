@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-
+import { v4 as uuidv4 } from 'uuid';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';

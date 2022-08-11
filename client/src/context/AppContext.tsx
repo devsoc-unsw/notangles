@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 
-import { defaultStartTime, defaultEndTime } from '../constants/timetable';
+import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -25,6 +25,9 @@ export interface IAppContext {
 
   isHideExamClasses: boolean;
   setIsHideExamClasses: (newIsHideExamClasses: boolean) => void;
+
+  isConvertToLocalTimezone: boolean;
+  setIsConvertToLocalTimezone: (newIsConvertToLocalTimezone: boolean) => void;
 
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
@@ -92,6 +95,9 @@ export const AppContext = createContext<IAppContext>({
   isHideExamClasses: false,
   setIsHideExamClasses: () => {},
 
+  isConvertToLocalTimezone: true,
+  setIsConvertToLocalTimezone: () => {},
+
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -113,10 +119,10 @@ export const AppContext = createContext<IAppContext>({
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => {},
 
-  earliestStartTime: defaultStartTime,
+  earliestStartTime: getDefaultStartTime(true),
   setEarliestStartTime: () => {},
 
-  latestEndTime: defaultEndTime,
+  latestEndTime: getDefaultEndTime(true),
   setLatestEndTime: () => {},
 
   term: `T0`,
@@ -156,8 +162,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termName, setTermName] = useState<string>(`Term 0`);
   const [year, setYear] = useState<string>('0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>('0000-00-00');
-  const [earliestStartTime, setEarliestStartTime] = useState(defaultStartTime);
-  const [latestEndTime, setLatestEndTime] = useState(defaultEndTime);
+  const [earliestStartTime, setEarliestStartTime] = useState(getDefaultStartTime(isConvertToLocalTimezone));
+  const [latestEndTime, setLatestEndTime] = useState(getDefaultEndTime(isConvertToLocalTimezone));
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -174,6 +180,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsHideClassInfo,
     isHideExamClasses,
     setIsHideExamClasses,
+    isConvertToLocalTimezone,
+    setIsConvertToLocalTimezone,
     alertMsg,
     setAlertMsg,
     errorVisibility,

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { styled } from '@mui/system';
 
-import { defaultStartTime, defaultEndTime } from '../../constants/timetable';
+import { getDefaultStartTime, getDefaultEndTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { unknownErrorMessage } from '../../constants/timetable'
 
@@ -88,7 +88,7 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
   return `${String(n).padStart(2, '0')}:00`;
 };
 
-const generateHours = (range: number[], is12HourMode: boolean): string[] => {
+const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalTimezone: boolean): string[] => {
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
   // Fill an array with hour strings according to the range
@@ -105,27 +105,27 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
-    if (defaultStartTime < defaultEndTime) {
-      return Array(defaultEndTime - defaultStartTime + 1)
+    if (getDefaultStartTime(isConvertToLocalTimezone) < getDefaultEndTime(isConvertToLocalTimezone)) {
+      return Array(getDefaultEndTime(isConvertToLocalTimezone) - getDefaultStartTime(isConvertToLocalTimezone) + 1)
       .fill(0)
-      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+      .map((_, i) => generateHour(i + getDefaultStartTime(isConvertToLocalTimezone), is12HourMode));
     } else {
-      return Array(((24 - defaultStartTime) + defaultEndTime) + 1)
+      return Array(((24 - getDefaultStartTime(isConvertToLocalTimezone)) + getDefaultEndTime(isConvertToLocalTimezone)) + 1)
       .fill(0)
-      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+      .map((_, i) => generateHour(i + getDefaultStartTime(isConvertToLocalTimezone), is12HourMode));
     }
   }
 };
 
 export const TimetableLayout: React.FC = () => {
   
-  const { is12HourMode, days, earliestStartTime, latestEndTime } = useContext(AppContext);
+  const { is12HourMode, days, earliestStartTime, latestEndTime, isConvertToLocalTimezone } = useContext(AppContext);
 
   const hoursRange = [
-    Math.min(earliestStartTime, defaultStartTime),
-    Math.max(latestEndTime, defaultEndTime) - 1,
+    Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone)),
+    Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1,
   ];
-  const hours: string[] = generateHours(hoursRange, is12HourMode);
+  const hours: string[] = generateHours(hoursRange, is12HourMode, isConvertToLocalTimezone);
 
   const dayCells = days.map((day, i) => (
     <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>

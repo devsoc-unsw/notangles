@@ -73,7 +73,7 @@ const sortUnique = (arr: number[]): number[] => {
   return ret;
 };
 
-const getCourseInfo = async (year: string, term: string, courseCode: CourseCode): Promise<CourseData> => {
+const getCourseInfo = async (year: string, term: string, courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));
@@ -140,7 +140,7 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
     if (!json) {
       throw new NetworkError('Internal server error');
     }
-    return dbCourseToCourseData(json);
+    return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     throw new NetworkError('Could not connect to server');
   }

@@ -14,7 +14,7 @@ const StyledDropdownContainer = styled(Grid)`
 `;
 
 const getTimeData = (time: ClassTime, days: string[]) => {
-  return [days.at(time.day - 1), to24Hour(((time.start % 24) + 24) % 24), '\u2013', to24Hour(((time.end % 24) + 24) % 24), `(Weeks ${time.weeksString})`].join(' ');
+  return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
 };
 
 const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {

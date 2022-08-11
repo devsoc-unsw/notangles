@@ -32,8 +32,8 @@ const enumerateWeeks = (weeks: string): number[] =>
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
   });
 
-const convertToLocalDayTime = (day: number, start: number, end: number): number[] => {
-  const offset = getTimeZoneOffset();
+const convertToLocalDayTime = (day: number, start: number, end: number, isConvertToLocalTimezone: boolean): number[] => {
+  const offset = getTimeZoneOffset(isConvertToLocalTimezone);
   
   let newDay = day;
   let newStart = start - offset;
@@ -45,10 +45,8 @@ const convertToLocalDayTime = (day: number, start: number, end: number): number[
   // Tuesday 13 - 16 AEST -> Monday 23 - 26 EDT
   if (newStart < 0) {
     newDay = newDay === 1 ? 7 : newDay - 1;
-    newStart = newStart % 24;
-    newEnd = newEnd % 24;
-    // newStart = ((newStart % 24) + 24) % 24;
-    // newEnd = ((newEnd % 24) + 24) % 24;
+    newStart = ((newStart % 24) + 24) % 24;
+    newEnd = ((newEnd % 24) + 24) % 24;
   }
 
   return [newDay, newStart, newEnd];
@@ -63,7 +61,7 @@ const convertToLocalDayTime = (day: number, start: number, end: number): number[
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => {
+const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLocalTimezone: boolean): ClassPeriod => {
 
   // Get the day, start and end time of the class.
   let day = weekdayToNumber(dbTimes.day);
@@ -71,7 +69,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
   let end = timeToNumber(dbTimes.time.end);
 
   // Convert to local day time.
-  [day, start, end] = convertToLocalDayTime(day, start, end);
+  [day, start, end] = convertToLocalDayTime(day, start, end, isConvertToLocalTimezone);
 
   const classPeriod: ClassPeriod = {
     type: 'class',
@@ -100,7 +98,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
  * const json: DBCourse = await data.json()
  * const courseInfo = dbCourseToCourseData(json)
  */
-export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
+export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezone: boolean): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
@@ -122,9 +120,13 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       section: dbClass.section,
     };
 
-    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));
+    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
     classData.periods.forEach((period) => {
+
+      // If a class ends at 0, it means it ends at 24 or midnight.
+      if (period.time.end == 0) period.time.end = 24;
+
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = Math.ceil(period.time.end);
       }
@@ -174,8 +176,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       },
     };
   });
-
-  // console.log(courseData);
 
   return courseData;
 };

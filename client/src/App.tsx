@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultStartTime, defaultEndTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
+import { getDefaultStartTime, getDefaultEndTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -71,6 +71,7 @@ const App: React.FC = () => {
     isDefaultUnscheduled,
     isHideClassInfo,
     isHideExamClasses,
+    isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
     infoVisibility,
@@ -158,7 +159,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(year, term, code).catch((err) => {
+        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
         })
       )
@@ -225,6 +226,10 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isHideExamClasses', isHideExamClasses);
   }, [isHideExamClasses]);
+
+  useEffect(() => {
+    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
+  }, [isConvertToLocalTimezone]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
@@ -297,7 +302,7 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
-        defaultStartTime,
+        getDefaultStartTime(isConvertToLocalTimezone),
         earliestStartTime
       )
     );
@@ -305,7 +310,7 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
-        defaultEndTime,
+        getDefaultEndTime(isConvertToLocalTimezone),
         latestEndTime
       )
     );
