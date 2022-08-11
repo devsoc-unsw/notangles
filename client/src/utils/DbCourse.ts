@@ -122,31 +122,27 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
-    const periods: ClassPeriod[] = [];
+    for (let index = 0; index < classData.periods.length; index++) {
+      if (classData.periods[index].time.start > classData.periods[index].time.end) {
 
-    // Loop through each class: if there is a class that spans over midnight, split it up.
-    classData.periods.forEach((period) => {
-    
-      if (period.time.start > period.time.end) {
-
-        // The first period is from the start time to midnight.
-        const firstPeriod = cloneDeep(period);
-        firstPeriod.time.end = 24;
+        // Only deep clone the time object since we want the class and locations to be updated.
+        const newPeriod: ClassPeriod = {
+          type: 'class',
+          class: classData,
+          locations: classData.periods[index].locations,
+          time: cloneDeep(classData.periods[index].time),
+        };
 
         // The second period is from midnight to the end time, and is on the next day.
-        const secondPeriod = cloneDeep(period);
-        secondPeriod.time.day = secondPeriod.time.day === 7 ? 1 : secondPeriod.time.day + 1;
-        secondPeriod.time.start = 0;
+        newPeriod.time.day = newPeriod.time.day === 7 ? 1 : newPeriod.time.day + 1;
+        newPeriod.time.start = 0;
+ 
+        classData.periods.push(newPeriod);
 
-        // Remove the original period and add the two new periods.
-        periods.push(firstPeriod);
-        periods.push(secondPeriod);
-      } else {
-        periods.push(period);
+        // Change the original period to end at midnight.
+        classData.periods[index].time.end = 24;
       }
-    });
-
-    classData.periods = periods;
+    }
 
     // Update the earliest start time and latest finish time of the course.
     classData.periods.forEach((period) => {
@@ -170,10 +166,12 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
     courseData.activities[dbClass.activity].push(classData);
   });
 
-  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+  const isDuplicate = (a: ClassPeriod, b: ClassPeriod): boolean => {
+    return a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+  }
 
   Object.keys(courseData.activities).forEach((activity) => {
+
     let allPeriods: ClassPeriod[] = [];
 
     courseData.activities[activity].forEach((classData) => {
@@ -188,7 +186,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
             .filter((aPeriod) => period !== aPeriod && isDuplicate(period, aPeriod))
             .map((periods) => periods.locations[0]),
         ];
-
         return period;
       });
     });

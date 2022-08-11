@@ -43,7 +43,6 @@ const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
 
 const getDuplicateClassData = (c: ClassPeriod) => {
   const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
-
   const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
     value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c))
   );
