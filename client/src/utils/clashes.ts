@@ -1,6 +1,4 @@
-import { useContext } from 'react';
-import { weekdaysLong, unknownErrorMessage } from '../constants/timetable';
-import { AppContext } from '../context/AppContext';
+import { unknownErrorMessage, weekdaysLong } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
@@ -125,10 +123,12 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
   return groupedClashes;
 };
 
-export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>, card: ClassCard | EventPeriod) => {
-
-  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
-  
+export const getClashInfo = (
+  groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
+  card: ClassCard | EventPeriod,
+  setErrorVisibility: (newErrorVisibility: boolean) => void,
+  setAlertMsg: (newErrorMsg: string) => void
+) => {
   let cardWidth = 100;
   let clashIndex = 0;
   let clashColour = 'orange';
@@ -140,7 +140,7 @@ export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | Event
 
     try {
       clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
-    } catch(err) {
+    } catch (err) {
       setAlertMsg(unknownErrorMessage);
       setErrorVisibility(true);
     }
