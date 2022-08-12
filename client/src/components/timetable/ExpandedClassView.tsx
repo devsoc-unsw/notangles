@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
-import { ClassPeriod, ClassTime, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
+import { CourseContext } from '../../context/CourseContext';
+import { ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
@@ -41,10 +42,11 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sect
 const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
   a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
-const getDuplicateClassData = (c: ClassPeriod) => {
+const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
+  const currCourse = courses.find((course) => course.code === c.class.courseCode);
   const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
 
-  const duplicateClasses = c.class.course.activities[c.class.activity].filter((value) =>
+  const duplicateClasses = currCourse!.activities[c.class.activity].filter((value) =>
     value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c))
   );
   const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [
@@ -73,15 +75,16 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
 
-  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(classPeriod)); // the relevant data to handle class changing with location dropdown
+  const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(classPeriod, selectedCourses)); // the relevant data to handle class changing with location dropdown
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
     if (!isScheduledPeriod(classPeriod)) return;
 
     setCurrentPeriod(classPeriod);
-    duplicateClassData.current = getDuplicateClassData(classPeriod); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
+    duplicateClassData.current = getDuplicateClassData(classPeriod, selectedCourses); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
     setSelectedIndex(
       duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === classPeriod.class.section)
     ); // makes selected item in new initial location dropdown the right one
@@ -103,7 +106,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
     >
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {classPeriod.class.course.code} — {classPeriod.class.course.name}
+          {classPeriod.class.courseCode} — {classPeriod.class.courseName}
           <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
             <Close />
           </IconButton>

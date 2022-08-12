@@ -95,7 +95,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
       <DroppedClass
         key={key}
         classCard={classCard}
-        color={assignedColors[classCard.class.course.code]}
+        color={assignedColors[classCard.class.courseCode]}
         y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
         handleSelectClass={handleSelectClass}
         cardWidth={cardWidth as number}

@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+import React, { useContext, useEffect } from 'react';
 
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
@@ -12,7 +12,13 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
+import {
+  defaultEndTime,
+  defaultStartTime,
+  getAvailableTermDetails,
+  unknownErrorMessage,
+  weekdaysLong,
+} from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -111,20 +117,21 @@ const App: React.FC = () => {
       prev = { ...prev };
 
       try {
-        prev[classData.course.code][classData.activity] = classData;
-      } catch(err) {
+        prev[classData.courseCode][classData.activity] = classData;
+      } catch (err) {
         setAlertMsg(unknownErrorMessage);
         setErrorVisibility(true);
       }
 
       return prev;
     });
+    console.log(classData);
   };
 
   const handleRemoveClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = null;
+      prev[classData.courseCode][classData.activity] = null;
       return prev;
     });
   };
@@ -241,18 +248,16 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-
             try {
               let result = undefined;
               result = newSelectedCourses
-              .find((x) => x.code === courseCode)
-              ?.activities[activity].find((x) => x.section === classId);
+                .find((x) => x.code === courseCode)
+                ?.activities[activity].find((x) => x.section === classId);
               if (result) classData = result;
-            } catch(err) {
+            } catch (err) {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);
             }
-
           }
 
           newSelectedClasses[courseCode][activity] = classData;

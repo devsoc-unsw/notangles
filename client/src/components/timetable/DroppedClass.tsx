@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
@@ -31,6 +32,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
 
   const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
+
+  const currCourse = selectedCourses.find((course) => course.code === classCard.class.courseCode);
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
@@ -64,7 +68,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, eventCopy);
+      setDragTarget(classCard, currCourse!, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -128,8 +132,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
+    const currCourse = selectedCourses.find((c) => c.code === classCard.class.courseCode);
     activityMaxPeriods = Math.max(
-      ...classCard.class.course.activities[classCard.class.activity].map((classData) => classData.periods.length)
+      ...currCourse!.activities[classCard.class.activity].map((classData) => classData.periods.length)
     );
   }
 
@@ -163,7 +168,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
-                {classCard.class.course.code} {classCard.class.activity}
+                {classCard.class.courseCode} {classCard.class.activity}
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (

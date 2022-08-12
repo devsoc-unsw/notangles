@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
-import { DbTimes, DbCourse } from '../interfaces/Database';
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
@@ -76,7 +76,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
-      course: courseData,
+      courseCode: dbCourse.courseCode,
+      courseName: dbCourse.name,
       activity: dbClass.activity,
       status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,
@@ -132,7 +133,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     courseData.inventoryData[activity] = {
       type: 'inventory',
       class: {
-        course: courseData,
+        courseCode: courseData.code,
         activity,
       },
     };
