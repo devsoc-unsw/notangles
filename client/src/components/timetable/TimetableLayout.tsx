@@ -92,6 +92,9 @@ const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalT
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
 
+  // console.log('min', min);
+  // console.log('max', max);
+
   // Fill an array with hour strings according to the range
   try {
     if (min < max) {
@@ -106,14 +109,18 @@ const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalT
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
-    if (getDefaultStartTime(isConvertToLocalTimezone) < getDefaultEndTime(isConvertToLocalTimezone)) {
-      return Array(getDefaultEndTime(isConvertToLocalTimezone) - getDefaultStartTime(isConvertToLocalTimezone) + 1)
+
+    const defaultStartTime = getDefaultStartTime(isConvertToLocalTimezone);
+    const defaultEndTime = getDefaultEndTime(isConvertToLocalTimezone);
+
+    if (defaultStartTime < defaultEndTime) {
+      return Array(defaultEndTime - defaultStartTime + 1)
       .fill(0)
-      .map((_, i) => generateHour(i + getDefaultStartTime(isConvertToLocalTimezone), is12HourMode));
+      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
     } else {
-      return Array(((24 - getDefaultStartTime(isConvertToLocalTimezone)) + getDefaultEndTime(isConvertToLocalTimezone)) + 1)
+      return Array(24)
       .fill(0)
-      .map((_, i) => generateHour(i + getDefaultStartTime(isConvertToLocalTimezone), is12HourMode));
+      .map((_, i) => generateHour(i + 0, is12HourMode));
     }
   }
 };

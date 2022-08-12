@@ -99,7 +99,6 @@ const App: React.FC = () => {
     if (storage.get('hasShownInfoMessage')) {
       setInfoVisibility(false);
     }
-
     storage.set('hasShownInfoMessage', true);
   }
 
@@ -165,7 +164,29 @@ const App: React.FC = () => {
       )
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
-      const newSelectedCourses = [...selectedCourses, ...addedCourses];
+      
+      let newSelectedCourses = [...selectedCourses];
+
+      // If there was no previously selected courses, newSelectedCourses is the same as addedCourses.
+      if (newSelectedCourses.length === 0) {
+        newSelectedCourses = addedCourses;
+      } else {
+        // If there were previously selected courses: if any of the added courses already exist in
+        // the previously selected courses, then replace the old course with the new course. Else,
+        // add the new course into newSelectedCourses.
+        addedCourses.forEach((addedCourse) => {
+          let found = false;
+          selectedCourses.forEach((selectedCourse, index) => {
+            if (addedCourse.code === selectedCourse.code) {
+              newSelectedCourses[index] = addedCourse;
+              found = true;
+            }
+          });
+          if (!found) {
+            newSelectedCourses.push(addedCourse);
+          }
+        });
+      }
 
       setSelectedCourses(newSelectedCourses);
 
@@ -229,6 +250,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
+    updateTimetableDaysAndTimes();
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
@@ -298,21 +320,21 @@ const App: React.FC = () => {
     return maxDay;
   };
 
-  useUpdateEffect(() => {
+  const updateTimetableDaysAndTimes = () => {
+
     setEarliestStartTime(
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
         getDefaultStartTime(isConvertToLocalTimezone),
-        earliestStartTime
       )
     );
+
     setLatestEndTime(
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
         getDefaultEndTime(isConvertToLocalTimezone),
-        latestEndTime
       )
     );
 
@@ -327,6 +349,10 @@ const App: React.FC = () => {
         )
       )
     );
+  }
+
+  useUpdateEffect(() => {
+    updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses]);
 
   useUpdateEffect(() => {

@@ -12,7 +12,7 @@ import DroppedEvent from './DroppedEvent';
 const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
 
-  const { isHideExamClasses, days } = useContext(AppContext);
+  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -89,7 +89,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     let key = cardKeys.get(classCard);
     key = key !== undefined ? key : ++keyCounter.current;
 
-    const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
+    const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard, setErrorVisibility, setAlertMsg);
 
     droppedClasses.push(
       <DroppedClass
@@ -120,7 +120,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
   });
 
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
-    const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
+    const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod, setErrorVisibility, setAlertMsg);
     droppedEvents.push(
       <DroppedEvent
         key={key}

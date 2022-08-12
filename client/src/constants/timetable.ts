@@ -1,9 +1,7 @@
 const REGULAR_TERM_STR_LEN = 2;
 
-import { useContext } from 'react';
 import { API_URL } from '../api/config';
 import timeoutPromise from '../utils/timeoutPromise';
-import { AppContext } from '../context/AppContext';
 
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
