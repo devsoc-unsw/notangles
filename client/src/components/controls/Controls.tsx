@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
+import CustomEvents from './CustomEvent';
 import History from './History';
 import { ControlsProps } from '../../interfaces/PropTypes';
 
@@ -23,6 +24,10 @@ const AutotimetablerWrapper = styled(Box)`
   }
 `;
 
+const CustomEventsWrapper = styled(Box)`
+  flex: 1;
+`;
+
 const HistoryWrapper = styled(Box)`
   margin-top: 20px;
   margin-left: 3px;
@@ -31,12 +36,15 @@ const HistoryWrapper = styled(Box)`
 const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} md={8}>
+      <Grid item xs={12} md={6}>
         <SelectWrapper>
           <CourseSelect assignedColors={assignedColors} handleSelect={handleSelectCourse} handleRemove={handleRemoveCourse} />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={4}>
+      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={6}>
+        <CustomEventsWrapper>
+          <CustomEvents />
+        </CustomEventsWrapper>
         <AutotimetablerWrapper>
           <Autotimetabler handleSelectClass={handleSelectClass} />
         </AutotimetablerWrapper>

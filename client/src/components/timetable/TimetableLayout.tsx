@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { unknownErrorMessage } from '../../constants/timetable'
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -86,20 +87,33 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
 };
 
 const generateHours = (range: number[], is12HourMode: boolean): string[] => {
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
   // Fill an array with hour strings according to the range
-  return Array(max - min + 1)
+  try {
+    return Array(max - min + 1)
     .fill(0)
     .map((_, i) => generateHour(i + min, is12HourMode));
+  } catch(err) {
+    setAlertMsg(unknownErrorMessage);
+    setErrorVisibility(true);
+
+    return Array(defaultEndTime - defaultStartTime + 1)
+    .fill(0)
+    .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+  }
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days } = useContext(AppContext);
+  const { is12HourMode, days, earliestStartTime, latestEndTime } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
-  const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestClassFinishTime, defaultEndTime) - 1];
+  const hoursRange = [
+    Math.min(earliestStartTime, earliestClassStartTime, defaultStartTime),
+    Math.max(latestEndTime, latestClassFinishTime, defaultEndTime) - 1,
+  ];
   const hours: string[] = generateHours(hoursRange, is12HourMode);
 
   const dayCells = days.map((day, i) => (

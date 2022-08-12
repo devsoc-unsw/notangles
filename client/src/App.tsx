@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -12,13 +12,13 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { getAvailableTermDetails } from './constants/timetable';
+import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import { Activity, ClassData, ClassTime, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Course';
-import { useDrag } from './utils/Drag';
+import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
@@ -70,12 +70,19 @@ const App: React.FC = () => {
     isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
+    isHideExamClasses,
+    setAlertMsg,
+    setErrorVisibility,
     infoVisibility,
     days,
     term,
     year,
     setInfoVisibility,
     setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
     setTerm,
     setYear,
     firstDayOfTerm,
@@ -84,7 +91,8 @@ const App: React.FC = () => {
     setTermNumber,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+    useContext(CourseContext);
 
   if (infoVisibility) {
     if (storage.get('hasShownInfoMessage')) {
@@ -94,12 +102,21 @@ const App: React.FC = () => {
     storage.set('hasShownInfoMessage', true);
   }
 
+  setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = classData;
+
+      try {
+        prev[classData.course.code][classData.activity] = classData;
+      } catch(err) {
+        setAlertMsg(unknownErrorMessage);
+        setErrorVisibility(true);
+      }
+
       return prev;
     });
   };
@@ -205,6 +222,10 @@ const App: React.FC = () => {
     storage.set('isHideClassInfo', isHideClassInfo);
   }, [isHideClassInfo]);
 
+  useEffect(() => {
+    storage.set('isHideExamClasses', isHideExamClasses);
+  }, [isHideExamClasses]);
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
@@ -220,11 +241,18 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-            const result = newSelectedCourses
+
+            try {
+              let result = undefined;
+              result = newSelectedCourses
               .find((x) => x.code === courseCode)
               ?.activities[activity].find((x) => x.section === classId);
+              if (result) classData = result;
+            } catch(err) {
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
+            }
 
-            if (result) classData = result;
           }
 
           newSelectedClasses[courseCode][activity] = classData;
@@ -233,6 +261,8 @@ const App: React.FC = () => {
 
       setSelectedClasses(newSelectedClasses);
     });
+
+    setCreatedEvents(storage.get('createdEvents'));
   }, [year]);
 
   useUpdateEffect(() => {
@@ -240,16 +270,58 @@ const App: React.FC = () => {
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
-    if (
-      selectedCourses.some((v) =>
-        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
-      )
-    ) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
-    } else if (days.length !== 5) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-    }
   }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    storage.set('createdEvents', createdEvents);
+  }, [createdEvents]);
+
+  const getLatestDotW = (courses: CourseData[]) => {
+    let maxDay: number = 5;
+    for (let i = 0; i < courses.length; i++) {
+      const activities = Object.values(courses[i].activities);
+      for (let j = 0; j < activities.length; j++) {
+        for (let k = 0; k < activities[j].length; k++) {
+          const classData = activities[j][k];
+          for (let l = 0; l < classData.periods.length; l++) {
+            maxDay = Math.max(maxDay, classData.periods[l].time.day);
+          }
+        }
+      }
+    }
+    return maxDay;
+  };
+
+  useUpdateEffect(() => {
+    setEarliestStartTime(
+      Math.min(
+        ...selectedCourses.map((course) => course.earliestStartTime),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
+        defaultStartTime,
+        earliestStartTime
+      )
+    );
+    setLatestEndTime(
+      Math.max(
+        ...selectedCourses.map((course) => course.latestFinishTime),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
+        defaultEndTime,
+        latestEndTime
+      )
+    );
+
+    setDays(
+      weekdaysLong.slice(
+        0,
+        Math.max(
+          getLatestDotW(selectedCourses),
+          ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
+          days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
+          5 // default
+        )
+      )
+    );
+  }, [createdEvents, selectedCourses]);
 
   useUpdateEffect(() => {
     const savedClasses: SavedClasses = {};
@@ -306,7 +378,7 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
                   save to calendar
                 </ICSButton>
                 <Footer />

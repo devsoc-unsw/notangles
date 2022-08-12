@@ -4,12 +4,12 @@ import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, ClassPeriod } from '../../interfaces/Course';
+import { Activity, ClassData, ClassPeriod } from '../../interfaces/Periods';
 import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import Dropzone from './Dropzone';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
-  const { isShowOnlyOpenClasses } = useContext(AppContext);
+  const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
 
   const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
     a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
@@ -33,6 +33,13 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
     });
+  }
+
+  // Hide exam classes dropzones if isHideExamClasses setting is toggled on
+  if (isHideExamClasses) {
+    if ('Exam' in newActivities) {
+      delete newActivities['Exam'];
+    }
   }
 
   // Filter out duplicate class periods
@@ -79,10 +86,8 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 };
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { isDarkMode } = useContext(AppContext);
+  const { isDarkMode, earliestStartTime } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
-
-  const earliestStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime), defaultStartTime);
 
   const dropzones = selectedCourses.map((course) => (
     <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />

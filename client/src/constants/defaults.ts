@@ -1,16 +1,14 @@
 const defaults: Record<string, any> = {
-  is12HourMode: false,
+  is12HourMode: true,
   isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   isSquareEdges: false,
   isShowOnlyOpenClasses: false,
   isDefaultUnscheduled: false,
   isHideClassInfo: false,
-  isSortAlphabetic: false,
-  userID: '',
-  accessToken: '',
-  userPicture: '',
+  isHideExamClasses: false,
   selectedCourses: [],
   selectedClasses: {},
+  createdEvents: {},
   hasShownInfoMessage: false,
 };
 

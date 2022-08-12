@@ -1,38 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Activity, ClassData, ClassPeriod, CourseCode, CourseData, Section, Status } from './Course';
-
-// List of the interfaces and types that are used in the scraper
-
-export interface DbCourse {
-  courseCode: CourseCode;
-  name: string;
-  classes: DbClass[];
-}
-
-export interface DbClass {
-  activity: Activity;
-  times: DbTimes[];
-  status: Status;
-  courseEnrolment: DbCourseEnrolment;
-  section: Section;
-}
-
-export interface DbCourseEnrolment {
-  enrolments: number;
-  capacity: number;
-}
-
-export interface DbTimes {
-  time: DbTime;
-  day: string;
-  location: string;
-  weeks: string;
-}
-
-export interface DbTime {
-  start: string;
-  end: string;
-}
+import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
+import { DbTimes, DbCourse } from '../interfaces/Database';
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
@@ -44,6 +12,7 @@ const weekdayToNumber = (weekDay: string) => {
     Thu: 4,
     Fri: 5,
     Sat: 6,
+    Sun: 7,
   };
   return conversionTable[weekDay];
 };
@@ -71,6 +40,7 @@ const enumerateWeeks = (weeks: string): number[] =>
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
+  type: 'class',
   class: classData,
   locations: [locationShorten(dbTimes.location)],
   time: {
@@ -160,6 +130,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
 
   Object.keys(courseData.activities).forEach((activity) => {
     courseData.inventoryData[activity] = {
+      type: 'inventory',
       class: {
         course: courseData,
         activity,

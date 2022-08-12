@@ -5,6 +5,18 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: '09/08/22',
+    changes: ['Added setting toggle to hide exam classes'],
+  },
+  {
+    date: '26/07/22',
+    changes: ['Changed icon to open expanded view'],
+  },
+  {
+    date: '23/07/22',
+    changes: ['Added support for custom user events'],
+  },
+  {
     date: '21/06/22',
     changes: ['Option to hide full classes changed to hide all non-open classes (both full and on-hold)'],
   },

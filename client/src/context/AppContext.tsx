@@ -1,4 +1,6 @@
 import React, { createContext, useState } from 'react';
+
+import { defaultEndTime, defaultStartTime } from '../constants/timetable';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -21,6 +23,9 @@ export interface IAppContext {
   isHideClassInfo: boolean;
   setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
 
+  isHideExamClasses: boolean;
+  setIsHideExamClasses: (newIsHideExamClasses: boolean) => void;
+
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -40,7 +45,14 @@ export interface IAppContext {
   setIsDrag: (newIsDrag: boolean) => void;
 
   days: string[];
-  setDays: (newDays: string[]) => void;
+  setDays(newDays: string[]): void;
+  setDays(callback: (oldDays: string[]) => string[]): void;
+
+  earliestStartTime: number;
+  setEarliestStartTime: (newEarliestStartTime: number) => void;
+
+  latestEndTime: number;
+  setLatestEndTime: (newLatestEndTime: number) => void;
 
   term: string;
   setTerm: (newTerm: string) => void;
@@ -77,6 +89,9 @@ export const AppContext = createContext<IAppContext>({
   isHideClassInfo: false,
   setIsHideClassInfo: () => {},
 
+  isHideExamClasses: false,
+  setIsHideExamClasses: () => {},
+
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -98,6 +113,11 @@ export const AppContext = createContext<IAppContext>({
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   setDays: () => {},
 
+  earliestStartTime: defaultStartTime,
+  setEarliestStartTime: () => {},
+
+  latestEndTime: defaultEndTime,
+  setLatestEndTime: () => {},
   term: `T0`,
   setTerm: () => {},
 
@@ -121,6 +141,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isShowOnlyOpenClasses, setisShowOnlyOpenClasses] = useState<boolean>(storage.get('isShowOnlyOpenClasses'));
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
+  const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
@@ -133,6 +154,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termName, setTermName] = useState<string>(`Term 0`);
   const [year, setYear] = useState<string>('0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>('0000-00-00');
+  const [earliestStartTime, setEarliestStartTime] = useState(9);
+  const [latestEndTime, setLatestEndTime] = useState(18);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -147,6 +170,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
+    isHideExamClasses,
+    setIsHideExamClasses,
     alertMsg,
     setAlertMsg,
     errorVisibility,
@@ -161,6 +186,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsDrag,
     days,
     setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
     term,
     setTerm,
     termName,
