@@ -226,7 +226,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       },
     };
   });
-  
+
   return courseData;
 };
 

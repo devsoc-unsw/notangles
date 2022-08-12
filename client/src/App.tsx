@@ -228,13 +228,14 @@ const App: React.FC = () => {
   }, [isHideExamClasses]);
 
   useEffect(() => {
+    updateTimetableEvents();
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  useUpdateEffect(() => {
+  const updateTimetableEvents = () => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
       const newSelectedClasses: SelectedClasses = {};
@@ -246,7 +247,6 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-
             try {
               let result = undefined;
               result = newSelectedCourses
@@ -257,17 +257,18 @@ const App: React.FC = () => {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);
             }
-
           }
 
           newSelectedClasses[courseCode][activity] = classData;
         });
       });
-
       setSelectedClasses(newSelectedClasses);
     });
-
     setCreatedEvents(storage.get('createdEvents'));
+  }
+
+  useUpdateEffect(() => {
+    updateTimetableEvents();
   }, [year]);
 
   useUpdateEffect(() => {
