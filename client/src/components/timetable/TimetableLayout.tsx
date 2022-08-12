@@ -92,9 +92,6 @@ const generateHours = (range: number[], is12HourMode: boolean, isConvertToLocalT
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const [min, max] = range;
 
-  // console.log('min', min);
-  // console.log('max', max);
-
   // Fill an array with hour strings according to the range
   try {
     if (min < max) {
