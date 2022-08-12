@@ -71,9 +71,28 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
   // Convert to local day time.
   [day, start, end] = convertToLocalDayTime(day, start, end, isConvertToLocalTimezone);
 
+  // Get the subactivity of the class (only matters for tutlabs to separate them).
+  let subactivity = classData.activity;
+  if (classData.activity === 'Tutorial-Laboratory') {
+    if (start < end) {
+      if (end - start === 1) {
+        subactivity = 'Tutorial';
+      } else {
+        subactivity = 'Laboratory';
+      }
+    } else {
+      if (24 - start + end === 1) {
+        subactivity = 'Tutorial';
+      } else {
+        subactivity = 'Laboratory';
+      }
+    }
+  }
+
   const classPeriod: ClassPeriod = {
     type: 'class',
     class: classData,
+    subactivity: subactivity,
     locations: [locationShorten(dbTimes.location)],
     time: {
       day: day,
@@ -145,6 +164,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
         const newPeriod: ClassPeriod = {
           type: 'class',
           class: classData,
+          subactivity: period.subactivity,
           locations: period.locations,
           time: cloneDeep(period.time),
         };
@@ -168,7 +188,12 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   });
 
   const isDuplicate = (a: ClassPeriod, b: ClassPeriod): boolean => {
-    return a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+    return (
+      a.subactivity === b.subactivity
+      && a.time.day === b.time.day 
+      && a.time.start === b.time.start 
+      && a.time.end === b.time.end
+    );
   }
 
   Object.keys(courseData.activities).forEach((activity) => {
@@ -201,7 +226,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       },
     };
   });
-
+  
   return courseData;
 };
 

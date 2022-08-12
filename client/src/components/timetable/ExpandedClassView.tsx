@@ -38,8 +38,14 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sect
   );
 };
 
-const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-  a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+const isDuplicate = (a: ClassPeriod, b: ClassPeriod): boolean => {
+  return (
+    a.subactivity === b.subactivity
+    && a.time.day === b.time.day 
+    && a.time.start === b.time.start 
+    && a.time.end === b.time.end
+  );
+}
 
 const getDuplicateClassData = (c: ClassPeriod) => {
   const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));

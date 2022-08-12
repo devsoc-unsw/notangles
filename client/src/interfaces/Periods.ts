@@ -40,6 +40,7 @@ export interface EventData {
 export interface ClassPeriod {
   type: 'class';
   class: ClassData;
+  subactivity: string;
   time: ClassTime;
   locations: string[];
 }
