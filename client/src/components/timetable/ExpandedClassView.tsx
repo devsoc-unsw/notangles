@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';

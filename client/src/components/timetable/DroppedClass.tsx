@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';

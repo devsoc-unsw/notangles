@@ -1,10 +1,9 @@
+import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
-
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
