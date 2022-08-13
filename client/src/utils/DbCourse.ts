@@ -41,7 +41,9 @@ const enumerateWeeks = (weeks: string): number[] =>
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
   type: 'class',
-  class: classData,
+  classId: classData.id,
+  courseCode: classData.courseCode,
+  activity: classData.activity,
   locations: [locationShorten(dbTimes.location)],
   time: {
     day: weekdayToNumber(dbTimes.day),
@@ -132,10 +134,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   Object.keys(courseData.activities).forEach((activity) => {
     courseData.inventoryData[activity] = {
       type: 'inventory',
-      class: {
-        courseCode: courseData.code,
-        activity,
-      },
+      classId: null,
+      courseCode: courseData.code,
+      activity: activity,
     };
   });
 

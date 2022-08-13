@@ -23,7 +23,7 @@ export const downloadIcsFile = async (
   const formattedClassEvents = getClassEvents(courses, classes).map(([period, week]) => ({
     start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
     end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
-    title: `${period.class.courseCode} ${period.class.activity}`,
+    title: `${period.courseCode} ${period.activity}`,
     location: period.locations[0],
   }));
 

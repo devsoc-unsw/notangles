@@ -45,14 +45,18 @@ export interface EventData {
 
 export interface ClassPeriod {
   type: 'class';
-  class: ClassData;
+  classId: string;
+  courseCode: CourseCode;
+  activity: Activity;
   time: ClassTime;
   locations: string[];
 }
 
 export interface InventoryPeriod {
   type: 'inventory';
-  class: InventoryData;
+  classId: null;
+  courseCode: CourseCode;
+  activity: Activity;
 }
 
 export interface EventPeriod {

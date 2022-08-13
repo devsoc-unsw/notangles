@@ -125,7 +125,6 @@ const App: React.FC = () => {
 
       return prev;
     });
-    console.log(classData);
   };
 
   const handleRemoveClass = (classData: ClassData) => {

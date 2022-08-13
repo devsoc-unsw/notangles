@@ -9,6 +9,7 @@ import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
+import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -43,10 +44,12 @@ const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
   a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
 const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
-  const currCourse = courses.find((course) => course.code === c.class.courseCode);
-  const periodIndex = c.class.periods.findIndex((p) => isDuplicate(p, c));
+  const currCourse = getCourseFromClassData(courses, c);
+  const currClass = getClassDataFromPeriod(courses, c);
 
-  const duplicateClasses = currCourse!.activities[c.class.activity].filter((value) =>
+  const periodIndex = currClass.periods.findIndex((p) => isDuplicate(p, c));
+
+  const duplicateClasses = currCourse.activities[c.activity].filter((value) =>
     value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c))
   );
   const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [
@@ -78,6 +81,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   const { selectedCourses } = useContext(CourseContext);
 
   const duplicateClassData = useRef<DuplicateClassData>(getDuplicateClassData(classPeriod, selectedCourses)); // the relevant data to handle class changing with location dropdown
+  const currClass = getClassDataFromPeriod(selectedCourses, classPeriod);
 
   useEffect(() => {
     // updates the data when changing to another time slot -- e.g. dragging the card around
@@ -85,9 +89,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
 
     setCurrentPeriod(classPeriod);
     duplicateClassData.current = getDuplicateClassData(classPeriod, selectedCourses); // current sectionsAndLocations has to be recalculated here otherwise the following line will use the unupdated value
-    setSelectedIndex(
-      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === classPeriod.class.section)
-    ); // makes selected item in new initial location dropdown the right one
+    setSelectedIndex(duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => section === currClass.section)); // makes selected item in new initial location dropdown the right one
   }, [classPeriod]);
 
   const handleLocationChange = (e: SelectChangeEvent<number>) => {
@@ -106,7 +108,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
     >
       <StyledDialogTitle>
         <StyledTitleContainer>
-          {classPeriod.class.courseCode} — {classPeriod.class.courseName}
+          {currClass.courseCode} — {currClass.courseName}
           <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
             <Close />
           </IconButton>
@@ -120,7 +122,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
             </Grid>
             <Grid item>
               <Typography>
-                {classPeriod && classPeriod.class.activity} (
+                {classPeriod && classPeriod.activity} (
                 {classPeriod && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
               </Typography>
             </Grid>
@@ -151,7 +153,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
             </Grid>
             <Grid item>
               <Typography>
-                Capacity {currentPeriod?.class.enrolments} / {currentPeriod?.class.capacity}
+                Capacity {currClass.enrolments} / {currClass.capacity}
               </Typography>
             </Grid>
           </Grid>

@@ -15,6 +15,7 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
+import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 
@@ -34,7 +35,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, earliestStartTime, setIsDrag } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
-  const currCourse = selectedCourses.find((course) => course.code === classCard.class.courseCode);
+  const currCourse = getCourseFromClassData(selectedCourses, classCard);
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
@@ -132,10 +133,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
-    const currCourse = selectedCourses.find((c) => c.code === classCard.class.courseCode);
-    activityMaxPeriods = Math.max(
-      ...currCourse!.activities[classCard.class.activity].map((classData) => classData.periods.length)
-    );
+    activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
   return (
@@ -168,7 +166,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
-                {classCard.class.courseCode} {classCard.class.activity}
+                {classCard.courseCode} {classCard.activity}
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (

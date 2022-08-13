@@ -49,7 +49,10 @@ export const setDropzoneRange = (numDaysHandler: number, earliestStartTimeHandle
 };
 
 const getInventoryPeriod = (courseData: CourseData, cardData: ClassCard): InventoryPeriod =>
-  courseData.inventoryData[cardData.class.activity];
+  courseData.inventoryData[cardData.activity];
+
+const getClassDataFromPeriod = (period: ClassCard) =>
+  dragTargetCourse?.activities[period.activity].find((data) => data.id === period.classId);
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 export const toPx = (value: number) => `${value}px`;
@@ -69,17 +72,26 @@ export const timeToPosition = (time: number, earliestStartTime: number) => time 
 
 const equalDur = (p1: ClassPeriod, p2: ClassPeriod) => p1.time.end - p1.time.start === p2.time.end - p2.time.start;
 
-export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) =>
-  a === null ||
-  b === null ||
-  a === b ||
-  (a.class.courseCode === b.class.courseCode &&
-    a.class.activity === b.class.activity &&
+export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
+  if (a === null || b === null || a === b) return true;
+
+  const classDataA = getClassDataFromPeriod(a);
+  const classDataB = getClassDataFromPeriod(b);
+
+  const classData = classDataA ? classDataA : classDataB;
+
+  if (!classData) return false;
+
+  return (
+    a.courseCode === b.courseCode &&
+    a.activity === b.activity &&
     (!isScheduledPeriod(a) ||
       !isScheduledPeriod(b) ||
       equalDur(a, b) ||
-      a.class.periods.indexOf(a) === b.class.periods.indexOf(b) ||
-      a.class.periods.every((p, i) => i === 0 || equalDur(p, a.class.periods[i - 1]))));
+      classData.periods.indexOf(a) === classData.periods.indexOf(b) ||
+      classData.periods.every((p, i) => i === 0 || equalDur(p, classData.periods[i - 1])))
+  );
+};
 
 export const freezeTransform = (element: HTMLElement) => {
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
@@ -144,8 +156,8 @@ const getIsElevated = (cardData: ClassCard | EventPeriod) => {
     const isMatchingClasses =
       isScheduledPeriod(cardData) &&
       isScheduledPeriod(dragTarget) &&
-      cardData.class.courseCode === dragTarget.class.courseCode &&
-      cardData.class.activity === dragTarget.class.activity;
+      cardData.courseCode === dragTarget.courseCode &&
+      cardData.activity === dragTarget.activity;
 
     return dragTarget !== null && (cardData === dragTarget || isMatchingClasses);
   } else {
@@ -283,12 +295,12 @@ const updateDropTarget = (now?: boolean) => {
         newTime.end !== currentClassTime.end
       ) {
         setCurrentClassTime(undefined);
-        selectClass(newDropTarget.class);
+        selectClass(getClassDataFromPeriod(newDropTarget)!);
       }
     } else if (isScheduledPeriod(dragTarget)) {
       // moved to inventory
       setCurrentClassTime(undefined);
-      removeClass(dragTarget.class);
+      removeClass(getClassDataFromPeriod(dragTarget)!);
     }
   } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
   }
