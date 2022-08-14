@@ -6,5 +6,5 @@ export const getCourseFromClassData = (selectedCourses: CourseData[], data: Clas
 
 export const getClassDataFromPeriod = (selectedCourses: CourseData[], period: ClassPeriod | InventoryPeriod) => {
   const course = selectedCourses.find((course) => course.code === period.courseCode);
-  return Object.values(course!.activities[period.activity]).find((classData) => classData.id === period.classId)!;
+  return course!.activities[period.activity].find((classData) => classData.id === period.classId)!;
 };
