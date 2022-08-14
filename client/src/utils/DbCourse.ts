@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
-import { DbTimes, DbCourse } from '../interfaces/Database';
 
 const locationShorten = (location: string): string => location.split(' (')[0];
 
@@ -41,7 +41,9 @@ const enumerateWeeks = (weeks: string): number[] =>
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
   type: 'class',
-  class: classData,
+  classId: classData.id,
+  courseCode: classData.courseCode,
+  activity: classData.activity,
   locations: [locationShorten(dbTimes.location)],
   time: {
     day: weekdayToNumber(dbTimes.day),
@@ -76,7 +78,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
-      course: courseData,
+      courseCode: dbCourse.courseCode,
+      courseName: dbCourse.name,
       activity: dbClass.activity,
       status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,
@@ -131,10 +134,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   Object.keys(courseData.activities).forEach((activity) => {
     courseData.inventoryData[activity] = {
       type: 'inventory',
-      class: {
-        course: courseData,
-        activity,
-      },
+      classId: null,
+      courseCode: courseData.code,
+      activity: activity,
     };
   });
 

@@ -20,13 +20,19 @@ export interface CourseData {
 
 export interface ClassData {
   id: string;
-  course: CourseData;
+  courseCode: CourseCode;
+  courseName: string;
   activity: Activity;
   status: Status;
   enrolments: number;
   capacity: number;
   periods: ClassPeriod[];
   section: Section;
+}
+
+export interface InventoryData {
+  courseCode: CourseCode;
+  activity: Activity;
 }
 
 export interface EventData {
@@ -39,17 +45,18 @@ export interface EventData {
 
 export interface ClassPeriod {
   type: 'class';
-  class: ClassData;
+  classId: string;
+  courseCode: CourseCode;
+  activity: Activity;
   time: ClassTime;
   locations: string[];
 }
 
 export interface InventoryPeriod {
   type: 'inventory';
-  class: {
-    course: CourseData;
-    activity: Activity;
-  };
+  classId: null;
+  courseCode: CourseCode;
+  activity: Activity;
 }
 
 export interface EventPeriod {

@@ -29,7 +29,7 @@ const findClashingPeriods = (
 
 const getId = (clash: ClassPeriod | EventPeriod) => {
   if (clash.type === 'class') {
-    return clash.class.id;
+    return clash.classId;
   } else {
     return clash.event.id;
   }
@@ -161,7 +161,7 @@ export const getClashInfo = (
         uniqueClashIDs.push(clashID);
       }
 
-      if (clash.type === 'class' && !clash.class.activity.includes('Lecture')) {
+      if (clash.type === 'class' && !clash.activity.includes('Lecture')) {
         nonLecturePeriods.add(clashID);
       }
 
@@ -171,7 +171,7 @@ export const getClashInfo = (
       // are not supposed to clash (no border).
       if (clash.type === 'class' && card.type === 'class') {
         const hasOverlappingWeeks = card.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
-        if (hasOverlappingWeeks && clash.class.id !== card.class.id) {
+        if (hasOverlappingWeeks && clash.classId !== card.classId) {
           isOverlapped = true;
         }
       }
