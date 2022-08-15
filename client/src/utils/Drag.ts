@@ -51,8 +51,12 @@ export const setDropzoneRange = (numDaysHandler: number, earliestStartTimeHandle
 const getInventoryPeriod = (courseData: CourseData, cardData: ClassCard): InventoryPeriod =>
   courseData.inventoryData[cardData.activity];
 
-const getClassDataFromPeriod = (period: ClassCard) =>
-  dragTargetCourse?.activities[period.activity].find((data) => data.id === period.classId);
+const getClassDataFromPeriod = (period: ClassCard) => {
+  const activities = dragTargetCourse?.activities[period.activity];
+  if (!activities) return undefined;
+
+  return activities.find((data) => data.id === period.classId);
+};
 
 const fromPx = (value: string) => Number(value.split('px')[0]);
 export const toPx = (value: number) => `${value}px`;
