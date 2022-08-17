@@ -91,7 +91,9 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
 
   const classPeriod: ClassPeriod = {
     type: 'class',
-    class: classData,
+    classId: classData.id,
+    courseCode: classData.courseCode,
+    activity: classData.activity,
     subactivity: subactivity,
     locations: [locationShorten(dbTimes.location)],
     time: {
@@ -130,7 +132,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
-      course: courseData,
+      courseCode: dbCourse.courseCode,
+      courseName: dbCourse.name,
       activity: dbClass.activity,
       status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,
@@ -163,10 +166,12 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
         // Only deep clone the time object since we want the class and locations to be updated.
         const newPeriod: ClassPeriod = {
           type: 'class',
-          class: classData,
+          classId: period.classId,
+          courseCode: period.courseCode,
+          activity: period.activity,
           subactivity: period.subactivity,
-          locations: period.locations,
           time: cloneDeep(period.time),
+          locations: period.locations,
         };
 
         // The second period is from midnight to the end time, and is on the next day.
@@ -220,10 +225,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   Object.keys(courseData.activities).forEach((activity) => {
     courseData.inventoryData[activity] = {
       type: 'inventory',
-      class: {
-        course: courseData,
-        activity,
-      },
+      classId: null,
+      courseCode: courseData.code,
+      activity: activity,
     };
   });
 

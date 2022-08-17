@@ -1,10 +1,7 @@
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 import { createEvents, DateArray } from 'ics';
-import type {
-  ClassPeriod, CourseData, CreatedEvents, EventPeriod, SelectedClasses
-} from '../interfaces/Periods';
-
+import type { ClassPeriod, CourseData, CreatedEvents, EventPeriod, SelectedClasses } from '../interfaces/Periods';
 
 /**
  * makes a request to download an ICS file which corresponds to the data the user input
@@ -12,7 +9,12 @@ import type {
  * @param classes global classes data
  * @returns
  */
-export const downloadIcsFile = async (courses: CourseData[], createdEvents: CreatedEvents, classes: SelectedClasses, firstDayOfTerm: string): Promise<void> => {
+export const downloadIcsFile = async (
+  courses: CourseData[],
+  createdEvents: CreatedEvents,
+  classes: SelectedClasses,
+  firstDayOfTerm: string
+): Promise<void> => {
   if (classes === null) {
     return;
   }
@@ -21,7 +23,7 @@ export const downloadIcsFile = async (courses: CourseData[], createdEvents: Crea
   const formattedClassEvents = getClassEvents(courses, classes).map(([period, week]) => ({
     start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
     end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
-    title: `${period.class.course.code} ${period.class.activity}`,
+    title: `${period.courseCode} ${period.activity}`,
     location: period.locations[0],
   }));
 
@@ -30,7 +32,7 @@ export const downloadIcsFile = async (courses: CourseData[], createdEvents: Crea
     end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
     title: period.event.name,
     location: period.event.location,
-  }))
+  }));
 
   const icsFile = createEvents(formattedClassEvents.concat(formattedCreatedEvents));
   saveAs(new Blob([icsFile.value as BlobPart], { type: 'text/ics' }), 'notangles.ics');
@@ -71,19 +73,13 @@ const getClassEvents = (courses: CourseData[], classes: SelectedClasses): [Class
 
   return allClasses.flatMap((classTime) =>
     // this cant actually be null, i just filtered it, ts is dumb
-    classTime!
-      .periods
-      .flatMap(
-          (period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number]
-        )
-      )
+    classTime!.periods.flatMap((period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number]))
   );
 };
 
 const getCreatedEvents = (createdEvents: CreatedEvents): [EventPeriod, number][] => {
   // assume that we are ignoring week 6!
-  return Object.entries(createdEvents)
-    .flatMap(
-      ([_, period]) => [1, 2, 3, 4, 5, 7, 8, 9, 10].map((week) => [period, week] as [EventPeriod, number])
-    )
-}
+  return Object.entries(createdEvents).flatMap(([_, period]) =>
+    [1, 2, 3, 4, 5, 7, 8, 9, 10].map((week) => [period, week] as [EventPeriod, number])
+  );
+};

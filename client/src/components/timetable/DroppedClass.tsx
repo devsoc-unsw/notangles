@@ -3,6 +3,7 @@ import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
@@ -14,6 +15,7 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
+import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 
@@ -31,6 +33,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
 
   const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
+
+  const currCourse = getCourseFromClassData(selectedCourses, classCard);
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
@@ -64,7 +69,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, eventCopy);
+      setDragTarget(classCard, currCourse!, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -128,9 +133,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
-    activityMaxPeriods = Math.max(
-      ...classCard.class.course.activities[classCard.class.activity].map((classData) => classData.periods.length)
-    );
+    activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
   return (
@@ -163,7 +166,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
-                {classCard.class.course.code} {classCard.class.activity}
+                {classCard.courseCode} {classCard.activity}
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
