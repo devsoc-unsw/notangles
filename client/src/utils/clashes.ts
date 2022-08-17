@@ -2,23 +2,38 @@ import { unknownErrorMessage, weekdaysLong } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
+/**
+ * @param period1 The first period
+ * @param period2 The second period
+ * @returns Whether the two periods overlap
+ */
 const hasTimeOverlap = (period1: ClassTime | EventTime, period2: ClassTime | EventTime) =>
   period1.day === period2.day &&
   ((period1.end > period2.start && period1.start < period2.end) || (period2.end > period1.start && period2.start < period1.end));
 
+/**
+ * @param currSelectedClasses The currently selected classes
+ * @returns A list of all the currently scheduled periods in the timetable
+ */
 const getClassPeriods = (currSelectedClasses: Record<string, ClassData | null>[]) => {
   return currSelectedClasses
     .flatMap((activities) => Object.values(activities))
     .flatMap((classData) => (classData ? classData.periods : []));
 };
 
+/**
+ * Generates a set of clashing periods
+ * @param clashes The set of clashing periods
+ * @param periods1 The first list of periods
+ * @param periods2 The second list of periods to compare to
+ */
 const findClashingPeriods = (
   clashes: Set<ClassPeriod | EventPeriod>,
-  card1: (ClassPeriod | EventPeriod)[],
-  card2: (ClassPeriod | EventPeriod)[]
+  periods1: (ClassPeriod | EventPeriod)[],
+  periods2: (ClassPeriod | EventPeriod)[]
 ) => {
-  card1.forEach((period1) => {
-    card2.forEach((period2) => {
+  periods1.forEach((period1) => {
+    periods2.forEach((period2) => {
       if (period1 !== period2 && hasTimeOverlap(period1.time, period2.time)) {
         clashes.add(period1);
         clashes.add(period2);
@@ -27,6 +42,10 @@ const findClashingPeriods = (
   });
 };
 
+/**
+ * @param clash The clashing period
+ * @returns The ID of the period
+ */
 const getId = (clash: ClassPeriod | EventPeriod) => {
   if (clash.type === 'class') {
     return clash.classId;
@@ -35,6 +54,12 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
   }
 };
 
+/**
+ * A clash can be between two classes, two custom events, or a class and a custom event
+ * @param selectedClasses The currently selected classes
+ * @param createdEvents The created custom events
+ * @returns A list of unique clashing classes and custom events
+ */
 const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents) => {
   const clashes: Set<ClassPeriod | EventPeriod> = new Set();
 
@@ -58,8 +83,10 @@ const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEven
   return Array.from(clashes);
 };
 
-// Sort clashes by start time. If two clahes have the same start time,
-// the clash with the earlier end time will come first.
+/**
+ * @param clashDays The map of days to the list of clashes occurring on that day
+ * @returns The map with each list sorted by starting time, then by ending time
+ */
 const sortClashesByTime = (clashDays: Record<number, (ClassPeriod | EventPeriod)[]>) => {
   for (const clashDay of Object.values(clashDays)) {
     clashDay.sort((a, b) => {
@@ -72,7 +99,11 @@ const sortClashesByTime = (clashDays: Record<number, (ClassPeriod | EventPeriod)
   return clashDays;
 };
 
-// Group clashes according to the days of the week they are in.
+/**
+ * @param clashes The list of all clashing periods
+ * @returns A map of a number (representing each day of the week) to the sorted list of clashing periods occurring on that day.
+ * The days of the week are zero-indexed
+ */
 const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
   const clashDays: Record<number, (ClassPeriod | EventPeriod)[]> = weekdaysLong.map((_) => []);
   clashes.forEach((clash) => clashDays[clash.time.day - 1].push(clash));
@@ -80,6 +111,10 @@ const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
   return sortClashesByTime(clashDays);
 };
 
+/**
+ * @param sortedClashes The map of days to the list of clashes occurring on that day
+ * @returns The map of days with each list being further separated into smaller lists representing which classes are clashing with each other
+ */
 const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[]>) => {
   const groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]> = weekdaysLong.map((_) => []);
 
@@ -94,20 +129,17 @@ const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[
 
         for (let i = 0; i < groupedClashes[dayInt].length; i++) {
           const currGroup = groupedClashes[dayInt][i];
-          // Clash occurs for two classes A and B when
-          // (StartA < EndB) and (EndA > StartB)
+          // A clash occurs for two classes A and B when (StartA < EndB) and (EndA > StartB)
           if (clash.time.start < currGroup[currGroup.length - 1].time.end && clash.time.end > currGroup[0].time.start) {
             currGroup.push(clash);
             hasAdded = true;
           }
         }
 
-        // If we haven't added the clash to any clashes list, add it to its own list of clashes as it
-        // means that it will be a part of a new group of clashes (no other classes that we have grouped
-        // have happened at the same time yet).
-        if (!hasAdded) {
-          groupedClashes[dayInt].push([clash]);
-        }
+        // If we haven't added the clash to any clashes list, add it to its own list of clashes
+        // This means that it will be a part of a new group of clashes
+        // (no other classes that we have grouped have happened at the same time yet).
+        if (!hasAdded) groupedClashes[dayInt].push([clash]);
       }
     }
   });
@@ -115,6 +147,12 @@ const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[
   return groupedClashes;
 };
 
+/**
+ *
+ * @param selectedClasses The currently selected classes
+ * @param createdEvents The created custom events
+ * @returns All classes and events grouped by day and clash group
+ */
 export const findClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents) => {
   const clashes = getClashes(selectedClasses, createdEvents);
   const sortedClashes = sortClashesByDay(clashes);
@@ -123,6 +161,16 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
   return groupedClashes;
 };
 
+/**
+ *
+ * @param groupedClashes The clashing periods
+ * @param card The current card
+ * @param setErrorVisibility The function used to toggle whether the info popup is visible
+ * @param setAlertMsg The function used to set the message on the info popup
+ * @returns A list based on the clash data containing the width of the card (expressed as a number between 0 and 100),
+ * the index of the card in its clash group (to maintain the chronological order of clashing periods)
+ * and the colour of the border of the card (red for non-permitted clash, orange for permitted clash, none for a custom event).
+ */
 export const getClashInfo = (
   groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
   card: ClassCard | EventPeriod,

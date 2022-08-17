@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
@@ -37,18 +37,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   const currCourse = getCourseFromClassData(selectedCourses, classCard);
 
+  const handleClose = (value: ClassData) => {
+    handleSelectClass(value);
+    setPopupOpen(!popupOpen);
+  };
+
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
 
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
-
-  const handleClose = (value: ClassData) => {
-    handleSelectClass(value);
-    setPopupOpen(!popupOpen);
-  };
-
   const onDown = (eventDown: any) => {
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
@@ -144,7 +143,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         onMouseDown={onDown}
         onTouchStart={onDown}
         card={classCard}
-        days={days}
+        nDays={days.length}
         y={y}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}

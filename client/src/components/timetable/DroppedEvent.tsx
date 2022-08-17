@@ -126,7 +126,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     <>
       <StyledCard
         card={eventPeriod}
-        days={days}
+        nDays={days.length}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
         cardWidth={cardWidth}

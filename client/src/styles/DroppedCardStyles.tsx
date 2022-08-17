@@ -11,12 +11,12 @@ export const transitionName = 'class';
 export const classTransformStyle = (
   card: ClassCard | EventPeriod,
   earliestStartTime: number,
-  days?: string[],
+  nDays?: number,
   y?: number,
   clashIndex?: number,
   width?: number,
   cellWidth: number = 0
-) => `translate(${classTranslateX(card, days, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
+) => `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -41,7 +41,7 @@ export const StyledCard = styled('div', {
     ),
 })<{
   card: ClassCard | EventPeriod;
-  days: string[];
+  nDays: number;
   y?: number;
   earliestStartTime: number;
   isSquareEdges: boolean;
@@ -52,8 +52,8 @@ export const StyledCard = styled('div', {
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
-    classTransformStyle(card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
+  transform: ${({ card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth)};
   width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ card }) => getClassHeight(card)};
   box-sizing: border-box;
