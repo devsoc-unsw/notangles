@@ -249,10 +249,12 @@ const App: React.FC = () => {
   }, [isHideExamClasses]);
 
   useEffect(() => {
-    updateTimetableEvents();
+    if (year !== '0000' || term !== 'T0') {
+      updateTimetableEvents();
+    }
     updateTimetableDaysAndTimes();
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone]);
+  }, [isConvertToLocalTimezone, year]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
