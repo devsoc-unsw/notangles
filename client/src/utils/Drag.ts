@@ -72,9 +72,7 @@ export const moveElement = (element: HTMLElement, dx: number, dy: number) => {
   element.style.top = toPx(fromPx(element.style.top) + dy);
 };
 
-export const timeToPosition = (time: number, earliestStartTime: number): number => {
-  return time - (earliestStartTime - 2);
-}
+export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
 
 const equalDur = (p1: ClassPeriod, p2: ClassPeriod) => p1.time.end - p1.time.start === p2.time.end - p2.time.start;
 
