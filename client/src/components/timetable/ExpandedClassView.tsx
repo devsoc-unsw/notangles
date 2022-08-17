@@ -106,7 +106,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
       duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
     if (isScheduledPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
-  
+
   return (
     <Dialog
       maxWidth="sm"
