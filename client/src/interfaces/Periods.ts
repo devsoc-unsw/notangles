@@ -48,7 +48,7 @@ export interface ClassPeriod {
   classId: string;
   courseCode: CourseCode;
   activity: Activity;
-  subactivity: string;
+  subActivity: string;
   time: ClassTime;
   locations: string[];
 }

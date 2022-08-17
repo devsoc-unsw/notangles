@@ -69,10 +69,22 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
   if (!isConvertToLocalTimezone) return 0;
 
   const localDate = new Date();
-  const sydDate = new Date(localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" }));
-  const offset = ((sydDate.getHours() * 60 + sydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
+  const sydDate = localDate.toLocaleString('en-UK', { timeZone: "Australia/Sydney" });
 
-  return 14;
+  // Get the date and time of the Sydney timezone.
+  const date = sydDate.split(',')[0];
+  const time = sydDate.split(',')[1];
+
+  // Get the specific day, month and year of the Sydney timezone to convert the string
+  // to a YYYY-MM-DD format to be created into a Date object.
+  const day = date.split('/')[0];
+  const month = date.split('/')[1];
+  const year = date.split('/')[2];
+  const formattedSydDate = new Date(`${year}-${month}-${day}, ${time}`);
+
+  const offset = ((formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
+
+  return offset;
 }
 
 // Get the local time based on the calculated offset.

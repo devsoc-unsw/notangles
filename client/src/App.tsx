@@ -176,18 +176,12 @@ const App: React.FC = () => {
       if (newSelectedCourses.length === 0) {
         newSelectedCourses = addedCourses;
       } else {
-        // If there were previously selected courses: if any of the added courses already exist in
-        // the previously selected courses, then replace the old course with the new course. Else,
-        // add the new course into newSelectedCourses.
+        // Update the existing courses with the new data (for changing timezones).
         addedCourses.forEach((addedCourse) => {
-          let found = false;
-          selectedCourses.forEach((selectedCourse, index) => {
-            if (addedCourse.code === selectedCourse.code) {
-              newSelectedCourses[index] = addedCourse;
-              found = true;
-            }
-          });
-          if (!found) {
+          if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
+            const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
+            newSelectedCourses[index] = addedCourse;
+          } else {
             newSelectedCourses.push(addedCourse);
           }
         });

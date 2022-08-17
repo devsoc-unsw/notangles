@@ -40,9 +40,6 @@ const convertToLocalDayTime = (day: number, start: number, end: number, isConver
   let newEnd = end - offset;
 
   // If the new start time is negative, then the class is in the previous day.
-  // E.g. Converting from Sydney to New York time:
-  // Tuesday 9 - 12 AEST -> Monday 19 - 22 EDT
-  // Tuesday 13 - 16 AEST -> Monday 23 - 26 EDT
   if (newStart < 0) {
     newDay = newDay === 1 ? 7 : newDay - 1;
     newStart = ((newStart % 24) + 24) % 24;
@@ -71,20 +68,20 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
   // Convert to local day time.
   [day, start, end] = convertToLocalDayTime(day, start, end, isConvertToLocalTimezone);
 
-  // Get the subactivity of the class (only matters for tutlabs to separate them).
-  let subactivity = classData.activity;
+  // Get the subActivity of the class (only matters for tutlabs to separate them).
+  let subActivity = classData.activity;
   if (classData.activity === 'Tutorial-Laboratory') {
     if (start < end) {
       if (end - start === 1) {
-        subactivity = 'Tutorial';
+        subActivity = 'Tutorial';
       } else {
-        subactivity = 'Laboratory';
+        subActivity = 'Laboratory';
       }
     } else {
       if (24 - start + end === 1) {
-        subactivity = 'Tutorial';
+        subActivity = 'Tutorial';
       } else {
-        subactivity = 'Laboratory';
+        subActivity = 'Laboratory';
       }
     }
   }
@@ -94,7 +91,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
     classId: classData.id,
     courseCode: classData.courseCode,
     activity: classData.activity,
-    subactivity: subactivity,
+    subActivity: subActivity,
     locations: [locationShorten(dbTimes.location)],
     time: {
       day: day,
@@ -169,7 +166,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
           classId: period.classId,
           courseCode: period.courseCode,
           activity: period.activity,
-          subactivity: period.subactivity,
+          subActivity: period.subActivity,
           time: cloneDeep(period.time),
           locations: period.locations,
         };
@@ -194,7 +191,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
   const isDuplicate = (a: ClassPeriod, b: ClassPeriod): boolean => {
     return (
-      a.subactivity === b.subactivity
+      a.subActivity === b.subActivity
       && a.time.day === b.time.day 
       && a.time.start === b.time.start 
       && a.time.end === b.time.end
