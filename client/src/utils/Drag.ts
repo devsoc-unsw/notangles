@@ -17,7 +17,7 @@ export const timetableWidth = 1100;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
-export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
+export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms, width ${transitionTime}ms`;
 export const elevatedScale = 1.1;
 export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3);
 export const getElevatedShadow = (_: boolean) => 24;
