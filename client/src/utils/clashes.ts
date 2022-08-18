@@ -129,6 +129,7 @@ const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[
 
         for (let i = 0; i < groupedClashes[dayInt].length; i++) {
           const currGroup = groupedClashes[dayInt][i];
+
           // A clash occurs for two classes A and B when (StartA < EndB) and (EndA > StartB)
           if (clash.time.start < currGroup[currGroup.length - 1].time.end && clash.time.end > currGroup[0].time.start) {
             currGroup.push(clash);
@@ -195,8 +196,7 @@ export const getClashInfo = (
 
     if (!clashGroup) return defaultValues;
 
-    // Get the length of the clash group according to the unique clash IDs.
-    let uniqueClashIDs: string[] = [];
+    let uniqueClashIDs = clashGroup.map((clash) => getId(clash));
     let nonLecturePeriods: Set<string> = new Set();
     let isOverlapped = false;
 
@@ -205,18 +205,12 @@ export const getClashInfo = (
     clashGroup.forEach((clash) => {
       const clashID = getId(clash);
 
-      if (!uniqueClashIDs.includes(clashID)) {
-        uniqueClashIDs.push(clashID);
-      }
-
       if (clash.type === 'class' && !clash.activity.includes('Lecture')) {
         nonLecturePeriods.add(clashID);
       }
 
-      // Check if the current card has weeks that are overlapping with
-      // the weeks of the current clash.
-      // This is so that two classes with clashing time but different weeks
-      // are not supposed to clash (no border).
+      // Check if the current card has weeks that are overlapping with the weeks of the current clash.
+      // This is so that two classes with clashing time but different weeks are not supposed to clash (no border).
       if (clash.type === 'class' && card.type === 'class') {
         const hasOverlappingWeeks = card.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
         if (hasOverlappingWeeks && clash.classId !== card.classId) {

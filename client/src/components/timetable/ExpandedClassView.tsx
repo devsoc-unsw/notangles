@@ -10,6 +10,7 @@ import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '..
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
+import { isDuplicate } from '../../utils/isDuplicate';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -39,9 +40,6 @@ const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sect
     </FormControl>
   );
 };
-
-const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-  a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
 const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
   const currCourse = getCourseFromClassData(courses, c);
