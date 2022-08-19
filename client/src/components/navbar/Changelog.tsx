@@ -106,8 +106,8 @@ const Changelog: React.FC = () => {
   return (
     <>
       <Timeline>
-        {changelog.map(({ date, changes }) => (
-          <TimelineItem>
+        {changelog.map(({ date, changes }, idx) => (
+          <TimelineItem key={idx}>
             <TimelineOppositeContent color="text.primary" sx={{ maxWidth: '120px' }}>
               {date}
             </TimelineOppositeContent>
@@ -116,8 +116,8 @@ const Changelog: React.FC = () => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {changes.map((change) => (
-                <StyledTypography>{change}</StyledTypography>
+              {changes.map((change, idx) => (
+                <StyledTypography key={idx}>{change}</StyledTypography>
               ))}
             </TimelineContent>
           </TimelineItem>
