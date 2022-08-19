@@ -221,7 +221,8 @@ const CustomEvent: React.FC = () => {
               views={['hours']}
               value={endTime}
               renderInput={(params) => {
-                const tooEarly = startTime.getHours() >= endTime.getHours();
+                const tooEarly =
+                  startTime.getHours() + startTime.getMinutes() / 60 >= endTime.getHours() + endTime.getMinutes() / 60;
                 return (
                   <TextField
                     {...params}
