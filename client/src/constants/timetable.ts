@@ -1,11 +1,15 @@
 const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
+import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
 
+/**
+ * @returns The details of the latest term there is data for
+ */
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
-  // and the api will replace them with valid ones and return them.
+  // The API will replace them with valid ones and return the updated values.
   let year = '0000';
   let termNumber = 1;
   let term = `T${termNumber}`;
@@ -48,7 +52,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    console.log('Could not ping timetable scraper!');
+    throw new NetworkError('Could not conect to timetable scraper!');
   }
 };
 

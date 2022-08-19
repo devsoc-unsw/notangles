@@ -1,9 +1,9 @@
+import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -22,6 +22,7 @@ import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
+import NetworkError from './interfaces/NetworkError';
 import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
@@ -208,14 +209,21 @@ const App: React.FC = () => {
      * Retrieves term data from scraper backend and updates state
      */
     const fetchTermData = async () => {
-      const termData = await getAvailableTermDetails();
-      if (termData !== undefined) {
+      try {
+        const termData = await getAvailableTermDetails();
         const { term, termName, termNumber, firstDayOfTerm, year } = termData;
         setTerm(term);
         setTermName(termName);
         setTermNumber(termNumber);
         setYear(year);
         setFirstDayOfTerm(firstDayOfTerm);
+      } catch (e) {
+        if (e instanceof NetworkError) {
+          setAlertMsg(e.message);
+        } else {
+          setAlertMsg(unknownErrorMessage);
+        }
+        setErrorVisibility(true);
       }
     };
 

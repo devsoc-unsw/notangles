@@ -1,4 +1,3 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
@@ -18,6 +17,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
@@ -203,7 +203,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     } catch (e) {
       if (e instanceof NetworkError) {
         setAutoVisibility(true);
-        setAlertMsg("Couldn't get response.");
+        setAlertMsg("Couldn't get response");
       }
     }
     setAnchorEl(null);

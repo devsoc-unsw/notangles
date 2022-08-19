@@ -17,8 +17,10 @@ const FooterContainer = styled(Box)`
 const Footer: React.FC = () => {
   const { lastUpdated } = useContext(AppContext);
 
-  // `date`: timestamp in milliseconds
-  // returns: time in relative format, such as "5 minutes" (ago) or "10 hours" (ago)
+  /**
+   * @param date Timestamp in Unix time
+   * @returns Time in  relative to the current time, such as "5 minutes" (ago) or "10 hours" (ago)
+   */
   const getRelativeTime = (date: number): string => {
     const diff = Date.now() - date;
     const minutes = Math.round(diff / 60000);

@@ -1,20 +1,20 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
+import { AddRounded, CheckRounded, CloseRounded, PersonOutline, SearchRounded, VideocamOutlined } from '@mui/icons-material';
+import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
-import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
 
 import getCoursesList from '../../api/getCoursesList';
+import { ThemeType } from '../../constants/theme';
+import { maxAddedCourses, unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { maxAddedCourses } from '../../constants/timetable';
-import { CourseCode, CourseData } from '../../interfaces/Periods';
+import { CourseContext } from '../../context/CourseContext';
 import { CourseOverview, CoursesList } from '../../interfaces/Courses';
 import NetworkError from '../../interfaces/NetworkError';
+import { CourseCode, CourseData } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
-import { CourseContext } from '../../context/CourseContext';
-import { ThemeType } from '../../constants/theme';
 
 const SEARCH_DELAY = 300;
 const INVALID_YEAR_FORMAT = '0000';
@@ -207,8 +207,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     } catch (e) {
       if (e instanceof NetworkError) {
         setAlertMsg(e.message);
-        setErrorVisibility(true);
+      } else {
+        setAlertMsg(unknownErrorMessage);
       }
+      setErrorVisibility(true);
     }
   };
 
