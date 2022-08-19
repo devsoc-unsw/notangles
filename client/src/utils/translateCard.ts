@@ -1,7 +1,7 @@
 import { rowHeight } from '../components/timetable/TimetableLayout';
 import { inventoryMargin } from '../constants/theme';
 import { EventPeriod, InInventory } from '../interfaces/Periods';
-import { ClassCard, isScheduledPeriod, timeToPosition } from './Drag';
+import { ClassCard, isScheduledPeriod } from './Drag';
 
 /**
  * Translates a card horizontally from the top left hand corner of the timetable
@@ -76,7 +76,7 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
   if (isScheduledPeriod(classCard)) {
     // This classCard is for a scheduled class
     // The number of rows to offset down
-    const offsetRows = timeToPosition(classCard.time.start, earliestStartTime) - 2;
+    const offsetRows = classCard.time.start - earliestStartTime;
 
     // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;

@@ -1,4 +1,5 @@
 import { contentPadding, lightTheme } from '../constants/theme';
+import { timetableWidth } from '../constants/timetable';
 import {
   ClassData,
   ClassPeriod,
@@ -13,44 +14,59 @@ import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
 
-export const timetableWidth = 1100;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
 export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
-export const elevatedScale = 1.1;
-export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3);
-export const getElevatedShadow = (_: boolean) => 24;
-// intersection area with inventory required to drop
-const inventoryDropIntersection = 0.5;
 
+export const elevatedScale = 1.1; // How much bigger the cards should be when being dragged around
+const inventoryDropIntersection = 0.5; // How much the cards should intersect with the unscheduled column to be placed inside it
+
+export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3); // How much shadow each card should have by default
+export const getElevatedShadow = (_: boolean) => 24; // How much shadow each card should have when it is picked up
+
+/**
+ *
+ * @param data The period
+ * @returns Whether the period is unscheduled
+ */
 export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod =>
   data !== null && (data as ClassPeriod).time !== undefined;
 
-let dragTargetCourse: CourseData | null = null;
-let dragTarget: ClassCard | EventPeriod | null = null;
-let dropTarget: ClassCard | EventPeriod | null = null;
-let dragSource: ClassCard | null = null;
-let dragElement: HTMLElement | null = null;
-let inventoryElement: HTMLElement | null = null;
-let lastX = 0;
-let lastY = 0;
-let lastScrollX = 0;
-let lastScrollY = 0;
+let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
+let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
+let dropTarget: ClassCard | EventPeriod | null = null; // The period the dragTarget is currently hovering over/last hovered over
+let dragSource: ClassCard | null = null; // The original period of the dragTarget
+let dragElement: HTMLElement | null = null; // The HTML element associated with the dragTarget
+let inventoryElement: HTMLElement | null = null; // The HTML element that is the unscheduled column
+let lastX = 0; // The current x-coordinate of the dragTarget
+let lastY = 0; // The current y-coordinate of the dragTarget
+let lastScrollX = 0; // How far to the right the screen was last scrolled horizontally
+let lastScrollY = 0; // How far down the screen was last scrolled vertically
 
 let numDays: number;
 let latestEndTime: number;
 let earliestStartTime: number;
 
-export const setDropzoneRange = (numDaysHandler: number, earliestStartTimeHandler: number, latestEndTimeHandler: number) => {
-  numDays = numDaysHandler;
-  earliestStartTime = earliestStartTimeHandler;
-  latestEndTime = latestEndTimeHandler;
+/**
+ * These values come from the React context
+ * @param days The number of days which should be shown
+ * @param earliest The earliest start time of all classes
+ * @param latest The latest end time of all classes
+ */
+export const setDropzoneRange = (days: number, earliest: number, latest: number) => {
+  numDays = days;
+  earliestStartTime = earliest;
+  latestEndTime = latest;
 };
 
 const getInventoryPeriod = (courseData: CourseData, cardData: ClassCard): InventoryPeriod =>
   courseData.inventoryData[cardData.activity];
 
+/**
+ * @param period The period to retrieve class data for
+ * @returns The class data for the class associated with the period
+ */
 const getClassDataFromPeriod = (period: ClassCard) => {
   const activities = dragTargetCourse?.activities[period.activity];
   if (!activities) return undefined;
@@ -58,24 +74,52 @@ const getClassDataFromPeriod = (period: ClassCard) => {
   return activities.find((data) => data.id === period.classId);
 };
 
+/**
+ * @param value The number of pixels with the unit px
+ * @returns The numerical value of the number of pixels
+ */
 const fromPx = (value: string) => Number(value.split('px')[0]);
+
+/**
+ * @param value The numerical value of the number of pixels
+ * @returns The string representing the number of pixels with the unit px
+ */
 export const toPx = (value: number) => `${value}px`;
 
+/**
+ * Sets the shadow size of the specified HTML element based on whether it is being dragged around or not
+ * @param element The HTML element
+ * @param elevated Whether the card is being dragged around or not
+ */
 export const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
   const isSquareEdges = storage.get('isSquareEdges');
   element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };
 
+/**
+ * Move a specified HTML element a certain number of pixels horizontally and vertically
+ * @param element The HTML element
+ * @param dx The change in the x position of the element
+ * @param dy The change in the y position of the element
+ */
 export const moveElement = (element: HTMLElement, dx: number, dy: number) => {
   element.style.left = toPx(fromPx(element.style.left) + dx);
   element.style.top = toPx(fromPx(element.style.top) + dy);
 };
 
-export const timeToPosition = (time: number, earliestStartTime: number) => time - (earliestStartTime - 2);
-
+/**
+ * @param p1 The first period
+ * @param p2 The second period
+ * @returns Whether the two periods are of equal duration
+ */
 const equalDur = (p1: ClassPeriod, p2: ClassPeriod) => p1.time.end - p1.time.start === p2.time.end - p2.time.start;
 
+/**
+ * @param a The first period
+ * @param b The second period
+ * @returns Whether a can be dropped into b (or vice versa). Either a or b can be the dropzone
+ */
 export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
   if (a === null || b === null || a === b) return true;
 
@@ -86,6 +130,7 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
 
   if (!classData) return false;
 
+  // The last || clause is necessary because not all periods for a given activity may be the same length
   return (
     a.courseCode === b.courseCode &&
     a.activity === b.activity &&
@@ -97,15 +142,30 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
   );
 };
 
+/**
+ * Saves the original location of the HTML element and
+ * prevents it from moving erratically as it passes through valid dropzones
+ * @param element The HTML element to freeze
+ */
 export const freezeTransform = (element: HTMLElement) => {
+  console.log(element.style.transform);
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
 };
 
+/**
+ * Removes the previous transformation in preparation for
+ * the new position of the element to be calculated
+ * @param element
+ */
 export const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 
-// given drag and drop bounding rects, returns intersection area relative to drag area
+/**
+ * @param drag The bounding rectangle of the element being dragged
+ * @param drop The bounding rectangle of the drop target
+ * @returns Their intersection area relative to the area of the dragged element's area
+ */
 const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
   const left = Math.max(drag.left, drop.left);
   const right = Math.min(drag.right, drop.right);
@@ -118,6 +178,11 @@ const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
   return intersectionArea / dragArea;
 };
 
+/**
+ * @param e1 The first element
+ * @param e2 The second element
+ * @returns The Euclidean distance in pixels between the top-left corners of the two elements
+ */
 const distanceBetween = (e1: Element, e2: Element) => {
   const r1 = e1.getBoundingClientRect();
   const r2 = e2.getBoundingClientRect();
@@ -129,6 +194,9 @@ const dropzones = new Map<ClassPeriod | InInventory, HTMLElement>();
 const classCards = new Map<ClassCard, HTMLElement>();
 const eventCards = new Map<EventPeriod, HTMLElement>();
 
+/**
+ * Updates the CSS for the dropzones to render them as valid or invalid based on the current drop target
+ */
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     if (dropTarget?.type === 'event') return;
@@ -155,6 +223,11 @@ const updateDropzones = () => {
   });
 };
 
+/**
+ *
+ * @param cardData The period
+ * @returns Whether the card associated with that period is currently being dragged around
+ */
 const getIsElevated = (cardData: ClassCard | EventPeriod) => {
   if (cardData.type !== 'event' && dragTarget?.type !== 'event') {
     const isMatchingClasses =
@@ -168,13 +241,21 @@ const getIsElevated = (cardData: ClassCard | EventPeriod) => {
     return dragTarget !== null && cardData === dragTarget;
   }
 };
+
 const initialZIndex = 100;
 const initialElevatedZIndex = 750;
 const elevatedZIndexOffset = initialElevatedZIndex - initialZIndex;
 let zIndex = initialZIndex;
 
-const getElevatedZIndex = () => String(zIndex++ + elevatedZIndexOffset);
+/**
+ * @returns The zIndex to use for an elevated card
+ */
+const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
 
+/**
+ * Updates the CSS for the given HTML elements e.g. when a card is picked up or dropped
+ * @param cards The map of periods to HTML elements to update
+ */
 const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
@@ -188,9 +269,7 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
 
     const inner = element.children[0] as HTMLElement;
-
     inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
-
     setShadow(inner, isElevated);
   });
 
@@ -199,11 +278,22 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   }
 };
 
+/**
+ * Creates an entry in the map of all dropzones for a particular period
+ * @param classPeriod The period
+ * @param element The HTML element corresponding to the dropzone for that period
+ * @param isInventory Whether the dropzone is the unscheduled column
+ */
 export const registerDropzone = (classPeriod: ClassPeriod | InInventory, element: HTMLElement, isInventory?: boolean) => {
   dropzones.set(classPeriod, element);
   if (isInventory) inventoryElement = element;
 };
 
+/**
+ * Removes an entry from the map of all dropzones for a particular period
+ * @param classPeriod The period
+ * @param isInventory Whether the dropzone is the unscheduled column
+ */
 export const unregisterDropzone = (classPeriod: ClassPeriod | InInventory, isInventory?: boolean) => {
   dropzones.delete(classPeriod);
   if (isInventory) inventoryElement = null;
@@ -211,15 +301,25 @@ export const unregisterDropzone = (classPeriod: ClassPeriod | InInventory, isInv
 
 let updateTimeout: number;
 
+/**
+ * Creates an entry in the map of all cards for a particular period
+ * @param data The period
+ * @param element The HTML element corresponding to the card for that peroid
+ */
 export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
 
-  // delays update until consecutive `registerCard` calls have concluded
+  // Delay the update until consecutive `registerCard` calls have concluded
   const cards = data.type === 'event' ? eventCards : classCards;
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => updateCards(cards), 0);
 };
 
+/**
+ * Removes an entry from the map of all cards for a particular period
+ * @param data The period
+ * @param element The HTML element corresponding to the card for that period
+ */
 export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   if (data.type === 'event') {
     if (eventCards.get(data) === element) eventCards.delete(data);

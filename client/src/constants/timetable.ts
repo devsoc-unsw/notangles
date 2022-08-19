@@ -63,6 +63,8 @@ export const colors: string[] = [
   '#3323ad', // deep blue
 ];
 
+export const timetableWidth = 1100;
+
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
 
@@ -71,4 +73,4 @@ export const maxAddedCourses = 8;
 export const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page'
+export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page';

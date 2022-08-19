@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
 import { styled } from '@mui/system';
+import React, { useContext } from 'react';
 
-import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import { defaultEndTime, defaultStartTime, unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { unknownErrorMessage } from '../../constants/timetable'
 
 export const rowHeight = 60;
 const classMargin = 1;
@@ -92,15 +91,15 @@ const generateHours = (range: number[], is12HourMode: boolean): string[] => {
   // Fill an array with hour strings according to the range
   try {
     return Array(max - min + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + min, is12HourMode));
-  } catch(err) {
+      .fill(0)
+      .map((_, i) => generateHour(i + min, is12HourMode));
+  } catch (err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
 
     return Array(defaultEndTime - defaultStartTime + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+      .fill(0)
+      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
   }
 };
 
