@@ -153,7 +153,6 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
  * @param element The HTML element to freeze
  */
 export const freezeTransform = (element: HTMLElement) => {
-  console.log(element.style.transform);
   element.style.transform = getComputedStyle(element).getPropertyValue('transform');
 };
 
@@ -363,6 +362,11 @@ let lastUpdate = 0; // The time of the last drop target update in Unix time
 
 let currentClassTime: ClassTime | undefined;
 
+/**
+ * Update the currently selected class when a card is moved over a dropzone
+ * or remove it if it is being unscheduled
+ * @param now Whether to force an update
+ */
 const updateDropTarget = (now?: boolean) => {
   // Cancel update if the dragTarget is an event, there is no drag happening, or the update is too soon (except if now is true)
   if (

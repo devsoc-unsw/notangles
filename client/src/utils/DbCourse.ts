@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 import { areDuplicatePeriods } from './areDuplicatePeriods';
+import { getAllPeriods } from './getAllPeriods';
 
 /**
  * @param location The location of the class
@@ -127,11 +128,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
   });
 
   Object.keys(courseData.activities).forEach((activity) => {
-    let allPeriods: ClassPeriod[] = [];
-
-    courseData.activities[activity].forEach((classData) => {
-      allPeriods = [...allPeriods, ...classData.periods];
-    });
+    const allPeriods = getAllPeriods(courseData.activities, activity);
 
     // Combine the locations of all periods which occur simultaneously with each other
     // This is to create the list of all possible locations a period can be in

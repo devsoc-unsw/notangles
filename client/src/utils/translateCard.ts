@@ -1,5 +1,5 @@
-import { rowHeight } from '../components/timetable/TimetableLayout';
 import { inventoryMargin } from '../constants/theme';
+import { rowHeight } from '../constants/timetable';
 import { EventPeriod, InInventory } from '../interfaces/Periods';
 import { ClassCard, isScheduledPeriod } from './Drag';
 

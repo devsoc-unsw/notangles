@@ -68,6 +68,10 @@ export const colors: string[] = [
 ];
 
 export const timetableWidth = 1100;
+export const rowHeight = 60;
+export const classMargin = 1;
+export const headerPadding = 10;
+
 
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;

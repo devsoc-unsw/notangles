@@ -1,58 +1,50 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import { Dialog, FormControl, Grid, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
+import { Dialog, Grid, IconButton, SelectChangeEvent, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
-import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
+import { ExpandedClassViewProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
+import LocationDropdown from './LocationDropdown';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
+/**
+ * @param time When the class runs
+ * @param days A list containing the long forms of the days of the week (e.g. Monday, Tuesday etc.)
+ * @returns A string detailing when a class runs
+ */
 const getTimeData = (time: ClassTime, days: string[]) => {
   return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
 };
 
-const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {
-  return (
-    <FormControl fullWidth>
-      <Select
-        labelId="simple-select"
-        id="simple-select"
-        variant="outlined"
-        value={selectedIndex}
-        inputProps={{ 'aria-label': 'Without label' }}
-        onChange={handleChange}
-      >
-        {sectionsAndLocations.map(([, location], index) => (
-          <MenuItem value={index} key={index}>
-            <Typography>{location}</Typography>
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+/**
+ * @param currPeriod The currently selected period
+ * @param courses The currently selected courses
+ * @returns Information about all the periods which are duplicates with the current period
+ * A period is a duplicate of another if they both occur at the same time and day but in a different location
+ */
+const getDuplicateClassData = (currPeriod: ClassPeriod, courses: CourseData[]) => {
+  const currCourse = getCourseFromClassData(courses, currPeriod);
+  const currClass = getClassDataFromPeriod(courses, currPeriod);
+
+  const periodIndex = currClass.periods.findIndex((period) => areDuplicatePeriods(period, currPeriod));
+
+  const duplicateClasses = currCourse.activities[currPeriod.activity].filter((classData) =>
+    classData.periods.some((period, index) => index === periodIndex && areDuplicatePeriods(period, currPeriod))
   );
-};
 
-const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
-  const currCourse = getCourseFromClassData(courses, c);
-  const currClass = getClassDataFromPeriod(courses, c);
-
-  const periodIndex = currClass.periods.findIndex((p) => areDuplicatePeriods(p, c));
-
-  const duplicateClasses = currCourse.activities[c.activity].filter((value) =>
-    value.periods.some((v, index) => index === periodIndex && areDuplicatePeriods(v, c))
-  );
-  const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [
-    dc.section,
-    dc.periods[periodIndex].locations.at(0) ?? '',
+  const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((duplicate) => [
+    duplicate.section,
+    duplicate.periods[periodIndex].locations.at(0) ?? '',
   ]);
 
   return {
@@ -63,13 +55,13 @@ const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
 };
 
 /*
-Displays expanded view of a droppedClass and allows for changing a class to others that occur at the same time period.
-the LocationDropdown shows the different locations and allows the choosing of other classes at this time slot.
-ExpandedView keeps an interenal reference of the currently selected class/period to display the changes from dropdown-selecting different classes, but it call a 'selectClass' function with
-each change to this internal reference. Instead the new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent. This is done
-becuase otherwise the view will close itself whenever a new item is selected in the locations dropdown.
+  Displays expanded view of a droppedClass and allows for changing a class to others that occur at the same time period.
+  the LocationDropdown shows the different locations and allows the choosing of other classes at this time slot.
+  ExpandedView keeps an interenal reference of the currently selected class/period to display the changes from dropdown-selecting different classes, but it call a 'selectClass' function with
+  each change to this internal reference. Instead the new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent. This is done
+  becuase otherwise the view will close itself whenever a new item is selected in the locations dropdown.
 
-Currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically be of type PeriodData
+  Currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically be of type PeriodData
 */
 const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
