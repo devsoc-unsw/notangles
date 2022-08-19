@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
-import { isDuplicate } from './isDuplicate';
+import { areDuplicatePeriods } from './areDuplicatePeriods';
 
 /**
  * @param location The location of the class
@@ -134,14 +134,14 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
     });
 
     // Combine the locations of all periods which occur simultaneously with each other
-    // This is to create the list of all possible locations a period can be in and
-    // is used in the expanded class view
+    // This is to create the list of all possible locations a period can be in
+    // It is used in the expanded class view
     courseData.activities[activity].forEach((classData) => {
       classData.periods = classData.periods.map((currPeriod) => {
         currPeriod.locations = [
           ...currPeriod.locations,
           ...allPeriods
-            .filter((period) => currPeriod !== period && isDuplicate(currPeriod, period))
+            .filter((period) => currPeriod !== period && areDuplicatePeriods(currPeriod, period))
             .map((periods) => periods.locations[0]),
         ];
 

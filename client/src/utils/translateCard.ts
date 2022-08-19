@@ -32,7 +32,8 @@ export const classTranslateX = (
 
   // This classCard is for an unscheduled class, i.e. it belongs in the inventory
   if (nDays) {
-    // This shifts by the cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
+    // This shifts by the cards length times the number of days
+    // plus nDays + 1 to account for the amount of column borders (of length 1px),
     // plus the margin seperating the days of the week from unscheduled section
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
@@ -42,7 +43,7 @@ export const classTranslateX = (
 
 /**
  * @param card The card
- * @returns The height of a class based on its duration in pixels
+ * @returns The height of a class in pixels based on its duration
  */
 export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
   // height compared to standard row height

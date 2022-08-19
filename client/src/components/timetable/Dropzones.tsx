@@ -4,7 +4,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, ClassData, ClassPeriod } from '../../interfaces/Periods';
 import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
-import { isDuplicate } from '../../utils/isDuplicate';
+import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import Dropzone from './Dropzone';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
@@ -49,7 +49,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 
     newActivities[activity].forEach((classData) => {
       classData.periods = classData.periods.filter((period) => {
-        const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
+        const duplicates = allPeriods.filter((other) => areDuplicatePeriods(period, other));
 
         return duplicates[0] === period;
       });

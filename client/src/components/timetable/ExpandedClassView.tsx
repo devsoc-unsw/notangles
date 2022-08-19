@@ -7,10 +7,10 @@ import { CourseContext } from '../../context/CourseContext';
 import { ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps, LocationDropdownProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
-import { isDuplicate } from '../../utils/isDuplicate';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -45,10 +45,10 @@ const getDuplicateClassData = (c: ClassPeriod, courses: CourseData[]) => {
   const currCourse = getCourseFromClassData(courses, c);
   const currClass = getClassDataFromPeriod(courses, c);
 
-  const periodIndex = currClass.periods.findIndex((p) => isDuplicate(p, c));
+  const periodIndex = currClass.periods.findIndex((p) => areDuplicatePeriods(p, c));
 
   const duplicateClasses = currCourse.activities[c.activity].filter((value) =>
-    value.periods.some((v, index) => index === periodIndex && isDuplicate(v, c))
+    value.periods.some((v, index) => index === periodIndex && areDuplicatePeriods(v, c))
   );
   const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((dc) => [
     dc.section,

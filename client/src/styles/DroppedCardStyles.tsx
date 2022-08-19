@@ -1,9 +1,9 @@
-import { styled } from '@mui/system';
 import { Button, Card, Grid, List } from '@mui/material';
+import { styled } from '@mui/system';
 
 import { borderRadius, borderWidth } from '../constants/theme';
-import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { EventPeriod } from '../interfaces/Periods';
+import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
 
 export const transitionName = 'class';
@@ -36,7 +36,7 @@ export const ExpandButton = styled(Button)`
 
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
-    !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
+    !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
 })<{

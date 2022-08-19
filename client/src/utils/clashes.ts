@@ -22,7 +22,7 @@ const getClassPeriods = (currSelectedClasses: Record<string, ClassData | null>[]
 };
 
 /**
- * Generates a set of clashing periods
+ * Populates a set of clashing periods
  * @param clashes The set of clashing periods
  * @param periods1 The first list of periods
  * @param periods2 The second list of periods to compare to
@@ -168,7 +168,7 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  * @param card The current card
  * @param setErrorVisibility The function used to toggle whether the info popup is visible
  * @param setAlertMsg The function used to set the message on the info popup
- * @returns A list based on the clash data containing the width of the card (expressed as a number between 0 and 100),
+ * @returns A list containing the width of the card (expressed as a number between 0 and 100),
  * the index of the card in its clash group (to maintain the chronological order of clashing periods)
  * and the colour of the border of the card (red for non-permitted clash, orange for permitted clash, none for a custom event).
  */
@@ -210,7 +210,7 @@ export const getClashInfo = (
       }
 
       // Check if the current card has weeks that are overlapping with the weeks of the current clash.
-      // This is so that two classes with clashing time but different weeks are not supposed to clash (no border).
+      // Two classes with clashing times which occur on different weeks are not defined as a clash.
       if (clash.type === 'class' && card.type === 'class') {
         const hasOverlappingWeeks = card.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
         if (hasOverlappingWeeks && clash.classId !== card.classId) {

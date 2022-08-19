@@ -253,7 +253,7 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  // Populates selected courses, classes and created events with the data saved in local storage
+  // Populate selected courses, classes and created events with the data saved in local storage
   useUpdateEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
@@ -267,8 +267,7 @@ const App: React.FC = () => {
 
           if (classId) {
             try {
-              let result = undefined;
-              result = newSelectedCourses
+              const result = newSelectedCourses
                 .find((x) => x.code === courseCode)
                 ?.activities[activity].find((x) => x.section === classId);
               if (result) classData = result;
@@ -278,6 +277,7 @@ const App: React.FC = () => {
             }
           }
 
+          // classData being null means the activity is unscheduled
           newSelectedClasses[courseCode][activity] = classData;
         });
       });
@@ -323,17 +323,17 @@ const App: React.FC = () => {
    */
   const getLatestDotW = (courses: CourseData[]) => {
     let maxDay: number = 5;
-    for (let i = 0; i < courses.length; i++) {
-      const activities = Object.values(courses[i].activities);
-      for (let j = 0; j < activities.length; j++) {
-        for (let k = 0; k < activities[j].length; k++) {
-          const classData = activities[j][k];
-          for (let l = 0; l < classData.periods.length; l++) {
-            maxDay = Math.max(maxDay, classData.periods[l].time.day);
+    for (const course of courses) {
+      const activities = Object.values(course.activities);
+      for (const activity of activities) {
+        for (const classData of activity) {
+          for (const period of classData.periods) {
+            maxDay = Math.max(maxDay, period.time.day);
           }
         }
       }
     }
+
     return maxDay;
   };
 
