@@ -60,6 +60,11 @@ export const setDropzoneRange = (days: number, earliest: number, latest: number)
   latestEndTime = latest;
 };
 
+/**
+ * @param courseData The course associated with the period
+ * @param cardData The period
+ * @returns The inventory data for the period's activity of the provided course
+ */
 const getInventoryPeriod = (courseData: CourseData, cardData: ClassCard): InventoryPeriod =>
   courseData.inventoryData[cardData.activity];
 
@@ -118,7 +123,7 @@ const equalDur = (p1: ClassPeriod, p2: ClassPeriod) => p1.time.end - p1.time.sta
 /**
  * @param a The first period
  * @param b The second period
- * @returns Whether a can be dropped into b (or vice versa). Either a or b can be the dropzone
+ * @returns Whether a can be dropped into b (or vice versa). Either a or b can be the receiving period
  */
 export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
   if (a === null || b === null || a === b) return true;
@@ -329,40 +334,52 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 };
 
 type ClassHandler = (classData: ClassData) => void;
-type EventTimetHandler = (eventTime: EventTime, recordKey: string) => void;
+type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
-let updateEventTime: EventTimetHandler = () => {};
+let updateEventTime: EventTimeHandler = () => {};
 
+/**
+ * Sets the select and remove class handler functions (from App)
+ * @param selectHandler The select handler to use
+ * @param removeHandler The remove handler to use
+ */
 export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler) => {
   selectClass = selectHandler;
   removeClass = removeHandler;
 };
 
-export const useEventDrag = (eventTimetHandler: EventTimetHandler) => {
-  updateEventTime = eventTimetHandler;
+/**
+ * Sets the update event handler function (from App)
+ * @param eventTimeHandler The event handler to use
+ */
+export const useEventDrag = (eventTimeHandler: EventTimeHandler) => {
+  updateEventTime = eventTimeHandler;
 };
 
-const updateDelay = 30;
-let lastUpdate = 0;
+const updateDelay = 30; // The delay between drop target updates
+let lastUpdate = 0; // The time of the last drop target update in Unix time
 
 let currentClassTime: ClassTime | undefined;
-const setCurrentClassTime = (time: ClassTime | undefined) => {
-  currentClassTime = time;
-};
 
 const updateDropTarget = (now?: boolean) => {
-  // Cancel if: no drag happening, or update is too soon (except if now = true)
-  if (!dragTargetCourse || !dragTarget || !dragElement || (!now && Date.now() - lastUpdate < updateDelay)) return;
+  // Cancel update if the dragTarget is an event, there is no drag happening, or the update is too soon (except if now is true)
+  if (
+    !dragTargetCourse ||
+    !dragTarget ||
+    !dragElement ||
+    dragTarget.type === 'event' ||
+    (!now && Date.now() - lastUpdate < updateDelay)
+  ) {
+    return;
+  }
 
   lastUpdate = Date.now();
 
-  if (dragTarget.type === 'event') return;
-
   const dragRect = dragElement.getBoundingClientRect();
 
-  // dropzone with greatest area of intersection
+  // Find the period with the greatest area of intersection with the dragTarget
   const bestMatch = Array.from(dropzones.entries())
     .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
@@ -383,14 +400,24 @@ const updateDropTarget = (now?: boolean) => {
   1;
 
   const { classPeriod, area } = bestMatch;
+
+  // result is the period with the best match
+  // It may be the original period if classPeriod is invalid
+  // It may be null if the period is the unscheduled classes column
   const result = classPeriod !== undefined && area > 0 ? classPeriod : dragSource;
+
+  // newDropTarget is the actual period that is associated with the result
+  // It may be a ClassPeriod (i.e. the same period as result) if the class is moved to a dropzone in the timetable
+  // It may be an InventoryPeriod if the class is moved to the inventory
   const newDropTarget = result !== null ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
 
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
+    // Card moved over a valid period
     dropTarget = newDropTarget;
     updateDropzones();
 
     if (isScheduledPeriod(newDropTarget)) {
+      // Moved over a valid dropzone for a scheduled class
       let newTime = newDropTarget.time;
       if (
         !currentClassTime ||
@@ -398,15 +425,14 @@ const updateDropTarget = (now?: boolean) => {
         newTime.start !== currentClassTime.start ||
         newTime.end !== currentClassTime.end
       ) {
-        setCurrentClassTime(undefined);
+        currentClassTime = undefined;
         selectClass(getClassDataFromPeriod(newDropTarget)!);
       }
     } else if (isScheduledPeriod(dragTarget)) {
-      // moved to inventory
-      setCurrentClassTime(undefined);
+      // A scheduled class was moved to the inventory
+      currentClassTime = undefined;
       removeClass(getClassDataFromPeriod(dragTarget)!);
     }
-  } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
   }
 };
 
@@ -543,9 +569,9 @@ export const setDragTarget = (
 
       if (cardData.type !== 'event') {
         if (cardData.type === 'class') {
-          setCurrentClassTime(cardData.time);
+          currentClassTime = cardData.time;
         } else {
-          setCurrentClassTime(undefined);
+          currentClassTime = undefined;
         }
       }
     } else {
