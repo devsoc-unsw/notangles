@@ -197,18 +197,14 @@ export const getClashInfo = (
     if (!clashGroup) return defaultValues;
 
     let uniqueClashIDs = clashGroup.map((clash) => getId(clash));
-    let nonLecturePeriods: Set<string> = new Set();
+    let nonLecturePeriods = clashGroup
+      .filter((clash) => clash.type === 'class' && !clash.activity.includes('Lecture'))
+      .map((clash) => getId(clash));
     let isOverlapped = false;
 
     const cardID = getId(card);
 
     clashGroup.forEach((clash) => {
-      const clashID = getId(clash);
-
-      if (clash.type === 'class' && !clash.activity.includes('Lecture')) {
-        nonLecturePeriods.add(clashID);
-      }
-
       // Check if the current card has weeks that are overlapping with the weeks of the current clash.
       // Two classes with clashing times which occur on different weeks are not defined as a clash.
       if (clash.type === 'class' && card.type === 'class') {
@@ -219,7 +215,7 @@ export const getClashInfo = (
       }
     });
 
-    if (nonLecturePeriods.size > 1 && card.type !== 'event') {
+    if (nonLecturePeriods.length > 1 && card.type !== 'event') {
       clashColour = 'red';
     } else if (!isOverlapped) {
       clashColour = 'transparent';
