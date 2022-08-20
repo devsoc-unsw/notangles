@@ -122,6 +122,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     };
   });
 
+  const isLongerThanOneHour = eventPeriod.time.end - eventPeriod.time.start > 1;
+
   return (
     <>
       <StyledCard
@@ -150,10 +152,15 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
-              <StyledCardInfo>
-                <StyledLocationIcon />
-                {eventPeriod.event.location}
-              </StyledCardInfo>
+              {/* only display location on card if event longer than one hour */}
+              {isLongerThanOneHour ? (
+                <StyledCardInfo>
+                  <StyledLocationIcon />
+                  {eventPeriod.event.location}
+                </StyledCardInfo>
+              ) : (
+                <></>
+              )}
               <TouchRipple ref={rippleRef} />
             </Grid>
           </StyledCardInnerGrid>
