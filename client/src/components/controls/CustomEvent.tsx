@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
+import React, { useContext, useState } from 'react';
+import { start } from 'repl';
 import { v4 as uuidv4 } from 'uuid';
 import { weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -12,9 +13,8 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import DropdownOption from '../timetable/DropdownOption';
 import { areValidEventTimes } from '../../utils/areValidEventTimes';
-import { start } from 'repl';
+import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
   && {
@@ -37,34 +37,34 @@ const ExecuteButton = styled(Button)`
 `;
 
 const CustomEvent: React.FC = () => {
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
-
-  // anchorEl sets position of the Custom Event popover
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const open = Boolean(anchorEl); // Whether the popover is shown
-  const popoverId = open ? 'simple-popover' : undefined;
-
-  // popover for Color Picker
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
-  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
-
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
-  const [eventDays, setEventDAys] = useState<Array<string>>([]);
+  const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
 
-  // Open popover when Event button is clicked
+  // Which element to make the popover stick to
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // Whether the popover is shown
+  const open = Boolean(anchorEl);
+  const popoverId = open ? 'simple-popover' : undefined;
+
+  // Which element to make the colour picker popover stick to
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // Whether the colour picker popover is shown
+  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
+  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
+    useContext(AppContext);
+
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Close popover when Event button is clicked again
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -78,7 +78,7 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleFormat = (newFormats: string[]) => {
-    setEventDAys(newFormats);
+    setEventDays(newFormats);
   };
 
   const doCreateEvent = () => {
@@ -111,15 +111,12 @@ const CustomEvent: React.FC = () => {
       [uuid]: newEvent,
     });
 
-    if (startTime.getHours() < earliestStartTime) {
-      setEarliestStartTime(startTime.getHours());
-    }
+    setEarliestStartTime(Math.min(earliestStartTime, startTime.getHours()));
+    setLatestEndTime(Math.max(latestEndTime, endTime.getHours()));
 
-    if (endTime.getHours() > latestEndTime) {
-      setLatestEndTime(endTime.getHours());
-    }
-
-    // This updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
+    // Updating the days of the week must be handled here otherwise
+    // DroppedCards will not have the updated days and it will crash
+    // (which is understandable since it's breaking React best practices by not being purely functional)
     if (weekdaysShort.indexOf(eventDays.toString()) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -131,9 +128,9 @@ const CustomEvent: React.FC = () => {
     setEventName('');
     setLocation('');
     setDescription('');
-    setEventDAys([]);
+    setEventDays([]);
 
-    // Close popover when Create button is clicked
+    // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
   };
@@ -146,8 +143,6 @@ const CustomEvent: React.FC = () => {
         </Box>
         {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
-
-      {/* Where the popover appears in relation to the button */}
       <Popover
         open={open}
         anchorEl={anchorEl}
