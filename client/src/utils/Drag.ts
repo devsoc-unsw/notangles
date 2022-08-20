@@ -440,6 +440,12 @@ const updateDropTarget = (now?: boolean) => {
   }
 };
 
+/**
+ *
+ * @param a
+ * @param b
+ * @returns
+ */
 export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | EventPeriod[]) => {
   const from = [...a];
   let to = [...b];
@@ -499,6 +505,9 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
 
 let onScroll = (_?: Event) => {};
 
+/**
+ * @returns The div enclosing the timetable grid
+ */
 const getScrollElement = () => {
   const element = document.getElementById('StyledTimetableScroll');
   if (element) element.onscroll = onScroll;
@@ -512,6 +521,11 @@ let clientX = 0;
 let clientY = 0;
 let lastFrame = Date.now();
 
+/**
+ * The amount each card has to be translated by changes if the screen has been scrolled.
+ * This handler function calculates how far the timetable has been moved
+ * to correctly position the cards, including the card currently being dragged around
+ */
 onScroll = (event?) => {
   const scrollElement = getScrollElement();
 
@@ -520,6 +534,7 @@ onScroll = (event?) => {
   const dx = scrollElement.scrollLeft - lastScrollX;
   const dy = document.documentElement.scrollTop - lastScrollY;
 
+  // If a card is dragged to the edge of the screen, it should move as the screen scrolls
   if (dragElement) {
     moveElement(dragElement, dx, dy);
     updateDropTarget();
@@ -536,8 +551,16 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
+// The ID of the event being dragged around
 let eventId = '';
 
+/**
+ * Handler function for when a card is picked up
+ * @param cardData The card
+ * @param courseData The course associated with that card
+ * @param event The HTML event that was triggered
+ * @param givenEventId The ID of the event being dragged around
+ */
 export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
@@ -550,10 +573,19 @@ export const setDragTarget = (
     if (givenEventId) eventId = givenEventId;
 
     if (cardData && event && event.currentTarget && scrollElement) {
-      const element = event.currentTarget as HTMLElement;
-      element.style.transition = moveTransition;
       document.documentElement.style.cursor = 'grabbing';
 
+      // Update the CSS for the card being dragged around
+      const element = event.currentTarget as HTMLElement;
+      element.style.transition = moveTransition;
+      freezeTransform(element);
+      dragElement = element;
+
+      // Take into account how much the screen has scrolled
+      lastX += scrollElement.scrollLeft;
+
+      // Save the original coordinates of the card
+      // The type of event is different on a computer v.s. a mobile device
       if (typeof event.pageX === 'number' && typeof event.pageY === 'number') {
         lastX = event.pageX;
         lastY = event.pageY;
@@ -565,10 +597,6 @@ export const setDragTarget = (
         }
       }
 
-      lastX += scrollElement.scrollLeft;
-
-      dragElement = element;
-      freezeTransform(element);
       updateDropTarget(true);
 
       if (cardData.type !== 'event') {
@@ -585,9 +613,9 @@ export const setDragTarget = (
     dragTargetCourse = courseData;
     dragTarget = cardData;
     dropTarget = cardData;
-    if (cardData?.type !== 'event') dragSource = cardData;
 
     if (cardData?.type !== 'event') {
+      dragSource = cardData;
       updateCards(classCards);
       updateDropzones();
     } else {
@@ -596,6 +624,11 @@ export const setDragTarget = (
   }
 };
 
+/**
+ * Handler function to move a card around as it is dragged
+ * @param x The current x-coordinate of the card
+ * @param y The current y-coordinate of the card
+ */
 const onMove = (x: number, y: number) => {
   if (dragElement) {
     moveElement(dragElement, x - lastX, y - lastY);
@@ -606,6 +639,9 @@ const onMove = (x: number, y: number) => {
   lastY = y;
 };
 
+/**
+ * Update animations while card is being dragged around
+ */
 const onFrame = () => {
   if (dragElement) {
     const delta = Date.now() - lastFrame;
@@ -614,10 +650,10 @@ const onFrame = () => {
     const scrollElement = getScrollElement();
 
     if (clientY < edgeSize) {
-      // top scroll
+      // Top scroll
       document.documentElement.scrollTop -= scrollSpeed * delta;
     } else if (clientHeight - clientY < edgeSize) {
-      // bottom scroll
+      // Bottom scroll
       document.documentElement.scrollTop += scrollSpeed * delta;
     }
 
@@ -626,10 +662,10 @@ const onFrame = () => {
       clientWidth - clientX < edgeSize &&
       scrollElement.scrollLeft < timetableWidth - window.innerWidth + contentPadding * 2
     ) {
-      // right scroll
+      // Right scroll
       scrollElement.scrollLeft += scrollSpeed * delta;
     } else if (scrollElement && clientX < edgeSize) {
-      // left scroll
+      // Left scroll
       scrollElement.scrollLeft -= scrollSpeed * delta;
     }
 
@@ -678,6 +714,9 @@ window.addEventListener(
   { passive: false }
 );
 
+/**
+ * Handler function to drop a card into a dropzone
+ */
 const drop = () => {
   if (dragElement) {
     const { style } = dragElement;
@@ -697,12 +736,15 @@ const drop = () => {
         const displacementx = dragrect.x - baserect.x;
         const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
-        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect(); // gridChildren.length - 5 is used to access an arbitrary item in the grid so we can get it's dimensions
-        const [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)]; // grid coords of drag target when released
+        // Get the size of an arbitrary grid cell
+        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
+
+        // Get the grid coordinates of the dragTarget when released
+        const [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
 
         const eventLength = dragTarget.time.end - dragTarget.time.start;
 
-        // ensure we released inside the grid
+        // Ensure we released inside the grid
         if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
           updateEventTime(
             {

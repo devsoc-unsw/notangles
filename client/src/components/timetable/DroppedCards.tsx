@@ -123,7 +123,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     cardKeys.set(classCard, key);
   });
 
-  // Sort by key to prevent disruptions to transitions
+  // Sort classes by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
 
   // Clear any cards which no longer exist
