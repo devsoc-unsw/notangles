@@ -17,7 +17,7 @@ export const timetableWidth = 1100;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
-export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
+export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms, width ${transitionTime}ms`;
 export const elevatedScale = 1.1;
 export const getDefaultShadow = (isSquareEdges: boolean) => (isSquareEdges ? 0 : 3);
 export const getElevatedShadow = (_: boolean) => 24;
@@ -105,17 +105,24 @@ export const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 
-// given drag and drop bounding rects, returns intersection area relative to drag area
-const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
-  const left = Math.max(drag.left, drop.left);
-  const right = Math.min(drag.right, drop.right);
-  const bottom = Math.min(drag.bottom, drop.bottom);
-  const top = Math.max(drag.top, drop.top);
+// this is added/subtracted to the rects to avoid a no intersection state when the dragElement
+// is right inbetween two dropzones
+const timetableBorderWidthPlusOne = 2;
 
-  const dragArea = drag.width * drag.height;
+// given drag and drop bounding rects, returns intersection area
+const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
+  // we pretend the drag element is it's full width (i.e. the width of the drop rect)
+  // to avoid consecutive best-dropzone calculations returning different dropzones
+  // (wherein it will switch to-and-fro between two dropzones)
+  const newLeft = drag.left - (drop.width - drag.width) / 2;
+  const left = Math.max(newLeft, drop.left);
+  const right = Math.min(newLeft + drop.width, drop.right);
+  const bottom = Math.min(drag.bottom + timetableBorderWidthPlusOne, drop.bottom);
+  const top = Math.max(drag.top - timetableBorderWidthPlusOne, drop.top);
+
   const intersectionArea = Math.max(0, right - left) * Math.max(0, bottom - top);
 
-  return intersectionArea / dragArea;
+  return intersectionArea;
 };
 
 const distanceBetween = (e1: Element, e2: Element) => {
@@ -143,9 +150,9 @@ const updateDropzones = () => {
 
     if (canDrop) {
       if (isDropTarget) {
-        opacity = '0.8';
+        opacity = '0.85';
       } else {
-        opacity = classPeriod ? '0.5' : '0';
+        opacity = classPeriod ? '0.4' : '0';
       }
     }
 
@@ -252,15 +259,21 @@ const setCurrentClassTime = (time: ClassTime | undefined) => {
   currentClassTime = time;
 };
 
+let lastRecWidth = -1;
+
 const updateDropTarget = (now?: boolean) => {
   // Cancel if: no drag happening, or update is too soon (except if now = true)
   if (!dragTargetCourse || !dragTarget || !dragElement || (!now && Date.now() - lastUpdate < updateDelay)) return;
 
-  lastUpdate = Date.now();
-
   if (dragTarget.type === 'event') return;
 
   const dragRect = dragElement.getBoundingClientRect();
+
+  if (lastRecWidth !== dragRect.width) {
+    lastRecWidth = dragRect.width;
+    lastUpdate -= transitionTime; // wait for the width transition to end
+    return;
+  }
 
   // dropzone with greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
@@ -308,6 +321,7 @@ const updateDropTarget = (now?: boolean) => {
     }
   } else if (newDropTarget !== undefined && newDropTarget === dropTarget) {
   }
+  lastUpdate = Date.now();
 };
 
 export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | EventPeriod[]) => {
@@ -408,6 +422,18 @@ window.addEventListener('scroll', onScroll, { passive: false });
 
 let eventId = '';
 
+let prevWidth: number = -1;
+
+let resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+  const entryWidth = entries[0].contentRect.width;
+
+  if (prevWidth !== -1 && entryWidth !== prevWidth) {
+    // gives the illusion that the width is grow/shrinking out from the center rather than a side
+    moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, 0);
+  }
+  prevWidth = entryWidth;
+});
+
 export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
@@ -440,6 +466,10 @@ export const setDragTarget = (
       dragElement = element;
       freezeTransform(element);
       updateDropTarget(true);
+
+      lastRecWidth = element.getBoundingClientRect().width;
+
+      resizeObserver.observe(dragElement);
 
       if (cardData.type !== 'event') {
         if (cardData.type === 'class') {
@@ -588,6 +618,7 @@ const drop = () => {
 
     document.documentElement.style.cursor = 'default';
     unfreezeTransform(dragElement);
+    resizeObserver.unobserve(dragElement);
   }
 
   setDragTarget(null, null);

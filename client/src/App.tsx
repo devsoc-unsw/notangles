@@ -169,7 +169,15 @@ const App: React.FC = () => {
       )
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
-      const newSelectedCourses = [...selectedCourses, ...addedCourses];
+
+      // prevent duplication on recompile
+      const newSelectedCoursesWithDups = [...selectedCourses, ...addedCourses];
+      const newSelectedCourseCodes = newSelectedCoursesWithDups.map((course) => course.name);
+      const newSelectedCourses = newSelectedCoursesWithDups.filter(
+        (course, index) =>
+          newSelectedCourseCodes.indexOf(course.name) === newSelectedCourseCodes.lastIndexOf(course.name) ||
+          newSelectedCourseCodes.indexOf(course.name) === index
+      );
 
       setSelectedCourses(newSelectedCourses);
 
