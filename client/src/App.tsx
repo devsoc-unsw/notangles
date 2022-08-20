@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+import React, { useContext, useEffect } from 'react';
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -181,13 +181,11 @@ const App: React.FC = () => {
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
-      // prevent duplication on recompile
+      // Prevent duplication of courses on recompile
       const newSelectedCoursesWithDups = [...selectedCourses, ...addedCourses];
-      const newSelectedCourseCodes = newSelectedCoursesWithDups.map((course) => course.name);
       const newSelectedCourses = newSelectedCoursesWithDups.filter(
-        (course, index) =>
-          newSelectedCourseCodes.indexOf(course.name) === newSelectedCourseCodes.lastIndexOf(course.name) ||
-          newSelectedCourseCodes.indexOf(course.name) === index
+        (course1, index, self) =>
+          index === self.findIndex((course2) => course1.code === course2.code && course1.name === course2.name)
       );
 
       setSelectedCourses(newSelectedCourses);

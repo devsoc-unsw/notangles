@@ -8,7 +8,7 @@ import { Action, Activity, ClassData, CreatedEvents, EventTime, InInventory, Sel
 
 type Actions = Action[];
 
-const initialIndex = 2;
+const initialIndex = 2; // Two actions are created when the page first loads
 
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
