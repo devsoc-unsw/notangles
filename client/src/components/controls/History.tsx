@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Redo, Restore, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -11,6 +11,9 @@ type Actions = Action[];
 const initialIndex = 2;
 
 const History: React.FC = () => {
+  const [disableLeft, setDisableLeft] = useState(true);
+  const [disableRight, setDisableRight] = useState(true);
+
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
   const { isDrag, setIsDrag } = useContext(AppContext);
@@ -19,8 +22,6 @@ const History: React.FC = () => {
   const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const dontAdd = useRef(false);
 
-  const [disableLeft, setDisableLeft] = useState(true);
-  const [disableRight, setDisableRight] = useState(true);
   const duplicateClasses = (prev: SelectedClasses) => {
     const newClasses: SelectedClasses = {};
 

@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
@@ -17,7 +18,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { AppContext } from '../../context/AppContext';
