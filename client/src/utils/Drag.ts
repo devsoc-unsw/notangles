@@ -17,7 +17,7 @@ export type ClassCard = ClassPeriod | InventoryPeriod;
 export const transitionTime = 350;
 const heightTransitionTime = 150;
 export const defaultTransition = `all ${transitionTime}ms`;
-export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms`;
+export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms, width ${transitionTime}ms`;
 
 export const elevatedScale = 1.1; // How much bigger the cards should be when being dragged around
 const inventoryDropIntersection = 0.5; // How much the cards should intersect with the unscheduled column to be placed inside it
@@ -165,21 +165,28 @@ export const unfreezeTransform = (element: HTMLElement) => {
   element.style.removeProperty('transform');
 };
 
+// This is added/subtracted to the rectangles to avoid a no intersection state
+// when the dragElement is right inbetween two dropzones
+const timetableBorderWidthPlusOne = 2;
+
 /**
  * @param drag The bounding rectangle of the element being dragged
  * @param drop The bounding rectangle of the drop target
  * @returns Their intersection area relative to the area of the dragged element's area
  */
 const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
-  const left = Math.max(drag.left, drop.left);
-  const right = Math.min(drag.right, drop.right);
-  const bottom = Math.min(drag.bottom, drop.bottom);
-  const top = Math.max(drag.top, drop.top);
+  // We pretend the drag element is its full width (i.e. the width of the drop rectangle)
+  // to avoid consecutive best-dropzone calculations returning different dropzones
+  // (wherein it will switch to-and-fro between two dropzones causing the card to stutter)
+  const newLeft = drag.left - (drop.width - drag.width) / 2;
+  const left = Math.max(newLeft, drop.left);
+  const right = Math.min(newLeft + drop.width, drop.right);
+  const bottom = Math.min(drag.bottom + timetableBorderWidthPlusOne, drop.bottom);
+  const top = Math.max(drag.top - timetableBorderWidthPlusOne, drop.top);
 
-  const dragArea = drag.width * drag.height;
   const intersectionArea = Math.max(0, right - left) * Math.max(0, bottom - top);
 
-  return intersectionArea / dragArea;
+  return intersectionArea;
 };
 
 /**
@@ -215,9 +222,9 @@ const updateDropzones = () => {
 
     if (canDrop) {
       if (isDropTarget) {
-        opacity = '0.8';
+        opacity = '0.85';
       } else {
-        opacity = classPeriod ? '0.5' : '0';
+        opacity = classPeriod ? '0.4' : '0';
       }
     }
 
@@ -362,6 +369,8 @@ let lastUpdate = 0; // The time of the last drop target update in Unix time
 
 let currentClassTime: ClassTime | undefined;
 
+let lastRecWidth = -1; // The width of the previous dropzone
+
 /**
  * Update the currently selected class when a card is moved over a dropzone
  * or remove it if it is being unscheduled
@@ -379,17 +388,22 @@ const updateDropTarget = (now?: boolean) => {
     return;
   }
 
-  lastUpdate = Date.now();
-
   const dragRect = dragElement.getBoundingClientRect();
 
-  // Find the period with the greatest area of intersection with the dragTarget
+  // Wait for the current width transition to end before calculating the next transition
+  if (lastRecWidth !== dragRect.width) {
+    lastRecWidth = dragRect.width;
+    lastUpdate -= transitionTime;
+    return;
+  }
+
+  // Find the period with the greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
     .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
-      // avoid accidental inventory drop and state oscillation when drag area dynamically changes
+      // Avoid accidental inventory drop and state oscillation when drag area dynamically changes
       if (dropElement === inventoryElement && area < inventoryDropIntersection) area = 0;
 
       return { classPeriod, area };
@@ -438,6 +452,7 @@ const updateDropTarget = (now?: boolean) => {
       removeClass(getClassDataFromPeriod(dragTarget)!);
     }
   }
+  lastUpdate = Date.now();
 };
 
 /**
@@ -551,6 +566,18 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
+let prevWidth: number = -1; // Previous width of the card
+
+const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+  const entryWidth = entries[0].contentRect.width;
+
+  if (prevWidth !== -1 && entryWidth !== prevWidth) {
+    // gives the illusion that the width is grow/shrinking out from the center rather than a side
+    moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, 0);
+  }
+  prevWidth = entryWidth;
+});
+
 // The ID of the event being dragged around
 let eventId = '';
 
@@ -598,6 +625,10 @@ export const setDragTarget = (
       }
 
       updateDropTarget(true);
+
+      lastRecWidth = element.getBoundingClientRect().width;
+
+      resizeObserver.observe(dragElement);
 
       if (cardData.type !== 'event') {
         if (cardData.type === 'class') {
@@ -760,6 +791,7 @@ const drop = () => {
 
     document.documentElement.style.cursor = 'default';
     unfreezeTransform(dragElement);
+    resizeObserver.unobserve(dragElement);
   }
 
   setDragTarget(null, null);
