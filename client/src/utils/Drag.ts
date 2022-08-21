@@ -135,21 +135,21 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
 
   if (!classData) return false;
 
-  // The last || clause is necessary because all possible periods for a given activity may not be the same length
+  // The second last || clause checks if the period is in the same relative position to the current period (within their respective classes)
+  // For example, either the tute/lab in a tute/lab combo
+
+  // The last || clause is necessary because all periods for a given activity may not be the same length (see JURD7251 22T2)
   // thus the equalDur(a, b) condition will be false. We need some other way of determining whether the dropzone is valid,
-  // namely that if the activity is made up of multiple periods in the same week all periods in the current group
-  // are the same length (by group I mean e.g. a particular lecture stream that occurs on two days of the week)
+  // namely that if the activity is made up of multiple periods in the same week, all periods are the same length
   return (
     a.courseCode === b.courseCode &&
     a.activity === b.activity &&
     (!isScheduledPeriod(a) ||
       !isScheduledPeriod(b) ||
       equalDur(a, b) ||
+      classData.periods.indexOf(a) === classData.periods.indexOf(b) ||
       classData.periods.every((p, i) => i === 0 || equalDur(p, classData.periods[i - 1])))
   );
-
-  // There is another condition a.class.periods.indexOf(a) === b.class.periods.indexOf(b) which I have removed
-  // because I didn't think it did anything. Let's see if this is true.
 };
 
 /**
