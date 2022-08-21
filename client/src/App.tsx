@@ -169,6 +169,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
+
       if (termData !== undefined) {
         const { term, termName, termNumber, firstDayOfTerm, year } = termData;
         setTerm(term);

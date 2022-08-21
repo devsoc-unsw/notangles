@@ -6,11 +6,22 @@ import timeoutPromise from '../utils/timeoutPromise';
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
   // and the api will replace them with valid ones and return them.
-  let year = '0000';
-  let termNumber = 1;
-  let term = `T${termNumber}`;
+  let termData = {
+    year: '',
+    term: '',
+    termNumber: '',
+    termName: '',
+    firstDayOfTerm: '',
+  };
+
+  if (localStorage.getItem('termData')) {
+    termData = JSON.parse(localStorage.getItem('termData')!);
+  }
+  let year = termData.year || '0000';
+  let termNumber = Number(termData.termNumber) || 1;
+  let term = termData.termName || `T${termNumber}`;
   let termName = `Term ${termNumber}`;
-  let firstDayOfTerm = `0000-00-00`;
+  let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
   try {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
@@ -39,6 +50,17 @@ export const getAvailableTermDetails = async () => {
       term = termIdRes;
       termNumber = 0; // This is a summer term.
     }
+    // Store the term details in local storage.
+    localStorage.setItem(
+      'termData',
+      JSON.stringify({
+        year: year,
+        term: term,
+        termNumber: termNumber,
+        termName: termName,
+        firstDayOfTerm: firstDayOfTerm,
+      })
+    );
 
     return {
       term: term,
