@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
-import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
+import React, { useContext, useState } from 'react';
+import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
@@ -26,7 +26,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(name);
-  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[day - 1]]);
+  const [newDays, setNewDays] = useState<Array<string>>([daysShort[day - 1]]);
   const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, start));
   const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end));
   const [newLocation, setNewLocation] = useState<string>(location);
@@ -64,7 +64,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     });
 
     // Update the time that appears in the TimePicker boxes when in edit mode.
-    setNewDays([weekdaysShort[eventTime.day - 1]]);
+    setNewDays([daysShort[eventTime.day - 1]]);
     setNewStartTime(new Date(2022, 0, 0, eventTime.start));
     setNewEndTime(new Date(2022, 0, 0, eventTime.end));
   };
@@ -79,7 +79,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     }
 
     const newEventTime = {
-      day: weekdaysShort.indexOf(newDays.toString()) + 1,
+      day: daysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
       end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
@@ -241,7 +241,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 optionName="Days"
                 optionState={newDays}
                 setOptionState={handleFormat}
-                optionChoices={weekdaysShort}
+                optionChoices={daysShort}
                 noOff
               />
             </ListItem>
@@ -340,7 +340,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 <AccessTime />
               </ListItemIcon>
               <Typography>
-                {weekdaysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
+                {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
           </StyledDialogContent>

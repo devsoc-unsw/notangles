@@ -1,4 +1,4 @@
-import { unknownErrorMessage, weekdaysLong } from '../constants/timetable';
+import { daysLong, unknownErrorMessage } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
@@ -105,7 +105,7 @@ const sortClashesByTime = (clashDays: Record<number, (ClassPeriod | EventPeriod)
  * The days of the week are zero-indexed
  */
 const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
-  const clashDays: Record<number, (ClassPeriod | EventPeriod)[]> = weekdaysLong.map((_) => []);
+  const clashDays: Record<number, (ClassPeriod | EventPeriod)[]> = daysLong.map((_) => []);
   clashes.forEach((clash) => clashDays[clash.time.day - 1].push(clash));
 
   return sortClashesByTime(clashDays);
@@ -116,7 +116,7 @@ const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
  * @returns The map of days with each list being further separated into smaller lists representing which classes are clashing with each other
  */
 const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[]>) => {
-  const groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]> = weekdaysLong.map((_) => []);
+  const groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]> = daysLong.map((_) => []);
 
   Object.entries(sortedClashes).forEach(([day, clashes]) => {
     const dayInt = parseInt(day);

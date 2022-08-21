@@ -1,4 +1,3 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Box,
@@ -18,8 +17,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import getAutoTimetable from '../../api/getAutoTimetable';
+import { weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import NetworkError from '../../interfaces/NetworkError';
@@ -64,28 +64,28 @@ const ExecuteButton = styled(Button)`
 type ClassMode = 'hybrid' | 'in person' | 'online';
 
 const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
-  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-
   const [daysAtUni, setDaysAtUni] = useState<number>(5);
   // const [friendsInClasses, setFriendsInClasses] = useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = useState<number>(0);
-  const [days, setDays] = useState<Array<string>>(weekdays);
+  const [days, setDays] = useState<Array<string>>(weekdaysShort);
   const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
   const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = React.useState(false);
 
-  // anchorEl sets position of the Autotimetabling popover
+  // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // Whether the popover is shown
+  const open = Boolean(anchorEl);
+  const popoverId = open ? 'simple-popover' : undefined;
 
   const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
-
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
 
-  // caches targetActivities and periodInfoPerMode in advance
+  // Cache targetActivities and periodInfoPerMode in advance
   useEffect(() => {
     if (!selectedCourses || !selectedCourses.length) return;
 
@@ -144,9 +144,6 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     setIsOpenInfo(!isOpenInfo);
   };
 
-  const open = Boolean(anchorEl);
-  const popoverId = open ? 'simple-popover' : undefined;
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -163,7 +160,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     const autoParams: Array<string | number> = [
       startTime.getHours(),
       endTime.getHours(),
-      days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
+      days.map((v) => (weekdaysShort.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
       breaksBetweenClasses,
       daysAtUni,
     ];
@@ -307,7 +304,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             optionName="Days"
             optionState={days}
             setOptionState={handleFormat}
-            optionChoices={weekdays}
+            optionChoices={weekdaysShort}
             multiple={true}
             noOff
           />

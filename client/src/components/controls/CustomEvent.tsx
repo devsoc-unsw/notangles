@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
+import React, { useContext, useState } from 'react';
 import { start } from 'repl';
 import { v4 as uuidv4 } from 'uuid';
-import { weekdaysShort } from '../../constants/timetable';
+import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
@@ -100,7 +100,7 @@ const CustomEvent: React.FC = () => {
         color: color,
       },
       time: {
-        day: weekdaysShort.indexOf(eventDays.toString()) + 1,
+        day: daysShort.indexOf(eventDays.toString()) + 1,
         start: startTime.getHours() + startTime.getMinutes() / 60,
         end: endTime.getHours() + endTime.getMinutes() / 60,
       },
@@ -117,11 +117,11 @@ const CustomEvent: React.FC = () => {
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
     // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (weekdaysShort.indexOf(eventDays.toString()) == 5) {
+    if (daysShort.indexOf(eventDays.toString()) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
       setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (weekdaysShort.indexOf(eventDays.toString()) == 6) {
+    } else if (daysShort.indexOf(eventDays.toString()) == 6) {
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 
@@ -234,7 +234,7 @@ const CustomEvent: React.FC = () => {
             optionName="Days"
             optionState={eventDays}
             setOptionState={handleFormat}
-            optionChoices={weekdaysShort}
+            optionChoices={daysShort}
             noOff
           />
           <Box m={1} display="flex" justifyContent="center" alignItems="center">

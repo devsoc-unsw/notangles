@@ -11,13 +11,7 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import {
-  defaultEndTime,
-  defaultStartTime,
-  getAvailableTermDetails,
-  unknownErrorMessage,
-  weekdaysLong,
-} from './constants/timetable';
+import { daysLong, defaultEndTime, defaultStartTime, getAvailableTermDetails, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -371,7 +365,7 @@ const App: React.FC = () => {
     );
 
     setDays(
-      weekdaysLong.slice(
+      daysLong.slice(
         0,
         Math.max(
           getLatestDotW(selectedCourses),
