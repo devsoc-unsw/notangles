@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Periods';
+import { ClassData, CourseData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -45,7 +45,16 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
-  const currCourse = getCourseFromClassData(selectedCourses, classCard);
+  let currCourse: CourseData | null = null;
+
+  try {
+    currCourse = getCourseFromClassData(selectedCourses, classCard);
+  } catch (err) {
+    setAlertMsg(unknownErrorMessage);
+    setErrorVisibility(true);
+  }
+
+  if (!currCourse) return <></>;
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);

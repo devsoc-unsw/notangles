@@ -1,4 +1,4 @@
-import { daysLong, unknownErrorMessage } from '../constants/timetable';
+import { daysLong } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
@@ -166,8 +166,6 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  *
  * @param groupedClashes The clashing periods
  * @param card The current card
- * @param setErrorVisibility The function used to toggle whether the info popup is visible
- * @param setAlertMsg The function used to set the message on the info popup
  * @returns A list containing the width of the card (expressed as a number between 0 and 100),
  * the index of the card in its clash group (to maintain the chronological order of clashing periods)
  * and the colour of the border of the card (red for non-permitted clash, orange for permitted clash, none for a custom event).
@@ -175,8 +173,6 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
 export const getClashInfo = (
   groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
   card: ClassCard | EventPeriod,
-  setErrorVisibility: (newErrorVisibility: boolean) => void,
-  setAlertMsg: (newErrorMsg: string) => void
 ) => {
   let cardWidth = 100;
   let clashIndex = 0;
@@ -190,8 +186,7 @@ export const getClashInfo = (
     try {
       clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
     } catch (err) {
-      setAlertMsg(unknownErrorMessage);
-      setErrorVisibility(true);
+      throw err
     }
 
     if (!clashGroup) return defaultValues;

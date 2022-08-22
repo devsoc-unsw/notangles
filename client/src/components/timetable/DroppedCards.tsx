@@ -1,4 +1,5 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, CourseCode } from '../../interfaces/Periods';
@@ -101,26 +102,29 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
 
   // Generate classes
   classCards.forEach((classCard) => {
-    let key = cardKeys.get(classCard);
-    key = key !== undefined ? key : ++keyCounter.current;
+    try {
+      let key = cardKeys.get(classCard);
+      key = key !== undefined ? key : ++keyCounter.current;
+      const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
 
-    const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard, setErrorVisibility, setAlertMsg);
-
-    droppedClasses.push(
-      <DroppedClass
-        key={key}
-        classCard={classCard}
-        color={assignedColors[classCard.courseCode]}
-        y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
-        handleSelectClass={handleSelectClass}
-        cardWidth={cardWidth as number}
-        clashIndex={clashIndex as number}
-        clashColour={clashColour as string}
-        cellWidth={cellWidth}
-      />
-    );
-
-    cardKeys.set(classCard, key);
+      droppedClasses.push(
+        <DroppedClass
+          key={key}
+          classCard={classCard}
+          color={assignedColors[classCard.courseCode]}
+          y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
+          handleSelectClass={handleSelectClass}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          clashColour={clashColour as string}
+          cellWidth={cellWidth}
+        />
+      );
+      cardKeys.set(classCard, key);
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
   });
 
   // Sort classes by key to prevent disruptions to transitions
@@ -133,17 +137,22 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
 
   // Generate events
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
-    const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod, setErrorVisibility, setAlertMsg);
-    droppedEvents.push(
-      <DroppedEvent
-        key={key}
-        eventId={key}
-        eventPeriod={eventPeriod}
-        cardWidth={cardWidth as number}
-        clashIndex={clashIndex as number}
-        cellWidth={cellWidth}
-      />
-    );
+    try {
+      const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
+      droppedEvents.push(
+        <DroppedEvent
+          key={key}
+          eventId={key}
+          eventPeriod={eventPeriod}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          cellWidth={cellWidth}
+        />
+      );
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
   });
 
   return (
