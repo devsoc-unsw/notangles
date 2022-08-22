@@ -8,7 +8,7 @@ import {
   EventPeriod,
   EventTime,
   InInventory,
-  InventoryPeriod,
+  InventoryPeriod
 } from '../interfaces/Periods';
 import storage from './storage';
 
@@ -137,10 +137,8 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
 
   // The second last || clause checks if the period is in the same relative position to the current period (within their respective classes)
   // For example, either the tute/lab in a tute/lab combo
-
-  // The last || clause is necessary because all periods for a given activity may not be the same length (see JURD7251 22T2)
-  // thus the equalDur(a, b) condition will be false. We need some other way of determining whether the dropzone is valid,
-  // namely that if the activity is made up of multiple periods in the same week, all periods are the same length
+  // These last two || clauses are necessary because all periods for a given activity
+  // may not be the same length (see JURD7251 22T2) thus the equalDur(a, b) condition will be false.
   return (
     a.courseCode === b.courseCode &&
     a.activity === b.activity &&
