@@ -82,11 +82,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const { setAutoVisibility, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
-  // The processed selectedCourses
   const targetActivities = useRef<ClassData[][]>([]);
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
 
-  // Cache targetActivities and periodInfoPerMode in advance
   useEffect(() => {
     if (!selectedCourses || !selectedCourses.length) return;
 
