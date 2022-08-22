@@ -252,11 +252,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }, SEARCH_DELAY);
   }, [inputValue, coursesList]);
 
-  /**
-   * Handler function for when the search query is changed
-   * @param _
-   * @param value
-   */
   const onChange = (_: any, value: CoursesList) => {
     if (value.length > selectedValue.length) {
       handleSelect(value[value.length - 1].code);

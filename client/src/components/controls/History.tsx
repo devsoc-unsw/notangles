@@ -140,7 +140,7 @@ const History: React.FC = () => {
   };
 
   /**
-   * Restores the initial state of the timetable (on first page load)
+   * Restores the initial state of the timetable (the same state as on first page load)
    */
   const restoreInitial = () => {
     if (!actions.current[initialIndex]) return;
@@ -150,10 +150,6 @@ const History: React.FC = () => {
     setCreatedEvents(actions.current[initialIndex].events);
   };
 
-  /**
-   * Handler function for keyboard shortcuts
-   * @param event The HTML event
-   */
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!event.ctrlKey || !(event.key === 'z' || event.key === 'y')) return;
     event.preventDefault();
