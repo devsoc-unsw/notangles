@@ -43,11 +43,9 @@ const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) =>
 };
 
 /**
- * Checks if two classes are equal
- *
  * @param dbClassTimesOne The first class
  * @param dbClassTimesTwo The second class
- * @returns
+ * @returns If the two classes are equivalent
  */
 const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): boolean => {
   return (

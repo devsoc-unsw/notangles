@@ -196,8 +196,8 @@ export const getClashInfo = (
 
     if (!clashGroup) return defaultValues;
 
-    let uniqueClashIDs = clashGroup.map((clash) => getId(clash));
-    let nonLecturePeriods = clashGroup
+    const uniqueClashIDs = clashGroup.map((clash) => getId(clash));
+    const nonLecturePeriods = clashGroup
       .filter((clash) => clash.type === 'class' && !clash.activity.includes('Lecture'))
       .map((clash) => getId(clash));
     let isOverlapped = false;

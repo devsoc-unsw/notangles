@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
 
   /**
    * @param date Timestamp in Unix time
-   * @returns Time in  relative to the current time, such as "5 minutes" (ago) or "10 hours" (ago)
+   * @returns Time relative to the current time, such as "5 minutes" (ago) or "10 hours" (ago)
    */
   const getRelativeTime = (date: number): string => {
     const diff = Date.now() - date;

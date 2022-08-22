@@ -56,12 +56,13 @@ const getDuplicateClassData = (currPeriod: ClassPeriod, courses: CourseData[]) =
 
 /*
   Displays expanded view of a droppedClass and allows for changing a class to others that occur at the same time period.
-  the LocationDropdown shows the different locations and allows the choosing of other classes at this time slot.
-  ExpandedView keeps an interenal reference of the currently selected class/period to display the changes from dropdown-selecting different classes, but it call a 'selectClass' function with
-  each change to this internal reference. Instead the new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent. This is done
-  becuase otherwise the view will close itself whenever a new item is selected in the locations dropdown.
+  The LocationDropdown shows the different locations and allows the choosing of other classes at this time slot.
+  ExpandedView keeps an internal reference of the currently selected class/period to display the changes from selecting different classes from the dropdown,
+  but it calls a 'selectClass' function with each change to this internal reference.
+  The new chosen class is officially selected when the ExpandedView is closed and handled by the handleClose function of its parent.
+  This is done because otherwise the view will close itself whenever a new item is selected in the locations dropdown.
 
-  Currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically be of type PeriodData
+  This is currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically of type PeriodData
 */
 const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
