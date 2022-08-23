@@ -4,7 +4,6 @@ import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/ma
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
-import { start } from 'repl';
 import { v4 as uuidv4 } from 'uuid';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';

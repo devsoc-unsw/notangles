@@ -35,7 +35,7 @@ def reducePeriodInfo(period):
     """Reduces the period info into nicer data to work with
 
     Args:
-        period: raw data from the server. See Confluence for more information
+        period: raw data from the server. See Confluence for more information: https://compclub.atlassian.net/wiki/spaces/N/pages/2211578212/Autotimetabler
 
     Returns:
         Tuple of:

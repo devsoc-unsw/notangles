@@ -2,6 +2,8 @@ import { daysLong } from '../constants/timetable';
 import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
+// Confluence docs regarding clashes: https://compclub.atlassian.net/wiki/spaces/N/pages/2227634185/Timetable+Clashes
+
 /**
  * @param period1 The first period
  * @param period2 The second period
@@ -170,10 +172,7 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  * the index of the card in its clash group (to maintain the chronological order of clashing periods)
  * and the colour of the border of the card (red for non-permitted clash, orange for permitted clash, none for a custom event).
  */
-export const getClashInfo = (
-  groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
-  card: ClassCard | EventPeriod,
-) => {
+export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>, card: ClassCard | EventPeriod) => {
   let cardWidth = 100;
   let clashIndex = 0;
   let clashColour = 'orange';
@@ -186,7 +185,7 @@ export const getClashInfo = (
     try {
       clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
     } catch (err) {
-      throw err
+      throw err;
     }
 
     if (!clashGroup) return defaultValues;
