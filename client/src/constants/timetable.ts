@@ -1,11 +1,15 @@
 const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
+import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
 
+/**
+ * @returns The details of the latest term there is data for
+ */
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
-  // and the api will replace them with valid ones and return them.
+  // The API will replace them with valid ones and return the updated values.
   let year = '0000';
   let termNumber = 1;
   let term = `T${termNumber}`;
@@ -48,7 +52,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    console.log('Could not ping timetable scraper!');
+    throw new NetworkError('Could not conect to timetable scraper!');
   }
 };
 
@@ -63,12 +67,18 @@ export const colors: string[] = [
   '#3323ad', // deep blue
 ];
 
+export const timetableWidth = 1100;
+export const rowHeight = 60;
+export const classMargin = 1;
+export const headerPadding = 10;
+
 export const defaultStartTime: number = 9;
 export const defaultEndTime: number = 18;
 
 export const maxAddedCourses = 8;
 
-export const weekdaysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+export const daysLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const daysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 
-export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page'
+export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page';
