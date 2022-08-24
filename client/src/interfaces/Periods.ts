@@ -86,15 +86,27 @@ export interface AutoData {
 }
 
 export interface PeriodInfo {
-  periodsPerClass: number; // i.e. periods.length
-  periodTimes: Array<number>; // for each class in the activity there are periodsPerClass groups of period.Day, period.startTime pairs; periodTimes.length == activity.classes.length * periodsPerClass * 2
-  durations: Array<number>; // where the ith period has duration[i] in hours
+  // The number of periods the class has per week
+  periodsPerClass: number;
+
+  // For each class in the activity there are periodsPerClass groups
+  // of (period.time.day, period.time.start) pairs
+  // i.e. periodTimes.length == activity.classes.length * periodsPerClass * 2
+  periodTimes: Array<number>;
+
+  // The ith period has duration[i] in hours
+  durations: Array<number>;
 }
 
 export interface DuplicateClassData {
-  duplicateClasses: ClassData[]; // other classes of the same course running at the same time
-  sectionsAndLocations: Array<[Section, Location]>; // wherein sectionsAndLocations[i] is a tuple of the Section (i.e. the class' "code") and Location for duplicateClasses[i]
-  periodIndex: number; // the relevant index (as classes have multiple periods, i.e. Tut-Labs)
+  // Other classes of the same course running at the same time
+  duplicateClasses: ClassData[];
+
+  // sectionsAndLocations[i] is a tuple of the Section (i.e. the class's "code") and Location for duplicateClasses[i]
+  sectionsAndLocations: Array<[Section, Location]>;
+
+  // The relevant index of the class (as classes have multiple periods, i.e. Tut-Labs)
+  periodIndex: number;
 }
 
 export interface Action {

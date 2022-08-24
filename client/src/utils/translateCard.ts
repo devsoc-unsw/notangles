@@ -1,11 +1,21 @@
-import { EventPeriod, InInventory } from '../interfaces/Periods';
-import { ClassCard, isScheduledPeriod, timeToPosition } from './Drag';
 import { inventoryMargin } from '../constants/theme';
-import { rowHeight } from '../components/timetable/TimetableLayout';
+import { rowHeight } from '../constants/timetable';
+import { EventPeriod, InInventory } from '../interfaces/Periods';
+import { ClassCard, isScheduledPeriod } from './Drag';
 
+/**
+ * Translates a card horizontally from the top left hand corner of the timetable
+ *
+ * @param card The card to translate
+ * @param nDays The number of days shown in the timetable
+ * @param clashIndex The index of the card in its clash group
+ * @param width  The width of the card
+ * @param cellWidth The width of a cell in the timetable
+ * @returns The CSS for the number of pixels to translate horizontally
+ */
 export const classTranslateX = (
   card: ClassCard | EventPeriod,
-  days?: string[],
+  nDays?: number,
   clashIndex?: number,
   width?: number,
   cellWidth?: number
@@ -21,15 +31,20 @@ export const classTranslateX = (
   }
 
   // This classCard is for an unscheduled class, i.e. it belongs in the inventory
-  if (days) {
-    // This shifts by the cards length times the number of days plus days.length + 1 to account for the amount of column borders (of length 1px) it must translate,
+  if (nDays) {
+    // This shifts by the cards length times the number of days
+    // plus nDays + 1 to account for the amount of column borders (of length 1px),
     // plus the margin seperating the days of the week from unscheduled section
-    return `calc(${days.length * 100}% + ${days.length + 1 + inventoryMargin}px)`;
+    return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
 
   return 0;
 };
 
+/**
+ * @param card The card
+ * @returns The height of a class in pixels based on its duration
+ */
 export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
   // height compared to standard row height
   const heightFactor = getHeightFactor(card);
@@ -37,9 +52,21 @@ export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
   return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
 };
 
-export const getHeightFactor = (classCard?: ClassCard | EventPeriod | InInventory) =>
-  classCard && isScheduledPeriod(classCard) ? classCard.time.end - classCard.time.start : 1;
+/**
+ * @param card The card
+ * @returns The scale factor of a card's height based on its duration relative to a standard one hour class
+ */
+export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
+  card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
 
+/**
+ * Translates a card vertically from the top left hand corner of the timetable
+ *
+ * @param classCard The card to translate
+ * @param earliestStartTime The earliest start time on the timetable
+ * @param y The index of the card in the unscheduled classes list (since all unscheduled classes are the same height)
+ * @returns The CSS for the number of pixels to translate vertically
+ */
 export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStartTime: number, y?: number) => {
   let result = 0;
 
@@ -49,7 +76,7 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
   if (isScheduledPeriod(classCard)) {
     // This classCard is for a scheduled class
     // The number of rows to offset down
-    const offsetRows = timeToPosition(classCard.time.start, earliestStartTime) - 2;
+    const offsetRows = classCard.time.start - earliestStartTime;
 
     // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;

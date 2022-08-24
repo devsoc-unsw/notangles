@@ -9,7 +9,6 @@ const defaults: Record<string, any> = {
   selectedCourses: [],
   selectedClasses: {},
   createdEvents: {},
-  hasShownInfoMessage: false,
 };
 
 export default defaults;
