@@ -207,7 +207,6 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="Start time" />
             <TimePicker
-              views={['hours']}
               value={startTime}
               renderInput={(params) => <TextField {...params} />}
               onChange={(e) => {
@@ -218,7 +217,6 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="End time" />
             <TimePicker
-              views={['hours']}
               value={endTime}
               renderInput={(params) => {
                 const tooEarly =
@@ -233,6 +231,7 @@ const CustomEvent: React.FC = () => {
               }}
               onChange={(e) => {
                 if (e) setEndTime(e);
+                console.log("end time is ", endTime)
               }}
             />
           </StyledListItem>

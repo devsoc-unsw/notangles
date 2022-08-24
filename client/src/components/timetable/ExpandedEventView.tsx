@@ -28,8 +28,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   const [newName, setNewName] = useState<string>(name);
   const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[day - 1]]);
-  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, start));
-  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end));
+  const [newStartTime, setNewStartTime] = useState<Date>(
+    new Date(2022, 0, 0, start, Math.floor((start - Math.floor(start)) * 60))
+  );
+  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end, Math.floor((end - Math.floor(end)) * 60)));
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -206,7 +208,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="Start time" />
               <TimePicker
-                views={['hours']}
                 value={newStartTime}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e) => {
@@ -218,10 +219,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="End time" />
               <TimePicker
-                views={['hours']}
                 value={newEndTime}
                 renderInput={(params) => {
-                  const tooEarly = newStartTime.getHours() >= newEndTime.getHours();
+                  const tooEarly =
+                    newStartTime.getHours() + newStartTime.getMinutes() / 60 >=
+                    newEndTime.getHours() + newEndTime.getMinutes() / 60;
                   return (
                     <TextField
                       {...params}
@@ -232,6 +234,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 }}
                 onChange={(e) => {
                   setIsChanged(true);
+                  console.log('new end time is ', newEndTime);
                   if (e) setNewEndTime(e);
                 }}
               />

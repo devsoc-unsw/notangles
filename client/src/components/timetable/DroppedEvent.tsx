@@ -153,13 +153,11 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
             <Grid item xs={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               {/* only display location on card if event longer than one hour */}
-              {isLongerThanOneHour ? (
+              {isLongerThanOneHour && (
                 <StyledCardInfo>
                   <StyledLocationIcon />
                   {eventPeriod.event.location}
                 </StyledCardInfo>
-              ) : (
-                <></>
               )}
               <TouchRipple ref={rippleRef} />
             </Grid>
