@@ -26,7 +26,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(name);
-  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[day - 1]]);
+  const [newDays, setNewDays] = useState<Array<string>>([daysShort[day - 1]]);
   const [newStartTime, setNewStartTime] = useState<Date>(
     new Date(2022, 0, 0, start, Math.floor((start - Math.floor(start)) * 60))
   );
@@ -234,7 +234,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 }}
                 onChange={(e) => {
                   setIsChanged(true);
-                  console.log('new end time is ', newEndTime);
                   if (e) setNewEndTime(e);
                 }}
               />
