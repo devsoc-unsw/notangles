@@ -24,11 +24,13 @@ const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) =>
     let times = dbClassWeeks.split(",")
     times.map(time => {
       if (time.includes("-")) {
+        // convert ranges into numbers
         let [min, max] = time.split("-")
         for (let j = parseInt(min); j < parseInt(max); j++) {
           dbClassTimesList.push(j)
         }
       } else {
+        // if not a range,a dd number to array directly
         dbClassTimesList.push(parseInt(time))
       }
     })
