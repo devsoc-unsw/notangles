@@ -21,32 +21,19 @@ import { API_URL } from './config';
 
 const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) => {
   for (let k = 0; k < dbClassWeeks.length; k++) {
-    // characters in the array are either '-',',' or a number from 0-9.
-    if (dbClassWeeks[k] == '-') {
-      // CASE 1: weeks are in a range, so we must add all the numbers within this range here
-      // weeks are a one digit number
-      let maximum: number = parseInt(dbClassWeeks[k + 1]);
-      if (k + 1 < dbClassWeeks.length - 1 && dbClassWeeks[k + 2] != ',' && dbClassWeeks[k + 2] != '-') {
-        // weeks are a two digit number
-        maximum = parseInt(dbClassWeeks[k + 1] + dbClassWeeks[k + 2]);
-      }
-      while (dbClassTimesList[dbClassTimesList.length - 1] < maximum - 1) {
-        // as this is a range, we need to add all the numbers between the range
-        dbClassTimesList.push(dbClassTimesList[dbClassTimesList.length - 1] + 1);
-      }
-    } else if (dbClassWeeks[k] != ',' && dbClassWeeks[k] != '-') {
-      // CASE 2: if this is not the middle of a range or a comma, we can just add the week as it is
-      if (k < dbClassWeeks.length - 1 && dbClassWeeks[k + 1] != ',' && dbClassWeeks[k + 1] != '-') {
-        // this week is a two digit number and the two digits must be added together
-        dbClassTimesList.push(parseInt(dbClassWeeks[k] + dbClassWeeks[k + 1]));
-        k++;
+    let times = dbClassWeeks.split(",")
+    times.map(time => {
+      if (time.includes("-")) {
+        let [min, max] = time.split("-")
+        for (let j = parseInt(min); j < parseInt(max); j++) {
+          dbClassTimesList.push(j)
+        }
       } else {
-        // this week is not a two digit number so we just add the one digit to it
-        dbClassTimesList.push(parseInt(dbClassWeeks[k]));
+        dbClassTimesList.push(parseInt(time))
       }
-    }
-  }
-};
+    })
+  };
+}
 
 const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): boolean => {
   return (dbClassTimesOne.day == dbClassTimesTwo.day &&
@@ -89,49 +76,46 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
     const json: DbCourse = await data.json();
     json.classes.forEach((dbClass) => {
       // loop through each class and search for another identical class
-      if ('times' in dbClass && dbClass.times.length > 1) {
-        for (let i = 0; i < dbClass.times.length - 1; i += 1) {
-          for (let j = i + 1; j < dbClass.times.length; j += 1) {
-            let dbClassTimesOne = dbClass.times[i];
-            let dbClassTimesTwo = dbClass.times[j];
-            if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
-              let dbClassTimesList: number[] = [];
+      for (let i = 0; i < dbClass.times.length - 1; i += 1) {
+        for (let j = i + 1; j < dbClass.times.length; j += 1) {
+          let dbClassTimesOne = dbClass.times[i];
+          let dbClassTimesTwo = dbClass.times[j];
+          if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
+            let dbClassTimesList: number[] = [];
 
-              convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
-              convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
+            convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
+            convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
 
-              dbClassTimesList = sortUnique(dbClassTimesList);
+            dbClassTimesList = sortUnique(dbClassTimesList);
 
-              let newWeeks: string = '';
-              let rangeStart = false;
+            let newWeeks: string = '';
+            let rangeStart = false;
 
-              for (let k = 0; k < dbClassTimesList.length; k++) {
-                if (k == 0 || k == dbClassTimesList.length - 1) {
-                  newWeeks += dbClassTimesList[k];
-                } else if (rangeStart) {
-                  // add the start of the range
-                  newWeeks += dbClassTimesList[k];
-                  rangeStart = false;
-                }
-
-                while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
-                  // keep iterating until you reach the end of the range (numbers stop being consecutive)
-                  k++;
-                }
-                if (!rangeStart) {
-                  // add the end of the range (last consecutive number)
-                  newWeeks += '-' + dbClassTimesList[k];
-                  if (k !== dbClassTimesList.length - 1) {
-                    // if this isn't the last week, we will need to add more weeks
-                    newWeeks += ',';
-                  }
-                  // get ready to add the end of the range
-                  rangeStart = true;
-                }
+            for (let k = 0; k < dbClassTimesList.length; k++) {
+              if (k == 0 || k == dbClassTimesList.length - 1) {
+                newWeeks += dbClassTimesList[k];
+              } else if (rangeStart) {
+                // add the start of the range
+                newWeeks += dbClassTimesList[k];
+                rangeStart = false;
               }
-              dbClassTimesOne.weeks = newWeeks;
-              dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
+              while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
+                // keep iterating until you reach the end of the range (numbers stop being consecutive)
+                k++;
+              }
+              if (!rangeStart) {
+                // add the end of the range (last consecutive number)
+                newWeeks += '-' + dbClassTimesList[k];
+                if (k !== dbClassTimesList.length - 1) {
+                  // if this isn't the last week, we will need to add more weeks
+                  newWeeks += ',';
+                }
+                // get ready to add the end of the range
+                rangeStart = true;
+              }
             }
+            dbClassTimesOne.weeks = newWeeks;
+            dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
           }
         }
       }
