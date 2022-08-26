@@ -162,7 +162,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Event Name"
+              label="Event Name"
               onChange={(e) => setEventName(e.target.value)}
               variant="outlined"
               fullWidth
@@ -176,7 +176,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-basic"
-              label="Add Description (optional)"
+              label="Description (optional)"
               onChange={(e) => setDescription(e.target.value)}
               variant="outlined"
               multiline
@@ -190,7 +190,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Location"
+              label="Location"
               onChange={(e) => setLocation(e.target.value)}
               variant="outlined"
               fullWidth
@@ -225,7 +225,6 @@ const CustomEvent: React.FC = () => {
               }}
               onChange={(e) => {
                 if (e) setEndTime(e);
-                console.log("end time is ", endTime)
               }}
             />
           </StyledListItem>

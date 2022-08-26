@@ -178,6 +178,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
               <TextField
                 fullWidth={true}
+                label="Description (optional)"
                 id="outlined-required"
                 variant="outlined"
                 value={newDescription}
