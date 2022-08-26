@@ -7,14 +7,26 @@ import timeoutPromise from '../utils/timeoutPromise';
 /**
  * @returns The details of the latest term there is data for
  */
+
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
-  // The API will replace them with valid ones and return the updated values.
-  let year = '0000';
-  let termNumber = 1;
-  let term = `T${termNumber}`;
+  // and the api will replace them with valid ones and return them.
+  let termData = {
+    year: '',
+    term: '',
+    termNumber: '',
+    termName: '',
+    firstDayOfTerm: '',
+  };
+
+  if (localStorage.getItem('termData')) {
+    termData = JSON.parse(localStorage.getItem('termData')!);
+  }
+  let year = termData.year || '0000';
+  let termNumber = Number(termData.termNumber) || 1;
+  let term = termData.termName || `T${termNumber}`;
   let termName = `Term ${termNumber}`;
-  let firstDayOfTerm = `0000-00-00`;
+  let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
   try {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
@@ -43,6 +55,17 @@ export const getAvailableTermDetails = async () => {
       term = termIdRes;
       termNumber = 0; // This is a summer term.
     }
+    // Store the term details in local storage.
+    localStorage.setItem(
+      'termData',
+      JSON.stringify({
+        year: year,
+        term: term,
+        termNumber: termNumber,
+        termName: termName,
+        firstDayOfTerm: firstDayOfTerm,
+      })
+    );
 
     return {
       term: term,
@@ -52,7 +75,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    throw new NetworkError('Could not conect to timetable scraper!');
+    console.log('Could not ping timetable scraper!');
   }
 };
 
