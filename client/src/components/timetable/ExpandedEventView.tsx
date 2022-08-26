@@ -66,8 +66,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     // Update the time that appears in the TimePicker boxes when in edit mode.
     setNewDays([daysShort[eventTime.day - 1]]);
 
-    setNewStartTime(new Date(2022, 0, 0, eventTime.start));
-    setNewEndTime(new Date(2022, 0, 0, eventTime.end));
+    setNewStartTime(new Date(2022, 0, 0, eventTime.start, (eventTime.start - Math.floor(eventTime.start)) * 60));
+    setNewEndTime(new Date(2022, 0, 0, eventTime.end, (eventTime.end - Math.floor(eventTime.end)) * 60));
   };
 
   useEventDrag(updateEventTime);
