@@ -1,10 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Button, GlobalStyles, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -12,13 +11,14 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { getAvailableTermDetails } from './constants/timetable';
+import { daysLong, defaultEndTime, defaultStartTime, getAvailableTermDetails, unknownErrorMessage } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
-import { Activity, ClassData, ClassTime, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Course';
-import { useDrag } from './utils/Drag';
+import NetworkError from './interfaces/NetworkError';
+import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 
@@ -70,12 +70,17 @@ const App: React.FC = () => {
     isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
-    infoVisibility,
+    isHideExamClasses,
+    setAlertMsg,
+    setErrorVisibility,
     days,
     term,
     year,
-    setInfoVisibility,
     setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
     setTerm,
     setYear,
     firstDayOfTerm,
@@ -84,36 +89,51 @@ const App: React.FC = () => {
     setTermNumber,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+    useContext(CourseContext);
 
-  if (infoVisibility) {
-    if (storage.get('hasShownInfoMessage')) {
-      setInfoVisibility(false);
-    }
+  setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
-    storage.set('hasShownInfoMessage', true);
-  }
-
-  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
-
+  /**
+   * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
+   *
+   * @param classData The data for the new class
+   */
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = classData;
+
+      try {
+        prev[classData.courseCode][classData.activity] = classData;
+      } catch (err) {
+        setAlertMsg(unknownErrorMessage);
+        setErrorVisibility(true);
+      }
+
       return prev;
     });
   };
 
+  /**
+   * Update the class data for a particular course's activity when it is moved to unscheduled
+   *
+   * @param classData The data for the unscheduled class
+   */
   const handleRemoveClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.course.code][classData.activity] = null;
+      prev[classData.courseCode][classData.activity] = null;
       return prev;
     });
   };
 
   useDrag(handleSelectClass, handleRemoveClass);
 
+  /**
+   * Initialise class data for a course when it is first selected
+   *
+   * @param course The data for the course which was selected
+   */
   const initCourse = (course: CourseData) => {
     setSelectedClasses((prevRef) => {
       const prev = { ...prevRef };
@@ -133,6 +153,13 @@ const App: React.FC = () => {
     });
   };
 
+  /**
+   * Retrieves course info for a single course or a list of courses
+   *
+   * @param data The course code of the selected course (when selecting via the course selector) or a list of the course codes of the selected courses
+   * @param noInit Whether to initialise the data structure for the course data
+   * @param callback An optional callback function to be executed using the course data
+   */
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
@@ -147,7 +174,13 @@ const App: React.FC = () => {
       )
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
-      const newSelectedCourses = [...selectedCourses, ...addedCourses];
+
+      // Prevent duplication of courses on recompile
+      const newSelectedCoursesWithDups = [...selectedCourses, ...addedCourses];
+      const newSelectedCourses = newSelectedCoursesWithDups.filter(
+        (course1, index, self) =>
+          index === self.findIndex((course2) => course1.code === course2.code && course1.name === course2.name)
+      );
 
       setSelectedCourses(newSelectedCourses);
 
@@ -156,6 +189,11 @@ const App: React.FC = () => {
     });
   };
 
+  /**
+   * Handles removing a course from the currently selected courses
+   *
+   * @param courseCode The course code of the course which was removed
+   */
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
@@ -167,9 +205,11 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    /**
+     * Retrieves term data from scraper backend and updates state
+     */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-
       if (termData !== undefined) {
         const { term, termName, termNumber, firstDayOfTerm, year } = termData;
         setTerm(term);
@@ -179,6 +219,7 @@ const App: React.FC = () => {
         setFirstDayOfTerm(firstDayOfTerm);
       }
     };
+
     fetchTermData();
   }, []);
 
@@ -206,9 +247,14 @@ const App: React.FC = () => {
     storage.set('isHideClassInfo', isHideClassInfo);
   }, [isHideClassInfo]);
 
+  useEffect(() => {
+    storage.set('isHideExamClasses', isHideExamClasses);
+  }, [isHideExamClasses]);
+
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
+  // Populate selected courses, classes and created events with the data saved in local storage
   useUpdateEffect(() => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
@@ -221,35 +267,34 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-            const result = newSelectedCourses
-              .find((x) => x.code === courseCode)
-              ?.activities[activity].find((x) => x.section === classId);
-
-            if (result) classData = result;
+            try {
+              const result = newSelectedCourses
+                .find((x) => x.code === courseCode)
+                ?.activities[activity].find((x) => x.section === classId);
+              if (result) classData = result;
+            } catch (err) {
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
+            }
           }
 
+          // classData being null means the activity is unscheduled
           newSelectedClasses[courseCode][activity] = classData;
         });
       });
 
       setSelectedClasses(newSelectedClasses);
     });
+
+    setCreatedEvents(storage.get('createdEvents'));
   }, [year]);
 
+  // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     storage.set(
       'selectedCourses',
       selectedCourses.map((course) => course.code)
     );
-    if (
-      selectedCourses.some((v) =>
-        Object.entries(v.activities).some(([a, b]) => b.some((vv) => vv.periods.some((vvv) => vvv.time.day === 6)))
-      )
-    ) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
-    } else if (days.length !== 5) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-    }
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -266,6 +311,66 @@ const App: React.FC = () => {
     storage.set('selectedClasses', savedClasses);
   }, [selectedClasses]);
 
+  useUpdateEffect(() => {
+    storage.set('createdEvents', createdEvents);
+  }, [createdEvents]);
+
+  /**
+   * Get the latest day of the week a course has classes on
+   * The first day of the week is considered to be Monday
+   *
+   * @param courses The list of the currently selected courses
+   * @returns A number corresponding to the latest day of the week. Monday is 1, Tuesday is 2 and so on
+   */
+  const getLatestDotW = (courses: CourseData[]) => {
+    let maxDay: number = 5;
+    for (const course of courses) {
+      const activities = Object.values(course.activities);
+      for (const activity of activities) {
+        for (const classData of activity) {
+          for (const period of classData.periods) {
+            maxDay = Math.max(maxDay, period.time.day);
+          }
+        }
+      }
+    }
+
+    return maxDay;
+  };
+
+  // Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
+  useUpdateEffect(() => {
+    setEarliestStartTime(
+      Math.min(
+        ...selectedCourses.map((course) => course.earliestStartTime),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
+        defaultStartTime,
+        earliestStartTime
+      )
+    );
+    setLatestEndTime(
+      Math.max(
+        ...selectedCourses.map((course) => course.latestFinishTime),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
+        defaultEndTime,
+        latestEndTime
+      )
+    );
+
+    setDays(
+      daysLong.slice(
+        0,
+        Math.max(
+          getLatestDotW(selectedCourses),
+          ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
+          days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
+          5 // default
+        )
+      )
+    );
+  }, [createdEvents, selectedCourses]);
+
+  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {
     body: {
@@ -307,7 +412,7 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, selectedClasses, firstDayOfTerm)}>
+                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
                   save to calendar
                 </ICSButton>
                 <Footer />

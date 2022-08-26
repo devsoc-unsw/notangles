@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
-import { CardData } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, InInventory, Location, Section } from './Course';
+import { ClassCard } from '../utils/Drag';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -72,10 +72,9 @@ export interface PeriodMetadataProps {
 }
 
 export interface DroppedClassProps {
-  cardData: CardData;
+  classCard: ClassCard;
   color: string;
   y?: number;
-  earliestStartTime: number;
   handleSelectClass(classData: ClassData): void;
   cardWidth: number;
   clashIndex: number;
@@ -83,15 +82,36 @@ export interface DroppedClassProps {
   cellWidth: number; // width of a grid cell
 }
 
-export interface DroppedClassesProps {
+export interface DroppedEventProps {
+  eventId: string;
+  eventPeriod: EventPeriod;
+  cardWidth: number;
+  clashIndex: number;
+  cellWidth: number; // width of a grid cell
+}
+
+export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
 }
 
-export interface ExpandedViewProps {
+export interface ExpandedClassViewProps {
+  classPeriod: ClassPeriod;
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
-  cardData: ClassPeriod;
+}
+
+export interface ExpandedEventViewProps {
+  eventPeriod: EventPeriod;
+  popupOpen: boolean;
+  handleClose: () => void;
+}
+
+export interface DiscardDialogProps {
+  openSaveDialog: boolean;
+  handleDiscardChanges: () => void;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenSaveDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface LocationDropdownProps {

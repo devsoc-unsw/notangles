@@ -28,6 +28,8 @@ const Settings: React.FC = () => {
     setIsDefaultUnscheduled,
     isHideClassInfo,
     setIsHideClassInfo,
+    isHideExamClasses,
+    setIsHideExamClasses,
   } = useContext(AppContext);
 
   const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
@@ -37,6 +39,7 @@ const Settings: React.FC = () => {
     { state: isShowOnlyOpenClasses, setter: setisShowOnlyOpenClasses, desc: 'Show only open classes' },
     { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
     { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
+    { state: isHideExamClasses, setter: setIsHideExamClasses, desc: 'Hide exam classes' },
   ];
 
   return (

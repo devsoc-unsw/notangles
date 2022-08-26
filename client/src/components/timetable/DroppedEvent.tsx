@@ -1,12 +1,11 @@
-import { MoreHoriz } from '@mui/icons-material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
-import { ClassData, CourseData } from '../../interfaces/Periods';
-import { DroppedClassProps } from '../../interfaces/PropTypes';
+import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
   StyledCard,
@@ -16,50 +15,20 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
-import { getCourseFromClassData } from '../../utils/getClassCourse';
-import ExpandedView from './ExpandedClassView';
-import PeriodMetadata from './PeriodMetadata';
+import ExpandedEventView from './ExpandedEventView';
 
-const DroppedClass: React.FC<DroppedClassProps> = ({
-  classCard,
-  color,
-  y,
-  handleSelectClass,
-  cardWidth,
-  clashIndex,
-  clashColour,
-  cellWidth,
-}) => {
+const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: text-bottom;
+  font-size: inherit;
+  padding-bottom: 0.1em;
+`;
+
+const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const {
-    earliestStartTime,
-    days,
-    isSquareEdges,
-    isHideClassInfo,
-    setIsDrag,
-    setAlertMsg,
-    setInfoVisibility,
-    setErrorVisibility,
-  } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
-
-  let currCourse: CourseData | null = null;
-
-  try {
-    currCourse = getCourseFromClassData(selectedCourses, classCard);
-  } catch (err) {
-    setAlertMsg(unknownErrorMessage);
-    setErrorVisibility(true);
-  }
-
-  if (!currCourse) return <></>;
-
-  const handleClose = (value: ClassData) => {
-    handleSelectClass(value);
-    setPopupOpen(!popupOpen);
-  };
+  const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -67,6 +36,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let timer: number | null = null;
   let rippleStopped = false;
   let ignoreMouse = false;
+
+  const handleClose = () => {
+    setPopupOpen(!popupOpen);
+  };
+
   const onDown = (eventDown: any) => {
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
@@ -80,7 +54,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
     const eventCopy = { ...eventDown };
 
-    if ('start' in rippleRef.current) {
+    if (rippleRef.current && 'start' in rippleRef.current) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -88,7 +62,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, currCourse!, eventCopy);
+      setDragTarget(eventPeriod, null, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -141,76 +115,61 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(classCard, elementCurrent);
+      registerCard(eventPeriod, elementCurrent);
     }
 
     return () => {
       if (elementCurrent) {
-        unregisterCard(classCard, elementCurrent);
+        unregisterCard(eventPeriod, elementCurrent);
       }
     };
   });
 
-  let activityMaxPeriods = 0;
-  if (classCard.type === 'inventory') {
-    activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
-  }
-
   return (
     <>
       <StyledCard
-        ref={element}
-        onMouseDown={onDown}
-        onTouchStart={onDown}
-        card={classCard}
+        card={eventPeriod}
         nDays={days.length}
-        y={y}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
+        cardWidth={cardWidth}
+        clashIndex={clashIndex}
+        cellWidth={cellWidth}
+        ref={element}
+        onMouseDown={onDown}
         onMouseOver={() => {
           setFullscreenVisible(true);
         }}
         onMouseLeave={() => {
           setFullscreenVisible(false);
         }}
-        clashIndex={clashIndex}
-        cardWidth={cardWidth}
-        cellWidth={cellWidth}
       >
         <StyledCardInner
+          hasClash={false}
           isSquareEdges={isSquareEdges}
-          backgroundColour={color}
-          hasClash={clashColour !== 'transparent'}
-          clashColour={clashColour}
+          clashColour={'none'}
+          backgroundColour={eventPeriod.event.color.toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
-              <StyledCardName>
-                {classCard.courseCode} {classCard.activity}
-              </StyledCardName>
+              <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               <StyledCardInfo>
-                {classCard.type === 'class' ? (
-                  !isHideClassInfo && <PeriodMetadata period={classCard} />
-                ) : (
-                  <>
-                    {activityMaxPeriods} class
-                    {activityMaxPeriods !== 1 && 'es'}
-                  </>
-                )}
+                <StyledLocationIcon />
+                {eventPeriod.event.location}
               </StyledCardInfo>
               <TouchRipple ref={rippleRef} />
             </Grid>
           </StyledCardInnerGrid>
-          {classCard.type === 'class' && fullscreenVisible && (
+          {fullscreenVisible && (
             <ExpandButton onClick={() => setPopupOpen(true)}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
         </StyledCardInner>
       </StyledCard>
-      {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
+      <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>
   );
 };
 
-export default DroppedClass;
+export default DroppedEvent;
