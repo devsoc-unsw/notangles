@@ -8,6 +8,13 @@ const defaults: Record<string, any> = {
   isHideExamClasses: false,
   selectedCourses: [],
   selectedClasses: {},
+  termData: 
+  { year: '0000',
+    termNumber: 1,
+    term:`T1`,
+    termName: `Term 1`,
+    firstDayOfTerm:  `0000-00-00`,
+  },
   createdEvents: {},
 };
 

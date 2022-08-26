@@ -133,6 +133,7 @@ export const AppContext = createContext<IAppContext>({
   setFirstDayOfTerm: () => {},
 });
 
+let termData = storage.get('termData');
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
@@ -148,13 +149,13 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [lastUpdated, setLastUpdated] = useState<number>(0);
   const [isDrag, setIsDrag] = useState<boolean>(false);
   const [days, setDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
-  const [termNumber, setTermNumber] = useState<number>(0);
-  const [term, setTerm] = useState<string>(`T0`);
-  const [termName, setTermName] = useState<string>(`Term 0`);
-  const [year, setYear] = useState<string>('0000');
-  const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>('0000-00-00');
   const [earliestStartTime, setEarliestStartTime] = useState(9);
   const [latestEndTime, setLatestEndTime] = useState(18);
+  const [termNumber, setTermNumber] = useState<number>(Number(termData.termNumber));
+  const [term, setTerm] = useState<string>(termData.term);
+  const [termName, setTermName] = useState<string>(termData.termName);
+  const [year, setYear] = useState<string>(termData.year);
+  const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm);
 
   const initialContext: IAppContext = {
     is12HourMode,
