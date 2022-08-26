@@ -119,6 +119,9 @@ const CustomEvent: React.FC = () => {
       setLatestEndTime(endTime.getHours());
     }
 
+    console.log(startTime.getHours());
+    console.log(endTime.getHours());
+
     // This updating must be handled here otherwise DroppedCards will not have the updated days and it will crash (which is understandable since it's breaking react best practices by not being purely functional)
     if (weekdaysShort.indexOf(eventDays.toString()) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -221,12 +224,13 @@ const CustomEvent: React.FC = () => {
               views={['hours']}
               value={endTime}
               renderInput={(params) => {
+                const endMidnight = (endTime.getHours() + endTime.getMinutes()) === 0;
                 const tooEarly = startTime.getHours() >= endTime.getHours();
                 return (
                   <TextField
                     {...params}
-                    error={params.error || tooEarly}
-                    label={tooEarly ? 'End time must be after start time' : ''}
+                    error={params.error || (!endMidnight && tooEarly)}
+                    label={!endMidnight && tooEarly ? 'End time must be after start time' : ''}
                   />
                 );
               }}
