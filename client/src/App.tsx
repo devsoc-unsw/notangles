@@ -230,6 +230,7 @@ const App: React.FC = () => {
     fetchTermData();
   }, []);
 
+  
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);

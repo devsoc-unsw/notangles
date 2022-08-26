@@ -14,7 +14,7 @@ import { CourseOverview, CoursesList } from '../../interfaces/Courses';
 import NetworkError from '../../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
-
+import storage from '../../utils/storage'; 
 const SEARCH_DELAY = 300;
 const INVALID_YEAR_FORMAT = '0000';
 
@@ -146,7 +146,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   useEffect(() => {
     const fetchCoursesList = async () => {
       try {
-        if (year !== INVALID_YEAR_FORMAT) {
+        if (year !== INVALID_YEAR_FORMAT) {;
+          let { term, termName, termNumber, firstDayOfTerm, year } = JSON.parse(storage.get('termData'));
           const fetchedCoursesList = await getCoursesList(year, term);
           setCoursesList(fetchedCoursesList.courses);
           fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);

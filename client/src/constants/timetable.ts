@@ -10,16 +10,10 @@ import storage from '../utils/storage';
 export const getAvailableTermDetails = async () => {
   // These are invalid term strings that are initially set
   // The API will replace them with valid ones and return the updated values.
+  let termData = JSON.parse(storage.get('termData'));
+  let {year, termNumber, termName, term, firstDayOfTerm} = termData;
+  termNumber = Number(termData.termNumber) || 1;
 
-
-
-  let termData = storage.get('termData');
-  
-  let year = termData.year;
-  let termNumber = Number(termData.termNumber) || 1;
-  let termName = `Term ${termNumber}`;
-  let term = termData.termName || `T${termNumber}`;
-  let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
   try {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();

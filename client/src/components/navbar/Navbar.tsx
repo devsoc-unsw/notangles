@@ -7,7 +7,7 @@ import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-
+import storage from '../../utils/storage';
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
@@ -51,7 +51,7 @@ const Weak = styled('span')`
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, year } = useContext(AppContext);
+  let {year, term, termNumber, termName, firstDayOfTerm} = JSON.parse(storage.get('termData'));
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
