@@ -122,8 +122,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     termName: '',
     firstDayOfTerm: '',
   };
-  if (localStorage.getItem('termData')) {
-    termData = JSON.parse(localStorage.getItem('termData')!);
+  if (storage.get('termData')) {
+    termData = JSON.parse(storage.get('termData')!);
   }
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));

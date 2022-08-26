@@ -12,6 +12,13 @@ const defaults: Record<string, any> = {
   selectedCourses: [],
   selectedClasses: {},
   hasShownInfoMessage: false,
+  termData: 
+    { year: '0000',
+      termNumber: 1,
+      term:`T1`,
+      termName: `Term 1`,
+      firstDayOfTerm:  `0000-00-00`,
+    },
 };
 
 export default defaults;

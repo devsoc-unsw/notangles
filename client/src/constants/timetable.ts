@@ -2,8 +2,8 @@ const REGULAR_TERM_STR_LEN = 2;
 
 import { API_URL } from '../api/config';
 import timeoutPromise from '../utils/timeoutPromise';
-
-export const getAvailableTermDetails = async () => {
+import storage from '../utils/storage';
+export const getAvailableTermDetails: any = async () => {
   // These are invalid term strings that are initially set
   // and the api will replace them with valid ones and return them.
   let termData = {
@@ -14,8 +14,8 @@ export const getAvailableTermDetails = async () => {
     firstDayOfTerm: '',
   };
 
-  if (localStorage.getItem('termData')) {
-    termData = JSON.parse(localStorage.getItem('termData')!);
+  if (storage.get('termData')) {
+    termData = JSON.parse(storage.get('termData')!);
   }
   let year = termData.year || '0000';
   let termNumber = Number(termData.termNumber) || 1;
@@ -51,7 +51,7 @@ export const getAvailableTermDetails = async () => {
       termNumber = 0; // This is a summer term.
     }
     // Store the term details in local storage.
-    localStorage.setItem(
+    storage.set(
       'termData',
       JSON.stringify({
         year: year,
