@@ -358,7 +358,7 @@ const App: React.FC = () => {
     setLatestEndTime(
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
-        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.end),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         defaultEndTime,
         latestEndTime
       )

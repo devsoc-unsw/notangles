@@ -27,10 +27,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   const [newName, setNewName] = useState<string>(name);
   const [newDays, setNewDays] = useState<Array<string>>([daysShort[day - 1]]);
-  const [newStartTime, setNewStartTime] = useState<Date>(
-    new Date(2022, 0, 0, start, Math.floor((start - Math.floor(start)) * 60))
-  );
-  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end, Math.floor((end - Math.floor(end)) * 60)));
+  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, start, (start - Math.floor(start)) * 60));
+  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end, (end - Math.floor(end)) * 60));
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
 
@@ -67,6 +65,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
     // Update the time that appears in the TimePicker boxes when in edit mode.
     setNewDays([daysShort[eventTime.day - 1]]);
+
     setNewStartTime(new Date(2022, 0, 0, eventTime.start));
     setNewEndTime(new Date(2022, 0, 0, eventTime.end));
   };

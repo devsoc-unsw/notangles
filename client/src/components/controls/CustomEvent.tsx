@@ -110,8 +110,8 @@ const CustomEvent: React.FC = () => {
       [uuid]: newEvent,
     });
 
-    setEarliestStartTime(Math.min(earliestStartTime, startTime.getHours()));
-    setLatestEndTime(Math.max(latestEndTime, endTime.getHours()));
+    setEarliestStartTime(Math.min(Math.ceil(earliestStartTime), Math.ceil(startTime.getHours() + startTime.getMinutes() / 60)));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
