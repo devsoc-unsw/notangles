@@ -1,17 +1,14 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
-
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
 
-// initializing sentry
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
   integrations: [new BrowserTracing()],

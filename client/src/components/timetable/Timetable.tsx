@@ -1,11 +1,10 @@
 import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
-
 import { contentPadding, inventoryMargin } from '../../constants/theme';
+import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
-import { timetableWidth } from '../../utils/Drag';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
