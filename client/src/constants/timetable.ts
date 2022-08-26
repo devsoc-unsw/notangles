@@ -16,10 +16,10 @@ export const getAvailableTermDetails: any = async () => {
     firstDayOfTerm: '',
   };
 
-  if (storage.get('termData')) {
-    termData = JSON.parse(storage.get('termData')!);
-  }
-  let year = termData.year || '0000';
+  
+  termData = storage.get('termData');
+
+  let year = termData.year;
   let termNumber = Number(termData.termNumber) || 1;
   let term = termData.termName || `T${termNumber}`;
   let termName = `Term ${termNumber}`;

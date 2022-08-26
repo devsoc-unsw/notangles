@@ -1,15 +1,13 @@
 import React, { useContext } from 'react';
 import { styled } from '@mui/system';
-import {
-  classMargin,
-  defaultEndTime,
-  defaultStartTime,
-  headerPadding,
-  rowHeight,
-  unknownErrorMessage,
-} from '../../constants/timetable';
+
+import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+
+export const rowHeight = 60;
+const classMargin = 1;
+const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -32,7 +30,6 @@ const BaseCell = styled('div', {
   justify-content: center;
   outline: solid ${({ theme }) => theme.palette.secondary.main} 1px;
   outline-offset: -0.5px;
-
   border-top-left-radius: ${({ theme, x, y }) => (x === 1 && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 1 && isEndY ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, isEndX, y }) => (isEndX && y === 1 ? theme.shape.borderRadius : 0)}px;
@@ -66,7 +63,6 @@ const ToggleCell = styled(BaseCell)`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: center;
-
   & span {
     grid-column: 1;
     grid-row: 1;
@@ -78,11 +74,6 @@ const ColumnWidthGuide = styled('span')`
   pointer-events: none;
 `;
 
-/**
- * @param n The numerical value of the hour
- * @param is12HourMode Whether 12-hour mode is set
- * @returns The hour in 12-hour am|pm format or 24-hour hh:mm format
- */
 const generateHour = (n: number, is12HourMode: boolean): string => {
   if (is12HourMode) {
     const period = n < 12 ? 'am' : 'pm';
@@ -92,53 +83,24 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
   return `${String(n).padStart(2, '0')}:00`;
 };
 
-/**
- * @param range The range of hours to generate
- * @param is12HourMode Whether 12-hour mode is set
- * @returns An array of hour strings
- */
-const generateHours = (
-  range: number[],
-  is12HourMode: boolean,
-  setAlertMsg: (newErrorMsg: string) => void,
-  setErrorVisibility: (newVisibility: boolean) => void
-): string[] => {
+const generateHours = (range: number[], is12HourMode: boolean): string[] => {
   const [min, max] = range;
-
-  try {
-    return Array(max - min + 1)
-      .fill(0)
-      .map((_, i) => generateHour(i + min, is12HourMode));
-  } catch (err) {
-    setAlertMsg(unknownErrorMessage);
-    setErrorVisibility(true);
-
-    return Array(defaultEndTime - defaultStartTime + 1)
-      .fill(0)
-      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
-  }
+  // Fill an array with hour strings according to the range
+  return Array(max - min + 1)
+    .fill(0)
+    .map((_, i) => generateHour(i + min, is12HourMode));
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { is12HourMode, days } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
   const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
+  const hoursRange = [Math.min(earliestClassStartTime, defaultStartTime), Math.max(latestClassFinishTime, defaultEndTime) - 1];
+  const hours: string[] = generateHours(hoursRange, is12HourMode);
 
-  const hoursRange = [
-    Math.min(earliestStartTime, earliestClassStartTime, defaultStartTime),
-    Math.max(latestEndTime, latestClassFinishTime, defaultEndTime) - 1,
-  ];
-
-  const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility);
-  const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
-      {hour}
-    </HourCell>
-  ));
-
-  const dayCells = days.map((day, i) => (
+  const dayCells = days.map((day: any, i: any) => (
     <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
       {day}
     </DayCell>
@@ -150,8 +112,14 @@ export const TimetableLayout: React.FC = () => {
     </InventoryCell>
   );
 
+  const hourCells = hours.map((hour, i) => (
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
+      {hour}
+    </HourCell>
+  ));
+
   const otherCells = hours.flatMap((_, y) =>
-    days.flatMap((_, x) => (
+    days.flatMap((_: any, x: any) => (
       <GridCell
         key={x * 1000 + y}
         x={x + 2}
