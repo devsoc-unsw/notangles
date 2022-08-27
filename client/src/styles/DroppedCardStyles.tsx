@@ -1,9 +1,8 @@
-import { styled } from '@mui/system';
 import { Button, Card, Grid, List } from '@mui/material';
-
+import { styled } from '@mui/system';
 import { borderRadius, borderWidth } from '../constants/theme';
-import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { EventPeriod } from '../interfaces/Periods';
+import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
 
 export const transitionName = 'class';
@@ -11,12 +10,12 @@ export const transitionName = 'class';
 export const classTransformStyle = (
   card: ClassCard | EventPeriod,
   earliestStartTime: number,
-  days?: string[],
+  nDays?: number,
   y?: number,
   clashIndex?: number,
   width?: number,
   cellWidth: number = 0
-) => `translate(${classTranslateX(card, days, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
+) => `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -36,12 +35,12 @@ export const ExpandButton = styled(Button)`
 
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
-    !['card', 'days', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
+    !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
 })<{
   card: ClassCard | EventPeriod;
-  days: string[];
+  nDays: number;
   y?: number;
   earliestStartTime: number;
   isSquareEdges: boolean;
@@ -52,8 +51,8 @@ export const StyledCard = styled('div', {
   position: relative;
   grid-column: 2;
   grid-row: 2 / -1;
-  transform: ${({ card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth }) =>
-    classTransformStyle(card, earliestStartTime, days, y, clashIndex, cardWidth, cellWidth)};
+  transform: ${({ card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth }) =>
+    classTransformStyle(card, earliestStartTime, nDays, y, clashIndex, cardWidth, cellWidth)};
   width: ${({ cardWidth }) => cardWidth}%;
   height: ${({ card }) => getClassHeight(card)};
   box-sizing: border-box;

@@ -3,6 +3,7 @@ import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
@@ -26,7 +27,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -87,7 +89,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
             try {
               rippleRef.current.stop(eventUp);
             } catch (error) {
-              console.log(error);
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
             }
           }, 100);
         }
@@ -126,7 +129,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     <>
       <StyledCard
         card={eventPeriod}
-        days={days}
+        nDays={days.length}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
         cardWidth={cardWidth}
