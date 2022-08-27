@@ -211,14 +211,12 @@ const App: React.FC = () => {
     const fetchTermData = async () => {
       try {
         const termData = await getAvailableTermDetails();
-        if (termData !== undefined) {
-          let { term, termName, termNumber, year, firstDayOfTerm } = termData;
-          setTerm(term);
-          setTermName(termName);
-          setTermNumber(termNumber);
-          setYear(year);
-          setFirstDayOfTerm(firstDayOfTerm);
-        }
+        let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+        setTerm(term);
+        setTermName(termName);
+        setTermNumber(termNumber);
+        setYear(year);
+        setFirstDayOfTerm(firstDayOfTerm);
       } catch (e) {
         if (e instanceof NetworkError) {
           setAlertMsg(e.message);
