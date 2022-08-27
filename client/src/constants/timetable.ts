@@ -75,7 +75,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    console.log('Could not ping timetable scraper!');
+    throw new NetworkError('Could not conect to timetable scraper!');
   }
 };
 
