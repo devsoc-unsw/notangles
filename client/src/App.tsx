@@ -211,7 +211,7 @@ const App: React.FC = () => {
     const fetchTermData = async () => {
       try {
         const termData = await getAvailableTermDetails();
-        const { term, termName, termNumber, firstDayOfTerm, year } = termData;
+        let { term, termName, termNumber, year, firstDayOfTerm } = termData;
         setTerm(term);
         setTermName(termName);
         setTermNumber(termNumber);
