@@ -88,14 +88,14 @@ const CustomEvent: React.FC = () => {
     }
 
     const newEvents: Record<string, EventPeriod> = {};
+
+    // Create an event for each day that is selected in the dropdown option
     for (const day of eventDays) {
       const newEvent = createEvent(day);
       newEvents[newEvent.event.id] = newEvent;
     }
 
     setCreatedEvents({ ...createdEvents, ...newEvents });
-
-    console.log(newEvents);
     setEventName('');
     setLocation('');
     setDescription('');

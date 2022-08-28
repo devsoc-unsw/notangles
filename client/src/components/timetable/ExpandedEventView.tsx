@@ -242,7 +242,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 optionState={newDays}
                 setOptionState={handleFormat}
                 optionChoices={daysShort}
-                multiple={true}
                 noOff
               />
             </ListItem>
