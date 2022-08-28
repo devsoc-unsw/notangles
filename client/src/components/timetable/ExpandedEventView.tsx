@@ -14,8 +14,10 @@ import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '..
 import { areValidEventTimes } from '../../utils/areValidEventTimes';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { useEventDrag } from '../../utils/Drag';
+import { v4 as uuidv4 } from 'uuid';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import { EventPeriod } from '../../interfaces/Periods';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -78,6 +80,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
       return;
     }
 
+    if (newDays.length > 1) {
+      console.log(newDays);
+      handleDeleteEvent(id);
+      createEvents();
+      return;
+    }
+
     const newEventTime = {
       day: daysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
@@ -102,6 +111,40 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setIsEditing(false);
   };
 
+  const createEvents = () => {
+    const newEvents: Record<string, EventPeriod> = {};
+
+    // Create an event for each day that is selected in the dropdown option
+    for (const day of newDays) {
+      const newEvent = createEvent(day);
+      newEvents[newEvent.event.id] = newEvent;
+    }
+
+    setCreatedEvents({ ...createdEvents, ...newEvents });
+    setIsEditing(false);
+  }
+
+  const createEvent = (day: string) => {
+    console.log(day);
+    const uuid = uuidv4();
+    const newEvent: EventPeriod = {
+      type: 'event',
+      event: {
+        id: uuid,
+        name: newName,
+        location: newLocation,
+        description: newDescription,
+        color: newColor,
+      },
+      time: {
+        day: daysShort.indexOf(day) + 1,
+        start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
+        end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
+      },
+    };
+    return newEvent;
+  };
+
   const handleDiscardChanges = () => {
     handleClose();
     setOpenSaveDialog(false);
@@ -109,6 +152,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setNewName(name);
     setNewLocation(location);
     setNewDescription(description);
+    setNewDays([daysShort[day - 1]]);
     setNewColor(color.toString());
   };
 
@@ -125,6 +169,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const handleDeleteEvent = (id: string) => {
+    console.log('delete');
     const updatedEventData = { ...createdEvents };
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
@@ -242,6 +287,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 optionState={newDays}
                 setOptionState={handleFormat}
                 optionChoices={daysShort}
+                multiple={true}
                 noOff
               />
             </ListItem>
