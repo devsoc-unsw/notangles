@@ -273,6 +273,7 @@ const App: React.FC = () => {
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
+  // Populate selected courses, classes and created events with the data saved in local storage
   const updateTimetableEvents = () => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
@@ -358,6 +359,7 @@ const App: React.FC = () => {
     return maxDay;
   };
 
+  // Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
   const updateTimetableDaysAndTimes = () => {
 
     setEarliestStartTime(

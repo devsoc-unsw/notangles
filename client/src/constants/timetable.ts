@@ -89,7 +89,10 @@ export const colors: string[] = [
   '#3323ad', // deep blue
 ];
 
-// Calculate the hours difference between the user's timezone and the Australian timezone.
+/**
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
+ * @returns A number which represents the hour offset between Sydney timezone and the user's local timezone.
+ */
 export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => {
 
   if (!isConvertToLocalTimezone) return 0;
@@ -110,10 +113,15 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
 
   const offset = ((formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes()) - (localDate.getHours() * 60 + localDate.getMinutes())) / 60;
 
-  return 14.5;
+  return offset;
 }
 
-// Get the local time based on the calculated offset.
+
+/**
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
+ * @param time The original time to be converted.
+ * @returns The new converted time (according to the user's local timezone).
+ */
 export const getLocalTime = (isConvertToLocalTimezone: boolean, time: number): number => {
   const offset = getTimeZoneOffset(isConvertToLocalTimezone);
   let newTime = time - offset;

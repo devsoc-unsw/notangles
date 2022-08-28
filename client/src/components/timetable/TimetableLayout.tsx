@@ -97,6 +97,9 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
 /**
  * @param range The range of hours to generate
  * @param is12HourMode Whether 12-hour mode is set
+ * @param setAlertMsg Sets an alert message
+ * @param setErrorVisibility Sets the visibility of the error popup
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
  * @returns An array of hour strings
  */
 const generateHours = (

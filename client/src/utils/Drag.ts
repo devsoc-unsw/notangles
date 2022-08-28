@@ -48,11 +48,6 @@ let numDays: number;
 let latestEndTime: number;
 let earliestStartTime: number;
 
-// hello
-// ur mum
-// ur dad
-// hiiiiiiiii
-
 /**
  * These values come from the React context
  * @param days The number of days which should be shown
