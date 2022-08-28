@@ -18,13 +18,13 @@ const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) =>
     let times = dbClassWeeks.split(',');
     times.map((time) => {
       if (time.includes('-')) {
-        // convert ranges into numbers
+        // Convert ranges into numbers
         let [min, max] = time.split('-');
         for (let j = parseInt(min); j < parseInt(max); j++) {
           dbClassTimesList.push(j);
         }
       } else {
-        // if not a range, add number to array directly
+        // If not a range, add number to array directly
         dbClassTimesList.push(parseInt(time));
       }
     });
@@ -53,19 +53,15 @@ const classesAreEqual = (dbClassTimesOne: DbTimes, dbClassTimesTwo: DbTimes): bo
  */
 const sortUnique = (arr: number[]): number[] => {
   if (arr.length === 0) return arr;
-  arr = arr.sort((a, b) => {
-    // sorting numbers in ascending order
-    // CASE 1: neg value - a will be ordered before b.
-    // CASE 2: 0 - ordering of a and b won’t change.
-    // CASE 3: pos value - b will be ordered before a.
-    return a - b;
-  });
+  arr = arr.sort((a, b) => a - b);
+
   let ret = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
     if (arr[i - 1] !== arr[i]) {
       ret.push(arr[i]);
     }
   }
+
   return ret;
 };
 
@@ -97,6 +93,7 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
         throw new NetworkError('Internal server error');
       }
     }
+
     const json: DbCourse = await data.json();
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
