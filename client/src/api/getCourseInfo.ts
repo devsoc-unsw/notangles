@@ -115,16 +115,16 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
             dbClassTimesList = sortUnique(dbClassTimesList);
 
             let newWeeks: string = '';
-            let rangeStart = false;
+            let isEndOfRange = false;
 
             // Convert the numerical representation of the weeks the classes are running back to a string
             for (let k = 0; k < dbClassTimesList.length; k++) {
               if (k == 0 || k == dbClassTimesList.length - 1) {
                 newWeeks += dbClassTimesList[k];
-              } else if (rangeStart) {
+              } else if (isEndOfRange) {
                 // Add the start of the range
                 newWeeks += dbClassTimesList[k];
-                rangeStart = false;
+                isEndOfRange = false;
               }
 
               while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
@@ -132,7 +132,7 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
                 k++;
               }
 
-              if (!rangeStart) {
+              if (!isEndOfRange) {
                 // Add the end of the range (last consecutive number)
                 newWeeks += '-' + dbClassTimesList[k];
 
@@ -142,9 +142,10 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
                 }
 
                 // Get ready to add the end of the range
-                rangeStart = true;
+                isEndOfRange = true;
               }
             }
+
             dbClassTimesOne.weeks = newWeeks;
             dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
           }
@@ -161,4 +162,3 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
 };
 
 export default getCourseInfo;
-
