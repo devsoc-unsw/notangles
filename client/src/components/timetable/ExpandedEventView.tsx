@@ -80,10 +80,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
       return;
     }
 
+    // For cloning events
     if (newDays.length > 1) {
-      console.log(newDays);
-      handleDeleteEvent(id);
-      createEvents();
+      createEvents(id);
       return;
     }
 
@@ -111,21 +110,21 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setIsEditing(false);
   };
 
-  const createEvents = () => {
-    const newEvents: Record<string, EventPeriod> = {};
+  const createEvents = (id: string) => {
+    const updatedEventData = { ...createdEvents };
+    delete updatedEventData[id];
 
     // Create an event for each day that is selected in the dropdown option
     for (const day of newDays) {
       const newEvent = createEvent(day);
-      newEvents[newEvent.event.id] = newEvent;
+      updatedEventData[newEvent.event.id] = newEvent;
     }
 
-    setCreatedEvents({ ...createdEvents, ...newEvents });
+    setCreatedEvents(updatedEventData);
     setIsEditing(false);
   }
 
   const createEvent = (day: string) => {
-    console.log(day);
     const uuid = uuidv4();
     const newEvent: EventPeriod = {
       type: 'event',
@@ -169,7 +168,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const handleDeleteEvent = (id: string) => {
-    console.log('delete');
     const updatedEventData = { ...createdEvents };
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
