@@ -74,7 +74,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    throw new NetworkError('Could not conect to timetable scraper!');
+    throw new NetworkError('Could not connect to timetable scraper!');
   }
 };
 
