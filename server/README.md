@@ -27,4 +27,4 @@ The Notangles server uses:
 
 ### `POST /auto`
 
-Returns a list of ints that correspond to class times for the inputed data
+Returns a list of ints that correspond to class times for the inputted data
