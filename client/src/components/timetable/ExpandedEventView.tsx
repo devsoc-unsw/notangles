@@ -221,14 +221,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <TimePicker
                 value={newEndTime}
                 renderInput={(params) => {
-                  const tooEarly =
-                    newStartTime.getHours() + newStartTime.getMinutes() / 60 >=
-                    newEndTime.getHours() + newEndTime.getMinutes() / 60;
+                  const tooEarly = !areValidEventTimes(newStartTime, newEndTime);
                   return (
                     <TextField
                       {...params}
                       error={params.error || tooEarly}
-                      label={tooEarly ? 'End time must be after start time' : ''}
+                      label={tooEarly && 'End time must be after start time'}
                     />
                   );
                 }}

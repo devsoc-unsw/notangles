@@ -178,12 +178,15 @@ const timetableBorderWidthPlusOne = 2;
  * @returns Their intersection area relative to the area of the dragged element's area
  */
 const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
-  const left = Math.max(drag.left, drop.left);
-  const right = Math.min(drag.right, drop.right);
-  const bottom = Math.min(drag.bottom, drop.bottom);
-  const top = Math.max(drag.top, drop.top);
+  // We pretend the drag element is its full width (i.e. the width of the drop rectangle)
+  // to avoid consecutive best-dropzone calculations returning different dropzones
+  // (wherein it will switch to-and-fro between two dropzones causing the card to stutter)
+  const newLeft = drag.left - (drop.width - drag.width) / 2;
+  const left = Math.max(newLeft, drop.left);
+  const right = Math.min(newLeft + drop.width, drop.right);
+  const bottom = Math.min(drag.bottom + timetableBorderWidthPlusOne, drop.bottom);
+  const top = Math.max(drag.top - timetableBorderWidthPlusOne, drop.top);
 
-  const dragArea = drag.width * drag.height;
   const intersectionArea = Math.max(0, right - left) * Math.max(0, bottom - top);
 
   return intersectionArea;
@@ -315,7 +318,7 @@ let updateTimeout: number;
 /**
  * Creates an entry in the map of all cards for a particular period
  * @param data The period
- * @param element The HTML element corresponding to the card for that peroid
+ * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);

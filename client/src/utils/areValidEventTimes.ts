@@ -1,5 +1,5 @@
 /**
- * @param start The starting time of the  event
+ * @param start The starting time of the event
  * @param end The ending time of the event
  * @returns Whether the start and end times represent a valid event
  */

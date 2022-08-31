@@ -110,7 +110,7 @@ const CustomEvent: React.FC = () => {
       [uuid]: newEvent,
     });
 
-    setEarliestStartTime(Math.min(Math.ceil(earliestStartTime), Math.ceil(startTime.getHours() + startTime.getMinutes() / 60)));
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     // Updating the days of the week must be handled here otherwise
@@ -213,13 +213,12 @@ const CustomEvent: React.FC = () => {
             <TimePicker
               value={endTime}
               renderInput={(params) => {
-                const tooEarly =
-                  startTime.getHours() + startTime.getMinutes() / 60 >= endTime.getHours() + endTime.getMinutes() / 60;
+                const tooEarly = !areValidEventTimes(startTime, endTime)
                 return (
                   <TextField
                     {...params}
-                    error={params.error || tooEarly}
-                    label={tooEarly ? 'End time must be after start time' : ''}
+                    error={params.error || tooEarly }
+                    label={tooEarly && 'End time must be after start time'}
                   />
                 );
               }}
