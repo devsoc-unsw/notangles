@@ -318,7 +318,7 @@ let updateTimeout: number;
 /**
  * Creates an entry in the map of all cards for a particular period
  * @param data The period
- * @param element The HTML element corresponding to the card for that peroid
+ * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
