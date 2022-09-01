@@ -12,7 +12,7 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { areValidEventTimes } from '../../utils/areValidEventTimes';
+import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
@@ -39,8 +39,8 @@ const CustomEvent: React.FC = () => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
+  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
+  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
 
@@ -213,11 +213,11 @@ const CustomEvent: React.FC = () => {
             <TimePicker
               value={endTime}
               renderInput={(params) => {
-                const tooEarly = !areValidEventTimes(startTime, endTime)
+                const tooEarly = !areValidEventTimes(startTime, endTime);
                 return (
                   <TextField
                     {...params}
-                    error={params.error || tooEarly }
+                    error={params.error || tooEarly}
                     label={tooEarly && 'End time must be after start time'}
                   />
                 );

@@ -28,6 +28,7 @@ import { AutotimetableProps } from '../../interfaces/PropTypes';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
+import { createDateWithTime } from '../../utils/eventTimes';
 
 const DropdownButton = styled(Button)`
   && {
@@ -68,8 +69,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   // const [friendsInClasses, setFriendsInClasses] = useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = useState<number>(0);
   const [days, setDays] = useState<Array<string>>(weekdaysShort);
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
+  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
+  const [endTime, setEndTime] = useState<Date>(createDateWithTime(21));
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
   const [isOpenInfo, setIsOpenInfo] = useState(false);
 
