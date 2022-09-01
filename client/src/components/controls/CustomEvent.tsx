@@ -12,7 +12,7 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { areValidEventTimes } from '../../utils/areValidEventTimes';
+import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
@@ -39,8 +39,8 @@ const CustomEvent: React.FC = () => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
+  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
+  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
 
@@ -103,7 +103,7 @@ const CustomEvent: React.FC = () => {
     // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
-  }
+  };
 
   const createEvent = (day: string) => {
     const uuid = uuidv4();
@@ -123,8 +123,13 @@ const CustomEvent: React.FC = () => {
       },
     };
 
-    setEarliestStartTime(Math.min(earliestStartTime, startTime.getHours()));
-    setLatestEndTime(Math.max(latestEndTime, endTime.getHours()));
+    setCreatedEvents({
+      ...createdEvents,
+      [uuid]: newEvent,
+    });
+
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
@@ -168,7 +173,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Event Name"
+              label="Event Name"
               onChange={(e) => setEventName(e.target.value)}
               variant="outlined"
               fullWidth
@@ -182,7 +187,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-basic"
-              label="Add Description (optional)"
+              label="Description (optional)"
               onChange={(e) => setDescription(e.target.value)}
               variant="outlined"
               multiline
@@ -196,7 +201,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Location"
+              label="Location"
               onChange={(e) => setLocation(e.target.value)}
               variant="outlined"
               fullWidth
@@ -207,7 +212,6 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="Start time" />
             <TimePicker
-              views={['hours']}
               value={startTime}
               renderInput={(params) => <TextField {...params} />}
               onChange={(e) => {
@@ -218,15 +222,14 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="End time" />
             <TimePicker
-              views={['hours']}
               value={endTime}
               renderInput={(params) => {
-                const tooEarly = startTime.getHours() >= endTime.getHours();
+                const tooEarly = !areValidEventTimes(startTime, endTime);
                 return (
                   <TextField
                     {...params}
                     error={params.error || tooEarly}
-                    label={tooEarly ? 'End time must be after start time' : ''}
+                    label={tooEarly && 'End time must be after start time'}
                   />
                 );
               }}
