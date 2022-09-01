@@ -1,19 +1,23 @@
 import React from 'react';
 import { styled } from '@mui/system';
 import { Typography } from '@mui/material';
-import { 
-  Timeline, 
-  TimelineItem, 
-  TimelineSeparator, 
-  TimelineConnector, 
-  TimelineContent, 
-  TimelineDot, 
-  TimelineOppositeContent 
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineOppositeContent
 } from '@mui/lab';
 
 type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
+  {
+    date: 'September 1, 2022',
+    changes: ['Added ability to create a custom event that happens on multiple days'],
+  },
   {
     date: 'August 8, 2022',
     changes: ['Added setting toggle to hide exam classes'],
