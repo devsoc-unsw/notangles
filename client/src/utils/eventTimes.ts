@@ -13,4 +13,4 @@ export const areValidEventTimes = (start: Date, end: Date) => {
  */
 export const createDateWithTime = (time: number) => {
   return new Date(2022, 0, 0, time, (time - Math.floor(time)) * 60);
-}
+};

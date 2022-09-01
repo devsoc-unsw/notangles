@@ -103,7 +103,7 @@ const CustomEvent: React.FC = () => {
     // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
-  }
+  };
 
   const createEvent = (day: string) => {
     const uuid = uuidv4();

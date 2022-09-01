@@ -172,7 +172,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const doAuto = async () => {
     if (!selectedCourses || !selectedCourses.length) return;
 
-    const selectedDays =  days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
+    const selectedDays = days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
     const selectedDaysStr = selectedDays.length ? selectedDays.reduce((a, b) => a + b) : '12345';
 
     const autoParams: Array<string | number> = [

@@ -1,15 +1,15 @@
 import React from 'react';
-import { styled } from '@mui/system';
-import { Typography } from '@mui/material';
 import {
   Timeline,
-  TimelineItem,
-  TimelineSeparator,
   TimelineConnector,
   TimelineContent,
   TimelineDot,
-  TimelineOppositeContent
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
 } from '@mui/lab';
+import { Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 type Change = { date: String; changes: String[] };
 
@@ -104,7 +104,7 @@ const changelog: Change[] = [
 
 const StyledTypography = styled(Typography)`
   padding-bottom: 5px;
-`
+`;
 
 const Changelog: React.FC = () => {
   return (
@@ -116,7 +116,7 @@ const Changelog: React.FC = () => {
               {date}
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot color='primary'/>
+              <TimelineDot color="primary" />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
