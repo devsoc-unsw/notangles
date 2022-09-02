@@ -15,7 +15,7 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
-    date: 'August 17, 2022',
+    date: 'September 2, 2022',
     changes: ['Added setting toggle to convert the timetable to local timezone']
   },
   {

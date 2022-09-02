@@ -111,17 +111,16 @@ const generateHours = (
 
   const [min, max] = range;
 
+  const full24HoursArray = Array(24).fill(0).map((_, i) => generateHour(i + 0, is12HourMode));
+
   // Fill an array with hour strings according to the range
   try {
     if (min < max) {
       return Array(max - min + 1)
       .fill(0)
       .map((_, i) => generateHour(i + min, is12HourMode));
-    } else {
-      return Array(24)
-      .fill(0)
-      .map((_, i) => generateHour(i + 0, is12HourMode));
     }
+    return full24HoursArray;
   } catch(err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
@@ -133,11 +132,8 @@ const generateHours = (
       return Array(defaultEndTime - defaultStartTime + 1)
       .fill(0)
       .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
-    } else {
-      return Array(24)
-      .fill(0)
-      .map((_, i) => generateHour(i + 0, is12HourMode));
     }
+    return full24HoursArray;
   }
 };
 

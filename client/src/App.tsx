@@ -384,6 +384,7 @@ const App: React.FC = () => {
         Math.max(
           getLatestDotW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
+          days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
           5 // default
         )
       )

@@ -123,7 +123,7 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
  * @returns The new converted time (according to the user's local timezone).
  */
 export const getLocalTime = (isConvertToLocalTimezone: boolean, time: number): number => {
-  const offset = getTimeZoneOffset(isConvertToLocalTimezone);
+  const offset = isConvertToLocalTimezone ? getTimeZoneOffset(isConvertToLocalTimezone) : 0;
   let newTime = time - offset;
   if (newTime < 0) {
     newTime = ((newTime % 24) + 24) % 24;
