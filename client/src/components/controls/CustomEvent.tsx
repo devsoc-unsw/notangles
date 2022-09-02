@@ -12,7 +12,7 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { areValidEventTimes } from '../../utils/areValidEventTimes';
+import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 
 const DropdownButton = styled(Button)`
@@ -39,8 +39,8 @@ const CustomEvent: React.FC = () => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 10));
+  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
+  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
 
@@ -80,15 +80,33 @@ const CustomEvent: React.FC = () => {
     setEventDays(newFormats);
   };
 
-  const doCreateEvent = () => {
-    const uuid = uuidv4();
-
+  const createEvents = () => {
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
       return;
     }
 
+    const newEvents: Record<string, EventPeriod> = {};
+
+    // Create an event for each day that is selected in the dropdown option
+    for (const day of eventDays) {
+      const newEvent = createEvent(day);
+      newEvents[newEvent.event.id] = newEvent;
+    }
+
+    setCreatedEvents({ ...createdEvents, ...newEvents });
+    setEventName('');
+    setLocation('');
+    setDescription('');
+    setEventDays([]);
+    // Close all popovers when Create button is clicked
+    setAnchorEl(null);
+    setColorPickerAnchorEl(null);
+  };
+
+  const createEvent = (day: string) => {
+    const uuid = uuidv4();
     const newEvent: EventPeriod = {
       type: 'event',
       event: {
@@ -99,7 +117,7 @@ const CustomEvent: React.FC = () => {
         color: color,
       },
       time: {
-        day: daysShort.indexOf(eventDays.toString()) + 1,
+        day: daysShort.indexOf(day) + 1,
         start: startTime.getHours() + startTime.getMinutes() / 60,
         end: endTime.getHours() + endTime.getMinutes() / 60,
       },
@@ -110,28 +128,21 @@ const CustomEvent: React.FC = () => {
       [uuid]: newEvent,
     });
 
-    setEarliestStartTime(Math.min(earliestStartTime, startTime.getHours()));
-    setLatestEndTime(Math.max(latestEndTime, endTime.getHours()));
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
     // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (daysShort.indexOf(eventDays.toString()) == 5) {
+    if (daysShort.indexOf(day) == 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
       setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (daysShort.indexOf(eventDays.toString()) == 6) {
+    } else if (daysShort.indexOf(day) == 6) {
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 
-    setEventName('');
-    setLocation('');
-    setDescription('');
-    setEventDays([]);
-
-    // Close all popovers when Create button is clicked
-    setAnchorEl(null);
-    setColorPickerAnchorEl(null);
+    return newEvent;
   };
 
   return (
@@ -162,7 +173,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Event Name"
+              label="Event Name"
               onChange={(e) => setEventName(e.target.value)}
               variant="outlined"
               fullWidth
@@ -176,7 +187,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-basic"
-              label="Add Description (optional)"
+              label="Description (optional)"
               onChange={(e) => setDescription(e.target.value)}
               variant="outlined"
               multiline
@@ -190,7 +201,7 @@ const CustomEvent: React.FC = () => {
             </ListItemIcon>
             <TextField
               id="outlined-required"
-              label="Add Location"
+              label="Location"
               onChange={(e) => setLocation(e.target.value)}
               variant="outlined"
               fullWidth
@@ -201,7 +212,6 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="Start time" />
             <TimePicker
-              views={['hours']}
               value={startTime}
               renderInput={(params) => <TextField {...params} />}
               onChange={(e) => {
@@ -212,15 +222,14 @@ const CustomEvent: React.FC = () => {
           <StyledListItem>
             <StyledListItemText primary="End time" />
             <TimePicker
-              views={['hours']}
               value={endTime}
               renderInput={(params) => {
-                const tooEarly = startTime.getHours() >= endTime.getHours();
+                const tooEarly = !areValidEventTimes(startTime, endTime);
                 return (
                   <TextField
                     {...params}
                     error={params.error || tooEarly}
-                    label={tooEarly ? 'End time must be after start time' : ''}
+                    label={tooEarly && 'End time must be after start time'}
                   />
                 );
               }}
@@ -234,6 +243,7 @@ const CustomEvent: React.FC = () => {
             optionState={eventDays}
             setOptionState={handleFormat}
             optionChoices={daysShort}
+            multiple={true}
             noOff
           />
           <Box m={1} display="flex" justifyContent="center" alignItems="center">
@@ -284,7 +294,7 @@ const CustomEvent: React.FC = () => {
           color="primary"
           disableElevation
           disabled={eventName === '' || location === '' || eventDays.length === 0}
-          onClick={doCreateEvent}
+          onClick={createEvents}
         >
           <Add />
           CREATE

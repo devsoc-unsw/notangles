@@ -1,15 +1,15 @@
 import React from 'react';
-import { styled } from '@mui/system';
-import { Typography } from '@mui/material';
-import { 
-  Timeline, 
-  TimelineItem, 
-  TimelineSeparator, 
-  TimelineConnector, 
-  TimelineContent, 
-  TimelineDot, 
-  TimelineOppositeContent 
+import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
 } from '@mui/lab';
+import { Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 type Change = { date: String; changes: String[] };
 
@@ -19,7 +19,11 @@ const changelog: Change[] = [
     changes: ['Added setting toggle to convert the timetable to local timezone']
   },
   {
-    date: 'August 9, 2022',
+    date: 'September 1, 2022',
+    changes: ['Added ability to create a custom event that happens on multiple days'],
+  },
+  {
+    date: 'August 8, 2022',
     changes: ['Added setting toggle to hide exam classes'],
   },
   {
@@ -104,7 +108,7 @@ const changelog: Change[] = [
 
 const StyledTypography = styled(Typography)`
   padding-bottom: 5px;
-`
+`;
 
 const Changelog: React.FC = () => {
   return (
@@ -116,7 +120,7 @@ const Changelog: React.FC = () => {
               {date}
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot color='primary'/>
+              <TimelineDot color="primary" />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
