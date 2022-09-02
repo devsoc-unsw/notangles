@@ -265,10 +265,8 @@ const App: React.FC = () => {
   }, [isHideExamClasses]);
 
   useEffect(() => {
-    updateTimetableEvents();
-    updateTimetableDaysAndTimes();
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone, year]);
+  }, [isConvertToLocalTimezone]);
 
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
@@ -308,7 +306,7 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     updateTimetableEvents();
-  }, [year]);
+  }, [year, isConvertToLocalTimezone]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
@@ -393,7 +391,7 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
-  }, [createdEvents, selectedCourses]);
+  }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
 
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
   const theme = isDarkMode ? darkTheme : lightTheme;
