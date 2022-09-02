@@ -71,13 +71,14 @@ const sortUnique = (arr: number[]): number[] => {
  * @param year The year that the course is offered in
  * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
+ * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
  * @return A promise containing the information of the course that is offered in the
  * specified year and term
  *
  * @example
  * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
-const getCourseInfo = async (year: string, term: string, courseCode: CourseCode): Promise<CourseData> => {
+const getCourseInfo = async (year: string, term: string, courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));
@@ -155,7 +156,7 @@ const getCourseInfo = async (year: string, term: string, courseCode: CourseCode)
 
     if (!json) throw new NetworkError('Internal server error');
 
-    return dbCourseToCourseData(json);
+    return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     throw new NetworkError('Could not connect to server');
   }

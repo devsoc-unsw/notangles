@@ -1,4 +1,6 @@
+import { cloneDeep } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import { getTimeZoneOffset } from '../constants/timetable';
 import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 import { areDuplicatePeriods } from './areDuplicatePeriods';
@@ -55,6 +57,23 @@ const enumerateWeeks = (weeks: string): number[] =>
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
   });
 
+const convertToLocalDayTime = (day: number, start: number, end: number, isConvertToLocalTimezone: boolean): number[] => {
+  const offset = getTimeZoneOffset(isConvertToLocalTimezone);
+
+  let newDay = day;
+  let newStart = start - offset;
+  let newEnd = end - offset;
+
+  // If the new start time is negative, then the class is in the previous day.
+  if (newStart < 0) {
+    newDay = newDay === 1 ? 7 : newDay - 1;
+    newStart = ((newStart % 24) + 24) % 24;
+    newEnd = ((newEnd % 24) + 24) % 24;
+  }
+
+  return [newDay, newStart, newEnd];
+};
+
 /**
  * An adapter that formats a DBTimes object to a Period object
  *
@@ -64,20 +83,51 @@ const enumerateWeeks = (weeks: string): number[] =>
  * @example
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
-const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod => ({
-  type: 'class',
-  classId: classData.id,
-  courseCode: classData.courseCode,
-  activity: classData.activity,
-  locations: [locationShorten(dbTimes.location)],
-  time: {
-    day: weekdayToNumber(dbTimes.day),
-    start: timeToNumber(dbTimes.time.start),
-    end: timeToNumber(dbTimes.time.end),
-    weeks: enumerateWeeks(dbTimes.weeks),
-    weeksString: dbTimes.weeks.replace(/,/g, ', '),
-  },
-});
+const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLocalTimezone: boolean): ClassPeriod => {
+  // Get the day, start and end time of the class.
+  let day = weekdayToNumber(dbTimes.day);
+  let start = timeToNumber(dbTimes.time.start);
+  let end = timeToNumber(dbTimes.time.end);
+
+  // Convert to local day time.
+  [day, start, end] = convertToLocalDayTime(day, start, end, isConvertToLocalTimezone);
+
+  // Get the subActivity of the class (only matters for tutlabs to separate them).
+  let subActivity = classData.activity;
+  if (classData.activity === 'Tutorial-Laboratory') {
+    if (start < end) {
+      if (end - start === 1) {
+        subActivity = 'Tutorial';
+      } else {
+        subActivity = 'Laboratory';
+      }
+    } else {
+      if (24 - start + end === 1) {
+        subActivity = 'Tutorial';
+      } else {
+        subActivity = 'Laboratory';
+      }
+    }
+  }
+
+  const classPeriod: ClassPeriod = {
+    type: 'class',
+    classId: classData.id,
+    courseCode: classData.courseCode,
+    activity: classData.activity,
+    subActivity: subActivity,
+    locations: [locationShorten(dbTimes.location)],
+    time: {
+      day: day,
+      start: start,
+      end: end,
+      weeks: enumerateWeeks(dbTimes.weeks),
+      weeksString: dbTimes.weeks.replace(/,/g, ', '),
+    },
+  };
+
+  return classPeriod;
+};
 
 /**
  * An adapter that formats a DBCourse object to a CourseData object
@@ -90,7 +140,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData): ClassPeriod =>
  * const json: DBCourse = await data.json()
  * const courseInfo = dbCourseToCourseData(json)
  */
-export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
+export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezone: boolean): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
@@ -113,11 +163,47 @@ export const dbCourseToCourseData = (dbCourse: DbCourse): CourseData => {
       section: dbClass.section,
     };
 
-    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData));
+    classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
     classData.periods.forEach((period) => {
-      courseData.earliestStartTime = Math.min(courseData.earliestStartTime, Math.floor(period.time.start));
-      courseData.latestFinishTime = Math.max(courseData.latestFinishTime, Math.ceil(period.time.end));
+      // If a class ends at 0, it means it ends at 24 i.e. midnight.
+      if (period.time.end == 0) period.time.end = 24;
+    });
+
+    // Split a class up in two if it spans over midnight.
+    classData.periods.forEach((period) => {
+      if (period.time.start > period.time.end) {
+        // Only deep clone the time object since we want the class and locations to be updated.
+        const newPeriod: ClassPeriod = {
+          type: 'class',
+          classId: period.classId,
+          courseCode: period.courseCode,
+          activity: period.activity,
+          subActivity: period.subActivity,
+          time: cloneDeep(period.time),
+          locations: period.locations,
+        };
+
+        // The second period is from midnight to the end time, and is on the next day.
+        newPeriod.time.day = newPeriod.time.day === 7 ? 1 : newPeriod.time.day + 1;
+        newPeriod.time.start = 0;
+
+        classData.periods.push(newPeriod);
+
+        // Change the original period to end at midnight.
+        period.time.end = 24;
+      }
+    });
+
+    // Update the earliest start time and latest finish time of the course.
+    classData.periods.forEach((period) => {
+      if (period.time.end > courseData.latestFinishTime) {
+        courseData.latestFinishTime = Math.ceil(period.time.end);
+      }
+
+      if (period.time.start < courseData.earliestStartTime) {
+        courseData.earliestStartTime = Math.floor(period.time.start);
+      }
     });
 
     if (!(dbClass.activity in courseData.activities)) {
