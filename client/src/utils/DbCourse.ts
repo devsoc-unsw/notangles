@@ -1,4 +1,3 @@
-import { consoleSandbox } from '@sentry/utils';
 import { cloneDeep } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { getTimeZoneOffset } from '../constants/timetable';
@@ -60,7 +59,7 @@ const enumerateWeeks = (weeks: string): number[] =>
 
 const convertToLocalDayTime = (day: number, start: number, end: number, isConvertToLocalTimezone: boolean): number[] => {
   const offset = getTimeZoneOffset(isConvertToLocalTimezone);
-  
+
   let newDay = day;
   let newStart = start - offset;
   let newEnd = end - offset;
@@ -73,7 +72,7 @@ const convertToLocalDayTime = (day: number, start: number, end: number, isConver
   }
 
   return [newDay, newStart, newEnd];
-}
+};
 
 /**
  * An adapter that formats a DBTimes object to a Period object
@@ -85,7 +84,6 @@ const convertToLocalDayTime = (day: number, start: number, end: number, isConver
  * const periods = dbClass.times.map(dbTimesToPeriod)
  */
 const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLocalTimezone: boolean): ClassPeriod => {
-
   // Get the day, start and end time of the class.
   let day = weekdayToNumber(dbTimes.day);
   let start = timeToNumber(dbTimes.time.start);
@@ -126,7 +124,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
       weeks: enumerateWeeks(dbTimes.weeks),
       weeksString: dbTimes.weeks.replace(/,/g, ', '),
     },
-  }
+  };
 
   return classPeriod;
 };
@@ -168,14 +166,13 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
     classData.periods.forEach((period) => {
-      // If a class ends at 0, it means it ends at 24 or midnight.
+      // If a class ends at 0, it means it ends at 24 i.e. midnight.
       if (period.time.end == 0) period.time.end = 24;
     });
 
     // Split a class up in two if it spans over midnight.
     classData.periods.forEach((period) => {
       if (period.time.start > period.time.end) {
-        
         // Only deep clone the time object since we want the class and locations to be updated.
         const newPeriod: ClassPeriod = {
           type: 'class',
@@ -190,7 +187,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
         // The second period is from midnight to the end time, and is on the next day.
         newPeriod.time.day = newPeriod.time.day === 7 ? 1 : newPeriod.time.day + 1;
         newPeriod.time.start = 0;
- 
+
         classData.periods.push(newPeriod);
 
         // Change the original period to end at midnight.
@@ -200,7 +197,6 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
     // Update the earliest start time and latest finish time of the course.
     classData.periods.forEach((period) => {
-
       if (period.time.end > courseData.latestFinishTime) {
         courseData.latestFinishTime = Math.ceil(period.time.end);
       }
@@ -248,4 +244,3 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
   return courseData;
 };
-

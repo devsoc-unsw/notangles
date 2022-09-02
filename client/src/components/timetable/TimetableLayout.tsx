@@ -6,7 +6,7 @@ import {
   getDefaultStartTime,
   headerPadding,
   rowHeight,
-  unknownErrorMessage,
+  unknownErrorMessage
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 
@@ -103,10 +103,10 @@ const generateHour = (n: number, is12HourMode: boolean): string => {
  * @returns An array of hour strings
  */
 const generateHours = (
-  range: number[], 
-  is12HourMode: boolean, 
-  setAlertMsg: (newErrorMsg: string) => void, 
-  setErrorVisibility: (newVisibility: boolean) => void, 
+  range: number[],
+  is12HourMode: boolean,
+  setAlertMsg: (newErrorMsg: string) => void,
+  setErrorVisibility: (newVisibility: boolean) => void,
   isConvertToLocalTimezone: boolean): string[] => {
 
   const [min, max] = range;

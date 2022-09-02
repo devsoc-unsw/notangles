@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+import React, { useContext, useEffect } from 'react';
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -11,7 +11,13 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { daysLong, getDefaultEndTime, getDefaultStartTime, getAvailableTermDetails, unknownErrorMessage } from './constants/timetable';
+import {
+  daysLong,
+  getAvailableTermDetails,
+  getDefaultEndTime,
+  getDefaultStartTime,
+  unknownErrorMessage,
+} from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -94,6 +100,32 @@ const App: React.FC = () => {
     useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
+  useEffect(() => {
+    /**
+     * Retrieves term data from scraper backend and updates state
+     */
+    const fetchTermData = async () => {
+      try {
+        const termData = await getAvailableTermDetails();
+        let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+        setTerm(term);
+        setTermName(termName);
+        setTermNumber(termNumber);
+        setYear(year);
+        setFirstDayOfTerm(firstDayOfTerm);
+      } catch (e) {
+        if (e instanceof NetworkError) {
+          setAlertMsg(e.message);
+        } else {
+          setAlertMsg(unknownErrorMessage);
+        }
+        setErrorVisibility(true);
+      }
+    };
+
+    fetchTermData();
+  }, []);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
@@ -210,68 +242,12 @@ const App: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    /**
-     * Retrieves term data from scraper backend and updates state
-     */
-    const fetchTermData = async () => {
-      try {
-        const termData = await getAvailableTermDetails();
-        let { term, termName, termNumber, year, firstDayOfTerm } = termData;
-        setTerm(term);
-        setTermName(termName);
-        setTermNumber(termNumber);
-        setYear(year);
-        setFirstDayOfTerm(firstDayOfTerm);
-      } catch (e) {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-        } else {
-          setAlertMsg(unknownErrorMessage);
-        }
-        setErrorVisibility(true);
-      }
-    };
-
-    fetchTermData();
-  }, []);
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
-  useEffect(() => {
-    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
-  }, [isShowOnlyOpenClasses]);
-
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
-
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);
-
-  useEffect(() => {
-    storage.set('isHideExamClasses', isHideExamClasses);
-  }, [isHideExamClasses]);
-
-  useEffect(() => {
-    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone]);
-
   type ClassId = string;
   type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
 
-  // Populate selected courses, classes and created events with the data saved in local storage
+  /**
+   * Populate selected courses, classes and created events with the data saved in local storage
+   */
   const updateTimetableEvents = () => {
     handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
       const savedClasses: SavedClasses = storage.get('selectedClasses');
@@ -302,9 +278,9 @@ const App: React.FC = () => {
       setSelectedClasses(newSelectedClasses);
     });
     setCreatedEvents(storage.get('createdEvents'));
-  }
+  };
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     updateTimetableEvents();
   }, [year, isConvertToLocalTimezone]);
 
@@ -357,14 +333,15 @@ const App: React.FC = () => {
     return maxDay;
   };
 
-  // Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
+  /**
+   *  Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
+   */
   const updateTimetableDaysAndTimes = () => {
-
     setEarliestStartTime(
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
-        ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.start),
-        getDefaultStartTime(isConvertToLocalTimezone),
+        ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
+        getDefaultStartTime(isConvertToLocalTimezone)
       )
     );
 
@@ -372,8 +349,14 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-        getDefaultEndTime(isConvertToLocalTimezone),
+        getDefaultEndTime(isConvertToLocalTimezone)
       )
+    );
+
+    console.log(
+      ...selectedCourses.map((course) => course.latestFinishTime),
+      ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
+      getDefaultEndTime(isConvertToLocalTimezone)
     );
 
     setDays(
@@ -382,16 +365,48 @@ const App: React.FC = () => {
         Math.max(
           getLatestDotW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
-          days.length, // Saturday and/or Sunday stays even if an event is moved to a weekday
+          days.length, // Saturday and/or Sunday columns persist until the next reload even if they aren't needed anymore
           5 // default
         )
       )
     );
-  }
+  };
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
+
+  useEffect(() => {
+    storage.set('is12HourMode', is12HourMode);
+  }, [is12HourMode]);
+
+  useEffect(() => {
+    storage.set('isDarkMode', isDarkMode);
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    storage.set('isSquareEdges', isSquareEdges);
+  }, [isSquareEdges]);
+
+  useEffect(() => {
+    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
+  }, [isShowOnlyOpenClasses]);
+
+  useEffect(() => {
+    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  }, [isDefaultUnscheduled]);
+
+  useEffect(() => {
+    storage.set('isHideClassInfo', isHideClassInfo);
+  }, [isHideClassInfo]);
+
+  useEffect(() => {
+    storage.set('isHideExamClasses', isHideExamClasses);
+  }, [isHideExamClasses]);
+
+  useEffect(() => {
+    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
+  }, [isConvertToLocalTimezone]);
 
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
   const theme = isDarkMode ? darkTheme : lightTheme;
