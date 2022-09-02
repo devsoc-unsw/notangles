@@ -1,3 +1,4 @@
+import { consoleSandbox } from '@sentry/utils';
 import { cloneDeep } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { getTimeZoneOffset } from '../constants/timetable';
@@ -166,19 +167,9 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
 
-    // Update the earliest start time and latest finish time of the course.
     classData.periods.forEach((period) => {
-
       // If a class ends at 0, it means it ends at 24 or midnight.
       if (period.time.end == 0) period.time.end = 24;
-
-      if (period.time.end > courseData.latestFinishTime) {
-        courseData.latestFinishTime = Math.ceil(period.time.end);
-      }
-
-      if (period.time.start < courseData.earliestStartTime) {
-        courseData.earliestStartTime = Math.floor(period.time.start);
-      }
     });
 
     // Split a class up in two if it spans over midnight.
@@ -204,6 +195,18 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
 
         // Change the original period to end at midnight.
         period.time.end = 24;
+      }
+    });
+
+    // Update the earliest start time and latest finish time of the course.
+    classData.periods.forEach((period) => {
+
+      if (period.time.end > courseData.latestFinishTime) {
+        courseData.latestFinishTime = Math.ceil(period.time.end);
+      }
+
+      if (period.time.start < courseData.earliestStartTime) {
+        courseData.earliestStartTime = Math.floor(period.time.start);
       }
     });
 
