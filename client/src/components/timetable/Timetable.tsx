@@ -32,8 +32,12 @@ const StyledTimetableScroll = styled(Box)`
   left: -${contentPadding}px;
   width: calc(100% + ${contentPadding * 2 - (1 / devicePixelRatio) * 2}px);
   overflow-x: none;
-  overflow-y: hidden;
-
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    padding-top: 20px;
+    margin-top: 50px;
+    width: 0px;
+  }
   ${({ theme }) => theme.breakpoints.down('sm')} {
     overflow-x: scroll;
   }
