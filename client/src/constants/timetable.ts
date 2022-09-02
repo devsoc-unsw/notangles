@@ -111,7 +111,7 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
     (formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes() - (localDate.getHours() * 60 + localDate.getMinutes())) /
     60;
 
-  return 10;
+  return offset;
 };
 
 /**

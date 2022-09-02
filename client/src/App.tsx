@@ -1,9 +1,9 @@
+import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
 import getCourseInfo from './api/getCourseInfo';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -16,7 +16,7 @@ import {
   getAvailableTermDetails,
   getDefaultEndTime,
   getDefaultStartTime,
-  unknownErrorMessage,
+  unknownErrorMessage
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
@@ -351,12 +351,6 @@ const App: React.FC = () => {
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         getDefaultEndTime(isConvertToLocalTimezone)
       )
-    );
-
-    console.log(
-      ...selectedCourses.map((course) => course.latestFinishTime),
-      ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-      getDefaultEndTime(isConvertToLocalTimezone)
     );
 
     setDays(
