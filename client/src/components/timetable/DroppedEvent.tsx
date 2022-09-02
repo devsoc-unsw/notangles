@@ -138,6 +138,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         clashIndex={clashIndex}
         cellWidth={cellWidth}
         ref={element}
+        onTouchStart={() => {
+          setFullscreenVisible(true);
+        }}
         onMouseDown={onDown}
         onMouseOver={() => {
           setFullscreenVisible(true);

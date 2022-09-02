@@ -161,7 +161,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       <StyledCard
         ref={element}
         onMouseDown={onDown}
-        onTouchStart={onDown}
+        onTouchStart={() => {
+          onDown
+          setFullscreenVisible(true);
+        }}
         card={classCard}
         nDays={days.length}
         y={y}
