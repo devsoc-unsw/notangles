@@ -74,7 +74,7 @@ export const getAvailableTermDetails = async () => {
       firstDayOfTerm: firstDayOfTerm,
     };
   } catch (e) {
-    throw new NetworkError('Could not conect to timetable scraper!');
+    throw new NetworkError('Could not connect to timetable scraper!');
   }
 };
 
@@ -89,13 +89,65 @@ export const colors: string[] = [
   '#3323ad', // deep blue
 ];
 
+/**
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
+ * @returns A number which represents the hour offset between Sydney timezone and the user's local timezone.
+ */
+export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => {
+  if (!isConvertToLocalTimezone) return 0;
+
+  const localDate = new Date();
+  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
+
+  // Get the date and time of the Sydney timezone.
+  const [date, time] = sydDate.split(',');
+
+  // Get the specific day, month and year of the Sydney timezone to convert the string
+  // to a YYYY-MM-DD format to be created into a Date object.
+  const [day, month, year] = date.split('/');
+  const formattedSydDate = new Date(`${year}-${month}-${day}, ${time}`);
+
+  const offset =
+    (formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes() - (localDate.getHours() * 60 + localDate.getMinutes())) /
+    60;
+
+  return offset;
+};
+
+/**
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
+ * @param time The original time to be converted.
+ * @returns The new converted time (according to the user's local timezone).
+ */
+export const getLocalTime = (isConvertToLocalTimezone: boolean, time: number): number => {
+  const offset = getTimeZoneOffset(isConvertToLocalTimezone);
+  let newTime = time - offset;
+  if (newTime < 0) {
+    newTime = ((newTime % 24) + 24) % 24;
+  }
+  return newTime;
+};
+
+/**
+ * @param isConvertToLocalTimezone Whether to convert the start time to the user's local timezone
+ * @returns The default start time of the timetable (9am Sydney time)
+ */
+export const getDefaultStartTime = (isConvertToLocalTimezone: boolean): number => {
+  return getLocalTime(isConvertToLocalTimezone, 9);
+};
+
+/**
+ * @param isConvertToLocalTimezone Whether to convert the end time to the user's local timezone
+ * @returns The default end time of the timetable (6pm Sydney time)
+ */
+export const getDefaultEndTime = (isConvertToLocalTimezone: boolean): number => {
+  return getLocalTime(isConvertToLocalTimezone, 18);
+};
+
 export const timetableWidth = 1100;
 export const rowHeight = 60;
 export const classMargin = 1;
 export const headerPadding = 10;
-
-export const defaultStartTime: number = 9;
-export const defaultEndTime: number = 18;
 
 export const maxAddedCourses = 8;
 

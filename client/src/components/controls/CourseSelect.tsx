@@ -367,9 +367,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
-            onKeyDown={(event: any) => {
-              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === 'z' || event.key === 'y'))) {
+            onKeyDown={(event) => {
+              // Delete the latest selected course if backspace is pressed
+              if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
+                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                handleRemove(selectedValue[selectedValue.length - 1].code);
               }
             }}
             InputLabelProps={{

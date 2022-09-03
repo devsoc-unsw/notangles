@@ -10,6 +10,7 @@ type Actions = Action[];
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
 const initialIndex = 2;
+const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
@@ -150,14 +151,32 @@ const History: React.FC = () => {
     setCreatedEvents(actions.current[initialIndex].events);
   };
 
+  /**
+   * Undo/redo accordingly when a hotkey is pressed
+   * @param event The keyboard event that was triggered
+   */
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (!event.ctrlKey || !(event.key === 'z' || event.key === 'y')) return;
+    // event.metaKey corresponds to the Cmd key on Mac
+    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
+
     event.preventDefault();
-    if (event.key === 'z' && actionsPointer.current > 1) {
-      changeHistory(-1);
+
+    if (!isMacOS && event.ctrlKey) {
+      if (event.key === 'z' && actionsPointer.current > 1) {
+        changeHistory(-1);
+      }
+      if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
+        changeHistory(1);
+      }
     }
-    if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
-      changeHistory(1);
+
+    if (isMacOS && event.metaKey) {
+      if (!event.shiftKey && event.key === 'z' && actionsPointer.current > 1) {
+        changeHistory(-1);
+      }
+      if (event.shiftKey && event.key === 'z' && actionsPointer.current + 1 < actions.current.length) {
+        changeHistory(1);
+      }
     }
   };
 
@@ -166,6 +185,9 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
+  let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
+  let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
+
   return (
     <>
       <Tooltip title="Reset Timetable">
@@ -173,14 +195,14 @@ const History: React.FC = () => {
           <Restore />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Undo (Ctrl+Z)">
+      <Tooltip title={undoTooltip}>
         <span>
           <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)} size="large">
             <Undo />
           </IconButton>
         </span>
       </Tooltip>
-      <Tooltip title="Redo (Ctrl+Y)">
+      <Tooltip title={redoTooltip}>
         <span>
           <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)} size="large">
             <Redo />

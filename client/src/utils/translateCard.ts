@@ -34,7 +34,7 @@ export const classTranslateX = (
   if (nDays) {
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
-    // plus the margin seperating the days of the week from unscheduled section
+    // plus the margin separating the days of the week from unscheduled section
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
 

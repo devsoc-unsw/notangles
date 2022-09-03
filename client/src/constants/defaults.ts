@@ -6,6 +6,7 @@ const defaults: Record<string, any> = {
   isDefaultUnscheduled: false,
   isHideClassInfo: false,
   isHideExamClasses: false,
+  isConvertToLocalTimezone: true,
   selectedCourses: [],
   selectedClasses: {},
   createdEvents: {},
