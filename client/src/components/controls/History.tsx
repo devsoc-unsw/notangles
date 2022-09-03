@@ -151,13 +151,29 @@ const History: React.FC = () => {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (!event.ctrlKey || !(event.key === 'z' || event.key === 'y')) return;
+    
+    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
     event.preventDefault();
-    if (event.key === 'z' && actionsPointer.current > 1) {
-      changeHistory(-1);
+
+    const isMacOS = (navigator.userAgent.indexOf("Mac") != -1);
+    
+    // If uses ctrl.
+    if (!isMacOS && event.ctrlKey) {
+      if (event.key === 'z' && actionsPointer.current > 1) {
+        changeHistory(-1);
+      }
+      if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
+        changeHistory(1);
+      }
     }
-    if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
-      changeHistory(1);
+    // If uses cmd.
+    if (isMacOS && event.metaKey) {
+      if (!event.shiftKey && event.key === 'z' && actionsPointer.current > 1) {
+        changeHistory(-1);
+      }
+      if (event.shiftKey && event.key === 'z' && actionsPointer.current + 1 < actions.current.length) {
+        changeHistory(1);
+      }
     }
   };
 
@@ -166,6 +182,15 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
+  let undoTooltip = "Undo (Ctrl+Z)";
+  let redoTooltip = "Redo (Ctrl+Y)";
+
+  // Change tooltip messages if user uses MacOS.
+  if ((navigator.userAgent.indexOf("Mac") != -1)) {
+    undoTooltip = "Undo (Cmd+Z)";
+    redoTooltip = "Redo (Cmd+Shift+Z)";
+  }
+
   return (
     <>
       <Tooltip title="Reset Timetable">
@@ -173,14 +198,14 @@ const History: React.FC = () => {
           <Restore />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Undo (Ctrl+Z)">
+      <Tooltip title={undoTooltip}>
         <span>
           <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)} size="large">
             <Undo />
           </IconButton>
         </span>
       </Tooltip>
-      <Tooltip title="Redo (Ctrl+Y)">
+      <Tooltip title={redoTooltip}>
         <span>
           <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)} size="large">
             <Redo />
