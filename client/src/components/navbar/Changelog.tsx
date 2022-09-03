@@ -15,8 +15,12 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'September 3, 2022',
+    changes: ['Backspace can be used to delete courses in the course selection search bar'],
+  },
+  {
     date: 'September 2, 2022',
-    changes: ['Added setting toggle to convert the timetable to local timezone']
+    changes: ["Added setting to convert the timetable to the user's local timezone"],
   },
   {
     date: 'September 1, 2022',
