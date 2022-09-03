@@ -1,6 +1,6 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Redo, Restore, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Action, Activity, ClassData, CreatedEvents, EventTime, InInventory, SelectedClasses } from '../../interfaces/Periods';
