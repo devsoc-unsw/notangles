@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import { Dialog, Grid, IconButton, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';

@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -161,7 +161,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       <StyledCard
         ref={element}
         onMouseDown={onDown}
-        onTouchStart={onDown}
+        onTouchStart={(event) => {
+          onDown(event);
+          setFullscreenVisible(true);
+        }}
         card={classCard}
         nDays={days.length}
         y={y}
