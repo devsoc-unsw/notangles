@@ -56,11 +56,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const timePickerStart = (isChanged: boolean, newStartTime: Date, start: number) => {
-    return (isChanged ? newStartTime : new Date(2022, 0, 0, start));
+    return (isChanged ? newStartTime : createDateWithTime(start));
   };
 
   const timePickerEnd = (isChanged: boolean, newEndTime: Date, end: number) => {
-    return (isChanged ? newEndTime : new Date(2022, 0, 0, end));
+    return (isChanged ? newEndTime : createDateWithTime(end))
   };
 
   const updateEventTime = (eventTime: EventTime, id: string) => {
@@ -162,6 +162,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setNewDescription(description);
     setNewDays([daysShort[day - 1]]);
     setNewColor(color.toString());
+    setNewStartTime(createDateWithTime(start));
+    setNewEndTime(createDateWithTime(end));
   };
 
   const handleCloseDialog = () => {
