@@ -1,9 +1,9 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AddRounded, CheckRounded, CloseRounded, PersonOutline, SearchRounded, VideocamOutlined } from '@mui/icons-material';
 import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import getCoursesList from '../../api/getCoursesList';
 import { ThemeType } from '../../constants/theme';
@@ -367,12 +367,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
-            onKeyDown={(event: any) => {
-              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === 'z' || event.key === 'y'))) {
-                event.stopPropagation();
-              }
-              // Delete the latest selected course if user backspace.
+            onKeyDown={(event) => {
+              // Delete the latest selected course if backspace is pressed
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
+                event.stopPropagation();
                 setSelectedValue(selectedValue.slice(selectedValue.length - 1));
                 handleRemove(selectedValue[selectedValue.length - 1].code);
               }

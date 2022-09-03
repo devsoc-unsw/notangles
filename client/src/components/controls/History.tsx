@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Redo, Restore, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Action, Activity, ClassData, CreatedEvents, EventTime, InInventory, SelectedClasses } from '../../interfaces/Periods';
@@ -10,6 +10,7 @@ type Actions = Action[];
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
 const initialIndex = 2;
+const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
@@ -150,14 +151,16 @@ const History: React.FC = () => {
     setCreatedEvents(actions.current[initialIndex].events);
   };
 
-  const isMacOS = (navigator.userAgent.indexOf("Mac") != -1);
-
+  /**
+   * Undo/redo accordingly when a hotkey is pressed
+   * @param event The keyboard event that was triggered
+   */
   const handleKeyDown = (event: KeyboardEvent) => {
-
+    // event.metaKey corresponds to the Cmd key on Mac
     if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
+
     event.preventDefault();
-    
-    // If uses ctrl.
+
     if (!isMacOS && event.ctrlKey) {
       if (event.key === 'z' && actionsPointer.current > 1) {
         changeHistory(-1);
@@ -166,7 +169,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
     }
-    // If uses cmd.
+
     if (isMacOS && event.metaKey) {
       if (!event.shiftKey && event.key === 'z' && actionsPointer.current > 1) {
         changeHistory(-1);
@@ -182,14 +185,8 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
-  let undoTooltip = "Undo (Ctrl+Z)";
-  let redoTooltip = "Redo (Ctrl+Y)";
-
-  // Change tooltip messages if user uses MacOS.
-  if (isMacOS) {
-    undoTooltip = "Undo (Cmd+Z)";
-    redoTooltip = "Redo (Cmd+Shift+Z)";
-  }
+  let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
+  let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
 
   return (
     <>
