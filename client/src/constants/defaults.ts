@@ -5,14 +5,11 @@ const defaults: Record<string, any> = {
   isShowOnlyOpenClasses: false,
   isDefaultUnscheduled: false,
   isHideClassInfo: false,
-  isSortAlphabetic: false,
-  userID: '',
-  accessToken: '',
-  userPicture: '',
+  isHideExamClasses: false,
+  isConvertToLocalTimezone: true,
   selectedCourses: [],
   selectedClasses: {},
   createdEvents: {},
-  hasShownInfoMessage: false,
 };
 
 export default defaults;

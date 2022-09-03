@@ -1,18 +1,15 @@
 import React, { useContext } from 'react';
-
 import { inventoryDropzoneOpacity } from '../../constants/theme';
-import { defaultStartTime } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, ClassPeriod } from '../../interfaces/Periods';
+import { Activity, ClassData } from '../../interfaces/Periods';
 import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
+import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
+import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
   const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
-
-  const isDuplicate = (a: ClassPeriod, b: ClassPeriod) =>
-    a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
 
   // Deep-ish copy of activities (so we can combine duplicates without affecting original)
   let newActivities: Record<Activity, ClassData[]> = {};
@@ -36,24 +33,15 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (isHideExamClasses) {
-    if ('Exam' in newActivities) {
-      delete newActivities['Exam'];
-    }
-  }
+  if (isHideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {
-    // All periods for a certain activity
-    let allPeriods: ClassPeriod[] = [];
-
-    newActivities[activity].forEach((classData) => {
-      allPeriods = [...allPeriods, ...classData.periods];
-    });
+    const allPeriods = getAllPeriods(newActivities, activity);
 
     newActivities[activity].forEach((classData) => {
       classData.periods = classData.periods.filter((period) => {
-        const duplicates = allPeriods.filter((other) => isDuplicate(period, other));
+        const duplicates = allPeriods.filter((other) => areDuplicatePeriods(period, other));
 
         return duplicates[0] === period;
       });

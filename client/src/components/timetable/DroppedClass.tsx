@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { ClassData } from '../../interfaces/Periods';
+import { CourseContext } from '../../context/CourseContext';
+import { ClassData, CourseData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -14,6 +16,7 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
+import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 
@@ -30,7 +33,28 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const {
+    earliestStartTime,
+    days,
+    isSquareEdges,
+    isHideClassInfo,
+    setIsDrag,
+    setAlertMsg,
+    setInfoVisibility,
+    setErrorVisibility,
+  } = useContext(AppContext);
+  const { selectedCourses } = useContext(CourseContext);
+
+  let currCourse: CourseData | null = null;
+
+  try {
+    currCourse = getCourseFromClassData(selectedCourses, classCard);
+  } catch (err) {
+    setAlertMsg(unknownErrorMessage);
+    setErrorVisibility(true);
+  }
+
+  if (!currCourse) return <></>;
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
@@ -64,7 +88,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, eventCopy);
+      setDragTarget(classCard, currCourse!, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -91,7 +115,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             try {
               rippleRef.current.stop(eventUp);
             } catch (error) {
-              console.log(error);
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
             }
           }, 100);
         }
@@ -128,9 +153,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
-    activityMaxPeriods = Math.max(
-      ...classCard.class.course.activities[classCard.class.activity].map((classData) => classData.periods.length)
-    );
+    activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
   return (
@@ -140,7 +163,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         onMouseDown={onDown}
         onTouchStart={onDown}
         card={classCard}
-        days={days}
+        nDays={days.length}
         y={y}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
@@ -163,7 +186,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>
-                {classCard.class.course.code} {classCard.class.activity}
+                {classCard.courseCode} {classCard.activity}
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (

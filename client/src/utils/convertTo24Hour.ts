@@ -1,3 +1,7 @@
+/**
+ * @param n The hour to convert
+ * @returns The hour represented in 24 hour format
+ */
 export const to24Hour = (n: number) => {
   let result = `${String((n / 1) >> 0)}:`;
   if ((n % 1) * 60) {
