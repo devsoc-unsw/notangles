@@ -150,12 +150,12 @@ const History: React.FC = () => {
     setCreatedEvents(actions.current[initialIndex].events);
   };
 
+  const isMacOS = (navigator.userAgent.indexOf("Mac") != -1);
+
   const handleKeyDown = (event: KeyboardEvent) => {
-    
+
     if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
     event.preventDefault();
-
-    const isMacOS = (navigator.userAgent.indexOf("Mac") != -1);
     
     // If uses ctrl.
     if (!isMacOS && event.ctrlKey) {
@@ -186,7 +186,7 @@ const History: React.FC = () => {
   let redoTooltip = "Redo (Ctrl+Y)";
 
   // Change tooltip messages if user uses MacOS.
-  if ((navigator.userAgent.indexOf("Mac") != -1)) {
+  if (isMacOS) {
     undoTooltip = "Undo (Cmd+Z)";
     redoTooltip = "Redo (Cmd+Shift+Z)";
   }
