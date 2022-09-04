@@ -21,6 +21,7 @@ export class AuthController {
     return req.user;
   }
 
+  @UseGuards(LoginGuard)
   @Get('/user')
   user(@Req() req: Request) {
     return this.authService.getUser(req.query.userID as string);

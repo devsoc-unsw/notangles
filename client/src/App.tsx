@@ -12,7 +12,13 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
-import { defaultEndTime, defaultStartTime, getAvailableTermDetails, weekdaysLong, unknownErrorMessage } from './constants/timetable';
+import {
+  defaultEndTime,
+  defaultStartTime,
+  getAvailableTermDetails,
+  weekdaysLong,
+  unknownErrorMessage,
+} from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
@@ -21,6 +27,7 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { AuthProvider } from './context/AuthContext';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -112,7 +119,7 @@ const App: React.FC = () => {
 
       try {
         prev[classData.course.code][classData.activity] = classData;
-      } catch(err) {
+      } catch (err) {
         setAlertMsg(unknownErrorMessage);
         setErrorVisibility(true);
       }
@@ -241,18 +248,16 @@ const App: React.FC = () => {
           let classData: ClassData | null = null;
 
           if (classId) {
-
             try {
               let result = undefined;
               result = newSelectedCourses
-              .find((x) => x.code === courseCode)
-              ?.activities[activity].find((x) => x.section === classId);
+                .find((x) => x.code === courseCode)
+                ?.activities[activity].find((x) => x.section === classId);
               if (result) classData = result;
-            } catch(err) {
+            } catch (err) {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);
             }
-
           }
 
           newSelectedClasses[courseCode][activity] = classData;
@@ -364,30 +369,32 @@ const App: React.FC = () => {
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <GlobalStyles styles={globalStyle} />
-          <StyledApp>
-            <Navbar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={assignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
-                  save to calendar
-                </ICSButton>
-                <Footer />
-                <Alerts />
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </LocalizationProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <GlobalStyles styles={globalStyle} />
+            <StyledApp>
+              <Navbar />
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={assignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
+                    save to calendar
+                  </ICSButton>
+                  <Footer />
+                  <Alerts />
+                </Content>
+              </ContentWrapper>
+            </StyledApp>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </StyledEngineProvider>
   );
 };

@@ -10,6 +10,8 @@ async function bootstrap() {
   const appOptions: NestApplicationOptions = { cors: true };
   const app = await NestFactory.create(AppModule, appOptions);
 
+  app.setGlobalPrefix('api');
+
   // Authentication & Session
   app.use(
     session({
