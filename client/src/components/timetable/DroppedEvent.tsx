@@ -3,6 +3,7 @@ import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
@@ -26,7 +27,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -60,7 +62,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventPeriod, eventCopy, eventId);
+      setDragTarget(eventPeriod, null, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -87,7 +89,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
             try {
               rippleRef.current.stop(eventUp);
             } catch (error) {
-              console.log(error);
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
             }
           }, 100);
         }
@@ -122,17 +125,22 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     };
   });
 
+  const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
+
   return (
     <>
       <StyledCard
         card={eventPeriod}
-        days={days}
+        nDays={days.length}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
         cardWidth={cardWidth}
         clashIndex={clashIndex}
         cellWidth={cellWidth}
         ref={element}
+        onTouchStart={() => {
+          setFullscreenVisible(true);
+        }}
         onMouseDown={onDown}
         onMouseOver={() => {
           setFullscreenVisible(true);
@@ -150,10 +158,13 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
-              <StyledCardInfo>
-                <StyledLocationIcon />
-                {eventPeriod.event.location}
-              </StyledCardInfo>
+              {/* only display location on card if event not less than one hour */}
+              {!isLessThanOneHour && (
+                <StyledCardInfo>
+                  <StyledLocationIcon />
+                  {eventPeriod.event.location}
+                </StyledCardInfo>
+              )}
               <TouchRipple ref={rippleRef} />
             </Grid>
           </StyledCardInnerGrid>

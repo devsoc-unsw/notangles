@@ -30,6 +30,8 @@ const Settings: React.FC = () => {
     setIsHideClassInfo,
     isHideExamClasses,
     setIsHideExamClasses,
+    isConvertToLocalTimezone,
+    setIsConvertToLocalTimezone,
   } = useContext(AppContext);
 
   const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
@@ -40,6 +42,7 @@ const Settings: React.FC = () => {
     { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
     { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
     { state: isHideExamClasses, setter: setIsHideExamClasses, desc: 'Hide exam classes' },
+    { state: isConvertToLocalTimezone, setter: setIsConvertToLocalTimezone, desc: 'Convert to local timezone' },
   ];
 
   return (
