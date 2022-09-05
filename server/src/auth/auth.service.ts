@@ -20,6 +20,7 @@ export class AuthService {
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
+
       await this.sendEmail(userInfo.email);
     }
   }
@@ -37,14 +38,14 @@ export class AuthService {
       subject: 'Notangles',
       text: 'Welcome to Notangles!',
       html: '<strong>Some message here!</strong>',
-    }
+    };
     sgMail
-    .send(msg)
-    .then(() => {
-      console.log('Email sent!');
-    })
-    .catch((error) => {
-      console.error("Error occured: ", error);
-    })
+      .send(msg)
+      .then(() => {
+        console.log('Email sent!');
+      })
+      .catch((error) => {
+        console.error('Error occured: ', error);
+      });
   }
 }

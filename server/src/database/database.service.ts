@@ -6,6 +6,7 @@ import {
   SettingsDocument,
   Timetable,
   TimetableDocument,
+  User,
   UserDocument,
 } from '../schemas/user.schema';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
@@ -17,8 +18,9 @@ import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
 export class DatabaseService {
   constructor(
     @InjectModel('UserSettings') private settingsModel: Model<SettingsDocument>,
-    @InjectModel('UserTimetable') private timetableModel: Model<TimetableDocument>,
-    @InjectModel('User') private userModel: Model<UserDocument>
+    @InjectModel('UserTimetable')
+    private timetableModel: Model<TimetableDocument>,
+    @InjectModel('User') private userModel: Model<UserDocument>,
   ) {}
 
   async createSettings(
@@ -55,5 +57,12 @@ export class DatabaseService {
       { google_uid: userID },
       { $set: { timetable: new this.timetableModel(timetableData) } },
     );
+  }
+
+  async saveUserTimetable(timetableData: UserTimetablesDto, userID: string) {
+    this.userModel.findById({ google_uid: userID }).then((user) => {
+      user.timetable = timetableData;
+      user.save();
+    });
   }
 }

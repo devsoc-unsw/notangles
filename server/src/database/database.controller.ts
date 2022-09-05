@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
   Request,
   UseInterceptors,
 } from '@nestjs/common';
@@ -10,6 +12,7 @@ import { Timetable, Settings } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseService } from './database.service';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/database.dto';
+import { User } from '@sentry/node';
 
 // @UseInterceptors(SessionSerializer) // I think? (uncomment me when i work)
 @Controller('database')
@@ -43,5 +46,10 @@ export class DatabaseController {
     @Body() body: UserTimetablesDto,
   ): Promise<Timetable> {
     return this.databaseService.createTimetable(body, req.user.userId);
+  }
+
+  @Post('/savetimetable')
+  async saveTimetable(@Request() req, @Body() body: UserTimetablesDto) {
+    this.databaseService.saveUserTimetable(body, req.user.userId);
   }
 }

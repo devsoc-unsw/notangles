@@ -10,7 +10,7 @@ interface Config {
   auto: string;
 }
 
-const LOCAL = 'http://localhost:3001';
+const LOCAL = 'http://localhost:3002';
 const LIVE = 'https://timetable.csesoc.app';
 
 const API_CONFIG: Record<string, Config> = Object.freeze({
