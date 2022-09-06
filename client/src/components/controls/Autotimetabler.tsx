@@ -18,8 +18,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-
 import getAutoTimetable from '../../api/getAutoTimetable';
+import { unknownErrorMessage, weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import NetworkError from '../../interfaces/NetworkError';
@@ -28,6 +28,7 @@ import { AutotimetableProps } from '../../interfaces/PropTypes';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import DropdownOption from '../timetable/DropdownOption';
+import { createDateWithTime } from '../../utils/eventTimes';
 
 const DropdownButton = styled(Button)`
   && {
@@ -64,41 +65,41 @@ const ExecuteButton = styled(Button)`
 type ClassMode = 'hybrid' | 'in person' | 'online';
 
 const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => {
-  const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
-
   const [daysAtUni, setDaysAtUni] = useState<number>(5);
   // const [friendsInClasses, setFriendsInClasses] = useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = useState<number>(0);
-  const [days, setDays] = useState<Array<string>>(weekdays);
-  const [startTime, setStartTime] = useState<Date>(new Date(2022, 0, 0, 9));
-  const [endTime, setEndTime] = useState<Date>(new Date(2022, 0, 0, 21));
+  const [days, setDays] = useState<Array<string>>(weekdaysShort);
+  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
+  const [endTime, setEndTime] = useState<Date>(createDateWithTime(21));
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
-  const [isOpenInfo, setIsOpenInfo] = React.useState(false);
+  const [isOpenInfo, setIsOpenInfo] = useState(false);
 
-  // anchorEl sets position of the Autotimetabling popover
+  // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // Whether the popover is shown
+  const open = Boolean(anchorEl);
+  const popoverId = open ? 'simple-popover' : undefined;
 
-  const { setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setAutoVisibility, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
-
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
 
-  // caches targetActivities and periodInfoPerMode in advance
   useEffect(() => {
     if (!selectedCourses || !selectedCourses.length) return;
 
     targetActivities.current = selectedCourses
-      .map((v) => Object.entries(v.activities).filter(([a, b]) => !a.startsWith('Lecture') && !a.startsWith('Exam')))
-      .reduce((a, b) => {
-        return a.concat(b);
-      })
-      .map((a) => a[1])
-      .filter((f) => f.some((c) => c.periods.length))
-      .map((classArray) => classArray.filter((c) => c.periods.length)); // filter out classes with no periods
+      .map((v) =>
+        Object.entries(v.activities).filter(
+          ([activity, classes]) => !activity.startsWith('Lecture') && !activity.startsWith('Exam')
+        )
+      )
+      .reduce((a, b) => a.concat(b))
+      .map(([activity, classes]) => classes)
+      .filter((classes) => classes.some((c) => c.periods.length))
+      .map((classes) => classes.filter((c) => c.periods.length));
 
-    // [[hasInPerson, hasOnline], ...]
     const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
@@ -144,9 +145,6 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     setIsOpenInfo(!isOpenInfo);
   };
 
-  const open = Boolean(anchorEl);
-  const popoverId = open ? 'simple-popover' : undefined;
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -159,24 +157,31 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     setDays(newFormats);
   };
 
+  /**
+   *
+   * @param classData The class
+   * @returns Whether the class has periods offered in the current teaching mode
+   */
+  const rightLocation = (classData: ClassData) => {
+    return (
+      classMode === 'hybrid' ||
+      classData.periods.some((p) => p.locations.length && (classMode === 'online') === ('Online' === p.locations[0]))
+    );
+  };
+
   const doAuto = async () => {
+    if (!selectedCourses || !selectedCourses.length) return;
+
+    const selectedDays = days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
+    const selectedDaysStr = selectedDays.length ? selectedDays.reduce((a, b) => a + b) : '12345';
+
     const autoParams: Array<string | number> = [
       startTime.getHours(),
       endTime.getHours(),
-      days.map((v) => (weekdays.indexOf(v) + 1).toString()).reduce((a, b) => a + b),
+      selectedDaysStr,
       breaksBetweenClasses,
       daysAtUni,
     ];
-
-    const rightLocation = (aClass: ClassData) => {
-      // gives online/inperson variant if mode is online/inperson
-      return (
-        classMode === 'hybrid' ||
-        aClass.periods.some((p) => p.locations.length && (classMode === 'online') === ('Online' === p.locations[0]))
-      );
-    };
-
-    if (!selectedCourses || !selectedCourses.length) return;
 
     const timetableData: { [k: string]: any } = ['start', 'end', 'days', 'gap', 'maxdays']
       .map((k, index) => [k, autoParams[index]])
@@ -192,20 +197,24 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
       results.forEach((timeAsNum, index) => {
         const [day, start] = [Math.floor(timeAsNum / 100), (timeAsNum % 100) / 2];
-        const k = targetActivities.current[index].find(
+
+        // Find each class specified by the autotimetabler and update the timetable
+        const allocatedClass = targetActivities.current[index].find(
           (c) => c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c)
         );
 
-        if (k !== undefined) {
-          handleSelectClass(k);
-        }
+        if (allocatedClass !== undefined) handleSelectClass(allocatedClass);
       });
     } catch (e) {
       if (e instanceof NetworkError) {
         setAutoVisibility(true);
-        setAlertMsg("Couldn't get response.");
+        setAlertMsg("Couldn't get response");
+      } else {
+        setErrorVisibility(true);
+        setAlertMsg(unknownErrorMessage);
       }
     }
+
     setAnchorEl(null);
   };
 
@@ -307,7 +316,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             optionName="Days"
             optionState={days}
             setOptionState={handleFormat}
-            optionChoices={weekdays}
+            optionChoices={weekdaysShort}
             multiple={true}
             noOff
           />
