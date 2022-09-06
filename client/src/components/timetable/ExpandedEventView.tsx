@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover, TextField, Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
 import { daysLong, daysShort } from '../../constants/timetable';
@@ -58,7 +57,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   /**
    * @param isChanged Indicates if an edit has been made to the start of the event
-   * @param newStartTime The new edited start time 
+   * @param newStartTime The new edited start time
    * @param start The original starting time of the event
    * @returns The correct time to display on the time picker.
    * The newStartTime is only displayed if an edit has been made, otherwise the
@@ -70,7 +69,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
   /**
    * @param isChanged Indicates if an edit has been made to the end of the event
-   * @param newEndTime The new edited start time 
+   * @param newEndTime The new edited start time
    * @param end The original ending time of the event
    * @returns The correct time to display on the time picker.
    * The newEndTime is only displayed if an edit has been made, otherwise the
