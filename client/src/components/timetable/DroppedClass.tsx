@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData } from '../../interfaces/Periods';
+import { ClassData, CourseData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -32,10 +33,28 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const { setInfoVisibility, isSquareEdges, isHideClassInfo, days, earliestStartTime, setIsDrag } = useContext(AppContext);
+  const {
+    earliestStartTime,
+    days,
+    isSquareEdges,
+    isHideClassInfo,
+    setIsDrag,
+    setAlertMsg,
+    setInfoVisibility,
+    setErrorVisibility,
+  } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
-  const currCourse = getCourseFromClassData(selectedCourses, classCard);
+  let currCourse: CourseData | null = null;
+
+  try {
+    currCourse = getCourseFromClassData(selectedCourses, classCard);
+  } catch (err) {
+    setAlertMsg(unknownErrorMessage);
+    setErrorVisibility(true);
+  }
+
+  if (!currCourse) return <></>;
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
@@ -96,7 +115,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             try {
               rippleRef.current.stop(eventUp);
             } catch (error) {
-              console.log(error);
+              setAlertMsg(unknownErrorMessage);
+              setErrorVisibility(true);
             }
           }, 100);
         }
@@ -141,9 +161,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       <StyledCard
         ref={element}
         onMouseDown={onDown}
-        onTouchStart={onDown}
+        onTouchStart={(event) => {
+          onDown(event);
+          setFullscreenVisible(true);
+        }}
         card={classCard}
-        days={days}
+        nDays={days.length}
         y={y}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}

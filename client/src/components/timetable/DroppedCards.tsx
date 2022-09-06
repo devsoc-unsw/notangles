@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Activity, CourseCode } from '../../interfaces/Periods';
@@ -11,6 +11,7 @@ import DroppedEvent from './DroppedEvent';
 
 const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
+  const [cellWidth, setCellWidth] = useState(0);
 
   const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
@@ -24,19 +25,28 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
   const keyCounter = useRef(0);
   const inventoryCards = useRef<ClassCard[]>([]);
 
+  const droppedCardsRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * @param courseCode The course code of the activity
+   * @param activity The activity
+   * @returns The inventory period corresponding to that activity
+   */
   const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
     selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
 
+  // Get all scheduled and unscheduled periods
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
-      // Filter out exam classes if isHideExamClasses setting is toggled on
       if (isHideExamClasses && activity === 'Exam') return;
+
       if (classData) {
+        // The current period is a scheduled
         classData.periods.forEach((classPeriod) => {
           classCards.push(classPeriod);
         });
       } else {
-        // in inventory
+        // The current period is in the inventory
         const inventoryPeriod = getInventoryPeriod(courseCode, activity);
         if (inventoryPeriod) {
           classCards.push(inventoryPeriod);
@@ -65,79 +75,91 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     }
   });
 
+  prevClassCards.current = [...classCards];
+
   // Handles getting width of a cell in the grid
-  const myRef = React.useRef<HTMLDivElement>(null);
-  const [cellWidth, setCellWidth] = useState(0);
   useLayoutEffect(() => {
+    /**
+     * Updates the computed width of each cell on the grid as the size of the timetable changes
+     */
     const updateCellWidth = () => {
-      if (myRef.current) {
-        const gridChildren = (myRef.current as unknown as HTMLDivElement).parentElement?.children;
+      if (droppedCardsRef.current) {
+        const gridChildren = (droppedCardsRef.current as unknown as HTMLDivElement).parentElement?.children;
 
         if (gridChildren) {
           setCellWidth(gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect().width);
         }
       }
     };
+
     window.addEventListener('resize', updateCellWidth);
     updateCellWidth();
+
     return () => window.removeEventListener('resize', updateCellWidth);
   }, [days]);
 
   const clashes = findClashes(selectedClasses, createdEvents);
 
+  // Generate classes
   classCards.forEach((classCard) => {
-    let key = cardKeys.get(classCard);
-    key = key !== undefined ? key : ++keyCounter.current;
+    try {
+      let key = cardKeys.get(classCard);
+      key = key !== undefined ? key : ++keyCounter.current;
+      const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
 
-    const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard, setErrorVisibility, setAlertMsg);
-
-    droppedClasses.push(
-      <DroppedClass
-        key={key}
-        classCard={classCard}
-        color={assignedColors[classCard.courseCode]}
-        y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
-        handleSelectClass={handleSelectClass}
-        cardWidth={cardWidth as number}
-        clashIndex={clashIndex as number}
-        clashColour={clashColour as string}
-        cellWidth={cellWidth}
-      />
-    );
-
-    cardKeys.set(classCard, key);
-  });
-
-  prevClassCards.current = [...classCards];
-
-  // Sort by key to prevent disruptions to transitions
-  droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
-
-  cardKeys.forEach((_, classCard) => {
-    if (!classCards.includes(classCard)) {
-      cardKeys.delete(classCard);
+      droppedClasses.push(
+        <DroppedClass
+          key={key}
+          classCard={classCard}
+          color={assignedColors[classCard.courseCode]}
+          y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
+          handleSelectClass={handleSelectClass}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          clashColour={clashColour as string}
+          cellWidth={cellWidth}
+        />
+      );
+      cardKeys.set(classCard, key);
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
     }
   });
 
+  // Sort classes by key to prevent disruptions to transitions
+  droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
+
+  // Clear any cards which no longer exist
+  cardKeys.forEach((_, classCard) => {
+    if (!classCards.includes(classCard)) cardKeys.delete(classCard);
+  });
+
+  // Generate events
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
-    const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod, setErrorVisibility, setAlertMsg);
-    droppedEvents.push(
-      <DroppedEvent
-        key={key}
-        eventId={key}
-        eventPeriod={eventPeriod}
-        cardWidth={cardWidth as number}
-        clashIndex={clashIndex as number}
-        cellWidth={cellWidth}
-      />
-    );
+    try {
+      const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
+      droppedEvents.push(
+        <DroppedEvent
+          key={key}
+          eventId={key}
+          eventPeriod={eventPeriod}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          cellWidth={cellWidth}
+        />
+      );
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
   });
 
   return (
     // TODO Fix CSSTransition please
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
-    <div style={{ display: 'contents' }} ref={myRef}>
+    <div style={{ display: 'contents' }} ref={droppedCardsRef}>
       {droppedClasses}
       {droppedEvents}
     </div>
