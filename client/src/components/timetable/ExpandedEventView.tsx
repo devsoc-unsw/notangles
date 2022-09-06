@@ -214,7 +214,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <ListItemIcon>
                 <Notes />
               </ListItemIcon>
-
               <TextField
                 fullWidth={true}
                 label="Description (optional)"
@@ -232,7 +231,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <ListItemIcon>
                 <LocationOn />
               </ListItemIcon>
-
               <TextField
                 fullWidth={true}
                 id="outlined-required"
