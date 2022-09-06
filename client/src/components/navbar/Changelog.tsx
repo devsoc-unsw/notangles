@@ -15,7 +15,7 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
-    date: 'September 3, 2022',
+    date: 'September 6, 2022',
     changes: ['Added ability to clone a created custom event'],
   },
   {
