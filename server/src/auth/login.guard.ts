@@ -17,7 +17,7 @@ export class LoginGuard extends AuthGuard('oidc') {
     // adding user data to DB if first time logging in
     await this.authService.createUser(request.user.userinfo).then(() => {
       // TODO: remove this console.log
-      console.log(request.user);
+      //console.log(request.user);
     });
 
     await super.logIn(request);

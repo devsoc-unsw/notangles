@@ -20,22 +20,38 @@ export class DatabaseController {
   constructor(private readonly databaseService: DatabaseService) {}
 
   @Get('/user')
-  async user(@Request() req): Promise<UserInterface | null> {
-    return this.databaseService.getUser(req.query.userId);
+  async user(@Request() req): Promise<User | null> {
+    /**
+     * The parameter is the user's google_uid
+     * eg controller 1): api/database/user?userFullName=Raiyan_Ahmed
+     *  will yield all the users with name Raiyan_Ahmed (note on the capitalisation)
+     *  (note that this is not the same as the user's name in the database)
+     *  TODO: make this more robust by changing it to lowercase from the getgo?
+     *
+     * eg controller 2): api/database/user?userId=<some google_uid>
+     *  will yield the user with the google_uid that corresponds to the one in the database.
+     *  this is unique to each user.
+     */
+
+    if (req.query.userId) {
+      return this.databaseService.getUser(req.query.userId);
+    } else if (req.query.userFullName) {
+      return this.databaseService.getUserByFullName(req.query.userFullName);
+    }
   }
 
-  // utility function
+  // utility function to get all the users in database.
   @Get('/users')
-  async users(): Promise<UserInterface | null> {
+  async users(): Promise<User | null> {
     return this.databaseService.getAllUsers();
   }
 
   // @UseGuards(<guardhere>)
   @Get('/settings')
   async getSettings(@Request() req): Promise<UserSettingsDto> {
-    this.databaseService.getSettings(req.query.userId).then((r) => {
-      console.log(r);
-    });
+    // this.databaseService.getSettings(req.query.userId).then((r) => {
+    //   console.log(r);
+    // });
     return this.databaseService.getSettings(req.query.userId);
   }
   // @UseGuards(<guardhere>)

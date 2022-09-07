@@ -60,19 +60,27 @@ export class DatabaseService {
   }
 
   async getUser(userID: string): Promise<User> {
-    console.log(userID as string);
-    this.userModel.find({}).then((e) => console.log(e));
+    // console.log(userID as string);
+    // this.userModel.find({}).then((e) => console.log(e));
     return this.userModel.findOne({ google_uid: userID });
+  }
+
+  async getUserByFullName(userFullName: string): Promise<Promise<User>[]> {
+    // userFullName is in the format of "firstname_lastname"
+    // Case sensitve search: The first and last characters are capitalised.
+    // TODO: store the first name and last name as lower case?
+    // so searching is more efficient and we do not have to handle weird edge cases later.
+    return this.userModel.find({
+      $and: [
+        { firstname: userFullName.split('_')[0] },
+        { lastname: userFullName.split('_')[1] },
+      ],
+    });
   }
 
   async getAllUsers(): Promise<User> {
-    this.userModel.find({}).then((e) => console.log(e));
+    // this.userModel.find({}).then((e) => console.log(e));
     return this.userModel.findOne({});
-  }
-
-  // This is not completely finished
-  async addDummyUser(userID: string): Promise<User> {
-    return this.userModel.findOne({ google_uid: userID });
   }
 
   async saveUserTimetable(timetableData: UserTimetablesDto, userID: string) {
