@@ -4,14 +4,14 @@ import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/ma
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
-import { v4 as uuidv4 } from 'uuid';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
+import { createNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 
@@ -26,13 +26,6 @@ const DropdownButton = styled(Button)`
       background-color: #598dff;
     }
   }
-`;
-
-const ExecuteButton = styled(Button)`
-  margin-top: 4px;
-  height: 40px;
-  width: 100%;
-  border-radius: 0px 0px 5px 5px;
 `;
 
 const CustomEvent: React.FC = () => {
@@ -106,26 +99,11 @@ const CustomEvent: React.FC = () => {
   };
 
   const createEvent = (day: string) => {
-    const uuid = uuidv4();
-    const newEvent: EventPeriod = {
-      type: 'event',
-      event: {
-        id: uuid,
-        name: eventName,
-        location: location,
-        description: description,
-        color: color,
-      },
-      time: {
-        day: daysShort.indexOf(day) + 1,
-        start: startTime.getHours() + startTime.getMinutes() / 60,
-        end: endTime.getHours() + endTime.getMinutes() / 60,
-      },
-    };
+    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime)
 
     setCreatedEvents({
       ...createdEvents,
-      [uuid]: newEvent,
+      [newEvent.event.id]: newEvent,
     });
 
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
