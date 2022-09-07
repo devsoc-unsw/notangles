@@ -631,6 +631,7 @@ export const setDragTarget = (
 
       lastRecWidth = element.getBoundingClientRect().width;
 
+      prevWidth = -1;
       resizeObserver.observe(dragElement);
 
       if (cardData.type !== 'event') {
