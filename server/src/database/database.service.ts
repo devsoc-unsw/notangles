@@ -59,10 +59,30 @@ export class DatabaseService {
     );
   }
 
+  async getUser(userID: string): Promise<User> {
+    console.log(userID as string);
+    this.userModel.find({}).then((e) => console.log(e));
+    return this.userModel.findOne({ google_uid: userID });
+  }
+
+  async getAllUsers(): Promise<User> {
+    this.userModel.find({}).then((e) => console.log(e));
+    return this.userModel.findOne({});
+  }
+
+  // This is not completely finished
+  async addDummyUser(userID: string): Promise<User> {
+    return this.userModel.findOne({ google_uid: userID });
+  }
+
   async saveUserTimetable(timetableData: UserTimetablesDto, userID: string) {
-    this.userModel.findById({ google_uid: userID }).then((user) => {
-      user.timetable = timetableData;
-      user.save();
-    });
+    try {
+      this.userModel.findOneAndUpdate(
+        { google_uid: userID },
+        { $set: { timetable: timetableData } },
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

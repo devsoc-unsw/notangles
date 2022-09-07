@@ -36,6 +36,7 @@ export class AuthController {
   @Get('/logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     req.session.destroy(() => {
+      this.authService.logoutUser(req.query.userID as string);
       res.clearCookie('connect.sid');
       res.redirect('/');
     });

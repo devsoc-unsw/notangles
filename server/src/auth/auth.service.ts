@@ -12,22 +12,47 @@ export class AuthService {
     let isCurrentUser = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
       const newUser = {
+        // Adding new user information from google to the database
         google_uid: userInfo.sub,
         firstname: userInfo.given_name,
         lastname: userInfo.family_name,
         email: userInfo.email,
         createdAt: new Date().toISOString().slice(0, 10),
+        lastLogin: new Date().toISOString().slice(0, 10),
+        profileURL: userInfo.picture,
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
-
       await this.sendEmail(userInfo.email);
+    } else {
+      // Updating the last login date of the user
+      await this.userModel.findOneAndUpdate(
+        { google_uid: userInfo.sub },
+        {
+          $set: {
+            profileURL: userInfo.picture,
+            lastLogin: new Date().toISOString().slice(0, 10),
+            loggedIn: true,
+          },
+        },
+      );
     }
   }
 
   async getUser(uidGiven: string): Promise<UserInterface | null> {
     const response = await this.userModel.find({ google_uid: uidGiven });
     return response.length !== 0 ? response.at(0) : null;
+  }
+
+  async logoutUser(uidGiven: string): Promise<void> {
+    await this.userModel.findOneAndUpdate(
+      { google_uid: uidGiven },
+      {
+        $set: {
+          loggedIn: false,
+        },
+      },
+    );
   }
 
   async sendEmail(userEmail: string): Promise<any> {
