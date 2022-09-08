@@ -8,6 +8,7 @@ import { AutoModule } from './auto/auto.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
+import { FriendController } from './friend/friend.controller';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UserModule } from './user/user.module';
     DatabaseModule,
     UserModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, FriendController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -27,3 +27,12 @@ export class UserTimetablesDto {
   selectedCourses: string[];
   selectedClasses: Record<string, Record<string, string>>;
 }
+
+export class FriendRequestDto {
+  userId: string;
+  friendId: string;
+  constructor(userId: string, friendId: string) {
+    this.userId = userId;
+    this.friendId = friendId;
+  }
+}
