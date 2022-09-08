@@ -7,6 +7,7 @@ import { SumModule } from './sum/sum.module';
 import { AutoModule } from './auto/auto.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from './database/database.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DatabaseModule } from './database/database.module';
     // AutoModule,
     MongooseModule.forRoot(`${process.env.DATABASE_URL}`),
     DatabaseModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

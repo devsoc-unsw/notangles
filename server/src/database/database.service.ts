@@ -59,6 +59,13 @@ export class DatabaseService {
     );
   }
 
+  async deleteTimetable(userID: string): Promise<Timetable> {
+    return this.userModel.findOneAndUpdate(
+      { google_uid: userID },
+      { $set: { timetable: new this.timetableModel() } },
+    );
+  }
+
   async getUser(userID: string): Promise<User> {
     // console.log(userID as string);
     // this.userModel.find({}).then((e) => console.log(e));
@@ -81,16 +88,5 @@ export class DatabaseService {
   async getAllUsers(): Promise<User> {
     // this.userModel.find({}).then((e) => console.log(e));
     return this.userModel.findOne({});
-  }
-
-  async saveUserTimetable(timetableData: UserTimetablesDto, userID: string) {
-    try {
-      this.userModel.findOneAndUpdate(
-        { google_uid: userID },
-        { $set: { timetable: timetableData } },
-      );
-    } catch (e) {
-      console.error(e);
-    }
   }
 }

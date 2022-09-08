@@ -26,7 +26,7 @@ export class AuthService {
         profileURL: userInfo.picture,
         loggedIn: true,
         settings: new UserSettingsDto(false, false, false, false, false, false),
-        timetable: new UserTimetablesDto(),
+        timetables: [],
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
