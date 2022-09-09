@@ -41,28 +41,60 @@ export class DatabaseService {
       .then((r) => r.settings);
   }
 
-  async getTimetable(userID: string): Promise<Timetable> {
+  async getTimetables(userID: string): Promise<UserTimetablesDto[]> {
     return this.userModel
       .findOne({ google_uid: userID })
-      .select('timetable')
+      .select('timetables')
       .exec()
-      .then((r) => r.timetable);
+      .then((r) => {
+        return r.timetables;
+      });
   }
 
   async createTimetable(
     timetableData: UserTimetablesDto,
     userID: string,
-  ): Promise<Timetable> {
+  ): Promise<UserTimetablesDto[]> {
+    const uuid = require('uuid');
+    const generatedId = uuid.v4();
+    const timetable = new this.timetableModel({
+      timetableId: generatedId,
+      selectedClasses: timetableData.selectedClasses,
+      selectedCourses: timetableData.selectedCourses,
+      events: timetableData.events,
+    });
+
+    // console.log(timetable);
+    // console.log('TEST');
+    // console.log(timetableData.events);
     return this.userModel.findOneAndUpdate(
       { google_uid: userID },
-      { $set: { timetable: new this.timetableModel(timetableData) } },
+      { $push: { timetables: new this.timetableModel(timetable) } },
     );
   }
 
-  async deleteTimetable(userID: string): Promise<Timetable> {
+  async deleteTimetable(
+    userID: string,
+    ttToDeleteId: string,
+  ): Promise<UserTimetablesDto[]> {
+    console.log('deleting timetable with id: ' + ttToDeleteId);
     return this.userModel.findOneAndUpdate(
       { google_uid: userID },
-      { $set: { timetable: new this.timetableModel() } },
+      { $pull: { timetables: { timetableId: ttToDeleteId } } },
+      { safe: true, multi: false },
+    );
+  }
+
+  async editTimetable(
+    userID: string,
+    edittedTimetable: UserTimetablesDto,
+  ): Promise<UserTimetablesDto[]> {
+    return this.userModel.findOneAndUpdate(
+      { google_uid: userID },
+      { $set: { 'timetables.$[elem]': edittedTimetable } },
+      {
+        arrayFilters: [{ 'elem.timetableId': edittedTimetable.timetableId }],
+      },
     );
   }
 
@@ -86,7 +118,6 @@ export class DatabaseService {
   }
 
   async getAllUsers(): Promise<User> {
-    // this.userModel.find({}).then((e) => console.log(e));
     return this.userModel.findOne({});
   }
 }

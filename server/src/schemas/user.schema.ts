@@ -1,6 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {
+  Events,
   UserSettingsDto,
   UserTimetablesDto,
 } from 'src/database/dtos/database.dto';
@@ -39,6 +40,8 @@ export type TimetableDocument = Timetable & Document;
 export class Timetable {
   // @Prop({unique: true, required: true })
   // userID: string;
+  @Prop({ unique: true, required: true })
+  timetableId: string;
 
   @Prop([String])
   selectedCourses: string[];
@@ -53,6 +56,9 @@ export class Timetable {
     }),
   )
   selectedClasses: Record<string, Record<string, string>>;
+
+  @Prop([Events])
+  events: Events[];
 }
 
 export const UserTimetableSchema = SchemaFactory.createForClass(Timetable);
@@ -71,7 +77,7 @@ export class User {
   @Prop() loggedIn: Boolean;
 
   @Prop({ type: UserSettingsSchema }) settings: UserSettingsDto;
-  @Prop({ type: UserTimetableSchema }) timetable: UserTimetablesDto;
+  @Prop([{ type: UserTimetableSchema }]) timetables: UserTimetablesDto[];
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
@@ -90,5 +96,5 @@ export interface UserInterface {
   lastLogin?: Date;
   loggedIn?: Boolean;
   settings: UserSettingsDto;
-  timetable: UserTimetablesDto;
+  timetables: UserTimetablesDto[];
 }

@@ -45,11 +45,8 @@ export class UserController {
 
   // @UseGuards(<guardhere>)
   @Get('/settings/:userId')
-  async getSettings(@Request() req): Promise<UserSettingsDto> {
-    // this.databaseService.getSettings(req.query.userId).then((r) => {
-    //   console.log(r);
-    // });
-    return this.databaseService.getSettings(req.query.userId);
+  async getSettings(@Request() req): Promise<Settings> {
+    return this.databaseService.getSettings(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
@@ -63,8 +60,8 @@ export class UserController {
 
   // @UseGuards(<guardhere>)
   @Get('/timetable/:userId')
-  async getTimetable(@Request() req): Promise<Timetable> {
-    return this.databaseService.getTimetable(req.params.userId);
+  async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
+    return this.databaseService.getTimetables(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
@@ -72,22 +69,29 @@ export class UserController {
   async createTimetable(
     @Request() req,
     @Body() body: UserTimetablesDto,
-  ): Promise<Timetable> {
+  ): Promise<UserTimetablesDto[]> {
     return this.databaseService.createTimetable(body, req.params.userId);
   }
 
-  //   // @UseGuards(<guardhere>)
-  //   @Put('/timetable')
-  //   async editTimetable(
-  //     @Request() req,
-  //     @Body() body: UserTimetablesDto,
-  //   ): Promise<Timetable> {
-  //     return this.databaseService.createTimetable(body, req.params.userId);
-  //   }
+  // // @UseGuards(<guardhere>)
+  // @Put('/timetable/:userId/:timetableId')
+  // async editTimetable(
+  //   @Request() req,
+  //   @Body() body: UserTimetablesDto,
+  // ): Promise<UserTimetablesDto[]> {
+  //   return this.databaseService.editTimetable(
+  //     body,
+  //     req.params.userId,
+  //     req.params.timetableId,
+  //   );
+  // }
 
   // @UseGuards(<guardhere>)
-  @Delete('/timetable/:userId')
-  async deleteTimetable(@Request() req): Promise<Timetable> {
-    return this.databaseService.deleteTimetable(req.params.userId);
+  @Delete('/timetable/:userId/:timetableId')
+  async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
+    return this.databaseService.deleteTimetable(
+      req.params.userId,
+      req.params.timetableId,
+    );
   }
 }

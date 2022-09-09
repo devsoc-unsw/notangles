@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { FriendController } from './friend/friend.controller';
+import { FriendModule } from './friend/friend.module';
 
 @Module({
   imports: [
@@ -18,9 +19,10 @@ import { FriendController } from './friend/friend.controller';
     // AutoModule,
     MongooseModule.forRoot(`${process.env.DATABASE_URL}`),
     DatabaseModule,
+    FriendModule,
     UserModule,
   ],
-  controllers: [AppController, FriendController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

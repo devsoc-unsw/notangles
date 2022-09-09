@@ -24,8 +24,10 @@ export class UserSettingsDto {
 }
 
 export class UserTimetablesDto {
+  timetableId: string;
   selectedCourses: string[];
   selectedClasses: Record<string, Record<string, string>>;
+  events: Events[];
 }
 
 export class FriendRequestDto {
@@ -35,4 +37,17 @@ export class FriendRequestDto {
     this.userId = userId;
     this.friendId = friendId;
   }
+}
+
+export class Events {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  color: string;
+  time: {
+    day: string;
+    start: string;
+    end: string;
+  };
 }

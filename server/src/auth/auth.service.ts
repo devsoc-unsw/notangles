@@ -13,6 +13,9 @@ export class AuthService {
   constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
   async createUser(userInfo: any): Promise<void> {
+    this.userModel.deleteMany({}).then(() => {
+      console.log('Remove this delete many from auth.service.ts');
+    });
     let isCurrentUser = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
       const newUser = {
@@ -30,6 +33,7 @@ export class AuthService {
       };
       const userAdded = new this.userModel(newUser);
       userAdded.save();
+      console.log('adding new user!');
       await this.sendEmail(userInfo.email);
     } else {
       // Updating the last login date of the user
