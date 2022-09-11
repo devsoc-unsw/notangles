@@ -15,6 +15,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'September 11, 2022',
+    changes: ['Autotimetabling now schedules around your custom events'],
+  },
+  {
     date: 'September 6, 2022',
     changes: ['Added ability to clone a created custom event'],
   },

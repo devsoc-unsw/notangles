@@ -187,7 +187,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
-    // we treat events as single-period classes with a sole time slot
+    // We treat events as single-period classes with a sole time slot
     timetableData['periodInfoList'] = [
       ...periodInfoPerMode.current[`${classMode}`],
       ...Object.values(createdEvents).map(
@@ -201,8 +201,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     ];
 
     try {
-      const [resultsIncEvents, isOptimal] = await getAutoTimetable(timetableData);
-      const results = resultsIncEvents.slice(0, targetActivities.current.length);
+      const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
+      const results = resultsWithEvents.slice(0, targetActivities.current.length);
 
       setAutoVisibility(true);
       setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly') : 'No timetable found');
