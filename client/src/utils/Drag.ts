@@ -611,9 +611,6 @@ export const setDragTarget = (
       freezeTransform(element);
       dragElement = element;
 
-      // Take into account how much the screen has scrolled
-      lastX += scrollElement.scrollLeft;
-
       // Save the original coordinates of the card
       // The type of event is different on a computer v.s. a mobile device
       if (typeof event.pageX === 'number' && typeof event.pageY === 'number') {
@@ -626,6 +623,9 @@ export const setDragTarget = (
           lastY = touch.pageY;
         }
       }
+
+      // Take into account how much the screen has scrolled
+      lastX += scrollElement.scrollLeft;
 
       updateDropTarget(true);
 
