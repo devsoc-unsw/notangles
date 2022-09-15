@@ -16,7 +16,7 @@ import {
   getAvailableTermDetails,
   getDefaultEndTime,
   getDefaultStartTime,
-  unknownErrorMessage
+  unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
@@ -28,6 +28,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { AuthProvider } from './context/AuthContext';
+import { RoomProvider } from './utils/liveblocks.config';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -95,6 +96,8 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermNumber,
+    roomKey,
+    setRoomKey,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -432,30 +435,32 @@ const App: React.FC = () => {
   return (
     <StyledEngineProvider injectFirst>
       <AuthProvider>
-        <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <GlobalStyles styles={globalStyle} />
-            <StyledApp>
-              <Navbar />
-              <ContentWrapper>
-                <Content>
-                  <Controls
-                    assignedColors={assignedColors}
-                    handleSelectClass={handleSelectClass}
-                    handleSelectCourse={handleSelectCourse}
-                    handleRemoveCourse={handleRemoveCourse}
-                  />
-                  <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                  <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
-                    save to calendar
-                  </ICSButton>
-                  <Footer />
-                  <Alerts />
-                </Content>
-              </ContentWrapper>
-            </StyledApp>
-          </LocalizationProvider>
-        </ThemeProvider>
+        <RoomProvider id={roomKey}>
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <GlobalStyles styles={globalStyle} />
+              <StyledApp>
+                <Navbar />
+                <ContentWrapper>
+                  <Content>
+                    <Controls
+                      assignedColors={assignedColors}
+                      handleSelectClass={handleSelectClass}
+                      handleSelectCourse={handleSelectCourse}
+                      handleRemoveCourse={handleRemoveCourse}
+                    />
+                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                    <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
+                      save to calendar
+                    </ICSButton>
+                    <Footer />
+                    <Alerts />
+                  </Content>
+                </ContentWrapper>
+              </StyledApp>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </RoomProvider>
       </AuthProvider>
     </StyledEngineProvider>
   );

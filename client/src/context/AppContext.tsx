@@ -1,3 +1,5 @@
+import { uuid4 } from '@sentry/utils';
+import { randomUUID } from 'crypto';
 import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
@@ -71,6 +73,9 @@ export interface IAppContext {
 
   firstDayOfTerm: string;
   setFirstDayOfTerm: (newFirstDayOfTerm: string) => void;
+
+  roomKey: string;
+  setRoomKey: (newRoomKey: string) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -139,6 +144,9 @@ export const AppContext = createContext<IAppContext>({
 
   firstDayOfTerm: '0000-00-00',
   setFirstDayOfTerm: () => {},
+
+  roomKey: '',
+  setRoomKey: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -174,6 +182,17 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [year, setYear] = useState<string>(termData.year || '0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
+  const [roomKey, setRoomKey] = useState<string>(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has('roomKey')) {
+      return queryParams.get('roomKey')!;
+    } else {
+      queryParams.append('roomKey', uuid4());
+      window.history.replaceState({}, '', `${window.location.pathname}?${queryParams.toString()}`);
+
+      return queryParams.get('roomKey')!;
+    }
+  });
   const initialContext: IAppContext = {
     is12HourMode,
     setIs12HourMode,
@@ -219,6 +238,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setYear,
     firstDayOfTerm,
     setFirstDayOfTerm,
+    roomKey,
+    setRoomKey,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

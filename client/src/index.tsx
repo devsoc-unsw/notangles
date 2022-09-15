@@ -8,6 +8,7 @@ import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
+import { RoomProvider } from './utils/liveblocks.config';
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
