@@ -28,7 +28,18 @@ export class AuthService {
         lastLogin: new Date().toISOString().slice(0, 10),
         profileURL: userInfo.picture,
         loggedIn: true,
-        settings: new UserSettingsDto(false, false, false, false, false, false),
+        settings: new UserSettingsDto(
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+        ),
         timetables: [],
       };
       const userAdded = new this.userModel(newUser);

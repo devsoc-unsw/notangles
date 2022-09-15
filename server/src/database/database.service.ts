@@ -27,10 +27,12 @@ export class DatabaseService {
     SettingsDto: UserSettingsDto,
     userID: string,
   ): Promise<Settings> {
-    return this.userModel.findOneAndUpdate(
-      { google_uid: userID },
-      { $set: { settings: new this.settingsModel(SettingsDto) } },
-    );
+    return this.userModel
+      .findOneAndUpdate(
+        { google_uid: userID },
+        { $set: { settings: new this.settingsModel(SettingsDto) } },
+      )
+      .then((r) => r.settings);
   }
 
   async getSettings(userID: string): Promise<Settings> {
@@ -67,10 +69,12 @@ export class DatabaseService {
     // console.log(timetable);
     // console.log('TEST');
     // console.log(timetableData.events);
-    return this.userModel.findOneAndUpdate(
-      { google_uid: userID },
-      { $push: { timetables: new this.timetableModel(timetable) } },
-    );
+    return this.userModel
+      .findOneAndUpdate(
+        { google_uid: userID },
+        { $push: { timetables: new this.timetableModel(timetable) } },
+      )
+      .then((r) => r.timetables);
   }
 
   async deleteTimetable(
@@ -78,24 +82,28 @@ export class DatabaseService {
     ttToDeleteId: string,
   ): Promise<UserTimetablesDto[]> {
     console.log('deleting timetable with id: ' + ttToDeleteId);
-    return this.userModel.findOneAndUpdate(
-      { google_uid: userID },
-      { $pull: { timetables: { timetableId: ttToDeleteId } } },
-      { safe: true, multi: false },
-    );
+    return this.userModel
+      .findOneAndUpdate(
+        { google_uid: userID },
+        { $pull: { timetables: { timetableId: ttToDeleteId } } },
+        { safe: true, multi: false },
+      )
+      .then((r) => r.timetables);
   }
 
   async editTimetable(
     userID: string,
     edittedTimetable: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return this.userModel.findOneAndUpdate(
-      { google_uid: userID },
-      { $set: { 'timetables.$[elem]': edittedTimetable } },
-      {
-        arrayFilters: [{ 'elem.timetableId': edittedTimetable.timetableId }],
-      },
-    );
+    return this.userModel
+      .findOneAndUpdate(
+        { google_uid: userID },
+        { $set: { 'timetables.$[elem]': edittedTimetable } },
+        {
+          arrayFilters: [{ 'elem.timetableId': edittedTimetable.timetableId }],
+        },
+      )
+      .then((r) => r.timetables);
   }
 
   async getUser(userID: string): Promise<User> {

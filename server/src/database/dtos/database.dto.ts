@@ -5,6 +5,10 @@ export class UserSettingsDto {
   isHideFullClasses: boolean;
   isDefaultUnscheduled: boolean;
   isHideClassInfo: boolean;
+  isSortAlphabetic: boolean;
+  isShowOnlyOpenClasses: boolean;
+  isHideExamClasses: boolean;
+  isConvertToLocalTimezone: boolean;
 
   constructor(
     is12HourMode: boolean,
@@ -13,6 +17,10 @@ export class UserSettingsDto {
     isHideFullClasses: boolean,
     isDefaultUnscheduled: boolean,
     isHideClassInfo: boolean,
+    isSortAlphabetic: boolean,
+    isShowOnlyOpenClasses: boolean,
+    isHideExamClasses: boolean,
+    isConvertToLocalTimezone: boolean,
   ) {
     this.is12HourMode = is12HourMode;
     this.isDarkMode = isDarkMode;
@@ -20,6 +28,10 @@ export class UserSettingsDto {
     this.isHideFullClasses = isHideFullClasses;
     this.isDefaultUnscheduled = isDefaultUnscheduled;
     this.isHideClassInfo = isHideClassInfo;
+    this.isSortAlphabetic = isSortAlphabetic;
+    this.isShowOnlyOpenClasses = isShowOnlyOpenClasses;
+    this.isHideExamClasses = isHideExamClasses;
+    this.isConvertToLocalTimezone = isConvertToLocalTimezone;
   }
 }
 
@@ -46,8 +58,8 @@ export class Events {
   description: string;
   color: string;
   time: {
-    day: string;
-    start: string;
-    end: string;
+    day: Number;
+    start: Number;
+    end: Number;
   };
 }
