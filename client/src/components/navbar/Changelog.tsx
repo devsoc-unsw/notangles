@@ -15,6 +15,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'September 15, 2022',
+    changes: ['Custom events can now end at midnight'],
+  },
+  {
     date: 'September 11, 2022',
     changes: ['Autotimetabling now schedules around your custom events'],
   },
@@ -32,7 +36,10 @@ const changelog: Change[] = [
   },
   {
     date: 'September 1, 2022',
-    changes: ['Added ability to create a custom event that happens on multiple days'],
+    changes: [
+      'Added ability to create a custom event that happens on multiple days',
+      'Event can now be less than one hour'
+    ]
   },
   {
     date: 'August 8, 2022',

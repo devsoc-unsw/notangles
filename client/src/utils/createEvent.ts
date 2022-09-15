@@ -12,6 +12,7 @@ export const createNewEvent = (
   endTime: Date
 ) => {
   const uuid = uuidv4();
+
   const newEvent: EventPeriod = {
     type: 'event',
     event: {
@@ -24,7 +25,7 @@ export const createNewEvent = (
     time: {
       day: daysShort.indexOf(day) + 1,
       start: startTime.getHours() + startTime.getMinutes() / 60,
-      end: endTime.getHours() + endTime.getMinutes() / 60,
+      end: endTime.getHours() + endTime.getMinutes() / 60 === 0 ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60,
     },
   };
   return newEvent;
