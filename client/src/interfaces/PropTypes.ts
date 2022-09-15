@@ -121,5 +121,5 @@ export interface LocationDropdownProps {
 }
 
 export interface CreateEventPopoverProps {
-  onClickCreate: () => void;
+  closePopover: () => void;
 }

@@ -11,7 +11,7 @@ import {
 import { AppContext } from '../../context/AppContext';
 import CustomEvent from '../controls/CustomEvent';
 import { Popover } from '@mui/material';
-import CreateEventPopover from '../../utils/CreateEventPopover';
+import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -216,6 +216,8 @@ export const TimetableLayout: React.FC = () => {
       {dayCells}
       {hourCells}
       {otherCells}
+
+      {/* For when user double clicks on a timetable grid */}
       <Popover
         open={open}
         anchorEl={createEventAnchorEl}
@@ -229,7 +231,7 @@ export const TimetableLayout: React.FC = () => {
           horizontal: 'left',
         }}
       >
-        <CreateEventPopover onClickCreate={handleClose} />
+        <CreateEventPopover closePopover={handleClose} />
       </Popover>
     </>
   );

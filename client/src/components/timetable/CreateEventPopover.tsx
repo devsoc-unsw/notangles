@@ -1,21 +1,21 @@
 import { useContext, useState } from 'react';
 import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../styles/CustomEventStyles';
-import { StyledList } from '../styles/DroppedCardStyles';
-import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { areValidEventTimes, createDateWithTime } from './eventTimes';
+import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledList } from '../../styles/DroppedCardStyles';
+import { Add, Event, LocationOn, Notes } from '@mui/icons-material';
+import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import { TimePicker } from '@mui/x-date-pickers';
-import DropdownOption from '../components/timetable/DropdownOption';
-import { daysShort } from '../constants/timetable';
-import { ColourIndicatorBox, StyledButtonContainer } from '../styles/ControlStyles';
+import DropdownOption from './DropdownOption';
+import { daysShort } from '../../constants/timetable';
+import { ColourIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import { Colorful } from '@uiw/react-color';
-import { AppContext } from '../context/AppContext';
-import { CourseContext } from '../context/CourseContext';
-import { EventPeriod } from '../interfaces/Periods';
-import { createNewEvent } from './createEvent';
-import { CreateEventPopoverProps } from '../interfaces/PropTypes';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { EventPeriod } from '../../interfaces/Periods';
+import { createNewEvent } from '../../utils/createEvent';
+import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ onClickCreate }) => {
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ closePopover }) => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -23,7 +23,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ onClickCreate }
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
-  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
@@ -77,7 +76,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ onClickCreate }
     setDescription('');
     setEventDays([]);
     // Close all popovers when Create button is clicked
-    onClickCreate();
+    closePopover();
     setColorPickerAnchorEl(null);
   };
 
