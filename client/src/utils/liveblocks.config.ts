@@ -5,4 +5,4 @@ const liveblocksClient = createClient({
   publicApiKey: 'pk_live_m1tiyyPZ108XbpzCjImrcocb',
 });
 
-export const { RoomProvider, useRoom } = createRoomContext(liveblocksClient);
+export const { RoomProvider, useOthers } = createRoomContext(liveblocksClient);

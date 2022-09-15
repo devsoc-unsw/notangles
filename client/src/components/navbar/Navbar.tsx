@@ -15,6 +15,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import { useAuth } from '../../context/AuthContext';
 import { LoadingButton } from '@mui/lab';
+import { useOthers } from '../../utils/liveblocks.config';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -74,7 +75,7 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user, loading, signIn, signOut } = useAuth();
 
-  console.log(user);
+  const others = useOthers();
 
   const buildUser = () => {
     if (loading) {
@@ -103,6 +104,7 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
+          <p>There are {others.count || 0} in this room.</p>
           {buildUser()}
           <CustomModal
             title="About"
