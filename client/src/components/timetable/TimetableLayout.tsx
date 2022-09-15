@@ -144,8 +144,17 @@ const generateHours = (
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
-    useContext(AppContext);
+  const {
+    is12HourMode,
+    days,
+    earliestStartTime,
+    latestEndTime,
+    setAlertMsg,
+    setErrorVisibility,
+    isConvertToLocalTimezone,
+    createEventAnchorEl,
+    setCreateEventAnchorEl,
+  } = useContext(AppContext);
 
   const hoursRange = [
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
@@ -171,16 +180,14 @@ export const TimetableLayout: React.FC = () => {
     </InventoryCell>
   );
 
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const open = Boolean(anchorEl);
+  const open = Boolean(createEventAnchorEl);
 
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
-    setAnchorEl(event.currentTarget);
-    console.log('handling open rn');
+    setCreateEventAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setCreateEventAnchorEl(null);
   };
 
   const otherCells = hours.flatMap((_, y) =>
@@ -212,7 +219,7 @@ export const TimetableLayout: React.FC = () => {
       {dayCells}
       {hourCells}
       {otherCells}
-      <Popover open={open} anchorEl={anchorEl} onClose={handleClose}>
+      <Popover open={open} anchorEl={createEventAnchorEl} onClose={handleClose}>
         <CreateEventPopover />
       </Popover>
     </>
