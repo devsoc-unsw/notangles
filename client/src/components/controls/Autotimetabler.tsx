@@ -81,7 +81,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const popoverId = open ? 'simple-popover' : undefined;
 
   const { setAutoVisibility, setAlertMsg, setErrorVisibility } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses, createdEvents } = useContext(CourseContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
@@ -187,10 +187,22 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
-    timetableData['periodInfoList'] = periodInfoPerMode.current[`${classMode}`];
+    // We treat events as single-period classes with a sole time slot
+    timetableData['periodInfoList'] = [
+      ...periodInfoPerMode.current[`${classMode}`],
+      ...Object.values(createdEvents).map(
+        (eventPeriod) =>
+          ({
+            periodsPerClass: 1,
+            periodTimes: [eventPeriod.time.day, eventPeriod.time.start],
+            durations: [eventPeriod.time.end - eventPeriod.time.start],
+          } as PeriodInfo)
+      ),
+    ];
 
     try {
-      const [results, isOptimal] = await getAutoTimetable(timetableData);
+      const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
+      const results = resultsWithEvents.slice(0, targetActivities.current.length);
 
       setAutoVisibility(true);
       setAlertMsg(results.length ? (isOptimal ? 'Success!' : 'Could not satisfy perfectly') : 'No timetable found');
