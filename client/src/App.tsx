@@ -98,7 +98,6 @@ const App: React.FC = () => {
     setTermName,
     setTermNumber,
     roomKey,
-    setRoomKey,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =

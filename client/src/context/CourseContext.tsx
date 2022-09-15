@@ -1,6 +1,8 @@
-import React, { createContext, useMemo, useState } from 'react';
+import { LiveStructure } from '@liveblocks/client';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
+import { useObject, useRoom } from '../utils/liveblocks.config';
 
 export interface ICourseContext {
   selectedCourses: CourseData[];
@@ -26,6 +28,7 @@ export const CourseContext = createContext<ICourseContext>({
 });
 
 const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
+  // const room = useRoom();
   const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [createdEvents, setCreatedEvents] = useState<CreatedEvents>({});
@@ -40,6 +43,16 @@ const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
     }),
     [selectedCourses, selectedClasses, createdEvents]
   );
+
+  //   const selectedCoursesRemote = useObject('selectedCourses');
+
+  //   useEffect(() => {
+  //     const onRemoteChange = () => {
+  //       setSelectedCourses(selectedCoursesRemote as any);
+  //     };
+
+  //     return room.subscribe(selectedCoursesRemote as LiveStructure, onRemoteChange);
+  //   }, [selectedCoursesRemote, selectedCourses, room]);
 
   return <CourseContext.Provider value={initialContext}>{children}</CourseContext.Provider>;
 };
