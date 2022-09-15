@@ -12,10 +12,7 @@ import {
 } from '@nestjs/common';
 import { Timetable, Settings, UserInterface } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
-import {
-  UserSettingsDto,
-  UserTimetablesDto,
-} from '../database/dtos/database.dto';
+import { UserSettingsDto, UserTimetablesDto } from './dtos/user.dto';
 import { User } from '@sentry/node';
 import { DatabaseService } from 'src/database/database.service';
 

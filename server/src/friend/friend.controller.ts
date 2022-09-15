@@ -12,11 +12,10 @@ import {
 import { Timetable, Settings, UserInterface } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { DatabaseService } from '../database/database.service';
-import {
-  FriendRequestDto,
-  UserSettingsDto,
-  UserTimetablesDto,
-} from '../database/dtos/database.dto';
+import { UserSettingsDto, UserTimetablesDto } from '../user/dtos/user.dto';
+
+import { FriendRequestDto } from './dtos/friend.dto';
+
 import { User } from '@sentry/node';
 
 @Controller('friend')

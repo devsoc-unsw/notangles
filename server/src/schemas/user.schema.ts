@@ -4,7 +4,7 @@ import {
   Events,
   UserSettingsDto,
   UserTimetablesDto,
-} from 'src/database/dtos/database.dto';
+} from 'src/user/dtos/user.dto';
 
 export type SettingsDocument = Settings & Document;
 
