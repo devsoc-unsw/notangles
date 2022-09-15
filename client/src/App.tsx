@@ -29,6 +29,7 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { AuthProvider } from './context/AuthContext';
 import { RoomProvider } from './utils/liveblocks.config';
+import UserPresence from './components/UserPresence/UserPresence';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -436,6 +437,7 @@ const App: React.FC = () => {
     <StyledEngineProvider injectFirst>
       <AuthProvider>
         <RoomProvider id={roomKey}>
+          <UserPresence />
           <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <GlobalStyles styles={globalStyle} />
