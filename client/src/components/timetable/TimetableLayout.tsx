@@ -144,22 +144,15 @@ const generateHours = (
 };
 
 export const TimetableLayout: React.FC = () => {
-  const {
-    is12HourMode,
-    days,
-    earliestStartTime,
-    latestEndTime,
-    setAlertMsg,
-    setErrorVisibility,
-    isConvertToLocalTimezone,
-    createEventAnchorEl,
-    setCreateEventAnchorEl,
-  } = useContext(AppContext);
+  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
+    useContext(AppContext);
 
   const hoursRange = [
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
     Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
   ];
+
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
 
   const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
   const hourCells = hours.map((hour, i) => (
@@ -183,7 +176,11 @@ export const TimetableLayout: React.FC = () => {
   const open = Boolean(createEventAnchorEl);
 
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Opens the create event popover
     setCreateEventAnchorEl(event.currentTarget);
+
+    // Create an event card on the grid user clicked on, with event name "No title"
+    // createEvents()
   };
 
   const handleClose = () => {
@@ -219,8 +216,20 @@ export const TimetableLayout: React.FC = () => {
       {dayCells}
       {hourCells}
       {otherCells}
-      <Popover open={open} anchorEl={createEventAnchorEl} onClose={handleClose}>
-        <CreateEventPopover />
+      <Popover
+        open={open}
+        anchorEl={createEventAnchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <CreateEventPopover onClickCreate={handleClose} />
       </Popover>
     </>
   );

@@ -119,3 +119,7 @@ export interface LocationDropdownProps {
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
 }
+
+export interface CreateEventPopoverProps {
+  onClickCreate: () => void;
+}

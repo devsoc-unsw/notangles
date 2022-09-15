@@ -13,8 +13,9 @@ import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import { EventPeriod } from '../interfaces/Periods';
 import { createNewEvent } from './createEvent';
+import { CreateEventPopoverProps } from '../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC = () => {
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ onClickCreate }) => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -22,20 +23,12 @@ const CreateEventPopover: React.FC = () => {
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
-  const {
-    setAlertMsg,
-    setErrorVisibility,
-    setDays,
-    earliestStartTime,
-    setEarliestStartTime,
-    latestEndTime,
-    setLatestEndTime,
-    createEventAnchorEl,
-    setCreateEventAnchorEl,
-  } = useContext(AppContext);
+  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
+    useContext(AppContext);
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
@@ -84,7 +77,7 @@ const CreateEventPopover: React.FC = () => {
     setDescription('');
     setEventDays([]);
     // Close all popovers when Create button is clicked
-    setCreateEventAnchorEl(null);
+    onClickCreate();
     setColorPickerAnchorEl(null);
   };
 

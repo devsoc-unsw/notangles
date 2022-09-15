@@ -71,9 +71,6 @@ export interface IAppContext {
 
   firstDayOfTerm: string;
   setFirstDayOfTerm: (newFirstDayOfTerm: string) => void;
-
-  createEventAnchorEl: HTMLDivElement | null;
-  setCreateEventAnchorEl: (event: HTMLDivElement | null) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -142,9 +139,6 @@ export const AppContext = createContext<IAppContext>({
 
   firstDayOfTerm: '0000-00-00',
   setFirstDayOfTerm: () => {},
-
-  createEventAnchorEl: null,
-  setCreateEventAnchorEl: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -179,7 +173,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [term, setTerm] = useState<string>(termData.term || `T0`);
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [year, setYear] = useState<string>(termData.year || '0000');
-  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | null>(null);
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const initialContext: IAppContext = {
     is12HourMode,
@@ -226,8 +219,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setYear,
     firstDayOfTerm,
     setFirstDayOfTerm,
-    createEventAnchorEl,
-    setCreateEventAnchorEl,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

@@ -30,99 +30,22 @@ const DropdownButton = styled(Button)`
 `;
 
 const CustomEvent: React.FC = () => {
-  const [eventName, setEventName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
-  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
-  const [eventDays, setEventDays] = useState<Array<string>>([]);
-  const [color, setColor] = useState<string>('#1F7E8C');
-
-  // Which element to make the popover stick to
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  // Whether the popover is shown
-  const open = Boolean(anchorEl);
-  const popoverId = open ? 'simple-popover' : undefined;
-
-  // Which element to make the colour picker popover stick to
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
-  // Whether the colour picker popover is shown
-  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
-  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
-
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
 
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    setCreateEventAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setCreateEventAnchorEl(null);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setColorPickerAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseColourPicker = () => {
-    setColorPickerAnchorEl(null);
-  };
-
-  const handleFormat = (newFormats: string[]) => {
-    setEventDays(newFormats);
-  };
-
-  const createEvents = () => {
-    if (!areValidEventTimes(startTime, endTime)) {
-      setAlertMsg('End time is earlier than start time');
-      setErrorVisibility(true);
-      return;
-    }
-
-    const newEvents: Record<string, EventPeriod> = {};
-
-    // Create an event for each day that is selected in the dropdown option
-    for (const day of eventDays) {
-      const newEvent = createEvent(day);
-      newEvents[newEvent.event.id] = newEvent;
-    }
-
-    setCreatedEvents({ ...createdEvents, ...newEvents });
-    setEventName('');
-    setLocation('');
-    setDescription('');
-    setEventDays([]);
-    // Close all popovers when Create button is clicked
-    setAnchorEl(null);
-    setColorPickerAnchorEl(null);
-  };
-
-  const createEvent = (day: string) => {
-    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
-
-    setCreatedEvents({
-      ...createdEvents,
-      [newEvent.event.id]: newEvent,
-    });
-
-    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
-    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
-
-    // Updating the days of the week must be handled here otherwise
-    // DroppedCards will not have the updated days and it will crash
-    // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (daysShort.indexOf(day) == 5) {
-      const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-      setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (daysShort.indexOf(day) == 6) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-    }
-
-    return newEvent;
-  };
+  const openCreateEventPopover = Boolean(createEventAnchorEl);
+  const popoverId = openCreateEventPopover ? 'simple-popover' : undefined;
 
   return (
     <StyledControlsButton>
@@ -130,11 +53,11 @@ const CustomEvent: React.FC = () => {
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
-        {open ? <ArrowDropUp /> : <ArrowDropDown />}
+        {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
-        open={open}
-        anchorEl={anchorEl}
+        open={openCreateEventPopover}
+        anchorEl={createEventAnchorEl}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
@@ -145,7 +68,7 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <CreateEventPopover />
+        <CreateEventPopover onClickCreate={handleClose} />
       </Popover>
     </StyledControlsButton>
   );
