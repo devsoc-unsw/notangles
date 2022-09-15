@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { styled } from '@mui/system';
 import {
   classMargin,
@@ -10,6 +10,8 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import CustomEvent from '../controls/CustomEvent';
+import { Popover } from '@mui/material';
+import CreateEventPopover from '../../utils/CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -21,6 +23,7 @@ const BaseCell = styled('div', {
   yTo?: number;
   isEndX?: boolean;
   isEndY?: boolean;
+  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 }>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
@@ -168,6 +171,18 @@ export const TimetableLayout: React.FC = () => {
     </InventoryCell>
   );
 
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+    console.log('handling open rn');
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const otherCells = hours.flatMap((_, y) =>
     days.flatMap((_, x) => (
       <GridCell
@@ -176,9 +191,8 @@ export const TimetableLayout: React.FC = () => {
         y={y + 2}
         isEndX={x === days.length - 1}
         isEndY={y === hours.length - 1}
-        onDoubleClick={() => {
-          alert('HELLOO');
-        }}
+        id={x === 0 && y === 0 ? 'origin' : undefined}
+        onDoubleClick={handleOpen}
       />
     ))
   );
@@ -198,6 +212,9 @@ export const TimetableLayout: React.FC = () => {
       {dayCells}
       {hourCells}
       {otherCells}
+      <Popover open={open} anchorEl={anchorEl} onClose={handleClose}>
+        <CreateEventPopover />
+      </Popover>
     </>
   );
 };
