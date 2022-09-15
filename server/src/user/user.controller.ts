@@ -8,66 +8,77 @@ import {
   Put,
   Query,
   Request,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+
+import { LoginGuard } from 'src/auth/login.guard';
+
 import { Timetable, Settings, UserInterface } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/user.dto';
 import { User } from '@sentry/node';
-import { DatabaseService } from 'src/database/database.service';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly userService: UserService) {}
 
+  @UseGuards(LoginGuard)
   @Get('/profile/:userId')
   async user(@Request() req): Promise<User | null> {
-    return this.databaseService.getUser(req.params.userId);
+    return this.userService.getUser(req.params.userId);
   }
 
+  @UseGuards(LoginGuard)
   @Get('/search')
   async userSearch(@Request() req): Promise<User | null> {
     if (req.query.userId) {
-      return this.databaseService.getUser(req.query.userId);
+      return this.userService.getUser(req.query.userId);
     } else if (req.query.userFullName) {
-      return this.databaseService.getUserByFullName(req.query.userFullName);
+      return this.userService.getUserByFullName(req.query.userFullName);
     }
   }
 
   // utility function to get all the users in database.
+
   @Get('/users')
   async users(): Promise<User | null> {
-    return this.databaseService.getAllUsers();
+    return this.userService.getAllUsers();
   }
 
   // @UseGuards(<guardhere>)
+  @UseGuards(LoginGuard)
   @Get('/settings/:userId')
   async getSettings(@Request() req): Promise<Settings> {
-    return this.databaseService.getSettings(req.params.userId);
+    return this.userService.getSettings(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
+  @UseGuards(LoginGuard)
   @Post('/settings/:userId')
   async createSettings(
     @Request() req,
     @Body() body: UserSettingsDto,
   ): Promise<Settings> {
-    return this.databaseService.createSettings(body, req.params.userId);
+    return this.userService.createSettings(body, req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
+  @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
   async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return this.databaseService.getTimetables(req.params.userId);
+    return this.userService.getTimetables(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
+  @UseGuards(LoginGuard)
   @Post('/timetable/:userId')
   async createTimetable(
     @Request() req,
     @Body() body: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return this.databaseService.createTimetable(body, req.params.userId);
+    return this.userService.createTimetable(body, req.params.userId);
   }
 
   // // @UseGuards(<guardhere>)
@@ -76,7 +87,7 @@ export class UserController {
   //   @Request() req,
   //   @Body() body: UserTimetablesDto,
   // ): Promise<UserTimetablesDto[]> {
-  //   return this.databaseService.editTimetable(
+  //   return this.userService.editTimetable(
   //     body,
   //     req.params.userId,
   //     req.params.timetableId,
@@ -84,9 +95,10 @@ export class UserController {
   // }
 
   // @UseGuards(<guardhere>)
+  @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')
   async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return this.databaseService.deleteTimetable(
+    return this.userService.deleteTimetable(
       req.params.userId,
       req.params.timetableId,
     );

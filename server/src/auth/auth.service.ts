@@ -3,10 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserInterface } from '../schemas/user.schema';
 import * as sgMail from '@sendgrid/mail';
-import {
-  UserSettingsDto,
-  UserTimetablesDto,
-} from 'src/database/dtos/database.dto';
+import { UserSettingsDto, UserTimetablesDto } from '../user/dtos/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +21,8 @@ export class AuthService {
         firstname: userInfo.given_name,
         lastname: userInfo.family_name,
         email: userInfo.email,
-        createdAt: new Date().toISOString().slice(0, 10),
-        lastLogin: new Date().toISOString().slice(0, 10),
+        createdAt: new Date(),
+        lastLogin: new Date(),
         profileURL: userInfo.picture,
         loggedIn: true,
         settings: new UserSettingsDto(
@@ -53,7 +50,7 @@ export class AuthService {
         {
           $set: {
             profileURL: userInfo.picture,
-            lastLogin: new Date().toISOString().slice(0, 10),
+            lastLogin: new Date(),
             loggedIn: true,
           },
         },

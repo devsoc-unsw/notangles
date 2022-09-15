@@ -30,6 +30,18 @@ export class Settings {
 
   @Prop({ unique: true, required: true })
   isHideClassInfo: boolean;
+
+  @Prop({ unique: true, required: true })
+  isSortAlphabetic: boolean;
+
+  @Prop({ unique: true, required: true })
+  isShowOnlyOpenClasses: boolean;
+
+  @Prop({ unique: true, required: true })
+  isHideExamClasses: boolean;
+
+  @Prop({ unique: true, required: true })
+  isConvertToLocalTimezone: boolean;
 }
 
 export const UserSettingsSchema = SchemaFactory.createForClass(Settings);
