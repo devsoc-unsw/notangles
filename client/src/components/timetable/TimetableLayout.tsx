@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { styled } from '@mui/system';
 import {
   classMargin,
+  daysShort,
   getDefaultEndTime,
   getDefaultStartTime,
   headerPadding,
@@ -12,6 +13,10 @@ import { AppContext } from '../../context/AppContext';
 import CustomEvent from '../controls/CustomEvent';
 import { Popover } from '@mui/material';
 import CreateEventPopover from './CreateEventPopover';
+import DroppedCards from './DroppedCards';
+import { CourseContext } from '../../context/CourseContext';
+import { createNewEvent } from '../../utils/createEvent';
+import { createDateWithTime } from '../../utils/eventTimes';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -183,6 +188,35 @@ export const TimetableLayout: React.FC = () => {
     // createEvents()
   };
 
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  // Create a temporary DroppedEvent card where the user double clicked on the grid
+  const createTempEvent = (x: number, y: number) => {
+    console.log('x is ', x);
+    console.log('y is ', y);
+    console.log(earliestStartTime);
+
+    const updatedEventData = { ...createdEvents };
+    const newEvent = createNewEvent(
+      '(No title)',
+      '(No location)',
+      '',
+      '#1F7E8C',
+      daysShort[x],
+      createDateWithTime(earliestStartTime + y),
+      createDateWithTime(earliestStartTime + y + 1)
+    );
+
+    updatedEventData[newEvent.event.id] = newEvent;
+
+    setCreatedEvents({
+      ...createdEvents,
+      [newEvent.event.id]: newEvent,
+    });
+
+    setCreatedEvents(updatedEventData);
+  };
+
   const handleClose = () => {
     setCreateEventAnchorEl(null);
   };
@@ -196,7 +230,10 @@ export const TimetableLayout: React.FC = () => {
         isEndX={x === days.length - 1}
         isEndY={y === hours.length - 1}
         id={x === 0 && y === 0 ? 'origin' : undefined}
-        onDoubleClick={handleOpen}
+        onDoubleClick={(event) => {
+          handleOpen(event);
+          createTempEvent(x, y);
+        }}
       />
     ))
   );

@@ -21,9 +21,6 @@ const DropdownButton = styled(Button)`
 `;
 
 const CustomEvent: React.FC = () => {
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
 
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
 
