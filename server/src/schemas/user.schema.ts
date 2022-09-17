@@ -87,7 +87,7 @@ export class User {
   @Prop() createdAt: Date;
   @Prop() lastLogin: Date;
   @Prop() loggedIn: Boolean;
-
+  @Prop([String]) friends: string[];
   @Prop({ type: UserSettingsSchema }) settings: UserSettingsDto;
   @Prop([{ type: UserTimetableSchema }]) timetables: UserTimetablesDto[];
 }
@@ -107,6 +107,7 @@ export interface UserInterface {
   createdAt?: Date;
   lastLogin?: Date;
   loggedIn?: Boolean;
+  friends: string[];
   settings: UserSettingsDto;
   timetables: UserTimetablesDto[];
 }

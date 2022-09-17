@@ -24,13 +24,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(LoginGuard)
   @Get('/profile/:userId')
   async user(@Request() req): Promise<User | null> {
     return this.userService.getUser(req.params.userId);
   }
 
-  @UseGuards(LoginGuard)
   @Get('/search')
   async userSearch(@Request() req): Promise<User | null> {
     if (req.query.userId) {
@@ -48,14 +46,12 @@ export class UserController {
   }
 
   // @UseGuards(<guardhere>)
-  @UseGuards(LoginGuard)
   @Get('/settings/:userId')
   async getSettings(@Request() req): Promise<Settings> {
     return this.userService.getSettings(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
-  @UseGuards(LoginGuard)
   @Post('/settings/:userId')
   async createSettings(
     @Request() req,
@@ -65,14 +61,12 @@ export class UserController {
   }
 
   // @UseGuards(<guardhere>)
-  @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
   async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
     return this.userService.getTimetables(req.params.userId);
   }
 
   // @UseGuards(<guardhere>)
-  @UseGuards(LoginGuard)
   @Post('/timetable/:userId')
   async createTimetable(
     @Request() req,
@@ -95,7 +89,7 @@ export class UserController {
   // }
 
   // @UseGuards(<guardhere>)
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')
   async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
     return this.userService.deleteTimetable(

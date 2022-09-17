@@ -44,6 +44,7 @@ export class UserTimetablesDto {
 
 export class Events {
   id: string;
+  type: string;
   name: string;
   location: string;
   description: string;

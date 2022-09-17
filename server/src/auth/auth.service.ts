@@ -4,15 +4,21 @@ import { Model } from 'mongoose';
 import { UserDocument, UserInterface } from '../schemas/user.schema';
 import * as sgMail from '@sendgrid/mail';
 import { UserSettingsDto, UserTimetablesDto } from '../user/dtos/user.dto';
+import { FriendRequestDocument } from 'src/friend/dtos/friend.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel('User') private userModel: Model<UserDocument>,
+    @InjectModel('FriendRequest')
+    private friendRequestModel: Model<FriendRequestDocument>,
+  ) {}
 
   async createUser(userInfo: any): Promise<void> {
     this.userModel.deleteMany({}).then(() => {
       console.log('Remove this delete many from auth.service.ts');
     });
+
     let isCurrentUser = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
       const newUser = {
@@ -37,10 +43,18 @@ export class AuthService {
           false,
           true,
         ),
+        friends: [],
         timetables: [],
       };
+
       const userAdded = new this.userModel(newUser);
       userAdded.save();
+
+      // This is the friend request Model
+      await new this.friendRequestModel({
+        userId: newUser.google_uid,
+        friendRequests: [],
+      }).save();
       console.log('adding new user!');
       await this.sendEmail(userInfo.email);
     } else {
