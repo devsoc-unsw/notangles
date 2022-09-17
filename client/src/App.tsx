@@ -341,7 +341,8 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
-        getDefaultStartTime(isConvertToLocalTimezone)
+        getDefaultStartTime(isConvertToLocalTimezone),
+        earliestStartTime
       )
     );
 
@@ -349,7 +350,8 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-        getDefaultEndTime(isConvertToLocalTimezone)
+        getDefaultEndTime(isConvertToLocalTimezone),
+        latestEndTime
       )
     );
 

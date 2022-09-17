@@ -93,6 +93,8 @@ const CustomEvent: React.FC = () => {
     setLocation('');
     setDescription('');
     setEventDays([]);
+    setStartTime(createDateWithTime(9));
+    setEndTime(createDateWithTime(10));
     // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);

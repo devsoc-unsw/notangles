@@ -15,7 +15,7 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
-    date: 'September 15, 2022',
+    date: 'September 17, 2022',
     changes: ['Custom events can now end at midnight'],
   },
   {
