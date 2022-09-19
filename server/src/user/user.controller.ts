@@ -1,15 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { UserService } from './user.service';
+import { Request, Response } from 'express';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
   @Get('profile')
-  profile() {
-    return this.userService.profile();
+  getProfile() {
+    return this.userService.getProfile();
   }
   @Get('timetable')
-  timetable() {
-    return this.userService.timetable();
+  getTimetable() {
+    return this.userService.getTimetable();
   }
 }
