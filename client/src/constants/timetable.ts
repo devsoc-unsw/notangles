@@ -100,12 +100,12 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
   const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
 
   // Get the date and time of the Sydney timezone.
-  const [date, time] = sydDate.split(',');
+  const [date, time] = sydDate.split(', ');
 
   // Get the specific day, month and year of the Sydney timezone to convert the string
   // to a YYYY-MM-DD format to be created into a Date object.
   const [day, month, year] = date.split('/');
-  const formattedSydDate = new Date(`${year}-${month}-${day}, ${time}`);
+  const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
 
   const offset =
     (formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes() - (localDate.getHours() * 60 + localDate.getMinutes())) /
