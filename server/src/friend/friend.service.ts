@@ -25,128 +25,97 @@ export class FriendService {
     @InjectModel('User') private userModel: Model<UserDocument>,
   ) {}
 
+  /**
+   *
+   * @param userID
+   * @returns
+   */
   async getFriends(userID: string): Promise<User[]> {
-    let fetchedFriends: User[] = [];
-    return this.userModel
+    const user: UserDocument = await this.userModel
       .findOne({ google_uid: userID })
-      .exec()
-      .then((r) => {
-        console.log(r);
-        if (r.friends.length === 0) {
-          return fetchedFriends;
-        }
+      .exec();
+    const friends: User[] = [];
+    user.friends.forEach(async (f) => {
+      const friendFound: UserDocument = await this.userModel
+        .findOne({ google_uid: f })
+        .exec();
+      friends.push(friendFound);
+    });
 
-        r.friends.forEach((friend) => {
-          this.userModel
-            .findOne({ google_uid: friend })
-            .exec()
-            .then((r) => {
-              fetchedFriends.push(r);
-            })
-            .then(() => {
-              console.log(fetchedFriends);
-              return fetchedFriends;
-            });
-        });
-      });
+    return friends;
   }
 
-  async addFriend(userId: string, friendId: string): Promise<User[] | void> {
-    return this.userModel
-      .findOneAndUpdate(
-        { google_uid: userId },
-        { $push: { friends: friendId } },
-      )
-      .exec()
-      .then(() => {
-        this.userModel
-          .findOneAndUpdate(
-            { google_uid: friendId },
-            { $push: { friends: userId } },
-          )
-          .exec()
-          .then(() => {
-            return this.getFriends(userId);
-          });
-      });
+  async addFriend(userId: string, friendId: string): Promise<User[]> {
+    const pushFriendIdToUser = async (uId: string, fId: string) => {
+      await this.userModel
+        .findOneAndUpdate({ google_uid: uId }, { $addToSet: { friends: fId } })
+        .exec();
+    };
+    pushFriendIdToUser(userId, friendId);
+    pushFriendIdToUser(friendId, userId);
+    return await this.getFriends(userId);
   }
 
-  async removeFriend(userID: string, friendId): Promise<User[] | void> {
-    return this.userModel
-      .findOneAndUpdate({ google_uid: userID }, { $pop: { friends: friendId } })
-      .exec()
-      .then(() => {
-        this.userModel
-          .findOneAndUpdate(
-            { google_uid: friendId },
-            { $pop: { friends: userID } },
-          )
-          .exec()
-          .then(() => {
-            return this.getFriends(userID);
-          });
-      });
+  async removeFriend(userId: string, friendId: string): Promise<User[]> {
+    const removeFriendIdFromUser = async (uId: string, fId: string) => {
+      await this.userModel
+        .findOneAndUpdate({ google_uid: uId }, { $pop: { friends: fId } })
+        .exec();
+    };
+
+    removeFriendIdFromUser(userId, friendId);
+    removeFriendIdFromUser(friendId, userId);
+
+    return await this.getFriends(userId);
   }
 
-  async getFriendRequests(userID: string): Promise<User[] | void> {
-    const friendRequests: User[] = [];
-    this.friendRequestModel
+  async getFriendRequests(userID: string): Promise<User[]> {
+    const user: FriendRequestDocument = await this.friendRequestModel
       .findOne({ google_uid: userID })
-      .exec()
-      .then((r) => {
-        r.sentRequestsTo.forEach((friend) => {
-          this.userModel
-            .findOne({ google_uid: friend })
-            .exec()
-            .then((r) => {
-              friendRequests.push(r);
-            });
-        });
-      });
+      .exec();
+    const friends: User[] = [];
+    user.sentRequestsTo.forEach(async (f) => {
+      const friendFound: UserDocument = await this.userModel
+        .findOne({ google_uid: f })
+        .exec();
+      friends.push(friendFound);
+    });
 
-    return friendRequests;
+    return friends;
   }
 
-  async sendFriendRequest(
-    userId: string,
-    friendId: string,
-  ): Promise<User[] | void> {
-    return this.userModel
-      .findOneAndUpdate(
-        { google_uid: userId },
-        { $addToSet: { friends: friendId } },
-      )
-      .exec()
-      .then(() => {
-        this.userModel
-          .findOneAndUpdate(
-            { google_uid: friendId },
-            { $addToSet: { friends: userId } },
-          )
-          .exec()
-          .then(() => {
-            return this.getFriends(userId);
-          });
-      });
+  async sendFriendRequest(userId: string, friendId: string): Promise<User[]> {
+    const pushFriendIdToUser = async (uId: string, fId: string) => {
+      await this.friendRequestModel
+        .findOneAndUpdate(
+          { google_uid: uId },
+          { $addToSet: { sentRequestsTo: fId } },
+        )
+        .exec();
+    };
+
+    pushFriendIdToUser(userId, friendId);
+    pushFriendIdToUser(friendId, userId);
+
+    return await this.getFriends(userId);
   }
 
   async declineFriendRequest(
     userId: string,
     friendId: string,
-  ): Promise<User[] | void> {
-    return this.friendRequestModel
-      .findOneAndUpdate({ google_uid: userId }, { $pop: { friends: friendId } })
-      .exec()
-      .then(() => {
-        this.friendRequestModel
-          .findOneAndUpdate(
-            { google_uid: friendId },
-            { $pull: { friends: { $in: userId } } },
-          )
-          .exec()
-          .then(() => {
-            return this.getFriends(userId);
-          });
-      });
+  ): Promise<User[]> {
+    const pushFriendIdToUser = async (uId: string, fId: string) => {
+      await this.friendRequestModel
+        .findOneAndUpdate(
+          { google_uid: uId },
+          { $pull: { sentRequestsTo: fId } },
+        )
+        .exec();
+    };
+
+    pushFriendIdToUser(userId, friendId);
+    pushFriendIdToUser(friendId, userId);
+
+    return await this.getFriendRequests(userId);
   }
 }

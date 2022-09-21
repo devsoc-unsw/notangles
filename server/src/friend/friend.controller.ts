@@ -40,9 +40,7 @@ export class FriendController {
     @Request() req,
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
-    this.friendService.addFriend(body.sentRequestTo, body.userId);
-    this.friendService.addFriend(body.userId, body.sentRequestTo);
-    return this.friendService.getFriends(body.userId);
+    return this.friendService.addFriend(body.sentRequestTo, body.userId);
   }
 
   // @UseGuards(LoginGuard)
@@ -51,9 +49,7 @@ export class FriendController {
     @Request() req,
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
-    this.friendService.removeFriend(body.sentRequestTo, body.userId);
-    this.friendService.removeFriend(body.userId, body.sentRequestTo);
-    return this.friendService.getFriends(body.userId);
+    return this.friendService.removeFriend(body.sentRequestTo, body.userId);
   }
 
   // @UseGuards(LoginGuard)
@@ -61,7 +57,7 @@ export class FriendController {
   async sendFriendRequest(
     @Request() req,
     @Body() body: SingleFriendRequestDto,
-  ): Promise<User[] | void> {
+  ): Promise<User[]> {
     const userSentFr: boolean = await this.friendService
       .getFriendRequests(body.userId)
       .then((res) => {
@@ -80,10 +76,8 @@ export class FriendController {
 
     if (userSentFr && userReceivedFr) {
       this.friendService.addFriend(body.sentRequestTo, body.userId);
-      this.friendService.addFriend(body.userId, body.sentRequestTo);
       // Clean up
       this.friendService.declineFriendRequest(body.userId, body.sentRequestTo);
-      this.friendService.declineFriendRequest(body.sentRequestTo, body.userId);
     } else {
       this.friendService.sendFriendRequest(body.userId, body.sentRequestTo);
     }
@@ -96,7 +90,7 @@ export class FriendController {
   async deleteFriendRequest(
     @Request() req,
     @Body() body: SingleFriendRequestDto,
-  ): Promise<User[] | void> {
+  ): Promise<User[]> {
     this.friendService.declineFriendRequest(body.sentRequestTo, body.userId);
     return this.friendService.getFriendRequests(body.userId);
   }

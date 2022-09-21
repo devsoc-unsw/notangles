@@ -27,15 +27,25 @@ export class UserService {
     SettingsDto: UserSettingsDto,
     userID: string,
   ): Promise<Settings> {
-    return this.userModel
-      .findOneAndUpdate(
+    const setUserSettings = async () =>
+      await this.userModel.findOneAndUpdate(
         { google_uid: userID },
         { $set: { settings: new this.settingsModel(SettingsDto) } },
-      )
-      .then((r) => r.settings);
+      );
+    return (await setUserSettings()).settings;
+    // return this.userModel
+    //   .findOneAndUpdate(
+    //     { google_uid: userID },
+    //     { $set: { settings: new this.settingsModel(SettingsDto) } },
+    //   )
+    //   .then((r) => r.settings);
   }
 
   async getSettings(userID: string): Promise<Settings> {
+    const user = await this.userModel.findOne({
+      google_uid: userID,
+    });
+    return user.settings;
     return this.userModel
       .findOne({ google_uid: userID })
       .select('settings')
