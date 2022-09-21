@@ -161,8 +161,6 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
   const sortedClashes = sortClashesByDay(clashes);
   const groupedClashes = groupClashes(sortedClashes);
 
-  console.log(groupedClashes);
-
   return groupedClashes;
 };
 
