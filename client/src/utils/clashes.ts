@@ -190,7 +190,7 @@ export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | Event
 
     if (!clashGroup) return defaultValues;
 
-    const uniqueClashIDs = [...Array.from(new Set(clashGroup.map((clash) => getId(clash))))];
+    const uniqueClashIDs = Array.from(new Set(clashGroup.map((clash) => getId(clash))));
 
     const nonLecturePeriods = clashGroup
       .filter((clash) => clash.type === 'class' && !clash.activity.includes('Lecture'))
