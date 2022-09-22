@@ -126,5 +126,4 @@ export interface CreateEventPopoverProps {
   onClose: () => void;
   anchorOrigin: PopoverOrigin;
   transformOrigin: PopoverOrigin;
-  closePopover: () => void;
 }

@@ -264,7 +264,6 @@ export const TimetableLayout: React.FC = () => {
           vertical: 'top',
           horizontal: 'left',
         }}
-        closePopover={handleClose}
       />
     </>
   );

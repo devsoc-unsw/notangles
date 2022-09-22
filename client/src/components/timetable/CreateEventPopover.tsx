@@ -15,14 +15,7 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { createNewEvent } from '../../utils/createEvent';
 import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
-  open,
-  anchorEl,
-  onClose,
-  anchorOrigin,
-  transformOrigin,
-  closePopover,
-}) => {
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl, onClose, anchorOrigin, transformOrigin }) => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -83,7 +76,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     setDescription('');
     setEventDays([]);
     // Close all popovers when Create button is clicked
-    closePopover();
+    onClose();
     setColorPickerAnchorEl(null);
   };
 

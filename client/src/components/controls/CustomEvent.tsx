@@ -54,7 +54,6 @@ const CustomEvent: React.FC = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
-        closePopover={handleClose}
       />
     </StyledControlsButton>
   );
