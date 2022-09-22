@@ -104,7 +104,7 @@ export class FriendService {
     userId: string,
     friendId: string,
   ): Promise<User[]> {
-    const pushFriendIdToUser = async (uId: string, fId: string) => {
+    const pullFriendIdFromUser = async (uId: string, fId: string) => {
       await this.friendRequestModel
         .findOneAndUpdate(
           { google_uid: uId },
@@ -113,8 +113,8 @@ export class FriendService {
         .exec();
     };
 
-    pushFriendIdToUser(userId, friendId);
-    pushFriendIdToUser(friendId, userId);
+    pullFriendIdFromUser(userId, friendId);
+    pullFriendIdFromUser(friendId, userId);
 
     return await this.getFriendRequests(userId);
   }

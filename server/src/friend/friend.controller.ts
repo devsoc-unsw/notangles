@@ -10,11 +10,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Timetable, Settings, UserInterface } from 'src/schemas/user.schema';
+import {
+  Timetable,
+  Settings,
+  UserInterface,
+  User,
+} from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
 import { LoginGuard } from 'src/auth/login.guard';
 import { UserSettingsDto, UserTimetablesDto } from '../user/dtos/user.dto';
-import { User } from '@sentry/node';
 import { FriendService } from './friend.service';
 import { UserService } from 'src/user/user.service';
 import { SingleFriendRequestDto } from './dtos/friend.dto';
@@ -28,7 +32,10 @@ export class FriendController {
 
   // @UseGuards(LoginGuard)
   @Get('/:userId')
-  async getFriends(@Request() req): Promise<User[] | void> {
+  /**
+   * Get all friend requests for a user given their google user Id.
+   */
+  async getFriends(@Request() req): Promise<User[]> {
     if (req.params.userId) {
       return this.friendService.getFriends(req.params.userId);
     }
@@ -58,27 +65,41 @@ export class FriendController {
     @Request() req,
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
-    const userSentFr: boolean = await this.friendService
-      .getFriendRequests(body.userId)
-      .then((res) => {
-        if (res) {
-          return body.userId in res;
-        }
-      });
+    // Initially, a check is made to see
+    // if the user has already sent a friend request to the other user and viceversa
+    // So we can add them as friends.
 
-    const userReceivedFr: boolean = await this.friendService
-      .getFriendRequests(body.sentRequestTo)
-      .then((res) => {
-        if (res) {
-          return body.userId in res;
-        }
-      });
+    const hasUserAsentReqToB = async (uId, fId): Promise<boolean> => {
+      /**
+       * After getting the user's friend requests, we check if the
+       * intented friendId is in the requests array. If it is, we
+       * set the return type as true.
+       */
+      const getUserFriendReqs: User[] =
+        await this.friendService.getFriendRequests(body.userId);
 
-    if (userSentFr && userReceivedFr) {
-      this.friendService.addFriend(body.sentRequestTo, body.userId);
-      // Clean up
-      this.friendService.declineFriendRequest(body.userId, body.sentRequestTo);
+      const hasUserSentFriendReq: boolean =
+        body.sentRequestTo in
+        [getUserFriendReqs.forEach((user) => user.google_uid)];
+      return hasUserSentFriendReq;
+    };
+
+    let [recv, sent] = await Promise.all([
+      hasUserAsentReqToB(body.userId, body.sentRequestTo),
+      hasUserAsentReqToB(body.sentRequestTo, body.userId),
+    ]);
+
+    if (recv && sent) {
+      // Add them as friends, and concurrently clean up the friend requests collection.
+      await Promise.all([
+        this.friendService.addFriend(body.sentRequestTo, body.userId),
+        this.friendService.declineFriendRequest(
+          body.userId,
+          body.sentRequestTo,
+        ),
+      ]);
     } else {
+      // One person or neither has not sent a friend Request to the other.
       this.friendService.sendFriendRequest(body.userId, body.sentRequestTo);
     }
 

@@ -15,6 +15,7 @@ export class AuthService {
   ) {}
 
   async createUser(userInfo: any): Promise<void> {
+    // TODO: remove this later
     this.userModel.deleteMany({}).then(() => {
       console.log('Remove this delete many from auth.service.ts');
     });
@@ -72,9 +73,9 @@ export class AuthService {
     }
   }
 
-  async getUser(uidGiven: string): Promise<UserInterface | null> {
-    const response = await this.userModel.find({ google_uid: uidGiven });
-    return response.length !== 0 ? response.at(0) : null;
+  async getUser(uidGiven: string): Promise<UserInterface> {
+    const response = await this.userModel.findOne({ google_uid: uidGiven });
+    return response;
   }
 
   async logoutUser(uidGiven: string): Promise<void> {

@@ -25,12 +25,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('/profile/:userId')
-  async user(@Request() req): Promise<User | null> {
+  async user(@Request() req): Promise<User> {
     return this.userService.getUser(req.params.userId);
   }
 
   @Get('/search')
-  async userSearch(@Request() req): Promise<User | null> {
+  async userSearch(@Request() req): Promise<User> {
     if (req.query.userId) {
       return this.userService.getUser(req.query.userId);
     } else if (req.query.userFullName) {
@@ -41,7 +41,7 @@ export class UserController {
   // utility function to get all the users in database.
 
   @Get('/users')
-  async users(): Promise<User | null> {
+  async users(): Promise<User> {
     return this.userService.getAllUsers();
   }
 
