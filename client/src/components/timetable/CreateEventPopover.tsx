@@ -15,7 +15,14 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { createNewEvent } from '../../utils/createEvent';
 import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ closePopover }) => {
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
+  open,
+  anchorEl,
+  onClose,
+  anchorOrigin,
+  transformOrigin,
+  closePopover,
+}) => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -93,7 +100,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ closePopover })
   };
 
   return (
-    <>
+    <Popover open={open} anchorEl={anchorEl} onClose={onClose} anchorOrigin={anchorOrigin} transformOrigin={transformOrigin}>
       <StyledList>
         <StyledListItem>
           <ListItemIcon>
@@ -223,7 +230,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ closePopover })
         <Add />
         CREATE
       </ExecuteButton>
-    </>
+    </Popover>
   );
 };
 

@@ -21,7 +21,6 @@ const DropdownButton = styled(Button)`
 `;
 
 const CustomEvent: React.FC = () => {
-
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,7 +42,7 @@ const CustomEvent: React.FC = () => {
         </Box>
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
-      <Popover
+      <CreateEventPopover
         open={openCreateEventPopover}
         anchorEl={createEventAnchorEl}
         onClose={handleClose}
@@ -55,9 +54,8 @@ const CustomEvent: React.FC = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
-      >
-        <CreateEventPopover closePopover={handleClose} />
-      </Popover>
+        closePopover={handleClose}
+      />
     </StyledControlsButton>
   );
 };

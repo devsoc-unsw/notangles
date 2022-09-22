@@ -183,9 +183,6 @@ export const TimetableLayout: React.FC = () => {
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     // Opens the create event popover
     setCreateEventAnchorEl(event.currentTarget);
-
-    // Create an event card on the grid user clicked on, with event name "No title"
-    // createEvents()
   };
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -255,7 +252,7 @@ export const TimetableLayout: React.FC = () => {
       {otherCells}
 
       {/* For when user double clicks on a timetable grid */}
-      <Popover
+      <CreateEventPopover
         open={open}
         anchorEl={createEventAnchorEl}
         onClose={handleClose}
@@ -267,9 +264,8 @@ export const TimetableLayout: React.FC = () => {
           vertical: 'top',
           horizontal: 'left',
         }}
-      >
-        <CreateEventPopover closePopover={handleClose} />
-      </Popover>
+        closePopover={handleClose}
+      />
     </>
   );
 };
