@@ -15,10 +15,7 @@ export class LoginGuard extends AuthGuard('oidc') {
     const result = (await super.canActivate(context)) as boolean;
     const request = context.switchToHttp().getRequest();
     // adding user data to DB if first time logging in
-    await this.authService.createUser(request.user.userinfo).then(() => {
-      // TODO: remove this console.log
-      //console.log(request.user);
-    });
+    await this.authService.createUser(request.user.userinfo);
 
     await super.logIn(request);
     return result;

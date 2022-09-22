@@ -43,48 +43,43 @@ export class FriendController {
 
   // @UseGuards(LoginGuard)
   @Post('/')
-  async addFriend(
-    @Request() req,
-    @Body() body: SingleFriendRequestDto,
-  ): Promise<User[]> {
+  async addFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
     return this.friendService.addFriend(body.sentRequestTo, body.userId);
   }
 
   // @UseGuards(LoginGuard)
   @Delete('/')
-  async deleteFriend(
-    @Request() req,
-    @Body() body: SingleFriendRequestDto,
-  ): Promise<User[]> {
+  async deleteFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
     return this.friendService.removeFriend(body.sentRequestTo, body.userId);
   }
 
   // @UseGuards(LoginGuard)
   @Post('/request')
   async sendFriendRequest(
-    @Request() req,
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
     // Initially, a check is made to see
     // if the user has already sent a friend request to the other user and viceversa
     // So we can add them as friends.
 
-    const hasUserAsentReqToB = async (uId, fId): Promise<boolean> => {
+    const hasUserAsentReqToB = async (
+      uId: string,
+      fId: string,
+    ): Promise<boolean> => {
       /**
        * After getting the user's friend requests, we check if the
        * intented friendId is in the requests array. If it is, we
        * set the return type as true.
        */
       const getUserFriendReqs: User[] =
-        await this.friendService.getFriendRequests(body.userId);
+        await this.friendService.getFriendRequests(uId);
 
       const hasUserSentFriendReq: boolean =
-        body.sentRequestTo in
-        [getUserFriendReqs.forEach((user) => user.google_uid)];
+        fId in [getUserFriendReqs.forEach((user) => user.google_uid)];
       return hasUserSentFriendReq;
     };
 
-    let [recv, sent] = await Promise.all([
+    let [recv, sent]: [boolean, boolean] = await Promise.all([
       hasUserAsentReqToB(body.userId, body.sentRequestTo),
       hasUserAsentReqToB(body.sentRequestTo, body.userId),
     ]);
@@ -109,7 +104,6 @@ export class FriendController {
   // @UseGuards(LoginGuard)
   @Delete('/request')
   async deleteFriendRequest(
-    @Request() req,
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
     this.friendService.declineFriendRequest(body.sentRequestTo, body.userId);

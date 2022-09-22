@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TimetableConstraints, TimetableConstraints_PeriodInfo } from'./auto';
+import { TimetableConstraints, TimetableConstraints_PeriodInfo } from './auto';
 
 export class TimetableConstraintsDto implements TimetableConstraints {
   start: number;

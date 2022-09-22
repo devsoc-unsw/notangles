@@ -33,12 +33,6 @@ export class UserService {
         { $set: { settings: new this.settingsModel(SettingsDto) } },
       );
     return (await setUserSettings()).settings;
-    // return this.userModel
-    //   .findOneAndUpdate(
-    //     { google_uid: userID },
-    //     { $set: { settings: new this.settingsModel(SettingsDto) } },
-    //   )
-    //   .then((r) => r.settings);
   }
 
   async getSettings(userID: string): Promise<Settings> {
@@ -46,11 +40,6 @@ export class UserService {
       google_uid: userID,
     });
     return user.settings;
-    return this.userModel
-      .findOne({ google_uid: userID })
-      .select('settings')
-      .exec()
-      .then((r) => r.settings);
   }
 
   async getTimetables(userID: string): Promise<UserTimetablesDto[]> {
@@ -69,16 +58,13 @@ export class UserService {
   ): Promise<UserTimetablesDto[]> {
     const uuid = require('uuid');
     const generatedId = uuid.v4();
-    const timetable = new this.timetableModel({
+    const timetable: TimetableDocument = new this.timetableModel({
       timetableId: generatedId,
       selectedClasses: timetableData.selectedClasses,
       selectedCourses: timetableData.selectedCourses,
       events: timetableData.events,
     });
 
-    // console.log(timetable);
-    // console.log('TEST');
-    // console.log(timetableData.events);
     return this.userModel
       .findOneAndUpdate(
         { google_uid: userID },
@@ -116,22 +102,35 @@ export class UserService {
       .then((r) => r.timetables);
   }
 
+  /**
+   * Find a user by their google_uid.
+   * @param userID
+   * @returns
+   */
   async getUser(userID: string): Promise<User> {
-    // console.log(userID as string);
-    // this.userModel.find({}).then((e) => console.log(e));
     return this.userModel.findOne({ google_uid: userID });
   }
 
+  /**
+   * Get a user's first and last name from the parameter.
+   * Note: The parameter is CASE SENSITIVE and is of form: "Firstname_Lastname"
+   * For example: "John_Doe"
+   *
+   * Three or more words in name case:
+   *  When a user have three words (or more) with their name,
+   *  the first word is their firstname by default.
+   *  The second and consecutive words define their lastname field.
+   * @param userFullName
+   * @returns
+   */
   async getUserByFullName(userFullName: string): Promise<Promise<User>[]> {
-    // userFullName is in the format of "firstname_lastname"
-    // Case sensitve search: The first and last characters are capitalised.
-    // TODO: store the first name and last name as lower case?
-    // so searching is more efficient and we do not have to handle weird edge cases later.
+    const count: number = userFullName.match(/_/g).length;
+    const name = userFullName.split('_');
+    const givenName = name[0];
+    const trailingNamespace = name.slice(1, count).join(' ');
+
     return this.userModel.find({
-      $and: [
-        { firstname: userFullName.split('_')[0] },
-        { lastname: userFullName.split('_')[1] },
-      ],
+      $and: [{ firstname: givenName }, { lastname: trailingNamespace }],
     });
   }
 

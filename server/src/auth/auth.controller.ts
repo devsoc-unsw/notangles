@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserAuthInformation } from 'src/user/dtos/user.dto';
 
@@ -43,6 +43,8 @@ export class AuthController {
     });
   }
 
+  // THIS IS FOR TESTING PURPOSES ONLY
+  //TODO: VVVVVVVVVVVVVVVVVVVVVVVVVV DELETE FROM PROD
   @Get('/dummy')
   async addDummyUsers() {
     const user1: UserAuthInformation = {
@@ -69,9 +71,19 @@ export class AuthController {
         'https://lh3.googleusercontent.com/a/ALm5wu18S3NDQ0Y-jIXJx4JjkHaxrjfiSWRK7fAdPy26=s96-c',
     };
 
-    this.authService.createUser(user1);
-    this.authService.createUser(user1);
-    this.authService.createUser(user2);
-    this.authService.createUser(mj);
+    await this.authService.createUser(user1);
+    await this.authService.createUser(user1);
+    await this.authService.createUser(user2);
+    await this.authService.createUser(mj);
+  }
+
+  @Delete('/delU')
+  async deleteAllUsers() {
+    await this.authService.delAllUsers();
+  }
+
+  @Delete('/delFr')
+  async deleteFriendReq() {
+    await this.authService.delAllFr();
   }
 }

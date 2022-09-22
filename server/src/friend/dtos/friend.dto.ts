@@ -10,7 +10,7 @@ export class FriendRequest {
   @Prop({ unique: true, required: true })
   userId: string;
 
-  @Prop({ unique: true, required: true })
+  @Prop()
   sentRequestsTo: string[];
 }
 

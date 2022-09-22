@@ -13,34 +13,34 @@ export class Settings {
   // @Prop({unique: true, required: true})
   // userID: string;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   is12HourMode: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isDarkMode: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isSquareEdges: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isHideFullClasses: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isDefaultUnscheduled: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isHideClassInfo: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isSortAlphabetic: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isShowOnlyOpenClasses: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isHideExamClasses: boolean;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   isConvertToLocalTimezone: boolean;
 }
 
@@ -88,8 +88,8 @@ export class User {
   @Prop() lastLogin: Date;
   @Prop() loggedIn: Boolean;
   @Prop([String]) friends: string[];
-  @Prop({ type: UserSettingsSchema }) settings: UserSettingsDto;
-  @Prop([{ type: UserTimetableSchema }]) timetables: UserTimetablesDto[];
+  @Prop({ type: UserSettingsDto }) settings: UserSettingsDto;
+  @Prop([{ type: UserTimetablesDto }]) timetables: UserTimetablesDto[];
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
@@ -97,9 +97,7 @@ export const userSchema = SchemaFactory.createForClass(User);
 export type UserDocument = User & Document;
 
 export interface UserInterface {
-  // uid: string;
   google_uid: string;
-  // zid: string;
   firstname: string;
   lastname?: string;
   email: string;

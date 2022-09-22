@@ -15,12 +15,7 @@ export class AuthService {
   ) {}
 
   async createUser(userInfo: any): Promise<void> {
-    // TODO: remove this later
-    this.userModel.deleteMany({}).then(() => {
-      console.log('Remove this delete many from auth.service.ts');
-    });
-
-    let isCurrentUser = await this.getUser(userInfo.sub);
+    let isCurrentUser: UserInterface = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
       const newUser = {
         // Adding new user information from google to the database
@@ -52,10 +47,15 @@ export class AuthService {
       userAdded.save();
 
       // This is the friend request Model
-      await new this.friendRequestModel({
-        userId: newUser.google_uid,
-        friendRequests: [],
-      }).save();
+      try {
+        await new this.friendRequestModel({
+          userId: newUser.google_uid,
+          friendRequests: [],
+        }).save();
+      } catch (error) {
+        console.log(error);
+      }
+
       console.log('adding new user!');
       await this.sendEmail(userInfo.email);
     } else {
@@ -106,5 +106,18 @@ export class AuthService {
       .catch((error) => {
         console.error('Error occured: ', error);
       });
+  }
+
+  //  TODO: Delete all the functions below this line.
+  async delAllUsers(): Promise<void> {
+    this.userModel.deleteMany({}).then(() => {
+      console.log('[Users] Remove this delete many from auth.service.ts');
+    });
+  }
+
+  async delAllFr(): Promise<void> {
+    this.friendRequestModel.deleteMany({}).then(() => {
+      console.log('[FR] Remove this delete many from auth.service.ts');
+    });
   }
 }
