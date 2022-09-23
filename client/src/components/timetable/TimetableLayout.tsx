@@ -158,6 +158,9 @@ export const TimetableLayout: React.FC = () => {
   ];
 
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  const [eventStartTime, setEventStartTime] = useState<Date>(createDateWithTime(9));
+  const [eventEndTime, setEventEndTime] = useState<Date>(createDateWithTime(10));
+  const [eventDay, setEventDay] = useState<string>('');
 
   const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
   const hourCells = hours.map((hour, i) => (
@@ -189,9 +192,7 @@ export const TimetableLayout: React.FC = () => {
 
   // Create a temporary DroppedEvent card where the user double clicked on the grid
   const createTempEvent = (x: number, y: number) => {
-    console.log('x is ', x);
-    console.log('y is ', y);
-    console.log(earliestStartTime);
+    // console.log('creating temp event with time ', createDateWithTime(earliestStartTime + y));
 
     const updatedEventData = { ...createdEvents };
     const newEvent = createNewEvent(
@@ -201,7 +202,7 @@ export const TimetableLayout: React.FC = () => {
       '#1F7E8C',
       daysShort[x],
       createDateWithTime(earliestStartTime + y),
-      createDateWithTime(earliestStartTime + y + 1)
+      createDateWithTime(earliestStartTime + y + 1) // what about case when start is 12am, end will have to be 1am?
     );
 
     updatedEventData[newEvent.event.id] = newEvent;
@@ -230,6 +231,9 @@ export const TimetableLayout: React.FC = () => {
         onDoubleClick={(event) => {
           handleOpen(event);
           createTempEvent(x, y);
+          setEventStartTime(createDateWithTime(earliestStartTime + y));
+          setEventEndTime(createDateWithTime(earliestStartTime + y + 1));
+          setEventDay(daysShort[x]);
         }}
       />
     ))
@@ -264,6 +268,10 @@ export const TimetableLayout: React.FC = () => {
           vertical: 'top',
           horizontal: 'left',
         }}
+        isDoubleClicked={true}
+        initialStartTime={eventStartTime}
+        initialEndTime={eventEndTime}
+        initialDay={eventDay}
       />
     </>
   );

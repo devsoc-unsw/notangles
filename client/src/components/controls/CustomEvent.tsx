@@ -6,6 +6,7 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { StyledControlsButton } from '../../styles/ControlStyles';
+import { createDateWithTime } from '../../utils/eventTimes';
 
 const DropdownButton = styled(Button)`
   && {
@@ -54,6 +55,10 @@ const CustomEvent: React.FC = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
+        isDoubleClicked={false}
+        initialStartTime={createDateWithTime(9)}
+        initialEndTime={createDateWithTime(10)}
+        initialDay={''}
       />
     </StyledControlsButton>
   );

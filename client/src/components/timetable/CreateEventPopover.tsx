@@ -15,13 +15,24 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { createNewEvent } from '../../utils/createEvent';
 import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl, onClose, anchorOrigin, transformOrigin }) => {
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
+  open,
+  anchorEl,
+  onClose,
+  anchorOrigin,
+  transformOrigin,
+  isDoubleClicked,
+  initialStartTime,
+  initialEndTime,
+  initialDay,
+}) => {
+  const [isInitialOpen, setIsInitialOpen] = useState<boolean>(isDoubleClicked ? true : false);
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
-  const [eventDays, setEventDays] = useState<Array<string>>([]);
+  const [eventDays, setEventDays] = useState<Array<string>>(isInitialOpen ? [initialDay] : []);
   const [color, setColor] = useState<string>('#1F7E8C');
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -70,6 +81,12 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl,
       newEvents[newEvent.event.id] = newEvent;
     }
 
+    // If user double clicked to open popover, delete the temp event
+    // the position of that event is just replaced with the new event
+    // if (isDoubleClicked) {
+    //   console.log('user created event from double click');
+    // }
+
     setCreatedEvents({ ...createdEvents, ...newEvents });
     setEventName('');
     setLocation('');
@@ -93,7 +110,16 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl,
   };
 
   return (
-    <Popover open={open} anchorEl={anchorEl} onClose={onClose} anchorOrigin={anchorOrigin} transformOrigin={transformOrigin}>
+    <Popover
+      open={open}
+      anchorEl={anchorEl}
+      onClose={() => {
+        onClose();
+        setIsInitialOpen(true);
+      }}
+      anchorOrigin={anchorOrigin}
+      transformOrigin={transformOrigin}
+    >
       <StyledList>
         <StyledListItem>
           <ListItemIcon>
@@ -140,17 +166,20 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl,
         <StyledListItem>
           <StyledListItemText primary="Start time" />
           <TimePicker
-            value={startTime}
+            // Displays time as the time of the grid the user pressed
+            // when popover has just been opened
+            value={isInitialOpen ? initialStartTime : startTime}
             renderInput={(params) => <TextField {...params} />}
             onChange={(e) => {
               if (e) setStartTime(e);
+              setIsInitialOpen(false);
             }}
           />
         </StyledListItem>
         <StyledListItem>
           <StyledListItemText primary="End time" />
           <TimePicker
-            value={endTime}
+            value={isInitialOpen ? initialEndTime : endTime}
             renderInput={(params) => {
               const tooEarly = !areValidEventTimes(startTime, endTime);
               return (
@@ -159,15 +188,17 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({ open, anchorEl,
             }}
             onChange={(e) => {
               if (e) setEndTime(e);
+              setIsInitialOpen(false);
             }}
           />
         </StyledListItem>
         <DropdownOption
           optionName="Days"
-          optionState={eventDays}
+          optionState={isInitialOpen ? initialDay : eventDays}
           setOptionState={handleFormat}
           optionChoices={daysShort}
-          multiple={true}
+          // only allow selecting multiple days if create event popover opened from controls button
+          multiple={!isDoubleClicked}
           noOff
         />
         <Box m={1} display="flex" justifyContent="center" alignItems="center">

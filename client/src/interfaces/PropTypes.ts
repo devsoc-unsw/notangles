@@ -126,4 +126,8 @@ export interface CreateEventPopoverProps {
   onClose: () => void;
   anchorOrigin: PopoverOrigin;
   transformOrigin: PopoverOrigin;
+  isDoubleClicked: boolean;
+  initialStartTime: Date;
+  initialEndTime: Date;
+  initialDay: string;
 }
