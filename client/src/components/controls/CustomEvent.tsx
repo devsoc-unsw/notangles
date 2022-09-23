@@ -99,7 +99,6 @@ const CustomEvent: React.FC = () => {
     }
     
     setCreatedEvents({ ...createdEvents, ...newEvents });
-
     // Close all popovers and reset values when Create button is clicked
     handleClose();
   };
