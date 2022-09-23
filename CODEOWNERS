@@ -1,4 +1,6 @@
-.github/ @csesoc/technical
 auto_server/ @csesoc/notangles-leads
 client/ @csesoc/notangles-leads
 server/ @csesoc/notangles-leads
+
+.github/ @csesoc/technical
+renovate.json @csesoc/technical
