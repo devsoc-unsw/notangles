@@ -4,7 +4,12 @@
  * @returns Whether the start and end times represent a valid event
  */
 export const areValidEventTimes = (start: Date, end: Date) => {
-  return start.getHours() + start.getMinutes() / 60 < end.getHours() + end.getMinutes() / 60;
+  // Return true if the event ends at midnight
+  if (end.getHours() + end.getMinutes() / 60 === 0) {
+    return true;
+  } else {
+    return start.getHours() + start.getMinutes() / 60 < end.getHours() + end.getMinutes() / 60;
+  }
 };
 
 /**
