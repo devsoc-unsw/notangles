@@ -58,6 +58,16 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
+    // Reset all values in the popover
+    setEventName('');
+    setLocation('');
+    setDescription('');
+    setEventDays([]);
+    setStartTime(createDateWithTime(9));
+    setEndTime(createDateWithTime(10));
+    setColor('#1F7E8C');
+    setAnchorEl(null);
+    setColorPickerAnchorEl(null);
     setAnchorEl(null);
   };
 
@@ -87,17 +97,11 @@ const CustomEvent: React.FC = () => {
       const newEvent = createEvent(day);
       newEvents[newEvent.event.id] = newEvent;
     }
-
+    
     setCreatedEvents({ ...createdEvents, ...newEvents });
-    setEventName('');
-    setLocation('');
-    setDescription('');
-    setEventDays([]);
-    setStartTime(createDateWithTime(9));
-    setEndTime(createDateWithTime(10));
-    // Close all popovers when Create button is clicked
-    setAnchorEl(null);
-    setColorPickerAnchorEl(null);
+
+    // Close all popovers and reset values when Create button is clicked
+    handleClose();
   };
 
   const createEvent = (day: string) => {
