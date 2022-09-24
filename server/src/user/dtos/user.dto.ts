@@ -61,9 +61,6 @@ export interface UserAuthInformation {
   picture: string;
 }
 
-/**
- *
- */
 export class Events {
   id: string;
   type: string;

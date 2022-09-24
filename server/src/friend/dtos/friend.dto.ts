@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export class SingleFriendRequestDto {
   userId: string;
-  sentRequestTo: string;
+  friendId: string;
 }
 
 @Schema()

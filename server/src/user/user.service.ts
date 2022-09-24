@@ -23,6 +23,14 @@ export class UserService {
     @InjectModel('User') private userModel: Model<UserDocument>,
   ) {}
 
+  /**
+   * Change the user's settings data.
+   *
+   * Please see the documentation for the Dto for more information.
+   * @param SettingsDto: UserSettingsDto - The settings data to be changed.
+   * @param userID: string of the user's google_uid.
+   * @returns a Promise of the updated settings data.
+   */
   async createSettings(
     SettingsDto: UserSettingsDto,
     userID: string,
@@ -35,6 +43,11 @@ export class UserService {
     return (await setUserSettings()).settings;
   }
 
+  /**
+   * Get the settings data of a user.
+   * @param userID: string of the user's google_uid.
+   * @returns a Promise of the settings data.
+   */
   async getSettings(userID: string): Promise<Settings> {
     const user = await this.userModel.findOne({
       google_uid: userID,
@@ -42,6 +55,11 @@ export class UserService {
     return user.settings;
   }
 
+  /**
+   * Get all the timetables of a user.
+   * @param userID: string of the user's google_uid.
+   * @returns a Promise of the user's timetables.
+   */
   async getTimetables(userID: string): Promise<UserTimetablesDto[]> {
     return this.userModel
       .findOne({ google_uid: userID })
@@ -52,9 +70,16 @@ export class UserService {
       });
   }
 
+  /**
+   * Create a timetable and put in the user's timetables.
+   * @param timetableData: in UserTimetablesDto format, please check documentation
+   *                       for more information.
+   * @param userId: string of the user's google_uid.
+   * @returns a Promise of the updated timetables.
+   */
   async createTimetable(
     timetableData: UserTimetablesDto,
-    userID: string,
+    userId: string,
   ): Promise<UserTimetablesDto[]> {
     const uuid = require('uuid');
     const generatedId = uuid.v4();
@@ -67,33 +92,45 @@ export class UserService {
 
     return this.userModel
       .findOneAndUpdate(
-        { google_uid: userID },
+        { google_uid: userId },
         { $push: { timetables: new this.timetableModel(timetable) } },
       )
       .then((r) => r.timetables);
   }
 
+  /**
+   * Delete a particular timetable from a user's timetables.
+   * @param userId: string of the user's google_uid.
+   * @param ttToDeleteId: the timetableId of the timetable to be deleted.
+   * @returns a Promise of the updated timetables.
+   */
   async deleteTimetable(
-    userID: string,
+    userId: string,
     ttToDeleteId: string,
   ): Promise<UserTimetablesDto[]> {
     console.log('deleting timetable with id: ' + ttToDeleteId);
     return this.userModel
       .findOneAndUpdate(
-        { google_uid: userID },
+        { google_uid: userId },
         { $pull: { timetables: { timetableId: ttToDeleteId } } },
         { safe: true, multi: false },
       )
       .then((r) => r.timetables);
   }
 
+  /**
+   * Edit a given timetable.
+   * @param userId: string of the user's google_uid.
+   * @param edittedTimetable: the timetable to be editted.
+   * @returns a Promise of the updated timetables.
+   */
   async editTimetable(
-    userID: string,
+    userId: string,
     edittedTimetable: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
     return this.userModel
       .findOneAndUpdate(
-        { google_uid: userID },
+        { google_uid: userId },
         { $set: { 'timetables.$[elem]': edittedTimetable } },
         {
           arrayFilters: [{ 'elem.timetableId': edittedTimetable.timetableId }],
@@ -104,11 +141,11 @@ export class UserService {
 
   /**
    * Find a user by their google_uid.
-   * @param userID
+   * @param userId
    * @returns
    */
-  async getUser(userID: string): Promise<User> {
-    return this.userModel.findOne({ google_uid: userID });
+  async getUser(userId: string): Promise<User> {
+    return this.userModel.findOne({ google_uid: userId });
   }
 
   /**
@@ -134,7 +171,25 @@ export class UserService {
     });
   }
 
-  async getAllUsers(): Promise<User> {
-    return this.userModel.findOne({});
+  /**
+   * [Utility]
+   * Get all the users in the database.
+   * @returns a Promise of all the users in the database.
+   */
+  async getAllUsers(): Promise<User[]> {
+    return this.userModel.find({});
+  }
+
+  /**
+   * [Utility]
+   * Validity checker if a user exists or not
+   * @param userId
+   * @returns
+   */
+  async checkIfUserExists(userId: string): Promise<boolean> {
+    const user: UserDocument = await this.userModel
+      .findOne({ google_uid: userId })
+      .exec();
+    return user !== null;
   }
 }

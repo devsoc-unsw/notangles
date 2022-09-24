@@ -55,11 +55,9 @@ export class AuthService {
       } catch (error) {
         console.log(error);
       }
-
-      console.log('adding new user!');
       await this.sendEmail(userInfo.email);
     } else {
-      // Updating the last login date of the user
+      // Updating the last login time of the user
       await this.userModel.findOneAndUpdate(
         { google_uid: userInfo.sub },
         {

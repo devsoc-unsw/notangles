@@ -26,80 +26,124 @@ export class FriendService {
   ) {}
 
   /**
-   *
-   * @param userID
-   * @returns
+   * Returns all friends of a valid user.
+   * @param userID: string which represents the user's google_uid.
+   * @returns Promise of an array of users who are the friends of the user.
    */
   async getFriends(userID: string): Promise<User[]> {
     const user: UserDocument = await this.userModel
       .findOne({ google_uid: userID })
       .exec();
     const friends: User[] = [];
-    user.friends.forEach(async (f) => {
+    // Safety checks for the case where the user is non existent.
+    if (!user) return friends;
+    for (const f of user.friends) {
       const friendFound: UserDocument = await this.userModel
         .findOne({ google_uid: f })
         .exec();
       friends.push(friendFound);
-    });
-
+    }
     return friends;
   }
 
+  /**
+   * Forcefully adds a friend to a user's friend list.
+   * @param userId: string which represents the user's google_uid.
+   * @param friendId: string which represents the friend's google_uid.
+   * @returns Promise of an array of users who are the friends of the user.
+   */
   async addFriend(userId: string, friendId: string): Promise<User[]> {
-    const pushFriendIdToUser = async (uId: string, fId: string) => {
-      await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $addToSet: { friends: fId } })
-        .exec();
-    };
-    pushFriendIdToUser(userId, friendId);
-    pushFriendIdToUser(friendId, userId);
+    if (userId !== friendId) {
+      const pushFriendIdToUser = async (uId: string, fId: string) => {
+        await this.userModel
+          .findOneAndUpdate(
+            { google_uid: uId },
+            { $addToSet: { friends: fId } },
+          )
+          .exec();
+      };
+      console.log(await pushFriendIdToUser(userId, friendId));
+      await pushFriendIdToUser(userId, friendId);
+      await pushFriendIdToUser(friendId, userId);
+    }
     return await this.getFriends(userId);
   }
 
+  /**
+   * Forcefully remove a friend from a user's friend list in a
+   * bidirectional manner.
+   * @param userId: string which represents the user's google_uid.
+   * @param friendId: string which represents the friend's google_uid.
+   * @returns Promise of an array of users who are the friends of the user.
+   */
   async removeFriend(userId: string, friendId: string): Promise<User[]> {
     const removeFriendIdFromUser = async (uId: string, fId: string) => {
       await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $pop: { friends: fId } })
+        .findOneAndUpdate({ google_uid: uId }, { $pull: { friends: fId } })
         .exec();
     };
 
-    removeFriendIdFromUser(userId, friendId);
-    removeFriendIdFromUser(friendId, userId);
+    await Promise.all([
+      removeFriendIdFromUser(userId, friendId),
+      removeFriendIdFromUser(friendId, userId),
+    ]);
 
     return await this.getFriends(userId);
   }
 
-  async getFriendRequests(userID: string): Promise<User[]> {
+  /**
+   * Get the friend requests of a user from the FriendRequest collection.
+   *
+   * @param userId: string which represents the user's google_uid.
+   * @returns Promise of an array of users who are currently in
+   *          a user's friend request collection.
+   */
+  async getFriendRequests(userId: string): Promise<User[]> {
     const user: FriendRequestDocument = await this.friendRequestModel
-      .findOne({ google_uid: userID })
+      .findOne({ google_uid: userId })
       .exec();
-    const friends: User[] = [];
-    user.sentRequestsTo.forEach(async (f) => {
-      const friendFound: UserDocument = await this.userModel
+    const friendRequestsSentTo: User[] = [];
+
+    for (const f of user.sentRequestsTo) {
+      const potentialFriendRequest: UserDocument = await this.userModel
         .findOne({ google_uid: f })
         .exec();
-      friends.push(friendFound);
-    });
-
-    return friends;
+      friendRequestsSentTo.push(potentialFriendRequest);
+    }
+    return friendRequestsSentTo;
   }
 
+  /**
+   * Forcefully adds a friend to a user's friend list.
+   * @param userId: string which represents the user's google_uid.
+   * @param friendId: string which represents the friend's google_uid.
+   * @returns Promise of an array of users who are currently in
+   *          a user's friend request collection.
+   */
   async sendFriendRequest(userId: string, friendId: string): Promise<User[]> {
-    const pushFriendIdToUser = async (uId: string, fId: string) => {
-      await this.friendRequestModel
-        .findOneAndUpdate(
-          { google_uid: uId },
-          { $addToSet: { sentRequestsTo: fId } },
-        )
-        .exec();
-    };
+    if (userId !== friendId) {
+      const pushFriendIdToUser = async (uId: string, fId: string) => {
+        await this.friendRequestModel
+          .findOneAndUpdate(
+            { google_uid: uId },
+            { $addToSet: { sentRequestsTo: fId } },
+          )
+          .exec();
+      };
 
-    pushFriendIdToUser(userId, friendId);
-    pushFriendIdToUser(friendId, userId);
-
-    return await this.getFriends(userId);
+      await pushFriendIdToUser(userId, friendId);
+    }
+    return await this.getFriendRequests(userId);
   }
 
+  /**
+   * Decline user's friend request. This will remove the friend request
+   * bidirectionally.
+   * @param userId: string which represents the user's google_uid.
+   * @param friendId: string which represents the friend's google_uid.
+   * @returns Promise of an array of users who are currently in
+   *          a user's friend request collection.
+   */
   async declineFriendRequest(
     userId: string,
     friendId: string,
@@ -113,9 +157,18 @@ export class FriendService {
         .exec();
     };
 
-    pullFriendIdFromUser(userId, friendId);
-    pullFriendIdFromUser(friendId, userId);
+    await pullFriendIdFromUser(userId, friendId);
+    await pullFriendIdFromUser(friendId, userId);
 
     return await this.getFriendRequests(userId);
+  }
+
+  /**
+   *
+   * @returns REMOVE THIS
+   */
+  async dropFriendRequests(): Promise<User[]> {
+    await this.friendRequestModel.deleteMany({}).exec();
+    return [];
   }
 }
