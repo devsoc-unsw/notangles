@@ -132,14 +132,13 @@ const Career = styled('div')`
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
-  const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term } = useContext(AppContext);
+  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term, coursesList, setCoursesList } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   // Retrieve the list of all courses from the scraper backend
