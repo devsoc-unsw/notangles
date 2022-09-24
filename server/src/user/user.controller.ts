@@ -27,7 +27,7 @@ export class UserController {
    */
   @Get('/profile/:userId')
   async user(@Request() req): Promise<User> {
-    return this.userService.getUser(req.params.userId);
+    return await this.userService.getUser(req.params.userId);
   }
 
   /**
@@ -39,9 +39,9 @@ export class UserController {
   @Get('/search')
   async userSearch(@Request() req): Promise<User> {
     if (req.query.userId) {
-      return this.userService.getUser(req.query.userId);
+      return await this.userService.getUser(req.query.userId);
     } else if (req.query.userFullName) {
-      return this.userService.getUserByFullName(req.query.userFullName);
+      return await this.userService.getUserByFullName(req.query.userFullName);
     }
   }
 
@@ -52,7 +52,7 @@ export class UserController {
    */
   @Get('/users')
   async users(): Promise<User> {
-    return this.userService.getAllUsers();
+    return await this.userService.getAllUsers();
   }
 
   /**
@@ -63,7 +63,7 @@ export class UserController {
   // @UseGuards(<guardhere>)
   @Get('/settings/:userId')
   async getSettings(@Request() req): Promise<Settings> {
-    return this.userService.getSettings(req.params.userId);
+    return await this.userService.getSettings(req.params.userId);
   }
 
   /**
@@ -79,7 +79,7 @@ export class UserController {
     @Request() req,
     @Body() body: UserSettingsDto,
   ): Promise<Settings> {
-    return this.userService.createSettings(body, req.params.userId);
+    return await this.userService.createSettings(body, req.params.userId);
   }
 
   /**
@@ -90,7 +90,7 @@ export class UserController {
   // @UseGuards(<guardhere>)
   @Get('/timetable/:userId')
   async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return this.userService.getTimetables(req.params.userId);
+    return await this.userService.getTimetables(req.params.userId);
   }
 
   /**
@@ -105,7 +105,7 @@ export class UserController {
     @Request() req,
     @Body() body: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return this.userService.createTimetable(body, req.params.userId);
+    return await this.userService.createTimetable(body, req.params.userId);
   }
 
   // // @UseGuards(<guardhere>)
@@ -114,10 +114,7 @@ export class UserController {
     @Request() req,
     @Body() body: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return this.userService.editTimetable(
-      req.params.userId,
-      req.params.timetableId,
-    );
+    return await this.userService.editTimetable(req.params.userId, body);
   }
 
   /**
@@ -128,7 +125,7 @@ export class UserController {
   // @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')
   async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return this.userService.deleteTimetable(
+    return await this.userService.deleteTimetable(
       req.params.userId,
       req.params.timetableId,
     );

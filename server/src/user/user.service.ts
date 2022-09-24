@@ -35,12 +35,13 @@ export class UserService {
     SettingsDto: UserSettingsDto,
     userID: string,
   ): Promise<Settings> {
-    const setUserSettings = async () =>
-      await this.userModel.findOneAndUpdate(
-        { google_uid: userID },
-        { $set: { settings: new this.settingsModel(SettingsDto) } },
-      );
-    return (await setUserSettings()).settings;
+    await this.userModel.findOneAndUpdate(
+      { google_uid: userID },
+      { $set: { settings: new this.settingsModel(SettingsDto) } },
+    );
+
+    const updatedSettings = await this.getSettings(userID);
+    return updatedSettings;
   }
 
   /**
@@ -61,13 +62,11 @@ export class UserService {
    * @returns a Promise of the user's timetables.
    */
   async getTimetables(userID: string): Promise<UserTimetablesDto[]> {
-    return this.userModel
+    const timetables = await this.userModel
       .findOne({ google_uid: userID })
       .select('timetables')
-      .exec()
-      .then((r) => {
-        return r.timetables;
-      });
+      .exec();
+    return timetables.timetables;
   }
 
   /**
@@ -90,12 +89,12 @@ export class UserService {
       events: timetableData.events,
     });
 
-    return this.userModel
-      .findOneAndUpdate(
-        { google_uid: userId },
-        { $push: { timetables: new this.timetableModel(timetable) } },
-      )
-      .then((r) => r.timetables);
+    await this.userModel.findOneAndUpdate(
+      { google_uid: userId },
+      { $push: { timetables: new this.timetableModel(timetable) } },
+    );
+
+    return await this.getTimetables(userId);
   }
 
   /**
@@ -108,14 +107,14 @@ export class UserService {
     userId: string,
     ttToDeleteId: string,
   ): Promise<UserTimetablesDto[]> {
-    console.log('deleting timetable with id: ' + ttToDeleteId);
-    return this.userModel
+    await this.userModel
       .findOneAndUpdate(
         { google_uid: userId },
         { $pull: { timetables: { timetableId: ttToDeleteId } } },
         { safe: true, multi: false },
       )
-      .then((r) => r.timetables);
+      .exec();
+    return await this.getTimetables(userId);
   }
 
   /**
@@ -128,24 +127,18 @@ export class UserService {
     userId: string,
     edittedTimetable: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return this.userModel
-      .findOneAndUpdate(
-        { google_uid: userId },
-        { $set: { 'timetables.$[elem]': edittedTimetable } },
-        {
-          arrayFilters: [{ 'elem.timetableId': edittedTimetable.timetableId }],
-        },
-      )
-      .then((r) => r.timetables);
+    await this.deleteTimetable(userId, edittedTimetable.timetableId);
+    await this.createTimetable(edittedTimetable, userId);
+    return await this.getTimetables(userId);
   }
 
   /**
    * Find a user by their google_uid.
-   * @param userId
-   * @returns
+   * @param userId - the google_uid of the user.
+   * @returns a Promise of the user.
    */
   async getUser(userId: string): Promise<User> {
-    return this.userModel.findOne({ google_uid: userId });
+    return await this.userModel.findOne({ google_uid: userId });
   }
 
   /**
@@ -164,9 +157,8 @@ export class UserService {
     const count: number = userFullName.match(/_/g).length;
     const name = userFullName.split('_');
     const givenName = name[0];
-    const trailingNamespace = name.slice(1, count).join(' ');
-
-    return this.userModel.find({
+    const trailingNamespace = name.slice(1, count + 1).join(' ');
+    return await this.userModel.find({
       $and: [{ firstname: givenName }, { lastname: trailingNamespace }],
     });
   }
@@ -177,7 +169,7 @@ export class UserService {
    * @returns a Promise of all the users in the database.
    */
   async getAllUsers(): Promise<User[]> {
-    return this.userModel.find({});
+    return await this.userModel.find({});
   }
 
   /**
