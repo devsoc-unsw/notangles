@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserInterface } from '../schemas/user.schema';
 import * as sgMail from '@sendgrid/mail';
-import { UserSettingsDto, UserTimetablesDto } from '../user/dtos/user.dto';
+import { UserSettingsDto } from '../user/dtos/user.dto';
 import { FriendRequestDocument } from 'src/friend/dtos/friend.dto';
 
 @Injectable()
@@ -104,18 +104,5 @@ export class AuthService {
       .catch((error) => {
         console.error('Error occured: ', error);
       });
-  }
-
-  //  TODO: Delete all the functions below this line.
-  async delAllUsers(): Promise<void> {
-    this.userModel.deleteMany({}).then(() => {
-      console.log('[Users] Remove this delete many from auth.service.ts');
-    });
-  }
-
-  async delAllFr(): Promise<void> {
-    this.friendRequestModel.deleteMany({}).then(() => {
-      console.log('[FR] Remove this delete many from auth.service.ts');
-    });
   }
 }

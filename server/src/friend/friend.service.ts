@@ -162,13 +162,4 @@ export class FriendService {
 
     return await this.getFriendRequests(userId);
   }
-
-  /**
-   *
-   * @returns REMOVE THIS
-   */
-  async dropFriendRequests(): Promise<User[]> {
-    await this.friendRequestModel.deleteMany({}).exec();
-    return [];
-  }
 }

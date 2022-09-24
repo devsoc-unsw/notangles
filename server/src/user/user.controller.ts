@@ -11,8 +11,7 @@ import {
 
 import { LoginGuard } from 'src/auth/login.guard';
 
-import { Timetable, Settings, UserInterface } from 'src/schemas/user.schema';
-import { SessionSerializer } from 'src/auth/session.serializer';
+import { Settings } from 'src/schemas/user.schema';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/user.dto';
 import { User } from '@sentry/node';
 import { UserService } from './user.service';

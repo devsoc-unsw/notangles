@@ -204,15 +204,4 @@ export class FriendController {
     await this.friendService.declineFriendRequest(body.friendId, body.userId);
     return await this.friendService.getFriendRequests(body.userId);
   }
-
-  // REMOVE THIS
-  @Delete('/requests')
-  @UseGuards(LoginGuard)
-  async deleteFriendRequests(
-    @Body() body: SingleFriendRequestDto,
-  ): Promise<User[]> {
-    console.log('DELETING ALL REQUESTS');
-    await this.friendService.dropFriendRequests();
-    return [];
-  }
 }
