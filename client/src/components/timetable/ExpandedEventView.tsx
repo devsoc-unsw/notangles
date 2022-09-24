@@ -246,7 +246,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="Start time" />
               <TimePicker
-                views={['hours']}
                 value={timePickerStart(isChanged, newStartTime, start)}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e) => {
@@ -258,7 +257,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="End time" />
               <TimePicker
-                views={['hours']}
                 value={timePickerEnd(isChanged, newEndTime, end)}
                 renderInput={(params) => {
                   const tooEarly = !areValidEventTimes(newStartTime, newEndTime);

@@ -143,7 +143,7 @@ def sols(requestData):
 
         durations, specialPeriods, _ = newPeriodData[specIndex]
 
-        # Intermediate variables to determine which classes to choose
+        # Intermediate variables to determine which set of grouped periods to choose
         specialBools = [model.NewBoolVar(f"e{i}") for i in range(len(specialPeriods))]
 
         # These start times are initialised to have a range lasting the entire day
@@ -153,11 +153,13 @@ def sols(requestData):
             for i in range(len(durations))
         ]
 
+        # Choose some (in our case one) of the grouped periods to add
         for i in range(len(specialPeriods)):
             for j in range(len(groupStartTimes)):
                 model.Add(groupStartTimes[j] == specialPeriods[i][j]).OnlyEnforceIf(specialBools[i])
 
         # This is similar to classIntervals but for special classes
+        # Add an interval for all classes in the group
         specialClassIntervals += [
             model.NewFixedSizeIntervalVar(groupStartTimes[j], durations[j] + minGapBetw, f"sI{j}") for j in range(len(groupStartTimes))
         ]
@@ -165,22 +167,23 @@ def sols(requestData):
         # This ensures a single assignment of grouped periods
         model.AddExactlyOne(specialBools)
 
-        # Now the start times can now be added as normal start times ???
-        # The first start time is added in place (why?)
+        # Now the start times can now be added as normal start times
+        # The start time of the first period is added in place
         classStartTimes.insert(specIndex, groupStartTimes[0])
 
-        # The rest are appended to the list to preserve the original order of classes
+        # The rest are appended to the list to preserve the original order of periods
         for j in range(1, len(groupStartTimes)):
             classStartTimes.append(groupStartTimes[j])
 
     # The possible days of the week a class can be scheduled on
     dayDomain = cp_model.Domain.FromValues([int(i) for i in days])
 
-    # Lists of constraints where for each list, list[i] is the constraint for the ith day (Monday is the 0th day)
+    # Lists of earliest start/latest end timeconstraints where for each list,
+    # list[i] is the constraint for the ith day (Monday is the 0th day)
     laterThanArr = []
     noLaterThanArr = []
 
-    # The list containing the boolean variables themselves
+    # The list containing the boolean variables to count how many constraints were satisfied
     constraintBools = []
 
     # The weight each constraint will have on the final result
@@ -227,13 +230,15 @@ def sols(requestData):
             model.AddDivisionEquality(dummyClassDayTimes[i], classStartTimes[i], DAY_MULT)
             model.Add(dummyClassDayTimes[i] == classDayTimes[i]).OnlyEnforceIf(constraintBools[-1])
 
-        # Create integer variables to correspond to the maximum number of days classes should be scheduled on
+        # Create integer variables which correspond to the maximum number of days classes should be scheduled on
+        # These will take any combination of day values
         possibleDays = [model.NewIntVar(1, 6, f"dv{i}") for i in range(maxDays)]
 
         for classDayTime in dummyClassDayTimes:
-            # Intermediate variable to determine value of which days classes should be scheduled on
+            # Intermediate variable to determine whether to enable assigning a class to that day
             possibleBools = [model.NewBoolVar("") for _ in possibleDays]
 
+            # Constrain that classDayTime == one of the possible days classes can be on
             for i in range(len(possibleDays)):
                 model.Add(classDayTime == possibleDays[i]).OnlyEnforceIf(possibleBools[i])
 
@@ -254,7 +259,7 @@ def sols(requestData):
     print(f"Status: {solver.StatusName(status)}")
 
     unsatisfied = sum(constraintWeights) - solver.ObjectiveValue()
-    print(f"Number constraints unsatisfied: {unsatisfied}")
+    print(f"Number of constraints unsatisfied: {unsatisfied}")
 
     if solver.StatusName(status) != "INFEASIBLE" and unsatisfied <= MAX_UNSATISFIED_CONSTRAINTS:
         solutions = [solver.Value(classStartTimes[i]) for i in range(numCourses)]
