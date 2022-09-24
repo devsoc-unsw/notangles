@@ -8,11 +8,11 @@ import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 
-import About from './About';
-import Changelog from './Changelog';
-import CustomModal from './CustomModal';
-import Privacy from './Privacy';
-import Settings from './Settings';
+import About from '../sidebar/About';
+import Changelog from '../sidebar/Changelog';
+import CustomModal from '../sidebar/CustomModal';
+import Privacy from '../sidebar/Privacy';
+import Settings from '../sidebar/Settings';
 
 const LogoImg = styled('img')`
   height: 46px;
