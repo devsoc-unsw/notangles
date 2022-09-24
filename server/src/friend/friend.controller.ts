@@ -30,7 +30,7 @@ export class FriendController {
    * @returns Promise to an array of users who are the users friend.
    */
   @Get('/:userId')
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   async getFriends(@Request() req): Promise<User[]> {
     if (req.params.userId) {
       return await this.friendService.getFriends(req.params.userId);
@@ -52,7 +52,7 @@ export class FriendController {
    * @returns Promise to an array of users who are the users friend.
    */
   @Post('/')
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   async addFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
@@ -74,7 +74,7 @@ export class FriendController {
    * @returns Promise to an array of users who are the users friend.
    */
   @Delete('/')
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   async deleteFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
@@ -96,8 +96,8 @@ export class FriendController {
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
   @Post('/request')
+  @UseGuards(LoginGuard)
   async sendFriendRequest(
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
@@ -189,8 +189,8 @@ export class FriendController {
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
   @Delete('/request')
+  @UseGuards(LoginGuard)
   async deleteFriendRequest(
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {
@@ -206,9 +206,8 @@ export class FriendController {
   }
 
   // REMOVE THIS
-
-  // @UseGuards(LoginGuard)
   @Delete('/requests')
+  @UseGuards(LoginGuard)
   async deleteFriendRequests(
     @Body() body: SingleFriendRequestDto,
   ): Promise<User[]> {

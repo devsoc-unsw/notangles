@@ -9,27 +9,27 @@ import { LoginGuard } from './login.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LoginGuard)
   @Get('/login')
+  @UseGuards(LoginGuard)
   login() {
     // This function will not be run and instead intercepted by the LoginGuard.
     return;
   }
 
-  @UseGuards(LoginGuard)
   @Get('/token')
+  @UseGuards(LoginGuard)
   async getToken(@Req() req: Request) {
     return req.user;
   }
 
-  @UseGuards(LoginGuard)
   @Get('/user')
+  @UseGuards(LoginGuard)
   user(@Req() req: Request) {
     return this.authService.getUser(req.query.userID as string);
   }
 
-  @UseGuards(LoginGuard)
   @Get('/callback')
+  @UseGuards(LoginGuard)
   loginCallback(@Res() res: Response) {
     res.redirect('/');
   }
