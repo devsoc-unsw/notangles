@@ -120,28 +120,34 @@ const CustomEvent: React.FC = () => {
   const createEvents = () => {
 
     const newEvents: Record<string, EventPeriod> = {};
-
+    
     if (eventType === 'General') {
       if (!areValidEventTimes(startTime, endTime)) {
         setAlertMsg('End time is earlier than start time');
         setErrorVisibility(true);
         return;
       }
-    } else {
-      const tutoringEvents: Record<string, EventPeriod> = {};
-      const classDetails = classesList.find((classData) => classData.section === classCode);
-      console.log("Class details", classDetails);
-      if (classDetails !== undefined) {
-        classDetails.periods.forEach((period) => {
-          setEventName(classCode);
-        });
+      // Create an event for each day that is selected in the dropdown option
+      for (const day of eventDays) {
+        const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
+        newEvents[newEvent.event.id] = newEvent;
       }
-    }
-
-    // Create an event for each day that is selected in the dropdown option
-    for (const day of eventDays) {
-      const newEvent = createEvent(day);
-      newEvents[newEvent.event.id] = newEvent;
+    } else {
+      // Get the class details according to the chosen class code.
+      const classDetails = classesList.find((classData) => classData.section === classCode);
+      // Create an event for each period of the selected class.
+      classDetails!.periods.forEach((period) => {
+        const newEvent = createEvent(
+          classDetails!.courseCode + ' ' + period.subActivity, 
+          period.locations[0],
+          classCode,
+          color,
+          daysShort[period.time.day - 1],
+          createDateWithTime(period.time.start),
+          createDateWithTime(period.time.end)
+        );
+        newEvents[newEvent.event.id] = newEvent;
+      });
     }
 
     setEventType('General');
@@ -162,7 +168,7 @@ const CustomEvent: React.FC = () => {
     setColorPickerAnchorEl(null);
   };
 
-  const createEvent = (day: string) => {
+  const createEvent = (eventName: string, location: string, description: string, color: string, day: string, startTime: Date, endTime: Date) => {
     const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime)
 
     setCreatedEvents({
