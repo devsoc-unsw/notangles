@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import ClassIcon from '@mui/icons-material/Class';
 import { Autocomplete, Box, Button, createFilterOptions, ListItem, ListItemIcon, Popover, Tab, TextField } from '@mui/material';
-import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
 import { daysShort } from '../../constants/timetable';
@@ -333,6 +332,13 @@ const CustomEvent: React.FC = () => {
                       );
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id && option.label === value.label}
+                    ListboxProps={
+                      {
+                        style:{
+                          maxHeight: '120px',
+                        }
+                      }
+                    }
                   />
                 </StyledListItem>
                 <StyledListItem>
@@ -355,6 +361,13 @@ const CustomEvent: React.FC = () => {
                       );
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id && option.label === value.label}
+                    ListboxProps={
+                      {
+                        style:{
+                          maxHeight: '120px',
+                        }
+                      }
+                    }
                   />
                 </StyledListItem>
               </StyledTabPanel>
