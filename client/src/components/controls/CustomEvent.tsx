@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import ClassIcon from '@mui/icons-material/Class';
-import { Autocomplete, Box, Button, createFilterOptions, ListItem, ListItemIcon, Popover, Tab, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, ListItem, ListItemIcon, Popover, Tab, TextField } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
 import { daysShort } from '../../constants/timetable';
@@ -98,11 +98,21 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
+    // Reset all values in the popover
     setEventType('General');
+    setEventName('');
+    setLocation('');
+    setDescription('');
+    setEventDays([]);
+    setStartTime(createDateWithTime(9));
+    setEndTime(createDateWithTime(10));
+    setColor('#1F7E8C');
     setCourseCode('');
     setClassCode('');
-    setClassesList([]);
     setClassesCodes([]);
+    setClassesList([]);
+    setAnchorEl(null);
+    setColorPickerAnchorEl(null);
     setAnchorEl(null);
   };
 
@@ -162,9 +172,11 @@ const CustomEvent: React.FC = () => {
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
-    // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
+    setCreatedEvents({ ...createdEvents, ...newEvents });
+    // Close all popovers and reset values when Create button is clicked
+    handleClose();
   };
 
   const createEvent = (
