@@ -1,17 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
 import ClassIcon from '@mui/icons-material/Class';
-import {
-  Autocomplete,
-  Box,
-  Button,
-  createFilterOptions,
-  ListItem,
-  ListItemIcon,
-  Popover,
-  Tab,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Box, Button, createFilterOptions, ListItem, ListItemIcon, Popover, Tab, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
@@ -20,31 +10,20 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import {
+  DropdownButton,
+  StyledTabPanel,
+  ExecuteButton,
+  StyledListItem,
+  StyledListItemText,
+} from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 import { CoursesList } from '../../interfaces/Courses';
 import getCourseInfo from '../../api/getCourseInfo';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-
-const DropdownButton = styled(Button)`
-  && {
-    width: 100%;
-    height: 55px;
-    margin-top: 20px;
-    margin-right: 10px;
-    text-align: left;
-    &:hover {
-      background-color: #598dff;
-    }
-  }
-`;
-
-const StyledTabPanel = styled(TabPanel)`
-  padding-bottom: 0;
-`;
+import { TabContext, TabList } from '@mui/lab';
 
 const CustomEvent: React.FC = () => {
   const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
@@ -58,6 +37,7 @@ const CustomEvent: React.FC = () => {
   const [courseCode, setCourseCode] = useState<string>('');
   const [classCode, setClassCode] = useState<string>('');
   const [classesList, setClassesList] = useState<ClassData[]>([]);
+  const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
 
   /**
@@ -75,8 +55,6 @@ const CustomEvent: React.FC = () => {
 
   let coursesCodes = getCoursesCodes(coursesList);
 
-  // A list of the classes for the chosen course (for the class dropdown)
-  let classesCodes: Array<Record<string, string>> = [];
   // Get the list of classes for the selected course code.
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
@@ -95,6 +73,7 @@ const CustomEvent: React.FC = () => {
               });
             }
           });
+          setClassesCodes(classesCodes);
         });
     }
   }, [courseCode]);
@@ -120,6 +99,10 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
+    setCourseCode('');
+    setClassCode('');
+    setClassesList([]);
+    setClassesCodes([]);
     setAnchorEl(null);
   };
 
@@ -178,8 +161,8 @@ const CustomEvent: React.FC = () => {
     setCourseCode('');
     coursesCodes = [];
     setClassCode('');
-    classesCodes = [];
     setClassesList([]);
+    setClassesCodes([]);
     // Close all popovers when Create button is clicked
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
@@ -239,7 +222,7 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <StyledList >
+        <StyledList>
           <Box sx={{ typography: 'body1' }}>
             <TabContext value={eventType}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -248,7 +231,7 @@ const CustomEvent: React.FC = () => {
                   <Tab label="Tutoring" value="Tutoring" />
                 </TabList>
               </Box>
-              <StyledTabPanel value="General" >
+              <StyledTabPanel value="General">
                 <StyledListItem>
                   <ListItemIcon>
                     <Event />
@@ -342,7 +325,6 @@ const CustomEvent: React.FC = () => {
                     autoHighlight
                     noOptionsText="No Results"
                     onChange={(_, value) => (value ? setCourseCode(value.label) : setCourseCode(''))}
-                    filterOptions={createFilterOptions({ limit: 3 })}
                     renderOption={(props, option) => {
                       return (
                         <li {...props} key={option.id}>
@@ -365,7 +347,6 @@ const CustomEvent: React.FC = () => {
                     autoHighlight
                     noOptionsText="No Results"
                     onChange={(_, value) => (value ? setClassCode(value.label) : setClassCode(''))}
-                    filterOptions={createFilterOptions({ limit: 3 })}
                     renderOption={(props, option) => {
                       return (
                         <li {...props} key={option.id}>
