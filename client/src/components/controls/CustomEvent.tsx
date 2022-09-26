@@ -60,8 +60,10 @@ const CustomEvent: React.FC = () => {
   };
   
   let coursesCodes = getCoursesCodes(coursesList);
-  let classesCodes: Array<Record<string, string>> = [];
 
+  // A list of the classes for the chosen course (for the class dropdown)
+  let classesCodes: Array<Record<string, string>> = [];
+  // Get the list of classes for the selected course code.
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop']
     if (courseCode !== '') {
@@ -323,7 +325,7 @@ const CustomEvent: React.FC = () => {
                   fullWidth
                   autoHighlight
                   noOptionsText="No Results"
-                  onChange={(e, value) => {if (value) {setCourseCode(value.label)}}}
+                  onChange={(e, value) => value ? setCourseCode(value.label) : setCourseCode('')}
                   filterOptions={createFilterOptions({ limit: 3 })}
                   renderOption={(props, option) => {
                     return (
@@ -346,7 +348,7 @@ const CustomEvent: React.FC = () => {
                   fullWidth
                   autoHighlight
                   noOptionsText="No Results"
-                  onChange={(e, value) => {if (value) {setClassCode(value.label)}}}
+                  onChange={(e, value) => value ? setClassCode(value.label) : setClassCode('')}
                   filterOptions={createFilterOptions({ limit: 3 })}
                   renderOption={(props, option) => {
                     return (
