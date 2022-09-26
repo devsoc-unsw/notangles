@@ -160,7 +160,6 @@ const CustomEvent: React.FC = () => {
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
     setCourseCode('');
-    coursesCodes = [];
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
