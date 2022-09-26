@@ -99,6 +99,7 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
+    setEventType('General');
     setCourseCode('');
     setClassCode('');
     setClassesList([]);
@@ -320,7 +321,7 @@ const CustomEvent: React.FC = () => {
                   <Autocomplete
                     disablePortal
                     options={coursesCodes}
-                    renderInput={(params) => <TextField {...params} label="Course code" />}
+                    renderInput={(params) => <TextField {...params} label="Course code *" />}
                     fullWidth
                     autoHighlight
                     noOptionsText="No Results"
@@ -342,7 +343,7 @@ const CustomEvent: React.FC = () => {
                   <Autocomplete
                     disablePortal
                     options={classesCodes}
-                    renderInput={(params) => <TextField {...params} label="Class code" />}
+                    renderInput={(params) => <TextField {...params} label="Class code *" />}
                     fullWidth
                     autoHighlight
                     noOptionsText="No Results"
