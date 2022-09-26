@@ -6,16 +6,10 @@ import {
   Box,
   Button,
   createFilterOptions,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
   ListItem,
   ListItemIcon,
   Popover,
-  Radio,
-  RadioGroup,
   Tab,
-  Tabs,
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -245,7 +239,7 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <StyledList>
+        <StyledList >
           <Box sx={{ typography: 'body1' }}>
             <TabContext value={eventType}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -347,7 +341,7 @@ const CustomEvent: React.FC = () => {
                     fullWidth
                     autoHighlight
                     noOptionsText="No Results"
-                    onChange={(e, value) => (value ? setCourseCode(value.label) : setCourseCode(''))}
+                    onChange={(_, value) => (value ? setCourseCode(value.label) : setCourseCode(''))}
                     filterOptions={createFilterOptions({ limit: 3 })}
                     renderOption={(props, option) => {
                       return (
@@ -370,7 +364,7 @@ const CustomEvent: React.FC = () => {
                     fullWidth
                     autoHighlight
                     noOptionsText="No Results"
-                    onChange={(e, value) => (value ? setClassCode(value.label) : setClassCode(''))}
+                    onChange={(_, value) => (value ? setClassCode(value.label) : setClassCode(''))}
                     filterOptions={createFilterOptions({ limit: 3 })}
                     renderOption={(props, option) => {
                       return (
