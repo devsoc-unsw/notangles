@@ -16,7 +16,7 @@ import {
   getAvailableTermDetails,
   getDefaultEndTime,
   getDefaultStartTime,
-  unknownErrorMessage
+  unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';

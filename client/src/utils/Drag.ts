@@ -8,7 +8,7 @@ import {
   EventPeriod,
   EventTime,
   InInventory,
-  InventoryPeriod
+  InventoryPeriod,
 } from '../interfaces/Periods';
 import storage from './storage';
 
