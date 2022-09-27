@@ -25,8 +25,8 @@ export class UserController {
    * @param req: decorator of the Request route handler param.
    * @returns Promise to a user object or null if user does not exist.
    */
-  @Get('/profile/:userId')
   @UseGuards(LoginGuard)
+  @Get('/profile/:userId')
   async user(@Request() req): Promise<User> {
     return await this.userService.getUser(req.params.userId);
   }
@@ -37,8 +37,8 @@ export class UserController {
    * @param req decorator of the Request route handler param.
    * @returns Promise to a user object or null if user does not exist.
    */
-  @Get('/search')
   @UseGuards(LoginGuard)
+  @Get('/search')
   async userSearch(@Request() req): Promise<User> {
     if (req.query.userId) {
       return await this.userService.getUser(req.query.userId);
@@ -52,8 +52,8 @@ export class UserController {
    * Get users in collection.
    * @returns Promise to an array of users.
    */
-  @Get('/users')
   @UseGuards(LoginGuard)
+  @Get('/users')
   async users(): Promise<User> {
     return await this.userService.getAllUsers();
   }
@@ -63,8 +63,8 @@ export class UserController {
    * @param req decorator of the Request route handler param.
    * @returns Promise to the user's settings
    */
-  @Get('/settings/:userId')
   @UseGuards(LoginGuard)
+  @Get('/settings/:userId')
   async getSettings(@Request() req): Promise<Settings> {
     return await this.userService.getSettings(req.params.userId);
   }
@@ -76,8 +76,8 @@ export class UserController {
    * @param body: UserSettingsDto which details user's settings.
    * @returns Promise to the user's settings.
    */
-  @Post('/settings/:userId')
   @UseGuards(LoginGuard)
+  @Post('/settings/:userId')
   async createSettings(
     @Request() req,
     @Body() body: UserSettingsDto,
@@ -90,8 +90,8 @@ export class UserController {
    * @param req decorator of the Request route handler param.
    * @returns Promise to the user's timetables.
    */
-  @Get('/timetable/:userId')
   @UseGuards(LoginGuard)
+  @Get('/timetable/:userId')
   async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
     return await this.userService.getTimetables(req.params.userId);
   }
@@ -102,8 +102,9 @@ export class UserController {
    * @param body: UserTimetablesDto which details the timetable to be added.
    * @returns Promise to the user's timetables.
    */
-  @Post('/timetable/:userId')
+
   @UseGuards(LoginGuard)
+  @Post('/timetable/:userId')
   async createTimetable(
     @Request() req,
     @Body() body: UserTimetablesDto,
@@ -111,8 +112,8 @@ export class UserController {
     return await this.userService.createTimetable(body, req.params.userId);
   }
 
-  @Put('/timetable/:userId/:timetableId')
   @UseGuards(LoginGuard)
+  @Put('/timetable/:userId/:timetableId')
   async editTimetable(
     @Request() req,
     @Body() body: UserTimetablesDto,
@@ -125,8 +126,8 @@ export class UserController {
    * @param req: decorator of the Request route handler param.
    * @returns Promise to the user's timetables.
    */
-  @Delete('/timetable/:userId/:timetableId')
   @UseGuards(LoginGuard)
+  @Delete('/timetable/:userId/:timetableId')
   async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
     return await this.userService.deleteTimetable(
       req.params.userId,

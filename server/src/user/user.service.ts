@@ -120,15 +120,22 @@ export class UserService {
   /**
    * Edit a given timetable.
    * @param userId: string of the user's google_uid.
-   * @param edittedTimetable: the timetable to be editted.
+   * @param editedTimetable: the timetable to be editted.
    * @returns a Promise of the updated timetables.
    */
   async editTimetable(
     userId: string,
-    edittedTimetable: UserTimetablesDto,
+    editedTimetable: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    await this.deleteTimetable(userId, edittedTimetable.timetableId);
-    await this.createTimetable(edittedTimetable, userId);
+    const { timetableId: timetableToDelete } = editedTimetable;
+    await this.userModel
+      .findOneAndUpdate(
+        { google_uid: userId, 'timetables.timetableId': timetableToDelete },
+        { $set: { 'timetables.$': editedTimetable } },
+        { safe: true, multi: false },
+      )
+      .exec();
+
     return await this.getTimetables(userId);
   }
 

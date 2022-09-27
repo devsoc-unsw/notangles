@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export class SingleFriendRequestDto {
-  userId: string;
-  friendId: string;
+export class FriendRequestDto {
+  senderId: string;
+  sendeeId: string;
 }
 
 @Schema()

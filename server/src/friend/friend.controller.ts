@@ -10,7 +10,7 @@ import {
 import { User } from 'src/schemas/user.schema';
 import { FriendService } from './friend.service';
 import { UserService } from 'src/user/user.service';
-import { SingleFriendRequestDto } from './dtos/friend.dto';
+import { FriendRequestDto } from './dtos/friend.dto';
 import { LoginGuard } from 'src/auth/login.guard';
 
 @Controller('friend')
@@ -29,8 +29,8 @@ export class FriendController {
    * @param req: the Request route handler param.
    * @returns Promise to an array of users who are the users friend.
    */
-  @Get('/:userId')
   @UseGuards(LoginGuard)
+  @Get('/:userId')
   async getFriends(@Request() req): Promise<User[]> {
     if (req.params.userId) {
       return await this.friendService.getFriends(req.params.userId);
@@ -47,20 +47,21 @@ export class FriendController {
    *  - The user trying to add themselves as friends.
    *  - Non valid users are not added as friends.
    *
-   * @param body decorator of the form SingleFriendRequestDto. Please see
+   * @param body decorator of the form FriendRequestDto. Please see
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  @Post('/')
   @UseGuards(LoginGuard)
-  async addFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
+  @Post('/')
+  async addFriend(@Body() body: FriendRequestDto): Promise<User[]> {
+    const { senderId, sendeeId } = body;
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
     // Validity checker for the user Ids provided.
-    if (!checkValidUser(body.userId) || !checkValidUser(body.friendId)) {
+    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
       return [];
     }
-    return await this.friendService.addFriend(body.userId, body.friendId);
+    return await this.friendService.addFriend(senderId, sendeeId);
   }
 
   /**
@@ -69,20 +70,21 @@ export class FriendController {
    * [Defensively checked for]:
    *  - Non valid users.
    *
-   * @param body decorator of the form SingleFriendRequestDto. Please see
+   * @param body decorator of the form FriendRequestDto. Please see
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  @Delete('/')
   @UseGuards(LoginGuard)
-  async deleteFriend(@Body() body: SingleFriendRequestDto): Promise<User[]> {
+  @Delete('/')
+  async deleteFriend(@Body() body: FriendRequestDto): Promise<User[]> {
+    const { senderId, sendeeId } = body;
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
     // Validity checker for the user Ids provided.
-    if (!checkValidUser(body.userId) || !checkValidUser(body.friendId)) {
+    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
       return [];
     }
-    return await this.friendService.removeFriend(body.userId, body.friendId);
+    return await this.friendService.removeFriend(senderId, sendeeId);
   }
 
   /**
@@ -92,35 +94,26 @@ export class FriendController {
    *  - Non valid users are not added as friends.
    *  - If the user has already sent a friend request, or already friends.
    *
-   * @param body decorator of the form SingleFriendRequestDto. Please see
+   * @param body decorator of the form FriendRequestDto. Please see
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  @Post('/request')
   @UseGuards(LoginGuard)
-  async sendFriendRequest(
-    @Body() body: SingleFriendRequestDto,
-  ): Promise<User[]> {
+  @Post('/request')
+  async sendFriendRequest(@Body() body: FriendRequestDto): Promise<User[]> {
+    const { senderId, sendeeId } = body;
     // Check for valid users.
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
     // Validity checker for the user Ids provided.
-    if (!checkValidUser(body.userId) || !checkValidUser(body.friendId)) {
+    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
       return [];
     }
-
-    // Initially, a check is made to see
-    // if the user has already sent a friend request to the other user and viceversa
-    // So we can add them as friends.
 
     const hasUserAsentReqToB = async (
       uId: string,
       fId: string,
     ): Promise<boolean> => {
-      // After getting the user's friend requests, we check if the
-      // intended friendId is in the requests array. If it is, we
-      // set the return type as true.
-
       const getUserFriendReqs: User[] =
         await this.friendService.getFriendRequests(uId);
 
@@ -132,13 +125,6 @@ export class FriendController {
       return false;
     };
 
-    /**
-     * There could be the case that the users are already
-     * friends, so we check for that too.
-     * @param uId
-     * @param fId
-     * @returns
-     */
     const alreadyFriends = async (
       uId: string,
       fId: string,
@@ -151,31 +137,26 @@ export class FriendController {
       return false;
     };
 
-    /**
-     * Performance optimisation:
-     * check before the promise all for the condition that
-     * they are already friends or not to save some time
-     */
-    const friended: boolean = await alreadyFriends(body.userId, body.friendId);
+    const friended: boolean = await alreadyFriends(senderId, sendeeId);
     if (!friended) {
       let [recv, sent]: [boolean, boolean] = await Promise.all([
-        hasUserAsentReqToB(body.userId, body.friendId),
-        hasUserAsentReqToB(body.friendId, body.userId),
+        hasUserAsentReqToB(senderId, sendeeId),
+        hasUserAsentReqToB(sendeeId, senderId),
       ]);
 
       if (recv && sent) {
         // Add them as friends, and concurrently clean up the friend requests collection.
         await Promise.all([
-          this.friendService.addFriend(body.friendId, body.userId),
-          this.friendService.declineFriendRequest(body.userId, body.friendId),
+          this.friendService.addFriend(sendeeId, senderId),
+          this.friendService.declineFriendRequest(senderId, sendeeId),
         ]);
       } else {
         // One person or neither has not sent a friend Request to the other.
-        await this.friendService.sendFriendRequest(body.userId, body.friendId);
+        return await this.friendService.sendFriendRequest(senderId, sendeeId);
       }
     }
 
-    return await this.friendService.getFriendRequests(body.userId);
+    return await this.friendService.getFriendRequests(senderId);
   }
 
   /**
@@ -185,23 +166,22 @@ export class FriendController {
    * [Defensively checked for]:
    *  - Non valid users.
    *
-   * @param body decorator of the form SingleFriendRequestDto. Please see
+   * @param body decorator of the form FriendRequestDto. Please see
    *        confluence documentation for the interface structure.
    * @returns Promise to an array of users who are the users friend.
    */
-  @Delete('/request')
   @UseGuards(LoginGuard)
-  async deleteFriendRequest(
-    @Body() body: SingleFriendRequestDto,
-  ): Promise<User[]> {
+  @Delete('/request')
+  async deleteFriendRequest(@Body() body: FriendRequestDto): Promise<User[]> {
+    const { senderId, sendeeId } = body;
     // Check for valid users.
     const checkValidUser = async (uId: string) =>
       this.userService.checkIfUserExists(uId);
     // Validity checker for the user Ids provided.
-    if (!checkValidUser(body.userId) || !checkValidUser(body.friendId)) {
+    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
       return [];
     }
-    await this.friendService.declineFriendRequest(body.friendId, body.userId);
-    return await this.friendService.getFriendRequests(body.userId);
+
+    return await this.friendService.declineFriendRequest(senderId, sendeeId);
   }
 }
