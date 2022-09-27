@@ -1,28 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import ClassIcon from '@mui/icons-material/Class';
-import { Autocomplete, Box, Button, ListItem, ListItemIcon, Popover, Tab, TextField } from '@mui/material';
-import { TimePicker } from '@mui/x-date-pickers';
+import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { TabContext, TabList } from '@mui/lab';
+import { Box, Button, ListItem, Popover, Tab, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import React, { useContext, useEffect, useState } from 'react';
+import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { CoursesList } from '../../interfaces/Courses';
 import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
-import {
-  DropdownButton,
-  StyledTabPanel,
-  ExecuteButton,
-  StyledListItem,
-  StyledListItemText,
-} from '../../styles/CustomEventStyles';
+import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
-import DropdownOption from '../timetable/DropdownOption';
-import { CoursesList } from '../../interfaces/Courses';
-import getCourseInfo from '../../api/getCourseInfo';
-import { TabContext, TabList } from '@mui/lab';
+import CustomEventGeneral from './CustomEventGeneral';
+import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
   const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
@@ -98,8 +91,8 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
-    // Reset all values in the popover
     setEventType('General');
+    // Reset info about the general event
     setEventName('');
     setLocation('');
     setDescription('');
@@ -107,10 +100,12 @@ const CustomEvent: React.FC = () => {
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
     setColor('#1F7E8C');
+    // Reset ino about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesCodes([]);
     setClassesList([]);
+    // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
     setAnchorEl(null);
@@ -122,10 +117,6 @@ const CustomEvent: React.FC = () => {
 
   const handleCloseColourPicker = () => {
     setColorPickerAnchorEl(null);
-  };
-
-  const handleFormat = (newFormats: string[]) => {
-    setEventDays(newFormats);
   };
 
   const createEvents = () => {
@@ -161,21 +152,22 @@ const CustomEvent: React.FC = () => {
     }
 
     setEventType('General');
-    setCreatedEvents({ ...createdEvents, ...newEvents });
+    // Reset info about the general event
     setEventName('');
     setLocation('');
     setDescription('');
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
+    // Reset ino about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
+    // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
     setCreatedEvents({ ...createdEvents, ...newEvents });
-    // Close all popovers and reset values when Create button is clicked
     handleClose();
   };
 
@@ -243,145 +235,28 @@ const CustomEvent: React.FC = () => {
                 </TabList>
               </Box>
               <StyledTabPanel value="General">
-                <StyledListItem>
-                  <ListItemIcon>
-                    <Event />
-                  </ListItemIcon>
-                  <TextField
-                    id="outlined-required"
-                    label="Event Name"
-                    onChange={(e) => setEventName(e.target.value)}
-                    variant="outlined"
-                    fullWidth
-                    required
-                    defaultValue={eventName}
-                  />
-                </StyledListItem>
-                <StyledListItem>
-                  <ListItemIcon>
-                    <Notes />
-                  </ListItemIcon>
-                  <TextField
-                    id="outlined-basic"
-                    label="Description (optional)"
-                    onChange={(e) => setDescription(e.target.value)}
-                    variant="outlined"
-                    multiline
-                    fullWidth
-                    defaultValue={description}
-                  />
-                </StyledListItem>
-                <StyledListItem>
-                  <ListItemIcon>
-                    <LocationOn />
-                  </ListItemIcon>
-                  <TextField
-                    id="outlined-required"
-                    label="Location"
-                    onChange={(e) => setLocation(e.target.value)}
-                    variant="outlined"
-                    fullWidth
-                    required
-                    defaultValue={location}
-                  />
-                </StyledListItem>
-                <StyledListItem>
-                  <StyledListItemText primary="Start time" />
-                  <TimePicker
-                    value={startTime}
-                    renderInput={(params) => <TextField {...params} />}
-                    onChange={(e) => {
-                      if (e) setStartTime(e);
-                    }}
-                  />
-                </StyledListItem>
-                <StyledListItem>
-                  <StyledListItemText primary="End time" />
-                  <TimePicker
-                    value={endTime}
-                    renderInput={(params) => {
-                      const tooEarly = !areValidEventTimes(startTime, endTime);
-                      return (
-                        <TextField
-                          {...params}
-                          error={params.error || tooEarly}
-                          label={tooEarly && 'End time must be after start time'}
-                        />
-                      );
-                    }}
-                    onChange={(e) => {
-                      if (e) setEndTime(e);
-                    }}
-                  />
-                </StyledListItem>
-                <DropdownOption
-                  optionName="Days"
-                  optionState={eventDays}
-                  setOptionState={handleFormat}
-                  optionChoices={daysShort}
-                  multiple={true}
-                  noOff
+                <CustomEventGeneral
+                  eventName={eventName}
+                  setEventName={setEventName}
+                  location={location}
+                  setLocation={setLocation}
+                  description={description}
+                  setDescription={setDescription}
+                  startTime={startTime}
+                  setStartTime={setStartTime}
+                  endTime={endTime}
+                  setEndTime={setEndTime}
+                  eventDays={eventDays}
+                  setEventDays={setEventDays}
                 />
               </StyledTabPanel>
               <StyledTabPanel value="Tutoring">
-                <StyledListItem>
-                  <ListItemIcon>
-                    <Event />
-                  </ListItemIcon>
-                  <Autocomplete
-                    disablePortal
-                    options={coursesCodes}
-                    renderInput={(params) => <TextField {...params} label="Course code *" />}
-                    fullWidth
-                    autoHighlight
-                    noOptionsText="No Results"
-                    onChange={(_, value) => (value ? setCourseCode(value.label) : setCourseCode(''))}
-                    renderOption={(props, option) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.label}
-                        </li>
-                      );
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id && option.label === value.label}
-                    ListboxProps={
-                      {
-                        style:{
-                          maxHeight: '120px',
-                        }
-                      }
-                    }
-                  />
-                </StyledListItem>
-                <StyledListItem>
-                  <ListItemIcon>
-                    <ClassIcon />
-                  </ListItemIcon>
-                  <Autocomplete
-                    disablePortal
-                    options={classesCodes}
-                    renderInput={(params) => <TextField {...params} label="Class code *" />}
-                    fullWidth
-                    autoHighlight
-                    noOptionsText="No Results"
-                    onChange={(_, value) => (value ? setClassCode(value.label) : setClassCode(''))}
-                    renderOption={(props, option) => {
-                      return (
-                        <li {...props} key={option.id}>
-                          {option.label}
-                        </li>
-                      );
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id && option.label === value.label}
-                    ListboxProps={
-                      {
-                        style:{
-                          maxHeight: '120px',
-                        }
-                      }
-                    }
-                  />
-                </StyledListItem>
+                <CustomEventTutoring
+                  coursesCodes={coursesCodes}
+                  classesCodes={classesCodes}
+                  setCourseCode={setCourseCode}
+                  setClassCode={setClassCode}
+                />
               </StyledTabPanel>
             </TabContext>
           </Box>

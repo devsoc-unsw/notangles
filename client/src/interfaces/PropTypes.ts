@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
+import { Dispatch, ReactNode, SetStateAction } from 'react';
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -110,12 +110,33 @@ export interface ExpandedEventViewProps {
 export interface DiscardDialogProps {
   openSaveDialog: boolean;
   handleDiscardChanges: () => void;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenSaveDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditing: Dispatch<SetStateAction<boolean>>;
+  setOpenSaveDialog: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface LocationDropdownProps {
   sectionsAndLocations: Array<[Section, Location]>;
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
+}
+export interface CustomEventGeneralProps {
+  eventName: String;
+  setEventName: Dispatch<SetStateAction<string>>;
+  description: String;
+  setDescription: Dispatch<SetStateAction<string>>;
+  location: String;
+  setLocation: Dispatch<SetStateAction<string>>;
+  startTime: Date;
+  setStartTime: Dispatch<SetStateAction<Date>>;
+  endTime: Date;
+  setEndTime: Dispatch<SetStateAction<Date>>;
+  eventDays: Array<string>;
+  setEventDays: Dispatch<SetStateAction<Array<string>>>;
+}
+
+export interface CustomEventTutoringProp {
+  coursesCodes: Array<Record<string, string>>;
+  classesCodes: Array<Record<string, string>>;
+  setCourseCode: Dispatch<SetStateAction<string>>;
+  setClassCode: Dispatch<SetStateAction<string>>;
 }
