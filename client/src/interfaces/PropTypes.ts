@@ -1,5 +1,5 @@
+import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
-import { Dispatch, ReactNode, SetStateAction } from 'react';
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -110,8 +110,8 @@ export interface ExpandedEventViewProps {
 export interface DiscardDialogProps {
   openSaveDialog: boolean;
   handleDiscardChanges: () => void;
-  setIsEditing: Dispatch<SetStateAction<boolean>>;
-  setOpenSaveDialog: Dispatch<SetStateAction<boolean>>;
+  setIsEditing: (isEditing: boolean) => void;
+  setOpenSaveDialog: (isOpen: boolean) => void;
 }
 
 export interface LocationDropdownProps {
@@ -120,23 +120,23 @@ export interface LocationDropdownProps {
   selectedIndex: number;
 }
 export interface CustomEventGeneralProps {
-  eventName: String;
-  setEventName: Dispatch<SetStateAction<string>>;
-  description: String;
-  setDescription: Dispatch<SetStateAction<string>>;
-  location: String;
-  setLocation: Dispatch<SetStateAction<string>>;
+  eventName: string;
+  setEventName: (name: string) => void;
+  description: string;
+  setDescription: (description: string) => void;
+  location: string;
+  setLocation: (location: string) => void;
   startTime: Date;
-  setStartTime: Dispatch<SetStateAction<Date>>;
+  setStartTime: (startTime: Date) => void;
   endTime: Date;
-  setEndTime: Dispatch<SetStateAction<Date>>;
-  eventDays: Array<string>;
-  setEventDays: Dispatch<SetStateAction<Array<string>>>;
+  setEndTime: (endTime: Date) => void;
+  eventDays: string[];
+  setEventDays: (days: string[]) => void;
 }
 
 export interface CustomEventTutoringProp {
-  coursesCodes: Array<Record<string, string>>;
-  classesCodes: Array<Record<string, string>>;
-  setCourseCode: Dispatch<SetStateAction<string>>;
-  setClassCode: Dispatch<SetStateAction<string>>;
+  coursesCodes: Record<string, string>[];
+  classesCodes: Record<string, string>[];
+  setCourseCode: (courseCode: string) => void;
+  setClassCode: (classCode: string) => void;
 }

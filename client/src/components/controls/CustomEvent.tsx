@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Button, ListItem, Popover, Tab, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import React, { useContext, useEffect, useState } from 'react';
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -73,12 +73,14 @@ const CustomEvent: React.FC = () => {
 
   // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the popover is shown
   const open = Boolean(anchorEl);
   const popoverId = open ? 'simple-popover' : undefined;
 
   // Which element to make the colour picker popover stick to
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
@@ -93,6 +95,7 @@ const CustomEvent: React.FC = () => {
 
   const handleClose = () => {
     setEventType('General');
+
     // Reset info about the general event
     setEventName('');
     setLocation('');
@@ -101,11 +104,13 @@ const CustomEvent: React.FC = () => {
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
     setColor('#1F7E8C');
-    // Reset ino about the tutoring event
+
+    // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesCodes([]);
     setClassesList([]);
+
     // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
@@ -129,6 +134,7 @@ const CustomEvent: React.FC = () => {
         setErrorVisibility(true);
         return;
       }
+
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
         const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
@@ -153,6 +159,7 @@ const CustomEvent: React.FC = () => {
     }
 
     setEventType('General');
+
     // Reset info about the general event
     setEventName('');
     setLocation('');
@@ -160,11 +167,13 @@ const CustomEvent: React.FC = () => {
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
-    // Reset ino about the tutoring event
+
+    // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
+
     // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
