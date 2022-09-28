@@ -1,8 +1,8 @@
+import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Button, ListItem, Popover, Tab, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
-import React, { useContext, useEffect, useState } from 'react';
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
