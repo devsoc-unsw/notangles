@@ -26,22 +26,10 @@ import NetworkError from '../../interfaces/NetworkError';
 import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import { AutotimetableProps } from '../../interfaces/PropTypes';
 import { StyledControlsButton } from '../../styles/ControlStyles';
+import { DropdownButton } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import DropdownOption from '../timetable/DropdownOption';
 import { createDateWithTime } from '../../utils/eventTimes';
-
-const DropdownButton = styled(Button)`
-  && {
-    width: 100%;
-    height: 55px;
-    margin-top: 20px;
-    margin-right: 10px;
-    text-align: left;
-    &:hover {
-      background-color: #598dff;
-    }
-  }
-`;
+import DropdownOption from '../timetable/DropdownOption';
 
 const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
