@@ -1,3 +1,5 @@
+// No Longer Used
+
 import * as React from 'react';
 import { useState, useContext } from 'react';
 import {
@@ -61,6 +63,27 @@ const Weak = styled('span')`
   z-index: 1201;
 `;
 
+const StyledDrawer = styled(Drawer)`
+  border-radius: 100px;
+`;
+
+const StyledDivider = styled(Divider)`
+  margin-top: 100px;
+`;
+
+const StyledAddFriendsButton = styled(AddFriendsButton)`
+  margin-top: 100px;
+  alignq-self: center;
+`;
+
+const StyledToolbar = styled(Toolbar)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+`;
+
 export default function Sidebar(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -71,21 +94,14 @@ export default function Sidebar(props: Props) {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
-  const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const drawer = (
     <div>
-      <Toolbar sx={{ backgroundColor: '#4074FC' }} disableGutters={true} />
-      <Box sx={{ backgroundColor: '#4074FC' }}>
-        <LogoImg src={currLogo} onMouseOver={() => setCurrLogo(notanglesLogoGif)} onMouseOut={() => setCurrLogo(notanglesLogo)} />
-        <NavbarTitle variant="h6">
-          Notangles
-          <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
-        </NavbarTitle>
-      </Box>
-      <Divider />
-      <Typography>Friends</Typography>
+      <StyledToolbar sx={{ backgroundColor: '#4074FC' }} disableGutters={true} />
+      <StyledDivider />
+      <Typography variant="h6" align="justify">
+        Friends
+      </Typography>
       <List>
         {['Grandpa MJ', 'Grace Kan', 'Friend 3', 'Friend 4'].map((text, index) => (
           <ListItem key={text} disablePadding>
@@ -99,9 +115,9 @@ export default function Sidebar(props: Props) {
           </ListItem>
         ))}
       </List>
-      <AddFriendsButton />
+      <StyledAddFriendsButton />
 
-      <Divider />
+      <StyledDivider />
       <Help />
     </div>
   );
@@ -112,7 +128,7 @@ export default function Sidebar(props: Props) {
     <Box sx={{ display: 'flex' }}>
       <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
+        <StyledDrawer
           container={container}
           variant="temporary"
           open={mobileOpen}
@@ -127,8 +143,8 @@ export default function Sidebar(props: Props) {
           }}
         >
           {drawer}
-        </Drawer>
-        <Drawer
+        </StyledDrawer>
+        <StyledDrawer
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
@@ -137,7 +153,7 @@ export default function Sidebar(props: Props) {
           open
         >
           {drawer}
-        </Drawer>
+        </StyledDrawer>
       </Box>
     </Box>
   );

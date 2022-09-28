@@ -8,12 +8,6 @@ import notanglesLogoGif from '../../assets/notangles.gif';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 
-import About from '../sidebar/About';
-import Changelog from '../sidebar/Changelog';
-import CustomModal from '../sidebar/CustomModal';
-import Privacy from '../sidebar/Privacy';
-import Settings from '../sidebar/Settings';
-
 const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
@@ -68,20 +62,6 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
-          <CustomModal
-            title="About"
-            showIcon={<Info />}
-            description={'Notangles: no more timetable tangles'}
-            content={<About />}
-          />
-          <CustomModal title="Changelog" showIcon={<Description />} description={'Changelog'} content={<Changelog />} />
-          <CustomModal
-            title="Privacy"
-            showIcon={<Security />}
-            description={'Application Privacy Statement'}
-            content={<Privacy />}
-          />
-          <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

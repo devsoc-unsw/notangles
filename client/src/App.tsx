@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -28,6 +28,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import Sidebar from './components/sidebar/Sidebar';
+import SidebarToggle from './components/sidebar/SidebarToggle';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -367,15 +368,21 @@ const App: React.FC = () => {
     },
   };
 
+  const [sidebar, setSidebar] = useState(false);
+  const toggleSidebar = () => {
+    setSidebar(!sidebar);
+  };
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
+            {/* <Navbar /> */}
+            <SidebarToggle />
             <ContentWrapper>
               <Content>
-                <Sidebar />
                 <Controls
                   assignedColors={assignedColors}
                   handleSelectClass={handleSelectClass}
