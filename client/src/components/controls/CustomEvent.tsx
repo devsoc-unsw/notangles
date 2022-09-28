@@ -18,7 +18,6 @@ import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
-  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
   const [eventType, setEventType] = useState<string>('General');
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -31,6 +30,8 @@ const CustomEvent: React.FC = () => {
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
+
+  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
