@@ -156,3 +156,5 @@ export const daysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 
 export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page';
+
+export const invalidYearFormat = '0000';

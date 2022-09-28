@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
+import { CoursesList } from '../interfaces/Courses';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -71,6 +72,9 @@ export interface IAppContext {
 
   firstDayOfTerm: string;
   setFirstDayOfTerm: (newFirstDayOfTerm: string) => void;
+
+  coursesList: CoursesList;
+  setCoursesList: (newCoursesList: CoursesList) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -139,6 +143,9 @@ export const AppContext = createContext<IAppContext>({
 
   firstDayOfTerm: '0000-00-00',
   setFirstDayOfTerm: () => {},
+
+  coursesList: [],
+  setCoursesList: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -174,6 +181,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [year, setYear] = useState<string>(termData.year || '0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
+  const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const initialContext: IAppContext = {
     is12HourMode,
     setIs12HourMode,
@@ -219,6 +227,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setYear,
     firstDayOfTerm,
     setFirstDayOfTerm,
+    coursesList,
+    setCoursesList,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
