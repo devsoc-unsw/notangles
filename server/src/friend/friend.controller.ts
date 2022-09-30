@@ -159,7 +159,9 @@ export class FriendController {
     if (!friended && !alreadySentFr) {
       return {
         status: 'Successfully sent friend request!',
-        data: await this.friendService.sendFriendRequest(senderId, sendeeId),
+        data: {
+          id: await this.friendService.sendFriendRequest(senderId, sendeeId),
+        },
       };
     }
     // Error handling response.
@@ -169,11 +171,13 @@ export class FriendController {
     } else {
       errorStatus += 'Friend Request already sent!';
     }
-
-    return {
-      status: errorStatus,
-      data: sendeeId,
-    };
+    throw new HttpException(
+      {
+        status: errorStatus,
+        data: sendeeId,
+      },
+      HttpStatus.CONFLICT,
+    );
   }
 
   /**
@@ -221,10 +225,13 @@ export class FriendController {
       errorStatus += 'No friend request sent by sendee to be accepted!';
     }
 
-    return {
-      status: errorStatus,
-      data: sendeeId,
-    };
+    throw new HttpException(
+      {
+        status: errorStatus,
+        data: sendeeId,
+      },
+      HttpStatus.CONFLICT,
+    );
   }
 
   /**
@@ -244,13 +251,16 @@ export class FriendController {
     const { senderId, sendeeId } = body;
     // Check for valid users.
     const checkValidUser = async (uId: string) => this.userService.getUser(uId);
+    const sendee = checkValidUser(sendeeId);
+    const sender = checkValidUser(senderId);
     // Validity checker for the user Ids provided.
-    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
+    if (!sendee || !sender) {
       throw new HttpException(
         'Invalid user Ids provided.',
         HttpStatus.BAD_REQUEST,
       );
     }
+
     return {
       status: 'Successfully removed friend request!',
       data: {

@@ -172,6 +172,17 @@ export class FriendService {
     userId: string,
     friendId: string,
   ): Promise<string> {
+    const senderFrModel = await this.friendRequestModel
+      .findOne({ google_uid: userId })
+      .exec();
+
+    if (!senderFrModel.sentRequestsTo.includes(friendId)) {
+      throw new HttpException(
+        "Friend request doesn't exist!",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const pullFriendIdFromUser = async (uId: string, fId: string) => {
       await this.friendRequestModel
         .findOneAndUpdate(
