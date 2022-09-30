@@ -1,50 +1,86 @@
-import React, { useContext, useState } from 'react';
-import { Add, ArrowDropDown, ArrowDropUp, Event, LocationOn, Notes } from '@mui/icons-material';
-import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/material';
-import { styled } from '@mui/system';
-import { TimePicker } from '@mui/x-date-pickers';
+import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { TabContext, TabList } from '@mui/lab';
+import { Box, Button, ListItem, Popover, Tab, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import React, { useContext, useEffect, useState } from 'react';
+import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod } from '../../interfaces/Periods';
+import { CoursesList } from '../../interfaces/Courses';
+import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
-import DropdownOption from '../timetable/DropdownOption';
-
-const DropdownButton = styled(Button)`
-  && {
-    width: 100%;
-    height: 55px;
-    margin-top: 20px;
-    margin-right: 10px;
-    text-align: left;
-    &:hover {
-      background-color: #598dff;
-    }
-  }
-`;
+import CustomEventGeneral from './CustomEventGeneral';
+import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
+  const [eventType, setEventType] = useState<string>('General');
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
+  const [courseCode, setCourseCode] = useState<string>('');
+  const [classCode, setClassCode] = useState<string>('');
+  const [classesList, setClassesList] = useState<ClassData[]>([]);
+  const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
+
+  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
+
+  /**
+   * Process coursesList to get an array of course codes
+   * @param coursesList
+   * @returns an array of course codes
+   */
+  const getCoursesCodes = (coursesList: CoursesList) => {
+    const coursesCodes: Array<Record<string, string>> = [];
+    coursesList.forEach((course, idx) => {
+      coursesCodes.push({ id: idx.toString(), label: course.code });
+    });
+    return coursesCodes;
+  };
+
+  let coursesCodes = getCoursesCodes(coursesList);
+
+  // Get the list of classes for the selected course code.
+  useEffect(() => {
+    const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
+    if (courseCode !== '') {
+      getCourseInfo(year, term, courseCode, isConvertToLocalTimezone)
+        .catch((err) => {
+          return err;
+        })
+        .then((course) => {
+          Object.keys(course.activities).forEach((activity) => {
+            if (tutoringActivities.includes(activity)) {
+              classesList.push(...course.activities[activity]);
+              setClassesList(classesList);
+              course.activities[activity].forEach((classData: ClassData, idx: number) => {
+                classesCodes.push({ id: idx.toString(), label: classData.section });
+              });
+            }
+          });
+          setClassesCodes(classesCodes);
+        });
+    }
+  }, [courseCode]);
 
   // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the popover is shown
   const open = Boolean(anchorEl);
   const popoverId = open ? 'simple-popover' : undefined;
 
   // Which element to make the colour picker popover stick to
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
@@ -58,6 +94,26 @@ const CustomEvent: React.FC = () => {
   };
 
   const handleClose = () => {
+    setEventType('General');
+
+    // Reset info about the general event
+    setEventName('');
+    setLocation('');
+    setDescription('');
+    setEventDays([]);
+    setStartTime(createDateWithTime(9));
+    setEndTime(createDateWithTime(10));
+    setColor('#1F7E8C');
+
+    // Reset info about the tutoring event
+    setCourseCode('');
+    setClassCode('');
+    setClassesCodes([]);
+    setClassesList([]);
+
+    // Close the popover
+    setAnchorEl(null);
+    setColorPickerAnchorEl(null);
     setAnchorEl(null);
   };
 
@@ -69,39 +125,72 @@ const CustomEvent: React.FC = () => {
     setColorPickerAnchorEl(null);
   };
 
-  const handleFormat = (newFormats: string[]) => {
-    setEventDays(newFormats);
-  };
-
   const createEvents = () => {
-    if (!areValidEventTimes(startTime, endTime)) {
-      setAlertMsg('End time is earlier than start time');
-      setErrorVisibility(true);
-      return;
-    }
-
     const newEvents: Record<string, EventPeriod> = {};
 
-    // Create an event for each day that is selected in the dropdown option
-    for (const day of eventDays) {
-      const newEvent = createEvent(day);
-      newEvents[newEvent.event.id] = newEvent;
+    if (eventType === 'General') {
+      if (!areValidEventTimes(startTime, endTime)) {
+        setAlertMsg('End time is earlier than start time');
+        setErrorVisibility(true);
+        return;
+      }
+
+      // Create an event for each day that is selected in the dropdown option
+      for (const day of eventDays) {
+        const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
+        newEvents[newEvent.event.id] = newEvent;
+      }
+    } else {
+      // Get the class details according to the chosen class code.
+      const classDetails = classesList.find((classData) => classData.section === classCode);
+      // Create an event for each period of the selected class.
+      classDetails!.periods.forEach((period) => {
+        const newEvent = createEvent(
+          classDetails!.courseCode + ' ' + period.subActivity,
+          period.locations[0],
+          classCode,
+          color,
+          daysShort[period.time.day - 1],
+          createDateWithTime(period.time.start),
+          createDateWithTime(period.time.end)
+        );
+        newEvents[newEvent.event.id] = newEvent;
+      });
     }
 
-    setCreatedEvents({ ...createdEvents, ...newEvents });
+    setEventType('General');
+
+    // Reset info about the general event
     setEventName('');
     setLocation('');
     setDescription('');
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
-    // Close all popovers when Create button is clicked
+
+    // Reset info about the tutoring event
+    setCourseCode('');
+    setClassCode('');
+    setClassesList([]);
+    setClassesCodes([]);
+
+    // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
+    setCreatedEvents({ ...createdEvents, ...newEvents });
+    handleClose();
   };
 
-  const createEvent = (day: string) => {
-    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime)
+  const createEvent = (
+    eventName: string,
+    location: string,
+    description: string,
+    color: string,
+    day: string,
+    startTime: Date,
+    endTime: Date
+  ) => {
+    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
 
     setCreatedEvents({
       ...createdEvents,
@@ -147,85 +236,40 @@ const CustomEvent: React.FC = () => {
         }}
       >
         <StyledList>
-          <StyledListItem>
-            <ListItemIcon>
-              <Event />
-            </ListItemIcon>
-            <TextField
-              id="outlined-required"
-              label="Event Name"
-              onChange={(e) => setEventName(e.target.value)}
-              variant="outlined"
-              fullWidth
-              required
-              defaultValue={eventName}
-            />
-          </StyledListItem>
-          <StyledListItem>
-            <ListItemIcon>
-              <Notes />
-            </ListItemIcon>
-            <TextField
-              id="outlined-basic"
-              label="Description (optional)"
-              onChange={(e) => setDescription(e.target.value)}
-              variant="outlined"
-              multiline
-              fullWidth
-              defaultValue={description}
-            />
-          </StyledListItem>
-          <StyledListItem>
-            <ListItemIcon>
-              <LocationOn />
-            </ListItemIcon>
-            <TextField
-              id="outlined-required"
-              label="Location"
-              onChange={(e) => setLocation(e.target.value)}
-              variant="outlined"
-              fullWidth
-              required
-              defaultValue={location}
-            />
-          </StyledListItem>
-          <StyledListItem>
-            <StyledListItemText primary="Start time" />
-            <TimePicker
-              value={startTime}
-              renderInput={(params) => <TextField {...params} />}
-              onChange={(e) => {
-                if (e) setStartTime(e);
-              }}
-            />
-          </StyledListItem>
-          <StyledListItem>
-            <StyledListItemText primary="End time" />
-            <TimePicker
-              value={endTime}
-              renderInput={(params) => {
-                const tooEarly = !areValidEventTimes(startTime, endTime);
-                return (
-                  <TextField
-                    {...params}
-                    error={params.error || tooEarly}
-                    label={tooEarly && 'End time must be after start time'}
-                  />
-                );
-              }}
-              onChange={(e) => {
-                if (e) setEndTime(e);
-              }}
-            />
-          </StyledListItem>
-          <DropdownOption
-            optionName="Days"
-            optionState={eventDays}
-            setOptionState={handleFormat}
-            optionChoices={daysShort}
-            multiple={true}
-            noOff
-          />
+          <Box sx={{ typography: 'body1' }}>
+            <TabContext value={eventType}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
+                  <Tab label="General" value="General" />
+                  <Tab label="Tutoring" value="Tutoring" />
+                </TabList>
+              </Box>
+              <StyledTabPanel value="General">
+                <CustomEventGeneral
+                  eventName={eventName}
+                  setEventName={setEventName}
+                  location={location}
+                  setLocation={setLocation}
+                  description={description}
+                  setDescription={setDescription}
+                  startTime={startTime}
+                  setStartTime={setStartTime}
+                  endTime={endTime}
+                  setEndTime={setEndTime}
+                  eventDays={eventDays}
+                  setEventDays={setEventDays}
+                />
+              </StyledTabPanel>
+              <StyledTabPanel value="Tutoring">
+                <CustomEventTutoring
+                  coursesCodes={coursesCodes}
+                  classesCodes={classesCodes}
+                  setCourseCode={setCourseCode}
+                  setClassCode={setClassCode}
+                />
+              </StyledTabPanel>
+            </TabContext>
+          </Box>
           <Box m={1} display="flex" justifyContent="center" alignItems="center">
             <ColourIndicatorBox backgroundColour={color} />
             <StyledButtonContainer>
@@ -273,7 +317,10 @@ const CustomEvent: React.FC = () => {
           variant="contained"
           color="primary"
           disableElevation
-          disabled={eventName === '' || location === '' || eventDays.length === 0}
+          disabled={
+            (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
+            (eventType === 'Tutoring' && (courseCode === '' || classCode === ''))
+          }
           onClick={createEvents}
         >
           <Add />
