@@ -73,6 +73,7 @@ export class UserSettingsDto {
 }
 
 export class UserTimetablesDto {
+  @IsString()
   timetableId: string;
 
   @IsArray()

@@ -38,9 +38,6 @@ export class UserController {
 
   /**
    * Get the user object.
-   * If user does not exist, a null is returned.
-   * @param req: decorator of the Request route handler param.
-   * @returns Promise to a user object or null if user does not exist.
    */
   // @UseGuards(LoginGuard)
   @Get('/profile/:userId')
@@ -54,9 +51,6 @@ export class UserController {
 
   /**
    * Search for a user by their googleId or by their full name.
-   * Please see documentation for the Fullname query.
-   * @param req decorator of the Request route handler param.
-   * @returns Promise to a user object or null if user does not exist.
    */
   // @UseGuards(LoginGuard)
   @Get('/search')
@@ -86,7 +80,6 @@ export class UserController {
 
   /**
    * Get the user settings.
-   * @returns Promise to the user's settings
    */
   // @UseGuards(LoginGuard)
   @Get('/settings/:userId')
@@ -99,9 +92,6 @@ export class UserController {
 
   /**
    * Edit/Create user settings.
-   * Please see documentation for the UserSettingsDto.
-   * @param body: UserSettingsDto which details user's settings.
-   * @returns Promise to the user's settings.
    */
   // @UseGuards(LoginGuard)
   @Post('/settings/:userId')
@@ -132,8 +122,6 @@ export class UserController {
 
   /**
    * Create a timetable for the user.
-   * @param body: UserTimetablesDto which details the timetable to be added.
-   * @returns Promise to the user's timetables.
    */
 
   // @UseGuards(LoginGuard)
@@ -143,13 +131,16 @@ export class UserController {
     @Body() body: UserTimetablesDto,
   ) {
     return {
-      status: 'Successfully found user and their timetables!',
+      status: 'Successfully found user and created their new timetable!',
       data: await this.userService.createTimetable(body, userId),
     };
   }
 
+  /**
+   * Edit the user's timetable.
+   */
   // @UseGuards(LoginGuard)
-  @Put('/timetable/:userId/:timetableId')
+  @Put('/timetable/:userId')
   async editTimetable(
     @Param('userId') userId: string,
     @Body() body: UserTimetablesDto,
@@ -164,7 +155,6 @@ export class UserController {
 
   /**
    * Delete a particular timetable from the user's timetables.
-   * @returns Promise to the user's timetables.
    */
   // @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')

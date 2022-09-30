@@ -30,11 +30,6 @@ export class UserService {
 
   /**
    * Change the user's settings data.
-   *
-   * Please see the documentation for the Dto for more information.
-   * @param SettingsDto: UserSettingsDto - The settings data to be changed.
-   * @param userID: string of the user's google_uid.
-   * @returns a Promise of the updated settings data.
    */
   async createSettings(
     SettingsDto: UserSettingsDto,
@@ -51,8 +46,6 @@ export class UserService {
 
   /**
    * Get the settings data of a user.
-   * @param userId: string of the user's google_uid.
-   * @returns a Promise of the settings data.
    */
   async getSettings(userId: string): Promise<Settings> {
     const user = await this.userModel.findOne({
@@ -65,8 +58,6 @@ export class UserService {
 
   /**
    * Get all the timetables of a user.
-   * @param userId: string of the user's google_uid.
-   * @returns a Promise of the user's timetables.
    */
   async getTimetables(userId: string): Promise<UserTimetablesDto[]> {
     const user = await this.userModel.findOne({
@@ -79,10 +70,6 @@ export class UserService {
 
   /**
    * Create a timetable and put in the user's timetables.
-   * @param timetableData: in UserTimetablesDto format, please check documentation
-   *                       for more information.
-   * @param userId: string of the user's google_uid.
-   * @returns a Promise of the updated timetables.
    */
   async createTimetable(
     timetableData: UserTimetablesDto,
@@ -108,14 +95,11 @@ export class UserService {
       { $push: { timetables: new this.timetableModel(timetable) } },
     );
 
-    return timetableData.timetableId;
+    return generatedId;
   }
 
   /**
    * Delete a particular timetable from a user's timetables.
-   * @param userId: string of the user's google_uid.
-   * @param ttToDeleteId: the timetableId of the timetable to be deleted.
-   * @returns a Promise of the updated timetables.
    */
   async deleteTimetable(userId: string, ttToDeleteId: string): Promise<string> {
     const user = await this.userModel.findOne({
@@ -146,9 +130,6 @@ export class UserService {
 
   /**
    * Edit a given timetable.
-   * @param userId: string of the user's google_uid.
-   * @param editedTimetable: the timetable to be editted.
-   * @returns a Promise of the updated timetables.
    */
   async editTimetable(
     userId: string,
