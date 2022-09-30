@@ -1,7 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class FriendRequestDto {
+  @IsString()
+  @IsNotEmpty()
   senderId: string;
+  @IsString()
+  @IsNotEmpty()
   sendeeId: string;
 }
 

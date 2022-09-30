@@ -84,11 +84,13 @@ export class FriendController {
   @Post('/')
   async addFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    const checkValidUser = async (uId: string) => this.userService.getUser(uId);
-    // Validity checker for the user Ids provided.
-    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
-      return [];
-    }
+    const [sender, sendee] = await Promise.all([
+      this.userService.getUser(senderId),
+      this.userService.getUser(senderId),
+    ]);
+    if (!sender || !sendee)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
     return {
       status: 'Successfully added users as friends!',
       data: {
