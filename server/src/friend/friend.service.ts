@@ -40,8 +40,6 @@ export class FriendService {
 
   /**
    * Returns all friends of a valid user.
-   * @param userID: string which represents the user's google_uid.
-   * @returns Promise of an array of users who are the friends of the user.
    */
   async getFriends(userId: string): Promise<User[]> {
     const user = await this.getUser(userId);
@@ -60,9 +58,6 @@ export class FriendService {
 
   /**
    * Forcefully adds a friend to a user's friend list.
-   * @param userId: string which represents the user's google_uid.
-   * @param friendId: string which represents the friend's google_uid.
-   * @returns Promise of an array of users who are the friends of the user.
    */
   async addFriend(userId: string, friendId: string): Promise<string> {
     if (userId !== friendId) {
@@ -89,9 +84,6 @@ export class FriendService {
   /**
    * Forcefully remove a friend from a user's friend list in a
    * bidirectional manner.
-   * @param userId: string which represents the user's google_uid.
-   * @param friendId: string which represents the friend's google_uid.
-   * @returns Promise of an array of users who are the friends of the user.
    */
   async removeFriend(userId: string, friendId: string): Promise<string> {
     const removeFriendIdFromUser = async (uId: string, fId: string) => {
@@ -116,10 +108,6 @@ export class FriendService {
 
   /**
    * Get the friend requests of a user from the FriendRequest collection.
-   *
-   * @param userId: string which represents the user's google_uid.
-   * @returns Promise of an array of users who are currently in
-   *          a user's friend request collection.
    */
   async getFriendRequests(userId: string): Promise<User[]> {
     const user: FriendRequestDocument = await this.friendRequestModel
@@ -139,10 +127,6 @@ export class FriendService {
 
   /**
    * Forcefully adds a friend to a user's friend list.
-   * @param userId: string which represents the user's google_uid.
-   * @param friendId: string which represents the friend's google_uid.
-   * @returns Promise of an array of users who are currently in
-   *          a user's friend request collection.
    */
   async sendFriendRequest(userId: string, friendId: string): Promise<string> {
     if (userId !== friendId) {
@@ -163,10 +147,6 @@ export class FriendService {
   /**
    * Decline user's friend request. This will remove the friend request
    * bidirectionally.
-   * @param userId: string which represents the user's google_uid.
-   * @param friendId: string which represents the friend's google_uid.
-   * @returns Promise of an array of users who are currently in
-   *          a user's friend request collection.
    */
   async declineFriendRequest(
     userId: string,
