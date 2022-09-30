@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import {
   classMargin,
@@ -158,9 +158,13 @@ export const TimetableLayout: React.FC = () => {
   ];
 
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
-  const [eventStartTime, setEventStartTime] = useState<Date>(createDateWithTime(9));
-  const [eventEndTime, setEventEndTime] = useState<Date>(createDateWithTime(10));
-  const [eventDay, setEventDay] = useState<string>('');
+  // const [eventStartTime, setEventStartTime] = useState<Date>(createDateWithTime(9));
+  // const [eventEndTime, setEventEndTime] = useState<Date>(createDateWithTime(10));
+  // const [eventDay, setEventDay] = useState<string>('Mo');
+
+  const eventDay = useRef<string>('Mo');
+  const eventStartTime = useRef<Date>(createDateWithTime(9));
+  const eventEndTime = useRef<Date>(createDateWithTime(10));
 
   const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
   const hourCells = hours.map((hour, i) => (
@@ -231,9 +235,12 @@ export const TimetableLayout: React.FC = () => {
         onDoubleClick={(event) => {
           handleOpen(event);
           createTempEvent(x, y);
-          setEventStartTime(createDateWithTime(earliestStartTime + y));
-          setEventEndTime(createDateWithTime(earliestStartTime + y + 1));
-          setEventDay(daysShort[x]);
+          eventStartTime.current = createDateWithTime(earliestStartTime + y);
+          eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
+          eventDay.current = daysShort[x];
+          // setEventStartTime(createDateWithTime(earliestStartTime + y));
+          // setEventEndTime(createDateWithTime(earliestStartTime + y + 1));
+          // setEventDay(daysShort[x]);
         }}
       />
     ))
@@ -269,9 +276,9 @@ export const TimetableLayout: React.FC = () => {
           horizontal: 'left',
         }}
         isDoubleClicked={true}
-        initialStartTime={eventStartTime}
-        initialEndTime={eventEndTime}
-        initialDay={eventDay}
+        initialStartTime={eventStartTime.current}
+        initialEndTime={eventEndTime.current}
+        initialDay={eventDay.current}
       />
     </>
   );

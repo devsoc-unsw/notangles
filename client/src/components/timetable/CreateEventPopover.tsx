@@ -30,8 +30,8 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
-  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
+  const [startTime, setStartTime] = useState<Date>(initialStartTime);
+  const [endTime, setEndTime] = useState<Date>(initialEndTime);
   const [eventDays, setEventDays] = useState<Array<string>>(isInitialOpen ? [initialDay] : []);
   const [color, setColor] = useState<string>('#1F7E8C');
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -42,6 +42,11 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
+    console.log('asdfasf startTime', startTime);
+    console.log('asdfasf endTime', endTime);
+
+    console.log('asdfasf initialEndTime', initialEndTime);
+
     const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
 
     setCreatedEvents({
@@ -67,6 +72,9 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   };
 
   const createEvents = () => {
+    console.log('creating an event with initialDay', initialDay, 'and event name', eventName);
+
+    console.log('is initial open is', isInitialOpen);
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
@@ -75,6 +83,13 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     const newEvents: Record<string, EventPeriod> = {};
 
+    // For when there is a pre-selected day
+    // (when user double clicks to create event)
+
+    // console.log('creating event with startTime', startTime);
+    // newEvents[newEvent.event.id] = newEvent;
+
+    console.log('eventDays', eventDays);
     // Create an event for each day that is selected in the dropdown option
     for (const day of eventDays) {
       const newEvent = createEvent(day);
