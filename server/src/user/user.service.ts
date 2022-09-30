@@ -69,7 +69,12 @@ export class UserService {
    * @returns a Promise of the user's timetables.
    */
   async getTimetables(userId: string): Promise<UserTimetablesDto[]> {
-    return (await this.getUser(userId)).timetables;
+    const user = await this.userModel.findOne({
+      google_uid: userId,
+    });
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+    return user.timetables;
   }
 
   /**
@@ -82,7 +87,7 @@ export class UserService {
   async createTimetable(
     timetableData: UserTimetablesDto,
     userId: string,
-  ): Promise<UserTimetablesDto[]> {
+  ): Promise<string> {
     const uuid = require('uuid');
     const generatedId = uuid.v4();
     const timetable: TimetableDocument = new this.timetableModel({
@@ -95,6 +100,7 @@ export class UserService {
     const user = await this.userModel.findOne({
       google_uid: userId,
     });
+
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
 
     await this.userModel.findOneAndUpdate(
@@ -102,7 +108,7 @@ export class UserService {
       { $push: { timetables: new this.timetableModel(timetable) } },
     );
 
-    return await this.getTimetables(userId);
+    return timetableData.timetableId;
   }
 
   /**
@@ -111,15 +117,22 @@ export class UserService {
    * @param ttToDeleteId: the timetableId of the timetable to be deleted.
    * @returns a Promise of the updated timetables.
    */
-  async deleteTimetable(
-    userId: string,
-    ttToDeleteId: string,
-  ): Promise<UserTimetablesDto[]> {
+  async deleteTimetable(userId: string, ttToDeleteId: string): Promise<string> {
     const user = await this.userModel.findOne({
       google_uid: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+    let foundTimetable: UserTimetablesDto;
+    user.timetables.forEach((timetable) => {
+      if (timetable.timetableId === ttToDeleteId) {
+        foundTimetable = timetable;
+      }
+    });
+
+    if (!foundTimetable)
+      throw new HttpException('Timetable Not Found!', HttpStatus.NOT_FOUND);
+
     await this.userModel
       .findOneAndUpdate(
         { google_uid: userId },
@@ -127,7 +140,8 @@ export class UserService {
         { safe: true, multi: false },
       )
       .exec();
-    return await this.getTimetables(userId);
+
+    return ttToDeleteId;
   }
 
   /**
@@ -139,7 +153,7 @@ export class UserService {
   async editTimetable(
     userId: string,
     editedTimetable: UserTimetablesDto,
-  ): Promise<UserTimetablesDto[]> {
+  ): Promise<string> {
     const { timetableId: timetableToDelete } = editedTimetable;
     // Error handling - User Not Found
     const user = await this.userModel.findOne({
@@ -147,7 +161,15 @@ export class UserService {
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+    let foundTimetable: UserTimetablesDto;
+    user.timetables.forEach((timetable) => {
+      if (timetable.timetableId === editedTimetable.timetableId) {
+        foundTimetable = timetable;
+      }
+    });
 
+    if (!foundTimetable)
+      throw new HttpException('Timetable Not Found!', HttpStatus.NOT_FOUND);
     await this.userModel
       .findOneAndUpdate(
         { google_uid: userId, 'timetables.timetableId': timetableToDelete },
@@ -156,7 +178,7 @@ export class UserService {
       )
       .exec();
 
-    return await this.getTimetables(userId);
+    return editedTimetable.timetableId;
   }
 
   /**

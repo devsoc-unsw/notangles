@@ -44,9 +44,12 @@ export class UserController {
    */
   // @UseGuards(LoginGuard)
   @Get('/profile/:userId')
-  async user(@Param('userId') userId: string): Promise<User> {
+  async user(@Param('userId') userId: string) {
     const userQueried = await this.userService.getUser(userId);
-    return this.validateResourceResponse(userQueried, 'User was not found!');
+    return {
+      status: 'Successfully found user!',
+      data: this.validateResourceResponse(userQueried, 'User was not found!'),
+    };
   }
 
   /**
@@ -57,11 +60,17 @@ export class UserController {
    */
   // @UseGuards(LoginGuard)
   @Get('/search')
-  async userSearch(@Request() req): Promise<User | User[]> {
+  async userSearch(@Request() req) {
     if (req.query.userId) {
-      return await this.userService.getUser(req.query.userId);
+      return {
+        status: 'Successfully found user!',
+        data: await this.userService.getUser(req.query.userId),
+      };
     } else if (req.query.userFullName) {
-      return await this.userService.getUserByFullName(req.query.userFullName);
+      return {
+        status: 'Successfully found user!',
+        data: await this.userService.getUserByFullName(req.query.userFullName),
+      };
     }
   }
 
@@ -81,11 +90,11 @@ export class UserController {
    */
   // @UseGuards(LoginGuard)
   @Get('/settings/:userId')
-  async getSettings(@Param('userId') userId: string): Promise<Settings> {
-    return this.validateResourceResponse(
-      await this.userService.getSettings(userId),
-      'User was not found!',
-    );
+  async getSettings(@Param('userId') userId: string) {
+    return {
+      status: 'Successfully found user and their settings!',
+      data: await this.userService.getSettings(userId),
+    };
   }
 
   /**
@@ -99,8 +108,13 @@ export class UserController {
   async createSettings(
     @Param('userId') userId: string,
     @Body() body: UserSettingsDto,
-  ): Promise<Settings> {
-    return await this.userService.createSettings(body, userId);
+  ) {
+    return {
+      status: 'Successfully edited user settings!',
+      data: {
+        id: await this.userService.createSettings(body, userId),
+      },
+    };
   }
 
   /**
@@ -109,10 +123,11 @@ export class UserController {
    */
   // @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
-  async getTimetable(
-    @Param('userId') userId: string,
-  ): Promise<UserTimetablesDto[]> {
-    return await this.userService.getTimetables(userId);
+  async getTimetable(@Param('userId') userId: string) {
+    return {
+      status: 'Successfully found user and their timetables!',
+      data: await this.userService.getTimetables(userId),
+    };
   }
 
   /**
@@ -126,8 +141,11 @@ export class UserController {
   async createTimetable(
     @Param('userId') userId: string,
     @Body() body: UserTimetablesDto,
-  ): Promise<UserTimetablesDto[]> {
-    return await this.userService.createTimetable(body, userId);
+  ) {
+    return {
+      status: 'Successfully found user and their timetables!',
+      data: await this.userService.createTimetable(body, userId),
+    };
   }
 
   // @UseGuards(LoginGuard)
@@ -135,13 +153,17 @@ export class UserController {
   async editTimetable(
     @Param('userId') userId: string,
     @Body() body: UserTimetablesDto,
-  ): Promise<UserTimetablesDto[]> {
-    return await this.userService.editTimetable(userId, body);
+  ) {
+    return {
+      status: 'Successfully Edited timetable',
+      data: {
+        id: await this.userService.editTimetable(userId, body),
+      },
+    };
   }
 
   /**
    * Delete a particular timetable from the user's timetables.
-   * @param req: decorator of the Request route handler param.
    * @returns Promise to the user's timetables.
    */
   // @UseGuards(LoginGuard)
@@ -149,7 +171,12 @@ export class UserController {
   async deleteTimetable(
     @Param('userId') userId: string,
     @Param('timetableId') timetableId: string,
-  ): Promise<UserTimetablesDto[]> {
-    return await this.userService.deleteTimetable(userId, timetableId);
+  ) {
+    return {
+      status: 'Successfully deleted timetable',
+      data: {
+        id: await this.userService.deleteTimetable(userId, timetableId),
+      },
+    };
   }
 }

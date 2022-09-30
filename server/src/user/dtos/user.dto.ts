@@ -1,5 +1,10 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
-import TimeFormatValidationPipe from 'src/pipes/TimeFormatValidation.pipe';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsObject,
+  IsString,
+} from 'class-validator';
 
 export class UserSettingsDto {
   @IsBoolean()
@@ -73,9 +78,11 @@ export class UserTimetablesDto {
   @IsArray()
   @IsNotEmpty()
   selectedCourses: string[];
+
   @IsNotEmpty()
   selectedClasses: Record<string, Record<string, string>>;
-  @IsNotEmpty()
+
+  @IsArray()
   events: EventsDto[];
 }
 
@@ -119,8 +126,8 @@ export class EventsDto {
   @IsNotEmpty()
   colour: string;
 
-  // @TimeFormatValidationPipe()
   @IsNotEmpty()
+  @IsObject()
   time: {
     day: Number;
     start: Number;
