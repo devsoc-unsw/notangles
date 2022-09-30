@@ -8,6 +8,7 @@ import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
+import { AuthProvider } from './context/AuthContext';
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
@@ -17,13 +18,15 @@ Sentry.init({
 
 const Root: React.FC = () => (
   <AppContextProvider>
-    <CourseContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<App />} path="/" />
-        </Routes>
-      </BrowserRouter>
-    </CourseContextProvider>
+    <AuthProvider>
+      <CourseContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<App />} path="/" />
+          </Routes>
+        </BrowserRouter>
+      </CourseContextProvider>
+    </AuthProvider>
   </AppContextProvider>
 );
 

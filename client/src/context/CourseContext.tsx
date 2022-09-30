@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
