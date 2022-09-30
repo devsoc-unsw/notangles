@@ -48,11 +48,16 @@ function useAuthProvider() {
 
     if (code) {
       setAuthCode(code);
+      params.delete('code');
     }
 
     if (state) {
       setState(state);
+      params.delete('state');
     }
+
+    // Apply params to the URL
+    window.history.replaceState(null, '', url.pathname);
 
     if (code && state) {
       setLoading(true);
