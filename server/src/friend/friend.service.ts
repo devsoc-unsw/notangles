@@ -1,4 +1,9 @@
-import { Injectable, SerializeOptions } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  SerializeOptions,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -25,15 +30,22 @@ export class FriendService {
     @InjectModel('User') private userModel: Model<UserDocument>,
   ) {}
 
+  async getUser(userId: string): Promise<User> {
+    const user: UserDocument = await this.userModel
+      .findOne({ google_uid: userId })
+      .exec();
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+    return user;
+  }
+
   /**
    * Returns all friends of a valid user.
    * @param userID: string which represents the user's google_uid.
    * @returns Promise of an array of users who are the friends of the user.
    */
-  async getFriends(userID: string): Promise<User[]> {
-    const user: UserDocument = await this.userModel
-      .findOne({ google_uid: userID })
-      .exec();
+  async getFriends(userId: string): Promise<User[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     const friends: User[] = [];
     // Safety checks for the case where the user is non existent.
     if (!user) return friends;
@@ -52,8 +64,14 @@ export class FriendService {
    * @param friendId: string which represents the friend's google_uid.
    * @returns Promise of an array of users who are the friends of the user.
    */
-  async addFriend(userId: string, friendId: string): Promise<User[]> {
+  async addFriend(userId: string, friendId: string): Promise<string> {
     if (userId !== friendId) {
+      // Defensively checking if either exist.
+      const [_user, _friend] = await Promise.all([
+        this.getUser(userId),
+        this.getUser(friendId),
+      ]);
+
       const pushFriendIdToUser = async (uId: string, fId: string) => {
         await this.userModel
           .findOneAndUpdate(
@@ -62,11 +80,10 @@ export class FriendService {
           )
           .exec();
       };
-      console.log(await pushFriendIdToUser(userId, friendId));
       await pushFriendIdToUser(userId, friendId);
       await pushFriendIdToUser(friendId, userId);
     }
-    return await this.getFriends(userId);
+    return friendId;
   }
 
   /**
@@ -76,8 +93,14 @@ export class FriendService {
    * @param friendId: string which represents the friend's google_uid.
    * @returns Promise of an array of users who are the friends of the user.
    */
-  async removeFriend(userId: string, friendId: string): Promise<User[]> {
+  async removeFriend(userId: string, friendId: string): Promise<string> {
     const removeFriendIdFromUser = async (uId: string, fId: string) => {
+      // Defensively checking if either exist.
+      const [_user, _friend] = await Promise.all([
+        this.getUser(userId),
+        this.getUser(friendId),
+      ]);
+
       await this.userModel
         .findOneAndUpdate({ google_uid: uId }, { $pull: { friends: fId } })
         .exec();
@@ -88,7 +111,7 @@ export class FriendService {
       removeFriendIdFromUser(friendId, userId),
     ]);
 
-    return await this.getFriends(userId);
+    return friendId;
   }
 
   /**
@@ -102,6 +125,7 @@ export class FriendService {
     const user: FriendRequestDocument = await this.friendRequestModel
       .findOne({ google_uid: userId })
       .exec();
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     const friendRequestsSentTo: User[] = [];
 
     for (const f of user.sentRequestsTo) {
@@ -120,7 +144,7 @@ export class FriendService {
    * @returns Promise of an array of users who are currently in
    *          a user's friend request collection.
    */
-  async sendFriendRequest(userId: string, friendId: string): Promise<User[]> {
+  async sendFriendRequest(userId: string, friendId: string): Promise<string> {
     if (userId !== friendId) {
       const pushFriendIdToUser = async (uId: string, fId: string) => {
         await this.friendRequestModel
@@ -133,7 +157,7 @@ export class FriendService {
 
       await pushFriendIdToUser(userId, friendId);
     }
-    return await this.getFriendRequests(userId);
+    return friendId;
   }
 
   /**
@@ -147,7 +171,7 @@ export class FriendService {
   async declineFriendRequest(
     userId: string,
     friendId: string,
-  ): Promise<User[]> {
+  ): Promise<string> {
     const pullFriendIdFromUser = async (uId: string, fId: string) => {
       await this.friendRequestModel
         .findOneAndUpdate(
@@ -160,6 +184,6 @@ export class FriendService {
     await pullFriendIdFromUser(userId, friendId);
     await pullFriendIdFromUser(friendId, userId);
 
-    return await this.getFriendRequests(userId);
+    return friendId;
   }
 }
