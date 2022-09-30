@@ -64,7 +64,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
    * original start time is shown.
    */
   const timePickerStart = (isChanged: boolean, newStartTime: Date, start: number) => {
-    return (isChanged ? newStartTime : createDateWithTime(start));
+    return isChanged ? newStartTime : createDateWithTime(start);
   };
 
   /**
@@ -76,7 +76,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
    * original end time is shown.
    */
   const timePickerEnd = (isChanged: boolean, newEndTime: Date, end: number) => {
-    return (isChanged ? newEndTime : createDateWithTime(end))
+    return isChanged ? newEndTime : createDateWithTime(end);
   };
 
   const updateEventTime = (eventTime: EventTime, id: string) => {
@@ -147,7 +147,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
     setCreatedEvents(updatedEventData);
     setIsEditing(false);
-  }
+  };
 
   const handleDiscardChanges = () => {
     handleClose();
