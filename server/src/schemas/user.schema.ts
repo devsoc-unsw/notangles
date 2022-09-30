@@ -1,7 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {
-  Events,
+  EventsDto,
   UserSettingsDto,
   UserTimetablesDto,
 } from 'src/user/dtos/user.dto';
@@ -10,9 +10,6 @@ export type SettingsDocument = Settings & Document;
 
 @Schema()
 export class Settings {
-  // @Prop({unique: true, required: true})
-  // userID: string;
-
   @Prop({ required: true })
   is12HourMode: boolean;
 
@@ -50,8 +47,6 @@ export type TimetableDocument = Timetable & Document;
 
 @Schema()
 export class Timetable {
-  // @Prop({unique: true, required: true })
-  // userID: string;
   @Prop({ unique: true, required: true })
   timetableId: string;
 
@@ -69,8 +64,8 @@ export class Timetable {
   )
   selectedClasses: Record<string, Record<string, string>>;
 
-  @Prop([Events])
-  events: Events[];
+  @Prop([EventsDto])
+  events: EventsDto[];
 }
 
 export const UserTimetableSchema = SchemaFactory.createForClass(Timetable);

@@ -1,4 +1,9 @@
-import { Injectable, SerializeOptions } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  SerializeOptions,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -46,27 +51,25 @@ export class UserService {
 
   /**
    * Get the settings data of a user.
-   * @param userID: string of the user's google_uid.
+   * @param userId: string of the user's google_uid.
    * @returns a Promise of the settings data.
    */
-  async getSettings(userID: string): Promise<Settings> {
+  async getSettings(userId: string): Promise<Settings> {
     const user = await this.userModel.findOne({
-      google_uid: userID,
+      google_uid: userId,
     });
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user.settings;
   }
 
   /**
    * Get all the timetables of a user.
-   * @param userID: string of the user's google_uid.
+   * @param userId: string of the user's google_uid.
    * @returns a Promise of the user's timetables.
    */
-  async getTimetables(userID: string): Promise<UserTimetablesDto[]> {
-    const timetables = await this.userModel
-      .findOne({ google_uid: userID })
-      .select('timetables')
-      .exec();
-    return timetables.timetables;
+  async getTimetables(userId: string): Promise<UserTimetablesDto[]> {
+    return (await this.getUser(userId)).timetables;
   }
 
   /**
@@ -89,6 +92,11 @@ export class UserService {
       events: timetableData.events,
     });
 
+    const user = await this.userModel.findOne({
+      google_uid: userId,
+    });
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+
     await this.userModel.findOneAndUpdate(
       { google_uid: userId },
       { $push: { timetables: new this.timetableModel(timetable) } },
@@ -107,6 +115,11 @@ export class UserService {
     userId: string,
     ttToDeleteId: string,
   ): Promise<UserTimetablesDto[]> {
+    const user = await this.userModel.findOne({
+      google_uid: userId,
+    });
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     await this.userModel
       .findOneAndUpdate(
         { google_uid: userId },
@@ -128,6 +141,13 @@ export class UserService {
     editedTimetable: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
     const { timetableId: timetableToDelete } = editedTimetable;
+    // Error handling - User Not Found
+    const user = await this.userModel.findOne({
+      google_uid: userId,
+    });
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+
     await this.userModel
       .findOneAndUpdate(
         { google_uid: userId, 'timetables.timetableId': timetableToDelete },
@@ -144,8 +164,12 @@ export class UserService {
    * @param userId - the google_uid of the user.
    * @returns a Promise of the user.
    */
+
   async getUser(userId: string): Promise<User> {
-    return await this.userModel.findOne({ google_uid: userId });
+    const user = await this.userModel.findOne({ google_uid: userId });
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+    return user;
   }
 
   /**
@@ -160,14 +184,21 @@ export class UserService {
    * @param userFullName
    * @returns
    */
-  async getUserByFullName(userFullName: string): Promise<Promise<User>[]> {
+  async getUserByFullName(userFullName: string): Promise<Promise<User[]>> {
     const count: number = userFullName.match(/_/g).length;
     const name = userFullName.split('_');
     const givenName = name[0];
     const trailingNamespace = name.slice(1, count + 1).join(' ');
-    return await this.userModel.find({
+    const user = await this.userModel.find({
       $and: [{ firstname: givenName }, { lastname: trailingNamespace }],
     });
+
+    if (!user || user.length === 0)
+      throw new HttpException(
+        'No user found with that name!',
+        HttpStatus.NOT_FOUND,
+      );
+    return user;
   }
 
   /**
@@ -177,18 +208,5 @@ export class UserService {
    */
   async getAllUsers(): Promise<User[]> {
     return await this.userModel.find({});
-  }
-
-  /**
-   * [Utility]
-   * Validity checker if a user exists or not
-   * @param userId
-   * @returns
-   */
-  async checkIfUserExists(userId: string): Promise<boolean> {
-    const user: UserDocument = await this.userModel
-      .findOne({ google_uid: userId })
-      .exec();
-    return user !== null;
   }
 }

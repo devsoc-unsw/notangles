@@ -1,13 +1,45 @@
+import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import TimeFormatValidationPipe from 'src/pipes/TimeFormatValidation.pipe';
+
 export class UserSettingsDto {
+  @IsBoolean()
+  @IsNotEmpty()
   is12HourMode: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isDarkMode: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isSquareEdges: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isHideFullClasses: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isDefaultUnscheduled: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isHideClassInfo: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isSortAlphabetic: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isShowOnlyOpenClasses: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isHideExamClasses: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
   isConvertToLocalTimezone: boolean;
 
   constructor(
@@ -37,9 +69,14 @@ export class UserSettingsDto {
 
 export class UserTimetablesDto {
   timetableId: string;
+
+  @IsArray()
+  @IsNotEmpty()
   selectedCourses: string[];
+  @IsNotEmpty()
   selectedClasses: Record<string, Record<string, string>>;
-  events: Events[];
+  @IsNotEmpty()
+  events: EventsDto[];
 }
 
 /**
@@ -61,13 +98,29 @@ export interface UserAuthInformation {
   picture: string;
 }
 
-export class Events {
+export class EventsDto {
+  @IsString()
+  @IsNotEmpty()
   id: string;
-  type: string;
+
+  @IsString()
+  @IsNotEmpty()
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
   location: string;
+
+  @IsString()
+  @IsNotEmpty()
   description: string;
-  color: string;
+
+  @IsString()
+  @IsNotEmpty()
+  colour: string;
+
+  // @TimeFormatValidationPipe()
+  @IsNotEmpty()
   time: {
     day: Number;
     start: Number;

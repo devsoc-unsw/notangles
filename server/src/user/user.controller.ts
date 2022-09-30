@@ -3,32 +3,50 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  Param,
   Post,
   Put,
   Request,
+  UseFilters,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { LoginGuard } from 'src/auth/login.guard';
 
-import { Settings } from 'src/schemas/user.schema';
+import { Settings, User } from 'src/schemas/user.schema';
 import { UserSettingsDto, UserTimetablesDto } from './dtos/user.dto';
-import { User } from '@sentry/node';
+
 import { UserService } from './user.service';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 @Controller('user')
+@UseFilters(HttpExceptionFilter)
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  validateResourceResponse(resourceRequested, errorMsg: string) {
+    if (resourceRequested) {
+      return resourceRequested;
+    } else {
+      throw new HttpException(errorMsg, HttpStatus.NOT_FOUND);
+    }
+  }
+
   /**
    * Get the user object.
    * If user does not exist, a null is returned.
    * @param req: decorator of the Request route handler param.
    * @returns Promise to a user object or null if user does not exist.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/profile/:userId')
-  async user(@Request() req): Promise<User> {
-    return await this.userService.getUser(req.params.userId);
+  async user(@Param('userId') userId: string): Promise<User> {
+    const userQueried = await this.userService.getUser(userId);
+    return this.validateResourceResponse(userQueried, 'User was not found!');
   }
 
   /**
@@ -37,9 +55,9 @@ export class UserController {
    * @param req decorator of the Request route handler param.
    * @returns Promise to a user object or null if user does not exist.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/search')
-  async userSearch(@Request() req): Promise<User> {
+  async userSearch(@Request() req): Promise<User | User[]> {
     if (req.query.userId) {
       return await this.userService.getUser(req.query.userId);
     } else if (req.query.userFullName) {
@@ -52,73 +70,73 @@ export class UserController {
    * Get users in collection.
    * @returns Promise to an array of users.
    */
-  @UseGuards(LoginGuard)
   @Get('/users')
-  async users(): Promise<User> {
+  async users(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
   /**
    * Get the user settings.
-   * @param req decorator of the Request route handler param.
    * @returns Promise to the user's settings
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/settings/:userId')
-  async getSettings(@Request() req): Promise<Settings> {
-    return await this.userService.getSettings(req.params.userId);
+  async getSettings(@Param('userId') userId: string): Promise<Settings> {
+    return this.validateResourceResponse(
+      await this.userService.getSettings(userId),
+      'User was not found!',
+    );
   }
 
   /**
    * Edit/Create user settings.
    * Please see documentation for the UserSettingsDto.
-   * @param req: decorator of the Request route handler param.
    * @param body: UserSettingsDto which details user's settings.
    * @returns Promise to the user's settings.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Post('/settings/:userId')
   async createSettings(
-    @Request() req,
+    @Param('userId') userId: string,
     @Body() body: UserSettingsDto,
   ): Promise<Settings> {
-    return await this.userService.createSettings(body, req.params.userId);
+    return await this.userService.createSettings(body, userId);
   }
 
   /**
    * Get the user's timetables.
-   * @param req decorator of the Request route handler param.
    * @returns Promise to the user's timetables.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
-  async getTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return await this.userService.getTimetables(req.params.userId);
+  async getTimetable(
+    @Param('userId') userId: string,
+  ): Promise<UserTimetablesDto[]> {
+    return await this.userService.getTimetables(userId);
   }
 
   /**
    * Create a timetable for the user.
-   * @param req: decorator of the Request route handler param.
    * @param body: UserTimetablesDto which details the timetable to be added.
    * @returns Promise to the user's timetables.
    */
 
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Post('/timetable/:userId')
   async createTimetable(
-    @Request() req,
+    @Param('userId') userId: string,
     @Body() body: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return await this.userService.createTimetable(body, req.params.userId);
+    return await this.userService.createTimetable(body, userId);
   }
 
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Put('/timetable/:userId/:timetableId')
   async editTimetable(
-    @Request() req,
+    @Param('userId') userId: string,
     @Body() body: UserTimetablesDto,
   ): Promise<UserTimetablesDto[]> {
-    return await this.userService.editTimetable(req.params.userId, body);
+    return await this.userService.editTimetable(userId, body);
   }
 
   /**
@@ -126,12 +144,12 @@ export class UserController {
    * @param req: decorator of the Request route handler param.
    * @returns Promise to the user's timetables.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')
-  async deleteTimetable(@Request() req): Promise<UserTimetablesDto[]> {
-    return await this.userService.deleteTimetable(
-      req.params.userId,
-      req.params.timetableId,
-    );
+  async deleteTimetable(
+    @Param('userId') userId: string,
+    @Param('timetableId') timetableId: string,
+  ): Promise<UserTimetablesDto[]> {
+    return await this.userService.deleteTimetable(userId, timetableId);
   }
 }

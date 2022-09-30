@@ -35,6 +35,8 @@
     "@sentry/node": "7.13.0",
     "@sentry/tracing": "7.13.0",
     "@types/passport": "1.0.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "express-session": "1.17.3",
     "mongodb": "4.6.0",
     "mongoose": "6.3.4",
