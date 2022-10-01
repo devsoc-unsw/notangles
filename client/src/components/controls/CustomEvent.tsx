@@ -18,7 +18,6 @@ import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
-  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
   const [eventType, setEventType] = useState<string>('General');
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -31,6 +30,8 @@ const CustomEvent: React.FC = () => {
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
+
+  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
@@ -72,12 +73,14 @@ const CustomEvent: React.FC = () => {
 
   // Which element to make the popover stick to
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the popover is shown
   const open = Boolean(anchorEl);
   const popoverId = open ? 'simple-popover' : undefined;
 
   // Which element to make the colour picker popover stick to
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
@@ -100,7 +103,7 @@ const CustomEvent: React.FC = () => {
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
     setColor('#1F7E8C');
-    // Reset ino about the tutoring event
+    // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesCodes([]);
@@ -159,7 +162,7 @@ const CustomEvent: React.FC = () => {
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
-    // Reset ino about the tutoring event
+    // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesList([]);

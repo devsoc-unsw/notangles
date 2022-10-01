@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import getCourseInfo from './api/getCourseInfo';
+import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
@@ -16,6 +17,7 @@ import {
   getAvailableTermDetails,
   getDefaultEndTime,
   getDefaultStartTime,
+  invalidYearFormat,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -94,6 +96,8 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermNumber,
+    setCoursesList,
+    setLastUpdated,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -103,7 +107,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     /**
-     * Retrieves term data from scraper backend and updates state
+     * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
       try {
@@ -126,6 +130,30 @@ const App: React.FC = () => {
 
     fetchTermData();
   }, []);
+
+  useEffect(() => {
+    /**
+     * Retrieves the list of all courses from the scraper backend
+     */
+    const fetchCoursesList = async () => {
+      try {
+        if (year !== invalidYearFormat) {
+          const { courses, lastUpdated } = await getCoursesList(year, term);
+          setCoursesList(courses);
+          setLastUpdated(lastUpdated);
+        }
+      } catch (e) {
+        if (e instanceof NetworkError) {
+          setAlertMsg(e.message);
+        } else {
+          setAlertMsg(unknownErrorMessage);
+        }
+        setErrorVisibility(true);
+      }
+    };
+
+    fetchCoursesList();
+  }, [year]);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
