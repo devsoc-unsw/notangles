@@ -59,6 +59,7 @@ const CustomEvent: React.FC = () => {
         initialStartTime={createDateWithTime(9)}
         initialEndTime={createDateWithTime(10)}
         initialDay={''}
+        tempEventId={''}
       />
     </StyledControlsButton>
   );

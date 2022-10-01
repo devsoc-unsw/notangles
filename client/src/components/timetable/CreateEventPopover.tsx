@@ -25,6 +25,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   initialStartTime,
   initialEndTime,
   initialDay,
+  tempEventId,
 }) => {
   const [isInitialDay, setIsInitialDay] = useState<boolean>(isDoubleClicked);
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(isDoubleClicked);
@@ -109,9 +110,14 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     // If user double clicked to open popover, delete the temp event
     // the position of that event is just replaced with the new event
-    // if (isDoubleClicked) {
-    //   console.log('user created event from double click');
-    // }
+    if (isDoubleClicked) {
+      // Delete the temporary created event with its id
+      for (const event in createdEvents) {
+        if (event === tempEventId) {
+          delete createdEvents[event];
+        }
+      }
+    }
 
     setCreatedEvents({ ...createdEvents, ...newEvents });
     setEventName('');

@@ -158,9 +158,7 @@ export const TimetableLayout: React.FC = () => {
   ];
 
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
-  // const [eventStartTime, setEventStartTime] = useState<Date>(createDateWithTime(9));
-  // const [eventEndTime, setEventEndTime] = useState<Date>(createDateWithTime(10));
-  // const [eventDay, setEventDay] = useState<string>('Mo');
+  const [tempEventId, setTempEventId] = useState<string>('');
 
   const eventDay = useRef<string>('Mo');
   const eventStartTime = useRef<Date>(createDateWithTime(9));
@@ -206,6 +204,8 @@ export const TimetableLayout: React.FC = () => {
       createDateWithTime(earliestStartTime + y),
       createDateWithTime(earliestStartTime + y + 1) // what about case when start is 12am, end will have to be 1am?
     );
+
+    setTempEventId(newEvent.event.id);
 
     updatedEventData[newEvent.event.id] = newEvent;
 
@@ -274,6 +274,7 @@ export const TimetableLayout: React.FC = () => {
         initialStartTime={eventStartTime.current}
         initialEndTime={eventEndTime.current}
         initialDay={eventDay.current}
+        tempEventId={tempEventId}
       />
     </>
   );

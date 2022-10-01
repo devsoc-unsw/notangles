@@ -130,4 +130,5 @@ export interface CreateEventPopoverProps {
   initialStartTime: Date;
   initialEndTime: Date;
   initialDay: string;
+  tempEventId: string;
 }
