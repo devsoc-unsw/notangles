@@ -95,6 +95,7 @@ const CustomEvent: React.FC = () => {
 
   const handleClose = () => {
     setEventType('General');
+
     // Reset info about the general event
     setEventName('');
     setLocation('');
@@ -103,11 +104,13 @@ const CustomEvent: React.FC = () => {
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
     setColor('#1F7E8C');
+
     // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesCodes([]);
     setClassesList([]);
+
     // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
@@ -155,6 +158,7 @@ const CustomEvent: React.FC = () => {
     }
 
     setEventType('General');
+
     // Reset info about the general event
     setEventName('');
     setLocation('');
@@ -162,11 +166,13 @@ const CustomEvent: React.FC = () => {
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
+
     // Reset info about the tutoring event
     setCourseCode('');
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
+    
     // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
