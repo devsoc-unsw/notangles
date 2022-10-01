@@ -11,8 +11,6 @@ import {
   Request,
   UseFilters,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 
 import { LoginGuard } from 'src/auth/login.guard';

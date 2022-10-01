@@ -9,7 +9,6 @@ import { Model } from 'mongoose';
 import {
   Settings,
   SettingsDocument,
-  Timetable,
   TimetableDocument,
   User,
   UserDocument,
