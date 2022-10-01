@@ -134,7 +134,7 @@ const CustomEvent: React.FC = () => {
         setErrorVisibility(true);
         return;
       }
-      
+
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
         const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
