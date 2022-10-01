@@ -152,6 +152,7 @@ export class FriendController {
         },
       };
     }
+
     // Error handling response.
     let errorStatus = 'Failed to send friend request! ';
     if (friended) {
@@ -159,13 +160,8 @@ export class FriendController {
     } else {
       errorStatus += 'Friend Request already sent!';
     }
-    throw new HttpException(
-      {
-        status: errorStatus,
-        data: sendeeId,
-      },
-      HttpStatus.CONFLICT,
-    );
+
+    throw new HttpException(errorStatus, HttpStatus.CONFLICT);
   }
 
   /**
@@ -209,13 +205,7 @@ export class FriendController {
       errorStatus += 'No friend request sent by sendee to be accepted!';
     }
 
-    throw new HttpException(
-      {
-        status: errorStatus,
-        data: sendeeId,
-      },
-      HttpStatus.CONFLICT,
-    );
+    throw new HttpException(errorStatus, HttpStatus.CONFLICT);
   }
 
   /**
