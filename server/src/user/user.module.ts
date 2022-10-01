@@ -6,8 +6,8 @@ import {
   UserTimetableSchema,
 } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
-import { DatabaseController } from './database.controller';
-import { DatabaseService } from './database.service';
+import { UserService } from './user.service';
+import { UserController } from './user.controller';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { DatabaseService } from './database.service';
       { name: 'UserTimetable', schema: UserTimetableSchema },
     ]),
   ],
-  controllers: [DatabaseController],
-  providers: [DatabaseService, SessionSerializer],
+  controllers: [UserController],
+  providers: [UserService, SessionSerializer],
 })
-export class DatabaseModule {}
+export class UserModule {}
