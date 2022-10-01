@@ -32,7 +32,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(initialStartTime);
   const [endTime, setEndTime] = useState<Date>(initialEndTime);
-  const [eventDays, setEventDays] = useState<Array<string>>(isInitialOpen ? [initialDay] : []);
+  const [eventDays, setEventDays] = useState<Array<string>>(isDoubleClicked ? [initialDay] : []);
   const [color, setColor] = useState<string>('#1F7E8C');
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -42,17 +42,10 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
-    console.log('asdfasf startTime', startTime);
-    console.log('asdfasf endTime', endTime);
+    // console.log('asdfasf startTime', startTime);
+    // console.log('asdfasf endTime', endTime);
 
-    console.log('asdfasf initialEndTime', initialEndTime);
-
-    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
-
-    setCreatedEvents({
-      ...createdEvents,
-      [newEvent.event.id]: newEvent,
-    });
+    // console.log('asdfasf initialEndTime', initialEndTime);
 
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
@@ -68,13 +61,27 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 
-    return newEvent;
+    if (isDoubleClicked) {
+      const newEvent = createNewEvent(eventName, location, description, color, day, initialStartTime, initialEndTime);
+      setCreatedEvents({
+        ...createdEvents,
+        [newEvent.event.id]: newEvent,
+      });
+      return newEvent;
+    } else {
+      const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
+      setCreatedEvents({
+        ...createdEvents,
+        [newEvent.event.id]: newEvent,
+      });
+      return newEvent;
+    }
   };
 
   const createEvents = () => {
-    console.log('creating an event with initialDay', initialDay, 'and event name', eventName);
+    console.log('creating an event with initialDay', initialDay);
 
-    console.log('is initial open is', isInitialOpen);
+    // console.log('is initial open is', isInitialOpen);
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
@@ -89,12 +96,22 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     // console.log('creating event with startTime', startTime);
     // newEvents[newEvent.event.id] = newEvent;
 
-    console.log('eventDays', eventDays);
-    // Create an event for each day that is selected in the dropdown option
-    for (const day of eventDays) {
-      const newEvent = createEvent(day);
+    // console.log('initialday is', initialDay);
+
+    if (isDoubleClicked) {
+      // TODO: problem because this doesnt allow user to create cloned events when double clicked
+      const newEvent = createEvent(initialDay);
       newEvents[newEvent.event.id] = newEvent;
+      console.log('setting event days to initial day', initialDay);
+    } else {
+      // Create an event for each day that is selected in the dropdown option
+      for (const day of eventDays) {
+        const newEvent = createEvent(day);
+        newEvents[newEvent.event.id] = newEvent;
+      }
     }
+
+    console.log('eventDays', eventDays);
 
     // If user double clicked to open popover, delete the temp event
     // the position of that event is just replaced with the new event

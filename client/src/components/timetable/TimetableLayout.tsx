@@ -238,6 +238,9 @@ export const TimetableLayout: React.FC = () => {
           eventStartTime.current = createDateWithTime(earliestStartTime + y);
           eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
           eventDay.current = daysShort[x];
+          
+
+          console.log('eventDay.current is', eventDay.current);
           // setEventStartTime(createDateWithTime(earliestStartTime + y));
           // setEventEndTime(createDateWithTime(earliestStartTime + y + 1));
           // setEventDay(daysShort[x]);
