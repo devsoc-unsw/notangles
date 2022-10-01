@@ -8,7 +8,7 @@ import {
   EventPeriod,
   EventTime,
   InInventory,
-  InventoryPeriod
+  InventoryPeriod,
 } from '../interfaces/Periods';
 import storage from './storage';
 
@@ -618,6 +618,13 @@ export const setDragTarget = (
         lastY = event.pageY;
       } else if (typeof event.touches === 'object' && typeof event.touches[0] === 'object') {
         const touch = event.touches[0];
+
+        // reupdates clientX/Y so onFrame() won't think finger's still at edge of screen
+        // and try scroll screen (not prob on computer as mousemove will 100% fire before next
+        // card drag and update it for us but *touchmove* won't)
+        clientX = touch.clientX;
+        clientY = touch.clientY;
+
         if (typeof touch.pageX === 'number' && typeof touch.pageY === 'number') {
           lastX = touch.pageX;
           lastY = touch.pageY;

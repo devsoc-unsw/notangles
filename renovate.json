@@ -3,6 +3,7 @@
   "lockFileMaintenance": { "enabled": true, "automerge": true },
   "prHourlyLimit": 5,
   "labels": ["dependencies"],
+  "reviewersFromCodeOwners": true,
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
@@ -10,10 +11,28 @@
       "automergeType": "branch"
     },
     {
+      "groupName": "ci-actions",
+      "managers": ["github-actions", "dockerfile"],
+      "automerge": true,
+      "automergeType": "branch",
+      "addLabels": ["deps: ci-actions"]
+    },
+    {
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
-      "groupName": "react monorepo with types"
+      "groupName": "react monorepo with types",
+      "addLabels": ["deps: react"]
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "groupName": "weekly patch updates",
+      "schedule": ["before 5am every monday"],
+      "addLabels": ["deps: patches"]
+    },
+    {
+      "managers": ["npm"],
+      "addLabels": ["deps: javascript"]
     }
   ]
 }

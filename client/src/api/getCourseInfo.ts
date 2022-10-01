@@ -78,7 +78,12 @@ const sortUnique = (arr: number[]): number[] => {
  * @example
  * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
-const getCourseInfo = async (year: string, term: string, courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
+const getCourseInfo = async (
+  year: string,
+  term: string,
+  courseCode: CourseCode,
+  isConvertToLocalTimezone: boolean
+): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
     const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));

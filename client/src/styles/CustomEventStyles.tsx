@@ -1,5 +1,23 @@
+import { TabPanel } from '@mui/lab';
 import { Button, ListItem, ListItemText } from '@mui/material';
 import { styled } from '@mui/system';
+
+export const DropdownButton = styled(Button)`
+  && {
+    width: 100%;
+    height: 55px;
+    margin-top: 20px;
+    margin-right: 10px;
+    text-align: left;
+    &:hover {
+      background-color: #598dff;
+    }
+  }
+`;
+
+export const StyledTabPanel = styled(TabPanel)`
+  padding-bottom: 0;
+`;
 
 export const StyledListItem = styled(ListItem)`
   padding-top: 8px;
