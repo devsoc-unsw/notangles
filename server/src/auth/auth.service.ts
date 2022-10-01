@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserInterface } from '../schemas/user.schema';
@@ -14,7 +14,7 @@ export class AuthService {
     private friendRequestModel: Model<FriendRequestDocument>,
   ) {}
 
-  async createUser(userInfo: any): Promise<void> {
+  async createUser(userInfo: any) {
     let isCurrentUser: UserInterface = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
       const newUser = {
@@ -46,16 +46,16 @@ export class AuthService {
       const userAdded = new this.userModel(newUser);
       userAdded.save();
 
-      // This is the friend request Model
       try {
         await new this.friendRequestModel({
           userId: newUser.google_uid,
           friendRequests: [],
         }).save();
+
+        await this.sendEmail(userInfo.email);
       } catch (error) {
-        console.log(error);
+        throw new HttpException(error, HttpStatus.BAD_REQUEST);
       }
-      await this.sendEmail(userInfo.email);
     } else {
       // Updating the last login time of the user
       await this.userModel.findOneAndUpdate(
@@ -71,23 +71,18 @@ export class AuthService {
     }
   }
 
-  async getUser(uidGiven: string): Promise<UserInterface> {
-    const response = await this.userModel.findOne({ google_uid: uidGiven });
-    return response;
+  async getUser(uidGiven: string) {
+    return await this.userModel.findOne({ google_uid: uidGiven });
   }
 
-  async logoutUser(uidGiven: string): Promise<void> {
+  async logoutUser(uidGiven: string) {
     await this.userModel.findOneAndUpdate(
       { google_uid: uidGiven },
-      {
-        $set: {
-          loggedIn: false,
-        },
-      },
+      { $set: { loggedIn: false } },
     );
   }
 
-  async sendEmail(userEmail: string): Promise<any> {
+  async sendEmail(userEmail: string) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: userEmail,
@@ -96,13 +91,11 @@ export class AuthService {
       text: 'Welcome to Notangles!',
       html: '<strong>Some message here!</strong>',
     };
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent!');
-      })
-      .catch((error) => {
-        console.error('Error occured: ', error);
-      });
+
+    try {
+      await sgMail.send(msg);
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -12,27 +10,19 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-
 import { LoginGuard } from 'src/auth/login.guard';
-
-import { Settings, User } from 'src/schemas/user.schema';
-import { UserSettingsDto, UserTimetablesDto } from './dtos/user.dto';
-
-import { UserService } from './user.service';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
+import {
+  UserDeleteTimetableQueryDto,
+  UserSettingsQueryDto,
+  UserTimetablesQueryDto,
+} from './dtos/user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 @UseFilters(HttpExceptionFilter)
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  validateResourceResponse(resourceRequested, errorMsg: string) {
-    if (resourceRequested) {
-      return resourceRequested;
-    } else {
-      throw new HttpException(errorMsg, HttpStatus.NOT_FOUND);
-    }
-  }
 
   /**
    * Get the user object.
@@ -40,10 +30,9 @@ export class UserController {
   @UseGuards(LoginGuard)
   @Get('/profile/:userId')
   async user(@Param('userId') userId: string) {
-    const userQueried = await this.userService.getUser(userId);
     return {
       status: 'Successfully found user!',
-      data: this.validateResourceResponse(userQueried, 'User was not found!'),
+      data: await this.userService.getUser(userId),
     };
   }
 
@@ -67,23 +56,13 @@ export class UserController {
   }
 
   /**
-   * [Utility]
-   * Get users in collection.
-   * @returns Promise to an array of users.
-   */
-  @Get('/users')
-  async users(): Promise<User[]> {
-    return await this.userService.getAllUsers();
-  }
-
-  /**
    * Get the user settings.
    */
   @UseGuards(LoginGuard)
   @Get('/settings/:userId')
   async getSettings(@Param('userId') userId: string) {
     return {
-      status: 'Successfully found user and their settings!',
+      status: "Successfully found user's settings!",
       data: await this.userService.getSettings(userId),
     };
   }
@@ -92,28 +71,25 @@ export class UserController {
    * Edit/Create user settings.
    */
   @UseGuards(LoginGuard)
-  @Post('/settings/:userId')
-  async createSettings(
-    @Param('userId') userId: string,
-    @Body() body: UserSettingsDto,
-  ) {
+  @Post('/settings')
+  async createSettings(@Body() body: UserSettingsQueryDto) {
+    const { userId, setting } = body;
     return {
       status: 'Successfully edited user settings!',
       data: {
-        id: await this.userService.createSettings(body, userId),
+        id: await this.userService.createSettings(setting, userId),
       },
     };
   }
 
   /**
    * Get the user's timetables.
-   * @returns Promise to the user's timetables.
    */
   @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
   async getTimetable(@Param('userId') userId: string) {
     return {
-      status: 'Successfully found user and their timetables!',
+      status: "Successfully found user's timetables!",
       data: await this.userService.getTimetables(userId),
     };
   }
@@ -121,16 +97,13 @@ export class UserController {
   /**
    * Create a timetable for the user.
    */
-
   @UseGuards(LoginGuard)
-  @Post('/timetable/:userId')
-  async createTimetable(
-    @Param('userId') userId: string,
-    @Body() body: UserTimetablesDto,
-  ) {
+  @Post('/timetable')
+  async createTimetable(@Body() body: UserTimetablesQueryDto) {
+    const { userId, timetable } = body;
     return {
       status: 'Successfully found user and created their new timetable!',
-      data: await this.userService.createTimetable(body, userId),
+      data: await this.userService.createTimetable(timetable, userId),
     };
   }
 
@@ -138,15 +111,13 @@ export class UserController {
    * Edit the user's timetable.
    */
   @UseGuards(LoginGuard)
-  @Put('/timetable/:userId')
-  async editTimetable(
-    @Param('userId') userId: string,
-    @Body() body: UserTimetablesDto,
-  ) {
+  @Put('/timetable')
+  async editTimetable(@Body() body: UserTimetablesQueryDto) {
+    const { userId, timetable } = body;
     return {
       status: 'Successfully Edited timetable',
       data: {
-        id: await this.userService.editTimetable(userId, body),
+        id: await this.userService.editTimetable(userId, timetable),
       },
     };
   }
@@ -155,11 +126,9 @@ export class UserController {
    * Delete a particular timetable from the user's timetables.
    */
   @UseGuards(LoginGuard)
-  @Delete('/timetable/:userId/:timetableId')
-  async deleteTimetable(
-    @Param('userId') userId: string,
-    @Param('timetableId') timetableId: string,
-  ) {
+  @Delete('/timetable')
+  async deleteTimetable(@Body() body: UserDeleteTimetableQueryDto) {
+    const { userId, timetableId } = body;
     return {
       status: 'Successfully deleted timetable',
       data: {

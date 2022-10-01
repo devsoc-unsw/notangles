@@ -9,7 +9,6 @@ import { Model } from 'mongoose';
 import {
   SettingsDocument,
   TimetableDocument,
-  User,
   UserDocument,
 } from '../schemas/user.schema';
 import { FriendRequestDocument } from './dtos/friend.dto';
@@ -28,7 +27,7 @@ export class FriendService {
     @InjectModel('User') private userModel: Model<UserDocument>,
   ) {}
 
-  async getUser(userId: string): Promise<User> {
+  async getUser(userId: string) {
     const user: UserDocument = await this.userModel
       .findOne({ google_uid: userId })
       .exec();
@@ -39,43 +38,31 @@ export class FriendService {
   /**
    * Returns all friends of a valid user.
    */
-  async getFriends(userId: string): Promise<User[]> {
+  async getFriends(userId: string) {
     const user = await this.getUser(userId);
-    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
-    const friends: User[] = [];
-    // Safety checks for the case where the user is non existent.
-    if (!user) return friends;
-    for (const f of user.friends) {
-      const friendFound: UserDocument = await this.userModel
-        .findOne({ google_uid: f })
-        .exec();
-      friends.push(friendFound);
-    }
-    return friends;
+    return await this.userModel.find({ google_uid: user.friends }).exec();
   }
 
   /**
-   * Forcefully adds a friend to a user's friend list.
+   * Adds a friend to a user's friend list.
    */
-  async addFriend(userId: string, friendId: string): Promise<string> {
-    if (userId !== friendId) {
-      // Defensively checking if either exist.
-      const [_user, _friend] = await Promise.all([
-        this.getUser(userId),
-        this.getUser(friendId),
-      ]);
+  async addFriend(userId: string, friendId: string) {
+    if (userId === friendId) return friendId;
 
-      const pushFriendIdToUser = async (uId: string, fId: string) => {
-        await this.userModel
-          .findOneAndUpdate(
-            { google_uid: uId },
-            { $addToSet: { friends: fId } },
-          )
-          .exec();
-      };
-      await pushFriendIdToUser(userId, friendId);
-      await pushFriendIdToUser(friendId, userId);
-    }
+    const [_user, _friend] = await Promise.all([
+      this.getUser(userId),
+      this.getUser(friendId),
+    ]);
+
+    const addFriendToUser = async (uId: string, fId: string) => {
+      await this.userModel
+        .findOneAndUpdate({ google_uid: uId }, { $addToSet: { friends: fId } })
+        .exec();
+    };
+
+    await addFriendToUser(userId, friendId);
+    await addFriendToUser(friendId, userId);
+
     return friendId;
   }
 
@@ -83,9 +70,8 @@ export class FriendService {
    * Forcefully remove a friend from a user's friend list in a
    * bidirectional manner.
    */
-  async removeFriend(userId: string, friendId: string): Promise<string> {
-    const removeFriendIdFromUser = async (uId: string, fId: string) => {
-      // Defensively checking if either exist.
+  async removeFriend(userId: string, friendId: string) {
+    const removeFriendFromUser = async (uId: string, fId: string) => {
       const [_user, _friend] = await Promise.all([
         this.getUser(userId),
         this.getUser(friendId),
@@ -97,48 +83,41 @@ export class FriendService {
     };
 
     await Promise.all([
-      removeFriendIdFromUser(userId, friendId),
-      removeFriendIdFromUser(friendId, userId),
+      removeFriendFromUser(userId, friendId),
+      removeFriendFromUser(friendId, userId),
     ]);
 
     return friendId;
   }
 
   /**
-   * Get the friend requests of a user from the FriendRequest collection.
+   * Get the friend requests a user has sent
    */
-  async getFriendRequests(userId: string): Promise<User[]> {
+  async getFriendRequests(userId: string) {
     const user: FriendRequestDocument = await this.friendRequestModel
       .findOne({ google_uid: userId })
       .exec();
-    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
-    const friendRequestsSentTo: User[] = [];
 
-    for (const f of user.sentRequestsTo) {
-      const potentialFriendRequest: UserDocument = await this.userModel
-        .findOne({ google_uid: f })
-        .exec();
-      friendRequestsSentTo.push(potentialFriendRequest);
-    }
-    return friendRequestsSentTo;
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+
+    return await this.userModel
+      .find({ google_uid: user.sentRequestsTo })
+      .exec();
   }
 
   /**
    * Forcefully adds a friend to a user's friend list.
    */
-  async sendFriendRequest(userId: string, friendId: string): Promise<string> {
-    if (userId !== friendId) {
-      const pushFriendIdToUser = async (uId: string, fId: string) => {
-        await this.friendRequestModel
-          .findOneAndUpdate(
-            { google_uid: uId },
-            { $addToSet: { sentRequestsTo: fId } },
-          )
-          .exec();
-      };
+  async sendFriendRequest(userId: string, friendId: string) {
+    if (userId === friendId) return friendId;
 
-      await pushFriendIdToUser(userId, friendId);
-    }
+    await this.friendRequestModel
+      .findOneAndUpdate(
+        { google_uid: userId },
+        { $addToSet: { sentRequestsTo: friendId } },
+      )
+      .exec();
+
     return friendId;
   }
 
@@ -146,15 +125,12 @@ export class FriendService {
    * Decline user's friend request. This will remove the friend request
    * bidirectionally.
    */
-  async declineFriendRequest(
-    userId: string,
-    friendId: string,
-  ): Promise<string> {
-    const senderFrModel = await this.friendRequestModel
+  async declineFriendRequest(userId: string, friendId: string) {
+    const senderRequests = await this.friendRequestModel
       .findOne({ google_uid: userId })
       .exec();
 
-    if (!senderFrModel.sentRequestsTo.includes(friendId)) {
+    if (!senderRequests.sentRequestsTo.includes(friendId)) {
       throw new HttpException(
         "Friend request doesn't exist!",
         HttpStatus.NOT_FOUND,

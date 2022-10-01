@@ -11,12 +11,11 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { User } from 'src/schemas/user.schema';
-import { FriendService } from './friend.service';
-import { UserService } from 'src/user/user.service';
-import { FriendRequestDto } from './dtos/friend.dto';
 import { LoginGuard } from 'src/auth/login.guard';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
+import { UserService } from 'src/user/user.service';
+import { FriendRequestDto } from './dtos/friend.dto';
+import { FriendService } from './friend.service';
 
 @Controller('friend')
 @UseFilters(HttpExceptionFilter)
@@ -25,32 +24,24 @@ export class FriendController {
     private readonly friendService: FriendService,
     private readonly userService: UserService,
   ) {}
-  hasUserAsentReqToB = async (uId: string, fId: string): Promise<boolean> => {
-    const getUserFriendReqs: User[] =
-      await this.friendService.getFriendRequests(uId);
 
-    for (const u of getUserFriendReqs) {
-      if (u.google_uid === fId) {
-        return true;
-      }
+  hasSentRequest = async (uId: string, fId: string) => {
+    const sentRequests = await this.friendService.getFriendRequests(uId);
+
+    for (const u of sentRequests) {
+      if (u.google_uid === fId) return true;
     }
+
     return false;
   };
 
-  alreadyFriends = async (uId: string, fId: string): Promise<boolean> => {
-    const user: User = await this.userService.getUser(uId);
-    // Check if they are already friends or not.
-    if (user.friends.includes(fId)) {
-      return true;
-    }
-    return false;
+  isAlreadyFriends = async (uId: string, fId: string) => {
+    const user = await this.userService.getUser(uId);
+    return user.friends.includes(fId);
   };
+
   /**
    * Return all already added friends for a user.
-   *
-   * [Defensively checked for]:
-   *  - If the user is not found.
-   *
    */
   @UseGuards(LoginGuard)
   @Get('/:userId')
@@ -64,26 +55,12 @@ export class FriendController {
   }
 
   /**
-   * Forcefully add two valid users as friends.
-   *
-   * This would remove the friend requests (documents)
-   * from their respective collections.
-   *
-   * [Defensively checked for]:
-   *  - The user trying to add themselves as friends.
-   *  - Non valid users are not added as friends.
-   *
+   * Forcefully add two valid users as each others' friends.
    */
   @UseGuards(LoginGuard)
   @Post('/')
   async addFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    const [sender, sendee] = await Promise.all([
-      this.userService.getUser(senderId),
-      this.userService.getUser(senderId),
-    ]);
-    if (!sender || !sendee)
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     return {
       status: 'Successfully added users as friends!',
@@ -94,21 +71,13 @@ export class FriendController {
   }
 
   /**
-   * Forcefully remove two valid users from being friends.
-   * Bidirectional removal of friendship relation.
-   * [Defensively checked for]:
-   *  - Non valid users.
-   *
+   * Forcefully remove two valid users from being each others' friends.
    */
   @UseGuards(LoginGuard)
   @Delete('/')
   async deleteFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    const checkValidUser = async (uId: string) => this.userService.getUser(uId);
-    // Validity checker for the user Ids provided.
-    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
-      return [];
-    }
+
     return {
       status: 'Successfully removed users as friends!',
       data: {
@@ -118,33 +87,17 @@ export class FriendController {
   }
 
   /**
-   * Send a friend request to a valid user.
-   * [Defensively checked for]:
-   *  - The user trying to add themselves as friends.
-   *  - Non valid users are not added as friends.
-   *  - If the user has already sent a friend request, or already friends.
-   *
+   * Send a friend request to a user.
    */
   @UseGuards(LoginGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    // Check for valid users.
-    const checkValidUser = async (uId: string) => this.userService.getUser(uId);
-    // Validity checker for the user Ids provided.
-    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
-      throw new HttpException(
-        'Invalid user Ids provided.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
-    const friended: boolean = await this.alreadyFriends(senderId, sendeeId);
-    const alreadySentFr: boolean = await this.hasUserAsentReqToB(
-      senderId,
-      sendeeId,
-    );
-    if (!friended && !alreadySentFr) {
+    const isFriended = await this.isAlreadyFriends(senderId, sendeeId);
+    const alreadySentRequest = await this.hasSentRequest(senderId, sendeeId);
+
+    if (!isFriended && !alreadySentRequest) {
       return {
         status: 'Successfully sent friend request!',
         data: {
@@ -153,9 +106,8 @@ export class FriendController {
       };
     }
 
-    // Error handling response.
     let errorStatus = 'Failed to send friend request! ';
-    if (friended) {
+    if (isFriended) {
       errorStatus += 'Already friends!';
     } else {
       errorStatus += 'Friend Request already sent!';
@@ -165,28 +117,15 @@ export class FriendController {
   }
 
   /**
-   * Send a friend request to a valid user.
-   * [Defensively checked for]:
-   *  - The user trying to add themselves as friends.
-   *  - Non valid users are not added as friends.
-   *  - If the user has already sent a friend request, or already friends.
+   * Accept a friend request from a valid user.
    */
   @UseGuards(LoginGuard)
   @Put('/request')
   async acceptFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    // Check for valid users.
-    const checkValidUser = async (uId: string) => this.userService.getUser(uId);
-    // Validity checker for the user Ids provided.
-    if (!checkValidUser(senderId) || !checkValidUser(sendeeId)) {
-      throw new HttpException(
-        'Invalid user Ids provided.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
-    const friended: boolean = await this.alreadyFriends(senderId, sendeeId);
-    if (!friended && (await this.hasUserAsentReqToB(sendeeId, senderId))) {
+    const isFriended: boolean = await this.isAlreadyFriends(senderId, sendeeId);
+    if (!isFriended && (await this.hasSentRequest(sendeeId, senderId))) {
       await Promise.all([
         this.friendService.addFriend(sendeeId, senderId),
         this.friendService.declineFriendRequest(senderId, sendeeId),
@@ -197,12 +136,12 @@ export class FriendController {
         data: sendeeId,
       };
     }
-    // Error handling response.
+
     let errorStatus = 'Failed to accept friend request! ';
-    if (friended) {
+    if (isFriended) {
       errorStatus += 'Already friends!';
     } else {
-      errorStatus += 'No friend request sent by sendee to be accepted!';
+      errorStatus += "Friend request doesn't exist!";
     }
 
     throw new HttpException(errorStatus, HttpStatus.CONFLICT);
@@ -210,27 +149,11 @@ export class FriendController {
 
   /**
    * Decline a friend request from a valid user.
-   * This would remove the friend requests (documents) from both users.
-   *
-   * [Defensively checked for]:
-   *  - Non valid users.
-   *
    */
   @UseGuards(LoginGuard)
   @Delete('/request')
   async deleteFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
-    // Check for valid users.
-    const checkValidUser = async (uId: string) => this.userService.getUser(uId);
-    const sendee = checkValidUser(sendeeId);
-    const sender = checkValidUser(senderId);
-    // Validity checker for the user Ids provided.
-    if (!sendee || !sender) {
-      throw new HttpException(
-        'Invalid user Ids provided.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     return {
       status: 'Successfully removed friend request!',
