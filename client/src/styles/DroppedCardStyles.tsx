@@ -127,5 +127,6 @@ export const StyledCardInfo = styled(StyledCardName)`
 `;
 
 export const StyledList = styled(List)`
+  width: 395px;
   padding: 12px 15px;
 `;

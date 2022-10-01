@@ -52,10 +52,8 @@ export class FriendController {
    * [Defensively checked for]:
    *  - If the user is not found.
    *
-   * @param req: the Request route handler param.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Get('/:userId')
   async getFriends(@Param('userId') userId: string) {
     if (userId) {
@@ -76,11 +74,8 @@ export class FriendController {
    *  - The user trying to add themselves as friends.
    *  - Non valid users are not added as friends.
    *
-   * @param body decorator of the form FriendRequestDto. Please see
-   *        confluence documentation for the interface structure.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Post('/')
   async addFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -105,11 +100,8 @@ export class FriendController {
    * [Defensively checked for]:
    *  - Non valid users.
    *
-   * @param body decorator of the form FriendRequestDto. Please see
-   *        confluence documentation for the interface structure.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Delete('/')
   async deleteFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -133,11 +125,8 @@ export class FriendController {
    *  - Non valid users are not added as friends.
    *  - If the user has already sent a friend request, or already friends.
    *
-   * @param body decorator of the form FriendRequestDto. Please see
-   *        confluence documentation for the interface structure.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -186,12 +175,8 @@ export class FriendController {
    *  - The user trying to add themselves as friends.
    *  - Non valid users are not added as friends.
    *  - If the user has already sent a friend request, or already friends.
-   *
-   * @param body decorator of the form FriendRequestDto. Please see
-   *        confluence documentation for the interface structure.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Put('/request')
   async acceptFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -241,11 +226,8 @@ export class FriendController {
    * [Defensively checked for]:
    *  - Non valid users.
    *
-   * @param body decorator of the form FriendRequestDto. Please see
-   *        confluence documentation for the interface structure.
-   * @returns Promise to an array of users who are the users friend.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Delete('/request')
   async deleteFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;

@@ -5,18 +5,15 @@ import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useT
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import getCoursesList from '../../api/getCoursesList';
 import { ThemeType } from '../../constants/theme';
-import { maxAddedCourses, unknownErrorMessage } from '../../constants/timetable';
+import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseOverview, CoursesList } from '../../interfaces/Courses';
-import NetworkError from '../../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
-const INVALID_YEAR_FORMAT = '0000';
 
 interface SearchOptions {
   threshold: number;
@@ -132,39 +129,18 @@ const Career = styled('div')`
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
-  const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term } = useContext(AppContext);
+  const { coursesList } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
-  // Retrieve the list of all courses from the scraper backend
   useEffect(() => {
-    const fetchCoursesList = async () => {
-      try {
-        if (year !== INVALID_YEAR_FORMAT) {
-          const fetchedCoursesList = await getCoursesList(year, term);
-          setCoursesList(fetchedCoursesList.courses);
-          fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
-
-          setLastUpdated(fetchedCoursesList.lastUpdated);
-        }
-      } catch (e) {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-        } else {
-          setAlertMsg(unknownErrorMessage);
-        }
-        setErrorVisibility(true);
-      }
-    };
-
-    fetchCoursesList();
-  }, [year]);
+    fuzzy = new Fuse(coursesList, searchOptions);
+  }, [coursesList]);
 
   // Generate a list of the user's selected courses
   useEffect(() => {

@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
 import AppContextProvider from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
 import CourseContextProvider from './context/CourseContext';
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
@@ -17,13 +18,15 @@ Sentry.init({
 
 const Root: React.FC = () => (
   <AppContextProvider>
-    <CourseContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<App />} path="/" />
-        </Routes>
-      </BrowserRouter>
-    </CourseContextProvider>
+    <AuthProvider>
+      <CourseContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<App />} path="/" />
+          </Routes>
+        </BrowserRouter>
+      </CourseContextProvider>
+    </AuthProvider>
   </AppContextProvider>
 );
 

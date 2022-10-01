@@ -6,7 +6,7 @@ import {
   getDefaultStartTime,
   headerPadding,
   rowHeight,
-  unknownErrorMessage
+  unknownErrorMessage,
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 
@@ -107,21 +107,23 @@ const generateHours = (
   is12HourMode: boolean,
   setAlertMsg: (newErrorMsg: string) => void,
   setErrorVisibility: (newVisibility: boolean) => void,
-  isConvertToLocalTimezone: boolean): string[] => {
-
+  isConvertToLocalTimezone: boolean
+): string[] => {
   const [min, max] = range;
 
-  const full24HoursArray = Array(24).fill(0).map((_, i) => generateHour(i + 0, is12HourMode));
+  const full24HoursArray = Array(24)
+    .fill(0)
+    .map((_, i) => generateHour(i + 0, is12HourMode));
 
   // Fill an array with hour strings according to the range
   try {
     if (min < max) {
       return Array(max - min + 1)
-      .fill(0)
-      .map((_, i) => generateHour(i + min, is12HourMode));
+        .fill(0)
+        .map((_, i) => generateHour(i + min, is12HourMode));
     }
     return full24HoursArray;
-  } catch(err) {
+  } catch (err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
 
@@ -130,15 +132,16 @@ const generateHours = (
 
     if (defaultStartTime < defaultEndTime) {
       return Array(defaultEndTime - defaultStartTime + 1)
-      .fill(0)
-      .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+        .fill(0)
+        .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
     }
     return full24HoursArray;
   }
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } = useContext(AppContext);
+  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
+    useContext(AppContext);
 
   const hoursRange = [
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),

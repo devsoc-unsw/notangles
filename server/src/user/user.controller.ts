@@ -39,7 +39,7 @@ export class UserController {
   /**
    * Get the user object.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Get('/profile/:userId')
   async user(@Param('userId') userId: string) {
     const userQueried = await this.userService.getUser(userId);
@@ -52,7 +52,7 @@ export class UserController {
   /**
    * Search for a user by their googleId or by their full name.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Get('/search')
   async userSearch(@Request() req) {
     if (req.query.userId) {
@@ -81,7 +81,7 @@ export class UserController {
   /**
    * Get the user settings.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Get('/settings/:userId')
   async getSettings(@Param('userId') userId: string) {
     return {
@@ -93,7 +93,7 @@ export class UserController {
   /**
    * Edit/Create user settings.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Post('/settings/:userId')
   async createSettings(
     @Param('userId') userId: string,
@@ -111,7 +111,7 @@ export class UserController {
    * Get the user's timetables.
    * @returns Promise to the user's timetables.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Get('/timetable/:userId')
   async getTimetable(@Param('userId') userId: string) {
     return {
@@ -124,7 +124,7 @@ export class UserController {
    * Create a timetable for the user.
    */
 
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Post('/timetable/:userId')
   async createTimetable(
     @Param('userId') userId: string,
@@ -139,7 +139,7 @@ export class UserController {
   /**
    * Edit the user's timetable.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Put('/timetable/:userId')
   async editTimetable(
     @Param('userId') userId: string,
@@ -156,7 +156,7 @@ export class UserController {
   /**
    * Delete a particular timetable from the user's timetables.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Delete('/timetable/:userId/:timetableId')
   async deleteTimetable(
     @Param('userId') userId: string,

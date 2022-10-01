@@ -164,8 +164,6 @@ export class UserService {
 
   /**
    * Find a user by their google_uid.
-   * @param userId - the google_uid of the user.
-   * @returns a Promise of the user.
    */
 
   async getUser(userId: string): Promise<User> {
