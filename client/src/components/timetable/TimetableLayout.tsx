@@ -219,6 +219,15 @@ export const TimetableLayout: React.FC = () => {
 
   const handleClose = () => {
     setCreateEventAnchorEl(null);
+
+    // Deletes temporary event created
+    for (const event in createdEvents) {
+      if (event === tempEventId) {
+        delete createdEvents[event];
+      }
+    }
+
+    setCreatedEvents({ ...createdEvents });
   };
 
   const otherCells = hours.flatMap((_, y) =>
