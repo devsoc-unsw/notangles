@@ -3,7 +3,7 @@ import { Box, Button, ListItem, ListItemIcon, Popover, TextField } from '@mui/ma
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { Add, Event, LocationOn, Notes } from '@mui/icons-material';
-import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
+import { areValidEventTimes } from '../../utils/eventTimes';
 import { TimePicker } from '@mui/x-date-pickers';
 import DropdownOption from './DropdownOption';
 import { daysShort } from '../../constants/timetable';
@@ -13,9 +13,9 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { createNewEvent } from '../../utils/createEvent';
-import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
+import { DoubleClickedCreateEventPopoverProps } from '../../interfaces/PropTypes';
 
-const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
+const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverProps> = ({
   open,
   anchorEl,
   onClose,
@@ -27,9 +27,11 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   initialDay,
   tempEventId,
 }) => {
+  // For the pre-selected fields
   const [isInitialDay, setIsInitialDay] = useState<boolean>(isDoubleClicked);
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(isDoubleClicked);
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(isDoubleClicked);
+
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -63,13 +65,12 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     let endTimeToCreateAs = endTime;
 
     if (isInitialStartTime) {
-      // This fixes the slow updating of the value passed in (from useRef in TimetableLayout)
-
+      // User did not change start time
       startTimeToCreateAs = initialStartTime;
     }
 
     if (isInitialEndTime) {
-      // This fixes the slow updating of the value passed in (from useRef in TimetableLayout)
+      // User did not change end time
       endTimeToCreateAs = initialEndTime;
     }
 
@@ -90,15 +91,9 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     const newEvents: Record<string, EventPeriod> = {};
 
-    // For when there is a pre-selected day
-    // (when user double clicks to create event)
-
-    // newEvents[newEvent.event.id] = newEvent;
-
     if (isInitialDay) {
-      // TODO: problem because this doesnt allow user to create cloned events when double clicked
+      // User did not change day
       const newEvent = createEvent(initialDay);
-      setEventDays([initialDay]);
       newEvents[newEvent.event.id] = newEvent;
     } else {
       // Create an event for each day that is selected in the dropdown option
@@ -108,8 +103,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       }
     }
 
-    // If user double clicked to open popover, delete the temp event
-    // the position of that event is just replaced with the new event
     if (isDoubleClicked) {
       // Delete the temporary created event with its id
       for (const event in createdEvents) {
@@ -127,6 +120,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     setIsInitialDay(true);
     setIsInitialStartTime(true);
     setIsInitialEndTime(true);
+
     // Close all popovers when Create button is clicked
     onClose();
     setColorPickerAnchorEl(null);
@@ -296,4 +290,4 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   );
 };
 
-export default CreateEventPopover;
+export default DoubleClickedCreateEventPopover;

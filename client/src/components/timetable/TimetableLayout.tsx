@@ -10,10 +10,7 @@ import {
   unknownErrorMessage,
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import CustomEvent from '../controls/CustomEvent';
-import { Popover } from '@mui/material';
-import CreateEventPopover from './CreateEventPopover';
-import DroppedCards from './DroppedCards';
+import DoubleClickedCreateEventPopover from './DoubleClickedCreateEventPopover';
 import { CourseContext } from '../../context/CourseContext';
 import { createNewEvent } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
@@ -192,9 +189,12 @@ export const TimetableLayout: React.FC = () => {
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
-  // Create a temporary DroppedEvent card where the user double clicked on the grid
+  /**
+   * Create a temporary DroppedEvent card where the user double clicked on the grid
+   * @param x Coordinate of where user double clicked on grid, indicates day
+   * @param y Coordinate of where user double clicked on grid, indicates time
+   */
   const createTempEvent = (x: number, y: number) => {
-    const updatedEventData = { ...createdEvents };
     const newEvent = createNewEvent(
       '(No title)',
       '(No location)',
@@ -202,32 +202,27 @@ export const TimetableLayout: React.FC = () => {
       '#1F7E8C',
       daysShort[x],
       createDateWithTime(earliestStartTime + y),
-      createDateWithTime(earliestStartTime + y + 1) // what about case when start is 12am, end will have to be 1am?
+      createDateWithTime(earliestStartTime + y + 1)
     );
 
     setTempEventId(newEvent.event.id);
-
-    updatedEventData[newEvent.event.id] = newEvent;
 
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
     });
-
-    setCreatedEvents(updatedEventData);
   };
 
   const handleClose = () => {
     setCreateEventAnchorEl(null);
 
-    // Deletes temporary event created
+    // Deletes temporary event created when user clicks out of popover
     for (const event in createdEvents) {
       if (event === tempEventId) {
         delete createdEvents[event];
+        setCreatedEvents({ ...createdEvents });
       }
     }
-
-    setCreatedEvents({ ...createdEvents });
   };
 
   const otherCells = hours.flatMap((_, y) =>
@@ -267,7 +262,7 @@ export const TimetableLayout: React.FC = () => {
       {otherCells}
 
       {/* For when user double clicks on a timetable grid */}
-      <CreateEventPopover
+      <DoubleClickedCreateEventPopover
         open={open}
         anchorEl={createEventAnchorEl}
         onClose={handleClose}

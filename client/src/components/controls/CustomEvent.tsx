@@ -111,7 +111,7 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
     setClassesList([]);
 
-    // Close the popover
+    // Close the popovers
     setColorPickerAnchorEl(null);
     setCreateEventAnchorEl(null);
   };
@@ -221,25 +221,6 @@ const CustomEvent: React.FC = () => {
         </Box>
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
-      {/* <CreateEventPopover
-        open={openCreateEventPopover}
-        anchorEl={createEventAnchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={
-          vertical: 'bottom',
-          horizontal: 'right',
-        }
-        isDoubleClicked={false}
-        initialStartTime={createDateWithTime(9)}
-        initialEndTime={createDateWithTime(10)}
-        initialDay={''}
-        tempEventId={''}
-      />
-      > */}
       <Popover
         open={openCreateEventPopover}
         anchorEl={createEventAnchorEl}

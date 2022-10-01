@@ -120,7 +120,7 @@ export interface LocationDropdownProps {
   selectedIndex: number;
 }
 
-export interface CreateEventPopoverProps {
+export interface DoubleClickedCreateEventPopoverProps {
   open: boolean;
   anchorEl: (HTMLButtonElement | HTMLDivElement | null);
   onClose: () => void;
@@ -132,6 +132,7 @@ export interface CreateEventPopoverProps {
   initialDay: string;
   tempEventId: string;
 }
+
 export interface CustomEventGeneralProps {
   eventName: string;
   setEventName: (name: string) => void;
