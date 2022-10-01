@@ -72,32 +72,6 @@ export class UserSettingsDto {
   }
 }
 
-export class UserSettingsQueryDto {
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
-  @IsNotEmpty()
-  setting: UserSettingsDto;
-}
-
-export class UserTimetablesQueryDto {
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
-  @IsNotEmpty()
-  timetable: UserTimetablesDto;
-}
-
-export class UserDeleteTimetableQueryDto {
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  timetableId: string;
-}
-
 export class UserTimetablesDto {
   @IsString()
   timetableId: string;
@@ -160,4 +134,31 @@ export class EventsDto {
     start: Number;
     end: Number;
   };
+}
+export class UserSettingsQueryDto {
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
+  @IsNotEmpty()
+  setting: UserSettingsDto;
+}
+
+export class UserDeleteTimetableQueryDto {
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  timetableId: string;
+}
+
+export class UserTimetablesQueryDto {
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
+  @IsNotEmpty()
+  timetable: UserTimetablesDto;
 }

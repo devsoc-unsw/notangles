@@ -5,6 +5,7 @@ export class FriendRequestDto {
   @IsString()
   @IsNotEmpty()
   senderId: string;
+
   @IsString()
   @IsNotEmpty()
   sendeeId: string;

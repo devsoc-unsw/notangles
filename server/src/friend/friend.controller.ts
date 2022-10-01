@@ -46,12 +46,10 @@ export class FriendController {
   @UseGuards(LoginGuard)
   @Get('/:userId')
   async getFriends(@Param('userId') userId: string) {
-    if (userId) {
-      return {
-        status: 'Successfully found user and their friends list!',
-        data: await this.friendService.getFriends(userId),
-      };
-    }
+    return {
+      status: 'Successfully found user and their friends list!',
+      data: await this.friendService.getFriends(userId),
+    };
   }
 
   /**
