@@ -26,13 +26,15 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   initialEndTime,
   initialDay,
 }) => {
-  const [isInitialOpen, setIsInitialOpen] = useState<boolean>(isDoubleClicked ? true : false);
+  const [isInitialDay, setIsInitialDay] = useState<boolean>(isDoubleClicked);
+  const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(isDoubleClicked);
+  const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(isDoubleClicked);
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(initialStartTime);
   const [endTime, setEndTime] = useState<Date>(initialEndTime);
-  const [eventDays, setEventDays] = useState<Array<string>>(isDoubleClicked ? [initialDay] : []);
+  const [eventDays, setEventDays] = useState<Array<string>>(isInitialDay ? [initialDay] : []);
   const [color, setColor] = useState<string>('#1F7E8C');
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -42,11 +44,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
-    // console.log('asdfasf startTime', startTime);
-    // console.log('asdfasf endTime', endTime);
-
-    // console.log('asdfasf initialEndTime', initialEndTime);
-
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
@@ -61,27 +58,29 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 
-    if (isDoubleClicked) {
-      const newEvent = createNewEvent(eventName, location, description, color, day, initialStartTime, initialEndTime);
-      setCreatedEvents({
-        ...createdEvents,
-        [newEvent.event.id]: newEvent,
-      });
-      return newEvent;
-    } else {
-      const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
-      setCreatedEvents({
-        ...createdEvents,
-        [newEvent.event.id]: newEvent,
-      });
-      return newEvent;
+    let startTimeToCreateAs = startTime;
+    let endTimeToCreateAs = endTime;
+
+    if (isInitialStartTime) {
+      // This fixes the slow updating of the value passed in (from useRef in TimetableLayout)
+
+      startTimeToCreateAs = initialStartTime;
     }
+
+    if (isInitialEndTime) {
+      // This fixes the slow updating of the value passed in (from useRef in TimetableLayout)
+      endTimeToCreateAs = initialEndTime;
+    }
+
+    const newEvent = createNewEvent(eventName, location, description, color, day, startTimeToCreateAs, endTimeToCreateAs);
+    setCreatedEvents({
+      ...createdEvents,
+      [newEvent.event.id]: newEvent,
+    });
+    return newEvent;
   };
 
   const createEvents = () => {
-    console.log('creating an event with initialDay', initialDay);
-
-    // console.log('is initial open is', isInitialOpen);
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
@@ -93,16 +92,13 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     // For when there is a pre-selected day
     // (when user double clicks to create event)
 
-    // console.log('creating event with startTime', startTime);
     // newEvents[newEvent.event.id] = newEvent;
 
-    // console.log('initialday is', initialDay);
-
-    if (isDoubleClicked) {
+    if (isInitialDay) {
       // TODO: problem because this doesnt allow user to create cloned events when double clicked
       const newEvent = createEvent(initialDay);
+      setEventDays([initialDay]);
       newEvents[newEvent.event.id] = newEvent;
-      console.log('setting event days to initial day', initialDay);
     } else {
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
@@ -110,8 +106,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
         newEvents[newEvent.event.id] = newEvent;
       }
     }
-
-    console.log('eventDays', eventDays);
 
     // If user double clicked to open popover, delete the temp event
     // the position of that event is just replaced with the new event
@@ -124,12 +118,16 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     setLocation('');
     setDescription('');
     setEventDays([]);
+    setIsInitialDay(true);
+    setIsInitialStartTime(true);
+    setIsInitialEndTime(true);
     // Close all popovers when Create button is clicked
     onClose();
     setColorPickerAnchorEl(null);
   };
 
   const handleFormat = (newFormats: string[]) => {
+    setIsInitialDay(false);
     setEventDays(newFormats);
   };
 
@@ -147,7 +145,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       anchorEl={anchorEl}
       onClose={() => {
         onClose();
-        setIsInitialOpen(true);
       }}
       anchorOrigin={anchorOrigin}
       transformOrigin={transformOrigin}
@@ -160,7 +157,9 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
           <TextField
             id="outlined-required"
             label="Event Name"
-            onChange={(e) => setEventName(e.target.value)}
+            onChange={(e) => {
+              setEventName(e.target.value);
+            }}
             variant="outlined"
             fullWidth
             required
@@ -200,18 +199,19 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
           <TimePicker
             // Displays time as the time of the grid the user pressed
             // when popover has just been opened
-            value={isInitialOpen ? initialStartTime : startTime}
+            value={isInitialStartTime ? initialStartTime : startTime}
             renderInput={(params) => <TextField {...params} />}
             onChange={(e) => {
               if (e) setStartTime(e);
-              setIsInitialOpen(false);
+              setIsInitialStartTime(false);
+              setEndTime(initialEndTime);
             }}
           />
         </StyledListItem>
         <StyledListItem>
           <StyledListItemText primary="End time" />
           <TimePicker
-            value={isInitialOpen ? initialEndTime : endTime}
+            value={isInitialEndTime ? initialEndTime : endTime}
             renderInput={(params) => {
               const tooEarly = !areValidEventTimes(startTime, endTime);
               return (
@@ -220,17 +220,17 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
             }}
             onChange={(e) => {
               if (e) setEndTime(e);
-              setIsInitialOpen(false);
+              setIsInitialEndTime(false);
+              setStartTime(initialStartTime);
             }}
           />
         </StyledListItem>
         <DropdownOption
           optionName="Days"
-          optionState={isInitialOpen ? initialDay : eventDays}
+          optionState={isInitialDay ? [initialDay] : eventDays}
           setOptionState={handleFormat}
           optionChoices={daysShort}
-          // only allow selecting multiple days if create event popover opened from controls button
-          multiple={!isDoubleClicked}
+          multiple={true}
           noOff
         />
         <Box m={1} display="flex" justifyContent="center" alignItems="center">
@@ -280,7 +280,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
         variant="contained"
         color="primary"
         disableElevation
-        disabled={eventName === '' || location === '' || eventDays.length === 0}
+        disabled={eventName === '' || location === '' || (eventDays.length === 0 && initialDay === '')}
         onClick={createEvents}
       >
         <Add />
