@@ -134,6 +134,7 @@ const CustomEvent: React.FC = () => {
         setErrorVisibility(true);
         return;
       }
+      
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
         const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
@@ -172,7 +173,7 @@ const CustomEvent: React.FC = () => {
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
-    
+
     // Close the popover
     setAnchorEl(null);
     setColorPickerAnchorEl(null);
