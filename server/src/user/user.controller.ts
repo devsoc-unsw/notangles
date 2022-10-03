@@ -71,7 +71,7 @@ export class UserController {
    * Edit/Create user settings.
    */
   @UseGuards(LoginGuard)
-  @Post('/settings')
+  @Put('/settings')
   async createSettings(@Body() body: UserSettingsQueryDto) {
     const { userId, setting } = body;
     return {
