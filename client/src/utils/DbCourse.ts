@@ -10,7 +10,7 @@ import { getAllPeriods } from './getAllPeriods';
  * @param location The location of the class
  * @returns The location without its room code (only the actual name of the room)
  */
-const locationShorten = (location: string): string => location.split(' (')[0];
+const locationShorten = (location: string): string => (location ? location.split(' (')[0] : '');
 
 /**
  * @param weekDay The day of the week to convert
