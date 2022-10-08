@@ -48,9 +48,7 @@ const CustomEvent: React.FC = () => {
 
   let coursesCodes = getCoursesCodes(coursesList);
   // Remove duplicated UG/PG course codes
-  coursesCodes = coursesCodes.filter((course, idx) => {
-    return coursesCodes.findIndex((c) => c.label === course.label) === idx;
-  });
+  coursesCodes = coursesCodes.filter((course, idx) => coursesCodes.findIndex((c) => c.label === course.label) === idx);
 
   // Get the list of classes for the selected course code.
   useEffect(() => {
