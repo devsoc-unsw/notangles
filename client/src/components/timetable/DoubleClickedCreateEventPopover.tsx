@@ -21,16 +21,15 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
   onClose,
   anchorOrigin,
   transformOrigin,
-  isDoubleClicked,
   initialStartTime,
   initialEndTime,
   initialDay,
   tempEventId,
 }) => {
   // For the pre-selected fields
-  const [isInitialDay, setIsInitialDay] = useState<boolean>(isDoubleClicked);
-  const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(isDoubleClicked);
-  const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(isDoubleClicked);
+  const [isInitialDay, setIsInitialDay] = useState<boolean>(true);
+  const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(true);
+  const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(true);
 
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -103,12 +102,10 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
       }
     }
 
-    if (isDoubleClicked) {
-      // Delete the temporary created event with its id
-      for (const event in createdEvents) {
-        if (event === tempEventId) {
-          delete createdEvents[event];
-        }
+    // Delete the temporary created event with its id
+    for (const event in createdEvents) {
+      if (event === tempEventId) {
+        delete createdEvents[event];
       }
     }
 

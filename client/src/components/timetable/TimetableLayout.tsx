@@ -274,7 +274,6 @@ export const TimetableLayout: React.FC = () => {
           vertical: 'top',
           horizontal: 'left',
         }}
-        isDoubleClicked={true}
         initialStartTime={eventStartTime.current}
         initialEndTime={eventEndTime.current}
         initialDay={eventDay.current}
