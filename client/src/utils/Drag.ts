@@ -175,7 +175,7 @@ const timetableBorderWidthPlusOne = 2;
 /**
  * @param drag The bounding rectangle of the element being dragged
  * @param drop The bounding rectangle of the drop target
- * @returns Their intersection area relative to the area of the dragged element's area
+ * @returns Their intersection area in px^2
  */
 const getIntersectionArea = (drag: DOMRect, drop: DOMRect) => {
   // We pretend the drag element is its full width (i.e. the width of the drop rectangle)
@@ -371,8 +371,9 @@ const updateDelay = 30; // The delay between drop target updates
 let lastUpdate = 0; // The time of the last drop target update in Unix time
 
 let currentClassTime: ClassTime | undefined;
-
-let lastRecWidth = -1; // The width of the previous dropzone
+// The width/height of the previous dropzone
+let lastRecWidth = -1;
+let lastRecHeight = -1;
 
 /**
  * Update the currently selected class when a card is moved over a dropzone
@@ -393,10 +394,15 @@ const updateDropTarget = (now?: boolean) => {
 
   const dragRect = dragElement.getBoundingClientRect();
 
-  // Wait for the current width transition to end before calculating the next transition
+  // Wait for the current width/height transition to end before calculating the next transition
   if (lastRecWidth !== dragRect.width) {
     lastRecWidth = dragRect.width;
-    lastUpdate -= transitionTime;
+    lastUpdate += transitionTime;
+    return;
+  }
+  if (lastRecHeight !== dragRect.height) {
+    lastRecHeight = dragRect.height;
+    lastUpdate += heightTransitionTime;
     return;
   }
 
@@ -406,8 +412,8 @@ const updateDropTarget = (now?: boolean) => {
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
-      // Avoid accidental inventory drop and state oscillation when drag area dynamically changes
-      if (dropElement === inventoryElement && area < inventoryDropIntersection) area = 0;
+      // Avoids card oscillating between inventory and timetable (because moving between inventory changes card height)
+      if (dropElement === inventoryElement && area < inventoryDropIntersection * dragRect.width * dragRect.height) area = 0;
 
       return { classPeriod, area };
     })
@@ -569,16 +575,21 @@ onScroll = (event?) => {
 
 window.addEventListener('scroll', onScroll, { passive: false });
 
-let prevWidth: number = -1; // Previous width of the card
+// initalize previous width/height of the card for ResizeObserver
+let prevWidth: number = -1;
+let prevHeight: number = -1;
 
 const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
   const entryWidth = entries[0].contentRect.width;
+  const entryHeight = entries[0].contentRect.height;
 
-  if (prevWidth !== -1 && entryWidth !== prevWidth) {
-    // gives the illusion that the width is grow/shrinking out from the center rather than a side
-    moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, 0);
+  if (prevWidth !== -1) {
+    // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes 
+    moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, (prevHeight - entryHeight) / 2);
+    
   }
   prevWidth = entryWidth;
+  prevHeight = entryHeight;
 });
 
 // The ID of the event being dragged around
@@ -637,8 +648,10 @@ export const setDragTarget = (
       updateDropTarget(true);
 
       lastRecWidth = element.getBoundingClientRect().width;
+      lastRecHeight = element.getBoundingClientRect().height;
 
       prevWidth = -1;
+      prevHeight = -1;
       resizeObserver.observe(dragElement);
 
       if (cardData.type !== 'event') {
