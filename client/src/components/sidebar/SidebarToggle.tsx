@@ -9,6 +9,13 @@ import AddFriendsButton from './AddFriendsButton';
 import Navbar from '../navbar/Navbar';
 import Friends from './Friends';
 import Profile from './Profile';
+import styled from '@mui/material/styles/styled';
+
+const StyledFriends = styled(Friends)`
+  margin-top: 20px;
+  height: 10vh;
+  overflow-y: scroll;
+`;
 
 export default function FadeMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -44,7 +51,7 @@ export default function FadeMenu() {
         <Profile />
         <Divider />
         <MenuItem>Friends</MenuItem>
-        <Friends />
+        <StyledFriends />
         <MenuItem>
           <AddFriendsButton />
         </MenuItem>

@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -30,6 +31,7 @@ const StyledNavBar = styled(AppBar)`
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
   z-index: 1201;
+  texttransform: 'lowercase';
 `;
 
 const Weak = styled('span')`
@@ -53,12 +55,13 @@ const Navbar: React.FC = () => {
     <NavbarBox>
       <StyledNavBar enableColorOnDark position="fixed">
         <Toolbar>
-          <LogoImg
-            src={currLogo}
-            onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-            onMouseOut={() => setCurrLogo(notanglesLogo)}
-          />
-          <NavbarTitle variant="h6">
+          <MenuIcon />
+          <NavbarTitle variant="h5">
+            <LogoImg
+              src={currLogo}
+              onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+              onMouseOut={() => setCurrLogo(notanglesLogo)}
+            />
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
