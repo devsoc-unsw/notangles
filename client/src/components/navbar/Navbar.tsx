@@ -31,7 +31,11 @@ const StyledNavBar = styled(AppBar)`
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
   z-index: 1201;
-  texttransform: 'lowercase';
+  font-size: 150%;
+  text-transform: capitalize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Weak = styled('span')`
@@ -56,7 +60,7 @@ const Navbar: React.FC = () => {
       <StyledNavBar enableColorOnDark position="fixed">
         <Toolbar>
           <MenuIcon />
-          <NavbarTitle variant="h5">
+          <NavbarTitle>
             <LogoImg
               src={currLogo}
               onMouseOver={() => setCurrLogo(notanglesLogoGif)}
