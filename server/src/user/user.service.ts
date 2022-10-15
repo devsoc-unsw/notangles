@@ -152,28 +152,25 @@ export class UserService {
   /**
    * Find a user by their google_uid.
    */
-  async getUser(userId: string) {
+  async getUserById(userId: string) {
     const user = await this.userModel.findOne({ google_uid: userId });
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user;
   }
 
   /**
-   * Get a user's first and last name from the parameter.
-   * Note: The parameter is CASE SENSITIVE and is of form: "Firstname_Lastname"
-   * For example: "John_Doe"
-   *
+   * Find a user by their full name
    * If there are three or more words in the user's name:
    *  The first word is their first name by default.
    *  The second and consecutive words define their last name field.
    */
-  async getUserByFullName(userFullName: string) {
-    const count: number = userFullName.match(/_/g).length;
-    const name = userFullName.split('_');
-    const givenName = name[0];
-    const trailingNamespace = name.slice(1, count + 1).join(' ');
+  async getUserByFullName(fullname: string) {
+    const numSpaces: number = fullname.match(/ /g).length;
+    const nameSplit = fullname.split('_');
+    const givenName = nameSplit[0];
+    const lastNames = nameSplit.slice(1, numSpaces + 1).join(' ');
     const user = await this.userModel.find({
-      $and: [{ firstname: givenName }, { lastname: trailingNamespace }],
+      $and: [{ firstname: givenName }, { lastname: lastNames }],
     });
 
     if (!user || user.length === 0)

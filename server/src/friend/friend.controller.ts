@@ -36,7 +36,7 @@ export class FriendController {
   };
 
   isAlreadyFriends = async (uId: string, fId: string) => {
-    const user = await this.userService.getUser(uId);
+    const user = await this.userService.getUserById(uId);
     return user.friends.includes(fId);
   };
 

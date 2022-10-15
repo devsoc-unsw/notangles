@@ -32,7 +32,7 @@ export class UserController {
   async user(@Param('userId') userId: string) {
     return {
       status: 'Successfully found user!',
-      data: await this.userService.getUser(userId),
+      data: await this.userService.getUserById(userId),
     };
   }
 
@@ -45,12 +45,12 @@ export class UserController {
     if (req.query.userId) {
       return {
         status: 'Successfully found user!',
-        data: await this.userService.getUser(req.query.userId),
+        data: await this.userService.getUserById(req.query.userId),
       };
     } else if (req.query.userFullName) {
       return {
         status: 'Successfully found user!',
-        data: await this.userService.getUserByFullName(req.query.userFullName),
+        data: await this.userService.getUserByFullName(req.query.name),
       };
     }
   }
