@@ -31,7 +31,7 @@ const StyledNavBar = styled(AppBar)`
 const NavbarTitle = styled(Typography)`
   flex-grow: 1;
   z-index: 1201;
-  texttransform: 'lowercase';
+  text-transform: lowercase;
 `;
 
 const Weak = styled('span')`

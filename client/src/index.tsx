@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
+import FriendTimetable from './FriendTimetable';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 
@@ -24,7 +25,7 @@ const Root: React.FC = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<App />} path="/" />
-          {/* <Route element={<FriendTimetable />} path="/friend" /> */}
+          <Route element={<FriendTimetable />} path="/friend" />
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>
