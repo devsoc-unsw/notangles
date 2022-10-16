@@ -1,11 +1,10 @@
 import React, { useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
-
 import { contentPadding, inventoryMargin } from '../../constants/theme';
+import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
-import { timetableWidth } from '../../utils/Drag';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
@@ -43,9 +42,13 @@ const StyledTimetableScroll = styled(Box)`
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
 
+  // Calculate the correct number of rows, accounting for when the earliest start time is later than latest end time.
+  // E.g. starting at 7pm and ending at 4am.
+  const numRows = latestEndTime > earliestStartTime ? latestEndTime - earliestStartTime : 24 - earliestStartTime + latestEndTime;
+
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
-      <StyledTimetable cols={days.length} rows={latestEndTime - earliestStartTime}>
+      <StyledTimetable cols={days.length} rows={numRows}>
         <TimetableLayout />
         <Dropzones assignedColors={assignedColors} />
         <DroppedCards assignedColors={assignedColors} handleSelectClass={handleSelectClass} />

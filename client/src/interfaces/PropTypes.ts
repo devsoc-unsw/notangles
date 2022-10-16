@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { SelectChangeEvent } from '@mui/material';
-
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -111,12 +110,33 @@ export interface ExpandedEventViewProps {
 export interface DiscardDialogProps {
   openSaveDialog: boolean;
   handleDiscardChanges: () => void;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenSaveDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditing: (isEditing: boolean) => void;
+  setOpenSaveDialog: (isOpen: boolean) => void;
 }
 
 export interface LocationDropdownProps {
   sectionsAndLocations: Array<[Section, Location]>;
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
+}
+export interface CustomEventGeneralProps {
+  eventName: string;
+  setEventName: (name: string) => void;
+  description: string;
+  setDescription: (description: string) => void;
+  location: string;
+  setLocation: (location: string) => void;
+  startTime: Date;
+  setStartTime: (startTime: Date) => void;
+  endTime: Date;
+  setEndTime: (endTime: Date) => void;
+  eventDays: string[];
+  setEventDays: (days: string[]) => void;
+}
+
+export interface CustomEventTutoringProp {
+  coursesCodes: Record<string, string>[];
+  classesCodes: Record<string, string>[];
+  setCourseCode: (courseCode: string) => void;
+  setClassCode: (classCode: string) => void;
 }

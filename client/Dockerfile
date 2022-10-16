@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:18.7.0-alpine as builder
+FROM node:18.10.0-alpine as builder
 
 # Set the current working directory inside the container
 WORKDIR /app

@@ -3,20 +3,20 @@ import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from 
 import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Colorful } from '@uiw/react-color';
-
-import { weekdaysLong, weekdaysShort } from '../../constants/timetable';
+import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { ColourIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
+import { createNewEvent } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
+import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import { areValidEventTimes } from '../../utils/areValidEventTimes';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -27,13 +27,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(name);
-  const [newDays, setNewDays] = useState<Array<string>>([weekdaysShort[day - 1]]);
-  const [newStartTime, setNewStartTime] = useState<Date>(new Date(2022, 0, 0, start));
-  const [newEndTime, setNewEndTime] = useState<Date>(new Date(2022, 0, 0, end));
+  const [newDays, setNewDays] = useState<Array<string>>([daysShort[day - 1]]);
+  const [newStartTime, setNewStartTime] = useState<Date>(createDateWithTime(start));
+  const [newEndTime, setNewEndTime] = useState<Date>(createDateWithTime(end));
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
+
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
+
   const [newColor, setNewColor] = useState<string>(color as string);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
 
@@ -44,7 +46,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setColorPickerAnchorEl(event.currentTarget);
   };
 
-  // Close color picker popover
   const handleCloseColorPicker = () => {
     setColorPickerAnchorEl(null);
   };
@@ -52,6 +53,30 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
     setIsChanged(true);
+  };
+
+  /**
+   * @param isChanged Indicates if an edit has been made to the start of the event
+   * @param newStartTime The new edited start time
+   * @param start The original starting time of the event
+   * @returns The correct time to display on the time picker.
+   * The newStartTime is only displayed if an edit has been made, otherwise the
+   * original start time is shown.
+   */
+  const timePickerStart = (isChanged: boolean, newStartTime: Date, start: number) => {
+    return isChanged ? newStartTime : createDateWithTime(start);
+  };
+
+  /**
+   * @param isChanged Indicates if an edit has been made to the end of the event
+   * @param newEndTime The new edited start time
+   * @param end The original ending time of the event
+   * @returns The correct time to display on the time picker.
+   * The newEndTime is only displayed if an edit has been made, otherwise the
+   * original end time is shown.
+   */
+  const timePickerEnd = (isChanged: boolean, newEndTime: Date, end: number) => {
+    return isChanged ? newEndTime : createDateWithTime(end);
   };
 
   const updateEventTime = (eventTime: EventTime, id: string) => {
@@ -63,10 +88,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
       },
     });
 
-    // Updates the time that appears in the TimePicker boxes when in edit mode.
-    setNewDays([weekdaysShort[eventTime.day - 1]]);
-    setNewStartTime(new Date(2022, 0, 0, eventTime.start));
-    setNewEndTime(new Date(2022, 0, 0, eventTime.end));
+    // Update the time that appears in the TimePicker boxes when in edit mode.
+    setNewDays([daysShort[eventTime.day - 1]]);
+
+    setNewStartTime(createDateWithTime(eventTime.start));
+    setNewEndTime(createDateWithTime(eventTime.end));
   };
 
   useEventDrag(updateEventTime);
@@ -78,8 +104,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
       return;
     }
 
+    // For cloning events
+    if (newDays.length > 1) {
+      createEvents(id);
+      return;
+    }
+
     const newEventTime = {
-      day: weekdaysShort.indexOf(newDays.toString()) + 1,
+      day: daysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
       end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
@@ -102,6 +134,21 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setIsEditing(false);
   };
 
+  const createEvents = (id: string) => {
+    const updatedEventData = { ...createdEvents };
+    // Delete the original event
+    delete updatedEventData[id];
+
+    // Create an event for each day that is selected in the dropdown option
+    for (const day of newDays) {
+      const newEvent = createNewEvent(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
+      updatedEventData[newEvent.event.id] = newEvent;
+    }
+
+    setCreatedEvents(updatedEventData);
+    setIsEditing(false);
+  };
+
   const handleDiscardChanges = () => {
     handleClose();
     setOpenSaveDialog(false);
@@ -109,12 +156,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     setNewName(name);
     setNewLocation(location);
     setNewDescription(description);
+    setNewDays([daysShort[day - 1]]);
     setNewColor(color.toString());
+    setNewStartTime(createDateWithTime(start));
+    setNewEndTime(createDateWithTime(end));
   };
 
   const handleCloseDialog = () => {
-    // Another dialog to alert user that changes have not been saved when in isEditing mode
     if (isEditing && isChanged) {
+      // Open a dialog to alert user that changes have not been saved when in isEditing mode
       setOpenSaveDialog(true);
     } else {
       handleClose();
@@ -137,15 +187,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
           <StyledDialogTitle>
             <StyledTitleContainer>
               <Grid container justifyContent="flex-end" alignItems="center">
-                <IconButton
-                  onClick={() => handleUpdateEvent(eventPeriod.event.id)}
-                  disabled={newName === '' || newLocation === ''}
-                >
-                  <Save />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
-                  <Delete />
-                </IconButton>
                 <IconButton aria-label="close" onClick={handleCloseDialog}>
                   <Close />
                 </IconButton>
@@ -173,9 +214,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <ListItemIcon>
                 <Notes />
               </ListItemIcon>
-
               <TextField
                 fullWidth={true}
+                label="Description (optional)"
                 id="outlined-required"
                 variant="outlined"
                 value={newDescription}
@@ -190,7 +231,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <ListItemIcon>
                 <LocationOn />
               </ListItemIcon>
-
               <TextField
                 fullWidth={true}
                 id="outlined-required"
@@ -206,8 +246,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="Start time" />
               <TimePicker
-                views={['hours']}
-                value={newStartTime}
+                value={timePickerStart(isChanged, newStartTime, start)}
                 renderInput={(params) => <TextField {...params} />}
                 onChange={(e) => {
                   setIsChanged(true);
@@ -218,15 +257,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             <ListItem>
               <StyledListItemText primary="End time" />
               <TimePicker
-                views={['hours']}
-                value={newEndTime}
+                value={timePickerEnd(isChanged, newEndTime, end)}
                 renderInput={(params) => {
-                  const tooEarly = newStartTime.getHours() >= newEndTime.getHours();
+                  const tooEarly = !areValidEventTimes(newStartTime, newEndTime);
                   return (
                     <TextField
                       {...params}
                       error={params.error || tooEarly}
-                      label={tooEarly ? 'End time must be after start time' : ''}
+                      label={tooEarly && 'End time must be after start time'}
                     />
                   );
                 }}
@@ -241,7 +279,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 optionName="Days"
                 optionState={newDays}
                 setOptionState={handleFormat}
-                optionChoices={weekdaysShort}
+                optionChoices={daysShort}
+                multiple={true}
                 noOff
               />
             </ListItem>
@@ -295,6 +334,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               </Popover>
             </Box>
           </StyledDialogContent>
+          <ExecuteButton
+            variant="contained"
+            color="primary"
+            onClick={() => handleUpdateEvent(eventPeriod.event.id)}
+            disabled={newName === '' || newLocation === '' || newDays.length === 0}
+          >
+            <Save />
+            SAVE
+          </ExecuteButton>
         </>
       ) : (
         <>
@@ -340,7 +388,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 <AccessTime />
               </ListItemIcon>
               <Typography>
-                {weekdaysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
+                {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
           </StyledDialogContent>

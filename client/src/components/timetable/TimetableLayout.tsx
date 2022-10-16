@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { styled } from '@mui/system';
-
-import { defaultEndTime, defaultStartTime } from '../../constants/timetable';
+import {
+  classMargin,
+  getDefaultEndTime,
+  getDefaultStartTime,
+  headerPadding,
+  rowHeight,
+  unknownErrorMessage,
+} from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
-import { unknownErrorMessage } from '../../constants/timetable'
-
-export const rowHeight = 60;
-const classMargin = 1;
-const headerPadding = 10;
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -77,44 +77,83 @@ const ColumnWidthGuide = styled('span')`
   pointer-events: none;
 `;
 
+/**
+ * @param n The numerical value of the hour
+ * @param is12HourMode Whether 12-hour mode is set
+ * @returns The hour in 12-hour am|pm format or 24-hour hh:mm format
+ */
 const generateHour = (n: number, is12HourMode: boolean): string => {
+  // Convert the hour to be in the 24 hrs range.
+  n = ((n % 24) + 24) % 24;
   if (is12HourMode) {
     const period = n < 12 ? 'am' : 'pm';
+    if (n === 0) n = 12;
     if (n > 12) n -= 12;
     return `${n} ${period}`;
   }
   return `${String(n).padStart(2, '0')}:00`;
 };
 
-const generateHours = (range: number[], is12HourMode: boolean): string[] => {
-  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+/**
+ * @param range The range of hours to generate
+ * @param is12HourMode Whether 12-hour mode is set
+ * @param setAlertMsg Sets an alert message
+ * @param setErrorVisibility Sets the visibility of the error popup
+ * @param isConvertToLocalTimezone Boolean for whether to convert to user's local timezone
+ * @returns An array of hour strings
+ */
+const generateHours = (
+  range: number[],
+  is12HourMode: boolean,
+  setAlertMsg: (newErrorMsg: string) => void,
+  setErrorVisibility: (newVisibility: boolean) => void,
+  isConvertToLocalTimezone: boolean
+): string[] => {
   const [min, max] = range;
+
+  const full24HoursArray = Array(24)
+    .fill(0)
+    .map((_, i) => generateHour(i + 0, is12HourMode));
+
   // Fill an array with hour strings according to the range
   try {
-    return Array(max - min + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + min, is12HourMode));
-  } catch(err) {
+    if (min < max) {
+      return Array(max - min + 1)
+        .fill(0)
+        .map((_, i) => generateHour(i + min, is12HourMode));
+    }
+    return full24HoursArray;
+  } catch (err) {
     setAlertMsg(unknownErrorMessage);
     setErrorVisibility(true);
 
-    return Array(defaultEndTime - defaultStartTime + 1)
-    .fill(0)
-    .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+    const defaultStartTime = getDefaultStartTime(isConvertToLocalTimezone);
+    const defaultEndTime = getDefaultEndTime(isConvertToLocalTimezone);
+
+    if (defaultStartTime < defaultEndTime) {
+      return Array(defaultEndTime - defaultStartTime + 1)
+        .fill(0)
+        .map((_, i) => generateHour(i + defaultStartTime, is12HourMode));
+    }
+    return full24HoursArray;
   }
 };
 
 export const TimetableLayout: React.FC = () => {
-  const { is12HourMode, days, earliestStartTime, latestEndTime } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
+    useContext(AppContext);
 
-  const latestClassFinishTime = Math.max(...selectedCourses.map((course) => course.latestFinishTime));
-  const earliestClassStartTime = Math.min(...selectedCourses.map((course) => course.earliestStartTime));
   const hoursRange = [
-    Math.min(earliestStartTime, earliestClassStartTime, defaultStartTime),
-    Math.max(latestEndTime, latestClassFinishTime, defaultEndTime) - 1,
+    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
+    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
   ];
-  const hours: string[] = generateHours(hoursRange, is12HourMode);
+
+  const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
+  const hourCells = hours.map((hour, i) => (
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
+      {hour}
+    </HourCell>
+  ));
 
   const dayCells = days.map((day, i) => (
     <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
@@ -127,12 +166,6 @@ export const TimetableLayout: React.FC = () => {
       Unscheduled
     </InventoryCell>
   );
-
-  const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
-      {hour}
-    </HourCell>
-  ));
 
   const otherCells = hours.flatMap((_, y) =>
     days.flatMap((_, x) => (

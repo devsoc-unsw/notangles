@@ -1,23 +1,19 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import { AddRounded, CheckRounded, CloseRounded, SearchRounded, VideocamOutlined, PersonOutline } from '@mui/icons-material';
+import { AddRounded, CheckRounded, CloseRounded, PersonOutline, SearchRounded, VideocamOutlined } from '@mui/icons-material';
 import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-
-import getCoursesList from '../../api/getCoursesList';
-import { AppContext } from '../../context/AppContext';
-import { maxAddedCourses } from '../../constants/timetable';
-import { CourseCode, CourseData } from '../../interfaces/Periods';
-import { CourseOverview, CoursesList } from '../../interfaces/Courses';
-import NetworkError from '../../interfaces/NetworkError';
-import { CourseSelectProps } from '../../interfaces/PropTypes';
-import { CourseContext } from '../../context/CourseContext';
+import Fuse from 'fuse.js';
+import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import { ThemeType } from '../../constants/theme';
+import { maxAddedCourses } from '../../constants/timetable';
+import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { CourseOverview, CoursesList } from '../../interfaces/Courses';
+import { CourseCode, CourseData } from '../../interfaces/Periods';
+import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
-const INVALID_YEAR_FORMAT = '0000';
 
 interface SearchOptions {
   threshold: number;
@@ -133,16 +129,20 @@ const Career = styled('div')`
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
-  const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { setAlertMsg, setErrorVisibility, setLastUpdated, year, term } = useContext(AppContext);
+  const { coursesList } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
+  useEffect(() => {
+    fuzzy = new Fuse(coursesList, searchOptions);
+  }, [coursesList]);
+
+  // Generate a list of the user's selected courses
   useEffect(() => {
     if (!selectedCourses.length) {
       setSelectedValue([]);
@@ -157,21 +157,56 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     );
   }, [selectedCourses, coursesList]);
 
-  let defaultOptions = coursesList;
-  // show relevant default options based of selected courses (TODO: improve)
+  /**
+   * @param courseCode A course code
+   * @returns The area of study of the course
+   */
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
-  const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
+
+  /**
+   * @param career The career of the course
+   * @returns The shortened career of the course
+   */
+  const getCourseCareer = (career: string) => {
+    if (career === 'Undergraduate') {
+      return 'UGRD';
+    } else if (career === 'Postgraduate') {
+      return 'PGRD';
+    } else if (career === 'Research') {
+      return 'RSCH';
+    } else {
+      return null;
+    }
+  };
+
+  // The courses shown when a user clicks on the search bar
+  let defaultOptions = coursesList;
   if (selectedValue.length) {
+    const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
+
+    // If there are courses selected, filter the default options to include courses in the same area of study
     defaultOptions = defaultOptions.filter(
       (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course)
     );
   }
 
+  /**
+   * Refresh the list of courses to choose from
+   * @param newOptions The new list of courses to choose from
+   */
   const setOptions = (newOptions: CoursesList) => {
     listRef?.current?.scrollTo(0);
     setOptionsState(newOptions);
   };
 
+  useEffect(() => {
+    setOptions(defaultOptions);
+  }, [coursesList]);
+
+  /**
+   * Filters the list of courses to only include the ones matching the search term
+   * @param query The search query entered in the search bar
+   */
   const search = (query: string) => {
     query = query.trim();
 
@@ -182,9 +217,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     const newOptions = fuzzy.search(query).map((result) => result.item);
     setOptions(newOptions);
-
-    return newOptions;
   };
+
+  // Add a delay between the search query changing and updating the search results
+  useEffect(() => {
+    clearTimeout(searchTimer.current);
+    searchTimer.current = window.setTimeout(() => {
+      search(inputValue);
+      searchTimer.current = undefined;
+    }, SEARCH_DELAY);
+  }, [inputValue, coursesList]);
 
   const onChange = (_: any, value: CoursesList) => {
     if (value.length > selectedValue.length) {
@@ -194,39 +236,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     setOptions(defaultOptions);
     setInputValue('');
   };
-
-  const fetchCoursesList = async () => {
-    try {
-      if (year !== INVALID_YEAR_FORMAT) {
-        const fetchedCoursesList = await getCoursesList(year, term);
-        setCoursesList(fetchedCoursesList.courses);
-        fuzzy = new Fuse(fetchedCoursesList.courses, searchOptions);
-
-        setLastUpdated(fetchedCoursesList.lastUpdated);
-      }
-    } catch (e) {
-      if (e instanceof NetworkError) {
-        setAlertMsg(e.message);
-        setErrorVisibility(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchCoursesList();
-  }, [year]);
-
-  useEffect(() => {
-    setOptions(defaultOptions);
-  }, [coursesList]);
-
-  useEffect(() => {
-    clearTimeout(searchTimer.current);
-    searchTimer.current = window.setTimeout(() => {
-      search(inputValue);
-      searchTimer.current = undefined;
-    }, SEARCH_DELAY);
-  }, [inputValue, coursesList]);
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
@@ -298,10 +307,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
-        // prevent built-in option filtering
+        // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) => option.code === value.code}
+        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
             <StyledOption>
@@ -310,15 +319,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               </StyledIcon>
               <span>{option.code}</span>
               <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-              <Career>
-                {option.career === 'Undergraduate'
-                  ? 'UGRD'
-                  : option.career === 'Postgraduate'
-                  ? 'PGRD'
-                  : option.career === 'Research'
-                  ? 'RSCH'
-                  : null}
-              </Career>
+              <Career>{getCourseCareer(option.career)}</Career>
               <RightContainer>
                 {option.online && (
                   <StyledIconRight>
@@ -342,9 +343,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
             onChange={(event) => setInputValue(event.target.value)}
-            onKeyDown={(event: any) => {
-              if (event.key === 'Backspace' || (event.ctrlKey && (event.key === 'z' || event.key === 'y'))) {
+            onKeyDown={(event) => {
+              // Delete the latest selected course if backspace is pressed
+              if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
+                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                handleRemove(selectedValue[selectedValue.length - 1].code);
               }
             }}
             InputLabelProps={{

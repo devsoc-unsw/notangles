@@ -6,8 +6,10 @@ import {
   UserTimetableSchema,
 } from 'src/schemas/user.schema';
 import { SessionSerializer } from 'src/auth/session.serializer';
-import { DatabaseController } from './database.controller';
-import { DatabaseService } from './database.service';
+import { FriendController } from './friend.controller';
+import { UserService } from 'src/user/user.service';
+import { FriendService } from './friend.service';
+import { FriendRequestSchema } from './dtos/friend.dto';
 
 @Module({
   imports: [
@@ -15,9 +17,10 @@ import { DatabaseService } from './database.service';
       { name: 'User', schema: userSchema },
       { name: 'UserSettings', schema: UserSettingsSchema },
       { name: 'UserTimetable', schema: UserTimetableSchema },
+      { name: 'FriendRequest', schema: FriendRequestSchema },
     ]),
   ],
-  controllers: [DatabaseController],
-  providers: [DatabaseService, SessionSerializer],
+  controllers: [FriendController],
+  providers: [UserService, FriendService, SessionSerializer],
 })
-export class DatabaseModule {}
+export class FriendModule {}

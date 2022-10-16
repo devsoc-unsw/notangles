@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
 import MenuIcon from '@mui/icons-material/Menu';
-
-import notanglesLogo from '../../assets/notangles_1.png';
+import { AppBar, Avatar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 import notanglesLogoGif from '../../assets/notangles.gif';
+import notanglesLogo from '../../assets/notangles_1.png';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -48,11 +47,44 @@ const Weak = styled('span')`
   z-index: 1201;
 `;
 
+/**
+ * Keyframe animation to spin
+ */
+const ScuffedLoadingSpinner = styled('div')`
+  animation: spin 1s linear infinite;
+  z-index: 1201;
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { user, loading, signIn, signOut } = useAuth();
+
+  console.log(user);
+
+  const buildUser = () => {
+    if (loading) {
+      return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
+    } else if (user) {
+      return <Avatar alt={user.name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />;
+    } else {
+      return (
+        <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>
+          Sign In
+        </Button>
+      );
+    }
+  };
 
   return (
     <NavbarBox>
