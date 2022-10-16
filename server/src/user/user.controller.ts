@@ -38,6 +38,8 @@ export class UserController {
 
   /**
    * Search for a user by their googleId or by their full name.
+   * When searching by the user's full name, each part of the user's name
+   * must be separated by underscores
    */
   @UseGuards(LoginGuard)
   @Get('/search')
