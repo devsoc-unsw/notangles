@@ -49,7 +49,7 @@ export class UserController {
         status: 'Successfully found user!',
         data: await this.userService.getUserById(req.query.userId),
       };
-    } else if (req.query.userFullName) {
+    } else if (req.query.name) {
       return {
         status: 'Successfully found user!',
         data: await this.userService.getUserByFullName(req.query.name),
