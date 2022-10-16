@@ -54,6 +54,9 @@ const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
 
   if (!currClass || !classStatus) return <></>;
 
+  const currLocation = period.locations[0];
+  const possibleLocations = period.locations.length;
+
   return (
     <>
       <StyledCapacityIndicator classStatus={classStatus}>
@@ -61,8 +64,14 @@ const PeriodMetadata: React.FC<PeriodMetadataProps> = ({ period }) => {
         {classStatus === 'On Hold' ? 'On Hold ' : `${currClass.enrolments}/${currClass.capacity} `}
       </StyledCapacityIndicator>
       ({period.time.weeks.length > 0 ? 'Weeks' : 'Week'} {period.time.weeksString})<br />
-      <StyledLocationIcon />
-      {period.locations[0] + (period.locations.length > 1 ? ` + ${period.locations.length - 1}` : '')}
+      {currLocation ? (
+        <>
+          <StyledLocationIcon />
+          {currLocation + (possibleLocations > 1 ? ` + ${possibleLocations - 1}` : '')}
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
