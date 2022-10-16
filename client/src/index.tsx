@@ -25,7 +25,7 @@ const Root: React.FC = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<App />} path="/" />
-          <Route element={<FriendTimetable />} path="/friend" />
+          <Route element={<FriendTimetable />} path="/:id" />
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>
