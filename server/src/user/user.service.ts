@@ -165,7 +165,7 @@ export class UserService {
    *  The second and consecutive words define their last name field.
    */
   async getUserByFullName(fullname: string) {
-    const numSpaces: number = fullname.match(/ /g).length;
+    const numSpaces: number = fullname.match(/_/g).length;
     const nameSplit = fullname.split('_');
     const givenName = nameSplit[0];
     const lastNames = nameSplit.slice(1, numSpaces + 1).join(' ');
