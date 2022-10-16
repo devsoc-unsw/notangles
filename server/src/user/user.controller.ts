@@ -41,7 +41,7 @@ export class UserController {
    * When searching by the user's full name, each part of the user's name
    * must be separated by underscores
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/search')
   async userSearch(@Request() req) {
     if (req.query.userId) {
@@ -49,7 +49,7 @@ export class UserController {
         status: 'Successfully found user!',
         data: await this.userService.getUserById(req.query.userId),
       };
-    } else if (req.query.userFullName) {
+    } else if (req.query.name) {
       return {
         status: 'Successfully found user!',
         data: await this.userService.getUserByFullName(req.query.name),
