@@ -132,6 +132,14 @@ export interface DoubleClickedCreateEventPopoverProps {
   tempEventId: string;
 }
 
+export interface ColorPickerProps {
+  color: string;
+  setColor: (color: string) => void;
+  colorPickerAnchorEl: HTMLButtonElement | null;
+  handleOpenColourPicker: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleCloseColourPicker: () => void;
+}
+
 export interface CustomEventGeneralProps {
   eventName: string;
   setEventName: (name: string) => void;
@@ -145,6 +153,15 @@ export interface CustomEventGeneralProps {
   setEndTime: (endTime: Date) => void;
   eventDays: string[];
   setEventDays: (days: string[]) => void;
+  initialStartTime: Date;
+  initialEndTime: Date;
+  initialDay: string;
+  isInitialStartTime: boolean;
+  setIsInitialStartTime: (isInitialStartTime: boolean) => void;
+  isInitialEndTime: boolean;
+  setIsInitialEndTime: (isInitialEndTime: boolean) => void;
+  isInitialDay: boolean;
+  setIsInitialDay: (isInitialDay: boolean) => void;
 }
 
 export interface CustomEventTutoringProp {
