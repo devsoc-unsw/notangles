@@ -93,6 +93,7 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
       // User did not change day
       const newEvent = createEvent(initialDay);
       newEvents[newEvent.event.id] = newEvent;
+      console.log('user did not change day');
     } else {
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {

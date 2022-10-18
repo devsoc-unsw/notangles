@@ -32,6 +32,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
 }) => {
   const handleFormat = (newFormats: string[]) => {
     setEventDays(newFormats);
+    setIsInitialDay(false);
   };
 
   return (
