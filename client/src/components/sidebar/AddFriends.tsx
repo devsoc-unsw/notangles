@@ -51,6 +51,7 @@ const AddFriends: React.FC = () => {
       .then((response) => response.json())
       .then((data) => {
         setUserList(data.data);
+        console.log(data.data);
       });
   };
   return (
