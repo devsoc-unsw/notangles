@@ -23,24 +23,22 @@ const AddFriends: React.FC = () => {
       {d.firstname}
       {d.lastname}
 
-      <Button variant="contained" onClick={}>
-        Add
-      </Button>
+      <Button variant="contained">Add</Button>
     </div>
   ));
 
   // use auth
   const { user } = useAuth();
 
-  // fucntion for adding friends
-  const addFriend = (id: string) => {
-    // create a new friend object
-    const body = {
-      senderId: user?.sub,
-      receiverId: id,
-    };
-    fetch('http://localhost:3001/api/friend/request', { method: 'post', body: JSON.stringify(body) }).then(response);
-  };
+  // // fucntion for adding friends
+  // const addFriend = (id: string) => {
+  //   // create a new friend object
+  //   const body = {
+  //     senderId: user?.sub,
+  //     receiverId: id,
+  //   };
+  //   fetch('http://localhost:3001/api/friend/request', { method: 'post', body: JSON.stringify(body) }).then(response);
+  // };
 
   // add friend to user
 

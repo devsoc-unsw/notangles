@@ -29,7 +29,6 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import Sidebar from './components/sidebar/Sidebar';
 import SidebarToggle from './components/sidebar/SidebarToggle';
 
 const StyledApp = styled(Box)`

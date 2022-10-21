@@ -52,7 +52,7 @@ export default function FadeMenu() {
     if (loading) {
       return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
     } else if (user) {
-      return <Avatar alt={user.name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />;
+      return <Avatar alt={user.given_name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} />;
     } else {
       return (
         <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>
@@ -92,6 +92,7 @@ export default function FadeMenu() {
         </MenuItem>
         <Divider />
         <Help />
+        <MenuItem onClick={signOut}>Logout</MenuItem>
       </Menu>
     </div>
   );
