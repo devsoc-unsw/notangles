@@ -28,7 +28,7 @@ export class AutoController implements OnModuleInit {
   }
 
   @Post('/')
-  async getAuto(@Body() data: TimetableConstraintsDto): Promise<any> {
+  async getAuto(@Body() data): Promise<any> {
     return this.autoService.findBestTimetable(data);
   }
 }

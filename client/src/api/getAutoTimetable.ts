@@ -3,7 +3,7 @@ import { API_URL } from './config';
 
 const getAutoTimetable = async (data: any): Promise<[number[], boolean]> => {
   try {
-    const res = await fetch(`${API_URL.auto}`, {
+    const res = await fetch(`/api/auto`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
