@@ -54,9 +54,9 @@ export class FriendService {
       this.getUser(friendId),
     ]);
 
-    const addFriendToUser = async (uId: string, fId: string) => {
+    const addFriendToUser = async (userId: string, friendId: string) => {
       await this.userModel
-        .findOneAndUpdate({ userId: uId }, { $addToSet: { friends: fId } })
+        .findOneAndUpdate({ userId }, { $addToSet: { friends: friendId } })
         .exec();
     };
 
@@ -71,14 +71,14 @@ export class FriendService {
    * bidirectional manner.
    */
   async removeFriend(userId: string, friendId: string) {
-    const removeFriendFromUser = async (uId: string, fId: string) => {
+    const removeFriendFromUser = async (userId: string, friendId: string) => {
       const [_user, _friend] = await Promise.all([
         this.getUser(userId),
         this.getUser(friendId),
       ]);
 
       await this.userModel
-        .findOneAndUpdate({ userId: uId }, { $pull: { friends: fId } })
+        .findOneAndUpdate({ userId }, { $pull: { friends: friendId } })
         .exec();
     };
 
@@ -123,6 +123,19 @@ export class FriendService {
   }
 
   /**
+   *  Checks whether a user has sent a friend request to another user
+   */
+  async hasSentRequest(userId: string, friendId: string) {
+    const sentRequests = await this.getSentFriendRequests(userId);
+
+    for (const user of sentRequests) {
+      if (user.userId === friendId) return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Forcefully adds a friend to a user's friend list.
    */
   async sendFriendRequest(userId: string, friendId: string) {
@@ -154,9 +167,9 @@ export class FriendService {
       );
     }
 
-    const pullFriendIdFromUser = async (uId: string, fId: string) => {
+    const pullFriendIdFromUser = async (userId: string, friendId: string) => {
       await this.friendRequestModel
-        .findOneAndUpdate({ userId: uId }, { $pull: { sentRequestsTo: fId } })
+        .findOneAndUpdate({ userId }, { $pull: { sentRequestsTo: friendId } })
         .exec();
     };
 

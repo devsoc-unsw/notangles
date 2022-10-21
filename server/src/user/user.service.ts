@@ -150,6 +150,14 @@ export class UserService {
   }
 
   /**
+   * Checks if two users are already friendss
+   */
+  async isAlreadyFriends(userId: string, friendId: string) {
+    const user = await this.getUserById(userId);
+    return user.friends.includes(friendId);
+  }
+
+  /**
    * Find a user by their userId.
    */
   async getUserById(userId: string) {
@@ -169,15 +177,16 @@ export class UserService {
     const nameSplit = fullname.split('_');
     const givenName = nameSplit[0];
     const lastNames = nameSplit.slice(1, numSpaces + 1).join(' ');
-    const user = await this.userModel.find({
+    const users = await this.userModel.find({
       $and: [{ firstname: givenName }, { lastname: lastNames }],
     });
 
-    if (!user || user.length === 0)
+    if (!users || users.length === 0)
       throw new HttpException(
         'No user found with that name!',
         HttpStatus.NOT_FOUND,
       );
-    return user;
+
+    return users;
   }
 }

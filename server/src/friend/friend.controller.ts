@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
@@ -24,21 +25,6 @@ export class FriendController {
     private readonly friendService: FriendService,
     private readonly userService: UserService,
   ) {}
-
-  hasSentRequest = async (uId: string, fId: string) => {
-    const sentRequests = await this.friendService.getSentFriendRequests(uId);
-
-    for (const u of sentRequests) {
-      if (u.userId === fId) return true;
-    }
-
-    return false;
-  };
-
-  isAlreadyFriends = async (uId: string, fId: string) => {
-    const user = await this.userService.getUserById(uId);
-    return user.friends.includes(fId);
-  };
 
   /**
    * Return all already added friends for a user.
@@ -84,7 +70,48 @@ export class FriendController {
     };
   }
 
-  // @UseGuards(LoginGuard)
+  /**
+   * Search for a user by their userId or by their full name.
+   * When searching by the user's full name, each part of the user's name
+   * must be separated by underscores
+   */
+  @UseGuards(LoginGuard)
+  @Get('/search')
+  async search(@Request() req) {
+    const createUser = async (
+      user: any,
+      currUserId: string,
+      userId: string,
+    ) => ({
+      ...user,
+      isFriends: await this.userService.isAlreadyFriends(currUserId, userId),
+      hasSentRequest: await this.friendService.hasSentRequest(
+        currUserId,
+        userId,
+      ),
+    });
+
+    if (req.query.userId) {
+      const user = await this.userService.getUserById(req.query.userId);
+      return {
+        status: 'Successfully found user!',
+        data: await createUser(user, req.user.userId, user.userId),
+      };
+    } else if (req.query.name) {
+      const users = await this.userService.getUserByFullName(req.query.name);
+      return {
+        status: 'Successfully found users!',
+        data: users.map(
+          async (user) => await createUser(user, req.user.userId, user.userId),
+        ),
+      };
+    }
+  }
+
+  /**
+   * Get a user's incoming and outgoing friend requests
+   */
+  @UseGuards(LoginGuard)
   @Get('/request/:userId')
   async getFriendRequests(@Param('userId') userId: string) {
     return {
@@ -99,13 +126,20 @@ export class FriendController {
   /**
    * Send a friend request to a user.
    */
-  // @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
 
-    const isFriended = await this.isAlreadyFriends(senderId, sendeeId);
-    const alreadySentRequest = await this.hasSentRequest(senderId, sendeeId);
+    const isFriended = await this.userService.isAlreadyFriends(
+      senderId,
+      sendeeId,
+    );
+
+    const alreadySentRequest = await this.friendService.hasSentRequest(
+      senderId,
+      sendeeId,
+    );
 
     if (!isFriended && !alreadySentRequest) {
       return {
@@ -134,8 +168,17 @@ export class FriendController {
   async acceptFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
 
-    const isFriended: boolean = await this.isAlreadyFriends(senderId, sendeeId);
-    if (!isFriended && (await this.hasSentRequest(sendeeId, senderId))) {
+    const isFriended: boolean = await this.userService.isAlreadyFriends(
+      senderId,
+      sendeeId,
+    );
+
+    const alreadySentRequest = await this.friendService.hasSentRequest(
+      sendeeId,
+      senderId,
+    );
+
+    if (!isFriended && alreadySentRequest) {
       await Promise.all([
         this.friendService.addFriend(sendeeId, senderId),
         this.friendService.declineFriendRequest(senderId, sendeeId),

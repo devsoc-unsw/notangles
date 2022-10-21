@@ -37,27 +37,6 @@ export class UserController {
   }
 
   /**
-   * Search for a user by their googleId or by their full name.
-   * When searching by the user's full name, each part of the user's name
-   * must be separated by underscores
-   */
-  @UseGuards(LoginGuard)
-  @Get('/search')
-  async userSearch(@Request() req) {
-    if (req.query.userId) {
-      return {
-        status: 'Successfully found user!',
-        data: await this.userService.getUserById(req.query.userId),
-      };
-    } else if (req.query.name) {
-      return {
-        status: 'Successfully found user!',
-        data: await this.userService.getUserByFullName(req.query.name),
-      };
-    }
-  }
-
-  /**
    * Get the user settings.
    */
   @UseGuards(LoginGuard)
