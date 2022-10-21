@@ -7,10 +7,10 @@
     "@date-io/date-fns": "2.16.0",
     "@emotion/react": "11.10.4",
     "@emotion/styled": "11.10.4",
-    "@mui/icons-material": "5.10.6",
-    "@mui/lab": "5.0.0-alpha.100",
-    "@mui/material": "5.10.6",
-    "@mui/x-date-pickers": "5.0.2",
+    "@mui/icons-material": "5.10.9",
+    "@mui/lab": "5.0.0-alpha.104",
+    "@mui/material": "5.10.10",
+    "@mui/x-date-pickers": "5.0.4",
     "@sentry/react": "7.15.0",
     "@sentry/tracing": "7.15.0",
     "@uiw/react-color": "1.1.0",
@@ -22,13 +22,13 @@
     "lodash": "4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.4.1",
+    "react-router-dom": "6.4.2",
     "react-scripts": "5.0.1",
     "react-transition-group": "4.4.5",
     "react-window": "1.8.7",
     "uuid": "9.0.0",
     "uuidv4": "6.2.13",
-    "web-vitals": "3.0.2",
+    "web-vitals": "3.0.4",
     "workbox-background-sync": "6.5.4",
     "workbox-broadcast-update": "6.5.4",
     "workbox-cacheable-response": "6.5.4",
@@ -73,6 +73,6 @@
     "@types/react-transition-group": "4.4.5",
     "@types/react-window": "1.8.5",
     "prettier": "2.7.1",
-    "typescript": "4.8.3"
+    "typescript": "4.8.4"
   }
 }
