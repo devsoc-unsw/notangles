@@ -73,7 +73,7 @@ export const UserTimetableSchema = SchemaFactory.createForClass(Timetable);
 @Schema()
 export class User {
   // @Prop({ required: true }) uid: string;
-  @Prop() google_uid: string;
+  @Prop() userId: string;
   // @Prop({ required: true }) zid: string;
   @Prop() firstname: string;
   @Prop() lastname: string;
@@ -92,7 +92,7 @@ export const userSchema = SchemaFactory.createForClass(User);
 export type UserDocument = User & Document;
 
 export interface UserInterface {
-  google_uid: string;
+  userId: string;
   firstname: string;
   lastname?: string;
   email: string;

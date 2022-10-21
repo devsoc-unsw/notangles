@@ -26,10 +26,10 @@ export class FriendController {
   ) {}
 
   hasSentRequest = async (uId: string, fId: string) => {
-    const sentRequests = await this.friendService.getFriendRequests(uId);
+    const sentRequests = await this.friendService.getSentFriendRequests(uId);
 
     for (const u of sentRequests) {
-      if (u.google_uid === fId) return true;
+      if (u.userId === fId) return true;
     }
 
     return false;
@@ -84,10 +84,22 @@ export class FriendController {
     };
   }
 
+  // @UseGuards(LoginGuard)
+  @Get('/request/:userId')
+  async getFriendRequests(@Param('userId') userId: string) {
+    return {
+      status: 'Successfully found user and their friend requests!',
+      data: {
+        sentReq: await this.friendService.getSentFriendRequests(userId),
+        recvReq: await this.friendService.getRecvFriendRequests(userId),
+      },
+    };
+  }
+
   /**
    * Send a friend request to a user.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;

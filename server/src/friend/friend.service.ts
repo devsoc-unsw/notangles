@@ -29,7 +29,7 @@ export class FriendService {
 
   async getUser(userId: string) {
     const user: UserDocument = await this.userModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId: userId })
       .exec();
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user;
@@ -40,7 +40,7 @@ export class FriendService {
    */
   async getFriends(userId: string) {
     const user = await this.getUser(userId);
-    return await this.userModel.find({ google_uid: user.friends }).exec();
+    return await this.userModel.find({ userId: user.friends }).exec();
   }
 
   /**
@@ -56,7 +56,7 @@ export class FriendService {
 
     const addFriendToUser = async (uId: string, fId: string) => {
       await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $addToSet: { friends: fId } })
+        .findOneAndUpdate({ userId: uId }, { $addToSet: { friends: fId } })
         .exec();
     };
 
@@ -78,7 +78,7 @@ export class FriendService {
       ]);
 
       await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $pull: { friends: fId } })
+        .findOneAndUpdate({ userId: uId }, { $pull: { friends: fId } })
         .exec();
     };
 
@@ -91,18 +91,35 @@ export class FriendService {
   }
 
   /**
-   * Get the friend requests a user has sent
+   * Get a user's sent friend requests
    */
-  async getFriendRequests(userId: string) {
+  async getSentFriendRequests(userId: string) {
     const user: FriendRequestDocument = await this.friendRequestModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId })
       .exec();
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
 
-    return await this.userModel
-      .find({ google_uid: user.sentRequestsTo })
+    return await this.userModel.find({ userId: user.sentRequestsTo }).exec();
+  }
+
+  /**
+   * Get a user's incoming friend requests
+   */
+  async getRecvFriendRequests(userId: string) {
+    const user: FriendRequestDocument = await this.friendRequestModel
+      .findOne({ userId })
       .exec();
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+
+    const recvFriendRequests = await this.friendRequestModel.find({
+      sentRequestsTo: userId,
+    });
+
+    return await this.userModel.find({
+      userId: recvFriendRequests.map((req) => req.userId),
+    });
   }
 
   /**
@@ -113,7 +130,7 @@ export class FriendService {
 
     await this.friendRequestModel
       .findOneAndUpdate(
-        { google_uid: userId },
+        { userId: userId },
         { $addToSet: { sentRequestsTo: friendId } },
       )
       .exec();
@@ -127,7 +144,7 @@ export class FriendService {
    */
   async declineFriendRequest(userId: string, friendId: string) {
     const senderRequests = await this.friendRequestModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId: userId })
       .exec();
 
     if (!senderRequests.sentRequestsTo.includes(friendId)) {
@@ -139,15 +156,14 @@ export class FriendService {
 
     const pullFriendIdFromUser = async (uId: string, fId: string) => {
       await this.friendRequestModel
-        .findOneAndUpdate(
-          { google_uid: uId },
-          { $pull: { sentRequestsTo: fId } },
-        )
+        .findOneAndUpdate({ userId: uId }, { $pull: { sentRequestsTo: fId } })
         .exec();
     };
 
-    await pullFriendIdFromUser(userId, friendId);
-    await pullFriendIdFromUser(friendId, userId);
+    await Promise.all([
+      pullFriendIdFromUser(userId, friendId),
+      pullFriendIdFromUser(friendId, userId),
+    ]);
 
     return friendId;
   }

@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { UserDocument, UserInterface } from '../schemas/user.schema';
 import * as sgMail from '@sendgrid/mail';
-import { UserSettingsDto } from '../user/dtos/user.dto';
+import { Model } from 'mongoose';
 import { FriendRequestDocument } from 'src/friend/dtos/friend.dto';
+import { UserDocument, UserInterface } from '../schemas/user.schema';
+import { UserSettingsDto } from '../user/dtos/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     if (isCurrentUser === null) {
       const newUser = {
         // Adding new user information from google to the database
-        google_uid: userInfo.sub,
+        userId: userInfo.sub,
         firstname: userInfo.given_name,
         lastname: userInfo.family_name,
         email: userInfo.email,
@@ -48,7 +48,7 @@ export class AuthService {
 
       try {
         await new this.friendRequestModel({
-          userId: newUser.google_uid,
+          userId: newUser.userId,
           friendRequests: [],
         }).save();
 
@@ -59,7 +59,7 @@ export class AuthService {
     } else {
       // Updating the last login time of the user
       await this.userModel.findOneAndUpdate(
-        { google_uid: userInfo.sub },
+        { userId: userInfo.sub },
         {
           $set: {
             profileURL: userInfo.picture,
@@ -72,12 +72,12 @@ export class AuthService {
   }
 
   async getUser(uidGiven: string) {
-    return await this.userModel.findOne({ google_uid: uidGiven });
+    return await this.userModel.findOne({ userId: uidGiven });
   }
 
   async logoutUser(uidGiven: string) {
     await this.userModel.findOneAndUpdate(
-      { google_uid: uidGiven },
+      { userId: uidGiven },
       { $set: { loggedIn: false } },
     );
   }
