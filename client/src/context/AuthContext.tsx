@@ -1,9 +1,10 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { Self } from '../interfaces/Self';
 
 interface IAuthContext {
   signIn: () => void;
   signOut: () => void;
-  user: any | null;
+  user: Self | null;
   loading: boolean;
   token: string | null;
   error: string | null;

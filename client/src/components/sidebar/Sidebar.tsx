@@ -25,10 +25,12 @@ import FaceIcon from '@mui/icons-material/Face';
 import { styled } from '@mui/system';
 import { AppContext } from '../../context/AppContext';
 import CustomModal from './CustomModal';
+import Avatar from '@mui/material/Avatar';
 
 import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import AddFriendsButton from './AddFriendsButton';
+import { useAuth } from '../../context/AuthContext';
 
 const drawerWidth = 250;
 
@@ -94,11 +96,43 @@ export default function Sidebar(props: Props) {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
+  const { user, loading, signIn, signOut } = useAuth();
+
+  /**
+   * Keyframe animation to spin
+   */
+  const ScuffedLoadingSpinner = styled('div')`
+    animation: spin 1s linear infinite;
+    z-index: 1201;
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  `;
+
+  const buildUser = () => {
+    if (loading) {
+      return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
+    } else if (user) {
+      return <Avatar alt={user.name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />;
+    } else {
+      return (
+        <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>
+          Sign In
+        </Button>
+      );
+    }
+  };
 
   const drawer = (
     <div>
-      <StyledToolbar sx={{ backgroundColor: '#4074FC' }} disableGutters={true} />
+      {/* <StyledToolbar sx={{ backgroundColor: '#4074FC' }} disableGutters={true} /> */}
       <StyledDivider />
+      {buildUser()}
       <Typography variant="h6" align="justify">
         Friends
       </Typography>

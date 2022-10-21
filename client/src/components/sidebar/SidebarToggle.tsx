@@ -10,11 +10,29 @@ import Navbar from '../navbar/Navbar';
 import Friends from './Friends';
 import Profile from './Profile';
 import styled from '@mui/material/styles/styled';
+import Avatar from '@mui/material/Avatar';
+import { useAuth } from '../../context/AuthContext';
 
 const StyledFriends = styled(Friends)`
   margin-top: 20px;
   height: 10vh;
   overflow-y: scroll;
+`;
+
+/**
+ * Keyframe animation to spin
+ */
+const ScuffedLoadingSpinner = styled('div')`
+  animation: spin 1s linear infinite;
+  z-index: 1201;
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 export default function FadeMenu() {
@@ -25,6 +43,23 @@ export default function FadeMenu() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const { user, loading, signIn, signOut } = useAuth();
+  console.log(user);
+
+  const buildUser = () => {
+    if (loading) {
+      return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
+    } else if (user) {
+      return <Avatar alt={user.name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />;
+    } else {
+      return (
+        <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>
+          Sign In
+        </Button>
+      );
+    }
   };
 
   return (
@@ -48,7 +83,7 @@ export default function FadeMenu() {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        <Profile />
+        {buildUser()}
         <Divider />
         <MenuItem>Friends</MenuItem>
         <StyledFriends />
