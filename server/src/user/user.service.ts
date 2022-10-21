@@ -30,7 +30,7 @@ export class UserService {
    */
   async createSettings(SettingsDto: UserSettingsDto, userID: string) {
     await this.userModel.findOneAndUpdate(
-      { google_uid: userID },
+      { userId: userID },
       { $set: { settings: new this.settingsModel(SettingsDto) } },
     );
 
@@ -42,7 +42,7 @@ export class UserService {
    */
   async getSettings(userId: string) {
     const user = await this.userModel.findOne({
-      google_uid: userId,
+      userId: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
@@ -54,7 +54,7 @@ export class UserService {
    */
   async getTimetables(userId: string) {
     const user = await this.userModel.findOne({
-      google_uid: userId,
+      userId: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
@@ -75,13 +75,13 @@ export class UserService {
     });
 
     const user = await this.userModel.findOne({
-      google_uid: userId,
+      userId: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
 
     await this.userModel.findOneAndUpdate(
-      { google_uid: userId },
+      { userId: userId },
       { $push: { timetables: new this.timetableModel(timetable) } },
     );
 
@@ -93,7 +93,7 @@ export class UserService {
    */
   async deleteTimetable(userId: string, ttToDeleteId: string) {
     const user = await this.userModel.findOne({
-      google_uid: userId,
+      userId: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
@@ -109,7 +109,7 @@ export class UserService {
 
     await this.userModel
       .findOneAndUpdate(
-        { google_uid: userId },
+        { userId: userId },
         { $pull: { timetables: { timetableId: ttToDeleteId } } },
         { safe: true, multi: false },
       )
@@ -125,7 +125,7 @@ export class UserService {
     const { timetableId: timetableToDelete } = editedTimetable;
     // Error handling - User Not Found
     const user = await this.userModel.findOne({
-      google_uid: userId,
+      userId: userId,
     });
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
@@ -140,7 +140,7 @@ export class UserService {
       throw new HttpException('Timetable Not Found!', HttpStatus.NOT_FOUND);
     await this.userModel
       .findOneAndUpdate(
-        { google_uid: userId, 'timetables.timetableId': timetableToDelete },
+        { userId: userId, 'timetables.timetableId': timetableToDelete },
         { $set: { 'timetables.$': editedTimetable } },
         { safe: true, multi: false },
       )
@@ -150,10 +150,18 @@ export class UserService {
   }
 
   /**
-   * Find a user by their google_uid.
+   * Checks if two users are already friendss
+   */
+  async isAlreadyFriends(userId: string, friendId: string) {
+    const user = await this.getUserById(userId);
+    return user.friends.includes(friendId);
+  }
+
+  /**
+   * Find a user by their userId.
    */
   async getUserById(userId: string) {
-    const user = await this.userModel.findOne({ google_uid: userId });
+    const user = await this.userModel.findOne({ userId: userId });
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user;
   }
@@ -169,15 +177,16 @@ export class UserService {
     const nameSplit = fullname.split('_');
     const givenName = nameSplit[0];
     const lastNames = nameSplit.slice(1, numSpaces + 1).join(' ');
-    const user = await this.userModel.find({
+    const users = await this.userModel.find({
       $and: [{ firstname: givenName }, { lastname: lastNames }],
     });
 
-    if (!user || user.length === 0)
+    if (!users || users.length === 0)
       throw new HttpException(
         'No user found with that name!',
         HttpStatus.NOT_FOUND,
       );
-    return user;
+
+    return users;
   }
 }

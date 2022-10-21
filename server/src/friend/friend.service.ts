@@ -29,7 +29,7 @@ export class FriendService {
 
   async getUser(userId: string) {
     const user: UserDocument = await this.userModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId: userId })
       .exec();
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user;
@@ -40,7 +40,7 @@ export class FriendService {
    */
   async getFriends(userId: string) {
     const user = await this.getUser(userId);
-    return await this.userModel.find({ google_uid: user.friends }).exec();
+    return await this.userModel.find({ userId: user.friends }).exec();
   }
 
   /**
@@ -54,9 +54,9 @@ export class FriendService {
       this.getUser(friendId),
     ]);
 
-    const addFriendToUser = async (uId: string, fId: string) => {
+    const addFriendToUser = async (userId: string, friendId: string) => {
       await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $addToSet: { friends: fId } })
+        .findOneAndUpdate({ userId }, { $addToSet: { friends: friendId } })
         .exec();
     };
 
@@ -71,14 +71,14 @@ export class FriendService {
    * bidirectional manner.
    */
   async removeFriend(userId: string, friendId: string) {
-    const removeFriendFromUser = async (uId: string, fId: string) => {
+    const removeFriendFromUser = async (userId: string, friendId: string) => {
       const [_user, _friend] = await Promise.all([
         this.getUser(userId),
         this.getUser(friendId),
       ]);
 
       await this.userModel
-        .findOneAndUpdate({ google_uid: uId }, { $pull: { friends: fId } })
+        .findOneAndUpdate({ userId }, { $pull: { friends: friendId } })
         .exec();
     };
 
@@ -91,18 +91,48 @@ export class FriendService {
   }
 
   /**
-   * Get the friend requests a user has sent
+   * Get a user's sent friend requests
    */
-  async getFriendRequests(userId: string) {
+  async getSentFriendRequests(userId: string) {
     const user: FriendRequestDocument = await this.friendRequestModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId })
       .exec();
 
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
 
-    return await this.userModel
-      .find({ google_uid: user.sentRequestsTo })
+    return await this.userModel.find({ userId: user.sentRequestsTo }).exec();
+  }
+
+  /**
+   * Get a user's incoming friend requests
+   */
+  async getRecvFriendRequests(userId: string) {
+    const user: FriendRequestDocument = await this.friendRequestModel
+      .findOne({ userId })
       .exec();
+
+    if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
+
+    const recvFriendRequests = await this.friendRequestModel.find({
+      sentRequestsTo: userId,
+    });
+
+    return await this.userModel.find({
+      userId: recvFriendRequests.map((req) => req.userId),
+    });
+  }
+
+  /**
+   *  Checks whether a user has sent a friend request to another user
+   */
+  async hasSentRequest(userId: string, friendId: string) {
+    const sentRequests = await this.getSentFriendRequests(userId);
+
+    for (const user of sentRequests) {
+      if (user.userId === friendId) return true;
+    }
+
+    return false;
   }
 
   /**
@@ -113,7 +143,7 @@ export class FriendService {
 
     await this.friendRequestModel
       .findOneAndUpdate(
-        { google_uid: userId },
+        { userId: userId },
         { $addToSet: { sentRequestsTo: friendId } },
       )
       .exec();
@@ -127,7 +157,7 @@ export class FriendService {
    */
   async declineFriendRequest(userId: string, friendId: string) {
     const senderRequests = await this.friendRequestModel
-      .findOne({ google_uid: userId })
+      .findOne({ userId: userId })
       .exec();
 
     if (!senderRequests.sentRequestsTo.includes(friendId)) {
@@ -137,17 +167,16 @@ export class FriendService {
       );
     }
 
-    const pullFriendIdFromUser = async (uId: string, fId: string) => {
+    const pullFriendIdFromUser = async (userId: string, friendId: string) => {
       await this.friendRequestModel
-        .findOneAndUpdate(
-          { google_uid: uId },
-          { $pull: { sentRequestsTo: fId } },
-        )
+        .findOneAndUpdate({ userId }, { $pull: { sentRequestsTo: friendId } })
         .exec();
     };
 
-    await pullFriendIdFromUser(userId, friendId);
-    await pullFriendIdFromUser(friendId, userId);
+    await Promise.all([
+      pullFriendIdFromUser(userId, friendId),
+      pullFriendIdFromUser(friendId, userId),
+    ]);
 
     return friendId;
   }

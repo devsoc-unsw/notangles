@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SessionSerializer } from 'src/auth/session.serializer';
 import {
   userSchema,
   UserSettingsSchema,
   UserTimetableSchema,
 } from 'src/schemas/user.schema';
-import { SessionSerializer } from 'src/auth/session.serializer';
-import { FriendController } from './friend.controller';
 import { UserService } from 'src/user/user.service';
-import { FriendService } from './friend.service';
 import { FriendRequestSchema } from './dtos/friend.dto';
+import { FriendController } from './friend.controller';
+import { FriendService } from './friend.service';
 
 @Module({
   imports: [
