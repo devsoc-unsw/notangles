@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { FriendRequestSchema } from 'src/friend/dtos/friend.dto';
+import { userSchema } from '../schemas/user.schema';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { buildOpenIdClient, OidcStrategy } from './oidc.strategy';
-import { userSchema } from '../schemas/user.schema';
-import { FriendRequestSchema } from 'src/friend/dtos/friend.dto';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',

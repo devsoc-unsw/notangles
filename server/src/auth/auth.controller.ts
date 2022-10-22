@@ -1,7 +1,5 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UserAuthInformation } from 'src/user/dtos/user.dto';
-
 import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 

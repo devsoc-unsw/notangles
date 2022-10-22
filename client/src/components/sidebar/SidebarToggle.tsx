@@ -46,7 +46,6 @@ export default function FadeMenu() {
   };
 
   const { user, loading, signIn, signOut } = useAuth();
-  console.log(user);
 
   const buildUser = () => {
     if (loading) {

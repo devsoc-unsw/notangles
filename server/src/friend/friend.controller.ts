@@ -8,10 +8,12 @@ import {
   Param,
   Post,
   Put,
-  Request,
+  Query,
+  Req,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { LoginGuard } from 'src/auth/login.guard';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 import { UserService } from 'src/user/user.service';
@@ -77,7 +79,7 @@ export class FriendController {
    */
   @UseGuards(LoginGuard)
   @Get('/search')
-  async search(@Request() req) {
+  async search(@Req() req: Request, @Query() userId, @Query() name) {
     const createUser = async (
       user: any,
       currUserId: string,
@@ -91,21 +93,23 @@ export class FriendController {
       ),
     });
 
-    if (req.query.userId) {
-      const user = await this.userService.getUserById(req.query.userId);
-      return {
-        status: 'Successfully found user!',
-        data: await createUser(user, req.user.userId, user.userId),
-      };
-    } else if (req.query.name) {
-      const users = await this.userService.getUserByFullName(req.query.name);
-      return {
-        status: 'Successfully found users!',
-        data: users.map(
-          async (user) => await createUser(user, req.user.userId, user.userId),
-        ),
-      };
-    }
+    console.log(req.user, userId, name);
+
+    // if (userId) {
+    //   const user = await this.userService.getUserById(userId);
+    //   return {
+    //     status: 'Successfully found user!',
+    //     data: await createUser(user, '1', user.userId),
+    //   };
+    // } else if (name) {
+    //   const users = await this.userService.getUserByFullName(name);
+    //   return {
+    //     status: 'Successfully found users!',
+    //     data: users.map(
+    //       async (user) => await createUser(user, '1', user.userId),
+    //     ),
+    //   };
+    // }
   }
 
   /**

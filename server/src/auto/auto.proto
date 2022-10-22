@@ -2,7 +2,7 @@ syntax = "proto3";
 
 
 
-message TimetableConstraints { 
+message TimetableConstraints {
     message PeriodInfo {
         int32 periodsPerClass = 1;
         repeated float periodTimes = 2;
@@ -16,11 +16,11 @@ message TimetableConstraints {
     repeated PeriodInfo periodInfo = 6;
 }
 
-message AutoTimetableResponse { 
+message AutoTimetableResponse {
     repeated float times = 1;
     bool optimal = 2;
 }
 
-service AutoTimetabler { 
+service AutoTimetabler {
     rpc FindBestTimetable (TimetableConstraints) returns (AutoTimetableResponse);
-}  
+}

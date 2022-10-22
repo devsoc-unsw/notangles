@@ -70,8 +70,6 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user, loading, signIn, signOut } = useAuth();
 
-  console.log(user);
-
   const buildUser = () => {
     if (loading) {
       return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;

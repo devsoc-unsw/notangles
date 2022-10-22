@@ -1,10 +1,9 @@
-import React from 'react';
-import { useState } from 'react';
-import { styled } from '@mui/system';
-import { Link, Typography, TextField, Divider, Box, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { User } from '../../interfaces/User';
+import { Box, Button, Divider, Link, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/system';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { User } from '../../interfaces/User';
 
 const ChangeItem = styled('div')`
   padding: 0.5vh 0;
@@ -28,7 +27,7 @@ const AddFriends: React.FC = () => {
   ));
 
   // use auth
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   // // fucntion for adding friends
   // const addFriend = (id: string) => {
@@ -47,13 +46,17 @@ const AddFriends: React.FC = () => {
   const searchUsers = () => {
     // make a state for search
     const underscoredName = search.replaceAll(' ', '_');
-    fetch(`http://localhost:3001/api/user/search?name=${underscoredName}`)
+    fetch(`http://localhost:3001/api/friend/search?name=${underscoredName}`, {
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+      }),
+    })
       .then((response) => response.json())
       .then((data) => {
         setUserList(data.data);
-        console.log(data.data);
       });
   };
+
   return (
     <>
       <Typography gutterBottom variant="body2">
