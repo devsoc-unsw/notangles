@@ -395,12 +395,18 @@ const updateDropTarget = (now?: boolean) => {
   const dragRect = dragElement.getBoundingClientRect();
 
   // Wait for the current width/height transition to end before calculating the next transition
-  if (lastRecWidth !== dragRect.width) {
+  // ignores off-by-0.1s
+  if (Math.abs(lastRecWidth - dragRect.width) > 0.1) {
+    // check for need to update height as well;
+    // or will delay transition even longer if check is true next call to this func
+    if (Math.abs(lastRecHeight - dragRect.height) > 0.1) {
+      lastRecHeight = dragRect.height;
+    }
     lastRecWidth = dragRect.width;
     lastUpdate += transitionTime;
     return;
   }
-  if (lastRecHeight !== dragRect.height) {
+  if (Math.abs(lastRecHeight - dragRect.height) > 0.1) {
     lastRecHeight = dragRect.height;
     lastUpdate += heightTransitionTime;
     return;
@@ -584,9 +590,8 @@ const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserv
   const entryHeight = entries[0].contentRect.height;
 
   if (prevWidth !== -1) {
-    // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes 
+    // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes
     moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, (prevHeight - entryHeight) / 2);
-    
   }
   prevWidth = entryWidth;
   prevHeight = entryHeight;
