@@ -39,7 +39,7 @@ export class UserController {
   /**
    * Get the user settings.
    */
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @Get('/settings/:userId')
   async getSettings(@Param('userId') userId: string) {
     return {

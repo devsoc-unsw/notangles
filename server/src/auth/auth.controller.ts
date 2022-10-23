@@ -1,13 +1,12 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { UserAuthInformation } from 'src/user/dtos/user.dto';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 
 import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @UseGuards(LoginGuard)
   @Get('/login')
@@ -28,19 +27,4 @@ export class AuthController {
     return this.authService.getUser(req.query.userID as string);
   }
 
-  @UseGuards(LoginGuard)
-  @Get('/callback')
-  loginCallback(@Res() res: Response) {
-    res.redirect('/');
-  }
-
-  @UseGuards(LoginGuard)
-  @Get('/logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
-    req.session.destroy(() => {
-      this.authService.logoutUser(req.query.userID as string);
-      res.clearCookie('connect.sid');
-      res.redirect('/');
-    });
-  }
 }

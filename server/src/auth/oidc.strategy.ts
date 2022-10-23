@@ -12,10 +12,10 @@ import {
  * Builder for the OIDC client.
  */
 export const buildOpenIdClient = async () => {
-  const TrustIssuer = await Issuer.discover(
+  const trustIssuer = await Issuer.discover(
     `${process.env.AUTHORIZATION_URL}/.well-known/openid-configuration`,
   );
-  const client = new TrustIssuer.Client({
+  const client = new trustIssuer.Client({
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
   });
