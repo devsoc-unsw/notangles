@@ -3,4 +3,5 @@ export interface User {
   lastname: string;
   google_uid: string;
   hasSentRequest: boolean;
+  isAlreadyFriend: boolean;
 }
