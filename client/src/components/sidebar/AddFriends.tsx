@@ -40,13 +40,26 @@ const UserProfile = styled(Box)`
   align-items: center;
 }`;
 
-// make a search box
 const SearchBox = styled(Box)`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1vh 0;
 }`;
+
+const SearchButton = styled(Button)`
+  color: white;
+  border-radius: 100%;
+  padding-top: 1.1vw;
+  padding-bottom: 1.1vw;
+  justify-content: center;
+  align-content: center;
+  margin-left: 1vw;
+  height: 90%;
+  &:hover {
+    color: grey;
+  }
+`;
 
 const AddFriends: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -120,24 +133,19 @@ const AddFriends: React.FC = () => {
   // that match the search
 
   // actual search users
-  // const searchUsers = () => {
-  //   // make a state for search
-  //   const underscoredName = search.replaceAll(' ', '_');
-  //   fetch(`http://localhost:3001/api/friend/search?name=${underscoredName}`, {
-  //     headers: new Headers({
-  //       Authorization: `Bearer ${token}`,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setUserList(data.data);
-  //     });
-  // };
-
-  // // fake user search
-  // const searchUsers = () => {
-  //   setUserList();
-  // };
+  const searchUsers = () => {
+    // make a state for search
+    const underscoredName = search.replaceAll(' ', '_');
+    fetch(`http://localhost:3001/api/friend/search?name=${underscoredName}`, {
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUserList(data.data);
+      });
+  };
 
   return (
     <>
@@ -153,7 +161,9 @@ const AddFriends: React.FC = () => {
           fullWidth
           onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
         />
-        <Button variant="contained" endIcon={<SearchIcon />} />
+        <SearchButton variant="contained">
+          <SearchIcon />
+        </SearchButton>
       </SearchBox>
       <div>{listItems}</div>
     </>
