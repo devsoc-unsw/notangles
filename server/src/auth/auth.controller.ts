@@ -19,7 +19,7 @@ export class AuthController {
   @UseGuards(LoginGuard)
   @Get('/token')
   async getToken(@Req() req: Request) {
-    return req.user;
+    return this.authService.login(req.user);
   }
 
   @UseGuards(LoginGuard)
@@ -32,15 +32,5 @@ export class AuthController {
   @Get('/callback')
   loginCallback(@Res() res: Response) {
     res.redirect('/');
-  }
-
-  @UseGuards(LoginGuard)
-  @Get('/logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
-    req.session.destroy(() => {
-      this.authService.logoutUser(req.query.userID as string);
-      res.clearCookie('connect.sid');
-      res.redirect('/');
-    });
   }
 }

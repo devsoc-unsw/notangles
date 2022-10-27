@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as sgMail from '@sendgrid/mail';
 import { Model } from 'mongoose';
@@ -12,8 +13,23 @@ export class AuthService {
     @InjectModel('User') private userModel: Model<UserDocument>,
     @InjectModel('FriendRequest')
     private friendRequestModel: Model<FriendRequestDocument>,
+    private readonly jwtService: JwtService,
   ) {}
 
+  async login(user: any) {
+    const jwtPayload = {
+      sub: user.userinfo.sub,
+      email: user.userinfo.email,
+    };
+
+    return {
+      access_token: this.jwtService.sign(jwtPayload, {
+        secret: process.env.JWT_SECRET || 'secret',
+      }),
+    };
+  }
+
+  // TODO: Move the below functions into a users module
   async createUser(userInfo: any) {
     let isCurrentUser: UserInterface = await this.getUser(userInfo.sub);
     if (isCurrentUser === null) {
