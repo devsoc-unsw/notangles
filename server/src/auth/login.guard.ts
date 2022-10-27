@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
  * if they are not authenticated.
  */
 @Injectable()
-export class LoginGuard extends AuthGuard('oidc') {
+export class OIDCGuard extends AuthGuard('oidc') {
   constructor(private readonly authService: AuthService) {
     super();
   }
