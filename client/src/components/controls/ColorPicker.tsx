@@ -16,7 +16,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
-      <ColourIndicatorBox backgroundColour={color} />
+      <ColourIndicatorBox backgroundColour={color} onClick={handleOpenColourPicker} />
       <StyledButtonContainer>
         <Button
           disableElevation

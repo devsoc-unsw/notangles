@@ -14,6 +14,9 @@ export const ColourIndicatorBox = styled(Box, {
   height: 35px;
   border-radius: 5px;
   background-color: ${({ backgroundColour }) => backgroundColour};
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const StyledButtonContainer = styled(Box)`

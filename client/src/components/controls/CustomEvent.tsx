@@ -86,7 +86,7 @@ const CustomEvent: React.FC = () => {
   const popoverId = openCreateEventPopover ? 'simple-popover' : undefined;
 
   // Which element to make the colour picker popover stick to
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
@@ -119,7 +119,7 @@ const CustomEvent: React.FC = () => {
     setCreateEventAnchorEl(null);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenColourPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 

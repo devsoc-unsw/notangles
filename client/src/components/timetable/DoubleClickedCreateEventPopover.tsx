@@ -37,9 +37,7 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
   const [isInitialDay, setIsInitialDay] = useState<boolean>(true);
 
   const [color, setColor] = useState<string>('#1F7E8C');
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
-  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -128,7 +126,7 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
     setEventDays(newFormats);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenColourPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 

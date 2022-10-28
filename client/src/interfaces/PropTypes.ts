@@ -135,8 +135,8 @@ export interface DoubleClickedCreateEventPopoverProps {
 export interface ColorPickerProps {
   color: string;
   setColor: (color: string) => void;
-  colorPickerAnchorEl: HTMLButtonElement | null;
-  handleOpenColourPicker: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  colorPickerAnchorEl: HTMLElement | null;
+  handleOpenColourPicker: (event: React.MouseEvent<HTMLElement>) => void;
   handleCloseColourPicker: () => void;
 }
 
