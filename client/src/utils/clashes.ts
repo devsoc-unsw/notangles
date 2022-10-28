@@ -114,7 +114,7 @@ const sortClashesByDay = (clashes: (ClassPeriod | EventPeriod)[]) => {
 };
 
 /**
- * @param sortedClashes The map of days to the list of clashes occurring on that day
+ * @param sortedClashes The map of days to the list of clashes occurring on that day sorted by time.start then time.end
  * @returns The map of days with each list being further separated into smaller lists representing which classes are clashing with each other
  */
 const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[]>) => {
@@ -122,28 +122,11 @@ const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[
 
   Object.entries(sortedClashes).forEach(([day, clashes]) => {
     const dayInt = parseInt(day);
+    let curGroupEndTime: number = -1;
     for (const clash of clashes) {
-      if (groupedClashes[dayInt].length === 0) {
-        // If there are no clashes in a day, add a new list of clashes with just that class
-        groupedClashes[dayInt].push([clash]);
-      } else {
-        let hasAdded = false;
-
-        for (let i = 0; i < groupedClashes[dayInt].length; i++) {
-          const currGroup = groupedClashes[dayInt][i];
-
-          // A clash occurs for two classes A and B when (StartA < EndB) and (EndA > StartB)
-          if (clash.time.start < currGroup[currGroup.length - 1].time.end && clash.time.end > currGroup[0].time.start) {
-            currGroup.push(clash);
-            hasAdded = true;
-          }
-        }
-
-        // If we haven't added the clash to any clashes list, add it to its own list of clashes
-        // This means that it will be a part of a new group of clashes
-        // (no other classes that we have grouped have happened at the same time yet).
-        if (!hasAdded) groupedClashes[dayInt].push([clash]);
-      }
+      if (clash.time.start >= curGroupEndTime) groupedClashes[dayInt].push([]); // new group if not clashing with cur
+      groupedClashes[dayInt].at(-1)?.push(clash);
+      curGroupEndTime = Math.max(curGroupEndTime, clash.time.end);
     }
   });
 
