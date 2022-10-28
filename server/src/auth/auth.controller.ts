@@ -1,44 +1,37 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginGuard } from './login.guard';
+import { OIDCGuard } from './login.guard';
+import { TokenGuard } from './token.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/login')
   login() {
     // This function will not be run and instead intercepted by the LoginGuard.
     return;
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/token')
-  async getToken(@Req() req: Request) {
-    return req.user;
+  async getToken(@Req() req: any) {
+    const uid = req.user.userinfo.sub;
+    const result = await this.authService.login(req.user);
+    return { ...result, uid };
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Get('/user')
   user(@Req() req: Request) {
-    return this.authService.getUser(req.query.userID as string);
+    return this.authService.getUser(req.query.id as string);
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/callback')
   loginCallback(@Res() res: Response) {
     res.redirect('/');
-  }
-
-  @UseGuards(LoginGuard)
-  @Get('/logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
-    req.session.destroy(() => {
-      this.authService.logoutUser(req.query.userID as string);
-      res.clearCookie('connect.sid');
-      res.redirect('/');
-    });
   }
 }

@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { LoginGuard } from 'src/auth/login.guard';
+import { OIDCGuard } from 'src/auth/login.guard';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 import { UserService } from 'src/user/user.service';
 import { FriendRequestDto } from './dtos/friend.dto';
@@ -31,7 +31,7 @@ export class FriendController {
   /**
    * Return all already added friends for a user.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/:userId')
   async getFriends(@Param('userId') userId: string) {
     return {
@@ -43,7 +43,7 @@ export class FriendController {
   /**
    * Forcefully add two valid users as each others' friends.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Post('/')
   async addFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -59,7 +59,7 @@ export class FriendController {
   /**
    * Forcefully remove two valid users from being each others' friends.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Delete('/')
   async deleteFriend(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -77,7 +77,7 @@ export class FriendController {
    * When searching by the user's full name, each part of the user's name
    * must be separated by underscores
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/search')
   async search(@Req() req: Request, @Query() userId, @Query() name) {
     const createUser = async (
@@ -115,7 +115,7 @@ export class FriendController {
   /**
    * Get a user's incoming and outgoing friend requests
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Get('/request/:userId')
   async getFriendRequests(@Param('userId') userId: string) {
     return {
@@ -130,7 +130,7 @@ export class FriendController {
   /**
    * Send a friend request to a user.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -167,7 +167,7 @@ export class FriendController {
   /**
    * Accept a friend request from a valid user.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Put('/request')
   async acceptFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -207,7 +207,7 @@ export class FriendController {
   /**
    * Decline a friend request from a valid user.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(OIDCGuard)
   @Delete('/request')
   async deleteFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
