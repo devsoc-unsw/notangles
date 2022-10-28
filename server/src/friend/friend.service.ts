@@ -31,6 +31,7 @@ export class FriendService {
     const user: UserDocument = await this.userModel
       .findOne({ userId: userId })
       .exec();
+
     if (!user) throw new HttpException('User Not Found!', HttpStatus.NOT_FOUND);
     return user;
   }

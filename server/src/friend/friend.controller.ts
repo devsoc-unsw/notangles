@@ -13,8 +13,7 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { OIDCGuard } from 'src/auth/login.guard';
+import { TokenGuard } from 'src/auth/token.guard';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 import { UserService } from 'src/user/user.service';
 import { FriendRequestDto } from './dtos/friend.dto';
@@ -29,63 +28,19 @@ export class FriendController {
   ) {}
 
   /**
-   * Return all already added friends for a user.
-   */
-  @UseGuards(OIDCGuard)
-  @Get('/:userId')
-  async getFriends(@Param('userId') userId: string) {
-    return {
-      status: 'Successfully found user and their friends list!',
-      data: await this.friendService.getFriends(userId),
-    };
-  }
-
-  /**
-   * Forcefully add two valid users as each others' friends.
-   */
-  @UseGuards(OIDCGuard)
-  @Post('/')
-  async addFriend(@Body() body: FriendRequestDto) {
-    const { senderId, sendeeId } = body;
-
-    return {
-      status: 'Successfully added users as friends!',
-      data: {
-        id: await this.friendService.addFriend(senderId, sendeeId),
-      },
-    };
-  }
-
-  /**
-   * Forcefully remove two valid users from being each others' friends.
-   */
-  @UseGuards(OIDCGuard)
-  @Delete('/')
-  async deleteFriend(@Body() body: FriendRequestDto) {
-    const { senderId, sendeeId } = body;
-
-    return {
-      status: 'Successfully removed users as friends!',
-      data: {
-        id: await this.friendService.removeFriend(senderId, sendeeId),
-      },
-    };
-  }
-
-  /**
    * Search for a user by their userId or by their full name.
    * When searching by the user's full name, each part of the user's name
    * must be separated by underscores
    */
-  @UseGuards(OIDCGuard)
+  @UseGuards(TokenGuard)
   @Get('/search')
-  async search(@Req() req: Request, @Query() userId, @Query() name) {
+  async search(@Req() req: any, @Query() query) {
     const createUser = async (
       user: any,
       currUserId: string,
       userId: string,
     ) => ({
-      ...user,
+      user: user._doc,
       isFriends: await this.userService.isAlreadyFriends(currUserId, userId),
       hasSentRequest: await this.friendService.hasSentRequest(
         currUserId,
@@ -93,29 +48,29 @@ export class FriendController {
       ),
     });
 
-    console.log(req.user, userId, name);
+    const { userId, name } = query;
 
-    // if (userId) {
-    //   const user = await this.userService.getUserById(userId);
-    //   return {
-    //     status: 'Successfully found user!',
-    //     data: await createUser(user, '1', user.userId),
-    //   };
-    // } else if (name) {
-    //   const users = await this.userService.getUserByFullName(name);
-    //   return {
-    //     status: 'Successfully found users!',
-    //     data: users.map(
-    //       async (user) => await createUser(user, '1', user.userId),
-    //     ),
-    //   };
-    // }
+    if (userId) {
+      const user = await this.userService.getUserById(userId);
+      return {
+        status: 'Successfully found user!',
+        data: await createUser(user, req.user.userId, user.userId),
+      };
+    } else if (name) {
+      const users = await this.userService.getUserByFullName(name);
+      return {
+        status: 'Successfully found users!',
+        data: await Promise.all(
+          users.map((user) => createUser(user, req.user.userId, user.userId)),
+        ),
+      };
+    }
   }
 
   /**
    * Get a user's incoming and outgoing friend requests
    */
-  @UseGuards(OIDCGuard)
+  @UseGuards(TokenGuard)
   @Get('/request/:userId')
   async getFriendRequests(@Param('userId') userId: string) {
     return {
@@ -130,7 +85,7 @@ export class FriendController {
   /**
    * Send a friend request to a user.
    */
-  @UseGuards(OIDCGuard)
+  @UseGuards(TokenGuard)
   @Post('/request')
   async sendFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -167,7 +122,7 @@ export class FriendController {
   /**
    * Accept a friend request from a valid user.
    */
-  @UseGuards(OIDCGuard)
+  @UseGuards(TokenGuard)
   @Put('/request')
   async acceptFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -207,7 +162,7 @@ export class FriendController {
   /**
    * Decline a friend request from a valid user.
    */
-  @UseGuards(OIDCGuard)
+  @UseGuards(TokenGuard)
   @Delete('/request')
   async deleteFriendRequest(@Body() body: FriendRequestDto) {
     const { senderId, sendeeId } = body;
@@ -216,6 +171,50 @@ export class FriendController {
       status: 'Successfully removed friend request!',
       data: {
         id: await this.friendService.declineFriendRequest(senderId, sendeeId),
+      },
+    };
+  }
+
+  /**
+   * Return all already added friends for a user.
+   */
+  @UseGuards(TokenGuard)
+  @Get('/:userId')
+  async getFriends(@Param('userId') userId: string) {
+    return {
+      status: 'Successfully found user and their friends list!',
+      data: await this.friendService.getFriends(userId),
+    };
+  }
+
+  /**
+   * Forcefully add two valid users as each others' friends.
+   */
+  @UseGuards(TokenGuard)
+  @Post('/')
+  async addFriend(@Body() body: FriendRequestDto) {
+    const { senderId, sendeeId } = body;
+
+    return {
+      status: 'Successfully added users as friends!',
+      data: {
+        id: await this.friendService.addFriend(senderId, sendeeId),
+      },
+    };
+  }
+
+  /**
+   * Forcefully remove two valid users from being each others' friends.
+   */
+  @UseGuards(TokenGuard)
+  @Delete('/')
+  async deleteFriend(@Body() body: FriendRequestDto) {
+    const { senderId, sendeeId } = body;
+
+    return {
+      status: 'Successfully removed users as friends!',
+      data: {
+        id: await this.friendService.removeFriend(senderId, sendeeId),
       },
     };
   }
