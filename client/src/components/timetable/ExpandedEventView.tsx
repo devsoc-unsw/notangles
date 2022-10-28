@@ -8,7 +8,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { ColourIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
@@ -285,7 +285,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               />
             </ListItem>
             <Box m={1} display="flex" justifyContent="center" alignItems="center">
-              <ColourIndicatorBox backgroundColour={newColor} />
+              <ColorIndicatorBox backgroundColor={newColor} />
               <StyledButtonContainer>
                 <Button
                   disableElevation

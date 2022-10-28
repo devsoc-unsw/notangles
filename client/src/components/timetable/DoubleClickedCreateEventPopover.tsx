@@ -126,11 +126,11 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
     setEventDays(newFormats);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 
-  const handleCloseColourPicker = () => {
+  const handleCloseColorPicker = () => {
     setColorPickerAnchorEl(null);
   };
 
@@ -172,8 +172,8 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
           color={color}
           setColor={setColor}
           colorPickerAnchorEl={colorPickerAnchorEl}
-          handleOpenColourPicker={handleOpenColourPicker}
-          handleCloseColourPicker={handleCloseColourPicker}
+          handleOpenColorPicker={handleOpenColorPicker}
+          handleCloseColorPicker={handleCloseColorPicker}
         />
       </StyledList>
       <ExecuteButton

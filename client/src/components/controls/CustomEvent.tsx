@@ -119,11 +119,11 @@ const CustomEvent: React.FC = () => {
     setCreateEventAnchorEl(null);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 
-  const handleCloseColourPicker = () => {
+  const handleCloseColorPicker = () => {
     setColorPickerAnchorEl(null);
   };
 
@@ -285,8 +285,8 @@ const CustomEvent: React.FC = () => {
             color={color}
             setColor={setColor}
             colorPickerAnchorEl={colorPickerAnchorEl}
-            handleOpenColourPicker={handleOpenColourPicker}
-            handleCloseColourPicker={handleCloseColourPicker}
+            handleOpenColorPicker={handleOpenColorPicker}
+            handleCloseColorPicker={handleCloseColorPicker}
           />
         </StyledList>
         <ExecuteButton
