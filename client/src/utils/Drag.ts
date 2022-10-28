@@ -793,14 +793,14 @@ const drop = () => {
         const baserect = gridChildren[1].getBoundingClientRect();
 
         // x and y displacement of the drag target from the start-point of the grid
-        const displacementx = dragrect.x - baserect.x;
+        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
         const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
         // Get the size of an arbitrary grid cell
         const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
 
         // Get the grid coordinates of the dragTarget when released
-        const [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
+        const [colIndex, rowIndex] = [Math.floor(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
 
         const eventLength = dragTarget.time.end - dragTarget.time.start;
 
