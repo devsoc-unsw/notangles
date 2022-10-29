@@ -1,6 +1,6 @@
+import React, { useContext, useState } from 'react';
 import { Add } from '@mui/icons-material';
 import { Popover } from '@mui/material';
-import { useContext, useState } from 'react';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -91,7 +91,6 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       // User did not change day
       const newEvent = createEvent(initialDay);
       newEvents[newEvent.event.id] = newEvent;
-      console.log('user did not change day');
     } else {
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
@@ -102,9 +101,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     // Delete the temporary created event with its id
     for (const event in createdEvents) {
-      if (event === tempEventId) {
-        delete createdEvents[event];
-      }
+      if (event === tempEventId) delete createdEvents[event];
     }
 
     setCreatedEvents({ ...createdEvents, ...newEvents });

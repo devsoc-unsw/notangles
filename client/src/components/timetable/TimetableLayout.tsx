@@ -146,6 +146,10 @@ const generateHours = (
 };
 
 export const TimetableLayout: React.FC = () => {
+  const [tempEventId, setTempEventId] = useState<string>('');
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  const open = Boolean(createEventAnchorEl);
+
   const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
     useContext(AppContext);
 
@@ -153,9 +157,6 @@ export const TimetableLayout: React.FC = () => {
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
     Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
   ];
-
-  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
-  const [tempEventId, setTempEventId] = useState<string>('');
 
   const eventDay = useRef<string>('Mo');
   const eventStartTime = useRef<Date>(createDateWithTime(9));
@@ -179,8 +180,6 @@ export const TimetableLayout: React.FC = () => {
       Unscheduled
     </InventoryCell>
   );
-
-  const open = Boolean(createEventAnchorEl);
 
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     // Opens the create event popover
