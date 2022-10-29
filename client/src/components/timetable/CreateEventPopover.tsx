@@ -1,22 +1,22 @@
-import { useContext, useState } from 'react';
-import { Popover } from '@mui/material';
-import { ExecuteButton } from '../../styles/CustomEventStyles';
-import { StyledList } from '../../styles/DroppedCardStyles';
 import { Add } from '@mui/icons-material';
-import { areValidEventTimes } from '../../utils/eventTimes';
+import { Popover } from '@mui/material';
+import { useContext, useState } from 'react';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventPeriod } from '../../interfaces/Periods';
+import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
+import { ExecuteButton } from '../../styles/CustomEventStyles';
+import { StyledList } from '../../styles/DroppedCardStyles';
 import { createNewEvent } from '../../utils/createEvent';
-import { DoubleClickedCreateEventPopoverProps } from '../../interfaces/PropTypes';
-import CustomEventGeneral from '../controls/CustomEventGeneral';
+import { areValidEventTimes } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
+import CustomEventGeneral from '../controls/CustomEventGeneral';
 
-const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverProps> = ({
+const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   open,
   anchorEl,
-  onClose,
+  handleClose,
   anchorOrigin,
   transformOrigin,
   initialStartTime,
@@ -117,13 +117,8 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
     setIsInitialEndTime(true);
 
     // Close all popovers when Create button is clicked
-    onClose();
+    handleClose();
     setColorPickerAnchorEl(null);
-  };
-
-  const handleFormat = (newFormats: string[]) => {
-    setIsInitialDay(false);
-    setEventDays(newFormats);
   };
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
@@ -139,7 +134,7 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
       open={open}
       anchorEl={anchorEl}
       onClose={() => {
-        onClose();
+        handleClose();
       }}
       anchorOrigin={anchorOrigin}
       transformOrigin={transformOrigin}
@@ -190,4 +185,4 @@ const DoubleClickedCreateEventPopover: React.FC<DoubleClickedCreateEventPopoverP
   );
 };
 
-export default DoubleClickedCreateEventPopover;
+export default CreateEventPopover;

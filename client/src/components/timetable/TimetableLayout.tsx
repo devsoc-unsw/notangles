@@ -10,10 +10,10 @@ import {
   unknownErrorMessage,
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import DoubleClickedCreateEventPopover from './DoubleClickedCreateEventPopover';
 import { CourseContext } from '../../context/CourseContext';
 import { createNewEvent } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
+import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -262,10 +262,10 @@ export const TimetableLayout: React.FC = () => {
       {otherCells}
 
       {/* For when user double clicks on a timetable grid */}
-      <DoubleClickedCreateEventPopover
+      <CreateEventPopover
         open={open}
         anchorEl={createEventAnchorEl}
-        onClose={handleClose}
+        handleClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',

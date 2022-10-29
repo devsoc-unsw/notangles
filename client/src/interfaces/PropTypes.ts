@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
+import { ReactNode } from 'react';
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -120,10 +120,10 @@ export interface LocationDropdownProps {
   selectedIndex: number;
 }
 
-export interface DoubleClickedCreateEventPopoverProps {
+export interface CreateEventPopoverProps {
   open: boolean;
-  anchorEl: (HTMLButtonElement | HTMLDivElement | null);
-  onClose: () => void;
+  anchorEl: HTMLButtonElement | HTMLDivElement | null;
+  handleClose: () => void;
   anchorOrigin: PopoverOrigin;
   transformOrigin: PopoverOrigin;
   initialStartTime: Date;

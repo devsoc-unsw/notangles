@@ -29,6 +29,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         </Button>
       </StyledButtonContainer>
       <Popover
+        id={colorPickerPopoverId}
         open={openColorPickerPopover}
         anchorEl={colorPickerAnchorEl}
         onClose={handleCloseColorPicker}

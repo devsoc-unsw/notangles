@@ -1,7 +1,7 @@
+import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -225,6 +225,7 @@ const CustomEvent: React.FC = () => {
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
+        id={popoverId}
         open={openCreateEventPopover}
         anchorEl={createEventAnchorEl}
         onClose={handleClose}
@@ -238,49 +239,47 @@ const CustomEvent: React.FC = () => {
         }}
       >
         <StyledList>
-          <Box sx={{ typography: 'body1' }}>
-            <TabContext value={eventType}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
-                  <Tab label="General" value="General" />
-                  <Tab label="Tutoring" value="Tutoring" />
-                </TabList>
-              </Box>
-              <StyledTabPanel value="General">
-                <CustomEventGeneral
-                  eventName={eventName}
-                  setEventName={setEventName}
-                  location={location}
-                  setLocation={setLocation}
-                  description={description}
-                  setDescription={setDescription}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                  endTime={endTime}
-                  setEndTime={setEndTime}
-                  eventDays={eventDays}
-                  setEventDays={setEventDays}
-                  initialStartTime={createDateWithTime(9)}
-                  initialEndTime={createDateWithTime(10)}
-                  initialDay={''}
-                  isInitialStartTime={isInitialStartTime}
-                  setIsInitialStartTime={setIsInitialStartTime}
-                  isInitialEndTime={isInitialEndTime}
-                  setIsInitialEndTime={setIsInitialEndTime}
-                  isInitialDay={isInitialDay}
-                  setIsInitialDay={setIsInitialDay}
-                />
-              </StyledTabPanel>
-              <StyledTabPanel value="Tutoring">
-                <CustomEventTutoring
-                  coursesCodes={coursesCodes}
-                  classesCodes={classesCodes}
-                  setCourseCode={setCourseCode}
-                  setClassCode={setClassCode}
-                />
-              </StyledTabPanel>
-            </TabContext>
-          </Box>
+          <TabContext value={eventType}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
+                <Tab label="General" value="General" />
+                <Tab label="Tutoring" value="Tutoring" />
+              </TabList>
+            </Box>
+            <StyledTabPanel value="General">
+              <CustomEventGeneral
+                eventName={eventName}
+                setEventName={setEventName}
+                location={location}
+                setLocation={setLocation}
+                description={description}
+                setDescription={setDescription}
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+                eventDays={eventDays}
+                setEventDays={setEventDays}
+                initialStartTime={createDateWithTime(9)}
+                initialEndTime={createDateWithTime(10)}
+                initialDay={''}
+                isInitialStartTime={isInitialStartTime}
+                setIsInitialStartTime={setIsInitialStartTime}
+                isInitialEndTime={isInitialEndTime}
+                setIsInitialEndTime={setIsInitialEndTime}
+                isInitialDay={isInitialDay}
+                setIsInitialDay={setIsInitialDay}
+              />
+            </StyledTabPanel>
+            <StyledTabPanel value="Tutoring">
+              <CustomEventTutoring
+                coursesCodes={coursesCodes}
+                classesCodes={classesCodes}
+                setCourseCode={setCourseCode}
+                setClassCode={setClassCode}
+              />
+            </StyledTabPanel>
+          </TabContext>
           <ColorPicker
             color={color}
             setColor={setColor}

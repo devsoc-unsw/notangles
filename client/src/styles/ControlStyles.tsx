@@ -1,6 +1,12 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
 
+export const StyledButtonText = styled(Box)`
+  margin-top: 3px;
+  margin-left: 1px;
+  flex-grow: 1;
+`;
+
 export const StyledControlsButton = styled('div')`
   display: flex;
 `;
