@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { User } from '../../interfaces/User';
 import Avatar from '@mui/material/Avatar';
+import { PersonAdd, PersonAddDisabled, People } from '@mui/icons-material';
 
 const ChangeItem = styled('div')`
   padding: 0.5vh 0;
@@ -61,13 +62,17 @@ const SearchButton = styled(Button)`
   }
 `;
 
+const StyledAvatar = styled(Avatar)`
+  margin-right: 0.8vw;
+}`;
+
 const AddFriends: React.FC = () => {
   const [search, setSearch] = useState('');
 
   // create fake users implementing User interface
   const fakeUser1: User = {
     firstname: 'Woof',
-    lastname: 'Lee',
+    lastname: 'Chicken',
     google_uid: '1000000',
     hasSentRequest: false,
     isAlreadyFriend: false,
@@ -75,7 +80,7 @@ const AddFriends: React.FC = () => {
 
   const fakeUser2: User = {
     firstname: 'Quack',
-    lastname: 'User',
+    lastname: 'Cow',
     google_uid: '1000000',
     hasSentRequest: false,
     isAlreadyFriend: true,
@@ -83,7 +88,7 @@ const AddFriends: React.FC = () => {
 
   const fakeUser3: User = {
     firstname: 'Meow',
-    lastname: 'User',
+    lastname: 'Mouse',
     google_uid: '1000',
     hasSentRequest: true,
     isAlreadyFriend: false,
@@ -95,18 +100,30 @@ const AddFriends: React.FC = () => {
     const sentRequest = d.hasSentRequest;
     const isFriend = d.isAlreadyFriend;
     if (isFriend) {
-      return <Button color="success">Friends</Button>;
+      return (
+        <Button color="success">
+          <People />
+        </Button>
+      );
     } else if (sentRequest) {
-      return <Button variant="outlined">Cancel Request</Button>;
+      return (
+        <Button variant="outlined" onClick={cancelRequest}>
+          <PersonAddDisabled />
+        </Button>
+      );
     } else {
-      return <Button variant="contained">Add friend</Button>;
+      return (
+        <Button variant="contained" onClick={sendRequest}>
+          <PersonAdd />
+        </Button>
+      );
     }
   }
 
   const listItems = userList.map((d) => (
     <UserItem key={d.google_uid}>
       <UserProfile>
-        <Avatar>{d.firstname.split('')[0].toUpperCase() + d.lastname.split('')[0].toUpperCase()}</Avatar>
+        <StyledAvatar>{d.firstname.split('')[0].toUpperCase() + d.lastname.split('')[0].toUpperCase()}</StyledAvatar>
         {/* to change to back ticks later */}
         {' ' + d.firstname + ' ' + d.lastname}
       </UserProfile>
