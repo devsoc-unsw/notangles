@@ -1,11 +1,15 @@
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Divider, Link, TextField, Typography } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/system';
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { User } from '../../interfaces/User';
+<<<<<<< HEAD
 import Avatar from '@mui/material/Avatar';
 import { PersonAdd, PersonAddDisabled, People } from '@mui/icons-material';
+=======
+>>>>>>> af55cfaba59cccf9d0888af9c90f78d3be308972
 
 const ChangeItem = styled('div')`
   padding: 0.5vh 0;
@@ -33,20 +37,20 @@ const UserItem = styled(Box)`
   display: flex;
   justify-content: space-between;
   padding-top: 1vh;
-}`;
+`;
 
 const UserProfile = styled(Box)`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-}`;
+`;
 
 const SearchBox = styled(Box)`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1vh 0;
-}`;
+`;
 
 const SearchButton = styled(Button)`
   color: white;
@@ -71,25 +75,31 @@ const AddFriends: React.FC = () => {
 
   // create fake users implementing User interface
   const fakeUser1: User = {
-    firstname: 'Woof',
-    lastname: 'Chicken',
-    google_uid: '1000000',
+    user: {
+      firstname: 'Woof',
+      lastname: 'Lee',
+      google_uid: '1000000',
+    },
     hasSentRequest: false,
     isAlreadyFriend: false,
   };
 
   const fakeUser2: User = {
-    firstname: 'Quack',
-    lastname: 'Cow',
-    google_uid: '1000000',
+    user: {
+      firstname: 'Quack',
+      lastname: 'User',
+      google_uid: '1000000',
+    },
     hasSentRequest: false,
     isAlreadyFriend: true,
   };
 
   const fakeUser3: User = {
-    firstname: 'Meow',
-    lastname: 'Mouse',
-    google_uid: '1000',
+    user: {
+      firstname: 'Meow',
+      lastname: 'User',
+      google_uid: '1000',
+    },
     hasSentRequest: true,
     isAlreadyFriend: false,
   };
@@ -121,11 +131,11 @@ const AddFriends: React.FC = () => {
   }
 
   const listItems = userList.map((d) => (
-    <UserItem key={d.google_uid}>
+    <UserItem key={d.user.google_uid}>
       <UserProfile>
-        <StyledAvatar>{d.firstname.split('')[0].toUpperCase() + d.lastname.split('')[0].toUpperCase()}</StyledAvatar>
+        <Avatar>{d.user.firstname.split('')[0].toUpperCase() + d.user.lastname.split('')[0].toUpperCase()}</Avatar>
         {/* to change to back ticks later */}
-        {' ' + d.firstname + ' ' + d.lastname}
+        {' ' + d.user.firstname + ' ' + d.user.lastname}
       </UserProfile>
       {AddFriendButton(d)}
     </UserItem>
@@ -178,7 +188,7 @@ const AddFriends: React.FC = () => {
           fullWidth
           onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
         />
-        <SearchButton variant="contained">
+        <SearchButton variant="contained" onClick={searchUsers}>
           <SearchIcon />
         </SearchButton>
       </SearchBox>

@@ -9,7 +9,7 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { LoginGuard } from 'src/auth/login.guard';
+import { TokenGuard } from 'src/auth/token.guard';
 import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 import {
   UserDeleteTimetableQueryDto,
@@ -26,7 +26,7 @@ export class UserController {
   /**
    * Get the user object.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Get('/profile/:userId')
   async user(@Param('userId') userId: string) {
     return {
@@ -38,7 +38,7 @@ export class UserController {
   /**
    * Get the user settings.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Get('/settings/:userId')
   async getSettings(@Param('userId') userId: string) {
     return {
@@ -50,7 +50,7 @@ export class UserController {
   /**
    * Edit/Create user settings.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Put('/settings')
   async createSettings(@Body() body: UserSettingsQueryDto) {
     const { userId, setting } = body;
@@ -65,7 +65,7 @@ export class UserController {
   /**
    * Get the user's timetables.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Get('/timetable/:userId')
   async getTimetable(@Param('userId') userId: string) {
     return {
@@ -77,7 +77,7 @@ export class UserController {
   /**
    * Create a timetable for the user.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Post('/timetable')
   async createTimetable(@Body() body: UserTimetablesQueryDto) {
     const { userId, timetable } = body;
@@ -90,7 +90,7 @@ export class UserController {
   /**
    * Edit the user's timetable.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Put('/timetable')
   async editTimetable(@Body() body: UserTimetablesQueryDto) {
     const { userId, timetable } = body;
@@ -105,7 +105,7 @@ export class UserController {
   /**
    * Delete a particular timetable from the user's timetables.
    */
-  @UseGuards(LoginGuard)
+  @UseGuards(TokenGuard)
   @Delete('/timetable')
   async deleteTimetable(@Body() body: UserDeleteTimetableQueryDto) {
     const { userId, timetableId } = body;
