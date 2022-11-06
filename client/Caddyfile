@@ -1,0 +1,10 @@
+:80 {
+  log
+  header -Server
+
+	root * /srv
+	encode zstd gzip
+	try_files {path} /index.html
+	file_server
+}
+
