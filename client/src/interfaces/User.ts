@@ -1,8 +1,10 @@
 export interface User {
   user: {
+    userId: string;
     firstname: string;
     lastname: string;
-    google_uid: string;
+    profileURL: string;
+    email: string;
   };
   hasSentRequest: boolean;
   isAlreadyFriend: boolean;

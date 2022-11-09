@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
-import { Divider } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import Help from './Help';
 import AddFriendsButton from './AddFriendsButton';
 import Navbar from '../navbar/Navbar';
@@ -17,6 +17,15 @@ const StyledFriends = styled(Friends)`
   margin-top: 20px;
   height: 10vh;
   overflow-y: scroll;
+`;
+
+const StyledProfile = styled('div')`
+  display: flex;
+  align-items: center;
+`;
+
+const StyledAvatar = styled(Avatar)`
+  margin-right: 0.8vw;
 `;
 
 /**
@@ -51,7 +60,14 @@ export default function FadeMenu() {
     if (loading) {
       return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
     } else if (user) {
-      return <Avatar alt={user.given_name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} />;
+      const { firstname, lastname, profileURL } = user;
+
+      return (
+        <StyledProfile>
+          <StyledAvatar alt={firstname} src={profileURL} sx={{ width: 32, height: 32, marginLeft: 1 }} />
+          {firstname + ' ' + lastname}
+        </StyledProfile>
+      );
     } else {
       return (
         <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>

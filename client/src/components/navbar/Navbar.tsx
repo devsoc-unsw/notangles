@@ -74,7 +74,9 @@ const Navbar: React.FC = () => {
     if (loading) {
       return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
     } else if (user) {
-      return <Avatar alt={user.given_name} src={user.picture} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />;
+      return (
+        <Avatar alt={user.firstname} src={user.profileURL} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />
+      );
     } else {
       return (
         <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>

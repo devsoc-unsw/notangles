@@ -29,10 +29,8 @@ export const useAuth = () => {
 };
 
 function useAuthProvider() {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<Self | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [authCode, setAuthCode] = useState<string | null>(null);
-  const [state, setState] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
@@ -47,35 +45,47 @@ function useAuthProvider() {
     const code = params.get('code');
     const state = params.get('state');
 
-    if (code) {
-      setAuthCode(code);
-      params.delete('code');
-    }
-
-    if (state) {
-      setState(state);
-      params.delete('state');
-    }
+    if (code) params.delete('code');
+    if (state) params.delete('state');
 
     // Apply params to the URL
     window.history.replaceState(null, '', url.pathname);
 
-    if (code && state) {
-      setLoading(true);
-      fetch('/api/auth/token?code=' + code + '&state=' + state)
+    const fetchToken = async () => {
+      const data = fetch('/api/auth/token?code=' + code + '&state=' + state)
         .then((res) => res.json())
         .then((data) => {
-          setToken(data.access_token);
-          setUser(data.userinfo);
-          setLoading(false);
-        })
+          const { access_token, uid } = data;
+          setToken(access_token);
+          return { userId: uid, token: access_token };
+        });
+
+      return data;
+    };
+
+    const fetchUser = async (userId: string, token: string) => {
+      fetch(`/api/user/profile/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setUser(data.data);
+        });
+    };
+
+    const exchangeToken = async () => {
+      const { userId, token } = await fetchToken();
+      await fetchUser(userId, token);
+    };
+
+    if (code && state) {
+      setLoading(true);
+      exchangeToken()
         .catch((err) => {
           setError(err.message);
-          setLoading(false);
         })
         .finally(() => {
-          setAuthCode(null);
-          setState(null);
+          setLoading(false);
         });
     }
   }, []);

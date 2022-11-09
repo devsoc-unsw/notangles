@@ -1,15 +1,12 @@
+import { People, PersonAdd, PersonAddDisabled } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Divider, Link, TextField, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/system';
-import React, { useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { AppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { User } from '../../interfaces/User';
-<<<<<<< HEAD
-import Avatar from '@mui/material/Avatar';
-import { PersonAdd, PersonAddDisabled, People } from '@mui/icons-material';
-=======
->>>>>>> af55cfaba59cccf9d0888af9c90f78d3be308972
 
 const ChangeItem = styled('div')`
   padding: 0.5vh 0;
@@ -70,45 +67,112 @@ const StyledAvatar = styled(Avatar)`
   margin-right: 0.8vw;
 }`;
 
+const ProfileImage = styled('img')`
+  width: 2.5vw;
+  height: 2.5vw;
+  border-radius: 50%;
+  margin-right: 0.8vw;
+}`;
+
 const AddFriends: React.FC = () => {
   const [search, setSearch] = useState('');
+  const [sentRequests, setSentRequests] = useState<User[]>([]);
+  const [recvRequests, setRecvRequests] = useState<User[]>([]);
 
-  // create fake users implementing User interface
-  const fakeUser1: User = {
-    user: {
-      firstname: 'Woof',
-      lastname: 'Lee',
-      google_uid: '1000000',
-    },
-    hasSentRequest: false,
-    isAlreadyFriend: false,
+  console.log(sentRequests);
+  console.log(recvRequests);
+
+  const { setAlertMsg, setErrorVisibility } = useContext(AppContext);
+
+  // use auth
+  const { user, token } = useAuth();
+  const [userList, setUserList] = useState<User[]>([]);
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
   };
 
-  const fakeUser2: User = {
-    user: {
-      firstname: 'Quack',
-      lastname: 'User',
-      google_uid: '1000000',
-    },
-    hasSentRequest: false,
-    isAlreadyFriend: true,
+  const getFriendRequests = () => {
+    fetch(`/api/friend/request/${user?.userId}`, {
+      method: 'get',
+      headers: headers,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const { sentReq, recvReq } = data.data;
+        setSentRequests(sentReq);
+        setRecvRequests(recvReq);
+      })
+      .catch((err) => {
+        setAlertMsg('Failed to get friend requests');
+        setErrorVisibility(true);
+      });
   };
 
-  const fakeUser3: User = {
-    user: {
-      firstname: 'Meow',
-      lastname: 'User',
-      google_uid: '1000',
-    },
-    hasSentRequest: true,
-    isAlreadyFriend: false,
+  // declare a use effect then set the setrequest in the use effect which returns the what we want to render
+  useEffect(() => {
+    getFriendRequests();
+  }, []);
+
+  const sendFriendRequest = (id: string) => {
+    const body = {
+      senderId: user?.userId,
+      sendeeId: id,
+    };
+
+    fetch('/api/friend/request', {
+      method: 'post',
+      headers: headers,
+      body: JSON.stringify(body),
+    }).then((response) => {
+      if (response.status === 200) {
+        setUserList(
+          userList.map((user) => {
+            if (user.user.userId === id) {
+              user.hasSentRequest = true;
+            }
+            return user;
+          })
+        );
+      } else {
+        setAlertMsg('Failed to send friend request');
+        setErrorVisibility(true);
+      }
+    });
   };
 
-  const [userList, setUserList] = useState<User[]>([fakeUser1, fakeUser2, fakeUser3]);
+  const cancelFriendRequest = (id: string) => {
+    // create a new friend object
+    const body = {
+      senderId: user?.userId,
+      sendeeId: id,
+    };
 
-  function AddFriendButton(d: User) {
-    const sentRequest = d.hasSentRequest;
-    const isFriend = d.isAlreadyFriend;
+    fetch('/api/friend/request', {
+      method: 'delete',
+      headers: headers,
+      body: JSON.stringify(body),
+    }).then((response) => {
+      if (response.status === 200) {
+        setUserList(
+          userList.map((user) => {
+            if (user.user.userId === id) {
+              user.hasSentRequest = false;
+            }
+            return user;
+          })
+        );
+      } else {
+        // print out the error message
+        setAlertMsg('Failed to cancel friend request');
+        setErrorVisibility(true);
+      }
+    });
+  };
+
+  const getAddFriendButton = (u: User) => {
+    const sentRequest = u.hasSentRequest;
+    const isFriend = u.isAlreadyFriend;
     if (isFriend) {
       return (
         <Button color="success">
@@ -117,47 +181,31 @@ const AddFriends: React.FC = () => {
       );
     } else if (sentRequest) {
       return (
-        <Button variant="outlined" onClick={cancelRequest}>
+        <Button variant="outlined" onClick={() => cancelFriendRequest(u.user.userId)}>
           <PersonAddDisabled />
         </Button>
       );
     } else {
       return (
-        <Button variant="contained" onClick={sendRequest}>
+        <Button variant="contained" onClick={() => sendFriendRequest(u.user.userId)}>
           <PersonAdd />
         </Button>
       );
     }
-  }
+  };
 
-  const listItems = userList.map((d) => (
-    <UserItem key={d.user.google_uid}>
+  const searchResults = userList.map((u) => (
+    <UserItem key={u.user.userId}>
       <UserProfile>
-        <Avatar>{d.user.firstname.split('')[0].toUpperCase() + d.user.lastname.split('')[0].toUpperCase()}</Avatar>
-        {/* to change to back ticks later */}
-        {' ' + d.user.firstname + ' ' + d.user.lastname}
+        <ProfileImage src={u.user.profileURL} />
+        {u.user.firstname + ' ' + u.user.lastname}
       </UserProfile>
-      {AddFriendButton(d)}
+      {getAddFriendButton(u)}
     </UserItem>
   ));
 
-  // use auth
-  const { user, token } = useAuth();
-
-  // // function for adding friends
-  // const addFriend = (id: string) => {
-  //   // create a new friend object
-  //   const body = {
-  //     senderId: user?.sub,
-  //     receiverId: id,
-  //   };
-  //   fetch('http://localhost:3001/api/friend/request', { method: 'post', body: JSON.stringify(body) }).then(response);
-  // };
-
-  // add friend to user
-
-  // pass search into actual search and return a list of users
-  // that match the search
+  console.log(sentRequests);
+  console.log(recvRequests);
 
   // actual search users
   const searchUsers = () => {
@@ -168,7 +216,14 @@ const AddFriends: React.FC = () => {
         Authorization: `Bearer ${token}`,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          setAlertMsg('User not found');
+          setErrorVisibility(true);
+        }
+      })
       .then((data) => {
         setUserList(data.data);
       });
@@ -192,7 +247,9 @@ const AddFriends: React.FC = () => {
           <SearchIcon />
         </SearchButton>
       </SearchBox>
-      <div>{listItems}</div>
+      <div>{searchResults}</div>
+      <div>Incoming Requests</div>
+      <div>Outgoing Requests</div>
     </>
   );
 };

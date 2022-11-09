@@ -18,9 +18,7 @@ export class AuthController {
   @UseGuards(OIDCGuard)
   @Get('/token')
   async getToken(@Req() req: any) {
-    const uid = req.user.userinfo.sub;
-    const result = await this.authService.login(req.user);
-    return { ...result, uid };
+    return await this.authService.login(req.user);
   }
 
   @UseGuards(TokenGuard)

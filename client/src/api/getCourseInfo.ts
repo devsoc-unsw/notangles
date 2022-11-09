@@ -163,7 +163,6 @@ const getCourseInfo = async (
 
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
-    console.log(error);
     throw new NetworkError('Could not connect to server');
   }
 };
