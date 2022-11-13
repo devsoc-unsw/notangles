@@ -18,6 +18,10 @@
       "addLabels": ["deps: ci-actions"]
     },
     {
+      "matchPackageNames": "python",
+      "allowedVersions": "<3.11"
+    },
+    {
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
