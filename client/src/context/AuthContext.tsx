@@ -1,9 +1,22 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+
+export interface User {
+  sub: string;
+  givenName: string;
+  familyName: string;
+  email: string;
+  picture: string;
+}
+
+interface TokenResponse {
+  accessToken: string;
+  user: User;
+}
 
 interface IAuthContext {
   signIn: () => void;
   signOut: () => void;
-  user: any | null;
+  user: User | null;
   loading: boolean;
   token: string | null;
   error: string | null;
@@ -28,61 +41,55 @@ export const useAuth = () => {
 };
 
 function useAuthProvider() {
-  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [authCode, setAuthCode] = useState<string | null>(null);
-  const [state, setState] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  const signIn = () => {
+  const signIn = useCallback(() => {
     window.location.href = 'http://localhost:3001/api/auth/login';
-  };
+  }, []);
 
-  // Populate the state and auth code from the URL if they are there
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    const code = params.get('code');
-    const state = params.get('state');
+  const signOut = useCallback(() => {
+    setToken(null);
+    setLoading(false);
+    setUser(null);
+    setError(null);
+  }, []);
 
-    if (code) {
-      setAuthCode(code);
-      params.delete('code');
-    }
-
-    if (state) {
-      setState(state);
-      params.delete('state');
-    }
-
-    // Apply params to the URL
-    window.history.replaceState(null, '', url.pathname);
-
-    if (code && state) {
-      setLoading(true);
-      fetch('/api/auth/token?code=' + code + '&state=' + state)
-        .then((res) => res.json())
-        .then((data) => {
-          setToken(data.access_token);
-          setUser(data.userinfo);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        })
-        .finally(() => {
-          setAuthCode(null);
-          setState(null);
-        });
+  const fetchToken = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/auth/token?state=${window.location.search.split('=')[1]}&code=${window.location.search.split('=')[2]}`
+      );
+      const data: TokenResponse = await response.json();
+      console.log(data);
+      if (data.accessToken && data.user) {
+        setToken(data.accessToken);
+        setUser(data.user);
+        localStorage.setItem('token', data.accessToken);
+        console.log('token set!');
+      }
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  const signOut = () => {
-    setUser(null);
-    setToken(null);
-  };
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      setToken(localStorage.getItem('token'));
+      console.log('token set!');
+      setLoading(false);
+    } else {
+      // Check for code and state in URL
+      if (window.location.search.includes('code') && window.location.search.includes('state')) {
+        fetchToken();
+      }
+    }
+  }, []);
 
   return {
     signIn,

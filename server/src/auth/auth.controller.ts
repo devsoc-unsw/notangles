@@ -1,8 +1,7 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UserAuthInformation } from 'src/user/dtos/user.dto';
 
-import { AuthService } from './auth.service';
+import { AuthenticatedRequest, AuthService } from './auth.service';
 import { OIDCGuard } from './login.guard';
 import { TokenGuard } from './token.guard';
 
@@ -19,16 +18,21 @@ export class AuthController {
 
   @UseGuards(OIDCGuard)
   @Get('/token')
-  async getToken(@Req() req: any) {
-    const uid = req.user.userinfo.sub;
-    const result = await this.authService.login(req.user);
-    return { ...result, uid };
+  async getToken(@Req() request: AuthenticatedRequest, response: Response) {
+    if (!request.user) {
+      response.sendStatus(401);
+    }
+    const accessToken = await this.authService.createAccessToken(request);
+    return {
+      accessToken,
+      user: request.user,
+    };
   }
 
   @UseGuards(TokenGuard)
   @Get('/user')
-  user(@Req() req: Request) {
-    return this.authService.getUser(req.query.id as string);
+  user(@Req() request: AuthenticatedRequest) {
+    return this.authService.getUser(request.user.sub);
   }
 
   @UseGuards(OIDCGuard)
