@@ -22,7 +22,7 @@ interface IAuthContext {
   error: string | null;
 }
 
-const authContext = createContext<IAuthContext>({
+const AuthContext = createContext<IAuthContext>({
   signIn: () => {},
   signOut: () => {},
   user: null,
@@ -33,11 +33,11 @@ const authContext = createContext<IAuthContext>({
 
 export function AuthProvider({ children }: PropsWithChildren<{}>) {
   const auth = useAuthProvider();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {
-  return useContext(authContext);
+  return useContext(AuthContext);
 };
 
 function useAuthProvider() {
