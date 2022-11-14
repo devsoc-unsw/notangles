@@ -64,12 +64,11 @@ function useAuthProvider() {
         `/api/auth/token?state=${window.location.search.split('=')[1]}&code=${window.location.search.split('=')[2]}`
       );
       const data: TokenResponse = await response.json();
-      console.log(data);
+
       if (data.accessToken && data.user) {
         setToken(data.accessToken);
         setUser(data.user);
         localStorage.setItem('token', data.accessToken);
-        console.log('token set!');
       }
     } catch (error) {
       setError(error);
@@ -81,7 +80,6 @@ function useAuthProvider() {
   useEffect(() => {
     if (localStorage.getItem('token')) {
       setToken(localStorage.getItem('token'));
-      console.log('token set!');
       setLoading(false);
     } else {
       // Check for code and state in URL
