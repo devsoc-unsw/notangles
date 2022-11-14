@@ -115,6 +115,7 @@ const App: React.FC = () => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
       try {
         await callback();
+        break;
       } catch (e) {
         if (attempt !== maxFetchAttempts) {
           await sleep(fetchCooldown); // chill for a while before retrying
