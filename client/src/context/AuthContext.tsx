@@ -60,9 +60,8 @@ function useAuthProvider() {
   const fetchToken = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/auth/token?state=${window.location.search.split('=')[1]}&code=${window.location.search.split('=')[2]}`
-      );
+      const [_, state, code] = window.location.search.split('=');
+      const response = await fetch(`/api/auth/token?state=${state}&code=${code}`);
       const data: TokenResponse = await response.json();
 
       if (data.accessToken && data.user) {
