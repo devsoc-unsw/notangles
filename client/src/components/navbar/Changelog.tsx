@@ -15,6 +15,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'October 29, 2022',
+    changes: ['Event can be created with a double click on the grid you want it to be created in'],
+  },
+  {
     date: 'September 28, 2022',
     changes: ['Custom events now encompass general and tutoring events'],
   },

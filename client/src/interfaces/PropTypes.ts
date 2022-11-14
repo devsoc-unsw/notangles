@@ -1,5 +1,5 @@
+import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
-import { SelectChangeEvent } from '@mui/material';
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -119,6 +119,27 @@ export interface LocationDropdownProps {
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
 }
+
+export interface CreateEventPopoverProps {
+  open: boolean;
+  anchorEl: HTMLButtonElement | HTMLDivElement | null;
+  handleClose: () => void;
+  anchorOrigin: PopoverOrigin;
+  transformOrigin: PopoverOrigin;
+  initialStartTime: Date;
+  initialEndTime: Date;
+  initialDay: string;
+  tempEventId: string;
+}
+
+export interface ColorPickerProps {
+  color: string;
+  setColor: (color: string) => void;
+  colorPickerAnchorEl: HTMLElement | null;
+  handleOpenColorPicker: (event: React.MouseEvent<HTMLElement>) => void;
+  handleCloseColorPicker: () => void;
+}
+
 export interface CustomEventGeneralProps {
   eventName: string;
   setEventName: (name: string) => void;
@@ -132,6 +153,15 @@ export interface CustomEventGeneralProps {
   setEndTime: (endTime: Date) => void;
   eventDays: string[];
   setEventDays: (days: string[]) => void;
+  initialStartTime: Date;
+  initialEndTime: Date;
+  initialDay: string;
+  isInitialStartTime: boolean;
+  setIsInitialStartTime: (isInitialStartTime: boolean) => void;
+  isInitialEndTime: boolean;
+  setIsInitialEndTime: (isInitialEndTime: boolean) => void;
+  isInitialDay: boolean;
+  setIsInitialDay: (isInitialDay: boolean) => void;
 }
 
 export interface CustomEventTutoringProp {

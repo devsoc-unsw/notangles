@@ -105,20 +105,22 @@ const App: React.FC = () => {
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
-  useEffect(() => {
-    /**
-     * Retrieves term data from the scraper backend
-     */
-    const fetchTermData = async () => {
+  /**
+   * Attemps callback() several times before raising error. Intended for unreliable fetches
+   */
+  const maxFetchAttempts: number = 6;
+  const fetchCooldown: number = 120; // milliseconds
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const fetchReliably = async (callback: () => Promise<void>) => {
+    for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
       try {
-        const termData = await getAvailableTermDetails();
-        let { term, termName, termNumber, year, firstDayOfTerm } = termData;
-        setTerm(term);
-        setTermName(termName);
-        setTermNumber(termNumber);
-        setYear(year);
-        setFirstDayOfTerm(firstDayOfTerm);
+        await callback();
+        break;
       } catch (e) {
+        if (attempt !== maxFetchAttempts) {
+          await sleep(fetchCooldown); // chill for a while before retrying
+          continue;
+        }
         if (e instanceof NetworkError) {
           setAlertMsg(e.message);
         } else {
@@ -126,9 +128,24 @@ const App: React.FC = () => {
         }
         setErrorVisibility(true);
       }
+    }
+  };
+
+  useEffect(() => {
+    /**
+     * Retrieves term data from the scraper backend
+     */
+    const fetchTermData = async () => {
+      const termData = await getAvailableTermDetails();
+      let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+      setTerm(term);
+      setTermName(termName);
+      setTermNumber(termNumber);
+      setYear(year);
+      setFirstDayOfTerm(firstDayOfTerm);
     };
 
-    fetchTermData();
+    fetchReliably(fetchTermData);
   }, []);
 
   useEffect(() => {
@@ -136,23 +153,12 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      try {
-        if (year !== invalidYearFormat) {
-          const { courses, lastUpdated } = await getCoursesList(year, term);
-          setCoursesList(courses);
-          setLastUpdated(lastUpdated);
-        }
-      } catch (e) {
-        if (e instanceof NetworkError) {
-          setAlertMsg(e.message);
-        } else {
-          setAlertMsg(unknownErrorMessage);
-        }
-        setErrorVisibility(true);
-      }
+      const { courses, lastUpdated } = await getCoursesList(year, term);
+      setCoursesList(courses);
+      setLastUpdated(lastUpdated);
     };
 
-    fetchCoursesList();
+    if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
   }, [year]);
 
   /**

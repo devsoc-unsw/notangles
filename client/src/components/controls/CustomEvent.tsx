@@ -1,23 +1,28 @@
+import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import { Box, Button, ListItem, Popover, Tab, TextField } from '@mui/material';
-import { Colorful } from '@uiw/react-color';
-import React, { useContext, useEffect, useState } from 'react';
+import { Box, Popover, Tab } from '@mui/material';
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CoursesList } from '../../interfaces/Courses';
 import { ClassData, EventPeriod } from '../../interfaces/Periods';
-import { ColourIndicatorBox, StyledButtonContainer, StyledControlsButton } from '../../styles/ControlStyles';
+import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
+import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
+  // Which element to make the popover stick to
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  // Whether the popover is shown
+  const openCreateEventPopover = Boolean(createEventAnchorEl);
+
   const [eventType, setEventType] = useState<string>('General');
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -30,6 +35,11 @@ const CustomEvent: React.FC = () => {
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
   const [color, setColor] = useState<string>('#1F7E8C');
+
+  // NO pre-selected fields when event popover is opened from controls bar
+  const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(false);
+  const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
+  const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
   const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
 
@@ -73,26 +83,17 @@ const CustomEvent: React.FC = () => {
     }
   }, [courseCode]);
 
-  // Which element to make the popover stick to
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  // Whether the popover is shown
-  const open = Boolean(anchorEl);
-  const popoverId = open ? 'simple-popover' : undefined;
+  const popoverId = openCreateEventPopover ? 'simple-popover' : undefined;
 
   // Which element to make the colour picker popover stick to
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  // Whether the colour picker popover is shown
-  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
-  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    setCreateEventAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
@@ -113,17 +114,16 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
     setClassesList([]);
 
-    // Close the popover
-    setAnchorEl(null);
+    // Close the popovers
     setColorPickerAnchorEl(null);
-    setAnchorEl(null);
+    setCreateEventAnchorEl(null);
   };
 
-  const handleOpenColourPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 
-  const handleCloseColourPicker = () => {
+  const handleCloseColorPicker = () => {
     setColorPickerAnchorEl(null);
   };
 
@@ -177,8 +177,8 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
 
     // Close the popover
-    setAnchorEl(null);
     setColorPickerAnchorEl(null);
+    setCreateEventAnchorEl(null);
     setCreatedEvents({ ...createdEvents, ...newEvents });
     handleClose();
   };
@@ -222,98 +222,71 @@ const CustomEvent: React.FC = () => {
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
-        {open ? <ArrowDropUp /> : <ArrowDropDown />}
+        {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
-        open={open}
-        anchorEl={anchorEl}
+        id={popoverId}
+        open={openCreateEventPopover}
+        anchorEl={createEventAnchorEl}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: 'top',
+          vertical: 'bottom',
           horizontal: 'right',
         }}
       >
         <StyledList>
-          <Box sx={{ typography: 'body1' }}>
-            <TabContext value={eventType}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
-                  <Tab label="General" value="General" />
-                  <Tab label="Tutoring" value="Tutoring" />
-                </TabList>
-              </Box>
-              <StyledTabPanel value="General">
-                <CustomEventGeneral
-                  eventName={eventName}
-                  setEventName={setEventName}
-                  location={location}
-                  setLocation={setLocation}
-                  description={description}
-                  setDescription={setDescription}
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                  endTime={endTime}
-                  setEndTime={setEndTime}
-                  eventDays={eventDays}
-                  setEventDays={setEventDays}
-                />
-              </StyledTabPanel>
-              <StyledTabPanel value="Tutoring">
-                <CustomEventTutoring
-                  coursesCodes={coursesCodes}
-                  classesCodes={classesCodes}
-                  setCourseCode={setCourseCode}
-                  setClassCode={setClassCode}
-                />
-              </StyledTabPanel>
-            </TabContext>
-          </Box>
-          <Box m={1} display="flex" justifyContent="center" alignItems="center">
-            <ColourIndicatorBox backgroundColour={color} />
-            <StyledButtonContainer>
-              <Button
-                disableElevation
-                variant="contained"
-                size="small"
-                aria-describedby={colorPickerPopoverId}
-                onClick={handleOpenColourPicker}
-              >
-                Choose Colour
-              </Button>
-            </StyledButtonContainer>
-            <Popover
-              open={openColorPickerPopover}
-              anchorEl={colorPickerAnchorEl}
-              onClose={handleCloseColourPicker}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-            >
-              <ListItem alignItems="flex-start">
-                <Colorful onChange={(e) => setColor(e.hex)} color={color} />
-              </ListItem>
-              <ListItem alignItems="flex-start">
-                <TextField
-                  id="outlined-required"
-                  label="Hex"
-                  variant="outlined"
-                  value={color}
-                  onChange={(e) => {
-                    setColor(e.target.value);
-                  }}
-                />
-              </ListItem>
-            </Popover>
-          </Box>
+          <TabContext value={eventType}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
+                <Tab label="General" value="General" />
+                <Tab label="Tutoring" value="Tutoring" />
+              </TabList>
+            </Box>
+            <StyledTabPanel value="General">
+              <CustomEventGeneral
+                eventName={eventName}
+                setEventName={setEventName}
+                location={location}
+                setLocation={setLocation}
+                description={description}
+                setDescription={setDescription}
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+                eventDays={eventDays}
+                setEventDays={setEventDays}
+                initialStartTime={createDateWithTime(9)}
+                initialEndTime={createDateWithTime(10)}
+                initialDay={''}
+                isInitialStartTime={isInitialStartTime}
+                setIsInitialStartTime={setIsInitialStartTime}
+                isInitialEndTime={isInitialEndTime}
+                setIsInitialEndTime={setIsInitialEndTime}
+                isInitialDay={isInitialDay}
+                setIsInitialDay={setIsInitialDay}
+              />
+            </StyledTabPanel>
+            <StyledTabPanel value="Tutoring">
+              <CustomEventTutoring
+                coursesCodes={coursesCodes}
+                classesCodes={classesCodes}
+                setCourseCode={setCourseCode}
+                setClassCode={setClassCode}
+              />
+            </StyledTabPanel>
+          </TabContext>
+          <ColorPicker
+            color={color}
+            setColor={setColor}
+            colorPickerAnchorEl={colorPickerAnchorEl}
+            handleOpenColorPicker={handleOpenColorPicker}
+            handleCloseColorPicker={handleCloseColorPicker}
+          />
         </StyledList>
         <ExecuteButton
           variant="contained"

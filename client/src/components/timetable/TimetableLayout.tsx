@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { styled } from '@mui/system';
 import {
   classMargin,
+  daysShort,
   getDefaultEndTime,
   getDefaultStartTime,
   headerPadding,
@@ -9,6 +10,10 @@ import {
   unknownErrorMessage,
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
+import { createNewEvent } from '../../utils/createEvent';
+import { createDateWithTime } from '../../utils/eventTimes';
+import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -20,6 +25,7 @@ const BaseCell = styled('div', {
   yTo?: number;
   isEndX?: boolean;
   isEndY?: boolean;
+  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 }>`
   grid-column: ${({ x }) => x};
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
@@ -140,6 +146,10 @@ const generateHours = (
 };
 
 export const TimetableLayout: React.FC = () => {
+  const [tempEventId, setTempEventId] = useState<string>('');
+  const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  const open = Boolean(createEventAnchorEl);
+
   const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
     useContext(AppContext);
 
@@ -147,6 +157,10 @@ export const TimetableLayout: React.FC = () => {
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
     Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
   ];
+
+  const eventDay = useRef<string>('Mo');
+  const eventStartTime = useRef<Date>(createDateWithTime(9));
+  const eventEndTime = useRef<Date>(createDateWithTime(10));
 
   const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
   const hourCells = hours.map((hour, i) => (
@@ -167,6 +181,49 @@ export const TimetableLayout: React.FC = () => {
     </InventoryCell>
   );
 
+  const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Opens the create event popover
+    setCreateEventAnchorEl(event.currentTarget);
+  };
+
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  /**
+   * Create a temporary DroppedEvent card where the user double clicked on the grid
+   * @param x Coordinate of where user double clicked on grid, indicates day
+   * @param y Coordinate of where user double clicked on grid, indicates time
+   */
+  const createTempEvent = (x: number, y: number) => {
+    const newEvent = createNewEvent(
+      '(No title)',
+      '(No location)',
+      '',
+      '#1F7E8C',
+      daysShort[x],
+      createDateWithTime(earliestStartTime + y),
+      createDateWithTime(earliestStartTime + y + 1)
+    );
+
+    setTempEventId(newEvent.event.id);
+
+    setCreatedEvents({
+      ...createdEvents,
+      [newEvent.event.id]: newEvent,
+    });
+  };
+
+  const handleClose = () => {
+    setCreateEventAnchorEl(null);
+
+    // Deletes temporary event created when user clicks out of popover
+    for (const event in createdEvents) {
+      if (event === tempEventId) {
+        delete createdEvents[event];
+        setCreatedEvents({ ...createdEvents });
+      }
+    }
+  };
+
   const otherCells = hours.flatMap((_, y) =>
     days.flatMap((_, x) => (
       <GridCell
@@ -176,6 +233,13 @@ export const TimetableLayout: React.FC = () => {
         isEndX={x === days.length - 1}
         isEndY={y === hours.length - 1}
         id={x === 0 && y === 0 ? 'origin' : undefined}
+        onDoubleClick={(event) => {
+          handleOpen(event);
+          createTempEvent(x, y);
+          eventStartTime.current = createDateWithTime(earliestStartTime + y);
+          eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
+          eventDay.current = daysShort[x];
+        }}
       />
     ))
   );
@@ -195,6 +259,25 @@ export const TimetableLayout: React.FC = () => {
       {dayCells}
       {hourCells}
       {otherCells}
+
+      {/* For when user double clicks on a timetable grid */}
+      <CreateEventPopover
+        open={open}
+        anchorEl={createEventAnchorEl}
+        handleClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        initialStartTime={eventStartTime.current}
+        initialEndTime={eventEndTime.current}
+        initialDay={eventDay.current}
+        tempEventId={tempEventId}
+      />
     </>
   );
 };
