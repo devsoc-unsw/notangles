@@ -204,8 +204,29 @@ const AddFriends: React.FC = () => {
     </UserItem>
   ));
 
-  console.log(sentRequests);
-  console.log(recvRequests);
+  const incomingRequests = recvRequests.map((u) => (
+    <UserItem key={u.user.userId}>
+      <UserProfile>
+        <ProfileImage src={u.user.profileURL} />
+        {u.user.firstname + ' ' + u.user.lastname}
+      </UserProfile>
+      <Button variant="contained" color="primary">
+        Accept
+      </Button>
+    </UserItem>
+  ));
+
+  // const outgoingRequests = sentRequests.map((u) => (
+  //   <UserItem key={u.user.userId}>
+  //     <UserProfile>
+  //       <ProfileImage src={u.user.profileURL} />
+  //       {u.user.firstname + ' ' + u.user.lastname}
+  //     </UserProfile>
+  //     <Button variant="outlined" color="primary">
+  //       Cancel
+  //     </Button>
+  //   </UserItem>
+  // ));
 
   // actual search users
   const searchUsers = () => {
@@ -249,7 +270,9 @@ const AddFriends: React.FC = () => {
       </SearchBox>
       <div>{searchResults}</div>
       <div>Incoming Requests</div>
+      <div>{incomingRequests}</div>
       <div>Outgoing Requests</div>
+      {/* <div>{outgoingRequests}</div> */}
     </>
   );
 };
