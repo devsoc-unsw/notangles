@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
-import { User } from '../../interfaces/User';
+import { SearchResult, User } from '../../interfaces/Friends';
 
 const ChangeItem = styled('div')`
   padding: 0.5vh 0;
@@ -75,18 +75,13 @@ const ProfileImage = styled('img')`
 }`;
 
 const AddFriends: React.FC = () => {
+  const [userList, setUserList] = useState<SearchResult[]>([]);
   const [search, setSearch] = useState('');
   const [sentRequests, setSentRequests] = useState<User[]>([]);
   const [recvRequests, setRecvRequests] = useState<User[]>([]);
 
-  console.log(sentRequests);
-  console.log(recvRequests);
-
-  const { setAlertMsg, setErrorVisibility } = useContext(AppContext);
-
-  // use auth
   const { user, token } = useAuth();
-  const [userList, setUserList] = useState<User[]>([]);
+  const { setAlertMsg, setErrorVisibility } = useContext(AppContext);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -170,7 +165,7 @@ const AddFriends: React.FC = () => {
     });
   };
 
-  const getAddFriendButton = (u: User) => {
+  const getAddFriendButton = (u: SearchResult) => {
     const sentRequest = u.hasSentRequest;
     const isFriend = u.isAlreadyFriend;
     if (isFriend) {
@@ -205,10 +200,10 @@ const AddFriends: React.FC = () => {
   ));
 
   const incomingRequests = recvRequests.map((u) => (
-    <UserItem key={u.user.userId}>
+    <UserItem>
       <UserProfile>
-        <ProfileImage src={u.user.profileURL} />
-        {u.user.firstname + ' ' + u.user.lastname}
+        <ProfileImage src={u.profileURL} />
+        {u.firstname + ' ' + u.lastname}
       </UserProfile>
       <Button variant="contained" color="primary">
         Accept
@@ -216,17 +211,19 @@ const AddFriends: React.FC = () => {
     </UserItem>
   ));
 
-  // const outgoingRequests = sentRequests.map((u) => (
-  //   <UserItem key={u.user.userId}>
-  //     <UserProfile>
-  //       <ProfileImage src={u.user.profileURL} />
-  //       {u.user.firstname + ' ' + u.user.lastname}
-  //     </UserProfile>
-  //     <Button variant="outlined" color="primary">
-  //       Cancel
-  //     </Button>
-  //   </UserItem>
-  // ));
+  console.log(sentRequests);
+
+  const outgoingRequests = sentRequests.map((u) => (
+    <UserItem>
+      <UserProfile>
+        <ProfileImage src={u.profileURL} />
+        {u.firstname + ' ' + u.lastname}
+      </UserProfile>
+      <Button variant="outlined" color="primary">
+        Cancel
+      </Button>
+    </UserItem>
+  ));
 
   // actual search users
   const searchUsers = () => {
@@ -272,7 +269,7 @@ const AddFriends: React.FC = () => {
       <div>Incoming Requests</div>
       <div>{incomingRequests}</div>
       <div>Outgoing Requests</div>
-      {/* <div>{outgoingRequests}</div> */}
+      <div>{outgoingRequests}</div>
     </>
   );
 };

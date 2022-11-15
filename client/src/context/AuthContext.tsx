@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
-import { Self } from '../interfaces/Self';
+import { Self } from '../interfaces/Friends';
 
 interface IAuthContext {
   signIn: () => void;
