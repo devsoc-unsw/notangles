@@ -1,20 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Box, Button, Dialog, Grid, IconButton, ListItem, ListItemIcon, Popover, TextField, Typography } from '@mui/material';
+import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Colorful } from '@uiw/react-color';
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { ColourIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { createNewEvent } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
+import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
@@ -33,16 +32,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
 
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const openColorPickerPopover = Boolean(colorPickerAnchorEl);
-
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
   const [newColor, setNewColor] = useState<string>(color as string);
-  const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
-  const handleColorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
   };
 
@@ -284,55 +280,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 noOff
               />
             </ListItem>
-            <Box m={1} display="flex" justifyContent="center" alignItems="center">
-              <ColourIndicatorBox backgroundColour={newColor} />
-              <StyledButtonContainer>
-                <Button
-                  disableElevation
-                  variant="contained"
-                  size="small"
-                  aria-describedby={colorPickerPopoverId}
-                  onClick={handleColorClick}
-                >
-                  Edit Colour
-                </Button>
-              </StyledButtonContainer>
-              <Popover
-                open={openColorPickerPopover}
-                anchorEl={colorPickerAnchorEl}
-                onClose={handleCloseColorPicker}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-              >
-                <ListItem alignItems="flex-start">
-                  <Colorful
-                    color={newColor}
-                    onChange={(e) => {
-                      setIsChanged(true);
-                      setNewColor(e.hex);
-                    }}
-                  />
-                </ListItem>
-                <ListItem>
-                  <TextField
-                    id="outlined-required"
-                    label="Hex"
-                    variant="outlined"
-                    value={newColor}
-                    onChange={(e) => {
-                      setIsChanged(true);
-                      setNewColor(e.target.value);
-                    }}
-                  />
-                </ListItem>
-              </Popover>
-            </Box>
+            <ColorPicker
+              color={newColor}
+              setColor={setNewColor}
+              colorPickerAnchorEl={colorPickerAnchorEl}
+              handleOpenColorPicker={handleOpenColorPicker}
+              handleCloseColorPicker={handleCloseColorPicker}
+            />
           </StyledDialogContent>
           <ExecuteButton
             variant="contained"

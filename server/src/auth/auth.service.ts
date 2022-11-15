@@ -6,6 +6,13 @@ import { Model } from 'mongoose';
 import { FriendRequestDocument } from 'src/friend/dtos/friend.dto';
 import { UserDocument, UserInterface } from '../schemas/user.schema';
 import { UserSettingsDto } from '../user/dtos/user.dto';
+import { Request } from 'express';
+import { UserinfoResponse } from 'openid-client';
+import { User } from '@sentry/node';
+
+export interface AuthenticatedRequest extends Request {
+  user: UserinfoResponse;
+}
 
 @Injectable()
 export class AuthService {
@@ -16,33 +23,33 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: any) {
+  async createAccessToken(request: AuthenticatedRequest): Promise<string> {
     const jwtPayload = {
-      sub: user.userinfo.sub,
-      email: user.userinfo.email,
+      sub: request.user.sub,
+      email: request.user.email,
+      given_name: request.user.given_name,
+      family_name: request.user.family_name,
+      picture: request.user.picture || '',
     };
 
-    return {
-      access_token: this.jwtService.sign(jwtPayload, {
-        secret: process.env.JWT_SECRET || 'secret',
-      }),
-      uid: user.userinfo.sub
-    };
+    return this.jwtService.sign(jwtPayload, {
+      secret: process.env.JWT_SECRET || 'secret',
+    });
   }
 
   // TODO: Move the below functions into a users module
-  async createUser(userInfo: any) {
-    let isCurrentUser: UserInterface = await this.getUser(userInfo.sub);
+  async createUser(user: User) {
+    let isCurrentUser: UserInterface = await this.getUser(user.sub);
     if (isCurrentUser === null) {
       const newUser = {
         // Adding new user information from google to the database
-        userId: userInfo.sub,
-        firstname: userInfo.given_name,
-        lastname: userInfo.family_name,
-        email: userInfo.email,
+        userId: user.sub,
+        firstname: user.given_name,
+        lastname: user.family_name,
+        email: user.email,
         createdAt: new Date(),
         lastLogin: new Date(),
-        profileURL: userInfo.picture,
+        profileURL: user.picture,
         loggedIn: true,
         settings: new UserSettingsDto(
           false,
@@ -69,17 +76,17 @@ export class AuthService {
           friendRequests: [],
         }).save();
 
-        await this.sendEmail(userInfo.email);
+        await this.sendEmail(user.email);
       } catch (error) {
         throw new HttpException(error, HttpStatus.BAD_REQUEST);
       }
     } else {
       // Updating the last login time of the user
       await this.userModel.findOneAndUpdate(
-        { userId: userInfo.sub },
+        { userId: user.sub },
         {
           $set: {
-            profileURL: userInfo.picture,
+            profileURL: user.picture,
             lastLogin: new Date(),
             loggedIn: true,
           },

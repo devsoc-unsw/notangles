@@ -60,12 +60,14 @@ export default function FadeMenu() {
     if (loading) {
       return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
     } else if (user) {
-      const { firstname, lastname, profileURL } = user;
+      const { given_name, family_name, picture } = user;
+
+      console.log(user);
 
       return (
         <StyledProfile>
-          <StyledAvatar alt={firstname} src={profileURL} sx={{ width: 32, height: 32, marginLeft: 1 }} />
-          {firstname + ' ' + lastname}
+          <StyledAvatar alt={given_name} src={picture} sx={{ width: 32, height: 32, marginLeft: 1 }} />
+          {given_name + ' ' + family_name}
         </StyledProfile>
       );
     } else {

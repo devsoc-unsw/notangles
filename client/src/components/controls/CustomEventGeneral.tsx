@@ -20,9 +20,19 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   setEndTime,
   eventDays,
   setEventDays,
+  initialStartTime,
+  initialEndTime,
+  initialDay,
+  isInitialStartTime,
+  setIsInitialStartTime,
+  isInitialEndTime,
+  setIsInitialEndTime,
+  isInitialDay,
+  setIsInitialDay,
 }) => {
   const handleFormat = (newFormats: string[]) => {
     setEventDays(newFormats);
+    setIsInitialDay(false);
   };
 
   return (
@@ -72,17 +82,21 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
       <StyledListItem>
         <StyledListItemText primary="Start time" />
         <TimePicker
-          value={startTime}
+          // Displays time as the time of the grid the user pressed
+          // when popover has just been opened
+          value={isInitialStartTime ? initialStartTime : startTime}
           renderInput={(params) => <TextField {...params} />}
           onChange={(e) => {
             if (e) setStartTime(e);
+            setIsInitialStartTime(false);
+            setEndTime(initialEndTime);
           }}
         />
       </StyledListItem>
       <StyledListItem>
         <StyledListItemText primary="End time" />
         <TimePicker
-          value={endTime}
+          value={isInitialEndTime ? initialEndTime : endTime}
           renderInput={(params) => {
             const tooEarly = !areValidEventTimes(startTime, endTime);
             return (
@@ -91,12 +105,14 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
           }}
           onChange={(e) => {
             if (e) setEndTime(e);
+            setIsInitialEndTime(false);
+            setStartTime(initialStartTime);
           }}
         />
       </StyledListItem>
       <DropdownOption
         optionName="Days"
-        optionState={eventDays}
+        optionState={isInitialDay ? [initialDay] : eventDays}
         setOptionState={handleFormat}
         optionChoices={daysShort}
         multiple={true}

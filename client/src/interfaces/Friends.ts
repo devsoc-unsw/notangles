@@ -1,9 +1,9 @@
 export interface Self {
-  userId: string;
-  firstname: string;
-  lastname: string;
-  profileURL: string;
+  sub: string;
+  given_name: string;
+  family_name: string;
   email: string;
+  picture: string;
 }
 
 export interface User {

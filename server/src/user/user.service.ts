@@ -175,11 +175,11 @@ export class UserService {
   async getUserByFullName(fullname: string) {
     const numSpaces: number = fullname.match(/_/g).length;
     const nameSplit = fullname.split('_');
-    const givenName = nameSplit[0];
+    const given_name = nameSplit[0];
     const lastNames = nameSplit.slice(1, numSpaces + 1).join(' ');
 
     const users = await this.userModel.find({
-      $and: [{ firstname: givenName }, { lastname: lastNames }],
+      $and: [{ firstname: given_name }, { lastname: lastNames }],
     });
 
     if (!users || users.length === 0)

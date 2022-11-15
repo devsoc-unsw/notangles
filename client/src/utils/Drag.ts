@@ -395,12 +395,18 @@ const updateDropTarget = (now?: boolean) => {
   const dragRect = dragElement.getBoundingClientRect();
 
   // Wait for the current width/height transition to end before calculating the next transition
-  if (lastRecWidth !== dragRect.width) {
+  // ignores off-by-0.1s
+  if (Math.abs(lastRecWidth - dragRect.width) > 0.1) {
+    // check for need to update height as well;
+    // or will delay transition even longer if check is true next call to this func
+    if (Math.abs(lastRecHeight - dragRect.height) > 0.1) {
+      lastRecHeight = dragRect.height;
+    }
     lastRecWidth = dragRect.width;
     lastUpdate += transitionTime;
     return;
   }
-  if (lastRecHeight !== dragRect.height) {
+  if (Math.abs(lastRecHeight - dragRect.height) > 0.1) {
     lastRecHeight = dragRect.height;
     lastUpdate += heightTransitionTime;
     return;
@@ -584,9 +590,8 @@ const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserv
   const entryHeight = entries[0].contentRect.height;
 
   if (prevWidth !== -1) {
-    // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes 
+    // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes
     moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, (prevHeight - entryHeight) / 2);
-    
   }
   prevWidth = entryWidth;
   prevHeight = entryHeight;
@@ -788,14 +793,14 @@ const drop = () => {
         const baserect = gridChildren[1].getBoundingClientRect();
 
         // x and y displacement of the drag target from the start-point of the grid
-        const displacementx = dragrect.x - baserect.x;
+        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
         const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
         // Get the size of an arbitrary grid cell
         const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
 
         // Get the grid coordinates of the dragTarget when released
-        const [colIndex, rowIndex] = [Math.round(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
+        const [colIndex, rowIndex] = [Math.floor(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
 
         const eventLength = dragTarget.time.end - dragTarget.time.start;
 

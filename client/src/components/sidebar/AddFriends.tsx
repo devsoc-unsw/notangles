@@ -88,7 +88,7 @@ const AddFriends: React.FC = () => {
   };
 
   const getFriendRequests = () => {
-    fetch(`/api/friend/request/${user?.userId}`, {
+    fetch(`/api/friend/request/${user?.sub}`, {
       method: 'get',
       headers: headers,
     })
@@ -111,7 +111,7 @@ const AddFriends: React.FC = () => {
 
   const sendFriendRequest = (id: string) => {
     const body = {
-      senderId: user?.userId,
+      senderId: user?.sub,
       sendeeId: id,
     };
 
@@ -139,7 +139,7 @@ const AddFriends: React.FC = () => {
   const cancelFriendRequest = (id: string) => {
     // create a new friend object
     const body = {
-      senderId: user?.userId,
+      senderId: user?.sub,
       sendeeId: id,
     };
 

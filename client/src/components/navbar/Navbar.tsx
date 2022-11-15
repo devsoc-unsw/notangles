@@ -68,23 +68,6 @@ const Navbar: React.FC = () => {
   const { term, termName, year } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { user, loading, signIn, signOut } = useAuth();
-
-  const buildUser = () => {
-    if (loading) {
-      return <ScuffedLoadingSpinner>Loading...</ScuffedLoadingSpinner>;
-    } else if (user) {
-      return (
-        <Avatar alt={user.firstname} src={user.profileURL} sx={{ width: 32, height: 32, marginLeft: 1 }} onClick={signOut} />
-      );
-    } else {
-      return (
-        <Button variant="contained" color="secondary" onClick={signIn} sx={{ marginLeft: 1 }}>
-          Sign In
-        </Button>
-      );
-    }
-  };
 
   return (
     <NavbarBox>
