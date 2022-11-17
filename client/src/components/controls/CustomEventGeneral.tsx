@@ -105,7 +105,6 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
           onChange={(e) => {
             if (e) setEndTime(e);
             setIsInitialEndTime(false);
-            console.log('setting end time');
           }}
         />
       </StyledListItem>
