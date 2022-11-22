@@ -143,10 +143,7 @@ export class FriendService {
     if (userId === friendId) return friendId;
 
     await this.friendRequestModel
-      .findOneAndUpdate(
-        { userId: userId },
-        { $addToSet: { sentRequestsTo: friendId } },
-      )
+      .findOneAndUpdate({ userId }, { $addToSet: { sentRequestsTo: friendId } })
       .exec();
 
     return friendId;
@@ -158,7 +155,7 @@ export class FriendService {
    */
   async declineFriendRequest(userId: string, friendId: string) {
     const senderRequests = await this.friendRequestModel
-      .findOne({ userId: userId })
+      .findOne({ userId })
       .exec();
 
     if (!senderRequests.sentRequestsTo.includes(friendId)) {

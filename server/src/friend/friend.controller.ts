@@ -35,6 +35,7 @@ export class FriendController {
   @UseGuards(TokenGuard)
   @Get('/search')
   async search(@Req() req: any, @Query() query) {
+    console.log(req.user);
     const createUser = async (
       user: any,
       currUserId: string,
@@ -54,14 +55,14 @@ export class FriendController {
       const user = await this.userService.getUserById(userId);
       return {
         status: 'Successfully found user!',
-        data: await createUser(user, req.user.userId, user.userId),
+        data: await createUser(user, req.user.sub, user.userId),
       };
     } else if (name) {
       const users = await this.userService.getUserByFullName(name);
       return {
         status: 'Successfully found users!',
         data: await Promise.all(
-          users.map((user) => createUser(user, req.user.userId, user.userId)),
+          users.map((user) => createUser(user, req.user.sub, user.userId)),
         ),
       };
     }
