@@ -15,8 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sentry/node": "7.22.0",
-    "@sentry/tracing": "7.22.0",
+    "@sentry/node": "7.29.0",
+    "@sentry/tracing": "7.29.0",
     "@grpc/grpc-js": "1.7.3",
     "body-parser": "1.20.1",
     "buffer-from": "1.1.2",
