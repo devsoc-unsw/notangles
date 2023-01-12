@@ -23,12 +23,21 @@ const Footer: React.FC = () => {
    */
   const getRelativeTime = (date: number): string => {
     const diff = Date.now() - date;
+
     const minutes = Math.round(diff / 60000);
+
     if (minutes < 60) {
       return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
     }
+
     const hours = Math.round(minutes / 60);
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+
+    if (hours < 24) {
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    }
+
+    const days = Math.round(hours / 24);
+    return `${days} ${days === 1 ? 'day' : 'days'}`;
   };
 
   return (
