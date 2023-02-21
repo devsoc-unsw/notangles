@@ -15,7 +15,7 @@ const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
-  const [disableReset, setDisableReset] = useState(false);
+  const [disableReset, setDisableReset] = useState(true);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
@@ -24,6 +24,7 @@ const History: React.FC = () => {
   const actions = useRef<Actions>([]);
   const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const dontAdd = useRef(false);
+  const isMounted = useRef(false); //prevents reset timetable disabling on initial render
 
   /**
    * @param selectedClasses The currently selected classes
@@ -52,7 +53,6 @@ const History: React.FC = () => {
     actionsPointer.current += direction;
     setDisableLeft(actionsPointer.current <= 1);
     setDisableRight(actionsPointer.current + 1 >= actions.current.length);
-    // setDisableReset(false);
   };
 
   /**
@@ -130,6 +130,23 @@ const History: React.FC = () => {
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents]);
 
+  //Disables reset timetable button when there is no courses, classes and events selected.
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    const currentClasses = actions.current[actionsPointer.current].classes;
+    const currentEvents = actions.current[actionsPointer.current].events;
+
+    const nCourses = actions.current[actionsPointer.current].courses.length;;
+    const nEvents = Object.values(currentEvents).length;
+    const nClasses = Object.values(currentClasses).length;
+
+    (nCourses === 0 && nEvents === 0 && nClasses === 0) ? setDisableReset(true) : setDisableReset(false);
+  }, [selectedCourses, selectedClasses, createdEvents]);
+
   /**
    * Updates the index of the current action and changes the timetable data to match
    * @param direction Which way to move (1 for increment, -1 for decrement)
@@ -146,12 +163,9 @@ const History: React.FC = () => {
    * Restores the initial state of the timetable (the same state as on first page load)
    */
   const restoreInitial = () => {
-    if (!actions.current[initialIndex]) return;
-
     setSelectedCourses([]);
     setSelectedClasses({});
     setCreatedEvents({});
-    // setDisableReset(true);
   };
 
   /**
