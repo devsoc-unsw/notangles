@@ -15,6 +15,7 @@ const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
+  const [disableReset, setDisableReset] = useState(false);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
@@ -51,6 +52,7 @@ const History: React.FC = () => {
     actionsPointer.current += direction;
     setDisableLeft(actionsPointer.current <= 1);
     setDisableRight(actionsPointer.current + 1 >= actions.current.length);
+    // setDisableReset(false);
   };
 
   /**
@@ -146,9 +148,10 @@ const History: React.FC = () => {
   const restoreInitial = () => {
     if (!actions.current[initialIndex]) return;
 
-    setSelectedCourses(actions.current[initialIndex].courses);
-    setSelectedClasses(duplicateClasses(actions.current[initialIndex].classes));
-    setCreatedEvents(actions.current[initialIndex].events);
+    setSelectedCourses([]);
+    setSelectedClasses({});
+    setCreatedEvents({});
+    // setDisableReset(true);
   };
 
   /**
@@ -190,8 +193,8 @@ const History: React.FC = () => {
 
   return (
     <>
-      <Tooltip title="Reset Timetable">
-        <IconButton color="inherit" onClick={() => restoreInitial()} size="large">
+      <Tooltip title="Clear Timetable">
+        <IconButton disabled={disableReset} color="inherit" onClick={() => restoreInitial()} size="large">
           <Restore />
         </IconButton>
       </Tooltip>
