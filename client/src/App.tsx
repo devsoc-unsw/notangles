@@ -98,6 +98,8 @@ const App: React.FC = () => {
     setTermNumber,
     setCoursesList,
     setLastUpdated,
+    selectedTimetable,
+    setSelectedTimetable,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -283,8 +285,8 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
-    handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
-      const savedClasses: SavedClasses = storage.get('selectedClasses');
+    handleSelectCourse(storage.get('timetables')[selectedTimetable].selectedCourses, true, (newSelectedCourses) => {
+      const savedClasses: SavedClasses = storage.get('timetables')[0].selectedClasses;
       const newSelectedClasses: SelectedClasses = {};
 
       Object.keys(savedClasses).forEach((courseCode) => {
@@ -311,7 +313,7 @@ const App: React.FC = () => {
       });
       setSelectedClasses(newSelectedClasses);
     });
-    setCreatedEvents(storage.get('createdEvents'));
+    setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
   };
 
   useEffect(() => {
@@ -320,9 +322,11 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
+    let newTimetables = storage.get('timetables');
+    newTimetables[selectedTimetable].selectedCourses = selectedCourses.map((course) => course.code);
     storage.set(
-      'selectedCourses',
-      selectedCourses.map((course) => course.code)
+      'timetables',
+      newTimetables
     );
   }, [selectedCourses]);
 
@@ -337,11 +341,15 @@ const App: React.FC = () => {
       });
     });
 
-    storage.set('selectedClasses', savedClasses);
+    let newTimetables = storage.get('timetables');
+    newTimetables[selectedTimetable].selectedClasses = savedClasses;
+    storage.set('timetables', newTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
-    storage.set('createdEvents', createdEvents);
+    let newTimetables = storage.get('timetables');
+    newTimetables[selectedTimetable].createdEvents = createdEvents;
+    storage.set('timetables', newTimetables);
   }, [createdEvents]);
 
   /**

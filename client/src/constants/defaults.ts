@@ -7,9 +7,13 @@ const defaults: Record<string, any> = {
   isHideClassInfo: false,
   isHideExamClasses: false,
   isConvertToLocalTimezone: true,
-  selectedCourses: [],
-  selectedClasses: {},
-  createdEvents: {},
+  timetables: [
+    {
+      selectedCourses: [],
+      selectedClasses: {},
+      createdEvents: {},
+    }
+  ]
 };
 
 export default defaults;
