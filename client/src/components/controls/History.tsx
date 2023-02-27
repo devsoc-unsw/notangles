@@ -174,7 +174,7 @@ const History: React.FC = () => {
    */
   const handleKeyDown = (event: KeyboardEvent) => {
     // event.metaKey corresponds to the Cmd key on Mac
-    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
+    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
 
     event.preventDefault();
 
@@ -185,6 +185,9 @@ const History: React.FC = () => {
       if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
         changeHistory(1);
       }
+      if (event.key === 'd') {
+        restoreInitial();
+      }
     }
 
     if (isMacOS && event.metaKey) {
@@ -193,6 +196,9 @@ const History: React.FC = () => {
       }
       if (event.shiftKey && event.key === 'z' && actionsPointer.current + 1 < actions.current.length) {
         changeHistory(1);
+      }
+      if (event.key === 'd') {
+        restoreInitial();
       }
     }
   };
