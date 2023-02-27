@@ -208,12 +208,13 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
+  let clearTooltip = isMacOS ? 'Clear (Ctrl+D)' : 'Clear (Cmd+D)';
   let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
   let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
 
   return (
     <>
-      <Tooltip title="Clear Timetable">
+      <Tooltip title={clearTooltip}>
         <IconButton disabled={disableReset} color="inherit" onClick={() => restoreInitial()} size="large">
           <Restore />
         </IconButton>
