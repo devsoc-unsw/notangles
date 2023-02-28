@@ -11,7 +11,7 @@ import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { createNewEvent } from '../../utils/createEvent';
+import { createNewEvent, createNewInviteEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
@@ -168,15 +168,13 @@ const CustomEvent: React.FC = () => {
         'eyJ0eXBlIjoiZXZlbnQiLCJldmVudCI6eyJpZCI6ImJiZjgyNDgyLTUxYmQtNDI4YS04YTY4LTk2MThmYTdlZGUyYiIsIm5hbWUiOiJUaXRsZSIsImxvY2F0aW9uIjoibG9jYXRpb24iLCJkZXNjcmlwdGlvbiI6IiIsImNvbG9yIjoiIzFGN0U4QyJ9LCJ0aW1lIjp7ImRheSI6MSwic3RhcnQiOjksImVuZCI6MTB9fQ==';
       console.log(atob(encoded));
       const inviteEvent = JSON.parse(atob(encoded));
-      // const { invName, invLocation, invDescription, invColor } = inviteEvent.event;
-      // const { invDay, invStart, invEnd } = inviteEvent.time;
       console.log(inviteEvent);
-      const newEvent = createEvent(
+      const newEvent = createInviteEvent(
         inviteEvent.event.name,
         inviteEvent.event.location,
         inviteEvent.event.description,
         inviteEvent.event.color,
-        'Mo',
+        inviteEvent.time.day,
         inviteEvent.time.start,
         inviteEvent.time.end
       );
@@ -242,6 +240,39 @@ const CustomEvent: React.FC = () => {
 
     return newEvent;
   };
+
+  const createInviteEvent = (
+    name: string,
+    location: string,
+    description: string,
+    color: string,
+    day: number,
+    startTime: number,
+    endTime: number
+  ) => {
+    const newEvent = createNewInviteEvent(name, location, description, color, day, startTime, endTime);
+
+    setCreatedEvents({
+      ...createdEvents,
+      [newEvent.event.id]: newEvent,
+    });
+
+    // setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    // setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
+
+    // // Updating the days of the week must be handled here otherwise
+    // // DroppedCards will not have the updated days and it will crash
+    // // (which is understandable since it's breaking React best practices by not being purely functional)
+    // if (daysShort.indexOf(day) == 5) {
+    //   const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    //   setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
+    // } else if (daysShort.indexOf(day) == 6) {
+    //   setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+    // }
+
+    return newEvent;
+  }
 
   return (
     <StyledControlsButton>
