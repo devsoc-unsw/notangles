@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Restore, Undo } from '@mui/icons-material';
+import { Redo, Delete, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -216,7 +216,7 @@ const History: React.FC = () => {
     <>
       <Tooltip title={clearTooltip}>
         <IconButton disabled={disableReset} color="inherit" onClick={() => restoreInitial()} size="large">
-          <Restore />
+          <Delete />
         </IconButton>
       </Tooltip>
       <Tooltip title={undoTooltip}>
