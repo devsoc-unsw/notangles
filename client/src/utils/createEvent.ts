@@ -32,3 +32,33 @@ export const createNewEvent = (
   };
   return newEvent;
 };
+
+export const createNewInviteEvent = (
+  name: string,
+  location: string,
+  description: string,
+  color: string,
+  day: number,
+  startTime: number,
+  endTime: number
+) => {
+  console.log(`invite ${name}`);
+  const uuid = uuidv4();
+
+  const newEvent: EventPeriod = {
+    type: 'event',
+    event: {
+      id: uuid,
+      name: name,
+      location: location,
+      description: description,
+      color: color,
+    },
+    time: {
+      day: day,
+      start: startTime,
+      end: endTime,
+    },
+  };
+  return newEvent;
+};
