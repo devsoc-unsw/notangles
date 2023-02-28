@@ -18,6 +18,7 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
+  timetableWidth,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -324,10 +325,7 @@ const App: React.FC = () => {
   useUpdateEffect(() => {
     let newTimetables = storage.get('timetables');
     newTimetables[selectedTimetable].selectedCourses = selectedCourses.map((course) => course.code);
-    storage.set(
-      'timetables',
-      newTimetables
-    );
+    storage.set('timetables', newTimetables);
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -410,6 +408,50 @@ const App: React.FC = () => {
     );
   };
 
+  // TO SILENCE THE TYPE ERROR: WILL MOVE THIS SOMEWHERE ELSE LATER
+  type TimetableData = {
+    name: String;
+    selectedCourses: Array<Object>;
+    selectedClasses: Object;
+    createdEvents: Object;
+  };
+
+  // EXPERIMENTAL: Currently adds a new timetable to local storage
+  // Future feature: should have a defined constant for max size
+  const handleCreateTimetable = () => {
+    const oldTimetables = storage.get('timetables');
+    const nextIndex = oldTimetables.length;
+
+    const newTimetable: TimetableData = {
+      name: `Timetable${nextIndex}`,
+      selectedCourses: [],
+      selectedClasses: {},
+      createdEvents: {},
+    };
+    storage.set('timetables', [...oldTimetables, newTimetable]);
+
+    //Should switch current timetable to current timetable
+    setSelectedTimetable(nextIndex);
+  };
+
+  // EXPERIMENTAL: Currently removes a timetable from local storage.
+  // Intended behaviour is a placeholder for the menu -> delete on the current tab
+  const handleDeleteTimetable = (targetIndex: number) => {
+    const oldTimetables = storage.get('timetables');
+    // If only one table, prevent the delete
+    if (oldTimetables.length > 0) {
+      const newTimetables = oldTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
+
+      // Intended behaviour: closing current tab will move to the NEXT (+1) tab, unless it is the last tab
+      let newIndex = targetIndex + 1;
+      if (newIndex === newTimetables.length) {
+        newIndex = targetIndex - 1;
+      }
+
+      setSelectedTimetable(newIndex);
+    }
+  };
+
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
@@ -487,6 +529,16 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
+                {storage.get('timetables').map((timetable: TimetableData, index: number) => (
+                  <div onClick={() => setSelectedTimetable(index)}>
+                    {index === selectedTimetable ? 'CURRENT ' : ' '}
+                    {timetable.name}
+                    {index === selectedTimetable && (
+                      <button onClick={() => handleDeleteTimetable(index)}> x (replace with open menu) </button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={handleCreateTimetable}> Replace later: Add new timetable </button>
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
                   save to calendar

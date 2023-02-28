@@ -9,6 +9,7 @@ const defaults: Record<string, any> = {
   isConvertToLocalTimezone: true,
   timetables: [
     {
+      name: 'Timetable0',
       selectedCourses: [],
       selectedClasses: {},
       createdEvents: {},
