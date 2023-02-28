@@ -91,10 +91,10 @@ const getCourseInfo = async (
     // Remove any leftover courses from localStorage if they are not offered in the current term
     // which is why a 400 error is returned
     if (data.status === 400) {
-      const selectedCourses = storage.get('selectedCourses');
+      const selectedCourses = storage.get('timetables')[0].selectedCourses;
       if (selectedCourses.includes(courseCode)) {
         delete selectedCourses[courseCode];
-        storage.set('selectedCourses', selectedCourses);
+        storage.set('timetables[0].selectedCourses', selectedCourses);
       } else {
         throw new NetworkError('Internal server error');
       }
