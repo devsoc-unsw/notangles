@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
+import { AccessTime, Close, ContentCopy, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
+import { Dialog, Grid, IconButton, InputAdornment, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -17,6 +17,7 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 import LinkIcon from '@mui/icons-material/Link';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -160,8 +161,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const handleCloseDialog = () => {
-    // console.log(JSON.stringify(eventPeriod));
-    // console.log(btoa(JSON.stringify(eventPeriod)));
     if (isEditing && isChanged) {
       // Open a dialog to alert user that changes have not been saved when in isEditing mode
       setOpenSaveDialog(true);
@@ -354,10 +353,21 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               </ListItemIcon>
               <TextField
                 InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                        }}
+                      >
+                        <ContentCopyIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                   readOnly: true,
                 }}
                 size="small"
-                value={`https://nyaaaaa.com`}
+                value={btoa(JSON.stringify(eventPeriod))}
               />
             </StyledListItem>
           </StyledDialogContent>
