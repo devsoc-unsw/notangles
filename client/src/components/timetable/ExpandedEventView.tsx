@@ -16,6 +16,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import LinkIcon from '@mui/icons-material/Link';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -159,6 +160,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   };
 
   const handleCloseDialog = () => {
+    // console.log(JSON.stringify(eventPeriod));
+    // console.log(btoa(JSON.stringify(eventPeriod)));
     if (isEditing && isChanged) {
       // Open a dialog to alert user that changes have not been saved when in isEditing mode
       setOpenSaveDialog(true);
@@ -344,6 +347,18 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <Typography>
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
+            </StyledListItem>
+            <StyledListItem>
+              <ListItemIcon>
+                <LinkIcon />
+              </ListItemIcon>
+              <TextField
+                InputProps={{
+                  readOnly: true,
+                }}
+                size="small"
+                value={`https://nyaaaaa.com`}
+              />
             </StyledListItem>
           </StyledDialogContent>
         </>

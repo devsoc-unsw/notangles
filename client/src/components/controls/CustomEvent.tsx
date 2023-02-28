@@ -16,6 +16,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
+import CustomEventInvite from './CustomEventInvite';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -34,6 +35,7 @@ const CustomEvent: React.FC = () => {
   const [classCode, setClassCode] = useState<string>('');
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
+  const [link, setLink] = useState<string>('');
   const [color, setColor] = useState<string>('#1F7E8C');
 
   // NO pre-selected fields when event popover is opened from controls bar
@@ -114,6 +116,9 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
     setClassesList([]);
 
+    // Reset info about the invite event
+    setLink('');
+
     // Close the popovers
     setColorPickerAnchorEl(null);
     setCreateEventAnchorEl(null);
@@ -142,7 +147,7 @@ const CustomEvent: React.FC = () => {
         const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
         newEvents[newEvent.event.id] = newEvent;
       }
-    } else {
+    } else if (eventType === 'Tutoring') {
       // Get the class details according to the chosen class code.
       const classDetails = classesList.find((classData) => classData.section === classCode);
       // Create an event for each period of the selected class.
@@ -158,6 +163,25 @@ const CustomEvent: React.FC = () => {
         );
         newEvents[newEvent.event.id] = newEvent;
       });
+    } else {
+      const encoded =
+        'eyJ0eXBlIjoiZXZlbnQiLCJldmVudCI6eyJpZCI6ImJiZjgyNDgyLTUxYmQtNDI4YS04YTY4LTk2MThmYTdlZGUyYiIsIm5hbWUiOiJUaXRsZSIsImxvY2F0aW9uIjoibG9jYXRpb24iLCJkZXNjcmlwdGlvbiI6IiIsImNvbG9yIjoiIzFGN0U4QyJ9LCJ0aW1lIjp7ImRheSI6MSwic3RhcnQiOjksImVuZCI6MTB9fQ==';
+      console.log(atob(encoded));
+      const inviteEvent = JSON.parse(atob(encoded));
+      // const { invName, invLocation, invDescription, invColor } = inviteEvent.event;
+      // const { invDay, invStart, invEnd } = inviteEvent.time;
+      console.log(inviteEvent);
+      const newEvent = createEvent(
+        inviteEvent.event.name,
+        inviteEvent.event.location,
+        inviteEvent.event.description,
+        inviteEvent.event.color,
+        'Mo',
+        inviteEvent.time.start,
+        inviteEvent.time.end
+      );
+      console.log(newEvent);
+      newEvents[newEvent.event.id] = newEvent;
     }
 
     setEventType('General');
@@ -175,6 +199,9 @@ const CustomEvent: React.FC = () => {
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
+
+    // Reset info about the invite event
+    setLink('');
 
     // Close the popover
     setColorPickerAnchorEl(null);
@@ -244,6 +271,7 @@ const CustomEvent: React.FC = () => {
               <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
                 <Tab label="General" value="General" />
                 <Tab label="Tutoring" value="Tutoring" />
+                <Tab label="Add Invite" value="Add Invite" />
               </TabList>
             </Box>
             <StyledTabPanel value="General">
@@ -279,14 +307,19 @@ const CustomEvent: React.FC = () => {
                 setClassCode={setClassCode}
               />
             </StyledTabPanel>
+            <StyledTabPanel value="Add Invite">
+              <CustomEventInvite link={link} setLink={setLink} />
+            </StyledTabPanel>
           </TabContext>
-          <ColorPicker
-            color={color}
-            setColor={setColor}
-            colorPickerAnchorEl={colorPickerAnchorEl}
-            handleOpenColorPicker={handleOpenColorPicker}
-            handleCloseColorPicker={handleCloseColorPicker}
-          />
+          {eventType !== 'Add Invite' && (
+            <ColorPicker
+              color={color}
+              setColor={setColor}
+              colorPickerAnchorEl={colorPickerAnchorEl}
+              handleOpenColorPicker={handleOpenColorPicker}
+              handleCloseColorPicker={handleCloseColorPicker}
+            />
+          )}
         </StyledList>
         <ExecuteButton
           variant="contained"
@@ -294,7 +327,8 @@ const CustomEvent: React.FC = () => {
           disableElevation
           disabled={
             (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
-            (eventType === 'Tutoring' && (courseCode === '' || classCode === ''))
+            (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
+            (eventType === 'Add Invite' && link === '')
           }
           onClick={createEvents}
         >
