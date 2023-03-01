@@ -287,7 +287,7 @@ const App: React.FC = () => {
    */
   const updateTimetableEvents = () => {
     handleSelectCourse(storage.get('timetables')[selectedTimetable].selectedCourses, true, (newSelectedCourses) => {
-      const savedClasses: SavedClasses = storage.get('timetables')[0].selectedClasses;
+      const savedClasses: SavedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
       const newSelectedClasses: SelectedClasses = {};
 
       Object.keys(savedClasses).forEach((courseCode) => {
@@ -319,7 +319,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
-  }, [year, isConvertToLocalTimezone]);
+  }, [year, isConvertToLocalTimezone, selectedTimetable]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
