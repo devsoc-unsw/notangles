@@ -101,6 +101,8 @@ const App: React.FC = () => {
     setLastUpdated,
     selectedTimetable,
     setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -215,8 +217,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
@@ -438,19 +440,40 @@ const App: React.FC = () => {
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
   const handleDeleteTimetable = (targetIndex: number) => {
     const oldTimetables = storage.get('timetables');
-    // If only one table, prevent the delete
-    if (oldTimetables.length > 0) {
-      const newTimetables = oldTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
 
+    // If only one table, prevent the delete
+    if (oldTimetables.length > 1) {
       // Intended behaviour: closing current tab will move to the NEXT (+1) tab, unless it is the last tab
       let newIndex = targetIndex + 1;
-      if (newIndex === newTimetables.length) {
-        newIndex = targetIndex - 1;
+      if (targetIndex === oldTimetables.length - 1) {
+        newIndex = targetIndex - 2;
       }
+
+      const newTimetables = oldTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
+      storage.set('timetables', newTimetables);
+
 
       setSelectedTimetable(newIndex);
     }
   };
+
+  // EXPERIMENTAL: Rerenders the timetables component after insertion/deletion
+  useEffect(() => {
+    const handleTimetables = () => {
+      const timetables = storage.get('timetables').map((timetable: TimetableData, index: number) => (
+        <div key={index} onClick={() => setSelectedTimetable(index)}>
+          {index === selectedTimetable ? 'CURRENT ' : ' '}
+          {timetable.name}
+          {index === selectedTimetable && (
+            <button onClick={() => handleDeleteTimetable(index)}> x (replace with open menu) </button>
+          )}
+        </div>
+      ));
+      setDisplayTimetables(timetables);
+    }
+    handleTimetables();
+  })
+
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
@@ -529,15 +552,7 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
-                {storage.get('timetables').map((timetable: TimetableData, index: number) => (
-                  <div onClick={() => setSelectedTimetable(index)}>
-                    {index === selectedTimetable ? 'CURRENT ' : ' '}
-                    {timetable.name}
-                    {index === selectedTimetable && (
-                      <button onClick={() => handleDeleteTimetable(index)}> x (replace with open menu) </button>
-                    )}
-                  </div>
-                ))}
+                {displayTimetables}
                 <button onClick={handleCreateTimetable}> Replace later: Add new timetable </button>
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
