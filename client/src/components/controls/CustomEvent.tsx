@@ -164,11 +164,7 @@ const CustomEvent: React.FC = () => {
         newEvents[newEvent.event.id] = newEvent;
       });
     } else {
-      const encoded =
-        'eyJ0eXBlIjoiZXZlbnQiLCJldmVudCI6eyJpZCI6ImJiZjgyNDgyLTUxYmQtNDI4YS04YTY4LTk2MThmYTdlZGUyYiIsIm5hbWUiOiJUaXRsZSIsImxvY2F0aW9uIjoibG9jYXRpb24iLCJkZXNjcmlwdGlvbiI6IiIsImNvbG9yIjoiIzFGN0U4QyJ9LCJ0aW1lIjp7ImRheSI6MSwic3RhcnQiOjksImVuZCI6MTB9fQ==';
-      console.log(atob(encoded));
-      const inviteEvent = JSON.parse(atob(encoded));
-      console.log(inviteEvent);
+      const inviteEvent = JSON.parse(atob(link));
       const newEvent = createInviteEvent(
         inviteEvent.event.name,
         inviteEvent.event.location,
@@ -178,7 +174,6 @@ const CustomEvent: React.FC = () => {
         inviteEvent.time.start,
         inviteEvent.time.end
       );
-      console.log(newEvent);
       newEvents[newEvent.event.id] = newEvent;
     }
 
