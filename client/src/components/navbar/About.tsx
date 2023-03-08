@@ -63,28 +63,26 @@ const About: React.FC = () => {
       </FeatList>
       <StyledTypography variant="h6">About the team</StyledTypography>
       <Typography gutterBottom variant="body2">
-        The current 2022 development team consists of two leads and nine members.
+        The current 2022 development team consists of two directors and seven members.
       </Typography>
       <Typography gutterBottom variant="body2">
-        <strong>Team Leads:</strong>
+        <strong>Team Directors:</strong>
       </Typography>
       <FeatList>
-        <li>Mun Joon Teo</li>
-        <li>Oliver Xu</li>
+        <li>Manhua Lu</li>
+        <li>Raiyan Ahmed</li>
       </FeatList>
       <Typography gutterBottom variant="body2">
         <strong>Members:</strong>
       </Typography>
       <FeatList>
-        <li>Angella Pham</li>
-        <li>Emily Tang</li>
-        <li>Grace Kan</li>
-        <li>Manhua Lu</li>
-        <li>Martin Knezevic</li>
-        <li>Maxwell Phillips</li>
-        <li>Omar Khursheed</li>
-        <li>Raiyan Ahmed</li>
+        <li>Eklavya Joshi</li>
+        <li>Jasmine Tran</li>
+        <li>Michael Siu</li>
+        <li>Sally Sun</li>
+        <li>Shaam Jevan</li>
         <li>Sijin Soon</li>
+        <li>Wanning Cai</li>
       </FeatList>
       <StyledTypography variant="h6">Disclaimer</StyledTypography>
       <Typography gutterBottom variant="body2">
