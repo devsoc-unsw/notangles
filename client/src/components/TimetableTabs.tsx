@@ -1,7 +1,8 @@
-import { Tabs, Tab } from '@mui/material';
-import { useContext } from 'react';
+import { Box, Tabs, Tab, MenuList, MenuItem, Menu } from '@mui/material';
+import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import storage from '../utils/storage';
+import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 
 const TimetableTabs: React.FC = () => {
   type TimetableData = {
@@ -10,6 +11,8 @@ const TimetableTabs: React.FC = () => {
     selectedClasses: Object;
     createdEvents: Object;
   };
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const {
     is12HourMode,
@@ -43,6 +46,9 @@ const TimetableTabs: React.FC = () => {
     displayTimetables,
     setDisplayTimetables,
   } = useContext(AppContext);
+
+  //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
+  const TabStyle = {};
 
   // EXPERIMENTAL: Currently removes a timetable from local storage.
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
@@ -83,19 +89,49 @@ const TimetableTabs: React.FC = () => {
     setSelectedTimetable(nextIndex);
   };
 
+  // MENU HANDLERS
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <div>
-      {displayTimetables.map((timetable: TimetableData, index: number) => (
-        <div key={index} onClick={() => setSelectedTimetable(index)}>
-          {index === selectedTimetable ? 'CURRENT ' : ' '}
-          {timetable.name}
-          {index === selectedTimetable && (
-            <button onClick={() => handleDeleteTimetable(index)}> x (replace with open menu) </button>
-          )}
-        </div>
-      ))}
-      <button onClick={handleCreateTimetable}> Replace later: Add new timetable </button>
-    </div>
+    <Box>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={handleMenuClose}>
+          <ContentCopy fontSize="small" />
+        </MenuItem>
+        <MenuItem onClick={handleMenuClose}>
+          <EditOutlined fontSize="small" />
+        </MenuItem>
+        <MenuItem onClick={handleMenuClose}>
+          <DeleteOutline fontSize="small" onClick={() => handleDeleteTimetable(selectedTimetable)} />
+        </MenuItem>
+      </Menu>
+      <Tabs value={selectedTimetable}>
+        {displayTimetables.map((timetable: TimetableData, index: number) => (
+          <Tab
+            label={timetable.name}
+            sx={TabStyle}
+            onClick={() => setSelectedTimetable(index)}
+            icon={
+              selectedTimetable === index ? (
+                <span onClick={handleMenuClick}>
+                  <MoreHoriz />
+                </span>
+              ) : (
+                <></>
+              )
+            }
+            iconPosition="end"
+          />
+        ))}
+        <Tab icon={<Add onClick={handleCreateTimetable} />}></Tab>
+      </Tabs>
+    </Box>
   );
 };
 export { TimetableTabs };
