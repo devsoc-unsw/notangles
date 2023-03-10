@@ -129,7 +129,7 @@ const TimetableTabs: React.FC = () => {
             iconPosition="end"
           />
         ))}
-        <Tab icon={<Add onClick={handleCreateTimetable} />}></Tab>
+        <Tab icon={<Add />} onClick={handleCreateTimetable} />
       </Tabs>
     </Box>
   );
