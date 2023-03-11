@@ -48,7 +48,15 @@ const TimetableTabs: React.FC = () => {
   } = useContext(AppContext);
 
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
-  const TabStyle = {};
+  const TabStyle = {
+    borderStyle: 'solid',
+    borderWidth: '2px',
+    borderRadius: '10px 10px 0 0',
+    color: 'grey',
+    margin: '3px 0 0 0',
+    boxShadow: '2px -2px 2px currentcolor',
+    '&.Mui-selected': { color: 'blue' },
+  };
 
   // EXPERIMENTAL: Currently removes a timetable from local storage.
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
@@ -99,7 +107,7 @@ const TimetableTabs: React.FC = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ paddingTop: '10px' }}>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={handleMenuClose}>
           <ContentCopy fontSize="small" />
