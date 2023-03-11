@@ -144,7 +144,7 @@ const History: React.FC = () => {
     const nEvents = Object.values(currentEvents).length;
     const nClasses = Object.values(currentClasses).length;
 
-    (nCourses === 0 && nEvents === 0 && nClasses === 0) ? setDisableReset(true) : setDisableReset(false);
+    setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
   }, [selectedCourses, selectedClasses, createdEvents]);
 
   /**
@@ -160,9 +160,9 @@ const History: React.FC = () => {
   };
 
   /**
-   * Restores the initial state of the timetable (the same state as on first page load)
+   * Resets timetable and selected courses to be completely empty
    */
-  const restoreInitial = () => {
+  const clearAll = () => {
     setSelectedCourses([]);
     setSelectedClasses({});
     setCreatedEvents({});
@@ -186,7 +186,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        restoreInitial();
+        clearAll();
       }
     }
 
@@ -198,7 +198,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        restoreInitial();
+        clearAll();
       }
     }
   };
@@ -215,7 +215,7 @@ const History: React.FC = () => {
   return (
     <>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset} color="inherit" onClick={() => restoreInitial()} size="large">
+        <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
           <Delete />
         </IconButton>
       </Tooltip>
