@@ -63,7 +63,7 @@ const About: React.FC = () => {
       </FeatList>
       <StyledTypography variant="h6">About the team</StyledTypography>
       <Typography gutterBottom variant="body2">
-        The current 2022 development team consists of two directors and seven members.
+        The current 2023 development team consists of two directors and seven members.
       </Typography>
       <Typography gutterBottom variant="body2">
         <strong>Team Directors:</strong>
