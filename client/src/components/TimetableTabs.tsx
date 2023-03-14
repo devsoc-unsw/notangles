@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, MenuList, MenuItem, Menu } from '@mui/material';
+import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import storage from '../utils/storage';
@@ -14,33 +14,10 @@ const TimetableTabs: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const [renameOpen, setRenameOpen] = useState<boolean>(false);
+  const [renamedString, setRenamedString] = useState<String>("");
+
   const {
-    is12HourMode,
-    isDarkMode,
-    isSquareEdges,
-    isShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    isHideClassInfo,
-    isHideExamClasses,
-    isConvertToLocalTimezone,
-    setAlertMsg,
-    setErrorVisibility,
-    days,
-    term,
-    year,
-    setDays,
-    earliestStartTime,
-    setEarliestStartTime,
-    latestEndTime,
-    setLatestEndTime,
-    setTerm,
-    setYear,
-    firstDayOfTerm,
-    setFirstDayOfTerm,
-    setTermName,
-    setTermNumber,
-    setCoursesList,
-    setLastUpdated,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
@@ -106,13 +83,28 @@ const TimetableTabs: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleMenuRename = () => {
+    setRenameOpen(true);
+    setRenamedString(displayTimetables[selectedTimetable].name);
+  };
+
+  const handleRenameClose = () => {
+    let newTimetables = [...displayTimetables];
+    newTimetables[selectedTimetable].name = renamedString;
+
+    storage.set('timetables', [...newTimetables]);
+    setDisplayTimetables([...newTimetables]);
+
+    setRenameOpen(false);
+  }
+
   return (
     <Box sx={{ paddingTop: '10px' }}>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={handleMenuClose}>
           <ContentCopy fontSize="small" />
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleMenuRename}>
           <EditOutlined fontSize="small" />
         </MenuItem>
         <MenuItem onClick={handleMenuClose}>
@@ -139,6 +131,21 @@ const TimetableTabs: React.FC = () => {
         ))}
         <Tab icon={<Add />} onClick={handleCreateTimetable} />
       </Tabs>
+      <Dialog onClose={handleRenameClose} open={renameOpen}>
+        <DialogTitle>Rename Timetable</DialogTitle>
+        <TextField 
+        sx={{padding: '10px', width: '160px', alignSelf: 'center'}}
+        id="outlined-basic" 
+        variant="outlined"
+        value={renamedString}
+        onChange={(e) => setRenamedString(e.target.value)}
+        />
+        <Button 
+        sx={{margin: '10px', width: '80px', alignSelf: 'center'}} 
+        variant="contained"
+        onClick={() => handleRenameClose()}
+        >OK</Button>
+      </Dialog>
     </Box>
   );
 };
