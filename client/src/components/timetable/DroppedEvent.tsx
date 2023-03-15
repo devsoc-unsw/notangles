@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -13,6 +14,7 @@ import {
   StyledCardInner,
   StyledCardInnerGrid,
   StyledCardName,
+  CopyButton,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
@@ -173,6 +175,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
+          {fullscreenVisible && <CopyButton />}
         </StyledCardInner>
       </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />

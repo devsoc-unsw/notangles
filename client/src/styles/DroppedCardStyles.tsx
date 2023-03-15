@@ -4,6 +4,7 @@ import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const transitionName = 'class';
 
@@ -21,6 +22,24 @@ export const ExpandButton = styled(Button)`
   position: absolute;
   top: 3px;
   right: 3px;
+  box-shadow: none;
+  min-width: 0px;
+  padding: 0;
+  opacity: 40%;
+  border-radius: 2px;
+  color: #f5f5f5;
+
+  &:hover {
+    opacity: 100%;
+  }
+`;
+
+export const CopyButton = styled(ContentCopyIcon)`
+  position: absolute;
+//   top: 30px;
+//   right: 7px;
+  bottom: 7px;
+  left: 7px;
   box-shadow: none;
   min-width: 0px;
   padding: 0;
