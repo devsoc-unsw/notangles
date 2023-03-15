@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
+import { CourseContext } from '../../context/CourseContext';
+import { createNewEvent } from '../../utils/createEvent';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
@@ -14,7 +15,7 @@ import {
   StyledCardInner,
   StyledCardInnerGrid,
   StyledCardName,
-  CopyButton,
+  DuplicateButton,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
@@ -28,6 +29,13 @@ const StyledLocationIcon = styled(LocationOn)`
 const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  
+  // For duplicating events
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const [eventName, setEventName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  //const [eventDays, setEventDays] = useState<Array<string>>([initialDay]);
 
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
@@ -129,6 +137,38 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
+  const duplicateEvent = () => {
+    var tempEvent = null
+    for (const event in createdEvents) {
+        if (createdEvents[event].event.id === eventId) {
+            tempEvent = createdEvents[event]
+            break
+        }
+    }
+
+    const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    if (tempEvent != null) {
+        const eventStart = new Date()
+        eventStart.setHours(tempEvent.time.start)
+        const eventEnd = new Date()
+        eventEnd.setHours(tempEvent.time.end) 
+        console.log(eventStart, eventEnd)
+
+        const newEvent = createNewEvent(tempEvent.event.name, 
+            tempEvent.event.location, 
+            tempEvent.event.description, 
+            tempEvent.event.color, 
+            MondayToSaturday[tempEvent.time.day + 1], 
+            eventStart, 
+            eventEnd);
+        setCreatedEvents({
+          ...createdEvents,
+          [newEvent.event.id]: newEvent,
+        });
+        return newEvent;
+    }
+  }
+
   return (
     <>
       <StyledCard
@@ -175,7 +215,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
-          {fullscreenVisible && <CopyButton />}
+          {fullscreenVisible && <DuplicateButton onClick={duplicateEvent} />}
         </StyledCardInner>
       </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />

@@ -34,10 +34,8 @@ export const ExpandButton = styled(Button)`
   }
 `;
 
-export const CopyButton = styled(ContentCopyIcon)`
+export const DuplicateButton = styled(ContentCopyIcon)`
   position: absolute;
-//   top: 30px;
-//   right: 7px;
   bottom: 7px;
   left: 7px;
   box-shadow: none;
@@ -49,6 +47,7 @@ export const CopyButton = styled(ContentCopyIcon)`
 
   &:hover {
     opacity: 100%;
+    cursor: pointer;
   }
 `;
 
