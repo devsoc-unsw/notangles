@@ -143,10 +143,10 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
             const eventStart = new Date(0)
             eventStart.setHours(tempEvent.time.start)
-            eventStart.setMinutes((tempEvent.time.start % 1)*60)
+            eventStart.setMinutes((tempEvent.time.start%1)*60)
             const eventEnd = new Date(0)
             eventEnd.setHours(tempEvent.time.end) 
-            eventEnd.setMinutes((tempEvent.time.end % 1)*60)
+            eventEnd.setMinutes((tempEvent.time.end%1)*60)
             
             // Create new event
             const newEvent = createNewEvent(tempEvent.event.name, 
