@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Restore, Undo } from '@mui/icons-material';
+import { Redo, Delete, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -144,7 +144,7 @@ const History: React.FC = () => {
     const nEvents = Object.values(currentEvents).length;
     const nClasses = Object.values(currentClasses).length;
 
-    (nCourses === 0 && nEvents === 0 && nClasses === 0) ? setDisableReset(true) : setDisableReset(false);
+    setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
   }, [selectedCourses, selectedClasses, createdEvents]);
 
   /**
@@ -160,9 +160,9 @@ const History: React.FC = () => {
   };
 
   /**
-   * Restores the initial state of the timetable (the same state as on first page load)
+   * Resets timetable and selected courses to be completely empty
    */
-  const restoreInitial = () => {
+  const clearAll = () => {
     setSelectedCourses([]);
     setSelectedClasses({});
     setCreatedEvents({});
@@ -182,11 +182,11 @@ const History: React.FC = () => {
       if (event.key === 'z' && actionsPointer.current > 1) {
         changeHistory(-1);
       }
-      if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
+      if (event.shiftKey && event.key === 'z' && actionsPointer.current + 1 < actions.current.length) {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        restoreInitial();
+        clearAll();
       }
     }
 
@@ -198,7 +198,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        restoreInitial();
+        clearAll();
       }
     }
   };
@@ -210,13 +210,13 @@ const History: React.FC = () => {
 
   let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
   let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
-  let redoTooltip = isMacOS ? 'Redo (Cmd+Y)' : 'Redo (Ctrl+Shift+Z)';
+  let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Shift+Z)';
 
   return (
     <>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset} color="inherit" onClick={() => restoreInitial()} size="large">
-          <Restore />
+        <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
+          <Delete />
         </IconButton>
       </Tooltip>
       <Tooltip title={undoTooltip}>
