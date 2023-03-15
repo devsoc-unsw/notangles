@@ -32,10 +32,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const [eventName, setEventName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  //const [eventDays, setEventDays] = useState<Array<string>>([initialDay]);
 
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
@@ -138,34 +134,31 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
   const duplicateEvent = () => {
-    var tempEvent = null
+    const MondayToSaturday: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+    // Get event details
     for (const event in createdEvents) {
         if (createdEvents[event].event.id === eventId) {
-            tempEvent = createdEvents[event]
+            var tempEvent = createdEvents[event]
+
+            const eventStart = new Date(0)
+            eventStart.setHours(tempEvent.time.start)
+            eventStart.setMinutes((tempEvent.time.start % 1)*60)
+            const eventEnd = new Date(0)
+            eventEnd.setHours(tempEvent.time.end) 
+            eventEnd.setMinutes((tempEvent.time.end % 1)*60)
+            
+            // Create new event
+            const newEvent = createNewEvent(tempEvent.event.name, 
+                tempEvent.event.location, 
+                tempEvent.event.description, 
+                tempEvent.event.color, 
+                MondayToSaturday[tempEvent.time.day - 1], 
+                eventStart, 
+                eventEnd);
+            setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
             break
         }
-    }
-
-    const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    if (tempEvent != null) {
-        const eventStart = new Date()
-        eventStart.setHours(tempEvent.time.start)
-        const eventEnd = new Date()
-        eventEnd.setHours(tempEvent.time.end) 
-        console.log(eventStart, eventEnd)
-
-        const newEvent = createNewEvent(tempEvent.event.name, 
-            tempEvent.event.location, 
-            tempEvent.event.description, 
-            tempEvent.event.color, 
-            MondayToSaturday[tempEvent.time.day + 1], 
-            eventStart, 
-            eventEnd);
-        setCreatedEvents({
-          ...createdEvents,
-          [newEvent.event.id]: newEvent,
-        });
-        return newEvent;
     }
   }
 
