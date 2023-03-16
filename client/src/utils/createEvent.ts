@@ -13,7 +13,6 @@ export const createNewEvent = (
 ) => {
   const uuid = uuidv4();
   const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
-  console.log(day);
 
   const newEvent: EventPeriod = {
     type: 'event',
@@ -42,7 +41,6 @@ export const createNewInviteEvent = (
   startTime: number,
   endTime: number
 ) => {
-  console.log(`invite ${name}`);
   const uuid = uuidv4();
 
   const newEvent: EventPeriod = {

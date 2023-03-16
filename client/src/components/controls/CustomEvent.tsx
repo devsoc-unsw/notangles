@@ -222,16 +222,7 @@ const CustomEvent: React.FC = () => {
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
-    // Updating the days of the week must be handled here otherwise
-    // DroppedCards will not have the updated days and it will crash
-    // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (daysShort.indexOf(day) == 5) {
-      const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-      setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (daysShort.indexOf(day) == 6) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-    }
+    updateDays(daysShort.indexOf(day));
 
     return newEvent;
   };
@@ -252,22 +243,25 @@ const CustomEvent: React.FC = () => {
       [newEvent.event.id]: newEvent,
     });
 
-    // setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
-    // setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime)));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime)));
 
-    // // Updating the days of the week must be handled here otherwise
-    // // DroppedCards will not have the updated days and it will crash
-    // // (which is understandable since it's breaking React best practices by not being purely functional)
-    // if (daysShort.indexOf(day) == 5) {
-    //   const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-    //   setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    // } else if (daysShort.indexOf(day) == 6) {
-    //   setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-    // }
+    updateDays(day);
 
     return newEvent;
-  }
+  };
+
+  const updateDays = (day: number) => {
+    // Updating the days of the week must be handled here otherwise
+    // DroppedCards will not have the updated days and it will crash
+    // (which is understandable since it's breaking React best practices by not being purely functional)
+    if (day == 5) {
+      const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
+    } else if (day == 6) {
+      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+    }
+  };
 
   return (
     <StyledControlsButton>
