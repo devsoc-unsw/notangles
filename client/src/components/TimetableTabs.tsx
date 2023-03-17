@@ -146,7 +146,9 @@ const TimetableTabs: React.FC = () => {
         </Button>
       </Dialog>
       <Dialog open={deleteOpen} onClose={handleMenuClose}>
-        <DialogTitle>{`Delete ${displayTimetables[selectedTimetable].name}?`}</DialogTitle>
+        {displayTimetables[selectedTimetable] && (
+          <DialogTitle>{`Delete ${displayTimetables[selectedTimetable].name}?`}</DialogTitle>
+        )}
         <DialogActions>
           <Button
             sx={ModalButtonStyle}
