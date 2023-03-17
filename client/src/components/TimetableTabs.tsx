@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, Button } from '@mui/material';
+import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, DialogActions, TextField, Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import storage from '../utils/storage';
@@ -15,14 +15,10 @@ const TimetableTabs: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
-  const [renamedString, setRenamedString] = useState<String>("");
+  const [renamedString, setRenamedString] = useState<String>('');
+  const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
 
-  const {
-    selectedTimetable,
-    setSelectedTimetable,
-    displayTimetables,
-    setDisplayTimetables,
-  } = useContext(AppContext);
+  const { selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
 
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
   const TabStyle = {
@@ -32,8 +28,10 @@ const TimetableTabs: React.FC = () => {
     color: 'grey',
     margin: '3px 0 0 0',
     boxShadow: '2px -2px 2px currentcolor',
-    '&.Mui-selected': { color: 'blue' },
+    '&.Mui-selected': { color: '#598dff' },
   };
+
+  const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
 
   // EXPERIMENTAL: Currently removes a timetable from local storage.
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
@@ -79,7 +77,10 @@ const TimetableTabs: React.FC = () => {
     setAnchorEl(event.currentTarget);
   };
 
+  // Collapse all modals and menus
   const handleMenuClose = () => {
+    setRenameOpen(false);
+    setDeleteOpen(false);
     setAnchorEl(null);
   };
 
@@ -96,7 +97,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables([...newTimetables]);
 
     setRenameOpen(false);
-  }
+  };
 
   return (
     <Box sx={{ paddingTop: '10px' }}>
@@ -107,8 +108,8 @@ const TimetableTabs: React.FC = () => {
         <MenuItem onClick={handleMenuRename}>
           <EditOutlined fontSize="small" />
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <DeleteOutline fontSize="small" onClick={() => handleDeleteTimetable(selectedTimetable)} />
+        <MenuItem onClick={() => setDeleteOpen(true)}>
+          <DeleteOutline fontSize="small" />
         </MenuItem>
       </Menu>
       <Tabs value={selectedTimetable}>
@@ -133,18 +134,34 @@ const TimetableTabs: React.FC = () => {
       </Tabs>
       <Dialog onClose={handleRenameClose} open={renameOpen}>
         <DialogTitle>Rename Timetable</DialogTitle>
-        <TextField 
-        sx={{padding: '10px', width: '160px', alignSelf: 'center'}}
-        id="outlined-basic" 
-        variant="outlined"
-        value={renamedString}
-        onChange={(e) => setRenamedString(e.target.value)}
+        <TextField
+          sx={{ padding: '10px', width: '160px', alignSelf: 'center' }}
+          id="outlined-basic"
+          variant="outlined"
+          value={renamedString}
+          onChange={(e) => setRenamedString(e.target.value)}
         />
-        <Button 
-        sx={{margin: '10px', width: '80px', alignSelf: 'center'}} 
-        variant="contained"
-        onClick={() => handleRenameClose()}
-        >OK</Button>
+        <Button sx={ModalButtonStyle} variant="contained" onClick={() => handleRenameClose()}>
+          OK
+        </Button>
+      </Dialog>
+      <Dialog open={deleteOpen} onClose={handleMenuClose}>
+        <DialogTitle>{`Delete ${displayTimetables[selectedTimetable].name}?`}</DialogTitle>
+        <DialogActions>
+          <Button
+            sx={ModalButtonStyle}
+            variant="contained"
+            onClick={() => {
+              handleDeleteTimetable(selectedTimetable);
+              handleMenuClose();
+            }}
+          >
+            Yes
+          </Button>
+          <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
+            No
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
