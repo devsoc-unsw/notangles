@@ -1,6 +1,7 @@
 import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, Button } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
+import { CourseContext } from '../context/CourseContext';
 import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 
@@ -24,6 +25,15 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
   } = useContext(AppContext);
 
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    createdEvents,
+    setCreatedEvents
+  } = useContext(CourseContext);
+
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
   const TabStyle = {
     borderStyle: 'solid',
@@ -38,17 +48,14 @@ const TimetableTabs: React.FC = () => {
   // EXPERIMENTAL: Currently removes a timetable from local storage.
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
   const handleDeleteTimetable = (targetIndex: number) => {
-    const oldTimetables = storage.get('timetables');
     // If only one tab then prevent the delete
-    if (oldTimetables.length > 1) {
+    if (displayTimetables.length > 1) {
       // Intended behaviour: closing current tab will move to the NEXT (+1) tab, unless it is the last tab
-      let newIndex = targetIndex + 1;
-      if (newIndex >= oldTimetables.length) {
+      let newIndex = targetIndex;
+      if (newIndex === displayTimetables.length - 1) {
         newIndex = targetIndex - 1;
       }
-
-      const newTimetables = oldTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
-      storage.set('timetables', newTimetables);
+      const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       setDisplayTimetables(newTimetables);
       setSelectedTimetable(newIndex);
     }
@@ -57,8 +64,7 @@ const TimetableTabs: React.FC = () => {
   // EXPERIMENTAL: Currently adds a new timetable to local storage
   // Future feature: should have a defined constant for max size
   const handleCreateTimetable = () => {
-    const oldTimetables = storage.get('timetables');
-    const nextIndex = oldTimetables.length;
+    const nextIndex = displayTimetables.length;
 
     const newTimetable: TimetableData = {
       name: `Timetable${nextIndex}`,
@@ -66,13 +72,32 @@ const TimetableTabs: React.FC = () => {
       selectedClasses: {},
       createdEvents: {},
     };
-    storage.set('timetables', [...oldTimetables, newTimetable]);
+    storage.set('timetables', [...displayTimetables, newTimetable]);
 
-    setDisplayTimetables([...oldTimetables, newTimetable]);
+    setDisplayTimetables([...displayTimetables, newTimetable]);
 
     //Should switch current timetable to the new timetable
     setSelectedTimetable(nextIndex);
   };
+
+  // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
+  const HandleSwitchTimetables = (timetableIndex: number) => {
+    // updating data to be displayed for the new timetable.
+    setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
+    setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
+    setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
+
+    setSelectedTimetable(timetableIndex);
+  }
+
+  // EXPERIMENTAL: Rerenders the timetables component after insertion/deletion (when selected timetable changes)
+  useEffect(() => {
+    const savedTimetables = storage.get('timetables');
+    // checking if a save exists and if so update the timetables to display.
+    if (savedTimetables) {
+      setDisplayTimetables(savedTimetables);
+    }
+  }, []);
 
   // MENU HANDLERS
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -114,9 +139,10 @@ const TimetableTabs: React.FC = () => {
       <Tabs value={selectedTimetable}>
         {displayTimetables.map((timetable: TimetableData, index: number) => (
           <Tab
+            key={index}
             label={timetable.name}
             sx={TabStyle}
-            onClick={() => setSelectedTimetable(index)}
+            onClick={() => HandleSwitchTimetables(index)}
             icon={
               selectedTimetable === index ? (
                 <span onClick={handleMenuClick}>
@@ -133,17 +159,17 @@ const TimetableTabs: React.FC = () => {
       </Tabs>
       <Dialog onClose={handleRenameClose} open={renameOpen}>
         <DialogTitle>Rename Timetable</DialogTitle>
-        <TextField 
-        sx={{padding: '10px', width: '160px', alignSelf: 'center'}}
-        id="outlined-basic" 
-        variant="outlined"
-        value={renamedString}
-        onChange={(e) => setRenamedString(e.target.value)}
+        <TextField
+          sx={{ padding: '10px', width: '160px', alignSelf: 'center' }}
+          id="outlined-basic"
+          variant="outlined"
+          value={renamedString}
+          onChange={(e) => setRenamedString(e.target.value)}
         />
-        <Button 
-        sx={{margin: '10px', width: '80px', alignSelf: 'center'}} 
-        variant="contained"
-        onClick={() => handleRenameClose()}
+        <Button
+          sx={{ margin: '10px', width: '80px', alignSelf: 'center' }}
+          variant="contained"
+          onClick={() => handleRenameClose()}
         >OK</Button>
       </Dialog>
     </Box>

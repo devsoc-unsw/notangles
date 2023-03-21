@@ -218,8 +218,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
@@ -410,15 +410,6 @@ const App: React.FC = () => {
       )
     );
   };
-
-  // EXPERIMENTAL: Rerenders the timetables component after insertion/deletion (when selected timetable changes)
-  useEffect(() => {
-    const savedTimetables = storage.get('timetables');
-    // checking if a save exists and if so update the timestables to display.
-    if (savedTimetables) {
-      setDisplayTimetables(savedTimetables);
-    }
-  }, []);
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
