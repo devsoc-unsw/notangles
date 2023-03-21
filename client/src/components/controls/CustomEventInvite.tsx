@@ -32,6 +32,7 @@ const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) =
       setEvent({ name: inviteEvent.event.name, location: inviteEvent.event.location, color: inviteEvent.event.color });
     }
   };
+
   return (
     <>
       <StyledListItem>
