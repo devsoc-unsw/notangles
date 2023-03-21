@@ -1,19 +1,17 @@
-import { Link } from '@mui/icons-material';
+import { Link, LocationOn } from '@mui/icons-material';
 import { ListItemIcon, TextField, Card } from '@mui/material';
 import { CustomEventInviteProp } from '../../interfaces/PropTypes';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 
-// style the card
 const PreviewCard = styled(Card)`
-  padding: 10px;
+  padding: 40px 20px;
   margin: 10px;
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
   align-items: center;
   background-color: #1f7e8c;
   border-radius: 10px;
@@ -23,7 +21,7 @@ const PreviewCard = styled(Card)`
 
 const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) => {
   const [eventPreview, setEventPreview] = useState(false);
-  const [event, setEvent] = useState({ name: '', location: '' });
+  const [event, setEvent] = useState({ name: '', location: '', color: '' });
 
   const checkRender = (link: string) => {
     setLink(link);
@@ -31,7 +29,7 @@ const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) =
     if (isBase64(link) && link.length > 0) {
       const inviteEvent = JSON.parse(atob(link));
       setEventPreview(true);
-      setEvent({ name: inviteEvent.event.name, location: inviteEvent.event.location });
+      setEvent({ name: inviteEvent.event.name, location: inviteEvent.event.location, color: inviteEvent.event.color });
     }
   };
   return (
@@ -50,14 +48,17 @@ const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) =
           defaultValue={link}
         />
         <br />
-        {eventPreview && (
-          <PreviewCard>
-            <StyledListItemText>
-              <strong>{event.name}</strong> {event.location}
-            </StyledListItemText>
-          </PreviewCard>
-        )}
       </StyledListItem>
+      {eventPreview && (
+        <PreviewCard sx={{ bgcolor: event.color }}>
+          <StyledListItemText>
+            <strong>{event.name}</strong>
+            <br />
+            <LocationOn sx={{ fontSize: '12px' }} />
+            {event.location}
+          </StyledListItemText>
+        </PreviewCard>
+      )}
     </>
   );
 };
