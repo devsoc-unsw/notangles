@@ -56,6 +56,9 @@ const TimetableTabs: React.FC = () => {
       const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       setDisplayTimetables(newTimetables);
       setSelectedTimetable(newIndex);
+      setSelectedCourses(newTimetables[newIndex].selectedCourses);
+      setSelectedClasses(newTimetables[newIndex].selectedClasses);
+      setCreatedEvents(newTimetables[newIndex].createdEvents);
     }
   };
 
@@ -78,6 +81,9 @@ const TimetableTabs: React.FC = () => {
 
       //Should switch current timetable to the new timetable
       setSelectedTimetable(nextIndex);
+      setSelectedCourses([]);
+      setSelectedClasses({});
+      setCreatedEvents({});
     }
   };
 
