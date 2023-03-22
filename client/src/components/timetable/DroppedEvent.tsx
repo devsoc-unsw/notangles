@@ -135,31 +135,30 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const duplicateEvent = () => {
     const MondayToSaturday: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    const event = Object.values(createdEvents).find(e => e.event.id === eventId);
+    
+    if (event != undefined) {
+      const eventStart = new Date(0);
+      eventStart.setHours(event.time.start);
+      eventStart.setMinutes((event.time.start % 1) * 60);
 
-    // Get event details
-    for (const event in createdEvents) {
-        if (createdEvents[event].event.id === eventId) {
-            var tempEvent = createdEvents[event]
+      const eventEnd = new Date(0);
+      eventEnd.setHours(event.time.end);
+      eventEnd.setMinutes((event.time.end % 1) * 60);
 
-            const eventStart = new Date(0)
-            eventStart.setHours(tempEvent.time.start)
-            eventStart.setMinutes((tempEvent.time.start%1)*60)
-            const eventEnd = new Date(0)
-            eventEnd.setHours(tempEvent.time.end) 
-            eventEnd.setMinutes((tempEvent.time.end%1)*60)
-            
-            // Create new event
-            const newEvent = createNewEvent(tempEvent.event.name, 
-                tempEvent.event.location, 
-                tempEvent.event.description, 
-                tempEvent.event.color, 
-                MondayToSaturday[tempEvent.time.day - 1], 
-                eventStart, 
-                eventEnd);
-            setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
-            break
-        }
-    }
+      // Create new event
+      const newEvent = createNewEvent(
+        event.event.name, 
+        event.event.location, 
+        event.event.description, 
+        event.event.color, 
+        MondayToSaturday[event.time.day - 1], 
+        eventStart, 
+        eventEnd
+      );
+
+      setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
+      }
   }
 
   return (
