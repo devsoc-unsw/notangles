@@ -289,8 +289,20 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
-    handleSelectCourse(storage.get('timetables')[selectedTimetable].selectedCourses, true, (newSelectedCourses) => {
-      const savedClasses: SavedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+    handleSelectCourse(storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code), true, (newSelectedCourses) => {
+      // const savedClasses: SavedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+      const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+
+      const savedClasses: SavedClasses = {};
+
+      Object.keys(timetableSelectedClasses).forEach((courseCode) => {
+        savedClasses[courseCode] = {};
+        Object.keys(timetableSelectedClasses[courseCode]).forEach((activity) => {
+          const classData = timetableSelectedClasses[courseCode][activity];
+          savedClasses[courseCode][activity] = classData ? classData.section : null;
+        });
+      });
+
       const newSelectedClasses: SelectedClasses = {};
 
       Object.keys(savedClasses).forEach((courseCode) => {
@@ -326,32 +338,41 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
-    let newTimetables = storage.get('timetables');
-    newTimetables[selectedTimetable].selectedCourses = selectedCourses.map((course) => course.code);
-    storage.set('timetables', newTimetables);
-  }, [selectedCourses]);
+    // let newTimetables = storage.get('timetables');
+    // newTimetables[selectedTimetable].selectedCourses = selectedCourses.map((course) => course.code);
+    // storage.set('timetables', newTimetables);
+    displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [selectedCourses, selectedTimetable]);
 
   useUpdateEffect(() => {
-    const savedClasses: SavedClasses = {};
+    // const savedClasses: SavedClasses = {};
 
-    Object.keys(selectedClasses).forEach((courseCode) => {
-      savedClasses[courseCode] = {};
-      Object.keys(selectedClasses[courseCode]).forEach((activity) => {
-        const classData = selectedClasses[courseCode][activity];
-        savedClasses[courseCode][activity] = classData ? classData.section : null;
-      });
-    });
+    // Object.keys(selectedClasses).forEach((courseCode) => {
+    //   savedClasses[courseCode] = {};
+    //   Object.keys(selectedClasses[courseCode]).forEach((activity) => {
+    //     const classData = selectedClasses[courseCode][activity];
+    //     savedClasses[courseCode][activity] = classData ? classData.section : null;
+    //   });
+    // });
 
-    let newTimetables = storage.get('timetables');
-    newTimetables[selectedTimetable].selectedClasses = savedClasses;
-    storage.set('timetables', newTimetables);
-  }, [selectedClasses]);
+    // let newTimetables = storage.get('timetables');
+    // newTimetables[selectedTimetable].selectedClasses = savedClasses;
+    // storage.set('timetables', newTimetables);
+    displayTimetables[selectedTimetable].selectedClasses = selectedClasses;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [selectedClasses, selectedTimetable]);
 
   useUpdateEffect(() => {
-    let newTimetables = storage.get('timetables');
-    newTimetables[selectedTimetable].createdEvents = createdEvents;
-    storage.set('timetables', newTimetables);
-  }, [createdEvents]);
+    // let newTimetables = storage.get('timetables');
+    // newTimetables[selectedTimetable].createdEvents = createdEvents;
+    // storage.set('timetables', newTimetables);
+    displayTimetables[selectedTimetable].createdEvents = createdEvents;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [createdEvents, selectedTimetable]);
 
   /**
    * Get the latest day of the week a course has classes on

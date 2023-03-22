@@ -62,29 +62,30 @@ const TimetableTabs: React.FC = () => {
   // EXPERIMENTAL: Currently adds a new timetable to local storage
   // Future feature: should have a defined constant for max size
   const handleCreateTimetable = () => {
-    const nextIndex = displayTimetables.length;
+    // users can only create 8 timetables for now.
+    if (displayTimetables.length < 8) {
+      const nextIndex = displayTimetables.length;
 
-    const newTimetable: TimetableData = {
-      name: `Timetable${nextIndex}`,
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-    };
-    storage.set('timetables', [...displayTimetables, newTimetable]);
+      const newTimetable: TimetableData = {
+        name: `Timetable${nextIndex}`,
+        selectedCourses: [],
+        selectedClasses: {},
+        createdEvents: {},
+      };
+      storage.set('timetables', [...displayTimetables, newTimetable]);
 
-    setDisplayTimetables([...displayTimetables, newTimetable]);
+      setDisplayTimetables([...displayTimetables, newTimetable]);
 
-    //Should switch current timetable to the new timetable
-    setSelectedTimetable(nextIndex);
+      //Should switch current timetable to the new timetable
+      setSelectedTimetable(nextIndex);
+    }
   };
 
   // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
   const HandleSwitchTimetables = (timetableIndex: number) => {
-    // updating data to be displayed for the new timetable.
-    setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
     setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
+    setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
     setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
-
     setSelectedTimetable(timetableIndex);
   }
 
