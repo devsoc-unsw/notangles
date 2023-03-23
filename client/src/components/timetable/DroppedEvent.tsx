@@ -134,7 +134,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
   const duplicateEvent = () => {
-    const MondayToSaturday: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    const DaysOfWeek: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const event = Object.values(createdEvents).find(e => e.event.id === eventId);
     
     if (event != undefined) {
@@ -152,7 +152,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         event.event.location, 
         event.event.description, 
         event.event.color, 
-        MondayToSaturday[event.time.day - 1], 
+        DaysOfWeek[event.time.day - 1], 
         eventStart, 
         eventEnd
       );
