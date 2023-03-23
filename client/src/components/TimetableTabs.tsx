@@ -1,9 +1,10 @@
-import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button } from '@mui/material';
+import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, FormHelperText } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
+import { contentPadding, darkTheme, lightTheme } from '../constants/theme';
 
 const TimetableTabs: React.FC = () => {
   type TimetableData = {
@@ -17,9 +18,12 @@ const TimetableTabs: React.FC = () => {
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<String>('');
+  const [renamedHelper, setrenamedHelper] = useState<String>('');
+  const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
 
-  const { selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
+  const { isDarkMode, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
+  const theme = isDarkMode ? darkTheme : lightTheme;
 
   const {
     selectedCourses,
@@ -30,16 +34,37 @@ const TimetableTabs: React.FC = () => {
     setCreatedEvents
   } = useContext(CourseContext);
 
+  const TabContainerStyle = {
+    backgroundColor: '#eeeeee',
+    borderRadius: '10px',
+  }
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
-  const TabStyle = {
-    borderStyle: 'solid',
-    borderWidth: '2px',
-    borderRadius: '10px 10px 0 0',
-    color: 'grey',
-    margin: '3px 0 0 0',
-    boxShadow: '2px -2px 2px currentcolor',
-    '&.Mui-selected': { color: '#598dff' },
-  };
+  const TabStyle = (index: Number) => {
+    let style = {
+      minHeight: '50px',
+      paddingTop: '3px',
+      paddingBottom: '3px',
+      borderStyle: 'solid',
+      borderWidth: '2px',
+      borderRadius: '10px',
+      borderColor: '#bbbbbb',
+      color: 'grey',
+      margin: '0 0 0 0',
+      marginLeft: '-2px',
+      '&.Mui-selected': { 
+        color: 'primary', 
+        backgroundColor: '#ffffff', 
+        boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`, 
+        borderWidth: '1px',
+        borderColor: `${theme.palette.primary.main}`,
+        zIndex: '1',
+      },
+    };
+
+    if (index === 0) {style.marginLeft = '0px'}
+    
+    return style;
+  }
 
   const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
 
@@ -70,7 +95,7 @@ const TimetableTabs: React.FC = () => {
       const nextIndex = displayTimetables.length;
 
       const newTimetable: TimetableData = {
-        name: `Timetable${nextIndex}`,
+        name: "New Timetable",//`Timetable${nextIndex}`,
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
@@ -116,12 +141,25 @@ const TimetableTabs: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleMenuRename = () => {
+  const handleRenameOpen = () => {
+    let timetableName = displayTimetables[selectedTimetable].name;
+    setRenamedString(timetableName);
+    setrenamedHelper(`${timetableName.length}/30`);
+    timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false)
+
     setRenameOpen(true);
-    setRenamedString(displayTimetables[selectedTimetable].name);
   };
 
-  const handleRenameClose = () => {
+
+  const handleRenameClose = (clickedOk: boolean) => {
+
+    if (!clickedOk) {
+      setRenameOpen(false)
+      return;
+    }
+
+    if (renamedErr) return;
+
     let newTimetables = [...displayTimetables];
     newTimetables[selectedTimetable].name = renamedString;
 
@@ -131,25 +169,36 @@ const TimetableTabs: React.FC = () => {
     setRenameOpen(false);
   };
 
+  const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let str = e.target.value;
+    setRenamedString(str);
+    setrenamedHelper(`${str.length}/30`);
+    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false)
+  }
+
   return (
     <Box sx={{ paddingTop: '10px' }}>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={handleMenuClose}>
           <ContentCopy fontSize="small" />
         </MenuItem>
-        <MenuItem onClick={handleMenuRename}>
+        <MenuItem onClick={handleRenameOpen}>
           <EditOutlined fontSize="small" />
         </MenuItem>
         <MenuItem onClick={() => setDeleteOpen(true)}>
           <DeleteOutline fontSize="small" />
         </MenuItem>
       </Menu>
-      <Tabs value={selectedTimetable}>
+      <Tabs 
+      value={selectedTimetable}
+      sx={TabContainerStyle}
+      TabIndicatorProps={{style: {display: 'none'}}}
+      >
         {displayTimetables.map((timetable: TimetableData, index: number) => (
           <Tab
             key={index}
             label={timetable.name}
-            sx={TabStyle}
+            sx={TabStyle(index)}
             onClick={() => HandleSwitchTimetables(index)}
             icon={
               selectedTimetable === index ? (
@@ -163,18 +212,20 @@ const TimetableTabs: React.FC = () => {
             iconPosition="end"
           />
         ))}
-        <Tab icon={<Add />} onClick={handleCreateTimetable} />
+        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={{padding: '10px', minWidth: '45px'}}/>
       </Tabs>
-      <Dialog onClose={handleRenameClose} open={renameOpen}>
+      <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
         <DialogTitle>Rename Timetable</DialogTitle>
         <TextField
           sx={{ padding: '10px', width: '160px', alignSelf: 'center' }}
           id="outlined-basic"
           variant="outlined"
+          helperText={renamedHelper}
           value={renamedString}
-          onChange={(e) => setRenamedString(e.target.value)}
+          onChange={(e) => handleRenameChange(e)}
+          error={renamedErr}
         />
-        <Button sx={ModalButtonStyle} variant="contained" onClick={() => handleRenameClose()}>
+        <Button sx={ModalButtonStyle} variant="contained" onClick={() => handleRenameClose(true)}>
           OK
         </Button>
       </Dialog>
