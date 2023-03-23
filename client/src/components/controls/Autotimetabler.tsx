@@ -284,7 +284,6 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 <TimePicker
                   views={['hours']}
                   value={startTime}
-                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setStartTime(e);
                   }}
@@ -301,7 +300,6 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                 <TimePicker
                   views={['hours']}
                   value={endTime}
-                  renderInput={(params) => <TextField {...params} />}
                   onChange={(e) => {
                     if (e) setEndTime(e);
                   }}

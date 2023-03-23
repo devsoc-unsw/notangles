@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Restore, Undo } from '@mui/icons-material';
+import { Redo, Delete, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -15,6 +15,7 @@ const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
+  const [disableReset, setDisableReset] = useState(true);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
@@ -23,6 +24,7 @@ const History: React.FC = () => {
   const actions = useRef<Actions>([]);
   const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const dontAdd = useRef(false);
+  const isMounted = useRef(false); //prevents reset timetable disabling on initial render
 
   /**
    * @param selectedClasses The currently selected classes
@@ -128,6 +130,23 @@ const History: React.FC = () => {
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents]);
 
+  //Disables reset timetable button when there is no courses, classes and events selected.
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    const currentClasses = actions.current[actionsPointer.current].classes;
+    const currentEvents = actions.current[actionsPointer.current].events;
+
+    const nCourses = actions.current[actionsPointer.current].courses.length;;
+    const nEvents = Object.values(currentEvents).length;
+    const nClasses = Object.values(currentClasses).length;
+
+    setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
+  }, [selectedCourses, selectedClasses, createdEvents]);
+
   /**
    * Updates the index of the current action and changes the timetable data to match
    * @param direction Which way to move (1 for increment, -1 for decrement)
@@ -141,14 +160,12 @@ const History: React.FC = () => {
   };
 
   /**
-   * Restores the initial state of the timetable (the same state as on first page load)
+   * Resets timetable and selected courses to be completely empty
    */
-  const restoreInitial = () => {
-    if (!actions.current[initialIndex]) return;
-
-    setSelectedCourses(actions.current[initialIndex].courses);
-    setSelectedClasses(duplicateClasses(actions.current[initialIndex].classes));
-    setCreatedEvents(actions.current[initialIndex].events);
+  const clearAll = () => {
+    setSelectedCourses([]);
+    setSelectedClasses({});
+    setCreatedEvents({});
   };
 
   /**
@@ -157,7 +174,7 @@ const History: React.FC = () => {
    */
   const handleKeyDown = (event: KeyboardEvent) => {
     // event.metaKey corresponds to the Cmd key on Mac
-    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y')) return;
+    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
 
     event.preventDefault();
 
@@ -168,6 +185,9 @@ const History: React.FC = () => {
       if (event.key === 'y' && actionsPointer.current + 1 < actions.current.length) {
         changeHistory(1);
       }
+      if (event.key === 'd') {
+        clearAll();
+      }
     }
 
     if (isMacOS && event.metaKey) {
@@ -177,6 +197,9 @@ const History: React.FC = () => {
       if (event.shiftKey && event.key === 'z' && actionsPointer.current + 1 < actions.current.length) {
         changeHistory(1);
       }
+      if (event.key === 'd') {
+        clearAll();
+      }
     }
   };
 
@@ -185,14 +208,15 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
+  let clearTooltip = isMacOS ? 'Clear (Ctrl+D)' : 'Clear (Cmd+D)';
   let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
   let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
 
   return (
     <>
-      <Tooltip title="Reset Timetable">
-        <IconButton color="inherit" onClick={() => restoreInitial()} size="large">
-          <Restore />
+      <Tooltip title={clearTooltip}>
+        <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
+          <Delete />
         </IconButton>
       </Tooltip>
       <Tooltip title={undoTooltip}>
