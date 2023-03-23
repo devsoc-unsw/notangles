@@ -245,7 +245,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <StyledListItemText primary="Start time" />
               <TimePicker
                 value={timePickerStart(isChanged, newStartTime, start)}
-                renderInput={(params) => <TextField {...params} />}
                 onChange={(e) => {
                   setIsChanged(true);
                   if (e) setNewStartTime(e);
@@ -256,16 +255,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
               <StyledListItemText primary="End time" />
               <TimePicker
                 value={timePickerEnd(isChanged, newEndTime, end)}
-                renderInput={(params) => {
-                  const tooEarly = !areValidEventTimes(newStartTime, newEndTime);
-                  return (
-                    <TextField
-                      {...params}
-                      error={params.error || tooEarly}
-                      label={tooEarly && 'End time must be after start time'}
-                    />
-                  );
-                }}
+                label={!areValidEventTimes(newStartTime, newEndTime) ? 'End time must be after start' : ''}
+                slotProps={{ textField: { color: areValidEventTimes(newStartTime, newEndTime) ? 'primary' : 'error' } }}
                 onChange={(e) => {
                   setIsChanged(true);
                   if (e) setNewEndTime(e);

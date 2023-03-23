@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:19.6.0-alpine as builder
+FROM node:19.8.1-alpine as builder
 
 # Set the current working directory inside the container
 WORKDIR /app
@@ -25,7 +25,7 @@ ENV REACT_APP_SENTRY_TRACE_RATE_CLIENT=$SENTRY_TRACE_RATE_CLIENT
 
 RUN npm run build
 
-FROM caddy:2.6.2-alpine
+FROM caddy:2.6.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/build /srv 
 

@@ -15,8 +15,8 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
-    date: 'March 6, 2022',
-    changes: ['Added ability to copy and paste an event from another timetable via a code in custom events']
+    date: 'March 11, 2023',
+    changes: ["Added a clear button that completely resets the state of the timetable"],
   },
   {
     date: 'October 29, 2022',
