@@ -45,12 +45,13 @@ const TimetableTabs: React.FC = () => {
       paddingTop: '3px',
       paddingBottom: '3px',
       borderStyle: 'solid',
-      borderWidth: '2px',
+      borderWidth: '0px',
       borderRadius: '10px',
       borderColor: '#bbbbbb',
       color: 'grey',
       margin: '0 0 0 0',
       marginLeft: '-2px',
+      transition: 'background-color 0.2s',
       '&.Mui-selected': { 
         color: 'primary', 
         backgroundColor: '#ffffff', 
@@ -59,6 +60,9 @@ const TimetableTabs: React.FC = () => {
         borderColor: `${theme.palette.primary.main}`,
         zIndex: '1',
       },
+      "&:hover": {
+        backgroundColor: "#ffffff",
+      }
     };
 
     if (index === 0) {style.marginLeft = '0px'}
@@ -91,7 +95,7 @@ const TimetableTabs: React.FC = () => {
   // Future feature: should have a defined constant for max size
   const handleCreateTimetable = () => {
     // users can only create 8 timetables for now.
-    if (displayTimetables.length < 8) {
+    if (displayTimetables.length < 16) {
       const nextIndex = displayTimetables.length;
 
       const newTimetable: TimetableData = {
@@ -141,6 +145,7 @@ const TimetableTabs: React.FC = () => {
     setAnchorEl(null);
   };
 
+  // Handle opening the rename dialog
   const handleRenameOpen = () => {
     let timetableName = displayTimetables[selectedTimetable].name;
     setRenamedString(timetableName);
@@ -151,8 +156,10 @@ const TimetableTabs: React.FC = () => {
   };
 
 
+  // Handle closing the rename dialog
   const handleRenameClose = (clickedOk: boolean) => {
 
+    // Checks if the user clicked out of the dialog or clicked Ok
     if (!clickedOk) {
       setRenameOpen(false)
       return;
@@ -169,6 +176,7 @@ const TimetableTabs: React.FC = () => {
     setRenameOpen(false);
   };
 
+  // Handle changes to the rename text field
   const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     let str = e.target.value;
     setRenamedString(str);
@@ -193,6 +201,7 @@ const TimetableTabs: React.FC = () => {
       value={selectedTimetable}
       sx={TabContainerStyle}
       TabIndicatorProps={{style: {display: 'none'}}}
+      variant="scrollable"
       >
         {displayTimetables.map((timetable: TimetableData, index: number) => (
           <Tab
