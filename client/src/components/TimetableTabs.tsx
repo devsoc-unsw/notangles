@@ -15,6 +15,37 @@ const TimetableTabs: React.FC = () => {
     createdEvents: Object;
   };
 
+  type TabTheme = {
+    containerBackground: String,
+    tabBorderColor: String,
+    tabTextColor: String,
+    tabHoverColor: String,
+    tabBackgroundColor: String,
+    tabSelectedText: String,
+  }
+
+  const tabThemeLight: TabTheme = {
+    containerBackground: '#eeeeee',
+    tabBorderColor: '#bbbbbb',
+    tabTextColor: '#808080',
+    tabHoverColor: '#ffffff',
+    tabBackgroundColor: '#ffffff',
+    tabSelectedText: "primary",
+  };
+
+  const tabThemeDark: TabTheme = {
+    containerBackground: '#2f2f2f',
+    tabBorderColor: '#bbbbbb',
+    tabTextColor: '#808080',
+    tabHoverColor: '#444444',
+    tabBackgroundColor: '#444444',
+    tabSelectedText: "#ffffff",
+  };
+
+  const { isDarkMode, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
+  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
@@ -22,9 +53,6 @@ const TimetableTabs: React.FC = () => {
   const [renamedHelper, setrenamedHelper] = useState<String>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
-
-  const { isDarkMode, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
-  const theme = isDarkMode ? darkTheme : lightTheme;
 
   const {
     selectedCourses,
@@ -35,10 +63,22 @@ const TimetableTabs: React.FC = () => {
     setCreatedEvents
   } = useContext(CourseContext);
 
+  const AddIconStyle = {
+    padding: '10px', 
+    minWidth: '50px',
+    minHeight: '50px',
+    transition: 'background-color 0.1s',
+    borderRadius: '50%',
+    "&:hover": {
+      backgroundColor: `${tabTheme.tabHoverColor}`,
+    }
+  }
+
   const TabContainerStyle = {
-    backgroundColor: '#eeeeee',
+    backgroundColor: `${tabTheme.containerBackground}`,
     borderRadius: '10px',
   }
+
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
   const TabStyle = (index: Number) => {
     let style = {
@@ -48,21 +88,21 @@ const TimetableTabs: React.FC = () => {
       borderStyle: 'solid',
       borderWidth: '0px',
       borderRadius: '10px',
-      borderColor: '#bbbbbb',
-      color: 'grey',
+      borderColor: `${tabTheme.tabBorderColor}`,
+      color: `${tabTheme.tabTextColor}`,
       margin: '0 0 0 0',
       marginLeft: '-2px',
       transition: 'background-color 0.1s',
       '&.Mui-selected': { 
-        color: 'primary', 
-        backgroundColor: '#ffffff', 
+        color: `${tabTheme.tabSelectedText}`, 
+        backgroundColor: `${tabTheme.tabBackgroundColor}`, 
         boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`, 
         borderWidth: '1px',
         borderColor: `${theme.palette.primary.main}`,
         zIndex: '1',
       },
       "&:hover": {
-        backgroundColor: "#ffffff",
+        backgroundColor: `${tabTheme.tabHoverColor}`,
       }
     };
 
@@ -134,6 +174,11 @@ const TimetableTabs: React.FC = () => {
     }
   }, []);
 
+  // Sets tab theme when changing UI mode
+  useEffect(() => {
+    setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
+  }, [isDarkMode]);
+
   // MENU HANDLERS
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -185,10 +230,38 @@ const TimetableTabs: React.FC = () => {
     str.length > 30 ? setRenamedErr(true) : setRenamedErr(false)
   }
 
+  const handleDuplicateTimetable = () => {
+    const currentTimetable = displayTimetables[selectedTimetable];
+  
+    const newTimetable = {
+      name: currentTimetable.name + ' - Copy',
+      selectedCourses: currentTimetable.selectedCourses,
+      selectedClasses: currentTimetable.selectedClasses,
+      createdEvents: currentTimetable.createdEvents,
+    };
+  
+    // Insert the new timetable after the current one
+    const newTimetables = [
+      ...displayTimetables.slice(0, selectedTimetable + 1),
+      newTimetable,
+      ...displayTimetables.slice(selectedTimetable + 1),
+    ];
+  
+    // Update the state variables
+    storage.set('timetables', newTimetables);
+    setDisplayTimetables(newTimetables);
+    setSelectedTimetable(selectedTimetable + 1);
+    setSelectedCourses(newTimetable.selectedCourses);
+    setSelectedClasses(newTimetable.selectedClasses);
+    setCreatedEvents(newTimetable.createdEvents);
+
+    handleMenuClose();
+  };
+
   return (
     <Box sx={{ paddingTop: '10px' }}>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={() => handleDuplicateTimetable()}>
           <ContentCopy fontSize="small" />
         </MenuItem>
         <MenuItem onClick={handleRenameOpen}>
@@ -222,15 +295,26 @@ const TimetableTabs: React.FC = () => {
             iconPosition="end"
           />
         ))}
-        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={{padding: '10px', minWidth: '45px'}}/>
+        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle}/>
       </Tabs>
       <Dialog 
       onClose={() => handleRenameClose(false)} 
       open={renameOpen}
       >
-        <DialogTitle sx={{alignSelf: 'center'}}>Rename Timetable</DialogTitle>
+        <DialogTitle 
+        sx={{alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px'}}>Rename Timetable</DialogTitle>
+        <Box 
+        sx={{
+          backgroundColor: `${theme.palette.primary.main}`, 
+          minHeight: '4px', 
+          width: '100px', 
+          alignSelf: 'center', 
+          borderRadius: '5px',
+          marginBottom: '8px'
+          }}
+          ></Box>
         <TextField
-          sx={{ padding: '5px', paddingTop: '0px', width: '180px', alignSelf: 'center' }}
+          sx={{ padding: '5px', paddingTop: '10px', width: '180px', alignSelf: 'center' }}
           id="outlined-basic"
           variant="outlined"
           helperText={renamedHelper}

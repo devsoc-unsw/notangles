@@ -334,7 +334,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
-  }, [year, isConvertToLocalTimezone, selectedTimetable]);
+  }, [year, isConvertToLocalTimezone]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
