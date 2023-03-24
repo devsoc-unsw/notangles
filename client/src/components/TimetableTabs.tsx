@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
+import { ExecuteButton } from '../styles/CustomEventStyles';
 import { contentPadding, darkTheme, lightTheme } from '../constants/theme';
 
 const TimetableTabs: React.FC = () => {
@@ -51,7 +52,7 @@ const TimetableTabs: React.FC = () => {
       color: 'grey',
       margin: '0 0 0 0',
       marginLeft: '-2px',
-      transition: 'background-color 0.2s',
+      transition: 'background-color 0.1s',
       '&.Mui-selected': { 
         color: 'primary', 
         backgroundColor: '#ffffff', 
@@ -223,10 +224,13 @@ const TimetableTabs: React.FC = () => {
         ))}
         <Tab icon={<Add />} onClick={handleCreateTimetable} sx={{padding: '10px', minWidth: '45px'}}/>
       </Tabs>
-      <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
-        <DialogTitle>Rename Timetable</DialogTitle>
+      <Dialog 
+      onClose={() => handleRenameClose(false)} 
+      open={renameOpen}
+      >
+        <DialogTitle sx={{alignSelf: 'center'}}>Rename Timetable</DialogTitle>
         <TextField
-          sx={{ padding: '10px', width: '160px', alignSelf: 'center' }}
+          sx={{ padding: '5px', paddingTop: '0px', width: '180px', alignSelf: 'center' }}
           id="outlined-basic"
           variant="outlined"
           helperText={renamedHelper}
@@ -234,9 +238,14 @@ const TimetableTabs: React.FC = () => {
           onChange={(e) => handleRenameChange(e)}
           error={renamedErr}
         />
-        <Button sx={ModalButtonStyle} variant="contained" onClick={() => handleRenameClose(true)}>
+        <ExecuteButton 
+        variant="contained"
+        color="primary"
+        disableElevation
+        onClick={() => handleRenameClose(true)}
+        >
           OK
-        </Button>
+        </ExecuteButton>
       </Dialog>
       <Dialog open={deleteOpen} onClose={handleMenuClose}>
         {displayTimetables[selectedTimetable] && (
