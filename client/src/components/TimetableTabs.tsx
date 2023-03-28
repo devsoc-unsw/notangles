@@ -1,13 +1,15 @@
-import { Box, Tabs, Tab, MenuList, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, FormHelperText } from '@mui/material';
+import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 import { ExecuteButton } from '../styles/CustomEventStyles';
-import { contentPadding, darkTheme, lightTheme } from '../constants/theme';
+import { darkTheme, lightTheme } from '../constants/theme';
 
 const TimetableTabs: React.FC = () => {
+  const TIMETABLE_LIMIT = 10;
+
   type TimetableData = {
     name: String;
     selectedCourses: Array<Object>;
@@ -16,13 +18,13 @@ const TimetableTabs: React.FC = () => {
   };
 
   type TabTheme = {
-    containerBackground: String,
-    tabBorderColor: String,
-    tabTextColor: String,
-    tabHoverColor: String,
-    tabBackgroundColor: String,
-    tabSelectedText: String,
-  }
+    containerBackground: String;
+    tabBorderColor: String;
+    tabTextColor: String;
+    tabHoverColor: String;
+    tabBackgroundColor: String;
+    tabSelectedText: String;
+  };
 
   const tabThemeLight: TabTheme = {
     containerBackground: '#eeeeee',
@@ -30,7 +32,7 @@ const TimetableTabs: React.FC = () => {
     tabTextColor: '#808080',
     tabHoverColor: '#ffffff',
     tabBackgroundColor: '#ffffff',
-    tabSelectedText: "primary",
+    tabSelectedText: 'primary',
   };
 
   const tabThemeDark: TabTheme = {
@@ -39,10 +41,18 @@ const TimetableTabs: React.FC = () => {
     tabTextColor: '#808080',
     tabHoverColor: '#444444',
     tabBackgroundColor: '#444444',
-    tabSelectedText: "#ffffff",
+    tabSelectedText: '#ffffff',
   };
 
-  const { isDarkMode, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
+  const {
+    isDarkMode,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
+    setAlertMsg,
+    setErrorVisibility,
+  } = useContext(AppContext);
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
@@ -54,30 +64,24 @@ const TimetableTabs: React.FC = () => {
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
 
-  const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
-    createdEvents,
-    setCreatedEvents
-  } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+    useContext(CourseContext);
 
   const AddIconStyle = {
-    padding: '10px', 
+    padding: '10px',
     minWidth: '50px',
     minHeight: '50px',
     transition: 'background-color 0.1s',
     borderRadius: '50%',
-    "&:hover": {
+    '&:hover': {
       backgroundColor: `${tabTheme.tabHoverColor}`,
-    }
-  }
+    },
+  };
 
   const TabContainerStyle = {
     backgroundColor: `${tabTheme.containerBackground}`,
     borderRadius: '10px',
-  }
+  };
 
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
   const TabStyle = (index: Number) => {
@@ -93,23 +97,25 @@ const TimetableTabs: React.FC = () => {
       margin: '0 0 0 0',
       marginLeft: '-2px',
       transition: 'background-color 0.1s',
-      '&.Mui-selected': { 
-        color: `${tabTheme.tabSelectedText}`, 
-        backgroundColor: `${tabTheme.tabBackgroundColor}`, 
-        boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`, 
+      '&.Mui-selected': {
+        color: `${tabTheme.tabSelectedText}`,
+        backgroundColor: `${tabTheme.tabBackgroundColor}`,
+        boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`,
         borderWidth: '1px',
         borderColor: `${theme.palette.primary.main}`,
         zIndex: '1',
       },
-      "&:hover": {
+      '&:hover': {
         backgroundColor: `${tabTheme.tabHoverColor}`,
-      }
+      },
     };
 
-    if (index === 0) {style.marginLeft = '0px'}
-    
+    if (index === 0) {
+      style.marginLeft = '0px';
+    }
+
     return style;
-  }
+  };
 
   const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
 
@@ -118,7 +124,7 @@ const TimetableTabs: React.FC = () => {
   const handleDeleteTimetable = (targetIndex: number) => {
     // If only one tab then prevent the delete
     if (displayTimetables.length > 1) {
-      // Intended behaviour: closing current tab will move to the NEXT (+1) tab, unless it is the last tab
+      // Intended behaviour: closing current tab will remain on the same index unless it is the last tab
       let newIndex = targetIndex;
       if (newIndex === displayTimetables.length - 1) {
         newIndex = targetIndex - 1;
@@ -135,12 +141,14 @@ const TimetableTabs: React.FC = () => {
   // EXPERIMENTAL: Currently adds a new timetable to local storage
   // Future feature: should have a defined constant for max size
   const handleCreateTimetable = () => {
-    // users can only create 8 timetables for now.
-    if (displayTimetables.length < 16) {
+    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+      setAlertMsg('Maximum timetables reached');
+      setErrorVisibility(true);
+    } else {
       const nextIndex = displayTimetables.length;
 
       const newTimetable: TimetableData = {
-        name: "New Timetable",//`Timetable${nextIndex}`,
+        name: 'New Timetable', //`Timetable${nextIndex}`,
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
@@ -163,7 +171,7 @@ const TimetableTabs: React.FC = () => {
     setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
     setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
     setSelectedTimetable(timetableIndex);
-  }
+  };
 
   // EXPERIMENTAL: Rerenders the timetables component after insertion/deletion (when selected timetable changes)
   useEffect(() => {
@@ -196,18 +204,16 @@ const TimetableTabs: React.FC = () => {
     let timetableName = displayTimetables[selectedTimetable].name;
     setRenamedString(timetableName);
     setrenamedHelper(`${timetableName.length}/30`);
-    timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false)
+    timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
 
     setRenameOpen(true);
   };
 
-
   // Handle closing the rename dialog
   const handleRenameClose = (clickedOk: boolean) => {
-
     // Checks if the user clicked out of the dialog or clicked Ok
     if (!clickedOk) {
-      setRenameOpen(false)
+      setRenameOpen(false);
       return;
     }
 
@@ -227,35 +233,40 @@ const TimetableTabs: React.FC = () => {
     let str = e.target.value;
     setRenamedString(str);
     setrenamedHelper(`${str.length}/30`);
-    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false)
-  }
+    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+  };
 
   const handleDuplicateTimetable = () => {
-    const currentTimetable = displayTimetables[selectedTimetable];
-  
-    const newTimetable = {
-      name: currentTimetable.name + ' - Copy',
-      selectedCourses: currentTimetable.selectedCourses,
-      selectedClasses: currentTimetable.selectedClasses,
-      createdEvents: currentTimetable.createdEvents,
-    };
-  
-    // Insert the new timetable after the current one
-    const newTimetables = [
-      ...displayTimetables.slice(0, selectedTimetable + 1),
-      newTimetable,
-      ...displayTimetables.slice(selectedTimetable + 1),
-    ];
-  
-    // Update the state variables
-    storage.set('timetables', newTimetables);
-    setDisplayTimetables(newTimetables);
-    setSelectedTimetable(selectedTimetable + 1);
-    setSelectedCourses(newTimetable.selectedCourses);
-    setSelectedClasses(newTimetable.selectedClasses);
-    setCreatedEvents(newTimetable.createdEvents);
+    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+      setAlertMsg('Maximum timetables reached');
+      setErrorVisibility(true);
+    } else {
+      const currentTimetable = displayTimetables[selectedTimetable];
 
-    handleMenuClose();
+      const newTimetable = {
+        name: currentTimetable.name + ' - Copy',
+        selectedCourses: currentTimetable.selectedCourses,
+        selectedClasses: currentTimetable.selectedClasses,
+        createdEvents: currentTimetable.createdEvents,
+      };
+
+      // Insert the new timetable after the current one
+      const newTimetables = [
+        ...displayTimetables.slice(0, selectedTimetable + 1),
+        newTimetable,
+        ...displayTimetables.slice(selectedTimetable + 1),
+      ];
+
+      // Update the state variables
+      storage.set('timetables', newTimetables);
+      setDisplayTimetables(newTimetables);
+      setSelectedTimetable(selectedTimetable + 1);
+      setSelectedCourses(newTimetable.selectedCourses);
+      setSelectedClasses(newTimetable.selectedClasses);
+      setCreatedEvents(newTimetable.createdEvents);
+
+      handleMenuClose();
+    }
   };
 
   return (
@@ -271,11 +282,11 @@ const TimetableTabs: React.FC = () => {
           <DeleteOutline fontSize="small" />
         </MenuItem>
       </Menu>
-      <Tabs 
-      value={selectedTimetable}
-      sx={TabContainerStyle}
-      TabIndicatorProps={{style: {display: 'none'}}}
-      variant="scrollable"
+      <Tabs
+        value={selectedTimetable}
+        sx={TabContainerStyle}
+        TabIndicatorProps={{ style: { display: 'none' } }}
+        variant="scrollable"
       >
         {displayTimetables.map((timetable: TimetableData, index: number) => (
           <Tab
@@ -295,24 +306,20 @@ const TimetableTabs: React.FC = () => {
             iconPosition="end"
           />
         ))}
-        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle}/>
+        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
       </Tabs>
-      <Dialog 
-      onClose={() => handleRenameClose(false)} 
-      open={renameOpen}
-      >
-        <DialogTitle 
-        sx={{alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px'}}>Rename Timetable</DialogTitle>
-        <Box 
-        sx={{
-          backgroundColor: `${theme.palette.primary.main}`, 
-          minHeight: '4px', 
-          width: '100px', 
-          alignSelf: 'center', 
-          borderRadius: '5px',
-          marginBottom: '8px'
+      <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
+        <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Rename Timetable</DialogTitle>
+        <Box
+          sx={{
+            backgroundColor: `${theme.palette.primary.main}`,
+            minHeight: '4px',
+            width: '100px',
+            alignSelf: 'center',
+            borderRadius: '5px',
+            marginBottom: '8px',
           }}
-          ></Box>
+        ></Box>
         <TextField
           sx={{ padding: '5px', paddingTop: '10px', width: '180px', alignSelf: 'center' }}
           id="outlined-basic"
@@ -322,12 +329,7 @@ const TimetableTabs: React.FC = () => {
           onChange={(e) => handleRenameChange(e)}
           error={renamedErr}
         />
-        <ExecuteButton 
-        variant="contained"
-        color="primary"
-        disableElevation
-        onClick={() => handleRenameClose(true)}
-        >
+        <ExecuteButton variant="contained" color="primary" disableElevation onClick={() => handleRenameClose(true)}>
           OK
         </ExecuteButton>
       </Dialog>
@@ -350,8 +352,8 @@ const TimetableTabs: React.FC = () => {
             No
           </Button>
         </DialogActions>
-      </Dialog >
-    </Box >
+      </Dialog>
+    </Box>
   );
 };
 export { TimetableTabs };
