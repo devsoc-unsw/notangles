@@ -31,6 +31,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [mousePoints, setMousePoints] = useState({ x: 0, y: 0 });
   
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -50,6 +51,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   };
 
   const onDown = (eventDown: any) => {
+    if (eventDown.button === 2) return; //do nothing if right click
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
@@ -194,6 +196,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         onContextMenu={(e) => {
           e.preventDefault();
           setMenu(true);
+          setMousePoints({ x: e.pageX, y: e.pageY});
         }}
       >
         <StyledCardInner
@@ -222,7 +225,18 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           )}
           {fullscreenVisible && <DuplicateButton onClick={duplicateEvent} />}
         </StyledCardInner>
-        {menu && <StyledContextMenu />}
+        {menu &&
+          <StyledContextMenu top={mousePoints.y} left={mousePoints.x} >
+            <ul>
+              <li>Copy</li>
+              <li>Cut</li>
+              <li>Duplicate</li>
+              <li>Delete</li>
+              <li>Edit</li>
+            </ul>
+          </StyledContextMenu>
+        
+        }
       </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>

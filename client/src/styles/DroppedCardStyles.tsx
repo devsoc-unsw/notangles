@@ -149,12 +149,38 @@ export const StyledList = styled(List)`
   padding: 12px 15px;
 `;
 
-export const StyledContextMenu = styled('div')`
+
+export const StyledContextMenu = styled('div', {
+  shouldForwardProp: (prop) => !['top', 'left'].includes(prop.toString()),
+})<{
+  top: number;
+  left: number;
+}>`
   border-radius: 4px;
   padding: 10px;
   box-sizing: border-box;
   margin: 5px 0;
   position: absolute;
-  width: 200px;
+  width: 150px;
   background-color: #2e2e2e;
+  z-index: 10;
+  color: white;
+  text-align: left;
+
+  ul {
+    margin: 0;
+    padding: 0px;
+    box-sizing: border-box;
+    list-style-type: none;
+  }
+  ul li {
+    margin: 0;
+    padding: 10px 6px;
+    border-radius: 4px;
+  }
+
+  ul li:hover {
+    cursor: pointer;
+    background-color: #4b4b4b;
+  }
 `;
