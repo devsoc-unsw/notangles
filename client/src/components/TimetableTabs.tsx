@@ -57,6 +57,7 @@ const TimetableTabs: React.FC = () => {
 
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorCoord, setAnchorCoord] = useState<null | { x: number; y: number }>(null);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<String>('');
@@ -166,7 +167,7 @@ const TimetableTabs: React.FC = () => {
   };
 
   // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
-  const HandleSwitchTimetables = (timetableIndex: number) => {
+  const handleSwitchTimetables = (timetableIndex: number) => {
     setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
     setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
     setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
@@ -192,11 +193,19 @@ const TimetableTabs: React.FC = () => {
     setAnchorEl(event.currentTarget);
   };
 
+  // Right clicking a tab switch to that tab and open the menu
+  const handleRightTabClick = (event: React.MouseEvent, index: number) => {
+    event.preventDefault();
+    handleSwitchTimetables(index);
+    setAnchorCoord({ x: event.clientX, y: event.clientY });
+  };
+
   // Collapse all modals and menus
   const handleMenuClose = () => {
     setRenameOpen(false);
     setDeleteOpen(false);
     setAnchorEl(null);
+    setAnchorCoord(null);
   };
 
   // Handle opening the rename dialog
@@ -264,14 +273,19 @@ const TimetableTabs: React.FC = () => {
       setSelectedCourses(newTimetable.selectedCourses);
       setSelectedClasses(newTimetable.selectedClasses);
       setCreatedEvents(newTimetable.createdEvents);
-
       handleMenuClose();
     }
   };
 
   return (
     <Box sx={{ paddingTop: '10px' }}>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+      <Menu
+        anchorReference={anchorEl === null ? 'anchorPosition' : 'anchorEl'}
+        anchorEl={anchorEl}
+        anchorPosition={anchorCoord !== null ? { top: anchorCoord.y, left: anchorCoord.x } : undefined}
+        open={Boolean(anchorEl) || anchorCoord !== null}
+        onClose={handleMenuClose}
+      >
         <MenuItem onClick={() => handleDuplicateTimetable()}>
           <ContentCopy fontSize="small" />
         </MenuItem>
@@ -293,7 +307,8 @@ const TimetableTabs: React.FC = () => {
             key={index}
             label={timetable.name}
             sx={TabStyle(index)}
-            onClick={() => HandleSwitchTimetables(index)}
+            onClick={() => handleSwitchTimetables(index)}
+            onContextMenu={(e) => handleRightTabClick(e, index)}
             icon={
               selectedTimetable === index ? (
                 <span onClick={handleMenuClick}>
