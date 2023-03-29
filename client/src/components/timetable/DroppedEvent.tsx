@@ -137,7 +137,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
   const duplicateEvent = () => {
-    console.log("hi")
     const DaysOfWeek: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const event = Object.values(createdEvents).find(e => e.event.id === eventId);
     
@@ -171,9 +170,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     return () => window.removeEventListener('click', handleClick);
   }, []);
 
-  const hello = () => {
-    console.log("hi");
-  }
   return (
     <>
       <StyledCard
