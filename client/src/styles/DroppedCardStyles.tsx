@@ -148,3 +148,13 @@ export const StyledList = styled(List)`
   width: 395px;
   padding: 12px 15px;
 `;
+
+export const StyledContextMenu = styled('div')`
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 5px 0;
+  position: absolute;
+  width: 200px;
+  background-color: #2e2e2e;
+`;

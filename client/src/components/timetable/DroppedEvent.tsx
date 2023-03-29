@@ -16,6 +16,7 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
   DuplicateButton,
+  StyledContextMenu,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
@@ -29,6 +30,7 @@ const StyledLocationIcon = styled(LocationOn)`
 const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [menu, setMenu] = useState(false);
   
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -161,6 +163,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
       }
   }
 
+
   return (
     <>
       <StyledCard
@@ -181,6 +184,10 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         }}
         onMouseLeave={() => {
           setFullscreenVisible(false);
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setMenu(true);
         }}
       >
         <StyledCardInner
@@ -209,6 +216,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           )}
           {fullscreenVisible && <DuplicateButton onClick={duplicateEvent} />}
         </StyledCardInner>
+        {menu && <StyledContextMenu />}
       </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>
