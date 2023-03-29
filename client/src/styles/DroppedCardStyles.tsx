@@ -148,8 +148,8 @@ export const StyledContextMenu = styled('div', {
   z-index: 101;
   color: white;
   text-align: left;
-  top: 30px;
-  left: 500px;
+  top: ${({ top }) => top - 140}px;
+  left: ${({ left }) => left - 30}px;
 
   ul {
     margin: 0;
