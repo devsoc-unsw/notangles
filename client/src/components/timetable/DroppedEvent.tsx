@@ -15,7 +15,6 @@ import {
   StyledCardInner,
   StyledCardInnerGrid,
   StyledCardName,
-  DuplicateButton,
   StyledContextMenu,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
@@ -138,6 +137,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
   const duplicateEvent = () => {
+    console.log("hi")
     const DaysOfWeek: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const event = Object.values(createdEvents).find(e => e.event.id === eventId);
     
@@ -171,7 +171,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     return () => window.removeEventListener('click', handleClick);
   }, []);
 
-
+  const hello = () => {
+    console.log("hi");
+  }
   return (
     <>
       <StyledCard
@@ -223,21 +225,19 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
-          {fullscreenVisible && <DuplicateButton onClick={duplicateEvent} />}
         </StyledCardInner>
+      </StyledCard>
         {menu &&
           <StyledContextMenu top={mousePoints.y} left={mousePoints.x} >
             <ul>
+              <li onClick={duplicateEvent}>Duplicate</li>
               <li>Copy</li>
               <li>Cut</li>
-              <li>Duplicate</li>
               <li>Delete</li>
               <li>Edit</li>
             </ul>
           </StyledContextMenu>
-        
         }
-      </StyledCard>
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>
   );

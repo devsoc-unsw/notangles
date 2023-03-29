@@ -34,23 +34,6 @@ export const ExpandButton = styled(Button)`
   }
 `;
 
-export const DuplicateButton = styled(ContentCopyIcon)`
-  position: absolute;
-  bottom: 7px;
-  left: 7px;
-  box-shadow: none;
-  min-width: 0px;
-  padding: 0;
-  opacity: 40%;
-  border-radius: 2px;
-  color: #f5f5f5;
-
-  &:hover {
-    opacity: 100%;
-    cursor: pointer;
-  }
-`;
-
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
@@ -158,14 +141,15 @@ export const StyledContextMenu = styled('div', {
 }>`
   border-radius: 4px;
   padding: 10px;
-  box-sizing: border-box;
   margin: 5px 0;
   position: absolute;
-  width: 150px;
-  background-color: #2e2e2e;
-  z-index: 10;
+  width: 130px;
+  background-color: #303030;
+  z-index: 101;
   color: white;
   text-align: left;
+  top: 30px;
+  left: 500px;
 
   ul {
     margin: 0;
