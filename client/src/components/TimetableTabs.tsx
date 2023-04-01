@@ -315,6 +315,26 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
+  // EXPERIEMENTAL: Hotkey for creating new timetables
+  useEffect(() => {
+    const handleCreateTimetableShortcut = (event: KeyboardEvent) => {
+      // If the ctrl+enter keys are pressed then creates new timetable
+      const createButton = document.getElementById('create-timetables-button');
+      if (event.ctrlKey && (event.key === "Enter")) {
+        event.preventDefault();
+        createButton?.focus();
+        createButton?.click();
+      }
+    };
+
+    document.addEventListener('keydown', handleCreateTimetableShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleCreateTimetableShortcut);
+    };
+  }, []);
+
   // EXPERIEMENTAL: Hotkeys for deleting timetables (CTRL+BACKSPACE) then delete to quick select 'OK'
   useEffect(() => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
@@ -396,7 +416,7 @@ const TimetableTabs: React.FC = () => {
             iconPosition="end"
           />
         ))}
-        <Tab icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+        <Tab id='create-timetables-button' icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
       </Tabs>
       <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
         <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Rename Timetable</DialogTitle>
