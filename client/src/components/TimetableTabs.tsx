@@ -6,6 +6,8 @@ import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
+import getCourseInfo from '../api/getCourseInfo';
+import { CourseData } from '../interfaces/Periods';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 10;
@@ -45,6 +47,9 @@ const TimetableTabs: React.FC = () => {
   };
 
   const {
+    isConvertToLocalTimezone,
+    term,
+    year,
     isDarkMode,
     selectedTimetable,
     setSelectedTimetable,
@@ -254,10 +259,42 @@ const TimetableTabs: React.FC = () => {
 
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
-        selectedCourses: currentTimetable.selectedCourses,
-        selectedClasses: currentTimetable.selectedClasses,
-        createdEvents: currentTimetable.createdEvents,
+        selectedCourses: [...currentTimetable.selectedCourses],
+        selectedClasses: { ...currentTimetable.selectedClasses },
+        createdEvents: { ...currentTimetable.createdEvents },
       };
+
+      // const codes: string[] = currentTimetable.selectedCourses.map((course: CourseData) => course.code);
+
+      // Promise.all(
+      //   codes.map((code) =>
+      //     getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+      //       return err;
+      //     })
+      //   )
+      // ).then((result) => {
+      //   const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
+
+      //   let newSelectedCourses = [...selectedCourses];
+
+      //   // Update the existing courses with the new data (for changing timezones).
+      //   addedCourses.forEach((addedCourse) => {
+      //     if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
+      //       const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
+      //       newSelectedCourses[index] = addedCourse;
+      //     } else {
+      //       newSelectedCourses.push(addedCourse);
+      //     }
+      //   });
+      //   console.log(newSelectedCourses);
+      //   // setSelectedCourses(newSelectedCourses);
+      // });
+      // Object.keys(newTimetable.selectedClasses).forEach((courseCode) => {
+      //   Object.keys(newTimetable.selectedClasses[courseCode]).forEach((activity) => {
+      //     newTimetable.selectedClasses[courseCode][activity].id = 'hello';
+      //   });
+      // });
+
 
       // Insert the new timetable after the current one
       const newTimetables = [
@@ -273,9 +310,50 @@ const TimetableTabs: React.FC = () => {
       setSelectedCourses(newTimetable.selectedCourses);
       setSelectedClasses(newTimetable.selectedClasses);
       setCreatedEvents(newTimetable.createdEvents);
+
       handleMenuClose();
+
     }
   };
+
+  // EXPERIEMENTAL: Hotkeys for deleting timetables (CTRL+BACKSPACE) then delete to quick select 'OK'
+  useEffect(() => {
+    const handleDeletePopupShortcut = (event: KeyboardEvent) => {
+      // If the ctrl+backspace keys are pressed then opens the delete dialog menu
+      if (event.ctrlKey && (event.key === "Backspace")) {
+        setDeleteOpen(!deleteOpen);
+      }
+    };
+
+    document.addEventListener('keydown', handleDeletePopupShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleDeletePopupShortcut);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
+      // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
+      const deleteConfirm = document.getElementById('confirm-delete-button');
+      if (deleteOpen) {
+        event.preventDefault();
+        if (event.key === "Enter") {
+          deleteConfirm?.focus();
+          deleteConfirm?.click();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleDeleteEnterShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleDeleteEnterShortcut);
+    };
+  }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
+
 
   return (
     <Box sx={{ paddingTop: '10px' }}>
@@ -354,6 +432,7 @@ const TimetableTabs: React.FC = () => {
         )}
         <DialogActions>
           <Button
+            id="confirm-delete-button"
             sx={ModalButtonStyle}
             variant="contained"
             onClick={() => {
