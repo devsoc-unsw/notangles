@@ -256,7 +256,6 @@ const TimetableTabs: React.FC = () => {
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[selectedTimetable];
-
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
         selectedCourses: [...currentTimetable.selectedCourses],
@@ -264,37 +263,37 @@ const TimetableTabs: React.FC = () => {
         createdEvents: { ...currentTimetable.createdEvents },
       };
 
-      // const codes: string[] = currentTimetable.selectedCourses.map((course: CourseData) => course.code);
+      const codes: string[] = currentTimetable.selectedCourses.map((course: CourseData) => course.code);
 
-      // Promise.all(
-      //   codes.map((code) =>
-      //     getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
-      //       return err;
-      //     })
-      //   )
-      // ).then((result) => {
-      //   const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
+      Promise.all(
+        codes.map((code) =>
+          getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+            return err;
+          })
+        )
+      ).then((result) => {
+        const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
-      //   let newSelectedCourses = [...selectedCourses];
+        let newSelectedCourses = [...selectedCourses];
 
-      //   // Update the existing courses with the new data (for changing timezones).
-      //   addedCourses.forEach((addedCourse) => {
-      //     if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
-      //       const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
-      //       newSelectedCourses[index] = addedCourse;
-      //     } else {
-      //       newSelectedCourses.push(addedCourse);
-      //     }
-      //   });
-      //   console.log(newSelectedCourses);
-      //   // setSelectedCourses(newSelectedCourses);
-      // });
+        // Update the existing courses with the new data (for changing timezones).
+        addedCourses.forEach((addedCourse) => {
+          if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
+            const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
+            newSelectedCourses[index] = addedCourse;
+          } else {
+            newSelectedCourses.push(addedCourse);
+          }
+        });
+        console.log(newSelectedCourses);
+
+        // setSelectedCourses(newSelectedCourses);
+      });
       // Object.keys(newTimetable.selectedClasses).forEach((courseCode) => {
       //   Object.keys(newTimetable.selectedClasses[courseCode]).forEach((activity) => {
       //     newTimetable.selectedClasses[courseCode][activity].id = 'hello';
       //   });
       // });
-
 
       // Insert the new timetable after the current one
       const newTimetables = [
@@ -337,12 +336,10 @@ const TimetableTabs: React.FC = () => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
       const deleteConfirm = document.getElementById('confirm-delete-button');
-      if (deleteOpen) {
+      if (deleteOpen && (event.key === "Enter")) {
         event.preventDefault();
-        if (event.key === "Enter") {
-          deleteConfirm?.focus();
-          deleteConfirm?.click();
-        }
+        deleteConfirm?.focus();
+        deleteConfirm?.click();
       }
     };
 
@@ -430,7 +427,7 @@ const TimetableTabs: React.FC = () => {
         {displayTimetables[selectedTimetable] && (
           <DialogTitle>{`Delete ${displayTimetables[selectedTimetable].name}?`}</DialogTitle>
         )}
-        <DialogActions>
+        <DialogActions sx={{ justifyContent: 'center' }}>
           <Button
             id="confirm-delete-button"
             sx={ModalButtonStyle}
