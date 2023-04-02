@@ -30,6 +30,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
+
   
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -161,7 +162,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
       setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
       }
-  }
+  };
 
 
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
@@ -169,12 +170,12 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     setContextMenu(
       contextMenu === null
         ? {
-            x: e.clientX + 2,
-            y: e.clientY - 6,
+            x: e.clientX,
+            y: e.clientY,
           }
         : null,
     );
-  }
+  };
 
   const handleCloseContextMenu = () => setContextMenu(null);
 
@@ -205,12 +206,13 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
       >
         <Menu 
           open={contextMenu != null}
-          onClose={handleCloseContextMenu}
+          anchorReference='anchorPosition'
           anchorPosition={
             contextMenu !== null
-              ? { top: contextMenu.y, left: contextMenu.x }
-              : undefined
+            ? { top: contextMenu.y, left: contextMenu.x }
+            : undefined
           }
+          onClose={handleCloseContextMenu}
         >
           <MenuItem onClick={handleCloseContextMenu}>Copy</MenuItem>
           <MenuItem onClick={handleCloseContextMenu}>Print</MenuItem>
