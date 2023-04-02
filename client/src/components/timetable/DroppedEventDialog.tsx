@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
-import { daysLong, daysShort } from '../../constants/timetable';
+import React, { useContext } from 'react';
+import { AccessTime, Close, Delete, Edit, LocationOn, Notes } from '@mui/icons-material';
+import { Grid, IconButton, ListItemIcon, Typography } from '@mui/material';
+import { daysLong } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
 import { DroppedEventDialogProps } from '../../interfaces/PropTypes';
 import { StyledListItem } from '../../styles/CustomEventStyles';

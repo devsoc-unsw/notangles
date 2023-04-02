@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
 import { Dialog } from '@mui/material';
 import { daysShort } from '../../constants/timetable';
 import { CourseContext } from '../../context/CourseContext';
