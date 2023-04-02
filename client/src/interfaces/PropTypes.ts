@@ -105,6 +105,8 @@ export interface ExpandedEventViewProps {
   eventPeriod: EventPeriod;
   popupOpen: boolean;
   handleClose: () => void;
+  setIsEditing: (isEditing: boolean) => void;
+  isEditing: boolean;
 }
 
 export interface DiscardDialogProps {
@@ -169,4 +171,19 @@ export interface CustomEventTutoringProp {
   classesCodes: Record<string, string>[];
   setCourseCode: (courseCode: string) => void;
   setClassCode: (classCode: string) => void;
+}
+
+export interface DroppedEventDialogProps {
+  eventPeriod: EventPeriod;
+  handleCloseDialog: () => void;
+  setIsEditing: (isEditing: boolean) => void;
+  isEditing: boolean;
+}
+
+export interface EditEventDialogProps {
+  eventPeriod: EventPeriod;
+  handleCloseDialog: () => void;
+  setIsEditing: (isEditing: boolean) => void;
+  isChanged: boolean;
+  setIsChanged: (isChanged: boolean) => void;
 }

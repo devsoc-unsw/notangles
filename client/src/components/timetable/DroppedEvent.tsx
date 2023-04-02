@@ -29,6 +29,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -185,6 +186,12 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     setCreatedEvents(updatedEventData);
   };
 
+  const handleEditEvent = () => {
+    setIsEditing(true);
+    setPopupOpen(true);
+    handleCloseContextMenu();
+  };
+
   return (
     <>
       <StyledCard
@@ -222,7 +229,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
         >
           <MenuItem onClick={handleDuplicateEvent}>Duplicate</MenuItem>
           <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
-          <MenuItem onClick={handleCloseContextMenu}>Edit</MenuItem>
+          <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
         </Menu>
         <StyledCardInner
           hasClash={false}
@@ -250,7 +257,13 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           )}
         </StyledCardInner>
       </StyledCard>
-      <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
+      <ExpandedEventView 
+        eventPeriod={eventPeriod} 
+        popupOpen={popupOpen} 
+        handleClose={handleClose}
+        setIsEditing={setIsEditing}
+        isEditing={isEditing}
+      />
     </>
   );
 };
