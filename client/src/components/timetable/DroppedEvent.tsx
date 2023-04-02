@@ -15,7 +15,6 @@ import {
   StyledCardInner,
   StyledCardInnerGrid,
   StyledCardName,
-  StyledContextMenu,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
@@ -31,7 +30,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
-  
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -181,6 +179,12 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const handleCloseContextMenu = () => setContextMenu(null);
 
+  const handleDeleteEvent = () => {
+    const updatedEventData = { ...createdEvents };
+    delete updatedEventData[eventPeriod.event.id];
+    setCreatedEvents(updatedEventData);
+  };
+
   return (
     <>
       <StyledCard
@@ -217,7 +221,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           onClose={handleCloseContextMenu}
         >
           <MenuItem onClick={duplicateEvent}>Duplicate</MenuItem>
-          <MenuItem onClick={handleCloseContextMenu}>Delete</MenuItem>
+          <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
           <MenuItem onClick={handleCloseContextMenu}>Edit</MenuItem>
         </Menu>
         <StyledCardInner
