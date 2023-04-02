@@ -162,6 +162,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
       setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
       }
+
+      handleCloseContextMenu();
   };
 
 
@@ -214,10 +216,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           }
           onClose={handleCloseContextMenu}
         >
-          <MenuItem onClick={handleCloseContextMenu}>Copy</MenuItem>
-          <MenuItem onClick={handleCloseContextMenu}>Print</MenuItem>
-          <MenuItem onClick={handleCloseContextMenu}>Highlight</MenuItem>
-          <MenuItem onClick={handleCloseContextMenu}>Email</MenuItem>
+          <MenuItem onClick={duplicateEvent}>Duplicate</MenuItem>
+          <MenuItem onClick={handleCloseContextMenu}>Delete</MenuItem>
+          <MenuItem onClick={handleCloseContextMenu}>Edit</MenuItem>
         </Menu>
         <StyledCardInner
           hasClash={false}
