@@ -134,7 +134,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
-  const duplicateEvent = () => {
+  const handleDuplicateEvent = () => {
     const DaysOfWeek: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const event = Object.values(createdEvents).find(e => e.event.id === eventId);
     
@@ -220,7 +220,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           }
           onClose={handleCloseContextMenu}
         >
-          <MenuItem onClick={duplicateEvent}>Duplicate</MenuItem>
+          <MenuItem onClick={handleDuplicateEvent}>Duplicate</MenuItem>
           <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
           <MenuItem onClick={handleCloseContextMenu}>Edit</MenuItem>
         </Menu>
