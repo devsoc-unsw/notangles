@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Grid, Menu, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
@@ -29,8 +29,7 @@ const StyledLocationIcon = styled(LocationOn)`
 const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
-  const [menu, setMenu] = useState(false);
-  const [mousePoints, setMousePoints] = useState({ x: 0, y: 0 });
+  const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   
   // For duplicating events
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -164,11 +163,20 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
       }
   }
 
-  useEffect(() => {
-    const handleClick = () => setMenu(false);
-    window.addEventListener('click', handleClick);
-    return () => window.removeEventListener('click', handleClick);
-  }, []);
+
+  const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setContextMenu(
+      contextMenu === null
+        ? {
+            x: e.clientX + 2,
+            y: e.clientY - 6,
+          }
+        : null,
+    );
+  }
+
+  const handleCloseContextMenu = () => setContextMenu(null);
 
   return (
     <>
@@ -192,11 +200,23 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           setFullscreenVisible(false);
         }}
         onContextMenu={(e) => {
-          e.preventDefault();
-          setMenu(true);
-          setMousePoints({ x: e.pageX, y: e.pageY});
+          handleContextMenu(e);
         }}
       >
+        <Menu 
+          open={contextMenu != null}
+          onClose={handleCloseContextMenu}
+          anchorPosition={
+            contextMenu !== null
+              ? { top: contextMenu.y, left: contextMenu.x }
+              : undefined
+          }
+        >
+          <MenuItem onClick={handleCloseContextMenu}>Copy</MenuItem>
+          <MenuItem onClick={handleCloseContextMenu}>Print</MenuItem>
+          <MenuItem onClick={handleCloseContextMenu}>Highlight</MenuItem>
+          <MenuItem onClick={handleCloseContextMenu}>Email</MenuItem>
+        </Menu>
         <StyledCardInner
           hasClash={false}
           isSquareEdges={isSquareEdges}
@@ -223,17 +243,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           )}
         </StyledCardInner>
       </StyledCard>
-        {menu &&
-          <StyledContextMenu top={mousePoints.y} left={mousePoints.x} >
-            <ul>
-              <li onClick={duplicateEvent}>Duplicate</li>
-              <li>Copy</li>
-              <li>Cut</li>
-              <li>Delete</li>
-              <li>Edit</li>
-            </ul>
-          </StyledContextMenu>
-        }
       <ExpandedEventView eventPeriod={eventPeriod} popupOpen={popupOpen} handleClose={handleClose} />
     </>
   );
