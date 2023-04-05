@@ -4,8 +4,6 @@ import { Grid, Menu, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
-import { CourseContext } from '../../context/CourseContext';
-import { createNewEvent } from '../../utils/createEvent';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
@@ -18,6 +16,7 @@ import {
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
+import EventContextMenu from './EventContextMenu';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -30,9 +29,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-
-  // For duplicating events
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const [isDoubleClick, setIsDoubleClick] = useState<boolean>(false);
 
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
@@ -49,7 +46,10 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   };
 
   const onDown = (eventDown: any) => {
-    if (eventDown.button === 2) return; //do nothing if right click
+    if (eventDown.button === 2) {
+      setIsDoubleClick(true);
+      return;
+    };
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
@@ -81,6 +81,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     }
 
     const onUp = (eventUp: any) => {
+      if (isDoubleClick) return;
       if (eventUp.type.includes('mouse') && ignoreMouse) return;
 
       window.removeEventListener('mousemove', onUp);
@@ -135,61 +136,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
-  const handleDuplicateEvent = () => {
-    const DaysOfWeek: string[] = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-    const event = Object.values(createdEvents).find(e => e.event.id === eventId);
-    
-    if (event != undefined) {
-      const eventStart = new Date(0);
-      eventStart.setHours(event.time.start);
-      eventStart.setMinutes((event.time.start % 1) * 60);
-
-      const eventEnd = new Date(0);
-      eventEnd.setHours(event.time.end);
-      eventEnd.setMinutes((event.time.end % 1) * 60);
-
-      // Create new event
-      const newEvent = createNewEvent(
-        event.event.name, 
-        event.event.location, 
-        event.event.description, 
-        event.event.color, 
-        DaysOfWeek[event.time.day - 1], 
-        eventStart, 
-        eventEnd
-      );
-
-      setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent});
-      }
-
-      handleCloseContextMenu();
-  };
-
-
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    setContextMenu(
-      contextMenu === null
-        ? {
-            x: e.clientX,
-            y: e.clientY,
-          }
-        : null,
-    );
-  };
-
-  const handleCloseContextMenu = () => setContextMenu(null);
-
-  const handleDeleteEvent = () => {
-    const updatedEventData = { ...createdEvents };
-    delete updatedEventData[eventPeriod.event.id];
-    setCreatedEvents(updatedEventData);
-  };
-
-  const handleEditEvent = () => {
-    setIsEditing(true);
-    setPopupOpen(true);
-    handleCloseContextMenu();
+    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null );
   };
 
   return (
@@ -217,20 +166,14 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           handleContextMenu(e);
         }}
       >
-        <Menu 
-          open={contextMenu != null}
-          anchorReference='anchorPosition'
-          anchorPosition={
-            contextMenu !== null
-            ? { top: contextMenu.y, left: contextMenu.x }
-            : undefined
-          }
-          onClose={handleCloseContextMenu}
-        >
-          <MenuItem onClick={handleDuplicateEvent}>Duplicate</MenuItem>
-          <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
-          <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
-        </Menu>
+        <EventContextMenu
+          eventId={eventId}
+          eventPeriod={eventPeriod}
+          contextMenu={contextMenu}
+          setContextMenu={setContextMenu}
+          setPopupOpen={setPopupOpen}
+          setIsEditing={setIsEditing}
+        />
         <StyledCardInner
           hasClash={false}
           isSquareEdges={isSquareEdges}

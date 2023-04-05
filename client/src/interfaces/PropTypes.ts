@@ -187,3 +187,12 @@ export interface EditEventDialogProps {
   isChanged: boolean;
   setIsChanged: (isChanged: boolean) => void;
 }
+
+export interface EventContextMenuProps {
+  eventId: string;
+  eventPeriod: EventPeriod;
+  contextMenu: null | { x: number; y: number }
+  setContextMenu: (contextMeny: null | { x: number; y: number }) => void;
+  setPopupOpen: (isPopupOpen: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void;
+}
