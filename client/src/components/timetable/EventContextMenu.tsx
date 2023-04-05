@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
 import { createNewEvent } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
-import { registerCard, unregisterCard } from '../../utils/Drag';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({ eventId, eventPeriod, contextMenu, setContextMenu, setPopupOpen, setIsEditing }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);

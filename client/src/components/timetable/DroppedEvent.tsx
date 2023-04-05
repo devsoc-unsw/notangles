@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid, Menu, MenuItem } from '@mui/material';
+import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
