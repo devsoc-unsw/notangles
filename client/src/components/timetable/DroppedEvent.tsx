@@ -5,6 +5,7 @@ import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -29,8 +30,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isDoubleClick, setIsDoubleClick] = useState<boolean>(false);
-
+  
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
 
@@ -46,10 +46,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
   };
 
   const onDown = (eventDown: any) => {
-    if (eventDown.button === 2) {
-      setIsDoubleClick(true);
-      return;
-    };
+    if (eventDown.button === 2 || contextMenu) return;
+
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
@@ -81,7 +79,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
     }
 
     const onUp = (eventUp: any) => {
-      if (isDoubleClick) return;
       if (eventUp.type.includes('mouse') && ignoreMouse) return;
 
       window.removeEventListener('mousemove', onUp);
