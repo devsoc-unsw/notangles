@@ -20,6 +20,7 @@ const Alerts: React.FC = () => {
 
   const getAutoSeverity = () => {
     if (alertMsg === 'Success!') return 'success';
+    if (alertMsg === 'Copied to clipboard!') return 'success';
     if (alertMsg.startsWith('Could not')) return 'warning';
     return 'error';
   };

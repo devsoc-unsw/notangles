@@ -18,6 +18,7 @@ import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 import LinkIcon from '@mui/icons-material/Link';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Alerts from '../Alerts';
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
   const { name, location, description, color } = eventPeriod.event;
@@ -38,7 +39,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newColor, setNewColor] = useState<string>(color as string);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -349,6 +350,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                       <IconButton
                         onClick={() => {
                           navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                          setAutoVisibility(true);
+                          setAlertMsg('Copied to clipboard!');
                         }}
                       >
                         <ContentCopyIcon />
