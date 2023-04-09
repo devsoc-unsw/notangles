@@ -6,7 +6,7 @@ import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
-import { display } from '@mui/system';
+import { Activity, ClassData, InInventory, SelectedClasses } from '../interfaces/Periods';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 10;
@@ -137,6 +137,9 @@ const TimetableTabs: React.FC = () => {
       setSelectedCourses(newTimetables[newIndex].selectedCourses);
       setSelectedClasses(newTimetables[newIndex].selectedClasses);
       setCreatedEvents(newTimetables[newIndex].createdEvents);
+    } else {
+      setAlertMsg('Must have at least 1 timetable');
+      setErrorVisibility(true);
     }
   };
 
@@ -169,7 +172,6 @@ const TimetableTabs: React.FC = () => {
 
   // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
   const handleSwitchTimetables = (timetableIndex: number) => {
-    console.log(selectedClasses);
     setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
     setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
     setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
@@ -253,9 +255,13 @@ const TimetableTabs: React.FC = () => {
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[selectedTimetable];
-      const newTimetable = structuredClone(currentTimetable);
-      newTimetable.name += ' - Copy';
 
+      const newTimetable = {
+        name: currentTimetable.name + ' - Copy',
+        selectedClasses: copyClasses(currentTimetable.selectedClasses),
+        selectedCourses: currentTimetable.selectedCourses,
+        createdEvents: currentTimetable.createdEvents
+      }
 
       // Insert the new timetable after the current one
       const newTimetables = [
@@ -273,6 +279,22 @@ const TimetableTabs: React.FC = () => {
       setSelectedTimetable(selectedTimetable + 1);
       handleMenuClose();
     }
+  };
+
+  // EXPERIMENTAL: Function to create a deep copy of timetable classes
+  const copyClasses = (oldClasses: SelectedClasses) => {
+    const newClasses: SelectedClasses = {};
+
+    Object.entries(oldClasses).forEach(([courseCode, activities]) => {
+      const activityCopy: Record<Activity, ClassData | InInventory> = {};
+
+      Object.entries(activities).forEach(([activity, classData]) => {
+        activityCopy[activity] = classData !== null ? { ...classData } : null;
+      });
+      newClasses[courseCode] = { ...activityCopy };
+    });
+
+    return newClasses;
   };
 
   // EXPERIEMENTAL: Hotkey for creating new timetables
