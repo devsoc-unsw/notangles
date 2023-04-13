@@ -8,7 +8,7 @@
     "@emotion/styled": "11.10.6",
     "@mui/icons-material": "5.11.11",
     "@mui/lab": "5.0.0-alpha.123",
-    "@mui/material": "5.11.13",
+    "@mui/material": "5.12.0",
     "@mui/x-date-pickers": "6.1.0",
     "@sentry/react": "7.47.0",
     "@sentry/tracing": "7.47.0",
