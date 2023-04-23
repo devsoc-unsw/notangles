@@ -30,6 +30,13 @@ export interface ClassData {
   section: Section;
 }
 
+export interface TimetableData {
+  name: String;
+  selectedCourses: CourseData[];
+  selectedClasses: SelectedClasses;
+  createdEvents: CreatedEvents;
+};
+
 export interface InventoryData {
   courseCode: CourseCode;
   activity: Activity;
