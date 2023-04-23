@@ -354,6 +354,24 @@ const TimetableTabs: React.FC = () => {
     };
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
+  useEffect(() => {
+    const handleRenameEnterShortcut = (event: KeyboardEvent) => {
+      // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
+      const renameConfirm = document.getElementById('confirm-rename-button');
+      if (renameOpen && (event.key === "Enter")) {
+        event.preventDefault();
+        renameConfirm?.focus();
+        renameConfirm?.click();
+      }
+    };
+
+    document.addEventListener('keydown', handleRenameEnterShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleRenameEnterShortcut);
+    };
+  }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
   // EXPERIMENTAL: Drag and drop functionality for timetable tabs
 
@@ -452,7 +470,7 @@ const TimetableTabs: React.FC = () => {
           onChange={(e) => handleRenameChange(e)}
           error={renamedErr}
         />
-        <ExecuteButton variant="contained" color="primary" disableElevation onClick={() => handleRenameClose(true)}>
+        <ExecuteButton variant="contained" color="primary" id="confirm-rename-button" disableElevation onClick={() => handleRenameClose(true)}>
           OK
         </ExecuteButton>
       </Dialog>
