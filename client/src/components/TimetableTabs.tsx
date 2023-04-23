@@ -6,17 +6,10 @@ import storage from '../utils/storage';
 import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
 import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
-import { Activity, ClassData, InInventory, SelectedClasses } from '../interfaces/Periods';
+import { Activity, ClassData, TimetableData, InInventory, SelectedClasses } from '../interfaces/Periods';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 10;
-
-  type TimetableData = {
-    name: String;
-    selectedCourses: Array<Object>;
-    selectedClasses: Object;
-    createdEvents: Object;
-  };
 
   type TabTheme = {
     containerBackground: String;
@@ -60,6 +53,9 @@ const TimetableTabs: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorCoord, setAnchorCoord] = useState<null | { x: number; y: number }>(null);
 
+  const dragTab = React.useRef<any>(null);
+  const dragOverTab = React.useRef<any>(null);
+
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<String>('');
   const [renamedHelper, setrenamedHelper] = useState<String>('');
@@ -89,6 +85,8 @@ const TimetableTabs: React.FC = () => {
   const TabStyle = (index: Number) => {
     let style = {
       minHeight: '50px',
+      minWidth: '150px',
+      maxWidth: '150px',
       paddingTop: '3px',
       paddingBottom: '3px',
       borderStyle: 'solid',
@@ -106,6 +104,9 @@ const TimetableTabs: React.FC = () => {
         borderWidth: '1px',
         borderColor: `${theme.palette.primary.main}`,
         zIndex: '1',
+      },
+      '&:active': {
+        cursor: 'move',
       },
       '&:hover': {
         backgroundColor: `${tabTheme.tabHoverColor}`,
@@ -354,6 +355,31 @@ const TimetableTabs: React.FC = () => {
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
 
+  // EXPERIMENTAL: Drag and drop functionality for timetable tabs
+
+  // Handle drag start (triggers whenever a tab is clicked)
+  const handleTabDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    dragTab.current = index;
+    handleSwitchTimetables(dragTab.current);
+  };
+
+  // handle drag enter (triggers whenever the user drags over another tab)
+  const handleTabDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    dragOverTab.current = index;
+    handleSortTabs();
+  };
+
+  // reordering the tabs
+  const handleSortTabs = () => {
+    const newTimetables = [...displayTimetables];
+    const draggedItem = newTimetables[dragTab.current];
+    newTimetables.splice(dragTab.current, 1);
+    newTimetables.splice(dragOverTab.current, 0, draggedItem);
+    setDisplayTimetables(newTimetables);
+    setSelectedTimetable(dragOverTab.current);
+    dragTab.current = dragOverTab.current;
+  }
+
   return (
     <Box sx={{ paddingTop: '10px' }}>
       <Menu
@@ -396,6 +422,11 @@ const TimetableTabs: React.FC = () => {
               )
             }
             iconPosition="end"
+            draggable={true}
+            onDragStart={(e) => handleTabDragStart(e, index)}
+            onDragEnter={(e) => handleTabDragEnter(e, index)}
+            onDragEnd={handleSortTabs}
+            onDragOver={(e) => e.preventDefault()}
           />
         ))}
         <Tab id='create-timetables-button' icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
