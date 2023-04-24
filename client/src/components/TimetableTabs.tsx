@@ -9,7 +9,7 @@ import { darkTheme, lightTheme } from '../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses } from '../interfaces/Periods';
 
 const TimetableTabs: React.FC = () => {
-  const TIMETABLE_LIMIT = 10;
+  const TIMETABLE_LIMIT = 13;
 
   type TabTheme = {
     containerBackground: String;
@@ -72,6 +72,8 @@ const TimetableTabs: React.FC = () => {
     useContext(CourseContext);
 
   const AddIconStyle = {
+    position: 'sticky',
+    right: '0px',
     padding: '10px',
     minWidth: '50px',
     minHeight: '50px',
@@ -410,7 +412,7 @@ const TimetableTabs: React.FC = () => {
   }
 
   return (
-    <Box sx={{ paddingTop: '10px' }}>
+    <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
       <Menu
         anchorReference={anchorEl === null ? 'anchorPosition' : 'anchorEl'}
         anchorEl={anchorEl}
