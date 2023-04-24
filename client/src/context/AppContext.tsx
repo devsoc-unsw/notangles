@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
+import { TimetableData } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -195,7 +196,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
-  const [displayTimetables, setDisplayTimetables] = useState<any>([]);
+  const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
   const initialContext: IAppContext = {
     is12HourMode,
     setIs12HourMode,

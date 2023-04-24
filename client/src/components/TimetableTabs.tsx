@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button } from '@mui/material';
+import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
@@ -47,6 +47,12 @@ const TimetableTabs: React.FC = () => {
     setAlertMsg,
     setErrorVisibility,
   } = useContext(AppContext);
+
+  const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
+
+  let addTimetabletip = isMacOS ? 'New Tab (Cmd+D)' : 'New Tab (Ctrl+Enter)';
+  let deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
+
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
@@ -301,12 +307,15 @@ const TimetableTabs: React.FC = () => {
   // EXPERIEMENTAL: Hotkey for creating new timetables
   useEffect(() => {
     const handleCreateTimetableShortcut = (event: KeyboardEvent) => {
-      // If the ctrl+enter keys are pressed then creates new timetable
       const createButton = document.getElementById('create-timetables-button');
-      if (event.ctrlKey && (event.key === "Enter")) {
-        event.preventDefault();
-        createButton?.focus();
-        createButton?.click();
+
+      // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
+      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          createButton?.focus();
+          createButton?.click();
+        }
       }
     };
 
@@ -318,12 +327,14 @@ const TimetableTabs: React.FC = () => {
     };
   }, []);
 
-  // EXPERIEMENTAL: Hotkeys for deleting timetables (CTRL+BACKSPACE) then delete to quick select 'OK'
+  // EXPERIEMENTAL: Hotkeys for deleting timetables
   useEffect(() => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
-      // If the ctrl+backspace keys are pressed then opens the delete dialog menu
-      if (event.ctrlKey && (event.key === "Backspace")) {
-        setDeleteOpen(!deleteOpen);
+      // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes selected timetable
+      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
+        if (event.key === "Backspace") {
+          setDeleteOpen(!deleteOpen);
+        }
       }
     };
 
@@ -335,6 +346,7 @@ const TimetableTabs: React.FC = () => {
     };
   }, []);
 
+  // EXPERIEMENTAL: Hotkey to confirm delete by pressing enter button
   useEffect(() => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
@@ -354,6 +366,7 @@ const TimetableTabs: React.FC = () => {
     };
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
+  // EXPERIEMENTAL: Hotkey to confirm rename by pressing enter button
   useEffect(() => {
     const handleRenameEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
@@ -373,21 +386,19 @@ const TimetableTabs: React.FC = () => {
     };
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
-  // EXPERIMENTAL: Drag and drop functionality for timetable tabs
-
-  // Handle drag start (triggers whenever a tab is clicked)
+  // EXPERIMENTAL: Handle drag start (triggers whenever a tab is clicked)
   const handleTabDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     dragTab.current = index;
     handleSwitchTimetables(dragTab.current);
   };
 
-  // handle drag enter (triggers whenever the user drags over another tab)
+  // EXPERIMENTAL: Handle drag enter (triggers whenever the user drags over another tab)
   const handleTabDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     dragOverTab.current = index;
     handleSortTabs();
   };
 
-  // reordering the tabs
+  // EXPERIMENTAL: Reordering the tabs when we drag and drop
   const handleSortTabs = () => {
     const newTimetables = [...displayTimetables];
     const draggedItem = newTimetables[dragTab.current];
@@ -413,9 +424,11 @@ const TimetableTabs: React.FC = () => {
         <MenuItem onClick={handleRenameOpen}>
           <EditOutlined fontSize="small" />
         </MenuItem>
-        <MenuItem onClick={() => setDeleteOpen(true)}>
-          <DeleteOutline fontSize="small" />
-        </MenuItem>
+        <Tooltip title={deleteTimetabletip}>
+          <MenuItem onClick={() => setDeleteOpen(true)}>
+            <DeleteOutline fontSize="small" />
+          </MenuItem>
+        </Tooltip>
       </Menu>
       <Tabs
         value={selectedTimetable}
@@ -447,7 +460,9 @@ const TimetableTabs: React.FC = () => {
             onDragOver={(e) => e.preventDefault()}
           />
         ))}
-        <Tab id='create-timetables-button' icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+        <Tooltip title={addTimetabletip}>
+          <Tab id='create-timetables-button' icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+        </Tooltip>
       </Tabs>
       <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
         <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Rename Timetable</DialogTitle>
