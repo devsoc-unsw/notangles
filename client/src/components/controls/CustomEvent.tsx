@@ -261,11 +261,9 @@ const CustomEvent: React.FC = () => {
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
     // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (day == 5) {
-      const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (day == 6) {
-      setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
+    if (day == 5 || day == 6) {
+      const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
     }
   };
 
