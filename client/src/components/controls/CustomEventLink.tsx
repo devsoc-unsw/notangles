@@ -1,11 +1,11 @@
 import { Link, LocationOn } from '@mui/icons-material';
-import { ListItemIcon, TextField, Card } from '@mui/material';
+import { ListItemIcon, TextField, Card, CardProps } from '@mui/material';
 import { CustomEventLinkProp } from '../../interfaces/PropTypes';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 
-const PreviewCard = styled(Card)`
+const PreviewCard = styled(Card) <CardProps & { bgColour: string }>`
   padding: 40px 20px;
   margin: 10px;
   display: flex;
@@ -13,9 +13,9 @@ const PreviewCard = styled(Card)`
   justify-content: center;
   text-align: center;
   align-items: center;
-  background-color: #1f7e8c;
-  border-radius: 10px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: ${props => props.bgColour !== '' ? props.bgColour : '#1f7e8c'};
+  border - radius: 10px;
+  box - shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: white;
 `;
 
@@ -58,7 +58,7 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
         <br />
       </StyledListItem>
       {eventPreview && (
-        <PreviewCard sx={{ bgcolor: event.color }}>
+        <PreviewCard bgColour={event.color}>
           <StyledListItemText>
             <strong>{event.name}</strong>
             <br />
