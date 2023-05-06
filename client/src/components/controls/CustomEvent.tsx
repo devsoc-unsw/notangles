@@ -11,12 +11,12 @@ import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { createNewEvent, createNewInviteEvent } from '../../utils/createEvent';
+import { createNewEvent, createNewLinkEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
-import CustomEventInvite from './CustomEventInvite';
+import CustomEventLink from './CustomEventLink';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -116,7 +116,7 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
     setClassesList([]);
 
-    // Reset info about the invite event
+    // Reset info about the link event
     setLink('');
 
     // Close the popovers
@@ -164,15 +164,15 @@ const CustomEvent: React.FC = () => {
         newEvents[newEvent.event.id] = newEvent;
       });
     } else {
-      const inviteEvent = JSON.parse(atob(link));
-      const newEvent = createInviteEvent(
-        inviteEvent.event.name,
-        inviteEvent.event.location,
-        inviteEvent.event.description,
-        inviteEvent.event.color,
-        inviteEvent.time.day,
-        inviteEvent.time.start,
-        inviteEvent.time.end
+      const linkEvent = JSON.parse(atob(link));
+      const newEvent = createLinkEvent(
+        linkEvent.event.name,
+        linkEvent.event.location,
+        linkEvent.event.description,
+        linkEvent.event.color,
+        linkEvent.time.day,
+        linkEvent.time.start,
+        linkEvent.time.end
       );
       newEvents[newEvent.event.id] = newEvent;
     }
@@ -193,7 +193,7 @@ const CustomEvent: React.FC = () => {
     setClassesList([]);
     setClassesCodes([]);
 
-    // Reset info about the invite event
+    // Reset info about the link event
     setLink('');
 
     // Close the popover
@@ -227,7 +227,7 @@ const CustomEvent: React.FC = () => {
     return newEvent;
   };
 
-  const createInviteEvent = (
+  const createLinkEvent = (
     name: string,
     location: string,
     description: string,
@@ -236,7 +236,7 @@ const CustomEvent: React.FC = () => {
     startTime: number,
     endTime: number
   ) => {
-    const newEvent = createNewInviteEvent(name, location, description, color, day, startTime, endTime);
+    const newEvent = createNewLinkEvent(name, location, description, color, day, startTime, endTime);
 
     setCreatedEvents({
       ...createdEvents,
@@ -291,7 +291,7 @@ const CustomEvent: React.FC = () => {
               <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
                 <Tab label="General" value="General" />
                 <Tab label="Tutoring" value="Tutoring" />
-                <Tab label="Add Invite" value="Add Invite" />
+                <Tab label="Via Link" value="Via Link" />
               </TabList>
             </Box>
             <StyledTabPanel value="General">
@@ -327,11 +327,11 @@ const CustomEvent: React.FC = () => {
                 setClassCode={setClassCode}
               />
             </StyledTabPanel>
-            <StyledTabPanel value="Add Invite">
-              <CustomEventInvite link={link} setLink={setLink} />
+            <StyledTabPanel value="Via Link">
+              <CustomEventLink link={link} setLink={setLink} />
             </StyledTabPanel>
           </TabContext>
-          {eventType !== 'Add Invite' && (
+          {eventType !== 'Via Link' && (
             <ColorPicker
               color={color}
               setColor={setColor}
@@ -348,7 +348,7 @@ const CustomEvent: React.FC = () => {
           disabled={
             (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
             (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
-            (eventType === 'Add Invite' && link === '')
+            (eventType === 'Via Link' && link === '')
           }
           onClick={createEvents}
         >

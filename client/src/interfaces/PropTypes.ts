@@ -171,7 +171,7 @@ export interface CustomEventTutoringProp {
   setClassCode: (classCode: string) => void;
 }
 
-export interface CustomEventInviteProp {
+export interface CustomEventLinkProp {
   link: string;
   setLink: (link: string) => void;
 }

@@ -32,7 +32,7 @@ export const createNewEvent = (
   return newEvent;
 };
 
-export const createNewInviteEvent = (
+export const createNewLinkEvent = (
   name: string,
   location: string,
   description: string,

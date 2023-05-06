@@ -1,6 +1,6 @@
 import { Link, LocationOn } from '@mui/icons-material';
 import { ListItemIcon, TextField, Card } from '@mui/material';
-import { CustomEventInviteProp } from '../../interfaces/PropTypes';
+import { CustomEventLinkProp } from '../../interfaces/PropTypes';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { useState } from 'react';
 import { styled } from '@mui/system';
@@ -19,7 +19,7 @@ const PreviewCard = styled(Card)`
   color: white;
 `;
 
-const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) => {
+const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink }) => {
   const [eventPreview, setEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
 
@@ -27,9 +27,9 @@ const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) =
     setLink(link);
     var isBase64 = require('is-base64');
     if (isBase64(link) && link.length > 0) {
-      const inviteEvent = JSON.parse(atob(link));
+      const linkEvent = JSON.parse(atob(link));
       setEventPreview(true);
-      setEvent({ name: inviteEvent.event.name, location: inviteEvent.event.location, color: inviteEvent.event.color });
+      setEvent({ name: linkEvent.event.name, location: linkEvent.event.location, color: linkEvent.event.color });
     }
   };
 
@@ -64,4 +64,4 @@ const CustomEventInvite: React.FC<CustomEventInviteProp> = ({ link, setLink }) =
   );
 };
 
-export default CustomEventInvite;
+export default CustomEventLink;
