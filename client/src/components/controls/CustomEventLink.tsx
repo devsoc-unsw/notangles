@@ -19,6 +19,10 @@ const PreviewCard = styled(Card) <CardProps & { bgColour: string }>`
   color: white;
 `;
 
+const StyledLocationOn = styled(LocationOn)`
+  font-size: 12px;
+`;
+
 const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAlertMsg, setErrorVisibility }) => {
   const [eventPreview, setEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
@@ -62,7 +66,7 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
           <StyledListItemText>
             <strong>{event.name}</strong>
             <br />
-            <LocationOn sx={{ fontSize: '12px' }} />
+            <StyledLocationOn />
             {event.location}
           </StyledListItemText>
         </PreviewCard>
