@@ -164,17 +164,23 @@ const CustomEvent: React.FC = () => {
         newEvents[newEvent.event.id] = newEvent;
       });
     } else {
-      const linkEvent = JSON.parse(atob(link));
-      const newEvent = createLinkEvent(
-        linkEvent.event.name,
-        linkEvent.event.location,
-        linkEvent.event.description,
-        linkEvent.event.color,
-        linkEvent.time.day,
-        linkEvent.time.start,
-        linkEvent.time.end
-      );
-      newEvents[newEvent.event.id] = newEvent;
+      try {
+        const linkEvent = JSON.parse(atob(link));
+        const newEvent = createLinkEvent(
+          linkEvent.event.name,
+          linkEvent.event.location,
+          linkEvent.event.description,
+          linkEvent.event.color,
+          linkEvent.time.day,
+          linkEvent.time.start,
+          linkEvent.time.end
+        );
+        newEvents[newEvent.event.id] = newEvent;
+      } catch {
+        setAlertMsg('Invalid event code');
+        setErrorVisibility(true);
+        return;
+      }
     }
 
     setEventType('General');
@@ -328,7 +334,7 @@ const CustomEvent: React.FC = () => {
               />
             </StyledTabPanel>
             <StyledTabPanel value="Via Link">
-              <CustomEventLink link={link} setLink={setLink} />
+              <CustomEventLink link={link} setLink={setLink} setAlertMsg={setAlertMsg} setErrorVisibility={setErrorVisibility} />
             </StyledTabPanel>
           </TabContext>
           {eventType !== 'Via Link' && (

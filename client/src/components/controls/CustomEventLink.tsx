@@ -19,7 +19,7 @@ const PreviewCard = styled(Card)`
   color: white;
 `;
 
-const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink }) => {
+const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAlertMsg, setErrorVisibility }) => {
   const [eventPreview, setEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
 
@@ -27,9 +27,16 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink }) => {
     setLink(link);
     var isBase64 = require('is-base64');
     if (isBase64(link) && link.length > 0) {
-      const linkEvent = JSON.parse(atob(link));
-      setEventPreview(true);
-      setEvent({ name: linkEvent.event.name, location: linkEvent.event.location, color: linkEvent.event.color });
+      try {
+        const linkEvent = JSON.parse(atob(link));
+        setEventPreview(true);
+        setEvent({ name: linkEvent.event.name, location: linkEvent.event.location, color: linkEvent.event.color });
+      } catch {
+        setAlertMsg('Invalid event code');
+        setErrorVisibility(true);
+        setEventPreview(false);
+        setEvent({ name: '', location: '', color: '' });
+      }
     }
   };
 
