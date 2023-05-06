@@ -8,7 +8,7 @@ import { EventPeriod } from '../../interfaces/Periods';
 import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 import { ExecuteButton } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { createNewEvent } from '../../utils/createEvent';
+import { parseAndCreateNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import CustomEventGeneral from '../controls/CustomEventGeneral';
@@ -70,7 +70,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       endTimeToCreateAs = initialEndTime;
     }
 
-    const newEvent = createNewEvent(eventName, location, description, color, day, startTimeToCreateAs, endTimeToCreateAs);
+    const newEvent = parseAndCreateNewEvent(eventName, location, description, color, day, startTimeToCreateAs, endTimeToCreateAs);
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,

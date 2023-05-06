@@ -11,7 +11,7 @@ import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { createNewEvent, createNewLinkEvent } from '../../utils/createEvent';
+import { createNewEvent, parseAndCreateNewEvent } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
@@ -218,7 +218,7 @@ const CustomEvent: React.FC = () => {
     startTime: Date,
     endTime: Date
   ) => {
-    const newEvent = createNewEvent(eventName, location, description, color, day, startTime, endTime);
+    const newEvent = parseAndCreateNewEvent(eventName, location, description, color, day, startTime, endTime);
 
     setCreatedEvents({
       ...createdEvents,
@@ -242,7 +242,7 @@ const CustomEvent: React.FC = () => {
     startTime: number,
     endTime: number
   ) => {
-    const newEvent = createNewLinkEvent(name, location, description, color, day, startTime, endTime);
+    const newEvent = createNewEvent(name, location, description, color, day, startTime, endTime);
 
     setCreatedEvents({
       ...createdEvents,
