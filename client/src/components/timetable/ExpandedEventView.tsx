@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItem, ListItemIcon, TextField, Typography } from '@mui/material';
+import { Dialog, Grid, IconButton, ListItem, ListItemIcon, ListItemIconProps, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -17,7 +18,11 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose, setIsEditing, isEditing }) => {
+const StyledListItemIcon = styled(ListItemIcon) <ListItemIconProps & { isDarkMode: boolean }>`
+  color: ${props => props.isDarkMode ? '#FFFFFF' : '#212121'};
+`;
+
+const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose, setIsEditing, isEditing  }) => {
   const { name, location, description, color } = eventPeriod.event;
   const { day, start, end } = eventPeriod.time;
 
@@ -35,7 +40,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newColor, setNewColor] = useState<string>(color as string);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { isDarkMode, setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -315,30 +320,31 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
           <StyledDialogContent>
             {description.length > 0 && (
               <StyledListItem>
-                <ListItemIcon>
+                <StyledListItemIcon isDarkMode={isDarkMode}>
                   <Notes />
-                </ListItemIcon>
+                </StyledListItemIcon>
                 <Typography>{description}</Typography>
               </StyledListItem>
             )}
             <StyledListItem>
-              <ListItemIcon>
+              <StyledListItemIcon isDarkMode={isDarkMode}>
                 <LocationOn />
-              </ListItemIcon>
+              </StyledListItemIcon>
               <Typography>{location}</Typography>
             </StyledListItem>
             <StyledListItem>
-              <ListItemIcon>
+              <StyledListItemIcon isDarkMode={isDarkMode}>
                 <AccessTime />
-              </ListItemIcon>
+              </StyledListItemIcon>
               <Typography>
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
           </StyledDialogContent>
         </>
-      )}
-    </Dialog>
+      )
+      }
+    </Dialog >
   );
 };
 
