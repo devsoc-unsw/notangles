@@ -26,7 +26,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({ eventPeriod, contex
         eventPeriod.event.description, 
         eventPeriod.event.color, 
         daysShort[eventPeriod.time.day - 1], 
-        eventStart, 
+        eventStart,
         eventEnd
       );
       return newEvent;

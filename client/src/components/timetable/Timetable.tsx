@@ -42,8 +42,6 @@ const StyledTimetableScroll = styled(Box)`
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
-
-  // For Right click menu
   const [copiedEvent, setCopiedEvent] = useState<EventPeriod | null>(null);
 
   // Calculate the correct number of rows, accounting for when the earliest start time is later than latest end time.
