@@ -283,9 +283,10 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
       setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null );
       const copyCopiedEvent = copiedEvent;
       const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
+      const startOffset = copyCopiedEvent.time.start % 1;
       copyCopiedEvent.time.day = x;
-      copyCopiedEvent.time.start = earliestStartTime + y;
-      copyCopiedEvent.time.end = earliestStartTime + y + eventTimeLength;
+      copyCopiedEvent.time.start = earliestStartTime + y + startOffset;
+      copyCopiedEvent.time.end = earliestStartTime + y + startOffset + eventTimeLength;
     }
   };
 
