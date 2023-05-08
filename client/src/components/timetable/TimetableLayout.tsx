@@ -14,6 +14,9 @@ import { CourseContext } from '../../context/CourseContext';
 import { createNewEvent } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
+import { EventPeriod } from '../../interfaces/Periods';
+import { TimetableLayoutProps } from '../../interfaces/PropTypes';
+import { Menu, MenuItem } from '@mui/material';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -145,9 +148,10 @@ const generateHours = (
   }
 };
 
-export const TimetableLayout: React.FC = () => {
+export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent }) => {
   const [tempEventId, setTempEventId] = useState<string>('');
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
   const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
@@ -240,11 +244,50 @@ export const TimetableLayout: React.FC = () => {
           eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
           eventDay.current = daysShort[x];
         }}
+        onContextMenu={(e) => {handleContextMenu(e, x, y); console.log('easlier', earliestStartTime)}}
       />
     ))
   );
 
   otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
+
+  const handlePaste = () => {
+    if (!copiedEvent) return;
+
+    const eventStart = getEventTime(copiedEvent.time.start);
+    const eventEnd = getEventTime(copiedEvent.time.end);
+    const newEvent = createNewEvent(
+      copiedEvent.event.name, 
+      copiedEvent.event.location, 
+      copiedEvent.event.description, 
+      copiedEvent.event.color, 
+      daysShort[copiedEvent.time.day], 
+      eventStart, 
+      eventEnd
+    );
+    setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent})
+    setContextMenu(null);
+  }
+
+  const getEventTime = (hour: number) => {
+    const eventTime = new Date(0);
+    eventTime.setHours(hour);
+    eventTime.setMinutes((hour % 1) * 60);
+    return eventTime;
+  }
+
+  // Update copiedEvent details to match the cell that was double clicked
+  const handleContextMenu = (e: React.MouseEvent<HTMLElement>, x: number, y: number) => {
+    if (copiedEvent) {
+      e.preventDefault();
+      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null );
+      const copyCopiedEvent = copiedEvent;
+      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
+      copyCopiedEvent.time.day = x;
+      copyCopiedEvent.time.start = earliestStartTime + y;
+      copyCopiedEvent.time.end = earliestStartTime + y + eventTimeLength;
+    }
+  };
 
   return (
     <>
@@ -278,6 +321,20 @@ export const TimetableLayout: React.FC = () => {
         initialDay={eventDay.current}
         tempEventId={tempEventId}
       />
+
+      {/* For right click menu on a cell */}
+      <Menu 
+        open={contextMenu != null}
+        anchorReference='anchorPosition'
+        anchorPosition={
+          contextMenu !== null
+          ? { top: contextMenu.y, left: contextMenu.x }
+          : undefined
+        }
+        onClose={() => setContextMenu(null)}
+    >
+        <MenuItem onClick={handlePaste}>Paste</MenuItem>
+    </Menu>
     </>
   );
 };

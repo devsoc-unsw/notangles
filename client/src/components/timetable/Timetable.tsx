@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
 import { contentPadding, inventoryMargin } from '../../constants/theme';
@@ -8,6 +8,7 @@ import { TimetableProps } from '../../interfaces/PropTypes';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
+import { EventPeriod } from '../../interfaces/Periods';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -42,6 +43,9 @@ const StyledTimetableScroll = styled(Box)`
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
 
+  // For Right click menu
+  const [copiedEvent, setCopiedEvent] = useState<EventPeriod | null>(null);
+
   // Calculate the correct number of rows, accounting for when the earliest start time is later than latest end time.
   // E.g. starting at 7pm and ending at 4am.
   const numRows = latestEndTime > earliestStartTime ? latestEndTime - earliestStartTime : 24 - earliestStartTime + latestEndTime;
@@ -49,9 +53,9 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable cols={days.length} rows={numRows}>
-        <TimetableLayout />
+        <TimetableLayout copiedEvent={copiedEvent} />
         <Dropzones assignedColors={assignedColors} />
-        <DroppedCards assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+        <DroppedCards assignedColors={assignedColors} handleSelectClass={handleSelectClass} setCopiedEvent={setCopiedEvent} />
       </StyledTimetable>
     </StyledTimetableScroll>
   );

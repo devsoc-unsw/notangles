@@ -44,6 +44,10 @@ export interface AutotimetableProps {
   handleSelectClass(classData: ClassData): void;
 }
 
+export interface TimetableLayoutProps{
+  copiedEvent: EventPeriod | null;
+}
+
 export interface TimetableProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
@@ -88,11 +92,13 @@ export interface DroppedEventProps {
   cardWidth: number;
   clashIndex: number;
   cellWidth: number; // width of a grid cell
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface ExpandedClassViewProps {
@@ -189,10 +195,11 @@ export interface EditEventDialogProps {
 }
 
 export interface EventContextMenuProps {
-  eventId: string;
   eventPeriod: EventPeriod;
   contextMenu: null | { x: number; y: number }
   setContextMenu: (contextMeny: null | { x: number; y: number }) => void;
   setPopupOpen: (isPopupOpen: boolean) => void;
   setIsEditing: (isEditing: boolean) => void;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
+
