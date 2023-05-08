@@ -24,12 +24,19 @@ const StyledLocationIcon = styled(LocationOn)`
   padding-bottom: 0.1em;
 `;
 
-const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth, setCopiedEvent }) => {
+const DroppedEvent: React.FC<DroppedEventProps> = ({
+  eventId,
+  eventPeriod,
+  cardWidth,
+  clashIndex,
+  cellWidth,
+  setCopiedEvent,
+}) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  
+
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
 
@@ -134,7 +141,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
 
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null );
+    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
   };
 
   return (
@@ -196,9 +203,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardW
           )}
         </StyledCardInner>
       </StyledCard>
-      <ExpandedEventView 
-        eventPeriod={eventPeriod} 
-        popupOpen={popupOpen} 
+      <ExpandedEventView
+        eventPeriod={eventPeriod}
+        popupOpen={popupOpen}
         handleClose={handleClose}
         setIsEditing={setIsEditing}
         isEditing={isEditing}

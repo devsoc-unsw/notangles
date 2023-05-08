@@ -44,7 +44,7 @@ export interface AutotimetableProps {
   handleSelectClass(classData: ClassData): void;
 }
 
-export interface TimetableLayoutProps{
+export interface TimetableLayoutProps {
   copiedEvent: EventPeriod | null;
 }
 
@@ -196,10 +196,9 @@ export interface EditEventDialogProps {
 
 export interface EventContextMenuProps {
   eventPeriod: EventPeriod;
-  contextMenu: null | { x: number; y: number }
+  contextMenu: null | { x: number; y: number };
   setContextMenu: (contextMeny: null | { x: number; y: number }) => void;
   setPopupOpen: (isPopupOpen: boolean) => void;
   setIsEditing: (isEditing: boolean) => void;
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
-

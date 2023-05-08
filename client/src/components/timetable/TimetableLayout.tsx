@@ -244,7 +244,10 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
           eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
           eventDay.current = daysShort[x];
         }}
-        onContextMenu={(e) => {handleContextMenu(e, x, y); console.log('easlier', earliestStartTime)}}
+        onContextMenu={(e) => {
+          handleContextMenu(e, x, y);
+          console.log('easlier', earliestStartTime);
+        }}
       />
     ))
   );
@@ -257,30 +260,30 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
     const eventStart = getEventTime(copiedEvent.time.start);
     const eventEnd = getEventTime(copiedEvent.time.end);
     const newEvent = createNewEvent(
-      copiedEvent.event.name, 
-      copiedEvent.event.location, 
-      copiedEvent.event.description, 
-      copiedEvent.event.color, 
-      daysShort[copiedEvent.time.day], 
-      eventStart, 
+      copiedEvent.event.name,
+      copiedEvent.event.location,
+      copiedEvent.event.description,
+      copiedEvent.event.color,
+      daysShort[copiedEvent.time.day],
+      eventStart,
       eventEnd
     );
-    setCreatedEvents({...createdEvents, [newEvent.event.id]: newEvent})
+    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
-  }
+  };
 
   const getEventTime = (hour: number) => {
     const eventTime = new Date(0);
     eventTime.setHours(hour);
     eventTime.setMinutes((hour % 1) * 60);
     return eventTime;
-  }
+  };
 
   // Update copiedEvent details to match the cell that was double clicked
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>, x: number, y: number) => {
     if (copiedEvent) {
       e.preventDefault();
-      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null );
+      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
       const copyCopiedEvent = copiedEvent;
       const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
       const startOffset = copyCopiedEvent.time.start % 1;
@@ -324,18 +327,14 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
       />
 
       {/* For right click menu on a cell */}
-      <Menu 
+      <Menu
         open={contextMenu != null}
-        anchorReference='anchorPosition'
-        anchorPosition={
-          contextMenu !== null
-          ? { top: contextMenu.y, left: contextMenu.x }
-          : undefined
-        }
+        anchorReference="anchorPosition"
+        anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}
-    >
+      >
         <MenuItem onClick={handlePaste}>Paste</MenuItem>
-    </Menu>
+      </Menu>
     </>
   );
 };

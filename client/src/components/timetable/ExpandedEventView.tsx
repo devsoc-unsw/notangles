@@ -18,11 +18,17 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const StyledListItemIcon = styled(ListItemIcon) <ListItemIconProps & { isDarkMode: boolean }>`
-  color: ${props => props.isDarkMode ? '#FFFFFF' : '#212121'};
+const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+  color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
-const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose, setIsEditing, isEditing  }) => {
+const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
+  eventPeriod,
+  popupOpen,
+  handleClose,
+  setIsEditing,
+  isEditing,
+}) => {
   const { name, location, description, color } = eventPeriod.event;
   const { day, start, end } = eventPeriod.time;
 
@@ -342,9 +348,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             </StyledListItem>
           </StyledDialogContent>
         </>
-      )
-      }
-    </Dialog >
+      )}
+    </Dialog>
   );
 };
 
