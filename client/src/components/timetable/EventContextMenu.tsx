@@ -12,6 +12,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   setPopupOpen,
   setIsEditing,
   setCopiedEvent,
+  copiedEvent,
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -67,6 +68,24 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
     setCopiedEvent(newEvent);
   };
 
+  const handlePasteEvent = () => {
+    if (!copiedEvent) return;
+
+    const eventStart = getEventTime(copiedEvent.time.start);
+    const eventEnd = getEventTime(copiedEvent.time.end);
+    const newEvent = createNewEvent(
+      copiedEvent.event.name,
+      copiedEvent.event.location,
+      copiedEvent.event.description,
+      copiedEvent.event.color,
+      daysShort[copiedEvent.time.day],
+      eventStart,
+      eventEnd
+    );
+    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
+    setContextMenu(null);
+  };
+
   return (
     <Menu
       open={contextMenu != null}
@@ -78,6 +97,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
       <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
       <MenuItem onClick={handleCopyEvent}>Copy</MenuItem>
+      {copiedEvent && <MenuItem onClick={handlePasteEvent}>Paste</MenuItem>}
     </Menu>
   );
 };

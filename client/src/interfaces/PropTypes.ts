@@ -93,12 +93,14 @@ export interface DroppedEventProps {
   clashIndex: number;
   cellWidth: number; // width of a grid cell
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
+  copiedEvent: EventPeriod | null;
 }
 
 export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
+  copiedEvent: EventPeriod | null;
 }
 
 export interface ExpandedClassViewProps {
@@ -201,4 +203,5 @@ export interface EventContextMenuProps {
   setPopupOpen: (isPopupOpen: boolean) => void;
   setIsEditing: (isEditing: boolean) => void;
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
+  copiedEvent: EventPeriod | null;
 }

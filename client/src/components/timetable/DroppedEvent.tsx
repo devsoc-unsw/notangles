@@ -31,6 +31,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   clashIndex,
   cellWidth,
   setCopiedEvent,
+  copiedEvent,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -142,6 +143,17 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
+
+    //Update copied event to match the cell double clicked on
+    if (copiedEvent) {
+      const copyCopiedEvent = copiedEvent;
+      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
+      const startOffset = copyCopiedEvent.time.start % 1;
+
+      copyCopiedEvent.time.day = eventPeriod.time.day - 1;
+      copyCopiedEvent.time.start = Math.floor(eventPeriod.time.start) + startOffset;
+      copyCopiedEvent.time.end = Math.floor(eventPeriod.time.start) + startOffset + eventTimeLength;
+    }
   };
 
   return (
@@ -176,6 +188,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setPopupOpen={setPopupOpen}
           setIsEditing={setIsEditing}
           setCopiedEvent={setCopiedEvent}
+          copiedEvent={copiedEvent}
         />
         <StyledCardInner
           hasClash={false}
