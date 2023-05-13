@@ -64,7 +64,6 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   const handleCopyEvent = () => {
     setContextMenu(null);
     const newEvent = getNewEvent();
-    console.log(newEvent);
     setCopiedEvent(newEvent);
   };
 
