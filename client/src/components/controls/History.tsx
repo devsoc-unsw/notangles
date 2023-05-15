@@ -215,9 +215,11 @@ const History: React.FC = () => {
   return (
     <>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
-          <Delete />
-        </IconButton>
+        <span>
+          <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
+            <Delete />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title={undoTooltip}>
         <span>

@@ -11,7 +11,7 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { createNewEvent } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
 
@@ -19,7 +19,7 @@ export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : c
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-})<{
+}) <{
   x: number;
   y: number;
   yTo?: number;
@@ -61,7 +61,7 @@ const InventoryCell = styled(DayCell)`
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-})<{ is12HourMode: boolean }>`
+}) <{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -194,7 +194,7 @@ export const TimetableLayout: React.FC = () => {
    * @param y Coordinate of where user double clicked on grid, indicates time
    */
   const createTempEvent = (x: number, y: number) => {
-    const newEvent = createNewEvent(
+    const newEvent = parseAndCreateEventObj(
       '(No title)',
       '(No location)',
       '',

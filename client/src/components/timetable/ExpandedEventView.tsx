@@ -1,6 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItem, ListItemIcon, ListItemIconProps, TextField, Typography } from '@mui/material';
+import { AccessTime, Close, ContentCopy, Delete, Edit, Event, Link, LocationOn, Notes, Save } from '@mui/icons-material';
+import {
+  Dialog,
+  Grid,
+  IconButton,
+  InputAdornment,
+  ListItem,
+  ListItemIcon,
+  ListItemIconProps,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import { daysLong, daysShort } from '../../constants/timetable';
@@ -11,15 +21,15 @@ import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
-import { createNewEvent } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const StyledListItemIcon = styled(ListItemIcon) <ListItemIconProps & { isDarkMode: boolean }>`
-  color: ${props => props.isDarkMode ? '#FFFFFF' : '#212121'};
+const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+  color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
@@ -41,7 +51,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
   const [newColor, setNewColor] = useState<string>(color as string);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { isDarkMode, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -142,7 +152,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
     // Create an event for each day that is selected in the dropdown option
     for (const day of newDays) {
-      const newEvent = createNewEvent(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
+      const newEvent = parseAndCreateEventObj(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
       updatedEventData[newEvent.event.id] = newEvent;
     }
 
@@ -341,11 +351,35 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
+            <StyledListItem>
+              <ListItemIcon>
+                <Link />
+              </ListItemIcon>
+              <TextField
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                          setAutoVisibility(true);
+                          setAlertMsg('Copied to clipboard!');
+                        }}
+                      >
+                        <ContentCopy />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  readOnly: true,
+                }}
+                size="small"
+                value={btoa(JSON.stringify(eventPeriod))}
+              />
+            </StyledListItem>
           </StyledDialogContent>
         </>
-      )
-      }
-    </Dialog >
+      )}
+    </Dialog>
   );
 };
 
