@@ -5,7 +5,7 @@ import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyl
 import { useState } from 'react';
 import { styled } from '@mui/system';
 
-const PreviewCard = styled(Card) <CardProps & { bgColour: string }>`
+const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 40px 20px;
   margin: 10px;
   display: flex;
@@ -13,9 +13,9 @@ const PreviewCard = styled(Card) <CardProps & { bgColour: string }>`
   justify-content: center;
   text-align: center;
   align-items: center;
-  background-color: ${props => props.bgColour !== '' ? props.bgColour : '#1f7e8c'};
-  border - radius: 10px;
-  box - shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: ${(props) => (props.bgColour !== '' ? props.bgColour : '#1f7e8c')};
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: white;
 `;
 

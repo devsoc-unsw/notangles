@@ -140,7 +140,7 @@ const History: React.FC = () => {
     const currentClasses = actions.current[actionsPointer.current].classes;
     const currentEvents = actions.current[actionsPointer.current].events;
 
-    const nCourses = actions.current[actionsPointer.current].courses.length;;
+    const nCourses = actions.current[actionsPointer.current].courses.length;
     const nEvents = Object.values(currentEvents).length;
     const nClasses = Object.values(currentClasses).length;
 
@@ -208,9 +208,9 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
-  let clearTooltip = isMacOS ? 'Clear (Ctrl+D)' : 'Clear (Cmd+D)';
-  let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
-  let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
+  let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
+  let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
+  let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
 
   return (
     <>
