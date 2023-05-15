@@ -11,7 +11,7 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { parseAndCreateNewEvent } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
 
@@ -194,7 +194,7 @@ export const TimetableLayout: React.FC = () => {
    * @param y Coordinate of where user double clicked on grid, indicates time
    */
   const createTempEvent = (x: number, y: number) => {
-    const newEvent = parseAndCreateNewEvent(
+    const newEvent = parseAndCreateEventObj(
       '(No title)',
       '(No location)',
       '',

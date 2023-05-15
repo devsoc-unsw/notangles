@@ -21,7 +21,7 @@ import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
-import { parseAndCreateNewEvent } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
@@ -155,7 +155,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
 
     // Create an event for each day that is selected in the dropdown option
     for (const day of newDays) {
-      const newEvent = parseAndCreateNewEvent(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
+      const newEvent = parseAndCreateEventObj(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
       updatedEventData[newEvent.event.id] = newEvent;
     }
 
