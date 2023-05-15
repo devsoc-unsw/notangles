@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import { Link, LocationOn } from '@mui/icons-material';
 import { ListItemIcon, TextField, Card, CardProps } from '@mui/material';
+import { styled } from '@mui/system';
 import { CustomEventLinkProp } from '../../interfaces/PropTypes';
 import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
-import { useState } from 'react';
-import { styled } from '@mui/system';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 40px 20px;
@@ -36,7 +36,7 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
         setEventPreview(true);
         setEvent({ name: linkEvent.event.name, location: linkEvent.event.location, color: linkEvent.event.color });
       } catch {
-        setAlertMsg('Invalid event code');
+        setAlertMsg('Invalid event link');
         setErrorVisibility(true);
         setEventPreview(false);
         setEvent({ name: '', location: '', color: '' });
@@ -52,7 +52,7 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
         </ListItemIcon>
         <TextField
           id="outlined-required"
-          label="Event Code"
+          label="Event Link"
           onChange={(e) => checkRender(e.target.value)}
           variant="outlined"
           fullWidth

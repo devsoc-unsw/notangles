@@ -177,7 +177,7 @@ const CustomEvent: React.FC = () => {
         );
         newEvents[newEvent.event.id] = newEvent;
       } catch {
-        setAlertMsg('Invalid event code');
+        setAlertMsg('Invalid event link');
         setErrorVisibility(true);
         return;
       }

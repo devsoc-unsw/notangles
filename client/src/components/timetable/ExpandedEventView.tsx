@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { AccessTime, Close, ContentCopy, Delete, Edit, Event, LocationOn, Notes, Save } from '@mui/icons-material';
+import { AccessTime, Close, ContentCopy, Delete, Edit, Event, Link, LocationOn, Notes, Save } from '@mui/icons-material';
 import {
   Dialog,
   Grid,
@@ -27,9 +27,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import LinkIcon from '@mui/icons-material/Link';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import Alerts from '../Alerts';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -356,7 +353,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
             </StyledListItem>
             <StyledListItem>
               <ListItemIcon>
-                <LinkIcon />
+                <Link />
               </ListItemIcon>
               <TextField
                 InputProps={{
@@ -369,7 +366,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
                           setAlertMsg('Copied to clipboard!');
                         }}
                       >
-                        <ContentCopyIcon />
+                        <ContentCopy />
                       </IconButton>
                     </InputAdornment>
                   ),
