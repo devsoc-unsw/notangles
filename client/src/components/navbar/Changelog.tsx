@@ -15,8 +15,12 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'May 15, 2023',
+    changes: ['Event can be created and shared between different users via a link'],
+  },
+  {
     date: 'March 11, 2023',
-    changes: ["Added a clear button that completely resets the state of the timetable"],
+    changes: ['Added a clear button that completely resets the state of the timetable'],
   },
   {
     date: 'October 29, 2022',
