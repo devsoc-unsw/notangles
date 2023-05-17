@@ -84,6 +84,8 @@ export interface DroppedClassProps {
   clashIndex: number;
   clashColour: string;
   cellWidth: number; // width of a grid cell
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface DroppedEventProps {
@@ -92,8 +94,8 @@ export interface DroppedEventProps {
   cardWidth: number;
   clashIndex: number;
   cellWidth: number; // width of a grid cell
-  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
   copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface DroppedCardsProps {

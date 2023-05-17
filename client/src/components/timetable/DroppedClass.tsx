@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Grid, Menu, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { unknownErrorMessage } from '../../constants/timetable';
+import { daysShort, unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData, CourseData } from '../../interfaces/Periods';
+import { ClassData, CourseData, ClassPeriod } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -19,6 +19,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
+import { createNewEvent } from '../../utils/createEvent';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -29,9 +30,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   clashIndex,
   clashColour,
   cellWidth,
+  setCopiedEvent,
+  copiedEvent,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
   const {
     earliestStartTime,
@@ -43,7 +47,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setInfoVisibility,
     setErrorVisibility,
   } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   let currCourse: CourseData | null = null;
 
@@ -156,6 +160,48 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
+  const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    if (copiedEvent) {
+      e.preventDefault();
+      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
+
+      //Update copied event to match the cell double clicked on
+      const copyCopiedEvent = copiedEvent;
+      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
+      const startOffset = copyCopiedEvent.time.start % 1;
+      const classPeriod = classCard as ClassPeriod;
+
+      copyCopiedEvent.time.day = classPeriod.time.day - 1;
+      copyCopiedEvent.time.start = Math.floor(classPeriod.time.start) + startOffset;
+      copyCopiedEvent.time.end = Math.floor(classPeriod.time.start) + startOffset + eventTimeLength;
+    }
+  };
+
+  const getEventTime = (hour: number) => {
+    const eventTime = new Date(0);
+    eventTime.setHours(hour);
+    eventTime.setMinutes((hour % 1) * 60);
+    return eventTime;
+  };
+
+  const handlePasteEvent = () => {
+    if (!copiedEvent) return;
+
+    const eventStart = getEventTime(copiedEvent.time.start);
+    const eventEnd = getEventTime(copiedEvent.time.end);
+    const newEvent = createNewEvent(
+      copiedEvent.event.name,
+      copiedEvent.event.location,
+      copiedEvent.event.description,
+      copiedEvent.event.color,
+      daysShort[copiedEvent.time.day],
+      eventStart,
+      eventEnd
+    );
+    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
+    setContextMenu(null);
+  };
+
   return (
     <>
       <StyledCard
@@ -179,6 +225,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
+        onContextMenu={(e) => handleContextMenu(e)}
       >
         <StyledCardInner
           isSquareEdges={isSquareEdges}
@@ -212,6 +259,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         </StyledCardInner>
       </StyledCard>
       {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
+      <Menu
+        open={contextMenu != null}
+        anchorReference="anchorPosition"
+        anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+        onClose={() => setContextMenu(null)}
+      >
+        <MenuItem onClick={handlePasteEvent}>Paste</MenuItem>
+      </Menu>
     </>
   );
 };

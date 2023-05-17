@@ -118,6 +118,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
           clashIndex={clashIndex as number}
           clashColour={clashColour as string}
           cellWidth={cellWidth}
+          setCopiedEvent={setCopiedEvent}
+          copiedEvent={copiedEvent}
         />
       );
       cardKeys.set(classCard, key);
