@@ -39,7 +39,7 @@ const Alerts: React.FC = () => {
       </Snackbar>
       <Snackbar open={infoVisibility} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity="info" onClose={handleInfoClose} variant="filled">
-          Press and hold to drag a class
+          Press and hold to drag a card
         </Alert>
       </Snackbar>
       <Snackbar

@@ -630,11 +630,12 @@ export const setDragTarget = (
       // Save the original coordinates of the card
       // The type of event is different on a computer v.s. a mobile device
       if (typeof event.pageX === 'number' && typeof event.pageY === 'number') {
+        // On computer
         lastX = event.pageX;
         lastY = event.pageY;
       } else if (typeof event.touches === 'object' && typeof event.touches[0] === 'object') {
+        // On mobile
         const touch = event.touches[0];
-
         // reupdates clientX/Y so onFrame() won't think finger's still at edge of screen
         // and try scroll screen (not prob on computer as mousemove will 100% fire before next
         // card drag and update it for us but *touchmove* won't)
