@@ -3,7 +3,16 @@ import { Redo, Delete, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Action, Activity, ClassData, CreatedEvents, EventTime, InInventory, SelectedClasses } from '../../interfaces/Periods';
+import {
+  Action,
+  Activity,
+  ClassData,
+  CreatedEvents,
+  EventTime,
+  InInventory,
+  SelectedClasses,
+  TimetableData,
+} from '../../interfaces/Periods';
 
 type Actions = Action[];
 
@@ -19,7 +28,8 @@ const History: React.FC = () => {
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
-  const { isDrag, setIsDrag } = useContext(AppContext);
+  const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } =
+    useContext(AppContext);
 
   const actions = useRef<Actions>([]);
   const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
@@ -43,6 +53,18 @@ const History: React.FC = () => {
     });
 
     return newClasses;
+  };
+
+  // MS: Duplicate all timetables
+  const duplicateTimetables = (displayTimetables: TimetableData[]) => {
+    return displayTimetables.map((timetable) => {
+      return {
+        name: timetable.name,
+        selectedCourses: timetable.selectedCourses,
+        selectedClasses: duplicateClasses(timetable.selectedClasses),
+        createdEvents: timetable.createdEvents,
+      };
+    });
   };
 
   /**
@@ -98,37 +120,72 @@ const History: React.FC = () => {
     return true;
   };
 
+  // Check if timetable is updated (ie. rename, shifting tabs)
+  const areIdenticalTimetables = (curr: TimetableData[]) => {
+    if (curr.length !== displayTimetables.length) {
+      return false;
+    }
+    for (const i in curr) {
+      if (curr[i].name !== displayTimetables[i].name) {
+        return false;
+      }
+
+      if (curr[i].selectedCourses.length !== displayTimetables[i].selectedCourses.length) {
+        return false;
+      }
+
+      if (!areIdenticalClasses(curr[i].selectedClasses, displayTimetables[i].selectedClasses)) {
+        return false;
+      }
+
+      if (!areIdenticalEvents(curr[i].createdEvents, displayTimetables[i].createdEvents)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   // Adds an action when a class is changed/added/removed, an event is created/removed
   // or a card is dragged to another place
-  useEffect(() => {
-    if (isDrag) return;
+  useEffect(
+    () => {
+      if (isDrag) {
+        return;
+      }
 
-    if (dontAdd.current) {
-      dontAdd.current = false;
-      return; // Prevents adding change induced by clicking redo/undo
-    }
+      if (dontAdd.current) {
+        dontAdd.current = false;
+        return; // Prevents adding change induced by clicking redo/undo
+      }
 
-    if (
-      actions.current.length > 1 &&
-      areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) &&
-      areIdenticalEvents(actions.current[actionsPointer.current].events, createdEvents)
-    ) {
-      return;
-    }
+      if (
+        actions.current.length > 1 &&
+        areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) &&
+        areIdenticalEvents(actions.current[actionsPointer.current].events, createdEvents) &&
+        areIdenticalTimetables(actions.current[actionsPointer.current].timetables)
+      ) {
+        return;
+      }
 
-    // Discard remainding redos as we branched off by making an action
-    if (actions.current.length > actionsPointer.current + 1) {
-      actions.current = actions.current.slice(0, actionsPointer.current + 1);
-    }
+      // Discard remaining redos as we branched off by making an action
+      if (actions.current.length > actionsPointer.current + 1) {
+        actions.current = actions.current.slice(0, actionsPointer.current + 1);
+      }
 
-    actions.current.push({
-      courses: [...selectedCourses],
-      classes: duplicateClasses(selectedClasses),
-      events: { ...createdEvents },
-    });
+      actions.current.push({
+        timetables: duplicateTimetables(displayTimetables),
+        selected: selectedTimetable,
+        courses: [...selectedCourses],
+        classes: duplicateClasses(selectedClasses),
+        events: { ...createdEvents },
+      });
 
-    incrementActionsPointer(1);
-  }, [selectedClasses, isDrag, createdEvents]);
+      incrementActionsPointer(1);
+    },
+    // [selectedClasses, isDrag, createdEvents]);
+    [isDrag, displayTimetables, createdEvents, selectedClasses]
+  );
 
   //Disables reset timetable button when there is no courses, classes and events selected.
   useEffect(() => {
@@ -137,15 +194,19 @@ const History: React.FC = () => {
       return;
     }
 
+    /** 
     const currentClasses = actions.current[actionsPointer.current].classes;
     const currentEvents = actions.current[actionsPointer.current].events;
 
-    const nCourses = actions.current[actionsPointer.current].courses.length;;
+    const nCourses = actions.current[actionsPointer.current].courses.length;
     const nEvents = Object.values(currentEvents).length;
     const nClasses = Object.values(currentClasses).length;
 
     setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
-  }, [selectedCourses, selectedClasses, createdEvents]);
+    */
+
+    setDisableReset(actions.current.length === 0);
+  }, [displayTimetables]);
 
   /**
    * Updates the index of the current action and changes the timetable data to match
@@ -154,9 +215,12 @@ const History: React.FC = () => {
   const changeHistory = (direction: number) => {
     incrementActionsPointer(direction);
     dontAdd.current = true;
+
     setSelectedCourses(actions.current[actionsPointer.current].courses);
     setSelectedClasses(duplicateClasses(actions.current[actionsPointer.current].classes)); // Very important to duplicate here again or things will break
     setCreatedEvents(actions.current[actionsPointer.current].events);
+    setSelectedTimetable(actions.current[actionsPointer.current].selected);
+    setDisplayTimetables(actions.current[actionsPointer.current].timetables);
   };
 
   /**
@@ -166,6 +230,16 @@ const History: React.FC = () => {
     setSelectedCourses([]);
     setSelectedClasses({});
     setCreatedEvents({});
+
+    setSelectedTimetable(0);
+    setDisplayTimetables([
+      {
+        name: 'New Timetable',
+        selectedCourses: [],
+        selectedClasses: {},
+        createdEvents: {},
+      },
+    ]);
   };
 
   /**

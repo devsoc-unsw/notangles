@@ -35,7 +35,7 @@ export interface TimetableData {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
-};
+}
 
 export interface InventoryData {
   courseCode: CourseCode;
@@ -118,6 +118,8 @@ export interface DuplicateClassData {
 }
 
 export interface Action {
+  timetables: TimetableData[];
+  selected: number;
   courses: CourseData[];
   classes: SelectedClasses;
   events: CreatedEvents;

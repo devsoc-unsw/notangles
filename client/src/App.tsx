@@ -218,8 +218,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -289,46 +289,49 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
-    handleSelectCourse(storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code), true, (newSelectedCourses) => {
+    handleSelectCourse(
+      storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      true,
+      (newSelectedCourses) => {
+        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
 
-      const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+        const savedClasses: SavedClasses = {};
 
-      const savedClasses: SavedClasses = {};
-
-      Object.keys(timetableSelectedClasses).forEach((courseCode) => {
-        savedClasses[courseCode] = {};
-        Object.keys(timetableSelectedClasses[courseCode]).forEach((activity) => {
-          const classData = timetableSelectedClasses[courseCode][activity];
-          savedClasses[courseCode][activity] = classData ? classData.section : null;
+        Object.keys(timetableSelectedClasses).forEach((courseCode) => {
+          savedClasses[courseCode] = {};
+          Object.keys(timetableSelectedClasses[courseCode]).forEach((activity) => {
+            const classData = timetableSelectedClasses[courseCode][activity];
+            savedClasses[courseCode][activity] = classData ? classData.section : null;
+          });
         });
-      });
 
-      const newSelectedClasses: SelectedClasses = {};
+        const newSelectedClasses: SelectedClasses = {};
 
-      Object.keys(savedClasses).forEach((courseCode) => {
-        newSelectedClasses[courseCode] = {};
-        Object.keys(savedClasses[courseCode]).forEach((activity) => {
-          const classId = savedClasses[courseCode][activity];
-          let classData: ClassData | null = null;
+        Object.keys(savedClasses).forEach((courseCode) => {
+          newSelectedClasses[courseCode] = {};
+          Object.keys(savedClasses[courseCode]).forEach((activity) => {
+            const classId = savedClasses[courseCode][activity];
+            let classData: ClassData | null = null;
 
-          if (classId) {
-            try {
-              const result = newSelectedCourses
-                .find((x) => x.code === courseCode)
-                ?.activities[activity].find((x) => x.section === classId);
-              if (result) classData = result;
-            } catch (err) {
-              setAlertMsg(unknownErrorMessage);
-              setErrorVisibility(true);
+            if (classId) {
+              try {
+                const result = newSelectedCourses
+                  .find((x) => x.code === courseCode)
+                  ?.activities[activity].find((x) => x.section === classId);
+                if (result) classData = result;
+              } catch (err) {
+                setAlertMsg(unknownErrorMessage);
+                setErrorVisibility(true);
+              }
             }
-          }
 
-          // classData being null means the activity is unscheduled
-          newSelectedClasses[courseCode][activity] = classData;
+            // classData being null means the activity is unscheduled
+            newSelectedClasses[courseCode][activity] = classData;
+          });
         });
-      });
-      setSelectedClasses(newSelectedClasses);
-    });
+        setSelectedClasses(newSelectedClasses);
+      }
+    );
     setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
   };
 
