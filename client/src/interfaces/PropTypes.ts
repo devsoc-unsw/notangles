@@ -207,3 +207,10 @@ export interface EventContextMenuProps {
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
   copiedEvent: EventPeriod | null;
 }
+
+export interface CustomEventLinkProp {
+  link: string;
+  setLink: (link: string) => void;
+  setAlertMsg: (msg: string) => void;
+  setErrorVisibility: (bool: boolean) => void;
+}

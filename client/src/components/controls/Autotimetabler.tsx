@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
-  Box,
   Button,
   Dialog,
   DialogContent,
@@ -13,7 +12,6 @@ import {
   ListItemText,
   Popover,
   Slider,
-  TextField,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';

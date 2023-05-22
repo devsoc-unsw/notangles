@@ -19,7 +19,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { createNewEvent } from '../../utils/createEvent';
+import { createEventObj } from '../../utils/createEvent';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -177,26 +177,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     }
   };
 
-  const getEventTime = (hour: number) => {
-    const eventTime = new Date(0);
-    eventTime.setHours(hour);
-    eventTime.setMinutes((hour % 1) * 60);
-    return eventTime;
-  };
-
   const handlePasteEvent = () => {
     if (!copiedEvent) return;
 
-    const eventStart = getEventTime(copiedEvent.time.start);
-    const eventEnd = getEventTime(copiedEvent.time.end);
-    const newEvent = createNewEvent(
+    const newEvent = createEventObj(
       copiedEvent.event.name,
       copiedEvent.event.location,
       copiedEvent.event.description,
       copiedEvent.event.color,
-      daysShort[copiedEvent.time.day],
-      eventStart,
-      eventEnd
+      copiedEvent.time.day + 1,
+      copiedEvent.time.start,
+      copiedEvent.time.end
     );
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);

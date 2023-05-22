@@ -11,18 +11,18 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { createNewEvent } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
-import { EventPeriod } from '../../interfaces/Periods';
 import { TimetableLayoutProps } from '../../interfaces/PropTypes';
 import { Menu, MenuItem } from '@mui/material';
+import { createEventObj } from '../../utils/createEvent';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-})<{
+}) <{
   x: number;
   y: number;
   yTo?: number;
@@ -64,7 +64,7 @@ const InventoryCell = styled(DayCell)`
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-})<{ is12HourMode: boolean }>`
+}) <{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -198,7 +198,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
    * @param y Coordinate of where user double clicked on grid, indicates time
    */
   const createTempEvent = (x: number, y: number) => {
-    const newEvent = createNewEvent(
+    const newEvent = parseAndCreateEventObj(
       '(No title)',
       '(No location)',
       '',
@@ -256,26 +256,17 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
   const handlePaste = () => {
     if (!copiedEvent) return;
 
-    const eventStart = getEventTime(copiedEvent.time.start);
-    const eventEnd = getEventTime(copiedEvent.time.end);
-    const newEvent = createNewEvent(
+    const newEvent = createEventObj(
       copiedEvent.event.name,
       copiedEvent.event.location,
       copiedEvent.event.description,
       copiedEvent.event.color,
-      daysShort[copiedEvent.time.day],
-      eventStart,
-      eventEnd
+      copiedEvent.time.day + 1,
+      copiedEvent.time.start,
+      copiedEvent.time.end
     );
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
-  };
-
-  const getEventTime = (hour: number) => {
-    const eventTime = new Date(0);
-    eventTime.setHours(hour);
-    eventTime.setMinutes((hour % 1) * 60);
-    return eventTime;
   };
 
   // Update copiedEvent details to match the cell that was double clicked

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
-import { createNewEvent } from '../../utils/createEvent';
+import { createEventObj } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
 import { daysShort } from '../../constants/timetable';
 
@@ -16,26 +16,17 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
-  const getEventTime = (hour: number) => {
-    const eventTime = new Date(0);
-    eventTime.setHours(hour);
-    eventTime.setMinutes((hour % 1) * 60);
-    return eventTime;
-  };
-
   // Creates a new event object that is a copy of the event with eventId
   const getNewEvent = () => {
     if (eventPeriod != undefined) {
-      const eventStart = getEventTime(eventPeriod.time.start);
-      const eventEnd = getEventTime(eventPeriod.time.end);
-      const newEvent = createNewEvent(
+      const newEvent = createEventObj(
         eventPeriod.event.name,
         eventPeriod.event.location,
         eventPeriod.event.description,
         eventPeriod.event.color,
-        daysShort[eventPeriod.time.day - 1],
-        eventStart,
-        eventEnd
+        eventPeriod.time.day - 1,
+        eventPeriod.time.start,
+        eventPeriod.time.end
       );
       return newEvent;
     }
@@ -70,16 +61,14 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   const handlePasteEvent = () => {
     if (!copiedEvent) return;
 
-    const eventStart = getEventTime(copiedEvent.time.start);
-    const eventEnd = getEventTime(copiedEvent.time.end);
-    const newEvent = createNewEvent(
+    const newEvent = createEventObj(
       copiedEvent.event.name,
       copiedEvent.event.location,
       copiedEvent.event.description,
       copiedEvent.event.color,
-      daysShort[copiedEvent.time.day],
-      eventStart,
-      eventEnd
+      copiedEvent.time.day + 1,
+      eventPeriod.time.start,
+      eventPeriod.time.end
     );
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
