@@ -80,6 +80,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}
+      autoFocus={false}
     >
       <MenuItem onClick={handleDuplicateEvent}>Duplicate</MenuItem>
       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
