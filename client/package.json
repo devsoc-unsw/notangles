@@ -9,7 +9,7 @@
     "@mui/icons-material": "5.11.16",
     "@mui/lab": "5.0.0-alpha.129",
     "@mui/material": "5.13.1",
-    "@mui/x-date-pickers": "6.4.0",
+    "@mui/x-date-pickers": "6.5.0",
     "@sentry/react": "7.52.1",
     "@sentry/tracing": "7.52.1",
     "@uiw/react-color": "1.2.2",
