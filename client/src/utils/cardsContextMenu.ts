@@ -4,13 +4,15 @@ import { ClassPeriod, EventPeriod } from '../interfaces/Periods';
  * Updates copiedEvent to match the cell double clicked on
  * @param e
  * @param copiedEvent
- * @param classPeriod
+ * @param day
+ * @param startTime
  * @param setContextMenu
  */
 export const handleContextMenu = (
   e: React.MouseEvent<HTMLElement>,
   copiedEvent: EventPeriod | null,
-  classPeriod: ClassPeriod | EventPeriod,
+  day: number, 
+  startTime: number,
   setContextMenu: (contextMenu: null | { x: number; y: number }) => void
 ) => {
   e.preventDefault();
@@ -21,8 +23,8 @@ export const handleContextMenu = (
     const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
     const startOffset = copyCopiedEvent.time.start % 1;
 
-    copyCopiedEvent.time.day = classPeriod.time.day - 1;
-    copyCopiedEvent.time.start = Math.floor(classPeriod.time.start) + startOffset;
-    copyCopiedEvent.time.end = Math.floor(classPeriod.time.start) + startOffset + eventTimeLength;
+    copyCopiedEvent.time.day = day;
+    copyCopiedEvent.time.start = Math.floor(startTime) + startOffset;
+    copyCopiedEvent.time.end = Math.floor(startTime) + startOffset + eventTimeLength;
   }
 };

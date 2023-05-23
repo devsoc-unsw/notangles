@@ -17,6 +17,7 @@ import CreateEventPopover from './CreateEventPopover';
 import { TimetableLayoutProps } from '../../interfaces/PropTypes';
 import { Menu, MenuItem } from '@mui/material';
 import { createEventObj } from '../../utils/createEvent';
+import { handleContextMenu } from '../../utils/cardsContextMenu';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -245,7 +246,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
           eventDay.current = daysShort[x];
         }}
         onContextMenu={(e) => {
-          handleContextMenu(e, x, y);
+          handleContextMenu(e, copiedEvent, x, y + earliestStartTime, setContextMenu);
         }}
       />
     ))
@@ -267,21 +268,6 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
     );
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
-  };
-
-  // Update copiedEvent details to match the cell that was double clicked
-  const handleContextMenu = (e: React.MouseEvent<HTMLElement>, x: number, y: number) => {
-    e.preventDefault();
-    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
-    
-    if (copiedEvent) {
-      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
-      const startOffset = copiedEvent.time.start % 1;
-      
-      copiedEvent.time.day = x;
-      copiedEvent.time.start = earliestStartTime + y + startOffset;
-      copiedEvent.time.end = earliestStartTime + y + startOffset + eventTimeLength;
-    }
   };
 
   return (

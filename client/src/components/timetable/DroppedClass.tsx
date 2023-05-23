@@ -200,7 +200,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
-        onContextMenu={(e) => handleContextMenu(e, copiedEvent, classCard as ClassPeriod, setContextMenu)}
+        onContextMenu={(e) => handleContextMenu(e, copiedEvent, (classCard as ClassPeriod).time.day - 1, (classCard as ClassPeriod).time.start, setContextMenu)}
       >
         <StyledCardInner
           isSquareEdges={isSquareEdges}
