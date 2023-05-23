@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import { Grid, Menu, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { daysShort, unknownErrorMessage } from '../../constants/timetable';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData, CourseData, ClassPeriod } from '../../interfaces/Periods';
@@ -19,7 +19,6 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { createEventObj } from '../../utils/createEvent';
 import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({

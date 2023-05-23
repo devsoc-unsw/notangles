@@ -1,5 +1,5 @@
 import { CreatedEvents } from '../interfaces/Periods';
-import { ClassPeriod, EventPeriod } from '../interfaces/Periods';
+import {EventPeriod } from '../interfaces/Periods';
 import { createEventObj } from './createEvent';
 
 /**
