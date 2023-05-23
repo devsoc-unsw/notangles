@@ -3,7 +3,6 @@ import { Menu, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
 import { createEventObj } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
-import { daysShort } from '../../constants/timetable';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({
   eventPeriod,
@@ -16,28 +15,20 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
-  // Creates a new event object that is a copy of the event with eventId
-  const getNewEvent = () => {
+  const handleDuplicateEvent = () => {
     if (eventPeriod != undefined) {
       const newEvent = createEventObj(
         eventPeriod.event.name,
         eventPeriod.event.location,
         eventPeriod.event.description,
         eventPeriod.event.color,
-        eventPeriod.time.day - 1,
+        eventPeriod.time.day,
         eventPeriod.time.start,
         eventPeriod.time.end
       );
-      return newEvent;
+      setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
+      setContextMenu(null);
     }
-
-    return null;
-  };
-
-  const handleDuplicateEvent = () => {
-    const newEvent = getNewEvent();
-    if (newEvent !== null) setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
-    setContextMenu(null);
   };
 
   const handleDeleteEvent = () => {
@@ -53,9 +44,19 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   };
 
   const handleCopyEvent = () => {
-    setContextMenu(null);
-    const newEvent = getNewEvent();
-    setCopiedEvent(newEvent);
+    if (eventPeriod != undefined) {
+      const newEvent = createEventObj(
+        eventPeriod.event.name,
+        eventPeriod.event.location,
+        eventPeriod.event.description,
+        eventPeriod.event.color,
+        eventPeriod.time.day,
+        eventPeriod.time.start,
+        eventPeriod.time.end
+      );
+      setCopiedEvent(newEvent);
+      setContextMenu(null);
+    }
   };
 
   const handlePasteEvent = () => {
