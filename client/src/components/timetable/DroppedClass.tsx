@@ -20,6 +20,7 @@ import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 import { createEventObj } from '../../utils/createEvent';
+import { handleContextMenu } from '../../utils/cardsContextMenu';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -160,23 +161,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
-    if (copiedEvent) {
-      e.preventDefault();
-      setContextMenu({ x: e.clientX, y: e.clientY });
-
-      //Update copied event to match the cell double clicked on
-      const copyCopiedEvent = copiedEvent;
-      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
-      const startOffset = copyCopiedEvent.time.start % 1;
-      const classPeriod = classCard as ClassPeriod;
-
-      copyCopiedEvent.time.day = classPeriod.time.day - 1;
-      copyCopiedEvent.time.start = Math.floor(classPeriod.time.start) + startOffset;
-      copyCopiedEvent.time.end = Math.floor(classPeriod.time.start) + startOffset + eventTimeLength;
-    }
-  };
-
   const handlePasteEvent = () => {
     if (!copiedEvent) return;
 
@@ -216,7 +200,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
-        onContextMenu={(e) => handleContextMenu(e)}
+        onContextMenu={(e) => handleContextMenu(e, copiedEvent, classCard as ClassPeriod, setContextMenu)}
       >
         <StyledCardInner
           isSquareEdges={isSquareEdges}

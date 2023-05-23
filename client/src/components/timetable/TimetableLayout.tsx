@@ -271,11 +271,13 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
 
   // Update copiedEvent details to match the cell that was double clicked
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>, x: number, y: number) => {
+    e.preventDefault();
+    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
+    
     if (copiedEvent) {
-      e.preventDefault();
-      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
       const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
       const startOffset = copiedEvent.time.start % 1;
+      
       copiedEvent.time.day = x;
       copiedEvent.time.start = earliestStartTime + y + startOffset;
       copiedEvent.time.end = earliestStartTime + y + startOffset + eventTimeLength;
