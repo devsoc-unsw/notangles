@@ -77,7 +77,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
-
+      
+    if (eventDown.button === 2 || contextMenu) return;
     if (!('type' in eventDown)) return;
     if (eventDown.type.includes('mouse') && ignoreMouse) return;
     if (eventDown.type.includes('touch')) ignoreMouse = true;
