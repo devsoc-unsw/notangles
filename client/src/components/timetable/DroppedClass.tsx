@@ -163,7 +163,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     if (copiedEvent) {
       e.preventDefault();
-      setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
+      setContextMenu({ x: e.clientX, y: e.clientY });
 
       //Update copied event to match the cell double clicked on
       const copyCopiedEvent = copiedEvent;

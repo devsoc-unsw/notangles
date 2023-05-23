@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
 import { createEventObj } from '../../utils/createEvent';
@@ -16,19 +16,18 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const handleDuplicateEvent = () => {
-    if (eventPeriod != undefined) {
-      const newEvent = createEventObj(
-        eventPeriod.event.name,
-        eventPeriod.event.location,
-        eventPeriod.event.description,
-        eventPeriod.event.color,
-        eventPeriod.time.day,
-        eventPeriod.time.start,
-        eventPeriod.time.end
-      );
-      setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
-      setContextMenu(null);
-    }
+    if (eventPeriod === undefined) return;
+    const newEvent = createEventObj(
+      eventPeriod.event.name,
+      eventPeriod.event.location,
+      eventPeriod.event.description,
+      eventPeriod.event.color,
+      eventPeriod.time.day,
+      eventPeriod.time.start,
+      eventPeriod.time.end
+    );
+    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
+    setContextMenu(null);
   };
 
   const handleDeleteEvent = () => {
@@ -44,24 +43,22 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   };
 
   const handleCopyEvent = () => {
-    if (eventPeriod != undefined) {
-      const newEvent = createEventObj(
-        eventPeriod.event.name,
-        eventPeriod.event.location,
-        eventPeriod.event.description,
-        eventPeriod.event.color,
-        eventPeriod.time.day,
-        eventPeriod.time.start,
-        eventPeriod.time.end
-      );
-      setCopiedEvent(newEvent);
-      setContextMenu(null);
-    }
+    if (eventPeriod === undefined) return;
+    const newEvent = createEventObj(
+      eventPeriod.event.name,
+      eventPeriod.event.location,
+      eventPeriod.event.description,
+      eventPeriod.event.color,
+      eventPeriod.time.day,
+      eventPeriod.time.start,
+      eventPeriod.time.end
+    );
+    setCopiedEvent(newEvent);
+    setContextMenu(null);
   };
 
   const handlePasteEvent = () => {
     if (!copiedEvent) return;
-
     const newEvent = createEventObj(
       copiedEvent.event.name,
       copiedEvent.event.location,
