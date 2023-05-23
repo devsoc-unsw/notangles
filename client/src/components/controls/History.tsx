@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Redo, Delete, Undo } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip, Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import {
@@ -25,6 +25,7 @@ const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
   const [disableReset, setDisableReset] = useState(true);
+  const [clearOpen, setClearOpen] = useState(false);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
@@ -35,6 +36,8 @@ const History: React.FC = () => {
   const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
+
+  const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
 
   /**
    * @param selectedClasses The currently selected classes
@@ -73,7 +76,7 @@ const History: React.FC = () => {
    */
   const incrementActionsPointer = (direction: number) => {
     actionsPointer.current += direction;
-    setDisableLeft(actionsPointer.current <= 1);
+    setDisableLeft(actionsPointer.current < 1);
     setDisableRight(actionsPointer.current + 1 >= actions.current.length);
   };
 
@@ -85,16 +88,24 @@ const History: React.FC = () => {
   const areIdenticalClasses = (curr: SelectedClasses, next: SelectedClasses) => {
     const cVals = Object.values(curr);
     const nVals = Object.values(next);
-    if (cVals.length !== nVals.length) return false;
+    if (cVals.length !== nVals.length) {
+      return false;
+    }
 
     for (let i = 0; i < cVals.length; i++) {
       const currClassData = Object.values(cVals[i]);
       const nextClassData = Object.values(nVals[i]);
-      if (currClassData.length !== nextClassData.length) return false;
+      if (currClassData.length !== nextClassData.length) {
+        return false;
+      }
 
       for (let j = 0; j < currClassData.length; j++) {
-        if (!currClassData[j] !== !nextClassData[j]) return false; // If exactly one is null
-        if (currClassData[j]?.id !== nextClassData[j]?.id) return false;
+        if (!currClassData[j] !== !nextClassData[j]) {
+          return false;
+        } // If exactly one is null
+        if (currClassData[j]?.id !== nextClassData[j]?.id) {
+          return false;
+        }
       }
     }
 
@@ -111,34 +122,32 @@ const History: React.FC = () => {
 
     const currEvents = Object.values(curr);
     const nextEvents = Object.values(next);
-    if (currEvents.length !== nextEvents.length) return false;
+    if (currEvents.length !== nextEvents.length) {
+      return false;
+    }
 
     for (let i = 0; i < currEvents.length; i++) {
-      if (!sameTime(currEvents[i].time, nextEvents[i].time)) return false;
+      if (!sameTime(currEvents[i].time, nextEvents[i].time)) {
+        return false;
+      }
     }
 
     return true;
   };
 
   // Check if timetable is updated (ie. rename, shifting tabs)
-  const areIdenticalTimetables = (curr: TimetableData[]) => {
+  const areIdenticalTimetables = (data: Action) => {
+    const curr = data.timetables;
     if (curr.length !== displayTimetables.length) {
       return false;
     }
+
     for (const i in curr) {
-      if (curr[i].name !== displayTimetables[i].name) {
-        return false;
-      }
-
-      if (curr[i].selectedCourses.length !== displayTimetables[i].selectedCourses.length) {
-        return false;
-      }
-
-      if (!areIdenticalClasses(curr[i].selectedClasses, displayTimetables[i].selectedClasses)) {
-        return false;
-      }
-
-      if (!areIdenticalEvents(curr[i].createdEvents, displayTimetables[i].createdEvents)) {
+      if (
+        curr[i].name !== displayTimetables[i].name ||
+        !areIdenticalClasses(curr[i].selectedClasses, displayTimetables[i].selectedClasses) ||
+        !areIdenticalEvents(curr[i].createdEvents, displayTimetables[i].createdEvents)
+      ) {
         return false;
       }
     }
@@ -146,6 +155,7 @@ const History: React.FC = () => {
     return true;
   };
 
+  console.log(actions, actionsPointer.current);
   // Adds an action when a class is changed/added/removed, an event is created/removed
   // or a card is dragged to another place
   useEffect(
@@ -161,9 +171,9 @@ const History: React.FC = () => {
 
       if (
         actions.current.length > 1 &&
-        areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) &&
-        areIdenticalEvents(actions.current[actionsPointer.current].events, createdEvents) &&
-        areIdenticalTimetables(actions.current[actionsPointer.current].timetables)
+        //areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) &&
+        //areIdenticalEvents(actions.current[actionsPointer.current].events, createdEvents) &&
+        areIdenticalTimetables(actions.current[actionsPointer.current])
       ) {
         return;
       }
@@ -224,7 +234,7 @@ const History: React.FC = () => {
   };
 
   /**
-   * Resets timetable and selected courses to be completely empty
+   * Resets all timetables - leave one default
    */
   const clearAll = () => {
     setSelectedCourses([]);
@@ -240,6 +250,26 @@ const History: React.FC = () => {
         createdEvents: {},
       },
     ]);
+  };
+
+  /**
+   * Reset current timetable and selected courses to be completely empty
+   */
+  const clearOne = () => {
+    setSelectedCourses([]);
+    setSelectedClasses({});
+    setCreatedEvents({});
+
+    setDisplayTimetables((prev: TimetableData[]) => {
+      const newArray = prev;
+      newArray[selectedTimetable] = {
+        ...newArray[selectedTimetable],
+        selectedCourses: [],
+        selectedClasses: {},
+        createdEvents: {},
+      };
+      return newArray;
+    });
   };
 
   /**
@@ -260,7 +290,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        clearAll();
+        setClearOpen((prev) => !prev);
       }
     }
 
@@ -272,7 +302,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        clearAll();
+        setClearOpen((prev) => !prev);
       }
     }
   };
@@ -288,8 +318,35 @@ const History: React.FC = () => {
 
   return (
     <>
+      <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>
+        <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Clear Timetables</DialogTitle>
+        <DialogActions sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+          <Button
+            id="clear-current-button"
+            sx={ModalButtonStyle}
+            variant="contained"
+            onClick={() => {
+              clearOne();
+              setClearOpen(false);
+            }}
+          >
+            Current
+          </Button>
+          <Button
+            id="clear-all-button"
+            sx={ModalButtonStyle}
+            variant="contained"
+            onClick={() => {
+              clearAll();
+              setClearOpen(false);
+            }}
+          >
+            All
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset} color="inherit" onClick={() => clearAll()} size="large">
+        <IconButton disabled={disableReset} color="inherit" onClick={() => setClearOpen(true)} size="large">
           <Delete />
         </IconButton>
       </Tooltip>
