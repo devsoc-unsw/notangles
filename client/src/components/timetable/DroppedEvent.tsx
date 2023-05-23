@@ -17,6 +17,7 @@ import {
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import ExpandedEventView from './ExpandedEventView';
 import EventContextMenu from './EventContextMenu';
+import { handleContextMenu } from '../../utils/cardsContextMenu';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -140,22 +141,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    setContextMenu(contextMenu === null ? { x: e.clientX, y: e.clientY } : null);
-
-    //Update copied event to match the cell double clicked on
-    if (copiedEvent) {
-      const copyCopiedEvent = copiedEvent;
-      const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
-      const startOffset = copyCopiedEvent.time.start % 1;
-
-      copyCopiedEvent.time.day = eventPeriod.time.day - 1;
-      copyCopiedEvent.time.start = Math.floor(eventPeriod.time.start) + startOffset;
-      copyCopiedEvent.time.end = Math.floor(eventPeriod.time.start) + startOffset + eventTimeLength;
-    }
-  };
-
   return (
     <>
       <StyledCard
@@ -179,7 +164,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setFullscreenVisible(false);
         }}
         onContextMenu={(e) => {
-          handleContextMenu(e);
+          handleContextMenu(e, copiedEvent, eventPeriod, setContextMenu);
         }}
       >
         <EventContextMenu
