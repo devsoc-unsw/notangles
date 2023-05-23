@@ -163,7 +163,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   const handlePasteEvent = () => {
     if (!copiedEvent) return;
-
     const newEvent = createEventObj(
       copiedEvent.event.name,
       copiedEvent.event.location,

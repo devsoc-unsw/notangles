@@ -1,4 +1,6 @@
+import { CreatedEvents } from '../interfaces/Periods';
 import { ClassPeriod, EventPeriod } from '../interfaces/Periods';
+import { createEventObj } from './createEvent';
 
 /**
  * Updates copiedEvent to match the cell double clicked on
@@ -11,7 +13,7 @@ import { ClassPeriod, EventPeriod } from '../interfaces/Periods';
 export const handleContextMenu = (
   e: React.MouseEvent<HTMLElement>,
   copiedEvent: EventPeriod | null,
-  day: number, 
+  day: number,
   startTime: number,
   setContextMenu: (contextMenu: null | { x: number; y: number }) => void
 ) => {
@@ -27,4 +29,33 @@ export const handleContextMenu = (
     copyCopiedEvent.time.start = Math.floor(startTime) + startOffset;
     copyCopiedEvent.time.end = Math.floor(startTime) + startOffset + eventTimeLength;
   }
+};
+
+/**
+ * Creates a new event that is a copy of the event details stored in copiedEvent
+ * Updates copiedEvent to match the cell double clicked on
+ * @param copiedEvent
+ * @param setContextMenu
+ * @param createdEvents
+ * @param setCreatedEvents
+ */
+export const handlePasteEvent = (
+  copiedEvent: EventPeriod | null,
+  setContextMenu: (contextMenu: null | { x: number; y: number }) => void,
+  createdEvents: CreatedEvents,
+  setCreatedEvents: (createdEvents: CreatedEvents) => void,
+) => {
+  if (!copiedEvent) return;
+
+  const newEvent = createEventObj(
+    copiedEvent.event.name,
+    copiedEvent.event.location,
+    copiedEvent.event.description,
+    copiedEvent.event.color,
+    copiedEvent.time.day + 1,
+    copiedEvent.time.start,
+    copiedEvent.time.end
+  );
+  setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
+  setContextMenu(null);
 };

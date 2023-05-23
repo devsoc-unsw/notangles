@@ -3,6 +3,7 @@ import { Menu, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
 import { createEventObj } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
+import { handlePasteEvent } from '../../utils/cardsContextMenu';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({
   eventPeriod,
@@ -57,21 +58,6 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
     setContextMenu(null);
   };
 
-  const handlePasteEvent = () => {
-    if (!copiedEvent) return;
-    const newEvent = createEventObj(
-      copiedEvent.event.name,
-      copiedEvent.event.location,
-      copiedEvent.event.description,
-      copiedEvent.event.color,
-      copiedEvent.time.day + 1,
-      eventPeriod.time.start,
-      eventPeriod.time.end
-    );
-    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
-    setContextMenu(null);
-  };
-
   return (
     <Menu
       open={contextMenu != null}
@@ -84,7 +70,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
       <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
       <MenuItem onClick={handleCopyEvent}>Copy</MenuItem>
-      <MenuItem disabled={copiedEvent === null} onClick={handlePasteEvent}>
+      <MenuItem disabled={copiedEvent === null} onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
         Paste
       </MenuItem>
     </Menu>
