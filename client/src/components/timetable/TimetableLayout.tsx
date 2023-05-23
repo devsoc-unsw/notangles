@@ -16,8 +16,8 @@ import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
 import { TimetableLayoutProps } from '../../interfaces/PropTypes';
 import { Menu, MenuItem } from '@mui/material';
-import { createEventObj } from '../../utils/createEvent';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
+import { handlePasteEvent } from '../../utils/cardsContextMenu';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -254,22 +254,6 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
 
   otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
 
-  const handlePaste = () => {
-    if (!copiedEvent) return;
-
-    const newEvent = createEventObj(
-      copiedEvent.event.name,
-      copiedEvent.event.location,
-      copiedEvent.event.description,
-      copiedEvent.event.color,
-      copiedEvent.time.day + 1,
-      copiedEvent.time.start,
-      copiedEvent.time.end
-    );
-    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
-    setContextMenu(null);
-  };
-
   return (
     <>
       <ToggleCell key={0} x={1} y={1}>
@@ -311,7 +295,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
         onClose={() => setContextMenu(null)}
         autoFocus={false}
       >
-        <MenuItem onClick={handlePaste}>Paste</MenuItem>
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>Paste</MenuItem>
       </Menu>
     </>
   );

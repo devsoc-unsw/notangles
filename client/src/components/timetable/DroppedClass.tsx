@@ -20,7 +20,7 @@ import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 import { createEventObj } from '../../utils/createEvent';
-import { handleContextMenu } from '../../utils/cardsContextMenu';
+import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -161,21 +161,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
   }
 
-  const handlePasteEvent = () => {
-    if (!copiedEvent) return;
-    const newEvent = createEventObj(
-      copiedEvent.event.name,
-      copiedEvent.event.location,
-      copiedEvent.event.description,
-      copiedEvent.event.color,
-      copiedEvent.time.day + 1,
-      copiedEvent.time.start,
-      copiedEvent.time.end
-    );
-    setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
-    setContextMenu(null);
-  };
-
   return (
     <>
       <StyledCard
@@ -247,7 +232,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}
       >
-        <MenuItem onClick={handlePasteEvent}>Paste</MenuItem>
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>Paste</MenuItem>
       </Menu>
     </>
   );

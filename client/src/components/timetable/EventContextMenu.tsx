@@ -70,7 +70,10 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
       <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
       <MenuItem onClick={handleCopyEvent}>Copy</MenuItem>
-      <MenuItem disabled={copiedEvent === null} onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+      <MenuItem
+        disabled={copiedEvent === null}
+        onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}
+      >
         Paste
       </MenuItem>
     </Menu>
