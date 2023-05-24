@@ -246,6 +246,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
           eventDay.current = daysShort[x];
         }}
         onContextMenu={(e) => {
+          if (!copiedEvent) return;
           handleContextMenu(e, copiedEvent, setCopiedEvent, x, y + earliestStartTime, setContextMenu);
         }}
       />
