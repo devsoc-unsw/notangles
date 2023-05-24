@@ -164,7 +164,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setFullscreenVisible(false);
         }}
         onContextMenu={(e) => {
-          handleContextMenu(e, copiedEvent, eventPeriod.time.day - 1, eventPeriod.time.start, setContextMenu);
+          handleContextMenu(e, copiedEvent, setCopiedEvent, eventPeriod.time.day - 1, eventPeriod.time.start, setContextMenu);
         }}
       >
         <EventContextMenu

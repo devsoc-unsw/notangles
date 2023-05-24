@@ -149,7 +149,7 @@ const generateHours = (
   }
 };
 
-export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent }) => {
+export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, setCopiedEvent }) => {
   const [tempEventId, setTempEventId] = useState<string>('');
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
@@ -246,7 +246,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent })
           eventDay.current = daysShort[x];
         }}
         onContextMenu={(e) => {
-          handleContextMenu(e, copiedEvent, x, y + earliestStartTime, setContextMenu);
+          handleContextMenu(e, copiedEvent, setCopiedEvent, x, y + earliestStartTime, setContextMenu);
         }}
       />
     ))

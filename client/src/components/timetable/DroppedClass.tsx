@@ -77,7 +77,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
     )
       return;
-      
+
     if (eventDown.button === 2 || contextMenu) return;
     if (!('type' in eventDown)) return;
     if (eventDown.type.includes('mouse') && ignoreMouse) return;
@@ -188,6 +188,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           handleContextMenu(
             e,
             copiedEvent,
+            setCopiedEvent,
             (classCard as ClassPeriod).time.day - 1,
             (classCard as ClassPeriod).time.start,
             setContextMenu

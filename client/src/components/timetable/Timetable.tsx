@@ -51,7 +51,7 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable cols={days.length} rows={numRows}>
-        <TimetableLayout copiedEvent={copiedEvent} />
+        <TimetableLayout copiedEvent={copiedEvent} setCopiedEvent={setCopiedEvent} />
         <Dropzones assignedColors={assignedColors} />
         <DroppedCards
           assignedColors={assignedColors}

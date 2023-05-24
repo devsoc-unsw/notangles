@@ -46,6 +46,7 @@ export interface AutotimetableProps {
 
 export interface TimetableLayoutProps {
   copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface TimetableProps {
