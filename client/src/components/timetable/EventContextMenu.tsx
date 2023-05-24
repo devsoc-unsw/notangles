@@ -4,6 +4,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { createEventObj } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
+import { EventPeriod, EventMetadata } from '../../interfaces/Periods';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({
   eventPeriod,
@@ -15,25 +16,22 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   copiedEvent,
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { id, name, location, description, color, day, start, end }: EventMetadata = {
+    ...eventPeriod.event,
+    ...eventPeriod.time,
+  };
+  const createNewEventObject = (): EventPeriod => createEventObj(name, location, description, color, day, start, end);
 
   const handleDuplicateEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(
-      eventPeriod.event.name,
-      eventPeriod.event.location,
-      eventPeriod.event.description,
-      eventPeriod.event.color,
-      eventPeriod.time.day,
-      eventPeriod.time.start,
-      eventPeriod.time.end
-    );
+    const newEvent = createNewEventObject();
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
   };
 
   const handleDeleteEvent = () => {
     const updatedEventData = { ...createdEvents };
-    delete updatedEventData[eventPeriod.event.id];
+    delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
 
@@ -45,15 +43,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleCopyEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(
-      eventPeriod.event.name,
-      eventPeriod.event.location,
-      eventPeriod.event.description,
-      eventPeriod.event.color,
-      eventPeriod.time.day,
-      eventPeriod.time.start,
-      eventPeriod.time.end
-    );
+    const newEvent = createNewEventObject();
     setCopiedEvent(newEvent);
     setContextMenu(null);
   };
