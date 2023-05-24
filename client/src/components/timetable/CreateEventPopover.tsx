@@ -77,11 +77,20 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     });
     return newEvent;
   };
-
+  const setDefaultEventFields = (): void => {
+    setEventName('');
+    setLocation('');
+    setDescription('');
+    setEventDays([]);
+    setIsInitialDay(true);
+    setIsInitialStartTime(true);
+    setIsInitialEndTime(true);
+  };
   const createEvents = () => {
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
+      setDefaultEventFields();
       return;
     }
 
@@ -105,13 +114,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     }
 
     setCreatedEvents({ ...createdEvents, ...newEvents });
-    setEventName('');
-    setLocation('');
-    setDescription('');
-    setEventDays([]);
-    setIsInitialDay(true);
-    setIsInitialStartTime(true);
-    setIsInitialEndTime(true);
+    setDefaultEventFields();
 
     // Close all popovers when Create button is clicked
     handleClose();

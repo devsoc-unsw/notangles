@@ -254,6 +254,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   );
 
   otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
+
   return (
     <>
       <ToggleCell key={0} x={1} y={1}>
