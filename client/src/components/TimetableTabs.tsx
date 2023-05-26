@@ -89,7 +89,7 @@ const TimetableTabs: React.FC = () => {
 
   const TabContainerStyle = {
     backgroundColor: `${tabTheme.containerBackground}`,
-    borderRadius: '10px',
+    borderRadius: '10px 10px 0 0',
   };
 
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
@@ -97,12 +97,11 @@ const TimetableTabs: React.FC = () => {
     let style = {
       minHeight: '50px',
       minWidth: '150px',
-      maxWidth: '150px',
       paddingTop: '3px',
       paddingBottom: '3px',
       borderStyle: 'solid',
       borderWidth: '0px',
-      borderRadius: '10px',
+      borderRadius: '10px 10px 0 0',
       borderColor: `${tabTheme.tabBorderColor}`,
       color: `${tabTheme.tabTextColor}`,
       margin: '0 0 0 0',
