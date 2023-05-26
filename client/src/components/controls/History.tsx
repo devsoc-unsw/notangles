@@ -13,6 +13,7 @@ import {
   SelectedClasses,
   TimetableData,
 } from '../../interfaces/Periods';
+import { time } from 'console';
 
 type Actions = Action[];
 
@@ -241,15 +242,20 @@ const History: React.FC = () => {
     setSelectedClasses({});
     setCreatedEvents({});
 
-    setSelectedTimetable(0);
-    setDisplayTimetables([
-      {
-        name: 'New Timetable',
-        selectedCourses: [],
-        selectedClasses: {},
-        createdEvents: {},
-      },
-    ]);
+    for(let i = 0; i < displayTimetables.length; i++) {
+      setSelectedTimetable(i);
+      clearOne();
+    }
+
+    // setSelectedTimetable(0);
+    // setDisplayTimetables([
+    //   {
+    //     name: 'New Timetable',
+    //     selectedCourses: [],
+    //     selectedClasses: {},
+    //     createdEvents: {},
+    //   },
+    // ]);
   };
 
   /**
