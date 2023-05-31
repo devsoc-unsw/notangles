@@ -3,8 +3,17 @@ import { Alert, Snackbar } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 
 const Alerts: React.FC = () => {
-  const { alertMsg, errorVisibility, setErrorVisibility, infoVisibility, setInfoVisibility, autoVisibility, setAutoVisibility } =
-    useContext(AppContext);
+  const {
+    alertMsg,
+    errorVisibility,
+    setErrorVisibility,
+    infoVisibility,
+    setInfoVisibility,
+    autoVisibility,
+    setAutoVisibility,
+    alertFunction,
+    setAlertFunction,
+  } = useContext(AppContext);
 
   const handleErrorClose = () => {
     setErrorVisibility(false);
@@ -21,9 +30,12 @@ const Alerts: React.FC = () => {
   const getAutoSeverity = () => {
     if (alertMsg === 'Success!') return 'success';
     if (alertMsg.startsWith('Could not')) return 'warning';
+    if (alertMsg.startsWith('Delete')) return 'info';
     return 'error';
   };
 
+  // Alerts.ts was not designed to handle onclick events and does not take props, so forgive this code
+  const deleteAlert = alertMsg.startsWith('Delete');
   return (
     <>
       <Snackbar
@@ -44,11 +56,23 @@ const Alerts: React.FC = () => {
       <Snackbar
         open={autoVisibility}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        autoHideDuration={2000}
+        autoHideDuration={deleteAlert ? 5000 : 2000}
         onClose={handleAutoClose}
       >
         <Alert severity={getAutoSeverity()} onClose={handleAutoClose} variant="filled">
-          {alertMsg}
+          {deleteAlert ? (
+            <span
+              onClick={() => {
+                alertFunction();
+                handleAutoClose();
+              }}
+            >
+              {' '}
+              {alertMsg}{' '}
+            </span>
+          ) : (
+            alertMsg
+          )}
         </Alert>
       </Snackbar>
     </>

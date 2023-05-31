@@ -13,7 +13,6 @@ import {
   SelectedClasses,
   TimetableData,
 } from '../../interfaces/Periods';
-import { time } from 'console';
 
 type TimetableActions = Action[][];
 
@@ -44,7 +43,9 @@ const History: React.FC = () => {
       timetableActions.current[i] = [];
       actionsPointer.current[i] = -initialIndex;
     }
-  }, [])
+  }, []);
+
+  console.log(timetableActions);
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
@@ -70,9 +71,7 @@ const History: React.FC = () => {
     return newClasses;
   };
 
-  const newTimetable = () => {
-
-  }
+  const newTimetable = () => {};
 
   // // MS: Duplicate all timetables
   // const duplicateTimetables = (displayTimetables: TimetableData[]) => {
@@ -216,6 +215,7 @@ const History: React.FC = () => {
   // Adds an action when a class is changed/added/removed, an event is created/removed
   // or a card is dragged to another place
   useEffect(() => {
+    /*
     console.log(selectedTimetable);
     console.log("1", timetableActions.current)
     if (timetableActions.current) {
@@ -228,6 +228,7 @@ const History: React.FC = () => {
         }
       }
     }
+    */
 
     if (isDrag) return;
 
@@ -238,15 +239,24 @@ const History: React.FC = () => {
 
     if (
       timetableActions.current[selectedTimetable].length > 1 &&
-      areIdenticalClasses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes, selectedClasses) &&
-      areIdenticalEvents(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events, createdEvents)
+      areIdenticalClasses(
+        timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes,
+        selectedClasses
+      ) &&
+      areIdenticalEvents(
+        timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events,
+        createdEvents
+      )
     ) {
       return;
     }
 
     // Discard remaining redos as we branched off by making an action
     if (timetableActions.current[selectedTimetable].length > actionsPointer.current[selectedTimetable] + 1) {
-      timetableActions.current[selectedTimetable] = timetableActions.current[selectedTimetable].slice(0, actionsPointer.current[selectedTimetable] + 1);
+      timetableActions.current[selectedTimetable] = timetableActions.current[selectedTimetable].slice(
+        0,
+        actionsPointer.current[selectedTimetable] + 1
+      );
     }
 
     timetableActions.current[selectedTimetable].push({
@@ -289,7 +299,9 @@ const History: React.FC = () => {
     dontAdd.current = true;
 
     setSelectedCourses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].courses);
-    setSelectedClasses(duplicateClasses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes)); // Very important to duplicate here again or things will break
+    setSelectedClasses(
+      duplicateClasses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes)
+    ); // Very important to duplicate here again or things will break
     setCreatedEvents(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events);
     // setSelectedTimetable(timetableActions.current[selectedTimetable][actionsPointer.current].selected);
     // setDisplayTimetables(timetableActions.current[selectedTimetable][actionsPointer.current].timetables);
@@ -303,7 +315,7 @@ const History: React.FC = () => {
     setSelectedClasses({});
     setCreatedEvents({});
 
-    for(let i = 0; i < displayTimetables.length; i++) {
+    for (let i = 0; i < displayTimetables.length; i++) {
       setSelectedTimetable(i);
       clearOne();
     }
@@ -353,7 +365,10 @@ const History: React.FC = () => {
       if (event.key === 'z' && actionsPointer.current[selectedTimetable] > 1) {
         changeHistory(-1);
       }
-      if (event.key === 'y' && actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length) {
+      if (
+        event.key === 'y' &&
+        actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length
+      ) {
         changeHistory(1);
       }
       if (event.key === 'd') {
@@ -365,7 +380,11 @@ const History: React.FC = () => {
       if (!event.shiftKey && event.key === 'z' && actionsPointer.current[selectedTimetable] > 1) {
         changeHistory(-1);
       }
-      if (event.shiftKey && event.key === 'z' && actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length) {
+      if (
+        event.shiftKey &&
+        event.key === 'z' &&
+        actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length
+      ) {
         changeHistory(1);
       }
       if (event.key === 'd') {

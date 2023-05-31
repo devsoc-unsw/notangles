@@ -34,6 +34,9 @@ export interface IAppContext {
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
+  alertFunction: () => void;
+  setAlertFunction: (newAlertFunction: () => void) => void;
+
   errorVisibility: boolean;
   setErrorVisibility: (newErrorVisibility: boolean) => void;
 
@@ -112,6 +115,9 @@ export const AppContext = createContext<IAppContext>({
   alertMsg: '',
   setAlertMsg: () => {},
 
+  alertFunction: () => {},
+  setAlertFunction: () => {},
+
   errorVisibility: false,
   setErrorVisibility: () => {},
 
@@ -181,6 +187,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
   const [alertMsg, setAlertMsg] = useState<string>('');
+  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
@@ -216,6 +223,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsConvertToLocalTimezone,
     alertMsg,
     setAlertMsg,
+    alertFunction,
+    setAlertFunction,
     errorVisibility,
     setErrorVisibility,
     infoVisibility,

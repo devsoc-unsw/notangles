@@ -48,7 +48,9 @@ const TimetableTabs: React.FC = () => {
     displayTimetables,
     setDisplayTimetables,
     setAlertMsg,
+    setAlertFunction,
     setErrorVisibility,
+    setAutoVisibility,
   } = useContext(AppContext);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
@@ -70,6 +72,7 @@ const TimetableTabs: React.FC = () => {
   const [renamedHelper, setrenamedHelper] = useState<String>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
@@ -132,11 +135,40 @@ const TimetableTabs: React.FC = () => {
 
   const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
 
+  // Lifted from History.ts
+  const duplicateClasses = (selectedClasses: SelectedClasses) => {
+    const newClasses: SelectedClasses = {};
+
+    Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+      const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
+
+      Object.entries(activities).forEach(([activity, classData]) => {
+        newActivityCopy[activity] = classData !== null ? { ...classData } : null;
+      });
+      newClasses[courseCode] = { ...newActivityCopy };
+    });
+
+    return newClasses;
+  };
+
   // EXPERIMENTAL: Currently removes a timetable from local storage.
   // Intended behaviour is a placeholder for the menu -> delete on the current tab
   const handleDeleteTimetable = (targetIndex: number) => {
     // If only one tab then prevent the delete
     if (displayTimetables.length > 1) {
+      // setPrevTimetables(displayTimetables);
+      prevTimetables = {
+        selected: selectedTimetable,
+        timetables: displayTimetables.map((timetable: TimetableData) => {
+          return {
+            name: timetable.name,
+            selectedCourses: timetable.selectedCourses,
+            selectedClasses: duplicateClasses(timetable.selectedClasses),
+            createdEvents: timetable.createdEvents,
+          };
+        }),
+      };
+      console.log(displayTimetables);
       // Intended behaviour: closing current tab will remain on the same index unless it is the last tab
       let newIndex = targetIndex;
       if (newIndex === displayTimetables.length - 1) {
@@ -148,6 +180,22 @@ const TimetableTabs: React.FC = () => {
       setSelectedCourses(newTimetables[newIndex].selectedCourses);
       setSelectedClasses(newTimetables[newIndex].selectedClasses);
       setCreatedEvents(newTimetables[newIndex].createdEvents);
+
+      setAlertMsg('Deleted timetable - Click to undo');
+      /* setAlertFunction(() => {
+        setDisplayTimetables(prevTimetables);
+        return;
+      });
+      */
+      setAlertFunction(() => () => {
+        setDisplayTimetables(prevTimetables.timetables);
+        setSelectedTimetable(prevTimetables.selected);
+        setSelectedCourses(prevTimetables.timetables[prevTimetables.selected].selectedCourses);
+        setSelectedClasses(prevTimetables.timetables[prevTimetables.selected].selectedClasses);
+        setCreatedEvents(prevTimetables.timetables[prevTimetables.selected].createdEvents);
+        return;
+      });
+      setAutoVisibility(true);
     } else {
       setAlertMsg('Must have at least 1 timetable');
       setErrorVisibility(true);
@@ -272,8 +320,8 @@ const TimetableTabs: React.FC = () => {
         name: currentTimetable.name + ' - Copy',
         selectedClasses: copyClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
-        createdEvents: copyEvents(currentTimetable.createdEvents)
-      }
+        createdEvents: copyEvents(currentTimetable.createdEvents),
+      };
 
       // Insert the new timetable after the current one
       const newTimetables = [
@@ -326,7 +374,7 @@ const TimetableTabs: React.FC = () => {
       newEvents[newEvent.event.id] = newEvent;
     });
     return newEvents;
-  }
+  };
 
   // EXPERIEMENTAL: Hotkey for creating new timetables
   useEffect(() => {
@@ -335,7 +383,7 @@ const TimetableTabs: React.FC = () => {
 
       // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        if (event.key === "Enter") {
+        if (event.key === 'Enter') {
           event.preventDefault();
           createButton?.focus();
           createButton?.click();
@@ -356,7 +404,7 @@ const TimetableTabs: React.FC = () => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
       // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes selected timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        if (event.key === "Backspace") {
+        if (event.key === 'Backspace') {
           setDeleteOpen(!deleteOpen);
         }
       }
@@ -375,7 +423,7 @@ const TimetableTabs: React.FC = () => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
       const deleteConfirm = document.getElementById('confirm-delete-button');
-      if (deleteOpen && (event.key === "Enter")) {
+      if (deleteOpen && event.key === 'Enter') {
         event.preventDefault();
         deleteConfirm?.focus();
         deleteConfirm?.click();
@@ -395,7 +443,7 @@ const TimetableTabs: React.FC = () => {
     const handleRenameEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
       const renameConfirm = document.getElementById('confirm-rename-button');
-      if (renameOpen && (event.key === "Enter")) {
+      if (renameOpen && event.key === 'Enter') {
         event.preventDefault();
         renameConfirm?.focus();
         renameConfirm?.click();
@@ -431,7 +479,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables(newTimetables);
     setSelectedTimetable(dragOverTab.current);
     dragTab.current = dragOverTab.current;
-  }
+  };
 
   return (
     <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
@@ -485,7 +533,7 @@ const TimetableTabs: React.FC = () => {
           />
         ))}
         <Tooltip title={addTimetabletip}>
-          <Tab id='create-timetables-button' icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+          <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
         </Tooltip>
       </Tabs>
       <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
@@ -509,7 +557,13 @@ const TimetableTabs: React.FC = () => {
           onChange={(e) => handleRenameChange(e)}
           error={renamedErr}
         />
-        <ExecuteButton variant="contained" color="primary" id="confirm-rename-button" disableElevation onClick={() => handleRenameClose(true)}>
+        <ExecuteButton
+          variant="contained"
+          color="primary"
+          id="confirm-rename-button"
+          disableElevation
+          onClick={() => handleRenameClose(true)}
+        >
           OK
         </ExecuteButton>
       </Dialog>
