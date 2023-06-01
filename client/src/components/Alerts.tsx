@@ -67,8 +67,7 @@ const Alerts: React.FC = () => {
                 handleAutoClose();
               }}
             >
-              {' '}
-              {alertMsg}{' '}
+              {alertMsg}
             </span>
           ) : (
             alertMsg

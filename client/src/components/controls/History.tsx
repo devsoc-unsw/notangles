@@ -14,7 +14,8 @@ import {
   TimetableData,
 } from '../../interfaces/Periods';
 
-type TimetableActions = Action[][];
+type TimetableActions = Record<string, Action[]>;
+type ActionsPointer = Record<string, number>;
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
@@ -22,7 +23,6 @@ const initialIndex = 2;
 const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
-  const TIMETABLE_LIMIT = 13;
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
   const [disableReset, setDisableReset] = useState(true);
@@ -33,19 +33,31 @@ const History: React.FC = () => {
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } =
     useContext(AppContext);
 
-  // const actions = useRef<Actions>([]);
-  const timetableActions = useRef<TimetableActions>([[]]);
+  const timetableActions = useRef<TimetableActions>({});
   // const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
-  const actionsPointer = useRef<number[]>([]); // set to -initialIndex as it will increment predictably as app starts up
+  const actionsPointer = useRef<ActionsPointer>({}); // set to -initialIndex as it will increment predictably as app starts up
+
+  /*
   useEffect(() => {
-    // Add empty arrays for each index
-    for (let i = 0; i < TIMETABLE_LIMIT; i++) {
-      timetableActions.current[i] = [];
-      actionsPointer.current[i] = -initialIndex;
+    for (const timetable of displayTimetables) {
+      timetableActions.current[timetable.id] = [];
+      actionsPointer.current[timetable.id] = -initialIndex;
     }
   }, []);
+  */
 
-  console.log(timetableActions);
+  useEffect(() => {
+    if (displayTimetables.length < 1) {
+      return;
+    }
+
+    const timetableId = displayTimetables[selectedTimetable].id;
+    setDisableLeft(actionsPointer.current[timetableId] === undefined || actionsPointer.current[timetableId] < 1);
+    setDisableRight(
+      actionsPointer.current[timetableId] === undefined ||
+        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
+    );
+  }, [selectedTimetable]);
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
@@ -71,8 +83,6 @@ const History: React.FC = () => {
     return newClasses;
   };
 
-  const newTimetable = () => {};
-
   // // MS: Duplicate all timetables
   // const duplicateTimetables = (displayTimetables: TimetableData[]) => {
   //   return displayTimetables.map((timetable) => {
@@ -90,9 +100,11 @@ const History: React.FC = () => {
    * @param direction Which way to update (1 for increment, -1 for decrement)
    */
   const incrementActionsPointer = (direction: number) => {
-    actionsPointer.current[selectedTimetable] += direction;
-    setDisableLeft(actionsPointer.current[selectedTimetable] < 1);
-    setDisableRight(actionsPointer.current[selectedTimetable] + 1 >= timetableActions.current[selectedTimetable].length);
+    const timetableId = displayTimetables[selectedTimetable].id;
+    console.log(actionsPointer, timetableId);
+    actionsPointer.current[timetableId] += direction;
+    setDisableLeft(actionsPointer.current[timetableId] < 1);
+    setDisableRight(actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length);
   };
 
   /**
@@ -150,86 +162,9 @@ const History: React.FC = () => {
     return true;
   };
 
-  // // Check if timetable is updated (ie. rename, shifting tabs)
-  // const areIdenticalTimetables = (data: Action) => {
-  //   const curr = data.timetables;
-  //   if (curr.length !== displayTimetables.length) {
-  //     return false;
-  //   }
-
-  //   for (const i in curr) {
-  //     if (
-  //       curr[i].name !== displayTimetables[i].name ||
-  //       !areIdenticalClasses(curr[i].selectedClasses, displayTimetables[i].selectedClasses) ||
-  //       !areIdenticalEvents(curr[i].createdEvents, displayTimetables[i].createdEvents)
-  //     ) {
-  //       return false;
-  //     }
-  //   }
-
-  //   return true;
-  // };
-
-  // console.log(actions, actionsPointer.current);
-  // // Adds an action when a class is changed/added/removed, an event is created/removed
-  // // or a card is dragged to another place
-  // useEffect(
-  //   () => {
-  //     if (isDrag) {
-  //       return;
-  //     }
-
-  //     if (dontAdd.current) {
-  //       dontAdd.current = false;
-  //       return; // Prevents adding change induced by clicking redo/undo
-  //     }
-
-  //     if (
-  //       actions.current.length > 1 &&
-  //       //areIdenticalClasses(actions.current[actionsPointer.current].classes, selectedClasses) &&
-  //       //areIdenticalEvents(actions.current[actionsPointer.current].events, createdEvents) &&
-  //       areIdenticalTimetables(actions.current[actionsPointer.current])
-  //     ) {
-  //       return;
-  //     }
-
-  //     // Discard remaining redos as we branched off by making an action
-  //     if (actions.current.length > actionsPointer.current + 1) {
-  //       actions.current = actions.current.slice(0, actionsPointer.current + 1);
-  //     }
-
-  //     actions.current.push({
-  //       timetables: duplicateTimetables(displayTimetables),
-  //       selected: selectedTimetable,
-  //       courses: [...selectedCourses],
-  //       classes: duplicateClasses(selectedClasses),
-  //       events: { ...createdEvents },
-  //     });
-
-  //     incrementActionsPointer(1);
-  //   },
-  //   // [selectedClasses, isDrag, createdEvents]);
-  //   [isDrag, displayTimetables, createdEvents, selectedClasses]
-  // );
-
   // Adds an action when a class is changed/added/removed, an event is created/removed
   // or a card is dragged to another place
   useEffect(() => {
-    /*
-    console.log(selectedTimetable);
-    console.log("1", timetableActions.current)
-    if (timetableActions.current) {
-      console.log("2", timetableActions.current[selectedTimetable]);
-      console.log(actionsPointer.current[selectedTimetable]);
-      if (timetableActions.current[selectedTimetable]) {
-        console.log("3", timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]]);
-        if (timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]]) {
-          console.log("4", timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes);
-        }
-      }
-    }
-    */
-
     if (isDrag) return;
 
     if (dontAdd.current) {
@@ -237,57 +172,81 @@ const History: React.FC = () => {
       return; // Prevents adding change induced by clicking redo/undo
     }
 
+    if (displayTimetables.length === 0) {
+      return;
+    }
+
+    const currentTimetable = displayTimetables[selectedTimetable];
+    // If history does not exist, chuck it in
+    if (!timetableActions.current[currentTimetable.id]) {
+      timetableActions.current[currentTimetable.id] = [];
+      actionsPointer.current[currentTimetable.id] = -1;
+    }
+
     if (
-      timetableActions.current[selectedTimetable].length > 1 &&
+      timetableActions.current[currentTimetable.id].length > 0 &&
       areIdenticalClasses(
-        timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes,
+        timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].classes,
         selectedClasses
       ) &&
       areIdenticalEvents(
-        timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events,
+        timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].events,
         createdEvents
-      )
+      ) &&
+      timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].name ===
+        displayTimetables[selectedTimetable].name
     ) {
+      console.log('HELLO');
       return;
     }
 
     // Discard remaining redos as we branched off by making an action
-    if (timetableActions.current[selectedTimetable].length > actionsPointer.current[selectedTimetable] + 1) {
-      timetableActions.current[selectedTimetable] = timetableActions.current[selectedTimetable].slice(
+    if (timetableActions.current[currentTimetable.id].length > actionsPointer.current[currentTimetable.id] + 1) {
+      timetableActions.current[currentTimetable.id] = timetableActions.current[currentTimetable.id].slice(
         0,
-        actionsPointer.current[selectedTimetable] + 1
+        actionsPointer.current[currentTimetable.id] + 1
       );
     }
 
-    timetableActions.current[selectedTimetable].push({
+    timetableActions.current[currentTimetable.id].push({
+      name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
       events: { ...createdEvents },
     });
 
     incrementActionsPointer(1);
-  }, [selectedClasses, isDrag, createdEvents]);
+  }, [selectedClasses, isDrag, createdEvents, displayTimetables]);
 
   //Disables reset timetable button when there is no courses, classes and events selected.
   useEffect(() => {
+    if (displayTimetables.length === 0) {
+      setDisableReset(true);
+      return;
+    }
+
     if (!isMounted.current) {
       isMounted.current = true;
       return;
     }
     // if new timetable has been created then set reset to be true since no courses, classes or events selected
-    if (actionsPointer.current[selectedTimetable] < 0) {
+    const timetableId = displayTimetables[selectedTimetable].id;
+    if (actionsPointer.current[timetableId] < 0) {
       setDisableReset(true);
     } else {
-      const currentClasses = timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes;
-      const currentEvents = timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events;
+      /*
+      // console.log(timetableActions, currentTimetable, actionsPointer);
+      const currentClasses = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].classes;
+      const currentEvents = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].events;
 
-      const nCourses = timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].courses.length;
+      const nCourses = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].courses.length;
       const nEvents = Object.values(currentEvents).length;
       const nClasses = Object.values(currentClasses).length;
 
       setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
+      */
+      setDisableReset(timetableActions.current[timetableId] && timetableActions.current[timetableId].length === 0);
     }
-    // setDisableReset(timetableActions.current[selectedTimetable].length === 0);
   }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents]);
 
   /**
@@ -298,13 +257,10 @@ const History: React.FC = () => {
     incrementActionsPointer(direction);
     dontAdd.current = true;
 
-    setSelectedCourses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].courses);
-    setSelectedClasses(
-      duplicateClasses(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].classes)
-    ); // Very important to duplicate here again or things will break
-    setCreatedEvents(timetableActions.current[selectedTimetable][actionsPointer.current[selectedTimetable]].events);
-    // setSelectedTimetable(timetableActions.current[selectedTimetable][actionsPointer.current].selected);
-    // setDisplayTimetables(timetableActions.current[selectedTimetable][actionsPointer.current].timetables);
+    const timetableId = displayTimetables[selectedTimetable].id;
+    setSelectedCourses(timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses);
+    setSelectedClasses(duplicateClasses(timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes)); // Very important to duplicate here again or things will break
+    setCreatedEvents(timetableActions.current[timetableId][actionsPointer.current[timetableId]].events);
   };
 
   /**
@@ -402,6 +358,9 @@ const History: React.FC = () => {
   let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
   let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
 
+  console.log('Actions', timetableActions);
+  console.log('Pointer', actionsPointer);
+  console.log(displayTimetables);
   return (
     <>
       <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>

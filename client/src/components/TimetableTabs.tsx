@@ -162,6 +162,7 @@ const TimetableTabs: React.FC = () => {
         timetables: displayTimetables.map((timetable: TimetableData) => {
           return {
             name: timetable.name,
+            id: timetable.id,
             selectedCourses: timetable.selectedCourses,
             selectedClasses: duplicateClasses(timetable.selectedClasses),
             createdEvents: timetable.createdEvents,
@@ -213,6 +214,7 @@ const TimetableTabs: React.FC = () => {
 
       const newTimetable: TimetableData = {
         name: 'New Timetable', //`Timetable${nextIndex}`,
+        id: Math.random().toString(36).slice(2, 7),
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},

@@ -32,6 +32,7 @@ export interface ClassData {
 
 export interface TimetableData {
   name: String;
+  id: String;
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
@@ -125,6 +126,7 @@ export interface DuplicateClassData {
 //   events: CreatedEvents;
 // }
 export interface Action {
+  name: string;
   courses: CourseData[];
   classes: SelectedClasses;
   events: CreatedEvents;

@@ -10,11 +10,12 @@ const defaults: Record<string, any> = {
   timetables: [
     {
       name: 'Timetable0',
+      id: 'temp',
       selectedCourses: [],
       selectedClasses: {},
       createdEvents: {},
-    }
-  ]
+    },
+  ],
 };
 
 export default defaults;
