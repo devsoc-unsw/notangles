@@ -16,12 +16,14 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   copiedEvent,
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { id, name, location, description, color, day, start, end }: EventMetadata = {
-    ...eventPeriod.event,
-    ...eventPeriod.time,
-  };
-  const createNewEventObject = (): EventPeriod => createEventObj(name, location, description, color, day, start, end);
 
+  const createNewEventObject = (): EventPeriod => {
+    const { id, name, location, description, color, day, start, end }: EventMetadata = {
+      ...eventPeriod.event,
+      ...eventPeriod.time,
+    };
+    return createEventObj(name, location, description, color, day, start, end);
+  };
   const handleDuplicateEvent = () => {
     if (eventPeriod === undefined) return;
     const newEvent = createNewEventObject();
@@ -31,7 +33,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleDeleteEvent = () => {
     const updatedEventData = { ...createdEvents };
-    delete updatedEventData[id];
+    delete updatedEventData[eventPeriod.event.id];
     setCreatedEvents(updatedEventData);
   };
 

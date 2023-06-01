@@ -41,7 +41,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 }) => {
   const { name, location, description, color } = eventPeriod.event;
   const { day, start, end } = eventPeriod.time;
-
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
@@ -131,7 +130,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
       end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
-
     setCreatedEvents({
       ...createdEvents,
       [id]: {
@@ -195,7 +193,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
-
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
