@@ -83,7 +83,7 @@ export interface IAppContext {
   selectedTimetable: number;
   setSelectedTimetable: (newSelectedTimetable: number) => void;
 
-  displayTimetables: any;
+  displayTimetables: TimetableData[];
   setDisplayTimetables: (newDisplayTimetable: any) => void;
 }
 

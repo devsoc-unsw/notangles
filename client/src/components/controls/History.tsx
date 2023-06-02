@@ -83,18 +83,6 @@ const History: React.FC = () => {
     return newClasses;
   };
 
-  // // MS: Duplicate all timetables
-  // const duplicateTimetables = (displayTimetables: TimetableData[]) => {
-  //   return displayTimetables.map((timetable) => {
-  //     return {
-  //       name: timetable.name,
-  //       selectedCourses: timetable.selectedCourses,
-  //       selectedClasses: duplicateClasses(timetable.selectedClasses),
-  //       createdEvents: timetable.createdEvents,
-  //     };
-  //   });
-  // };
-
   /**
    * Update the index of the current action
    * @param direction Which way to update (1 for increment, -1 for decrement)
@@ -257,6 +245,13 @@ const History: React.FC = () => {
     dontAdd.current = true;
 
     const timetableId = displayTimetables[selectedTimetable].id;
+    setDisplayTimetables((prev: TimetableData[]) => {
+      return prev.map((timetable) => {
+        return timetable.id === timetableId
+          ? { ...timetable, name: timetableActions.current[timetableId][actionsPointer.current[timetableId]].name }
+          : timetable;
+      });
+    });
     setSelectedCourses(timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses);
     setSelectedClasses(duplicateClasses(timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes)); // Very important to duplicate here again or things will break
     setCreatedEvents(timetableActions.current[timetableId][actionsPointer.current[timetableId]].events);
@@ -295,7 +290,7 @@ const History: React.FC = () => {
     setCreatedEvents({});
 
     setDisplayTimetables((prev: TimetableData[]) => {
-      const newArray = prev;
+      const newArray = [...prev];
       newArray[selectedTimetable] = {
         ...newArray[selectedTimetable],
         selectedCourses: [],

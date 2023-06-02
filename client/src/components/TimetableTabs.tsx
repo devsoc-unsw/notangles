@@ -69,8 +69,8 @@ const TimetableTabs: React.FC = () => {
   const dragOverTab = React.useRef<any>(null);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
-  const [renamedString, setRenamedString] = useState<String>('');
-  const [renamedHelper, setrenamedHelper] = useState<String>('');
+  const [renamedString, setRenamedString] = useState<string>('');
+  const [renamedHelper, setrenamedHelper] = useState<string>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
@@ -316,7 +316,7 @@ const TimetableTabs: React.FC = () => {
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
         id: generateTimetableId(displayTimetables),
-        selectedClasses: copyClasses(currentTimetable.selectedClasses),
+        selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: copyEvents(currentTimetable.createdEvents),
       };
@@ -337,22 +337,6 @@ const TimetableTabs: React.FC = () => {
       setSelectedTimetable(selectedTimetable + 1);
       handleMenuClose();
     }
-  };
-
-  // EXPERIMENTAL: Function to create a deep copy of timetable classes
-  const copyClasses = (oldClasses: SelectedClasses) => {
-    const newClasses: SelectedClasses = {};
-
-    Object.entries(oldClasses).forEach(([courseCode, activities]) => {
-      const activityCopy: Record<Activity, ClassData | InInventory> = {};
-
-      Object.entries(activities).forEach(([activity, classData]) => {
-        activityCopy[activity] = classData !== null ? { ...classData } : null;
-      });
-      newClasses[courseCode] = { ...activityCopy };
-    });
-
-    return newClasses;
   };
 
   // EXPERIMENTAL: Function to create a copy of custom events (changes the event id)

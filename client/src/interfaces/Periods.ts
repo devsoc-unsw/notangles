@@ -31,8 +31,8 @@ export interface ClassData {
 }
 
 export interface TimetableData {
-  name: String;
-  id: String;
+  name: string;
+  id: string;
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
