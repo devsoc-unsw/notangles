@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
-import { Menu, MenuItem } from '@mui/material';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { MenuItem, Divider, ListItemIcon, ListItemText } from '@mui/material';
+import { FileCopy, Edit, Delete, ContentCopy, ContentPaste } from '@mui/icons-material';
 import { CourseContext } from '../../context/CourseContext';
 import { createEventObj } from '../../utils/createEvent';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
@@ -51,24 +53,47 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   };
 
   return (
-    <Menu
+    <StyledMenu
       open={contextMenu != null}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}
       autoFocus={false}
     >
-      <MenuItem onClick={handleDuplicateEvent}>Duplicate</MenuItem>
-      <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
-      <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
-      <MenuItem onClick={handleCopyEvent}>Copy</MenuItem>
+      <MenuItem onClick={handleEditEvent}>
+        <ListItemIcon>
+            <Edit fontSize="small"/>
+        </ListItemIcon>
+        <ListItemText>Edit</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={handleCopyEvent}>
+        <ListItemIcon>
+            <ContentCopy fontSize="small"/>
+        </ListItemIcon>
+        <ListItemText>Copy</ListItemText>
+      </MenuItem>
       <MenuItem
         disabled={copiedEvent === null}
-        onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}
-      >
-        Paste
+        onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+        <ListItemIcon>
+            <ContentPaste fontSize="small"/>
+        </ListItemIcon>
+        <ListItemText>Paste</ListItemText>
       </MenuItem>
-    </Menu>
+      <MenuItem onClick={handleDuplicateEvent}>
+        <ListItemIcon>
+            <FileCopy fontSize="small"/>
+        </ListItemIcon>
+        <ListItemText>Duplicate</ListItemText>
+      </MenuItem>
+      <Divider />
+      <MenuItem onClick={handleDeleteEvent}>
+        <ListItemIcon>
+            <Delete fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Delete</ListItemText>
+      </MenuItem>
+    </StyledMenu>
   );
 };
 
