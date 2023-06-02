@@ -9,13 +9,15 @@ import {
   rowHeight,
   unknownErrorMessage,
 } from '../../constants/timetable';
+import { ContentPaste } from '@mui/icons-material';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
 import { TimetableLayoutProps } from '../../interfaces/PropTypes';
-import { Menu, MenuItem } from '@mui/material';
+import { MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
 
@@ -289,15 +291,20 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
       />
 
       {/* For right click menu on a cell */}
-      <Menu
+      <StyledMenu
         open={contextMenu != null}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}
         autoFocus={false}
       >
-        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>Paste</MenuItem>
-      </Menu>
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+          <ListItemIcon>
+              <ContentPaste fontSize="small"/>
+          </ListItemIcon>
+          <ListItemText>Paste</ListItemText>
+        </MenuItem>
+      </StyledMenu>
     </>
   );
 };
