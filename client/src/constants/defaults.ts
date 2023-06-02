@@ -10,7 +10,7 @@ const defaults: Record<string, any> = {
   timetables: [
     {
       name: 'Timetable0',
-      id: 'temp',
+      id: '123456',
       selectedCourses: [],
       selectedClasses: {},
       createdEvents: {},

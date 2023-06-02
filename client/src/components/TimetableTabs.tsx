@@ -10,6 +10,7 @@ import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, Creat
 import { createNewEvent } from '../utils/createEvent';
 import { daysShort } from '../constants/timetable';
 import { createDateWithTime } from '../utils/eventTimes';
+import { generateTimetableId } from '../utils/generateTimetableId';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -183,11 +184,6 @@ const TimetableTabs: React.FC = () => {
       setCreatedEvents(newTimetables[newIndex].createdEvents);
 
       setAlertMsg('Deleted timetable - Click to undo');
-      /* setAlertFunction(() => {
-        setDisplayTimetables(prevTimetables);
-        return;
-      });
-      */
       setAlertFunction(() => () => {
         setDisplayTimetables(prevTimetables.timetables);
         setSelectedTimetable(prevTimetables.selected);
@@ -214,7 +210,7 @@ const TimetableTabs: React.FC = () => {
 
       const newTimetable: TimetableData = {
         name: 'New Timetable', //`Timetable${nextIndex}`,
-        id: Math.random().toString(36).slice(2, 7),
+        id: generateTimetableId(displayTimetables),
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
@@ -317,9 +313,9 @@ const TimetableTabs: React.FC = () => {
     } else {
       const currentTimetable = displayTimetables[selectedTimetable];
 
-      console.log(currentTimetable.createdEvents);
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
+        id: generateTimetableId(displayTimetables),
         selectedClasses: copyClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: copyEvents(currentTimetable.createdEvents),

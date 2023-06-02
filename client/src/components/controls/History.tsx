@@ -196,7 +196,6 @@ const History: React.FC = () => {
       timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].name ===
         displayTimetables[selectedTimetable].name
     ) {
-      console.log('HELLO');
       return;
     }
 
