@@ -358,6 +358,11 @@ const App: React.FC = () => {
     setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
 
+  // Update storage when dragging timetables
+  useUpdateEffect(() => {
+    storage.set('timetables', displayTimetables);
+  }, [displayTimetables]);
+
   /**
    * Get the latest day of the week a course has classes on
    * The first day of the week is considered to be Monday
