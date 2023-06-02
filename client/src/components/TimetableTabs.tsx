@@ -7,10 +7,10 @@ import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/i
 import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
-import { createNewEvent } from '../utils/createEvent';
+import { createEventObj } from '../utils/createEvent';
 import { daysShort } from '../constants/timetable';
 import { createDateWithTime } from '../utils/eventTimes';
-import { generateTimetableId } from '../utils/generateTimetableId';
+import { v4 as uuidv4 } from 'uuid';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -210,7 +210,7 @@ const TimetableTabs: React.FC = () => {
 
       const newTimetable: TimetableData = {
         name: 'New Timetable', //`Timetable${nextIndex}`,
-        id: generateTimetableId(displayTimetables),
+        id: uuidv4(),
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
@@ -315,7 +315,7 @@ const TimetableTabs: React.FC = () => {
 
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
-        id: generateTimetableId(displayTimetables),
+        id: uuidv4(),
         selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: copyEvents(currentTimetable.createdEvents),
@@ -344,14 +344,14 @@ const TimetableTabs: React.FC = () => {
     const newEvents: CreatedEvents = {};
 
     Object.entries(oldEvents).forEach(([code, period]) => {
-      const newEvent = createNewEvent(
+      const newEvent = createEventObj(
         period.event.name,
         period.event.location,
         period.event.description,
         period.event.color,
-        daysShort[period.time.day - 1],
-        createDateWithTime(period.time.start),
-        createDateWithTime(period.time.end)
+        period.time.day,
+        period.time.start,
+        period.time.end
       );
       newEvents[newEvent.event.id] = newEvent;
     });

@@ -29,9 +29,16 @@
       "addLabels": ["deps: react"]
     },
     {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "weekly minor & patch updates",
+      "schedule": ["before 5am every monday"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "addLabels": ["deps: minor"]
+    },
+    {
       "matchUpdateTypes": ["patch"],
-      "groupName": "weekly patch updates",
-      "schedule": ["before 5am every monday"],
       "addLabels": ["deps: patches"]
     },
     {

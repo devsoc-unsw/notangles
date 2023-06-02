@@ -348,9 +348,9 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, []);
 
-  let clearTooltip = isMacOS ? 'Clear (Ctrl+D)' : 'Clear (Cmd+D)';
-  let undoTooltip = isMacOS ? 'Undo (Ctrl+Z)' : 'Undo (Cmd+Z)';
-  let redoTooltip = isMacOS ? 'Redo (Ctrl+Y)' : 'Redo (Cmd+Shift+Z)';
+  let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
+  let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
+  let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
 
   console.log('Actions', timetableActions);
   console.log('Pointer', actionsPointer);

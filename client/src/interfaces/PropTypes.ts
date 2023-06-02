@@ -170,3 +170,10 @@ export interface CustomEventTutoringProp {
   setCourseCode: (courseCode: string) => void;
   setClassCode: (classCode: string) => void;
 }
+
+export interface CustomEventLinkProp {
+  link: string;
+  setLink: (link: string) => void;
+  setAlertMsg: (msg: string) => void;
+  setErrorVisibility: (bool: boolean) => void;
+}
