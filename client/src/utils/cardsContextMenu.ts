@@ -23,13 +23,19 @@ export const handleContextMenu = (
   setContextMenu({ x: e.clientX, y: e.clientY });
 
   if (copiedEvent) {
-    const copyCopiedEvent = copiedEvent;
-    const eventTimeLength = copiedEvent.time.end - copiedEvent.time.start;
-    const startOffset = copyCopiedEvent.time.start % 1;
+    const copyCopiedEvent: EventPeriod = copiedEvent;
+    const eventTimeLength: number = copiedEvent.time.end - copiedEvent.time.start;
+    const startOffset: number = copyCopiedEvent.time.start % 1; // Get the floating point value, ie. the minutes
+    const [start, end]: [number, number] = [
+      Math.floor(startTime) + startOffset,
+      Math.floor(startTime) + startOffset + eventTimeLength,
+    ];
 
-    copyCopiedEvent.time.day = day;
-    copyCopiedEvent.time.start = Math.floor(startTime) + startOffset;
-    copyCopiedEvent.time.end = Math.floor(startTime) + startOffset + eventTimeLength;
+    copyCopiedEvent.time = {
+      day,
+      start,
+      end,
+    };
 
     setCopiedEvent(copyCopiedEvent);
   }
@@ -50,16 +56,8 @@ export const handlePasteEvent = (
   setCreatedEvents: (createdEvents: CreatedEvents) => void
 ) => {
   if (!copiedEvent) return;
-
-  const newEvent = createEventObj(
-    copiedEvent.event.name,
-    copiedEvent.event.location,
-    copiedEvent.event.description,
-    copiedEvent.event.color,
-    copiedEvent.time.day + 1,
-    copiedEvent.time.start,
-    copiedEvent.time.end
-  );
+  const { id, name, location, description, color, day, start, end } = { ...copiedEvent.event, ...copiedEvent.time };
+  const newEvent = createEventObj(name, location, description, color, day + 1, start, end);
   setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
   setContextMenu(null);
 };
