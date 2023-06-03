@@ -13,6 +13,7 @@ import {
   SelectedClasses,
   TimetableData,
 } from '../../interfaces/Periods';
+import { v4 as uuidv4 } from 'uuid';
 
 type TimetableActions = Record<string, Action[]>;
 type ActionsPointer = Record<string, number>;
@@ -36,28 +37,6 @@ const History: React.FC = () => {
   const timetableActions = useRef<TimetableActions>({});
   // const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
   const actionsPointer = useRef<ActionsPointer>({}); // set to -initialIndex as it will increment predictably as app starts up
-
-  /*
-  useEffect(() => {
-    for (const timetable of displayTimetables) {
-      timetableActions.current[timetable.id] = [];
-      actionsPointer.current[timetable.id] = -initialIndex;
-    }
-  }, []);
-  */
-
-  useEffect(() => {
-    if (displayTimetables.length < 1) {
-      return;
-    }
-
-    const timetableId = displayTimetables[selectedTimetable].id;
-    setDisableLeft(actionsPointer.current[timetableId] === undefined || actionsPointer.current[timetableId] < 1);
-    setDisableRight(
-      actionsPointer.current[timetableId] === undefined ||
-        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
-    );
-  }, [selectedTimetable]);
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
@@ -207,7 +186,7 @@ const History: React.FC = () => {
 
   //Disables reset timetable button when there is no courses, classes and events selected.
   useEffect(() => {
-    if (displayTimetables.length === 0) {
+    if (displayTimetables.length < 1) {
       setDisableReset(true);
       return;
     }
@@ -218,7 +197,7 @@ const History: React.FC = () => {
     }
     // if new timetable has been created then set reset to be true since no courses, classes or events selected
     const timetableId = displayTimetables[selectedTimetable].id;
-    if (actionsPointer.current[timetableId] < 0) {
+    if (actionsPointer.current[timetableId] < 1) {
       setDisableReset(true);
     } else {
       /*
@@ -235,6 +214,19 @@ const History: React.FC = () => {
       setDisableReset(timetableActions.current[timetableId] && timetableActions.current[timetableId].length === 0);
     }
   }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents]);
+
+  useEffect(() => {
+    if (displayTimetables.length < 1) {
+      return;
+    }
+
+    const timetableId = displayTimetables[selectedTimetable].id;
+    setDisableLeft(actionsPointer.current[timetableId] === undefined || actionsPointer.current[timetableId] < 1);
+    setDisableRight(
+      actionsPointer.current[timetableId] === undefined ||
+        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
+    );
+  }, [selectedTimetable]);
 
   /**
    * Updates the index of the current action and changes the timetable data to match
@@ -265,20 +257,22 @@ const History: React.FC = () => {
     setSelectedClasses({});
     setCreatedEvents({});
 
+    /*
     for (let i = 0; i < displayTimetables.length; i++) {
       setSelectedTimetable(i);
       clearOne();
     }
-
-    // setSelectedTimetable(0);
-    // setDisplayTimetables([
-    //   {
-    //     name: 'New Timetable',
-    //     selectedCourses: [],
-    //     selectedClasses: {},
-    //     createdEvents: {},
-    //   },
-    // ]);
+    */
+    setSelectedTimetable(0);
+    setDisplayTimetables([
+      {
+        name: 'My timetable',
+        id: uuidv4(),
+        selectedCourses: [],
+        selectedClasses: {},
+        createdEvents: {},
+      },
+    ]);
   };
 
   /**
