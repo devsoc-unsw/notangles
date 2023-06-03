@@ -69,17 +69,15 @@ export const StyledMenu = styled((props: MenuProps) => (
         color: theme.palette.grey[300],
         marginRight: theme.spacing(1.5),
       },
-      // If you want a border on the hover as well as animation
-      // "&:hover": {
+      "&:hover": {
+        backgroundColor: 'rgb(97, 97, 97, 0.4) !important'
+        // If you want a border on the hover as well as animation
         // borderRadius: 5,
         // marginRight: theme.spacing(0.85),
         // marginLeft: theme.spacing(0.85),
-      // },
+      },
       '&:active': {
-        backgroundColor: alpha(
-          theme.palette.primary.main,
-          theme.palette.action.selectedOpacity,
-        ),
+        backgroundColor: alpha(theme.palette.grey[300], 0.5)
       },
     },
   },
