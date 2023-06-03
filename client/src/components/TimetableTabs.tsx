@@ -11,6 +11,7 @@ import { createEventObj } from '../utils/createEvent';
 import { daysShort } from '../constants/timetable';
 import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
+import zIndex from '@mui/material/styles/zIndex';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -86,6 +87,9 @@ const TimetableTabs: React.FC = () => {
     minHeight: '50px',
     transition: 'background-color 0.1s',
     borderRadius: '50%',
+    zIndex: '100',
+    backgroundColor: `${tabTheme.containerBackground}`,
+    opacity: 0.75,
     '&:hover': {
       backgroundColor: `${tabTheme.tabHoverColor}`,
     },
