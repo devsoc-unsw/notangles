@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Delete, Undo } from '@mui/icons-material';
+import { Redo, Delete, Undo, ResetTv } from '@mui/icons-material';
 import { IconButton, Tooltip, Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -14,6 +14,8 @@ import {
   TimetableData,
 } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
+import { allowedNodeEnvironmentFlags } from 'process';
+import { disable } from 'workbox-navigation-preload';
 
 type TimetableActions = Record<string, Action[]>;
 type ActionsPointer = Record<string, number>;
@@ -26,7 +28,7 @@ const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
-  const [disableReset, setDisableReset] = useState(true);
+  const [disableReset, setDisableReset] = useState({ current: true, all: true });
   const [clearOpen, setClearOpen] = useState(false);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -68,7 +70,6 @@ const History: React.FC = () => {
    */
   const incrementActionsPointer = (direction: number) => {
     const timetableId = displayTimetables[selectedTimetable].id;
-    console.log(actionsPointer, timetableId);
     actionsPointer.current[timetableId] += direction;
     setDisableLeft(actionsPointer.current[timetableId] < 1);
     setDisableRight(actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length);
@@ -186,34 +187,52 @@ const History: React.FC = () => {
 
   //Disables reset timetable button when there is no courses, classes and events selected.
   useEffect(() => {
-    if (displayTimetables.length < 1) {
-      setDisableReset(true);
-      return;
-    }
-
     if (!isMounted.current) {
       isMounted.current = true;
       return;
     }
+
+    const disableStatus = { current: true, all: true };
+
+    // More than one timetable is resetAll-able
+    if (displayTimetables.length > 1) {
+      disableStatus.all = false;
+    }
+
+    // Current timetable being non-empty is resetAll and resetOne-able
+    const currentTimetable = displayTimetables[selectedTimetable];
     // if new timetable has been created then set reset to be true since no courses, classes or events selected
-    const timetableId = displayTimetables[selectedTimetable].id;
-    if (actionsPointer.current[timetableId] < 1) {
-      setDisableReset(true);
+    if (actionsPointer.current[currentTimetable.id] < 1) {
+      disableStatus.current = true;
     } else {
       /*
-      // console.log(timetableActions, currentTimetable, actionsPointer);
-      const currentClasses = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].classes;
-      const currentEvents = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].events;
-
-      const nCourses = timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].courses.length;
+      const currentClasses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes;
+      const currentEvents = timetableActions.current[timetableId][actionsPointer.current[timetableId]].events;
+      const nCourses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses.length;
+      
       const nEvents = Object.values(currentEvents).length;
       const nClasses = Object.values(currentClasses).length;
-
-      setDisableReset(nCourses === 0 && nEvents === 0 && nClasses === 0);
       */
-      setDisableReset(timetableActions.current[timetableId] && timetableActions.current[timetableId].length === 0);
+
+      const nCourses = selectedCourses.length;
+      const nEvents = Object.values(createdEvents).length;
+      const nClasses = Object.values(selectedClasses).length;
+
+      disableStatus.current = nCourses === 0 && nEvents === 0 && nClasses === 0;
+      disableStatus.all = nCourses === 0 && nEvents === 0 && nClasses === 0;
+
+      // If only name is different to default, than still reset-allable but not reset-oneable
+      if (currentTimetable.name !== 'My timetable') {
+        disableStatus.all = false;
+      }
+
+      // If there is history attached to the single timetable, then we can reset everything as well
+      if (timetableActions.current[currentTimetable.id].length > 1) {
+        disableStatus.all = false;
+      }
     }
-  }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents]);
+    setDisableReset(disableStatus);
+  }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents, displayTimetables]);
 
   useEffect(() => {
     if (displayTimetables.length < 1) {
@@ -346,9 +365,6 @@ const History: React.FC = () => {
   let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
   let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
 
-  console.log('Actions', timetableActions);
-  console.log('Pointer', actionsPointer);
-  console.log(displayTimetables);
   return (
     <>
       <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>
@@ -358,6 +374,7 @@ const History: React.FC = () => {
             id="clear-current-button"
             sx={ModalButtonStyle}
             variant="contained"
+            disabled={disableReset.current}
             onClick={() => {
               clearOne();
               setClearOpen(false);
@@ -369,6 +386,7 @@ const History: React.FC = () => {
             id="clear-all-button"
             sx={ModalButtonStyle}
             variant="contained"
+            disabled={disableReset.all}
             onClick={() => {
               clearAll();
               setClearOpen(false);
@@ -379,7 +397,12 @@ const History: React.FC = () => {
         </DialogActions>
       </Dialog>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset} color="inherit" onClick={() => setClearOpen(true)} size="large">
+        <IconButton
+          disabled={disableReset.all && disableReset.current}
+          color="inherit"
+          onClick={() => setClearOpen(true)}
+          size="large"
+        >
           <Delete />
         </IconButton>
       </Tooltip>
