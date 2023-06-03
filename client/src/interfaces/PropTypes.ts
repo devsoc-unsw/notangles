@@ -102,8 +102,8 @@ export interface DroppedEventProps {
 export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
-  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
   copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface ExpandedClassViewProps {
@@ -116,8 +116,8 @@ export interface ExpandedEventViewProps {
   eventPeriod: EventPeriod;
   popupOpen: boolean;
   handleClose: () => void;
-  setIsEditing: (isEditing: boolean) => void;
   isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export interface DiscardDialogProps {
@@ -187,8 +187,8 @@ export interface CustomEventTutoringProp {
 export interface DroppedEventDialogProps {
   eventPeriod: EventPeriod;
   handleCloseDialog: () => void;
-  setIsEditing: (isEditing: boolean) => void;
   isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export interface EditEventDialogProps {

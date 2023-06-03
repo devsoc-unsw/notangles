@@ -1,4 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
+import { ContentPaste } from '@mui/icons-material';
+import { MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { styled } from '@mui/system';
 import {
   classMargin,
@@ -9,17 +11,15 @@ import {
   rowHeight,
   unknownErrorMessage,
 } from '../../constants/timetable';
-import { ContentPaste } from '@mui/icons-material';
-import { StyledMenu } from '../../styles/CustomEventStyles';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { TimetableLayoutProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
-import CreateEventPopover from './CreateEventPopover';
-import { TimetableLayoutProps } from '../../interfaces/PropTypes';
-import { MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
+import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -300,7 +300,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
       >
         <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
           <ListItemIcon>
-              <ContentPaste fontSize="small"/>
+            <ContentPaste fontSize="small" />
           </ListItemIcon>
           <ListItemText>Paste</ListItemText>
         </MenuItem>

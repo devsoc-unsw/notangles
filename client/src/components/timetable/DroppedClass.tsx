@@ -15,12 +15,12 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
-import { StyledMenu } from '../../styles/CustomEventStyles';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,

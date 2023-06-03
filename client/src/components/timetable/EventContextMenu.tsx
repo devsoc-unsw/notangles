@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import { StyledMenu } from '../../styles/CustomEventStyles';
-import { MenuItem, Divider, ListItemIcon, ListItemText } from '@mui/material';
 import { FileCopy, Edit, Delete, ContentCopy, ContentPaste } from '@mui/icons-material';
+import { MenuItem, Divider, ListItemIcon, ListItemText } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
-import { createEventObj } from '../../utils/createEvent';
-import { EventContextMenuProps } from '../../interfaces/PropTypes';
-import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { EventPeriod, EventMetadata } from '../../interfaces/Periods';
+import { EventContextMenuProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { handlePasteEvent } from '../../utils/cardsContextMenu';
+import { createEventObj } from '../../utils/createEvent';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({
   eventPeriod,
@@ -19,16 +19,14 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 }) => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
-  const createNewEventObject = (): EventPeriod => {
-    const { id, name, location, description, color, day, start, end }: EventMetadata = {
-      ...eventPeriod.event,
-      ...eventPeriod.time,
-    };
-    return createEventObj(name, location, description, color, day, start, end);
+  const { name, location, description, color, day, start, end }: EventMetadata = {
+    ...eventPeriod.event,
+    ...eventPeriod.time,
   };
+
   const handleDuplicateEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createNewEventObject();
+    const newEvent = createEventObj(name, location, description, color, day, start, end);
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
   };
@@ -47,7 +45,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleCopyEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createNewEventObject();
+    const newEvent = createEventObj(name, location, description, color, day, start, end);
     setCopiedEvent(newEvent);
     setContextMenu(null);
   };

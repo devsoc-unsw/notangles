@@ -56,7 +56,7 @@ export const handlePasteEvent = (
   setCreatedEvents: (createdEvents: CreatedEvents) => void
 ) => {
   if (!copiedEvent) return;
-  const { id, name, location, description, color, day, start, end } = { ...copiedEvent.event, ...copiedEvent.time };
+  const { name, location, description, color, day, start, end } = { ...copiedEvent.event, ...copiedEvent.time };
   const newEvent = createEventObj(name, location, description, color, day + 1, start, end);
   setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
   setContextMenu(null);

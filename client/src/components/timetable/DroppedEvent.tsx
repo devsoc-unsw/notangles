@@ -15,9 +15,9 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
+import { handleContextMenu } from '../../utils/cardsContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 import EventContextMenu from './EventContextMenu';
-import { handleContextMenu } from '../../utils/cardsContextMenu';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;

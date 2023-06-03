@@ -4,7 +4,6 @@ import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const transitionName = 'class';
 
