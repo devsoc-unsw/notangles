@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { MoreHoriz } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { ContentPaste, MoreHoriz } from '@mui/icons-material';
+import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData, CourseData } from '../../interfaces/Periods';
+import { ClassData, CourseData, ClassPeriod } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import {
   ExpandButton,
@@ -15,6 +15,8 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
@@ -29,9 +31,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   clashIndex,
   clashColour,
   cellWidth,
+  setCopiedEvent,
+  copiedEvent,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
   const {
     earliestStartTime,
@@ -43,7 +48,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setInfoVisibility,
     setErrorVisibility,
   } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   let currCourse: CourseData | null = null;
 
@@ -74,6 +79,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     )
       return;
 
+    if (eventDown.button === 2 || contextMenu) return;
     if (!('type' in eventDown)) return;
     if (eventDown.type.includes('mouse') && ignoreMouse) return;
     if (eventDown.type.includes('touch')) ignoreMouse = true;
@@ -179,6 +185,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         clashIndex={clashIndex}
         cardWidth={cardWidth}
         cellWidth={cellWidth}
+        onContextMenu={(e) => {
+          if (!copiedEvent) return;
+          handleContextMenu(
+            e,
+            copiedEvent,
+            setCopiedEvent,
+            (classCard as ClassPeriod).time.day - 1,
+            (classCard as ClassPeriod).time.start,
+            setContextMenu
+          );
+        }}
       >
         <StyledCardInner
           isSquareEdges={isSquareEdges}
@@ -212,6 +229,21 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         </StyledCardInner>
       </StyledCard>
       {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
+      {/* For right click menu on a class card */}
+      <StyledMenu
+        open={contextMenu != null}
+        anchorReference="anchorPosition"
+        anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+        onClose={() => setContextMenu(null)}
+        autoFocus={false}
+      >
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+          <ListItemIcon>
+            <ContentPaste fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Paste</ListItemText>
+        </MenuItem>
+      </StyledMenu>
     </>
   );
 };

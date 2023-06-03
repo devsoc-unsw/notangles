@@ -44,6 +44,11 @@ export interface AutotimetableProps {
   handleSelectClass(classData: ClassData): void;
 }
 
+export interface TimetableLayoutProps {
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
+}
+
 export interface TimetableProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
@@ -80,6 +85,8 @@ export interface DroppedClassProps {
   clashIndex: number;
   clashColour: string;
   cellWidth: number; // width of a grid cell
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface DroppedEventProps {
@@ -88,11 +95,15 @@ export interface DroppedEventProps {
   cardWidth: number;
   clashIndex: number;
   cellWidth: number; // width of a grid cell
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
 }
 
 export interface ExpandedClassViewProps {
@@ -105,6 +116,8 @@ export interface ExpandedEventViewProps {
   eventPeriod: EventPeriod;
   popupOpen: boolean;
   handleClose: () => void;
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export interface DiscardDialogProps {
@@ -169,6 +182,31 @@ export interface CustomEventTutoringProp {
   classesCodes: Record<string, string>[];
   setCourseCode: (courseCode: string) => void;
   setClassCode: (classCode: string) => void;
+}
+
+export interface DroppedEventDialogProps {
+  eventPeriod: EventPeriod;
+  handleCloseDialog: () => void;
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
+}
+
+export interface EditEventDialogProps {
+  eventPeriod: EventPeriod;
+  handleCloseDialog: () => void;
+  setIsEditing: (isEditing: boolean) => void;
+  isChanged: boolean;
+  setIsChanged: (isChanged: boolean) => void;
+}
+
+export interface EventContextMenuProps {
+  eventPeriod: EventPeriod;
+  contextMenu: null | { x: number; y: number };
+  setContextMenu: (contextMenu: null | { x: number; y: number }) => void;
+  setPopupOpen: (isPopupOpen: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void;
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void;
+  copiedEvent: EventPeriod | null;
 }
 
 export interface CustomEventLinkProp {
