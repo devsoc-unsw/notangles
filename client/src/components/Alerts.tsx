@@ -12,7 +12,6 @@ const Alerts: React.FC = () => {
     autoVisibility,
     setAutoVisibility,
     alertFunction,
-    setAlertFunction,
   } = useContext(AppContext);
 
   const handleErrorClose = () => {

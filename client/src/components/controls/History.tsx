@@ -145,7 +145,7 @@ const History: React.FC = () => {
     }
 
     const currentTimetable = displayTimetables[selectedTimetable];
-    // If history does not exist, chuck it in
+    // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
       timetableActions.current[currentTimetable.id] = [];
       actionsPointer.current[currentTimetable.id] = -1;
@@ -205,15 +205,6 @@ const History: React.FC = () => {
     if (actionsPointer.current[currentTimetable.id] < 1) {
       disableStatus.current = true;
     } else {
-      /*
-      const currentClasses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes;
-      const currentEvents = timetableActions.current[timetableId][actionsPointer.current[timetableId]].events;
-      const nCourses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses.length;
-      
-      const nEvents = Object.values(currentEvents).length;
-      const nClasses = Object.values(currentClasses).length;
-      */
-
       const nCourses = selectedCourses.length;
       const nEvents = Object.values(createdEvents).length;
       const nClasses = Object.values(selectedClasses).length;
@@ -276,12 +267,6 @@ const History: React.FC = () => {
     setSelectedClasses({});
     setCreatedEvents({});
 
-    /*
-    for (let i = 0; i < displayTimetables.length; i++) {
-      setSelectedTimetable(i);
-      clearOne();
-    }
-    */
     setSelectedTimetable(0);
     setDisplayTimetables([
       {

@@ -19,7 +19,6 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
-  timetableWidth,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -101,7 +100,6 @@ const App: React.FC = () => {
     setCoursesList,
     setLastUpdated,
     selectedTimetable,
-    setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
   } = useContext(AppContext);
@@ -112,7 +110,7 @@ const App: React.FC = () => {
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   /**
-   * Attemps callback() several times before raising error. Intended for unreliable fetches
+   * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
   const fetchCooldown: number = 120; // milliseconds

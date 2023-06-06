@@ -8,40 +8,11 @@ import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
 import { createEventObj } from '../utils/createEvent';
-import { daysShort } from '../constants/timetable';
-import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
-import zIndex from '@mui/material/styles/zIndex';
+import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../styles/TimetableTabStyles';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
-
-  type TabTheme = {
-    containerBackground: String;
-    tabBorderColor: String;
-    tabTextColor: String;
-    tabHoverColor: String;
-    tabBackgroundColor: String;
-    tabSelectedText: String;
-  };
-
-  const tabThemeLight: TabTheme = {
-    containerBackground: '#eeeeee',
-    tabBorderColor: '#bbbbbb',
-    tabTextColor: '#808080',
-    tabHoverColor: '#ffffff',
-    tabBackgroundColor: '#ffffff',
-    tabSelectedText: 'primary',
-  };
-
-  const tabThemeDark: TabTheme = {
-    containerBackground: '#2f2f2f',
-    tabBorderColor: '#bbbbbb',
-    tabTextColor: '#808080',
-    tabHoverColor: '#444444',
-    tabBackgroundColor: '#444444',
-    tabSelectedText: '#ffffff',
-  };
 
   const {
     isDarkMode,
@@ -54,9 +25,9 @@ const TimetableTabs: React.FC = () => {
     setErrorVisibility,
     setAutoVisibility,
   } = useContext(AppContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
-
   let addTimetabletip = isMacOS ? 'New Tab (Cmd+D)' : 'New Tab (Ctrl+Enter)';
   let deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
 
@@ -76,71 +47,12 @@ const TimetableTabs: React.FC = () => {
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
-    useContext(CourseContext);
+  const { AddIconStyle, TabContainerStyle, TabStyle, ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
+  useEffect(() => {
+    setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
+  }, [isDarkMode]);
 
-  const AddIconStyle = {
-    position: 'sticky',
-    right: '0px',
-    padding: '10px',
-    minWidth: '50px',
-    minHeight: '50px',
-    transition: 'background-color 0.1s',
-    borderRadius: '50%',
-    zIndex: '100',
-    backgroundColor: `${tabTheme.containerBackground}`,
-    opacity: 0.75,
-    '&:hover': {
-      backgroundColor: `${tabTheme.tabHoverColor}`,
-    },
-  };
-
-  const TabContainerStyle = {
-    backgroundColor: `${tabTheme.containerBackground}`,
-    borderRadius: '10px 10px 0 0',
-  };
-
-  //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
-  const TabStyle = (index: Number) => {
-    let style = {
-      minHeight: '50px',
-      minWidth: '150px',
-      paddingTop: '3px',
-      paddingBottom: '3px',
-      borderStyle: 'solid',
-      borderWidth: '0px',
-      borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor}`,
-      color: `${tabTheme.tabTextColor}`,
-      margin: '0 0 0 0',
-      marginLeft: '-2px',
-      transition: 'background-color 0.1s',
-      '&.Mui-selected': {
-        color: `${tabTheme.tabSelectedText}`,
-        backgroundColor: `${tabTheme.tabBackgroundColor}`,
-        boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`,
-        borderWidth: '1px',
-        borderColor: `${theme.palette.primary.main}`,
-        zIndex: '1',
-      },
-      '&:active': {
-        cursor: 'move',
-      },
-      '&:hover': {
-        backgroundColor: `${tabTheme.tabHoverColor}`,
-      },
-    };
-
-    if (index === 0) {
-      style.marginLeft = '0px';
-    }
-
-    return style;
-  };
-
-  const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
-
-  // Lifted from History.ts
+  /** DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables */
   const duplicateClasses = (selectedClasses: SelectedClasses) => {
     const newClasses: SelectedClasses = {};
 
@@ -156,12 +68,31 @@ const TimetableTabs: React.FC = () => {
     return newClasses;
   };
 
-  // EXPERIMENTAL: Currently removes a timetable from local storage.
-  // Intended behaviour is a placeholder for the menu -> delete on the current tab
+  const duplicateEvents = (oldEvents: CreatedEvents) => {
+    const newEvents: CreatedEvents = {};
+
+    Object.entries(oldEvents).forEach(([code, period]) => {
+      const newEvent = createEventObj(
+        period.event.name,
+        period.event.location,
+        period.event.description,
+        period.event.color,
+        period.time.day,
+        period.time.start,
+        period.time.end
+      );
+      newEvents[newEvent.event.id] = newEvent;
+    });
+    return newEvents;
+  };
+
+  /**
+   * Timetable handlers
+   */
+  // Handler for deleting timetable from displayTimetables
   const handleDeleteTimetable = (targetIndex: number) => {
     // If only one tab then prevent the delete
     if (displayTimetables.length > 1) {
-      // setPrevTimetables(displayTimetables);
       prevTimetables = {
         selected: selectedTimetable,
         timetables: displayTimetables.map((timetable: TimetableData) => {
@@ -174,8 +105,8 @@ const TimetableTabs: React.FC = () => {
           };
         }),
       };
-      console.log(displayTimetables);
-      // Intended behaviour: closing current tab will remain on the same index unless it is the last tab
+
+      // Closing current tab will remain on the same index unless it is the last tab
       let newIndex = targetIndex;
       if (newIndex === displayTimetables.length - 1) {
         newIndex = targetIndex - 1;
@@ -203,8 +134,7 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
-  // EXPERIMENTAL: Currently adds a new timetable to local storage
-  // Future feature: should have a defined constant for max size
+  // Creates new timetable
   const handleCreateTimetable = () => {
     if (displayTimetables.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
@@ -231,7 +161,7 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
-  // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
+  // Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display
   const handleSwitchTimetables = (timetableIndex: number) => {
     setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
     setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
@@ -239,7 +169,7 @@ const TimetableTabs: React.FC = () => {
     setSelectedTimetable(timetableIndex);
   };
 
-  // EXPERIMENTAL: Rerenders the timetables component after insertion/deletion (when selected timetable changes)
+  // Rerenders the timetables component after insertion/deletion (when selected timetable changes)
   useEffect(() => {
     const savedTimetables = storage.get('timetables');
     // checking if a save exists and if so update the timetables to display.
@@ -248,12 +178,33 @@ const TimetableTabs: React.FC = () => {
     }
   }, []);
 
-  // Sets tab theme when changing UI mode
-  useEffect(() => {
-    setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
-  }, [isDarkMode]);
+  // Handle drag start (triggers whenever a tab is clicked)
+  const handleTabDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    dragTab.current = index;
+    handleSwitchTimetables(dragTab.current);
+  };
 
-  // MENU HANDLERS
+  // Handle drag enter (triggers whenever the user drags over another tab)
+  const handleTabDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    dragOverTab.current = index;
+    handleSortTabs();
+  };
+
+  // Reordering the tabs when we drag and drop
+  const handleSortTabs = () => {
+    const newTimetables = [...displayTimetables];
+    const draggedItem = newTimetables[dragTab.current];
+    newTimetables.splice(dragTab.current, 1);
+    newTimetables.splice(dragOverTab.current, 0, draggedItem);
+    setDisplayTimetables(newTimetables);
+    setSelectedTimetable(dragOverTab.current);
+    dragTab.current = dragOverTab.current;
+  };
+
+  /**
+   * Dropdown menu tab handlers
+   */
+  // Left click handler on three dots icon
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -310,6 +261,7 @@ const TimetableTabs: React.FC = () => {
     str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
   };
 
+  // Handler for duplicate icon click
   const handleDuplicateTimetable = () => {
     if (displayTimetables.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
@@ -322,7 +274,7 @@ const TimetableTabs: React.FC = () => {
         id: uuidv4(),
         selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
-        createdEvents: copyEvents(currentTimetable.createdEvents),
+        createdEvents: duplicateEvents(currentTimetable.createdEvents),
       };
 
       // Insert the new timetable after the current one
@@ -343,26 +295,10 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
-  // EXPERIMENTAL: Function to create a copy of custom events (changes the event id)
-  const copyEvents = (oldEvents: CreatedEvents) => {
-    const newEvents: CreatedEvents = {};
-
-    Object.entries(oldEvents).forEach(([code, period]) => {
-      const newEvent = createEventObj(
-        period.event.name,
-        period.event.location,
-        period.event.description,
-        period.event.color,
-        period.time.day,
-        period.time.start,
-        period.time.end
-      );
-      newEvents[newEvent.event.id] = newEvent;
-    });
-    return newEvents;
-  };
-
-  // EXPERIEMENTAL: Hotkey for creating new timetables
+  /**
+   * Menu shortcut (hotkey) event listeners
+   */
+  // Hotkey for creating new timetables
   useEffect(() => {
     const handleCreateTimetableShortcut = (event: KeyboardEvent) => {
       const createButton = document.getElementById('create-timetables-button');
@@ -385,7 +321,7 @@ const TimetableTabs: React.FC = () => {
     };
   }, []);
 
-  // EXPERIEMENTAL: Hotkeys for deleting timetables
+  // Hotkeys for deleting timetables
   useEffect(() => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
       // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes selected timetable
@@ -404,7 +340,7 @@ const TimetableTabs: React.FC = () => {
     };
   }, []);
 
-  // EXPERIEMENTAL: Hotkey to confirm delete by pressing enter button
+  // Hotkey to confirm delete by pressing enter button
   useEffect(() => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
@@ -424,7 +360,7 @@ const TimetableTabs: React.FC = () => {
     };
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
 
-  // EXPERIEMENTAL: Hotkey to confirm rename by pressing enter button
+  // Hotkey to confirm rename by pressing enter button
   useEffect(() => {
     const handleRenameEnterShortcut = (event: KeyboardEvent) => {
       // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
@@ -443,29 +379,6 @@ const TimetableTabs: React.FC = () => {
       document.removeEventListener('keydown', handleRenameEnterShortcut);
     };
   }, [deleteOpen, handleDeleteTimetable, handleMenuClose, selectedTimetable]);
-
-  // EXPERIMENTAL: Handle drag start (triggers whenever a tab is clicked)
-  const handleTabDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    dragTab.current = index;
-    handleSwitchTimetables(dragTab.current);
-  };
-
-  // EXPERIMENTAL: Handle drag enter (triggers whenever the user drags over another tab)
-  const handleTabDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    dragOverTab.current = index;
-    handleSortTabs();
-  };
-
-  // EXPERIMENTAL: Reordering the tabs when we drag and drop
-  const handleSortTabs = () => {
-    const newTimetables = [...displayTimetables];
-    const draggedItem = newTimetables[dragTab.current];
-    newTimetables.splice(dragTab.current, 1);
-    newTimetables.splice(dragOverTab.current, 0, draggedItem);
-    setDisplayTimetables(newTimetables);
-    setSelectedTimetable(dragOverTab.current);
-    dragTab.current = dragOverTab.current;
-  };
 
   return (
     <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
