@@ -71,23 +71,26 @@ const HourCell = styled(GridCell, {
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
+  align-items: flex-start;
+  margin-top: -11px;
+  outline: none;
 `;
 
-const ToggleCell = styled(BaseCell)`
-  padding: 0 ${headerPadding}px;
-  display: grid;
-  justify-content: center;
+// const ToggleCell = styled(BaseCell)`
+//   padding: 0 ${headerPadding}px;
+//   display: grid;
+//   justify-content: center;
 
-  & span {
-    grid-column: 1;
-    grid-row: 1;
-  }
-`;
+//   & span {
+//     grid-column: 1;
+//     grid-row: 1;
+//   }
+// `;
 
-const ColumnWidthGuide = styled('span')`
-  opacity: 0;
-  pointer-events: none;
-`;
+// const ColumnWidthGuide = styled('span')`
+//   opacity: 0;
+//   pointer-events: none;
+// `;
 
 /**
  * @param n The numerical value of the hour
@@ -259,14 +262,14 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
 
   return (
     <>
-      <ToggleCell key={0} x={1} y={1}>
+      {/* <ToggleCell key={0} x={1} y={1}>
         {
           // Invisible guide for the column width for
           // consistency between 24 and 12 hour time.
           // Content is something like '10 AM'.
         }
         <ColumnWidthGuide>{generateHour(10, true)}</ColumnWidthGuide>
-      </ToggleCell>
+      </ToggleCell> */}
       {dayCells}
       {hourCells}
       {otherCells}
