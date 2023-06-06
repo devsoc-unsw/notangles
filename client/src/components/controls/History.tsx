@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Delete, Undo, ResetTv } from '@mui/icons-material';
+import { Redo, Delete, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip, Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -14,15 +14,13 @@ import {
   TimetableData,
 } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
-import { allowedNodeEnvironmentFlags } from 'process';
-import { disable } from 'workbox-navigation-preload';
 
 type TimetableActions = Record<string, Action[]>;
 type ActionsPointer = Record<string, number>;
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
-const initialIndex = 2;
+const initialIndex = 1;
 const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
@@ -37,8 +35,7 @@ const History: React.FC = () => {
     useContext(AppContext);
 
   const timetableActions = useRef<TimetableActions>({});
-  // const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
-  const actionsPointer = useRef<ActionsPointer>({}); // set to -initialIndex as it will increment predictably as app starts up
+  const actionsPointer = useRef<ActionsPointer>({});
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
@@ -148,7 +145,7 @@ const History: React.FC = () => {
     // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
       timetableActions.current[currentTimetable.id] = [];
-      actionsPointer.current[currentTimetable.id] = -1;
+      actionsPointer.current[currentTimetable.id] = -initialIndex;
     }
 
     if (
