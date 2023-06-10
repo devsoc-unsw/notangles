@@ -12,6 +12,7 @@ import { daysShort } from '../constants/timetable';
 import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
 import zIndex from '@mui/material/styles/zIndex';
+import { motion, Reorder, AnimatePresence } from "framer-motion";
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -467,6 +468,15 @@ const TimetableTabs: React.FC = () => {
     dragTab.current = dragOverTab.current;
   };
 
+  const sorting = () => {
+    console.log(displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }
+
+  const initialItems = ["🍅 Tomato", "🥒 Cucumber", "🧀 Cheese", "🥬 Lettuce"];
+  const [items, setItems] = useState(initialItems);
+
+
   return (
     <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
       <Menu
@@ -488,6 +498,63 @@ const TimetableTabs: React.FC = () => {
           </MenuItem>
         </Tooltip>
       </Menu>
+      {/* <Box>
+        <Reorder.Group axis="y" onReorder={setItems} values={items}>
+          {items.map((item) => (
+            <Reorder.Item value={item} id={item} style={{ border: '2px solid black' }}>
+              <span>{item}</span>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      </Box> */}
+      <div>
+        <Reorder.Group
+          axis="x"
+          values={displayTimetables}
+          onReorder={setDisplayTimetables}
+          style={{ listStyleType: 'none', display: 'flex', paddingInlineStart: '0px' }}
+        >
+          {displayTimetables.map((timetable: TimetableData, index: number) => (<AnimatePresence initial={false}>
+            <Reorder.Item
+              value={timetable}
+              key={index}
+              id={timetable.name}
+              style={TabStyle(index)}
+              onPointerDown={() => handleSwitchTimetables(index)}
+              onContextMenu={(e) => handleRightTabClick(e, index)}
+              // animate={{
+              //   opacity: 1,
+              //   backgroundColor: selectedTimetable === index ? "#f3f3f3" : "#fff",
+              //   y: 0,
+              //   transition: { duration: 0.15 }
+              // }}
+              // exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
+              whileDrag={{ backgroundColor: "#e3e3e3" }}
+            // onDragStart={() => handleTabDragStart(index)}
+            // onDragEnter={(e) => handleTabDragEnter(e, index)}
+            // onDragEnd={handleSortTabs}
+            // onDragOver={(e) => e.preventDefault()}
+            >
+              <motion.span layout="position">{timetable.name}</motion.span>
+              <motion.div layout>
+                {selectedTimetable === index ? (
+                  <span onClick={handleMenuClick}>
+                    <MoreHoriz />
+                  </span>
+                ) : (
+                  <></>
+                )
+                }
+              </motion.div>
+            </Reorder.Item>
+          </AnimatePresence>
+          ))}
+          <Tooltip title={addTimetabletip}>
+            <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+          </Tooltip>
+        </Reorder.Group>
+      </div>
+
       <Tabs
         value={selectedTimetable}
         sx={TabContainerStyle}
