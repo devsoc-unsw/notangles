@@ -31,6 +31,14 @@ export interface ClassData {
   section: Section;
 }
 
+export interface TimetableData {
+  name: string;
+  id: string;
+  selectedCourses: CourseData[];
+  selectedClasses: SelectedClasses;
+  createdEvents: CreatedEvents;
+}
+
 export interface InventoryData {
   courseCode: CourseCode;
   activity: Activity;
@@ -111,7 +119,15 @@ export interface DuplicateClassData {
   periodIndex: number;
 }
 
+// export interface Action {
+//   timetables: TimetableData[];
+//   selected: number;
+//   courses: CourseData[];
+//   classes: SelectedClasses;
+//   events: CreatedEvents;
+// }
 export interface Action {
+  name: string;
   courses: CourseData[];
   classes: SelectedClasses;
   events: CreatedEvents;

@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 const defaults: Record<string, any> = {
   is12HourMode: true,
   isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
@@ -7,9 +9,15 @@ const defaults: Record<string, any> = {
   isHideClassInfo: false,
   isHideExamClasses: false,
   isConvertToLocalTimezone: true,
-  selectedCourses: [],
-  selectedClasses: {},
-  createdEvents: {},
+  timetables: [
+    {
+      name: 'My timetable',
+      id: uuidv4(),
+      selectedCourses: [],
+      selectedClasses: {},
+      createdEvents: {},
+    },
+  ],
 };
 
 export default defaults;

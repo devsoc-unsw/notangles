@@ -10,6 +10,7 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
+import { TimetableTabs } from './components/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
@@ -18,6 +19,7 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
+  timetableWidth,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -98,6 +100,10 @@ const App: React.FC = () => {
     setTermNumber,
     setCoursesList,
     setLastUpdated,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -283,35 +289,50 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
-    handleSelectCourse(storage.get('selectedCourses'), true, (newSelectedCourses) => {
-      const savedClasses: SavedClasses = storage.get('selectedClasses');
-      const newSelectedClasses: SelectedClasses = {};
+    handleSelectCourse(
+      storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      true,
+      (newSelectedCourses) => {
+        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
 
-      Object.keys(savedClasses).forEach((courseCode) => {
-        newSelectedClasses[courseCode] = {};
-        Object.keys(savedClasses[courseCode]).forEach((activity) => {
-          const classId = savedClasses[courseCode][activity];
-          let classData: ClassData | null = null;
+        const savedClasses: SavedClasses = {};
 
-          if (classId) {
-            try {
-              const result = newSelectedCourses
-                .find((x) => x.code === courseCode)
-                ?.activities[activity].find((x) => x.section === classId);
-              if (result) classData = result;
-            } catch (err) {
-              setAlertMsg(unknownErrorMessage);
-              setErrorVisibility(true);
-            }
-          }
-
-          // classData being null means the activity is unscheduled
-          newSelectedClasses[courseCode][activity] = classData;
+        Object.keys(timetableSelectedClasses).forEach((courseCode) => {
+          savedClasses[courseCode] = {};
+          Object.keys(timetableSelectedClasses[courseCode]).forEach((activity) => {
+            const classData = timetableSelectedClasses[courseCode][activity];
+            savedClasses[courseCode][activity] = classData ? classData.section : null;
+          });
         });
-      });
-      setSelectedClasses(newSelectedClasses);
-    });
-    setCreatedEvents(storage.get('createdEvents'));
+
+        const newSelectedClasses: SelectedClasses = {};
+
+        Object.keys(savedClasses).forEach((courseCode) => {
+          newSelectedClasses[courseCode] = {};
+          Object.keys(savedClasses[courseCode]).forEach((activity) => {
+            const classId = savedClasses[courseCode][activity];
+            let classData: ClassData | null = null;
+
+            if (classId) {
+              try {
+                const result = newSelectedCourses
+                  .find((x) => x.code === courseCode)
+                  ?.activities[activity].find((x) => x.section === classId);
+                if (result) classData = result;
+              } catch (err) {
+                setAlertMsg(unknownErrorMessage);
+                setErrorVisibility(true);
+              }
+            }
+
+            // classData being null means the activity is unscheduled
+            newSelectedClasses[courseCode][activity] = classData;
+          });
+        });
+        setSelectedClasses(newSelectedClasses);
+      }
+    );
+    setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
   };
 
   useEffect(() => {
@@ -320,29 +341,27 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
-    storage.set(
-      'selectedCourses',
-      selectedCourses.map((course) => course.code)
-    );
+    displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
-    const savedClasses: SavedClasses = {};
-
-    Object.keys(selectedClasses).forEach((courseCode) => {
-      savedClasses[courseCode] = {};
-      Object.keys(selectedClasses[courseCode]).forEach((activity) => {
-        const classData = selectedClasses[courseCode][activity];
-        savedClasses[courseCode][activity] = classData ? classData.section : null;
-      });
-    });
-
-    storage.set('selectedClasses', savedClasses);
+    displayTimetables[selectedTimetable].selectedClasses = selectedClasses;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
-    storage.set('createdEvents', createdEvents);
+    displayTimetables[selectedTimetable].createdEvents = createdEvents;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
+
+  // Update storage when dragging timetables
+  useUpdateEffect(() => {
+    storage.set('timetables', displayTimetables);
+  }, [displayTimetables]);
 
   /**
    * Get the latest day of the week a course has classes on
@@ -479,6 +498,7 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
+                <TimetableTabs />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
                   save to calendar

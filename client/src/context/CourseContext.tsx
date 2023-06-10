@@ -16,13 +16,13 @@ export interface ICourseContext {
 
 export const CourseContext = createContext<ICourseContext>({
   selectedCourses: [],
-  setSelectedCourses: () => {},
+  setSelectedCourses: () => { },
 
   selectedClasses: {},
-  setSelectedClasses: () => {},
+  setSelectedClasses: () => { },
 
   createdEvents: {},
-  setCreatedEvents: () => {},
+  setCreatedEvents: () => { },
 });
 
 const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
