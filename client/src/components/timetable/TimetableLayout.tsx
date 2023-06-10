@@ -56,6 +56,7 @@ const GridCell = styled(BaseCell)`
 
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
+  border-bottom: 3px solid ${({ theme }) => theme.palette.secondary.main};
 `;
 
 const InventoryCell = styled(DayCell)`
@@ -63,6 +64,7 @@ const InventoryCell = styled(DayCell)`
   border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
+  border-bottom: 0px;
 `;
 
 const HourCell = styled(GridCell, {
@@ -71,8 +73,7 @@ const HourCell = styled(GridCell, {
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
-  align-items: flex-start;
-  margin-top: -11px;
+  margin-top: -${rowHeight / 2}px;
   outline: none;
 `;
 
