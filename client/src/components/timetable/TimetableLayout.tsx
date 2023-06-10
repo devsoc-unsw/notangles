@@ -73,7 +73,7 @@ const HourCell = styled(GridCell, {
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
-  margin-top: -${rowHeight / 2}px;
+  margin-top: -${rowHeight / 2 + 1}px;
   outline: none;
 `;
 
