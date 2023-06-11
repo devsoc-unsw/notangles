@@ -10,7 +10,7 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
-import { TimetableTabs } from './components/TimetableTabs';
+import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
@@ -216,8 +216,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
