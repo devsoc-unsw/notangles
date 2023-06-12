@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import storage from '../utils/storage';
-import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
+import { Add, MoreHoriz, ContentCopy, EditOutlined, DeleteOutline, DoNotDisturbOnTotalSilenceOutlined } from '@mui/icons-material';
 import { ExecuteButton } from '../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
@@ -13,6 +13,7 @@ import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
 import zIndex from '@mui/material/styles/zIndex';
 import { motion, Reorder, AnimatePresence } from "framer-motion";
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -101,6 +102,13 @@ const TimetableTabs: React.FC = () => {
     borderRadius: '10px 10px 0 0',
   };
 
+  const TabContainerStyle2 = {
+    backgroundColor: `${tabTheme.containerBackground}`,
+    borderRadius: '10px 10px 0 0',
+    display: 'flex',
+  };
+
+
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
   const TabStyle = (index: Number) => {
     let style = {
@@ -134,6 +142,47 @@ const TimetableTabs: React.FC = () => {
 
     if (index === 0) {
       style.marginLeft = '0px';
+    }
+
+    return style;
+  };
+
+  const TabStyle2 = (index: Number) => {
+    let style = {
+      boxShadow: '',
+      minHeight: '50px',
+      minWidth: '150px',
+      paddingTop: '3px',
+      paddingBottom: '3px',
+      backgroundColor: '',
+      borderStyle: 'solid',
+      borderWidth: '0px',
+      borderRadius: '10px 10px 0 0',
+      borderColor: `${tabTheme.tabBorderColor}`,
+      color: `${tabTheme.tabTextColor}`,
+      margin: '0 0 0 0',
+      marginLeft: '-2px',
+      transition: 'background-color 0.1s',
+      zIndex: '',
+      '&:active': {
+        cursor: 'move',
+      },
+      '&:hover': {
+        backgroundColor: `${tabTheme.tabHoverColor}`,
+      },
+    };
+
+    if (index === 0) {
+      style.marginLeft = '0px';
+    }
+
+    if (index === selectedTimetable) {
+      style.color = `${tabTheme.tabSelectedText}`;
+      style.backgroundColor = `${tabTheme.tabBackgroundColor}`;
+      style.boxShadow = `inset 0 0 7px ${theme.palette.primary.main}`;
+      style.borderWidth = '1px';
+      style.borderColor = `${theme.palette.primary.main}`;
+      style.zIndex = '1';
     }
 
     return style;
@@ -459,14 +508,37 @@ const TimetableTabs: React.FC = () => {
 
   // EXPERIMENTAL: Reordering the tabs when we drag and drop
   const handleSortTabs = () => {
-    const newTimetables = [...displayTimetables];
-    const draggedItem = newTimetables[dragTab.current];
-    newTimetables.splice(dragTab.current, 1);
-    newTimetables.splice(dragOverTab.current, 0, draggedItem);
-    setDisplayTimetables(newTimetables);
-    setSelectedTimetable(dragOverTab.current);
-    dragTab.current = dragOverTab.current;
+    console.log('hi');
+    // const newTimetables = [...displayTimetables];
+    // const draggedItem = newTimetables[dragTab.current];
+    // newTimetables.splice(dragTab.current, 1);
+    // newTimetables.splice(dragOverTab.current, 0, draggedItem);
+    // setDisplayTimetables(newTimetables);
+    // setSelectedTimetable(dragOverTab.current);
+    // dragTab.current = dragOverTab.current;
   };
+
+  const handleSortTabs2 = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    const newTimetables = [...displayTimetables];
+    const draggedItem = newTimetables[source.index];
+    newTimetables.splice(source.index, 1);
+    newTimetables.splice(destination.index, 0, draggedItem);
+    setDisplayTimetables(newTimetables);
+    setSelectedTimetable(destination.index);
+  }
 
   const sorting = () => {
     console.log(displayTimetables);
@@ -498,62 +570,108 @@ const TimetableTabs: React.FC = () => {
           </MenuItem>
         </Tooltip>
       </Menu>
-      {/* <Box>
-        <Reorder.Group axis="y" onReorder={setItems} values={items}>
-          {items.map((item) => (
-            <Reorder.Item value={item} id={item} style={{ border: '2px solid black' }}>
-              <span>{item}</span>
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
-      </Box> */}
-      <div>
-        <Reorder.Group
-          axis="x"
-          values={displayTimetables}
-          onReorder={setDisplayTimetables}
-          style={{ listStyleType: 'none', display: 'flex', paddingInlineStart: '0px' }}
+      <Box style={{ display: 'flex' }}>
+        <DragDropContext
+          onDragEnd={handleSortTabs2}
         >
-          {displayTimetables.map((timetable: TimetableData, index: number) => (<AnimatePresence initial={false}>
-            <Reorder.Item
-              value={timetable}
-              key={index}
-              id={timetable.name}
-              style={TabStyle(index)}
-              onPointerDown={() => handleSwitchTimetables(index)}
-              onContextMenu={(e) => handleRightTabClick(e, index)}
-              // animate={{
-              //   opacity: 1,
-              //   backgroundColor: selectedTimetable === index ? "#f3f3f3" : "#fff",
-              //   y: 0,
-              //   transition: { duration: 0.15 }
-              // }}
-              // exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
-              whileDrag={{ backgroundColor: "#e3e3e3" }}
-            // onDragStart={() => handleTabDragStart(index)}
-            // onDragEnter={(e) => handleTabDragEnter(e, index)}
-            // onDragEnd={handleSortTabs}
-            // onDragOver={(e) => e.preventDefault()}
-            >
-              <motion.span layout="position">{timetable.name}</motion.span>
-              <motion.div layout>
-                {selectedTimetable === index ? (
-                  <span onClick={handleMenuClick}>
-                    <MoreHoriz />
-                  </span>
-                ) : (
-                  <></>
-                )
-                }
-              </motion.div>
-            </Reorder.Item>
-          </AnimatePresence>
-          ))}
+          <Droppable droppableId='tabs' direction='horizontal'>
+            {props => (
+              <Box
+                ref={props.innerRef}
+                {...props.droppableProps}
+                sx={TabContainerStyle2}
+              >
+                {displayTimetables.map((timetable: TimetableData, index: number) => (
+                  <Draggable draggableId={index.toString()} index={index}>
+                    {(props) => (
+                      <Box
+                        ref={props.innerRef}
+                        {...props.draggableProps}
+                        {...props.dragHandleProps}
+                        key={index}
+                        sx={TabStyle2(index)}
+                        onClick={() => handleSwitchTimetables(index)}
+                        onContextMenu={(e) => handleRightTabClick(e, index)}>
+                        {timetable.name}
+                        {
+                          selectedTimetable === index ? (
+                            <span onClick={handleMenuClick}>
+                              <MoreHoriz />
+                            </span>
+                          ) : (
+                            <></>
+                          )
+                        }
+                      </Box>
+                    )}
+                  </Draggable>
+                ))}
+                {props.placeholder}
+              </Box>
+            )}
+          </Droppable>
           <Tooltip title={addTimetabletip}>
             <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
           </Tooltip>
-        </Reorder.Group>
-      </div>
+        </DragDropContext>
+      </Box>
+      <Box style={{ display: 'flex' }}>
+        <DragDropContext
+          onDragEnd={handleSortTabs2}
+        >
+          <Droppable droppableId='tabs' direction='horizontal'>
+            {props => (
+              <Tabs
+                value={selectedTimetable}
+                ref={props.innerRef}
+                {...props.droppableProps}
+                sx={TabContainerStyle2}
+                TabIndicatorProps={{ style: { display: 'none' } }}
+                variant="scrollable"
+              >
+                {displayTimetables.map((timetable: TimetableData, index: number) => (
+                  <Draggable draggableId={index.toString()} index={index}>
+                    {(props) => (
+                      <div
+                        ref={props.innerRef}
+                        {...props.draggableProps}
+                        {...props.dragHandleProps}>
+                        <Tab
+
+                          key={index}
+                          label={timetable.name}
+                          sx={TabStyle(index)}
+                          onClick={() => handleSwitchTimetables(index)}
+                          onContextMenu={(e) => handleRightTabClick(e, index)}
+                          icon={
+                            selectedTimetable === index ? (
+                              <span onClick={handleMenuClick}>
+                                <MoreHoriz />
+                              </span>
+                            ) : (
+                              <></>
+                            )
+                          }
+                          iconPosition="end"
+                          onDragStart={(e) => handleTabDragStart(e, index)}
+                          onDragEnter={(e) => handleTabDragEnter(e, index)}
+                          onDragEnd={handleSortTabs}
+                          onDragOver={(e) => e.preventDefault()}
+                        />
+                      </div>
+
+                    )}
+                  </Draggable>
+                ))}
+                {props.placeholder}
+              </Tabs>
+            )}
+          </Droppable>
+          <Tooltip title={addTimetabletip}>
+            <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
+          </Tooltip>
+        </DragDropContext>
+      </Box>
 
       <Tabs
         value={selectedTimetable}
@@ -641,7 +759,7 @@ const TimetableTabs: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box >
   );
 };
 export { TimetableTabs };
