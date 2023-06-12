@@ -1,15 +1,18 @@
-import { Box, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip } from '@mui/material';
+import { Box, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip, Tab } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
 import { ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
-import { ExecuteButton } from '../../styles/CustomEventStyles';
+import { ExecuteButton, } from '../../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
 import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
+import { StyledTabPanel } from '../../styles/CustomEventStyles';
+import { TabContext, TabList } from '@mui/lab';
+import { EditNote } from '@mui/icons-material';
 
 export const EditTabPopups: React.FC = () => {
     const TIMETABLE_LIMIT = 13;
@@ -329,26 +332,28 @@ export const EditTabPopups: React.FC = () => {
                 </Tooltip>
             </Menu>
             <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
-                <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Rename Timetable</DialogTitle>
-                <Box
-                    sx={{
-                        backgroundColor: `${theme.palette.primary.main}`,
-                        minHeight: '4px',
-                        width: '100px',
-                        alignSelf: 'center',
-                        borderRadius: '5px',
-                        marginBottom: '8px',
-                    }}
-                ></Box>
-                <TextField
-                    sx={{ padding: '5px', paddingTop: '10px', width: '180px', alignSelf: 'center' }}
-                    id="outlined-basic"
-                    variant="outlined"
-                    helperText={renamedHelper}
-                    value={renamedString}
-                    onChange={(e) => handleRenameChange(e)}
-                    error={renamedErr}
-                />
+                <TabContext value={"Rename Timetable"}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList centered>
+                            <Tab label="Rename Timetable" value="Rename Timetable" />
+                        </TabList>
+                    </Box>
+                    <StyledTabPanel value="Rename Timetable">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ paddingBottom: '15px', minWidth: '40px' }}>
+                                <EditNote />
+                            </Box>
+                            <TextField
+                                id="outlined-basic"
+                                variant="outlined"
+                                helperText={renamedHelper}
+                                value={renamedString}
+                                onChange={(e) => handleRenameChange(e)}
+                                error={renamedErr}
+                            />
+                        </Box>
+                    </StyledTabPanel>
+                </TabContext>
                 <ExecuteButton
                     variant="contained"
                     color="primary"
