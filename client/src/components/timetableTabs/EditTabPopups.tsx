@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
 import { StyledTabPanel } from '../../styles/CustomEventStyles';
 import { TabContext, TabList } from '@mui/lab';
-import { EditNote } from '@mui/icons-material';
+import { EditNote, Delete } from '@mui/icons-material';
 
 export const EditTabPopups: React.FC = () => {
     const TIMETABLE_LIMIT = 13;
@@ -365,25 +365,29 @@ export const EditTabPopups: React.FC = () => {
                 </ExecuteButton>
             </Dialog>
             <Dialog open={deleteOpen} onClose={handleMenuClose}>
-                {displayTimetables[selectedTimetable] && (
-                    <DialogTitle>{`Delete ${displayTimetables[selectedTimetable].name}?`}</DialogTitle>
-                )}
-                <DialogActions sx={{ justifyContent: 'center' }}>
-                    <Button
-                        id="confirm-delete-button"
-                        sx={ModalButtonStyle}
-                        variant="contained"
-                        onClick={() => {
-                            handleDeleteTimetable(selectedTimetable);
-                            handleMenuClose();
-                        }}
-                    >
-                        Yes
-                    </Button>
-                    <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
-                        No
-                    </Button>
-                </DialogActions>
+                <TabContext value={"Delete Timetable"}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList centered>
+                            <Tab label="Delete Timetable" value="Delete Timetable" />
+                        </TabList>
+                    </Box>
+                    <DialogActions sx={{ justifyContent: 'center' }}>
+                        <Button
+                            id="confirm-delete-button"
+                            sx={ModalButtonStyle}
+                            variant="contained"
+                            onClick={() => {
+                                handleDeleteTimetable(selectedTimetable);
+                                handleMenuClose();
+                            }}
+                        >
+                            Yes
+                        </Button>
+                        <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
+                            No
+                        </Button>
+                    </DialogActions>
+                </TabContext>
             </Dialog>
         </>
     );
