@@ -12,7 +12,6 @@ import { daysShort } from '../constants/timetable';
 import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
 import zIndex from '@mui/material/styles/zIndex';
-import { motion, Reorder, AnimatePresence } from "framer-motion";
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 const TimetableTabs: React.FC = () => {
