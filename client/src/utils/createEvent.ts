@@ -22,8 +22,7 @@ export const createEventObj = (
   day: number,
   startTime: number,
   endTime: number
-) => {
-
+): EventPeriod => {
   const newEvent: EventPeriod = {
     type: 'event',
     event: {
@@ -44,7 +43,7 @@ export const createEventObj = (
 };
 
 /**
- * Similar to the createEventObj function 
+ * Similar to the createEventObj function
  * except that it converts the type of day, startTime and endTime
  * @param name
  * @param location
@@ -63,7 +62,7 @@ export const parseAndCreateEventObj = (
   day: string,
   startTime: Date,
   endTime: Date
-) => {
+): EventPeriod => {
   const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
   const eventDay = daysShort.indexOf(day) + 1;
   const eventStart = startTime.getHours() + startTime.getMinutes() / 60;

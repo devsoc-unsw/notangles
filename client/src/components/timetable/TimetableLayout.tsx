@@ -1,4 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
+import { ContentPaste } from '@mui/icons-material';
+import { MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { styled } from '@mui/system';
 import {
   classMargin,
@@ -11,15 +13,19 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { TimetableLayoutProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
+import { handleContextMenu } from '../../utils/cardsContextMenu';
+import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-}) <{
+})<{
   x: number;
   y: number;
   yTo?: number;
@@ -61,7 +67,7 @@ const InventoryCell = styled(DayCell)`
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-}) <{ is12HourMode: boolean }>`
+})<{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
@@ -145,9 +151,10 @@ const generateHours = (
   }
 };
 
-export const TimetableLayout: React.FC = () => {
+export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, setCopiedEvent }) => {
   const [tempEventId, setTempEventId] = useState<string>('');
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
+  const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
   const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
@@ -240,6 +247,10 @@ export const TimetableLayout: React.FC = () => {
           eventEndTime.current = createDateWithTime(earliestStartTime + y + 1);
           eventDay.current = daysShort[x];
         }}
+        onContextMenu={(e) => {
+          if (!copiedEvent) return;
+          handleContextMenu(e, copiedEvent, setCopiedEvent, x, y + earliestStartTime, setContextMenu);
+        }}
       />
     ))
   );
@@ -278,6 +289,22 @@ export const TimetableLayout: React.FC = () => {
         initialDay={eventDay.current}
         tempEventId={tempEventId}
       />
+
+      {/* For right click menu on a cell */}
+      <StyledMenu
+        open={contextMenu != null}
+        anchorReference="anchorPosition"
+        anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+        onClose={() => setContextMenu(null)}
+        autoFocus={false}
+      >
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+          <ListItemIcon>
+            <ContentPaste fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Paste</ListItemText>
+        </MenuItem>
+      </StyledMenu>
     </>
   );
 };

@@ -9,7 +9,7 @@ import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
 
-const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
+const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass, setCopiedEvent, copiedEvent }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
@@ -118,6 +118,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
           clashIndex={clashIndex as number}
           clashColour={clashColour as string}
           cellWidth={cellWidth}
+          setCopiedEvent={setCopiedEvent}
+          copiedEvent={copiedEvent}
         />
       );
       cardKeys.set(classCard, key);
@@ -147,6 +149,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
           cardWidth={cardWidth as number}
           clashIndex={clashIndex as number}
           cellWidth={cellWidth}
+          setCopiedEvent={setCopiedEvent}
+          copiedEvent={copiedEvent}
         />
       );
     } catch (err) {

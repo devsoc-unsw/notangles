@@ -32,11 +32,15 @@ const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
-const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popupOpen, handleClose }) => {
+const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
+  eventPeriod,
+  popupOpen,
+  handleClose,
+  setIsEditing,
+  isEditing,
+}) => {
   const { name, location, description, color } = eventPeriod.event;
   const { day, start, end } = eventPeriod.time;
-
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
@@ -126,7 +130,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
       end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
-
     setCreatedEvents({
       ...createdEvents,
       [id]: {
@@ -190,7 +193,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({ eventPeriod, popu
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
-
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
