@@ -52,7 +52,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   return (
     <StyledMenu
-      open={contextMenu != null}
+      open={contextMenu !== null}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}

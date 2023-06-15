@@ -196,7 +196,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)}>
+            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}

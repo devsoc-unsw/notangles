@@ -1,9 +1,42 @@
-import { Theme } from '@mui/material';
+import { Box, Tab, Tabs, Theme, styled } from '@mui/material';
+
+export const TimetableTabsContainer = styled(Box)`
+  padding-top: 10px;
+  overflow: auto;
+`;
+
+export const TimetableTabContainer = styled(Tabs)`
+  border-radius: 10px 10px 0 0;
+  border-color: #bbbbbb;
+  color: #808080;
+`;
+
+export const StyledTab = styled(Tab)`
+  min-height: 50px;
+  min-width: 150px;
+  border-radius: 10px 10px 0 0;
+  transition: background-color 0.1s;
+  /* .MuiOutlinedInput-root {
+    fieldset {
+      background-color: red;
+    }
+
+    &.Mui-selected fieldset {
+      background-color: red;
+    }
+    &:hover fieldset {
+      background-color: red;
+    }
+    &:active fieldset {
+      cursor: move;
+    }
+  } */
+
+  /* border-style: solid; */
+`;
 
 export type TabTheme = {
   containerBackground: String;
-  tabBorderColor: String;
-  tabTextColor: String;
   tabHoverColor: String;
   tabBackgroundColor: String;
   tabSelectedText: String;
@@ -11,8 +44,6 @@ export type TabTheme = {
 
 export const tabThemeLight: TabTheme = {
   containerBackground: '#eeeeee',
-  tabBorderColor: '#bbbbbb',
-  tabTextColor: '#808080',
   tabHoverColor: '#ffffff',
   tabBackgroundColor: '#ffffff',
   tabSelectedText: 'primary',
@@ -20,8 +51,6 @@ export const tabThemeLight: TabTheme = {
 
 export const tabThemeDark: TabTheme = {
   containerBackground: '#2f2f2f',
-  tabBorderColor: '#bbbbbb',
-  tabTextColor: '#808080',
   tabHoverColor: '#444444',
   tabBackgroundColor: '#444444',
   tabSelectedText: '#ffffff',
@@ -46,23 +75,10 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
 
   const TabContainerStyle = {
     backgroundColor: `${tabTheme.containerBackground}`,
-    borderRadius: '10px 10px 0 0',
   };
 
-  const TabStyle = (index: Number) => {
-    let style = {
-      minHeight: '50px',
-      minWidth: '150px',
-      paddingTop: '3px',
-      paddingBottom: '3px',
-      borderStyle: 'solid',
-      borderWidth: '0px',
-      borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor}`,
-      color: `${tabTheme.tabTextColor}`,
-      margin: '0 0 0 0',
-      marginLeft: '-2px',
-      transition: 'background-color 0.1s',
+  const TabStyle = () => {
+    return {
       '&.Mui-selected': {
         color: `${tabTheme.tabSelectedText}`,
         backgroundColor: `${tabTheme.tabBackgroundColor}`,
@@ -78,12 +94,6 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
         backgroundColor: `${tabTheme.tabHoverColor}`,
       },
     };
-
-    if (index === 0) {
-      style.marginLeft = '0px';
-    }
-
-    return style;
   };
 
   const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };

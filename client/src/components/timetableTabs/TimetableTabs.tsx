@@ -7,8 +7,17 @@ import { Add, MoreHoriz } from '@mui/icons-material';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { TimetableData } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
-import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
-import { EditTabPopups } from './EditTabPopups';
+import {
+  TabTheme,
+  tabThemeDark,
+  tabThemeLight,
+  createTimetableStyle,
+  TimetableTabsContainer,
+  TimetableTabContainer,
+  StyledTab,
+} from '../../styles/TimetableTabStyles';
+import EditTabPopups from './EditTabPopups';
+import { ExpandButton } from '../../styles/DroppedCardStyles';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -21,11 +30,10 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
     setAlertMsg,
     setErrorVisibility,
-    setAnchorElement,
-    setAnchorCoords,
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
@@ -122,8 +130,9 @@ const TimetableTabs: React.FC = () => {
    * Dropdown menu tab handlers
    */
   // Left click handler for the three dots icon (editing the timetable tab)
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElement(event.currentTarget);
+  const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setAnchorElement({ x: e.clientX, y: e.clientY });
   };
 
   // Right clicking a tab will switch to that tab and open the menu
@@ -132,29 +141,29 @@ const TimetableTabs: React.FC = () => {
     handleSwitchTimetables(index);
 
     // Anchoring the menu to the mouse position
-    setAnchorCoords({ x: event.clientX, y: event.clientY });
+    // setAnchorCoords({ x: event.clientX, y: event.clientY });
   };
 
   return (
-    <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
-      <Tabs
+    <TimetableTabsContainer>
+      <TimetableTabContainer
         value={selectedTimetable}
         sx={TabContainerStyle}
-        TabIndicatorProps={{ style: { display: 'none' } }}
+        TabIndicatorProps={{ sx: { display: 'none' } }}
         variant="scrollable"
       >
         {displayTimetables.map((timetable: TimetableData, index: number) => (
-          <Tab
+          <StyledTab
             key={index}
             label={timetable.name}
-            sx={TabStyle(index)}
+            sx={TabStyle}
             onClick={() => handleSwitchTimetables(index)}
             onContextMenu={(e) => handleRightTabClick(e, index)}
             icon={
               selectedTimetable === index ? (
-                <span onClick={handleMenuClick}>
+                <ExpandButton onClick={handleMenuClick} sx={{ color: 'primary' }}>
                   <MoreHoriz />
-                </span>
+                </ExpandButton>
               ) : (
                 <></>
               )
@@ -167,12 +176,12 @@ const TimetableTabs: React.FC = () => {
             onDragOver={(e) => e.preventDefault()}
           />
         ))}
+        <EditTabPopups anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetabletip}>
           <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
         </Tooltip>
-      </Tabs>
-      <EditTabPopups />
-    </Box>
+      </TimetableTabContainer>
+    </TimetableTabsContainer>
   );
 };
 export { TimetableTabs };

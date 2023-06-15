@@ -215,3 +215,8 @@ export interface CustomEventLinkProp {
   setAlertMsg: (msg: string) => void;
   setErrorVisibility: (bool: boolean) => void;
 }
+
+export interface EditTabPopupsProps {
+  anchorElement: null | { x: number; y: number };
+  setAnchorElement: (anchorElement: null | { x: number; y: number }) => void;
+}

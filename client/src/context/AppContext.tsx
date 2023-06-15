@@ -85,12 +85,6 @@ export interface IAppContext {
 
   displayTimetables: TimetableData[];
   setDisplayTimetables: (newDisplayTimetable: any) => void;
-
-  anchorElement: null | HTMLElement;
-  setAnchorElement: (newAnchorElement: null | HTMLElement) => void;
-
-  anchorCoords: null | { x: number; y: number };
-  setAnchorCoords: (newAnchorCoord: null | { x: number; y: number }) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -171,12 +165,6 @@ export const AppContext = createContext<IAppContext>({
 
   displayTimetables: [],
   setDisplayTimetables: () => {},
-
-  anchorElement: null,
-  setAnchorElement: () => {},
-
-  anchorCoords: null,
-  setAnchorCoords: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -216,8 +204,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
-  const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
-  const [anchorCoords, setAnchorCoords] = useState<null | { x: number; y: number }>(null);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -272,10 +258,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
-    anchorElement,
-    setAnchorElement,
-    anchorCoords,
-    setAnchorCoords,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

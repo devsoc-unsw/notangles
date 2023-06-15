@@ -26,7 +26,6 @@ export const ExpandButton = styled(Button)`
   padding: 0;
   opacity: 40%;
   border-radius: 2px;
-  color: #f5f5f5;
 
   &:hover {
     opacity: 100%;
@@ -38,7 +37,7 @@ export const StyledCard = styled('div', {
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString()
     ),
-}) <{
+})<{
   card: ClassCard | EventPeriod;
   nDays: number;
   y?: number;
@@ -88,7 +87,7 @@ export const StyledCard = styled('div', {
 
 export const StyledCardInner = styled(Card, {
   shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
-}) <{
+})<{
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;

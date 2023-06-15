@@ -1,10 +1,23 @@
-import { Box, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip, Tab } from '@mui/material';
+import {
+  Box,
+  MenuItem,
+  Menu,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogActions,
+  Button,
+  Tooltip,
+  Tab,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { ContentCopy, EditOutlined, DeleteOutline } from '@mui/icons-material';
-import { ExecuteButton, } from '../../styles/CustomEventStyles';
+import { ContentCopy, EditOutlined, DeleteOutline, Edit, Delete } from '@mui/icons-material';
+import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
@@ -13,384 +26,390 @@ import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../
 import { StyledTabPanel } from '../../styles/CustomEventStyles';
 import { TabContext, TabList } from '@mui/lab';
 import { EditNote } from '@mui/icons-material';
+import { EditTabPopupsProps } from '../../interfaces/PropTypes';
 
-export const EditTabPopups: React.FC = () => {
-    const TIMETABLE_LIMIT = 13;
+const EditTabPopups: React.FC<EditTabPopupsProps> = ({ anchorElement, setAnchorElement }) => {
+  const TIMETABLE_LIMIT = 13;
 
-    const {
-        isDarkMode,
-        selectedTimetable,
-        setSelectedTimetable,
-        displayTimetables,
-        setDisplayTimetables,
-        setAlertMsg,
-        setAlertFunction,
-        setErrorVisibility,
-        setAutoVisibility,
-        anchorElement,
-        setAnchorElement,
-        anchorCoords,
-        setAnchorCoords,
-    } = useContext(AppContext);
+  const {
+    isDarkMode,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
+    setAlertMsg,
+    setAlertFunction,
+    setErrorVisibility,
+    setAutoVisibility,
+  } = useContext(AppContext);
 
-    const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
 
-    const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
+  const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
-    let deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
+  let deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
 
-    const theme = isDarkMode ? darkTheme : lightTheme;
+  const theme = isDarkMode ? darkTheme : lightTheme;
 
-    const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
+  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
 
-    const [renameOpen, setRenameOpen] = useState<boolean>(false);
-    const [renamedString, setRenamedString] = useState<string>('');
-    const [renamedHelper, setrenamedHelper] = useState<string>('');
-    const [renamedErr, setRenamedErr] = useState<boolean>(false);
-    const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
-    let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
+  const [renameOpen, setRenameOpen] = useState<boolean>(false);
+  const [renamedString, setRenamedString] = useState<string>('');
+  const [renamedHelper, setrenamedHelper] = useState<string>('');
+  const [renamedErr, setRenamedErr] = useState<boolean>(false);
+  const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
-    const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
+  const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
 
-    /**
-     * DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables 
-    */
-    // Used to create a deep copy of selectedClasses to avoid mutating the original
-    const duplicateClasses = (selectedClasses: SelectedClasses) => {
-        const newClasses: SelectedClasses = {};
+  /**
+   * DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables
+   */
+  // Used to create a deep copy of selectedClasses to avoid mutating the original
+  const duplicateClasses = (selectedClasses: SelectedClasses) => {
+    const newClasses: SelectedClasses = {};
 
-        Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
-            const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
+    Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+      const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
-            Object.entries(activities).forEach(([activity, classData]) => {
-                newActivityCopy[activity] = classData !== null ? { ...classData } : null;
-            });
-            newClasses[courseCode] = { ...newActivityCopy };
-        });
+      Object.entries(activities).forEach(([activity, classData]) => {
+        newActivityCopy[activity] = classData !== null ? { ...classData } : null;
+      });
+      newClasses[courseCode] = { ...newActivityCopy };
+    });
 
-        return newClasses;
-    };
+    return newClasses;
+  };
 
-    // Used to create a deep copy of createdEvents to avoid mutating the original
-    const duplicateEvents = (oldEvents: CreatedEvents) => {
-        const newEvents: CreatedEvents = {};
+  // Used to create a deep copy of createdEvents to avoid mutating the original
+  const duplicateEvents = (oldEvents: CreatedEvents) => {
+    const newEvents: CreatedEvents = {};
 
-        Object.entries(oldEvents).forEach(([code, period]) => {
-            const newEvent = createEventObj(
-                period.event.name,
-                period.event.location,
-                period.event.description,
-                period.event.color,
-                period.time.day,
-                period.time.start,
-                period.time.end
-            );
-            newEvents[newEvent.event.id] = newEvent;
-        });
-        return newEvents;
-    };
+    Object.entries(oldEvents).forEach(([code, period]) => {
+      const newEvent = createEventObj(
+        period.event.name,
+        period.event.location,
+        period.event.description,
+        period.event.color,
+        period.time.day,
+        period.time.start,
+        period.time.end
+      );
+      newEvents[newEvent.event.id] = newEvent;
+    });
+    return newEvents;
+  };
 
-    /**
-     * Timetable handlers
-     */
-    // Handler for deleting a timetable
-    const handleDeleteTimetable = (targetIndex: number) => {
-        // If only one tab then prevent the delete
-        if (displayTimetables.length > 1) {
-            prevTimetables = {
-                selected: selectedTimetable,
-                timetables: displayTimetables.map((timetable: TimetableData) => {
-                    return {
-                        name: timetable.name,
-                        id: timetable.id,
-                        selectedCourses: timetable.selectedCourses,
-                        selectedClasses: duplicateClasses(timetable.selectedClasses),
-                        createdEvents: timetable.createdEvents,
-                    };
-                }),
-            };
+  /**
+   * Timetable handlers
+   */
+  // Handler for deleting a timetable
+  const handleDeleteTimetable = (targetIndex: number) => {
+    // If only one tab then prevent the delete
+    if (displayTimetables.length > 1) {
+      prevTimetables = {
+        selected: selectedTimetable,
+        timetables: displayTimetables.map((timetable: TimetableData) => {
+          return {
+            name: timetable.name,
+            id: timetable.id,
+            selectedCourses: timetable.selectedCourses,
+            selectedClasses: duplicateClasses(timetable.selectedClasses),
+            createdEvents: timetable.createdEvents,
+          };
+        }),
+      };
 
-            // Deleting the current tab will remain on the same index unless it is the last tab
-            let newIndex = targetIndex;
-            if (newIndex === displayTimetables.length - 1) {
-                newIndex = targetIndex - 1;
-            }
+      // Deleting the current tab will remain on the same index unless it is the last tab
+      let newIndex = targetIndex;
+      if (newIndex === displayTimetables.length - 1) {
+        newIndex = targetIndex - 1;
+      }
 
-            const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
-            // Updating the timetables state to the new timetable index
-            setDisplayTimetables(newTimetables);
-            setSelectedTimetable(newIndex);
-            setSelectedCourses(newTimetables[newIndex].selectedCourses);
-            setSelectedClasses(newTimetables[newIndex].selectedClasses);
-            setCreatedEvents(newTimetables[newIndex].createdEvents);
+      const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
+      // Updating the timetables state to the new timetable index
+      setDisplayTimetables(newTimetables);
+      setSelectedTimetable(newIndex);
+      setSelectedCourses(newTimetables[newIndex].selectedCourses);
+      setSelectedClasses(newTimetables[newIndex].selectedClasses);
+      setCreatedEvents(newTimetables[newIndex].createdEvents);
 
-            // Prompting they user to undo the current tab deletion
-            setAlertMsg('Deleted timetable - Click to undo');
-            setAlertFunction(() => () => {
-                setDisplayTimetables(prevTimetables.timetables);
-                setSelectedTimetable(prevTimetables.selected);
-                setSelectedCourses(prevTimetables.timetables[prevTimetables.selected].selectedCourses);
-                setSelectedClasses(prevTimetables.timetables[prevTimetables.selected].selectedClasses);
-                setCreatedEvents(prevTimetables.timetables[prevTimetables.selected].createdEvents);
-                return;
-            });
-            setAutoVisibility(true);
-        } else {
-            setAlertMsg('Must have at least 1 timetable');
-            setErrorVisibility(true);
+      // Prompting they user to undo the current tab deletion
+      setAlertMsg('Deleted timetable - Click here to undo');
+      setAlertFunction(() => () => {
+        setDisplayTimetables(prevTimetables.timetables);
+        setSelectedTimetable(prevTimetables.selected);
+        setSelectedCourses(prevTimetables.timetables[prevTimetables.selected].selectedCourses);
+        setSelectedClasses(prevTimetables.timetables[prevTimetables.selected].selectedClasses);
+        setCreatedEvents(prevTimetables.timetables[prevTimetables.selected].createdEvents);
+        return;
+      });
+      setAutoVisibility(true);
+    } else {
+      setAlertMsg('Must have at least 1 timetable');
+      setErrorVisibility(true);
+    }
+  };
+
+  // Collapse all modals and menus
+  const handleMenuClose = () => {
+    setRenameOpen(false);
+    setDeleteOpen(false);
+    setAnchorElement(null);
+  };
+
+  // Handle opening the rename dialog
+  const handleRenameOpen = () => {
+    let timetableName = displayTimetables[selectedTimetable].name;
+    setRenamedString(timetableName);
+    setrenamedHelper(`${timetableName.length}/30`);
+    timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+
+    setRenameOpen(true);
+  };
+
+  // Handle closing the rename dialog
+  const handleRenameClose = (clickedOk: boolean) => {
+    // Checks if the user clicked out of the dialog or submitted a new name
+    if (!clickedOk) {
+      setRenameOpen(false);
+      return;
+    }
+
+    if (renamedErr) return;
+
+    // updating the timetable name in the state and local storage
+    let newTimetables = [...displayTimetables];
+    newTimetables[selectedTimetable].name = renamedString;
+
+    storage.set('timetables', [...newTimetables]);
+    setDisplayTimetables([...newTimetables]);
+
+    setRenameOpen(false);
+  };
+
+  // Handle changes to the rename text field
+  const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let str = e.target.value;
+    setRenamedString(str);
+    setrenamedHelper(`${str.length}/30`);
+    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+  };
+
+  // Handler to duplicate the selected timetable
+  const handleDuplicateTimetable = () => {
+    // Limiting users to have a maximum of 13 timetables
+    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+      setAlertMsg('Maximum timetables reached');
+      setErrorVisibility(true);
+    } else {
+      const currentTimetable = displayTimetables[selectedTimetable];
+
+      // Creating the duplicated timetable
+      const newTimetable = {
+        name: currentTimetable.name + ' - Copy',
+        id: uuidv4(),
+        selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
+        selectedCourses: currentTimetable.selectedCourses,
+        createdEvents: duplicateEvents(currentTimetable.createdEvents),
+      };
+
+      // Inserting the duplicate timetable after the current one
+      const newTimetables = [
+        ...displayTimetables.slice(0, selectedTimetable + 1),
+        newTimetable,
+        ...displayTimetables.slice(selectedTimetable + 1),
+      ];
+
+      // Update the state variables
+      storage.set('timetables', newTimetables);
+      setDisplayTimetables(newTimetables);
+      setSelectedCourses(newTimetable.selectedCourses);
+      setSelectedClasses(newTimetable.selectedClasses);
+      setCreatedEvents(newTimetable.createdEvents);
+      setSelectedTimetable(selectedTimetable + 1);
+      handleMenuClose();
+    }
+  };
+
+  /**
+   * Menu shortcut (hotkey) event listeners
+   */
+  // Hotkey for creating new timetables
+  useEffect(() => {
+    const handleCreateTimetableShortcut = (event: KeyboardEvent) => {
+      const createButton = document.getElementById('create-timetables-button');
+
+      // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
+      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
+        // Preventing creating a timetable when the delete or rename popups are open
+        if (event.key === 'Enter' && !deleteOpen && !renameOpen) {
+          event.preventDefault();
+          createButton?.focus();
+          createButton?.click();
         }
+      }
     };
 
-    // Collapse all modals and menus
-    const handleMenuClose = () => {
-        setRenameOpen(false);
-        setDeleteOpen(false);
-        setAnchorElement(null);
-        setAnchorCoords(null);
+    document.addEventListener('keydown', handleCreateTimetableShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleCreateTimetableShortcut);
     };
+  }, [deleteOpen, renameOpen]);
 
-    // Handle opening the rename dialog
-    const handleRenameOpen = () => {
-        let timetableName = displayTimetables[selectedTimetable].name;
-        setRenamedString(timetableName);
-        setrenamedHelper(`${timetableName.length}/30`);
-        timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
-
-        setRenameOpen(true);
-    };
-
-    // Handle closing the rename dialog
-    const handleRenameClose = (clickedOk: boolean) => {
-        // Checks if the user clicked out of the dialog or submitted a new name
-        if (!clickedOk) {
-            setRenameOpen(false);
-            return;
+  // Hotkey for deleting timetables
+  useEffect(() => {
+    const handleDeletePopupShortcut = (event: KeyboardEvent) => {
+      // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
+      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
+        // Preventing deletion of timetable when the rename popup is open
+        if (event.key === 'Backspace' && !renameOpen) {
+          setDeleteOpen(true);
         }
-
-        if (renamedErr) return;
-
-        // updating the timetable name in the state and local storage
-        let newTimetables = [...displayTimetables];
-        newTimetables[selectedTimetable].name = renamedString;
-
-        storage.set('timetables', [...newTimetables]);
-        setDisplayTimetables([...newTimetables]);
-
-        setRenameOpen(false);
+      }
     };
 
-    // Handle changes to the rename text field
-    const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        let str = e.target.value;
-        setRenamedString(str);
-        setrenamedHelper(`${str.length}/30`);
-        str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+    document.addEventListener('keydown', handleDeletePopupShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleDeletePopupShortcut);
+    };
+  }, [deleteOpen, renameOpen]);
+
+  // Hotkey to confirm delete prompt by pressing enter button
+  useEffect(() => {
+    const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
+      // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
+      const deleteConfirm = document.getElementById('confirm-delete-button');
+      if (deleteOpen && event.key === 'Enter') {
+        event.preventDefault();
+        deleteConfirm?.focus();
+        deleteConfirm?.click();
+      }
     };
 
-    // Handler to duplicate the selected timetable
-    const handleDuplicateTimetable = () => {
-        // Limiting users to have a maximum of 13 timetables
-        if (displayTimetables.length >= TIMETABLE_LIMIT) {
-            setAlertMsg('Maximum timetables reached');
-            setErrorVisibility(true);
-        } else {
-            const currentTimetable = displayTimetables[selectedTimetable];
+    document.addEventListener('keydown', handleDeleteEnterShortcut);
 
-            // Creating the duplicated timetable
-            const newTimetable = {
-                name: currentTimetable.name + ' - Copy',
-                id: uuidv4(),
-                selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
-                selectedCourses: currentTimetable.selectedCourses,
-                createdEvents: duplicateEvents(currentTimetable.createdEvents),
-            };
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleDeleteEnterShortcut);
+    };
+  }, [deleteOpen]);
 
-            // Inserting the duplicate timetable after the current one
-            const newTimetables = [
-                ...displayTimetables.slice(0, selectedTimetable + 1),
-                newTimetable,
-                ...displayTimetables.slice(selectedTimetable + 1),
-            ];
-
-            // Update the state variables
-            storage.set('timetables', newTimetables);
-            setDisplayTimetables(newTimetables);
-            setSelectedCourses(newTimetable.selectedCourses);
-            setSelectedClasses(newTimetable.selectedClasses);
-            setCreatedEvents(newTimetable.createdEvents);
-            setSelectedTimetable(selectedTimetable + 1);
-            handleMenuClose();
-        }
+  // Hotkey to confirm rename by pressing enter button
+  useEffect(() => {
+    const handleRenameEnterShortcut = (event: KeyboardEvent) => {
+      // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
+      const renameConfirm = document.getElementById('confirm-rename-button');
+      if (renameOpen && event.key === 'Enter') {
+        event.preventDefault();
+        renameConfirm?.focus();
+        renameConfirm?.click();
+      }
     };
 
-    /**
-     * Menu shortcut (hotkey) event listeners
-     */
-    // Hotkey for creating new timetables
-    useEffect(() => {
-        const handleCreateTimetableShortcut = (event: KeyboardEvent) => {
-            const createButton = document.getElementById('create-timetables-button');
+    document.addEventListener('keydown', handleRenameEnterShortcut);
 
-            // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
-            if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-                // Preventing creating a timetable when the delete or rename popups are open
-                if (event.key === 'Enter' && !deleteOpen && !renameOpen) {
-                    event.preventDefault();
-                    createButton?.focus();
-                    createButton?.click();
-                }
-            }
-        };
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleRenameEnterShortcut);
+    };
+  }, [renameOpen]);
 
-        document.addEventListener('keydown', handleCreateTimetableShortcut);
+  return (
+    <StyledMenu
+      open={anchorElement !== null}
+      anchorReference="anchorPosition"
+      anchorPosition={anchorElement !== null ? { top: anchorElement.y, left: anchorElement.x } : undefined}
+      onClose={handleMenuClose}
+      autoFocus={false}
+    >
+      <MenuItem onClick={handleRenameOpen}>
+        <ListItemIcon>
+          <Edit fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Edit</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={handleDuplicateTimetable}>
+        <ListItemIcon>
+          <ContentCopy fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Copy</ListItemText>
+      </MenuItem>
 
-        // Removing the event listener when the component unmounts
-        return () => {
-            document.removeEventListener('keydown', handleCreateTimetableShortcut);
-        };
-    }, [deleteOpen, renameOpen]);
+      <MenuItem onClick={() => setDeleteOpen(true)}>
+        <ListItemIcon>
+          <Delete fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>Delete</ListItemText>
+      </MenuItem>
 
-    // Hotkey for deleting timetables
-    useEffect(() => {
-        const handleDeletePopupShortcut = (event: KeyboardEvent) => {
-            // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
-            if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-                // Preventing deletion of timetable when the rename popup is open
-                if (event.key === 'Backspace' && !renameOpen) {
-                    setDeleteOpen(true);
-                }
-            }
-        };
+      <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
+        <TabContext value={'Rename Timetable'}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList centered>
+              <Tab label="Rename Timetable" value="Rename Timetable" />
+            </TabList>
+          </Box>
+          <StyledTabPanel value="Rename Timetable">
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ paddingBottom: '15px', minWidth: '40px' }}>
+                <EditNote />
+              </Box>
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                helperText={renamedHelper}
+                value={renamedString}
+                onChange={(e) => handleRenameChange(e)}
+                error={renamedErr}
+              />
+            </Box>
+          </StyledTabPanel>
+        </TabContext>
+        <ExecuteButton
+          variant="contained"
+          color="primary"
+          id="confirm-rename-button"
+          disableElevation
+          onClick={() => handleRenameClose(true)}
+        >
+          OK
+        </ExecuteButton>
+      </Dialog>
 
-        document.addEventListener('keydown', handleDeletePopupShortcut);
-
-        // Removing the event listener when the component unmounts
-        return () => {
-            document.removeEventListener('keydown', handleDeletePopupShortcut);
-        };
-    }, [deleteOpen, renameOpen]);
-
-    // Hotkey to confirm delete prompt by pressing enter button
-    useEffect(() => {
-        const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
-            // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
-            const deleteConfirm = document.getElementById('confirm-delete-button');
-            if (deleteOpen && event.key === 'Enter') {
-                event.preventDefault();
-                deleteConfirm?.focus();
-                deleteConfirm?.click();
-            }
-        };
-
-        document.addEventListener('keydown', handleDeleteEnterShortcut);
-
-        // Removing the event listener when the component unmounts
-        return () => {
-            document.removeEventListener('keydown', handleDeleteEnterShortcut);
-        };
-    }, [deleteOpen]);
-
-    // Hotkey to confirm rename by pressing enter button
-    useEffect(() => {
-        const handleRenameEnterShortcut = (event: KeyboardEvent) => {
-            // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
-            const renameConfirm = document.getElementById('confirm-rename-button');
-            if (renameOpen && event.key === 'Enter') {
-                event.preventDefault();
-                renameConfirm?.focus();
-                renameConfirm?.click();
-            }
-        };
-
-        document.addEventListener('keydown', handleRenameEnterShortcut);
-
-        // Removing the event listener when the component unmounts
-        return () => {
-            document.removeEventListener('keydown', handleRenameEnterShortcut);
-        };
-    }, [renameOpen]);
-
-    return (
-        <>
-            <Menu
-                anchorReference={anchorElement === null ? 'anchorPosition' : 'anchorEl'}
-                anchorEl={anchorElement}
-                anchorPosition={anchorCoords !== null ? { top: anchorCoords.y, left: anchorCoords.x } : undefined}
-                open={Boolean(anchorElement) || anchorCoords !== null}
-                onClose={handleMenuClose}
-            >
-                <MenuItem onClick={() => handleDuplicateTimetable()}>
-                    <ContentCopy fontSize="small" />
-                </MenuItem>
-                <MenuItem onClick={handleRenameOpen}>
-                    <EditOutlined fontSize="small" />
-                </MenuItem>
-                <Tooltip title={deleteTimetabletip}>
-                    <MenuItem onClick={() => setDeleteOpen(true)}>
-                        <DeleteOutline fontSize="small" />
-                    </MenuItem>
-                </Tooltip>
-            </Menu>
-            <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
-                <TabContext value={"Rename Timetable"}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <TabList centered>
-                            <Tab label="Rename Timetable" value="Rename Timetable" />
-                        </TabList>
-                    </Box>
-                    <StyledTabPanel value="Rename Timetable">
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box sx={{ paddingBottom: '15px', minWidth: '40px' }}>
-                                <EditNote />
-                            </Box>
-                            <TextField
-                                id="outlined-basic"
-                                variant="outlined"
-                                helperText={renamedHelper}
-                                value={renamedString}
-                                onChange={(e) => handleRenameChange(e)}
-                                error={renamedErr}
-                            />
-                        </Box>
-                    </StyledTabPanel>
-                </TabContext>
-                <ExecuteButton
-                    variant="contained"
-                    color="primary"
-                    id="confirm-rename-button"
-                    disableElevation
-                    onClick={() => handleRenameClose(true)}
-                >
-                    OK
-                </ExecuteButton>
-            </Dialog>
-            <Dialog open={deleteOpen} onClose={handleMenuClose}>
-                <TabContext value={"Delete Timetable"}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <TabList centered>
-                            <Tab label="Delete Timetable" value="Delete Timetable" />
-                        </TabList>
-                    </Box>
-                    <StyledTabPanel value="Delete Timetable">
-                        <DialogActions sx={{ justifyContent: 'center' }}>
-                            <Button
-                                id="confirm-delete-button"
-                                sx={ModalButtonStyle}
-                                variant="contained"
-                                onClick={() => {
-                                    handleDeleteTimetable(selectedTimetable);
-                                    handleMenuClose();
-                                }}
-                            >
-                                Yes
-                            </Button>
-                            <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
-                                No
-                            </Button>
-                        </DialogActions>
-                    </StyledTabPanel>
-                </TabContext>
-            </Dialog>
-        </>
-    );
+      <Dialog open={deleteOpen} onClose={handleMenuClose}>
+        <TabContext value={'Delete Timetable'}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList centered>
+              <Tab label="Delete Timetable" value="Delete Timetable" />
+            </TabList>
+          </Box>
+          <StyledTabPanel value="Delete Timetable">
+            <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button
+                id="confirm-delete-button"
+                sx={ModalButtonStyle}
+                variant="contained"
+                onClick={() => {
+                  handleDeleteTimetable(selectedTimetable);
+                  handleMenuClose();
+                }}
+              >
+                Yes
+              </Button>
+              <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
+                No
+              </Button>
+            </DialogActions>
+          </StyledTabPanel>
+        </TabContext>
+      </Dialog>
+    </StyledMenu>
+  );
 };
+
+export default EditTabPopups;
