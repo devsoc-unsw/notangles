@@ -43,7 +43,6 @@ const TimetableTabs: React.FC = () => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
 
-
   /**
    * Timetable handlers
    */
@@ -86,8 +85,8 @@ const TimetableTabs: React.FC = () => {
   }, []);
 
   /**
-  * Drag and drop functions for rearranging timetable tabs
-  */
+   * Drag and drop functions for rearranging timetable tabs
+   */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetableIndex: number) => {
     setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);

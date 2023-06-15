@@ -216,8 +216,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;

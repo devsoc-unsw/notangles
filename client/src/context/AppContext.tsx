@@ -95,88 +95,88 @@ export interface IAppContext {
 
 export const AppContext = createContext<IAppContext>({
   is12HourMode: false,
-  setIs12HourMode: () => { },
+  setIs12HourMode: () => {},
 
   isDarkMode: false,
-  setIsDarkMode: () => { },
+  setIsDarkMode: () => {},
 
   isSquareEdges: false,
-  setIsSquareEdges: () => { },
+  setIsSquareEdges: () => {},
 
   isShowOnlyOpenClasses: false,
-  setisShowOnlyOpenClasses: () => { },
+  setisShowOnlyOpenClasses: () => {},
 
   isDefaultUnscheduled: false,
-  setIsDefaultUnscheduled: () => { },
+  setIsDefaultUnscheduled: () => {},
 
   isHideClassInfo: false,
-  setIsHideClassInfo: () => { },
+  setIsHideClassInfo: () => {},
 
   isHideExamClasses: false,
-  setIsHideExamClasses: () => { },
+  setIsHideExamClasses: () => {},
 
   isConvertToLocalTimezone: true,
-  setIsConvertToLocalTimezone: () => { },
+  setIsConvertToLocalTimezone: () => {},
 
   alertMsg: '',
-  setAlertMsg: () => { },
+  setAlertMsg: () => {},
 
-  alertFunction: () => { },
-  setAlertFunction: () => { },
+  alertFunction: () => {},
+  setAlertFunction: () => {},
 
   errorVisibility: false,
-  setErrorVisibility: () => { },
+  setErrorVisibility: () => {},
 
   infoVisibility: false,
-  setInfoVisibility: () => { },
+  setInfoVisibility: () => {},
 
   autoVisibility: false,
-  setAutoVisibility: () => { },
+  setAutoVisibility: () => {},
 
   lastUpdated: 0,
-  setLastUpdated: () => { },
+  setLastUpdated: () => {},
 
   isDrag: false,
-  setIsDrag: () => { },
+  setIsDrag: () => {},
 
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-  setDays: () => { },
+  setDays: () => {},
 
   earliestStartTime: getDefaultStartTime(true),
-  setEarliestStartTime: () => { },
+  setEarliestStartTime: () => {},
 
   latestEndTime: getDefaultEndTime(true),
-  setLatestEndTime: () => { },
+  setLatestEndTime: () => {},
 
   term: `T0`,
-  setTerm: () => { },
+  setTerm: () => {},
 
   termName: `Term 0`,
-  setTermName: () => { },
+  setTermName: () => {},
 
   termNumber: 0,
-  setTermNumber: () => { },
+  setTermNumber: () => {},
 
   year: '0000',
-  setYear: () => { },
+  setYear: () => {},
 
   firstDayOfTerm: '0000-00-00',
-  setFirstDayOfTerm: () => { },
+  setFirstDayOfTerm: () => {},
 
   coursesList: [],
-  setCoursesList: () => { },
+  setCoursesList: () => {},
 
   selectedTimetable: 0,
-  setSelectedTimetable: () => { },
+  setSelectedTimetable: () => {},
 
   displayTimetables: [],
-  setDisplayTimetables: () => { },
+  setDisplayTimetables: () => {},
 
   anchorElement: null,
-  setAnchorElement: () => { },
+  setAnchorElement: () => {},
 
   anchorCoords: null,
-  setAnchorCoords: () => { },
+  setAnchorCoords: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -199,7 +199,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
   const [alertMsg, setAlertMsg] = useState<string>('');
-  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => { });
+  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);

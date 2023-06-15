@@ -161,7 +161,7 @@ const History: React.FC = () => {
         createdEvents
       ) &&
       timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].name ===
-      displayTimetables[selectedTimetable].name
+        displayTimetables[selectedTimetable].name
     ) {
       return;
     }
@@ -233,7 +233,7 @@ const History: React.FC = () => {
     setDisableLeft(actionsPointer.current[timetableId] === undefined || actionsPointer.current[timetableId] < 1);
     setDisableRight(
       actionsPointer.current[timetableId] === undefined ||
-      actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
+        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
     );
   }, [selectedTimetable]);
 
@@ -352,7 +352,7 @@ const History: React.FC = () => {
   return (
     <>
       <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>
-        <TabContext value={"Clear Timetables"}>
+        <TabContext value={'Clear Timetables'}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList centered>
               <Tab label="Clear Timetables" value="Clear Timetables" />
