@@ -68,8 +68,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
-  const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
-
   const StyledDialogButtons = styled(Box)`
   display: flex;
   flex-direction: row;
@@ -79,7 +77,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   padding-right: 5px;
 `;
 
-  // Helper function to set the state
+  // Helper function to set the timetable state
   const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);

@@ -51,7 +51,7 @@ const TimetableTabs: React.FC = () => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
 
-  // Helper function to set the state
+  // Helper function to set the timetable state
   const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
