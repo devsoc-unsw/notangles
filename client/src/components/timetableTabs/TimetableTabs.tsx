@@ -139,9 +139,8 @@ const TimetableTabs: React.FC = () => {
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
     event.preventDefault();
     handleSwitchTimetables(index);
-
     // Anchoring the menu to the mouse position
-    // setAnchorCoords({ x: event.clientX, y: event.clientY });
+    setAnchorElement({ x: event.clientX, y: event.clientY });
   };
 
   return (

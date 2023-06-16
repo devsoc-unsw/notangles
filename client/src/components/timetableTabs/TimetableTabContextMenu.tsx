@@ -11,13 +11,20 @@ import {
   Tab,
   ListItemIcon,
   ListItemText,
+  Divider,
+  ListItem,
+  Grid,
+  IconButton,
+  styled,
+  ListItemIconProps,
+  Typography,
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { ContentCopy, EditOutlined, DeleteOutline, Edit, Delete } from '@mui/icons-material';
-import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
+import { ContentCopy, EditOutlined, DeleteOutline, Edit, Delete, Save, Close } from '@mui/icons-material';
+import { ExecuteButton, StyledListItem, StyledMenu } from '../../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
@@ -27,6 +34,7 @@ import { StyledTabPanel } from '../../styles/CustomEventStyles';
 import { TabContext, TabList } from '@mui/lab';
 import { EditNote } from '@mui/icons-material';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -55,7 +63,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');
-  const [renamedHelper, setrenamedHelper] = useState<string>('');
+  const [renamedHelper, setRenamedHelper] = useState<string>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
@@ -158,13 +166,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setAnchorElement(null);
   };
 
-  // Handle opening the rename dialog
   const handleRenameOpen = () => {
     let timetableName = displayTimetables[selectedTimetable].name;
     setRenamedString(timetableName);
-    setrenamedHelper(`${timetableName.length}/30`);
+    setRenamedHelper(`${timetableName.length}/30`);
     timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
-
     setRenameOpen(true);
   };
 
@@ -192,7 +198,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     let str = e.target.value;
     setRenamedString(str);
-    setrenamedHelper(`${str.length}/30`);
+    setRenamedHelper(`${str.length}/30`);
     str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
   };
 
@@ -337,9 +343,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         <ListItemIcon>
           <ContentCopy fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Copy</ListItemText>
+        <ListItemText>Duplicate</ListItemText>
       </MenuItem>
-
+      <Divider />
       <MenuItem onClick={() => setDeleteOpen(true)}>
         <ListItemIcon>
           <Delete fontSize="small" />
@@ -347,40 +353,50 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         <ListItemText>Delete</ListItemText>
       </MenuItem>
 
-      <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
-        <TabContext value={'Rename Timetable'}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList centered>
-              <Tab label="Rename Timetable" value="Rename Timetable" />
-            </TabList>
-          </Box>
-          <StyledTabPanel value="Rename Timetable">
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box sx={{ paddingBottom: '15px', minWidth: '40px' }}>
-                <EditNote />
-              </Box>
-              <TextField
-                id="outlined-basic"
-                variant="outlined"
-                helperText={renamedHelper}
-                value={renamedString}
-                onChange={(e) => handleRenameChange(e)}
-                error={renamedErr}
-              />
-            </Box>
-          </StyledTabPanel>
-        </TabContext>
+      {/* Rename timetable Dialog  */}
+      <Dialog open={renameOpen} maxWidth="sm" onClose={() => handleRenameClose(false)}>
+        <StyledDialogTitle>
+          <StyledTitleContainer>
+            <>Rename Timetable</>
+            <Grid container justifyContent="flex-end" alignItems="center">
+              <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
+                <Close />
+              </IconButton>
+            </Grid>
+          </StyledTitleContainer>
+        </StyledDialogTitle>
+        <StyledDialogContent>
+          <ListItem>
+            <ListItemIcon sx={{ paddingBottom: 2 }}>
+              <EditNote />
+            </ListItemIcon>
+            <TextField
+              fullWidth={true}
+              id="outlined-required"
+              required
+              variant="outlined"
+              helperText={renamedHelper}
+              value={renamedString}
+              onChange={(e) => handleRenameChange(e)}
+              error={renamedErr}
+            />
+          </ListItem>
+        </StyledDialogContent>
+
         <ExecuteButton
           variant="contained"
           color="primary"
           id="confirm-rename-button"
           disableElevation
           onClick={() => handleRenameClose(true)}
+          disabled={renamedString === '' || renamedErr}
         >
-          OK
+          <Save />
+          SAVE
         </ExecuteButton>
       </Dialog>
 
+      {/* Delete timetable Dialog  */}
       <Dialog open={deleteOpen} onClose={handleMenuClose}>
         <TabContext value={'Delete Timetable'}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
