@@ -16,7 +16,7 @@ import {
   TimetableTabContainer,
   StyledTab,
 } from '../../styles/TimetableTabStyles';
-import EditTabPopups from './EditTabPopups';
+import TimetableTabContextMenu from './TimetableTabContextMenu';
 import { ExpandButton } from '../../styles/DroppedCardStyles';
 
 const TimetableTabs: React.FC = () => {
@@ -176,7 +176,7 @@ const TimetableTabs: React.FC = () => {
             onDragOver={(e) => e.preventDefault()}
           />
         ))}
-        <EditTabPopups anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
+        <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetabletip}>
           <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
         </Tooltip>

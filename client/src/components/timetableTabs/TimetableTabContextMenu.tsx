@@ -26,9 +26,9 @@ import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../
 import { StyledTabPanel } from '../../styles/CustomEventStyles';
 import { TabContext, TabList } from '@mui/lab';
 import { EditNote } from '@mui/icons-material';
-import { EditTabPopupsProps } from '../../interfaces/PropTypes';
+import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 
-const EditTabPopups: React.FC<EditTabPopupsProps> = ({ anchorElement, setAnchorElement }) => {
+const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
 
   const {
@@ -412,4 +412,4 @@ const EditTabPopups: React.FC<EditTabPopupsProps> = ({ anchorElement, setAnchorE
   );
 };
 
-export default EditTabPopups;
+export default TimetableTabContextMenu;
