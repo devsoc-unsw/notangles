@@ -70,6 +70,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
 
+  const StyledDialogButtons = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-right: 5px;
+`;
+
   // Helper function to set the state
   const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
     setSelectedCourses(selectedCourses);
@@ -399,34 +408,23 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       </Dialog>
 
       {/* Delete timetable Dialog  */}
-      <Dialog open={deleteOpen} onClose={handleMenuClose}>
-        <TabContext value={'Delete Timetable'}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList centered>
-              <Tab label="Delete Timetable" value="Delete Timetable" />
-            </TabList>
-          </Box>
-          <StyledTabPanel value="Delete Timetable">
-            <DialogActions sx={{ justifyContent: 'center' }}>
-              <Button
-                id="confirm-delete-button"
-                sx={ModalButtonStyle}
-                variant="contained"
-                onClick={() => {
-                  handleDeleteTimetable(selectedTimetable);
-                  handleMenuClose();
-                }}
-              >
-                Yes
-              </Button>
-              <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
-                No
-              </Button>
-            </DialogActions>
-          </StyledTabPanel>
-        </TabContext>
+      <Dialog maxWidth="xs" open={deleteOpen} onClose={handleMenuClose}>
+        <StyledTitleContainer>
+          <StyledDialogContent>Delete current timetable?</StyledDialogContent>
+        </StyledTitleContainer>
+        <StyledDialogButtons>
+          <Button
+            onClick={handleMenuClose}
+          >
+            Cancel
+          </Button>
+          <Button onClick={() => {
+            handleDeleteTimetable(selectedTimetable);
+            handleMenuClose();
+          }}>Delete</Button>
+        </StyledDialogButtons>
       </Dialog>
-    </StyledMenu>
+    </StyledMenu >
   );
 };
 
