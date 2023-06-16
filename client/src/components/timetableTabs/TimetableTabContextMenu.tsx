@@ -26,7 +26,7 @@ import storage from '../../utils/storage';
 import { ContentCopy, EditOutlined, DeleteOutline, Edit, Delete, Save, Close } from '@mui/icons-material';
 import { ExecuteButton, StyledListItem, StyledMenu } from '../../styles/CustomEventStyles';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
+import { Activity, ClassData, TimetableData, InInventory, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
 import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
@@ -69,6 +69,14 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
   const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
+
+  // Helper function to set the state
+  const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
+    setSelectedCourses(selectedCourses);
+    setSelectedClasses(selectedClasses);
+    setCreatedEvents(createdEvents);
+    setSelectedTimetable(timetableIndex);
+  }
 
   /**
    * DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables
@@ -137,19 +145,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newTimetables);
-      setSelectedTimetable(newIndex);
-      setSelectedCourses(newTimetables[newIndex].selectedCourses);
-      setSelectedClasses(newTimetables[newIndex].selectedClasses);
-      setCreatedEvents(newTimetables[newIndex].createdEvents);
+      const { selectedCourses, selectedClasses, createdEvents } = newTimetables[newIndex];
+      setTimetableState(selectedCourses, selectedClasses, createdEvents, newIndex);
 
       // Prompting they user to undo the current tab deletion
       setAlertMsg('Deleted timetable - Click here to undo');
       setAlertFunction(() => () => {
         setDisplayTimetables(prevTimetables.timetables);
-        setSelectedTimetable(prevTimetables.selected);
-        setSelectedCourses(prevTimetables.timetables[prevTimetables.selected].selectedCourses);
-        setSelectedClasses(prevTimetables.timetables[prevTimetables.selected].selectedClasses);
-        setCreatedEvents(prevTimetables.timetables[prevTimetables.selected].createdEvents);
+        const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
+        setTimetableState(selectedCourses, selectedClasses, createdEvents, prevTimetables.selected);
         return;
       });
       setAutoVisibility(true);
@@ -230,10 +234,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       // Update the state variables
       storage.set('timetables', newTimetables);
       setDisplayTimetables(newTimetables);
-      setSelectedCourses(newTimetable.selectedCourses);
-      setSelectedClasses(newTimetable.selectedClasses);
-      setCreatedEvents(newTimetable.createdEvents);
-      setSelectedTimetable(selectedTimetable + 1);
+      const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
+      setTimetableState(selectedCourses, selectedClasses, createdEvents, selectedTimetable + 1);
       handleMenuClose();
     }
   };

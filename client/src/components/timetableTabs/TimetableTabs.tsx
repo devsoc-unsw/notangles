@@ -5,7 +5,7 @@ import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
 import { Add, MoreHoriz } from '@mui/icons-material';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { TimetableData } from '../../interfaces/Periods';
+import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
 import {
   TabTheme,
@@ -51,6 +51,14 @@ const TimetableTabs: React.FC = () => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
 
+  // Helper function to set the state
+  const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
+    setSelectedCourses(selectedCourses);
+    setSelectedClasses(selectedClasses);
+    setCreatedEvents(createdEvents);
+    setSelectedTimetable(timetableIndex);
+  }
+
   /**
    * Timetable handlers
    */
@@ -74,12 +82,8 @@ const TimetableTabs: React.FC = () => {
 
       setDisplayTimetables([...displayTimetables, newTimetable]);
 
-      // Should switch current timetable to the new timetable
-      setSelectedTimetable(nextIndex);
       // Clearing the selected courses, classes and created events for the new timetable
-      setSelectedCourses([]);
-      setSelectedClasses({});
-      setCreatedEvents({});
+      setTimetableState([], {}, {}, nextIndex);
     }
   };
 
@@ -97,10 +101,8 @@ const TimetableTabs: React.FC = () => {
    */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetableIndex: number) => {
-    setSelectedCourses(displayTimetables[timetableIndex].selectedCourses);
-    setSelectedClasses(displayTimetables[timetableIndex].selectedClasses);
-    setCreatedEvents(displayTimetables[timetableIndex].createdEvents);
-    setSelectedTimetable(timetableIndex);
+    const { selectedCourses, selectedClasses, createdEvents } = displayTimetables[timetableIndex];
+    setTimetableState(selectedCourses, selectedClasses, createdEvents, timetableIndex);
   };
 
   // Reordering the tabs when they are dragged and dropped
