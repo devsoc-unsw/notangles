@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, Tooltip } from '@mui/material';
+import { Tab, Tooltip } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';

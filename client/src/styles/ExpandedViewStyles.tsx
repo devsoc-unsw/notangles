@@ -18,3 +18,12 @@ export const StyledTitleContainer = styled(Box)`
 export const StyledDialogContent = styled(DialogContent)`
   padding-bottom: 20px;
 `;
+
+export const StyledDialogButtons = styled(Box)`
+display: flex;
+flex-direction: row;
+justify-content: flex-end;
+align-items: flex-end;
+padding-bottom: 5px;
+padding-right: 5px;
+`;

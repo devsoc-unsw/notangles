@@ -1,40 +1,28 @@
 import {
-  Box,
   MenuItem,
-  Menu,
   Dialog,
-  DialogTitle,
   TextField,
-  DialogActions,
   Button,
   Tooltip,
-  Tab,
   ListItemIcon,
   ListItemText,
   Divider,
   ListItem,
   Grid,
   IconButton,
-  styled,
-  ListItemIconProps,
-  Typography,
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { ContentCopy, EditOutlined, DeleteOutline, Edit, Delete, Save, Close } from '@mui/icons-material';
-import { ExecuteButton, StyledListItem, StyledMenu } from '../../styles/CustomEventStyles';
-import { darkTheme, lightTheme } from '../../constants/theme';
+import { ContentCopy, Edit, Delete, Save, Close } from '@mui/icons-material';
+import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
 import { Activity, ClassData, TimetableData, InInventory, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
-import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
-import { StyledTabPanel } from '../../styles/CustomEventStyles';
-import { TabContext, TabList } from '@mui/lab';
 import { EditNote } from '@mui/icons-material';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer, StyledDialogButtons } from '../../styles/ExpandedViewStyles';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -57,25 +45,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   let deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
-
-  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
-
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');
   const [renamedHelper, setRenamedHelper] = useState<string>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
-
-  const StyledDialogButtons = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: flex-end;
-  padding-bottom: 5px;
-  padding-right: 5px;
-`;
 
   // Helper function to set the timetable state
   const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
@@ -335,33 +310,36 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   }, [renameOpen]);
 
   return (
-    <StyledMenu
-      open={anchorElement !== null}
-      anchorReference="anchorPosition"
-      anchorPosition={anchorElement !== null ? { top: anchorElement.y, left: anchorElement.x } : undefined}
-      onClose={handleMenuClose}
-      autoFocus={false}
-    >
-      <MenuItem onClick={handleRenameOpen}>
-        <ListItemIcon>
-          <Edit fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Edit</ListItemText>
-      </MenuItem>
-      <MenuItem onClick={handleDuplicateTimetable}>
-        <ListItemIcon>
-          <ContentCopy fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Duplicate</ListItemText>
-      </MenuItem>
-      <Divider />
-      <MenuItem onClick={() => setDeleteOpen(true)}>
-        <ListItemIcon>
-          <Delete fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Delete</ListItemText>
-      </MenuItem>
-
+    <>
+      <StyledMenu
+        open={anchorElement !== null}
+        anchorReference="anchorPosition"
+        anchorPosition={anchorElement !== null ? { top: anchorElement.y, left: anchorElement.x } : undefined}
+        onClose={handleMenuClose}
+        autoFocus={false}
+      >
+        <MenuItem onClick={handleRenameOpen}>
+          <ListItemIcon>
+            <Edit fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleDuplicateTimetable}>
+          <ListItemIcon>
+            <ContentCopy fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Duplicate</ListItemText>
+        </MenuItem>
+        <Divider />
+        <Tooltip title={deleteTimetabletip}>
+          <MenuItem onClick={() => setDeleteOpen(true)}>
+            <ListItemIcon>
+              <Delete fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Tooltip>
+      </StyledMenu >
       {/* Rename timetable Dialog  */}
       <Dialog open={renameOpen} maxWidth="sm" onClose={() => handleRenameClose(false)}>
         <StyledDialogTitle>
@@ -416,13 +394,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           >
             Cancel
           </Button>
-          <Button onClick={() => {
-            handleDeleteTimetable(selectedTimetable);
-            handleMenuClose();
-          }}>Delete</Button>
+          <Button
+            id="confirm-delete-button"
+            onClick={() => {
+              handleDeleteTimetable(selectedTimetable);
+              handleMenuClose();
+            }}>Delete</Button>
         </StyledDialogButtons>
       </Dialog>
-    </StyledMenu >
+    </>
   );
 };
 

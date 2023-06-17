@@ -38,7 +38,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   return (
     <>
       <StyledListItem>
-      <ListItemIcon>
+        <ListItemIcon>
           <Event />
         </ListItemIcon>
         <TextField
