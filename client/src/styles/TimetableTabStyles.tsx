@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs, Theme, styled } from '@mui/material';
+import { Box, Tab, Tabs, Theme, styled, Snackbar } from '@mui/material';
 
 export const TimetableTabsContainer = styled(Box)`
   padding-top: 10px;

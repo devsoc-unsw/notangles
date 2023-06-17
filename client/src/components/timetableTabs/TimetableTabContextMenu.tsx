@@ -10,17 +10,17 @@ import {
   ListItem,
   Grid,
   IconButton,
+  Snackbar,
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { ContentCopy, Edit, Delete, Save, Close } from '@mui/icons-material';
+import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
 import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
 import { Activity, ClassData, TimetableData, InInventory, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
-import { EditNote } from '@mui/icons-material';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer, StyledDialogButtons } from '../../styles/ExpandedViewStyles';
 
@@ -28,15 +28,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const TIMETABLE_LIMIT = 13;
 
   const {
-    isDarkMode,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
     setAlertMsg,
     setAlertFunction,
+    alertFunction,
     setErrorVisibility,
-    setAutoVisibility,
+    isDarkMode
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
@@ -50,6 +50,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const [renamedHelper, setRenamedHelper] = useState<string>('');
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  const [openRestoreAlert, setOpenRestoreAlert] = useState<boolean>(false);
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
   // Helper function to set the timetable state
@@ -130,15 +131,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       const { selectedCourses, selectedClasses, createdEvents } = newTimetables[newIndex];
       setTimetableState(selectedCourses, selectedClasses, createdEvents, newIndex);
 
-      // Prompting they user to undo the current tab deletion
-      setAlertMsg('Deleted timetable - Click here to undo');
+      setOpenRestoreAlert(true);
+
+      // If user chooses to undo the deletion then we will restore the previous state
       setAlertFunction(() => () => {
         setDisplayTimetables(prevTimetables.timetables);
         const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
         setTimetableState(selectedCourses, selectedClasses, createdEvents, prevTimetables.selected);
         return;
       });
-      setAutoVisibility(true);
     } else {
       setAlertMsg('Must have at least 1 timetable');
       setErrorVisibility(true);
@@ -309,6 +310,30 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     };
   }, [renameOpen]);
 
+
+  /**
+   * Function to handle the restore deleted timetable snackbar
+   */
+  // Action button for the restore deleted timetable snackbar
+  const restoreTimetable = (
+    <React.Fragment>
+      <ExecuteButton onClick={() => {
+        alertFunction();
+        setOpenRestoreAlert(false);
+      }}>
+        UNDO
+      </ExecuteButton>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={() => setOpenRestoreAlert(false)}
+      >
+        <Close fontSize="small" />
+      </IconButton>
+    </React.Fragment >
+  );
+
   return (
     <>
       <StyledMenu
@@ -402,6 +427,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
             }}>Delete</Button>
         </StyledDialogButtons>
       </Dialog>
+      {/* Restore deleted timetable Alert */}
+      <Snackbar
+        open={openRestoreAlert}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() => setOpenRestoreAlert(false)}
+        message="Timetable Deleted"
+        action={restoreTimetable}
+      />
     </>
   );
 };
