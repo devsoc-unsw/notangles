@@ -18,7 +18,7 @@ const StyledTimetable = styled(Box, {
 }>`
   display: grid;
   min-width: ${timetableWidth}px;
-  padding: ${contentPadding}px;
+  padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: 1px;
