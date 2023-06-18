@@ -59,8 +59,7 @@ export const tabThemeDark: TabTheme = {
 export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
   '& .MuiSnackbarContent-root': {
     backgroundColor: theme.palette.mode === 'dark' ? '#444444' : '#ffffff',
-    color: '#3a76f8',
-    fontWeight: '500',
+    color: theme.palette.mode === 'dark' ? '#ffffff' : '#2f2f2f',
   },
 }));
 

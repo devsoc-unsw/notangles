@@ -322,17 +322,17 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Action button for the restore deleted timetable snackbar
   const restoreTimetable = (
     <>
-      <Button size="small" onClick={() => {
+      <Button sx={{ color: '#3a76f8', fontSize: 'small' }} onClick={() => {
         alertFunction();
         setOpenRestoreAlert(false);
       }}>
         Undo
       </Button>
       <IconButton
-        size="small"
         aria-label="close"
         color="inherit"
         onClick={handleRestoreClose}
+        sx={{ color: '#3a76f8' }}
       >
         <Close fontSize="small" />
       </IconButton>
