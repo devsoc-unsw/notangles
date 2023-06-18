@@ -56,6 +56,14 @@ export const tabThemeDark: TabTheme = {
   tabSelectedText: '#ffffff',
 };
 
+export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
+  '& .MuiSnackbarContent-root': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#444444' : '#ffffff',
+    color: '#3a76f8',
+    fontWeight: '500',
+  },
+}));
+
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
   const AddIconStyle = {
     position: 'sticky',

@@ -10,7 +10,6 @@ import {
   ListItem,
   Grid,
   IconButton,
-  Snackbar,
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
@@ -23,6 +22,7 @@ import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer, StyledDialogButtons } from '../../styles/ExpandedViewStyles';
+import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -314,24 +314,29 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   /**
    * Function to handle the restore deleted timetable snackbar
    */
+  // Closes the restore deleted timetable alert
+  const handleRestoreClose = () => {
+    setOpenRestoreAlert(false)
+  }
+
   // Action button for the restore deleted timetable snackbar
   const restoreTimetable = (
-    <React.Fragment>
-      <ExecuteButton onClick={() => {
+    <>
+      <Button size="small" onClick={() => {
         alertFunction();
         setOpenRestoreAlert(false);
       }}>
-        UNDO
-      </ExecuteButton>
+        Undo
+      </Button>
       <IconButton
         size="small"
         aria-label="close"
         color="inherit"
-        onClick={() => setOpenRestoreAlert(false)}
+        onClick={handleRestoreClose}
       >
         <Close fontSize="small" />
       </IconButton>
-    </React.Fragment >
+    </>
   );
 
   return (
@@ -428,7 +433,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         </StyledDialogButtons>
       </Dialog>
       {/* Restore deleted timetable Alert */}
-      <Snackbar
+      <StyledSnackbar
         open={openRestoreAlert}
         autoHideDuration={5000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
