@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip } from '@mui/material';
+import { Box, Tabs, Tab, MenuItem, Menu, Dialog, DialogTitle, TextField, DialogActions, Button, Tooltip, ButtonBase, IconButton } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
@@ -13,6 +13,7 @@ import { createDateWithTime } from '../utils/eventTimes';
 import { v4 as uuidv4 } from 'uuid';
 import zIndex from '@mui/material/styles/zIndex';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import AddIcon from '@mui/icons-material/Add';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -150,9 +151,9 @@ const TimetableTabs: React.FC = () => {
     let style = {
       boxShadow: '',
       maxWidth: '360px',
-      minHeight: '42px',
+      minHeight: '50px',
       minWidth: '150px',
-      padding: '3px 12px',
+      padding: '3px 16px',
       backgroundColor: '',
       borderStyle: 'solid',
       borderWidth: '0px',
@@ -168,6 +169,10 @@ const TimetableTabs: React.FC = () => {
       textTransform: 'uppercase',
       fontSize: '0.875rem',
       fontWeight: '500',
+      fontFamily: "Roboto,Helvetica,Arial",
+      lineHeight: '1.25',
+      letterSpacing: '0.02857em',
+      flexShrink: '0',
       zIndex: '',
       '&:active': {
         cursor: 'move',
@@ -188,6 +193,7 @@ const TimetableTabs: React.FC = () => {
       style.borderWidth = '1px';
       style.borderColor = `${theme.palette.primary.main}`;
       style.zIndex = '1';
+      style.minWidth = '130px';
     }
 
     return style;
@@ -574,7 +580,7 @@ const TimetableTabs: React.FC = () => {
           </MenuItem>
         </Tooltip>
       </Menu>
-      <Box style={{ display: 'flex' }}>
+      <Box sx={TabContainerStyle2}>
         <DragDropContext
           onDragEnd={handleSortTabs2}
         >
@@ -588,7 +594,7 @@ const TimetableTabs: React.FC = () => {
                 {displayTimetables.map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
-                      <Box
+                      <ButtonBase
                         ref={props.innerRef}
                         {...props.draggableProps}
                         {...props.dragHandleProps}
@@ -606,7 +612,7 @@ const TimetableTabs: React.FC = () => {
                             <></>
                           )
                         }
-                      </Box>
+                      </ButtonBase>
                     )}
                   </Draggable>
                 ))}
@@ -614,12 +620,14 @@ const TimetableTabs: React.FC = () => {
               </Box>
             )}
           </Droppable>
-          <Tooltip title={addTimetabletip}>
-            <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
-          </Tooltip>
         </DragDropContext>
+        <Tooltip title={addTimetabletip}>
+          <IconButton id="create-timetables-button" onClick={handleCreateTimetable} sx={AddIconStyle}>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
-      <Box style={{ display: 'flex' }}>
+      {/* <Box style={{ display: 'flex' }}>
         <DragDropContext
           onDragEnd={handleSortTabs2}
         >
@@ -636,31 +644,28 @@ const TimetableTabs: React.FC = () => {
                 {displayTimetables.map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
-                      <Tab
-                        ref={props.innerRef}
+                      <div ref={props.innerRef}
                         {...props.draggableProps}
-                        {...props.dragHandleProps}
-                        key={index}
-                        label={timetable.name}
-                        sx={TabStyle(index)}
-                        onClick={() => handleSwitchTimetables(index)}
-                        onContextMenu={(e) => handleRightTabClick(e, index)}
-                        icon={
-                          selectedTimetable === index ? (
-                            <span onClick={handleMenuClick}>
-                              <MoreHoriz />
-                            </span>
-                          ) : (
-                            <></>
-                          )
-                        }
-                        iconPosition="end"
-                        onDragStart={(e) => handleTabDragStart(e, index)}
-                        onDragEnter={(e) => handleTabDragEnter(e, index)}
-                        onDragEnd={handleSortTabs}
-                        onDragOver={(e) => e.preventDefault()}
-                      />
-
+                      >
+                        <span {...props.dragHandleProps}>||</span>
+                        <Tab
+                          key={index}
+                          label={timetable.name}
+                          sx={TabStyle(index)}
+                          onClick={() => handleSwitchTimetables(index)}
+                          onContextMenu={(e) => handleRightTabClick(e, index)}
+                          icon={
+                            selectedTimetable === index ? (
+                              <span onClick={handleMenuClick}>
+                                <MoreHoriz />
+                              </span>
+                            ) : (
+                              <></>
+                            )
+                          }
+                          iconPosition="end"
+                        />
+                      </div>
                     )}
                   </Draggable>
                 ))}
@@ -672,9 +677,9 @@ const TimetableTabs: React.FC = () => {
             <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
           </Tooltip>
         </DragDropContext>
-      </Box>
+      </Box> */}
 
-      <Tabs
+      {/* <Tabs
         value={selectedTimetable}
         sx={TabContainerStyle}
         TabIndicatorProps={{ style: { display: 'none' } }}
@@ -707,7 +712,7 @@ const TimetableTabs: React.FC = () => {
         <Tooltip title={addTimetabletip}>
           <Tab id="create-timetables-button" icon={<Add />} onClick={handleCreateTimetable} sx={AddIconStyle} />
         </Tooltip>
-      </Tabs>
+      </Tabs> */}
       <Dialog onClose={() => handleRenameClose(false)} open={renameOpen}>
         <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Rename Timetable</DialogTitle>
         <Box
