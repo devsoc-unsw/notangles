@@ -9,6 +9,10 @@ import {
   TimetableData,
 } from '../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
+import { createEventObj } from './createEvent';
+
+export type TimetableActions = Record<string, Action[]>;
+export type ActionsPointer = Record<string, number>;
 
 /**
  * @param selectedClasses The currently selected classes
@@ -27,6 +31,25 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
   });
 
   return newClasses;
+};
+
+// Used to create a deep copy of createdEvents to avoid mutating the original
+const duplicateEvents = (oldEvents: CreatedEvents) => {
+  const newEvents: CreatedEvents = {};
+
+  Object.entries(oldEvents).forEach(([code, period]) => {
+    const newEvent = createEventObj(
+      period.event.name,
+      period.event.location,
+      period.event.description,
+      period.event.color,
+      period.time.day,
+      period.time.start,
+      period.time.end
+    );
+    newEvents[newEvent.event.id] = newEvent;
+  });
+  return newEvents;
 };
 
 /**
@@ -84,10 +107,10 @@ const areIdenticalEvents = (curr: CreatedEvents, next: CreatedEvents) => {
   return true;
 };
 
-const extractHistoryInfo = (timetableId: string, timetableActions: any, actionsPointer: any) => {
-  const courses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses;
-  const classes = duplicateClasses(timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes);
-  const events = timetableActions.current[timetableId][actionsPointer.current[timetableId]].events;
+const extractHistoryInfo = (timetableId: string, timetableActions: TimetableActions, actionsPointer: ActionsPointer) => {
+  const courses = timetableActions[timetableId][actionsPointer[timetableId]].courses;
+  const classes = duplicateClasses(timetableActions[timetableId][actionsPointer[timetableId]].classes);
+  const events = timetableActions[timetableId][actionsPointer[timetableId]].events;
   return { courses: courses, classes: classes, events: events };
 };
 
@@ -120,6 +143,7 @@ const createDefaultTimetable = (): TimetableData[] => {
 
 export {
   duplicateClasses,
+  duplicateEvents,
   areIdenticalClasses,
   areIdenticalEvents,
   areIdenticalTimetables,

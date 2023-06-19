@@ -17,12 +17,17 @@ import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
 import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
 import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
-import { Activity, ClassData, TimetableData, InInventory, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
-import { createEventObj } from '../../utils/createEvent';
+import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer, StyledDialogButtons } from '../../styles/ExpandedViewStyles';
+import {
+  StyledDialogContent,
+  StyledDialogTitle,
+  StyledTitleContainer,
+  StyledDialogButtons,
+} from '../../styles/ExpandedViewStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
+import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -36,7 +41,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setAlertFunction,
     alertFunction,
     setErrorVisibility,
-    isDarkMode
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
@@ -54,49 +58,16 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
   // Helper function to set the timetable state
-  const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
+  const setTimetableState = (
+    selectedCourses: CourseData[],
+    selectedClasses: SelectedClasses,
+    createdEvents: CreatedEvents,
+    timetableIndex: number
+  ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
     setCreatedEvents(createdEvents);
     setSelectedTimetable(timetableIndex);
-  }
-
-  /**
-   * DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables
-   */
-  // Used to create a deep copy of selectedClasses to avoid mutating the original
-  const duplicateClasses = (selectedClasses: SelectedClasses) => {
-    const newClasses: SelectedClasses = {};
-
-    Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
-      const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
-
-      Object.entries(activities).forEach(([activity, classData]) => {
-        newActivityCopy[activity] = classData !== null ? { ...classData } : null;
-      });
-      newClasses[courseCode] = { ...newActivityCopy };
-    });
-
-    return newClasses;
-  };
-
-  // Used to create a deep copy of createdEvents to avoid mutating the original
-  const duplicateEvents = (oldEvents: CreatedEvents) => {
-    const newEvents: CreatedEvents = {};
-
-    Object.entries(oldEvents).forEach(([code, period]) => {
-      const newEvent = createEventObj(
-        period.event.name,
-        period.event.location,
-        period.event.description,
-        period.event.color,
-        period.time.day,
-        period.time.start,
-        period.time.end
-      );
-      newEvents[newEvent.event.id] = newEvent;
-    });
-    return newEvents;
   };
 
   /**
@@ -310,30 +281,27 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     };
   }, [renameOpen]);
 
-
   /**
    * Function to handle the restore deleted timetable snackbar
    */
   // Closes the restore deleted timetable alert
   const handleRestoreClose = () => {
-    setOpenRestoreAlert(false)
-  }
+    setOpenRestoreAlert(false);
+  };
 
   // Action button for the restore deleted timetable snackbar
   const restoreTimetable = (
     <>
-      <Button sx={{ color: '#3a76f8', fontSize: 'small' }} onClick={() => {
-        alertFunction();
-        setOpenRestoreAlert(false);
-      }}>
+      <Button
+        sx={{ color: '#3a76f8', fontSize: 'small' }}
+        onClick={() => {
+          alertFunction();
+          setOpenRestoreAlert(false);
+        }}
+      >
         Undo
       </Button>
-      <IconButton
-        aria-label="close"
-        color="inherit"
-        onClick={handleRestoreClose}
-        sx={{ color: '#3a76f8' }}
-      >
+      <IconButton aria-label="close" color="inherit" onClick={handleRestoreClose} sx={{ color: '#3a76f8' }}>
         <Close fontSize="small" />
       </IconButton>
     </>
@@ -369,7 +337,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
             <ListItemText>Delete</ListItemText>
           </MenuItem>
         </Tooltip>
-      </StyledMenu >
+      </StyledMenu>
       {/* Rename timetable Dialog  */}
       <Dialog open={renameOpen} maxWidth="sm" onClose={() => handleRenameClose(false)}>
         <StyledDialogTitle>
@@ -419,17 +387,16 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           <StyledDialogContent>Delete current timetable?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
-          <Button
-            onClick={handleMenuClose}
-          >
-            Cancel
-          </Button>
+          <Button onClick={handleMenuClose}>Cancel</Button>
           <Button
             id="confirm-delete-button"
             onClick={() => {
               handleDeleteTimetable(selectedTimetable);
               handleMenuClose();
-            }}>Delete</Button>
+            }}
+          >
+            Delete
+          </Button>
         </StyledDialogButtons>
       </Dialog>
       {/* Restore deleted timetable Alert */}

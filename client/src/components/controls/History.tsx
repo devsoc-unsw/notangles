@@ -4,16 +4,15 @@ import { IconButton, Tooltip, Dialog, Button, Box, styled } from '@mui/material'
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { StyledDialogContent, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
-import { Action, CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
+import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import {
   duplicateClasses,
   areIdenticalTimetables,
   extractHistoryInfo,
   createDefaultTimetable,
+  TimetableActions,
+  ActionsPointer,
 } from '../../utils/timetableHelpers';
-
-type TimetableActions = Record<string, Action[]>;
-type ActionsPointer = Record<string, number>;
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
@@ -46,7 +45,7 @@ const History: React.FC = () => {
     padding-right: 5px;
   `;
 
-  const setTimetableStates = (
+  const setTimetableState = (
     courses: CourseData[],
     classes: SelectedClasses,
     events: CreatedEvents,
@@ -96,27 +95,18 @@ const History: React.FC = () => {
       actionsPointer.current[currentTimetable.id] = -initialIndex;
     }
 
-    if (
-      areIdenticalTimetables(
-        timetableActions.current[currentTimetable.id],
-        actionsPointer.current[currentTimetable.id],
-        selectedClasses,
-        createdEvents,
-        currentTimetable
-      )
-    ) {
+    const currentActions = timetableActions.current[currentTimetable.id];
+    const currentPointer = actionsPointer.current[currentTimetable.id];
+    if (areIdenticalTimetables(currentActions, currentPointer, selectedClasses, createdEvents, currentTimetable)) {
       return;
     }
 
     // Discard remaining redos as we branched off by making an action
-    if (timetableActions.current[currentTimetable.id].length > actionsPointer.current[currentTimetable.id] + 1) {
-      timetableActions.current[currentTimetable.id] = timetableActions.current[currentTimetable.id].slice(
-        0,
-        actionsPointer.current[currentTimetable.id] + 1
-      );
+    if (currentActions.length > currentPointer + 1) {
+      timetableActions.current[currentTimetable.id] = currentActions.slice(0, currentPointer + 1);
     }
 
-    timetableActions.current[currentTimetable.id].push({
+    currentActions.push({
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
@@ -172,11 +162,9 @@ const History: React.FC = () => {
     }
 
     const timetableId = displayTimetables[selectedTimetable].id;
-    setDisableLeft(!actionsPointer.current[timetableId] || actionsPointer.current[timetableId] < 1);
-    setDisableRight(
-      !actionsPointer.current[timetableId] ||
-        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
-    );
+    const currentPointer = actionsPointer.current[timetableId];
+    setDisableLeft(currentPointer === undefined || currentPointer < 1);
+    setDisableRight(currentPointer === undefined || currentPointer + 1 >= timetableActions.current[timetableId].length);
   }, [selectedTimetable]);
 
   /**
@@ -196,15 +184,15 @@ const History: React.FC = () => {
       });
     };
 
-    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions, actionsPointer);
-    setTimetableStates(courses, classes, events, modifyTimetableName);
+    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
+    setTimetableState(courses, classes, events, modifyTimetableName);
   };
 
   /**
    * Resets all timetables - leave one default
    */
   const clearAll = () => {
-    setTimetableStates([], {}, {}, createDefaultTimetable(), 0);
+    setTimetableState([], {}, {}, createDefaultTimetable(), 0);
   };
   /**
    * Reset current timetable and selected courses to be completely empty
@@ -221,7 +209,7 @@ const History: React.FC = () => {
       return newArray;
     };
 
-    setTimetableStates([], {}, {}, clearFunc);
+    setTimetableState([], {}, {}, clearFunc);
   };
 
   /**
