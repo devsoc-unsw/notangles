@@ -272,6 +272,7 @@ const History: React.FC = () => {
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
+            disabled={disableReset.all}
             onClick={() => {
               clearAll();
               setClearOpen(false);
@@ -280,6 +281,7 @@ const History: React.FC = () => {
             All
           </Button>
           <Button
+            disabled={disableReset.current}
             onClick={() => {
               clearOne();
               setClearOpen(false);

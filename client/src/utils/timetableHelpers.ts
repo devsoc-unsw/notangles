@@ -121,6 +121,10 @@ const areIdenticalTimetables = (
   createdEvents: CreatedEvents,
   currentTimetable: TimetableData
 ): boolean => {
+  // This signifies that history has not been instantiated for this timetable yet, but will be at the end of the useEffect in history.ts
+  if (currentPointer === -1) {
+    return false;
+  }
   return (
     currentActions.length > 0 &&
     areIdenticalClasses(currentActions[currentPointer].classes, selectedClasses) &&
