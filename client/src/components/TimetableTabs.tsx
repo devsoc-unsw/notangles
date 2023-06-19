@@ -106,6 +106,7 @@ const TimetableTabs: React.FC = () => {
     backgroundColor: `${tabTheme.containerBackground}`,
     borderRadius: '10px 10px 0 0',
     display: 'flex',
+    width: 'max-content'
   };
 
 
@@ -151,8 +152,8 @@ const TimetableTabs: React.FC = () => {
     let style = {
       boxShadow: '',
       maxWidth: '360px',
-      minHeight: '50px',
-      minWidth: '150px',
+      minHeight: '42px',
+      minWidth: '118px',
       padding: '3px 16px',
       backgroundColor: '',
       borderStyle: 'solid',
@@ -193,7 +194,6 @@ const TimetableTabs: React.FC = () => {
       style.borderWidth = '1px';
       style.borderColor = `${theme.palette.primary.main}`;
       style.zIndex = '1';
-      style.minWidth = '130px';
     }
 
     return style;
@@ -594,7 +594,7 @@ const TimetableTabs: React.FC = () => {
                 {displayTimetables.map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
-                      <ButtonBase
+                      <Box
                         ref={props.innerRef}
                         {...props.draggableProps}
                         {...props.dragHandleProps}
@@ -612,7 +612,7 @@ const TimetableTabs: React.FC = () => {
                             <></>
                           )
                         }
-                      </ButtonBase>
+                      </Box>
                     )}
                   </Draggable>
                 ))}
