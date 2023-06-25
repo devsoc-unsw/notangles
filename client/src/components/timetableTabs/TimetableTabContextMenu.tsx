@@ -332,9 +332,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         <Tooltip title={deleteTimetabletip}>
           <MenuItem onClick={() => setDeleteOpen(true)}>
             <ListItemIcon>
-              <Delete fontSize="small" />
+              <Delete fontSize="small" sx={{ color: 'red', opacity: '85%' }} />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText sx={{ color: 'red', opacity: '85%' }}>Delete</ListItemText>
           </MenuItem>
         </Tooltip>
       </StyledMenu>

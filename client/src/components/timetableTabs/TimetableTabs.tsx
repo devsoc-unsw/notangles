@@ -162,7 +162,7 @@ const TimetableTabs: React.FC = () => {
             onContextMenu={(e) => handleRightTabClick(e, index)}
             icon={
               selectedTimetable === index ? (
-                <ExpandButton onClick={handleMenuClick} sx={{ color: 'primary' }}>
+                <ExpandButton onClick={handleMenuClick} sx={{ color: 'primary', opacity: '70%', }}>
                   <MoreHoriz />
                 </ExpandButton>
               ) : (

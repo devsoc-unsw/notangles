@@ -194,23 +194,6 @@ const History: React.FC = () => {
   const clearAll = () => {
     setTimetableState([], {}, {}, createDefaultTimetable(), 0);
   };
-  /**
-   * Reset current timetable and selected courses to be completely empty
-   */
-  const clearOne = () => {
-    const clearFunc = (prev: TimetableData[]) => {
-      const newArray = [...prev];
-      newArray[selectedTimetable] = {
-        ...newArray[selectedTimetable],
-        selectedCourses: [],
-        selectedClasses: {},
-        createdEvents: {},
-      };
-      return newArray;
-    };
-
-    setTimetableState([], {}, {}, clearFunc);
-  };
 
   /**
    * Undo/redo accordingly when a hotkey is pressed
@@ -220,15 +203,18 @@ const History: React.FC = () => {
     // event.metaKey corresponds to the Cmd key on Mac
     if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
 
+    const currentTimetable = displayTimetables[selectedTimetable];
+
     event.preventDefault();
 
     if (!isMacOS && event.ctrlKey) {
-      if (event.key === 'z' && actionsPointer.current[selectedTimetable] > 1) {
+      if (event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
         changeHistory(-1);
       }
       if (
         event.key === 'y' &&
-        actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length
+        !disableRight &&
+        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
       ) {
         changeHistory(1);
       }
@@ -238,13 +224,18 @@ const History: React.FC = () => {
     }
 
     if (isMacOS && event.metaKey) {
-      if (!event.shiftKey && event.key === 'z' && actionsPointer.current[selectedTimetable] > 1) {
+      if (!event.shiftKey &&
+        event.key === 'z' &&
+        !disableLeft &&
+        actionsPointer.current[currentTimetable.id] > 1
+      ) {
         changeHistory(-1);
       }
       if (
         event.shiftKey &&
         event.key === 'z' &&
-        actionsPointer.current[selectedTimetable] + 1 < timetableActions.current[selectedTimetable].length
+        !disableRight &&
+        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
       ) {
         changeHistory(1);
       }
@@ -257,7 +248,7 @@ const History: React.FC = () => {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
-  }, []);
+  }, [disableLeft, disableRight]);
 
   let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
   let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
@@ -268,26 +259,25 @@ const History: React.FC = () => {
       {/* Clear timetable(s) Dialog  */}
       <Dialog maxWidth="xs" onClose={() => setClearOpen(false)} open={clearOpen}>
         <StyledTitleContainer>
-          <StyledDialogContent>Clear timetable data?</StyledDialogContent>
+          <StyledDialogContent>Clear all timetables?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
             disabled={disableReset.all}
             onClick={() => {
-              clearAll();
               setClearOpen(false);
             }}
           >
-            All
+            CANCEL
           </Button>
           <Button
             disabled={disableReset.current}
             onClick={() => {
-              clearOne();
+              clearAll();
               setClearOpen(false);
             }}
           >
-            Current
+            CLEAR
           </Button>
         </StyledDialogButtons>
       </Dialog>
