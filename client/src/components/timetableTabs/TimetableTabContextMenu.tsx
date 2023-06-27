@@ -1,15 +1,14 @@
 import {
-  MenuItem,
-  Dialog,
-  TextField,
   Button,
-  Tooltip,
+  Dialog,
+  Divider,
+  IconButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   ListItem,
-  Grid,
-  IconButton,
+  MenuItem,
+  TextField,
+  Tooltip,
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
@@ -21,11 +20,12 @@ import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../..
 import { v4 as uuidv4 } from 'uuid';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import {
+  StyledDialogButtons,
   StyledDialogContent,
   StyledDialogTitle,
   StyledTitleContainer,
-  StyledDialogButtons,
-} from '../../styles/ExpandedViewStyles';
+  StyledTopIcons,
+} from '../../styles/ControlStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 
@@ -320,7 +320,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           <ListItemIcon>
             <Edit fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Edit</ListItemText>
+          <ListItemText>Rename</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleDuplicateTimetable}>
           <ListItemIcon>
@@ -340,15 +340,13 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       </StyledMenu>
       {/* Rename timetable Dialog  */}
       <Dialog open={renameOpen} maxWidth="sm" onClose={() => handleRenameClose(false)}>
+        <StyledTopIcons>
+          <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
+            <Close />
+          </IconButton>
+        </StyledTopIcons>
         <StyledDialogTitle>
-          <StyledTitleContainer>
-            <>Rename Timetable</>
-            <Grid container justifyContent="flex-end" alignItems="center">
-              <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
-                <Close />
-              </IconButton>
-            </Grid>
-          </StyledTitleContainer>
+          <StyledTitleContainer>Rename Timetable</StyledTitleContainer>
         </StyledDialogTitle>
         <StyledDialogContent>
           <ListItem>

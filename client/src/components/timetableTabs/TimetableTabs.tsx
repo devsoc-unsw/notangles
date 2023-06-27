@@ -1,23 +1,23 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Add, MoreHoriz } from '@mui/icons-material';
 import { Tab, Tooltip } from '@mui/material';
-import React, { useContext, useState, useEffect } from 'react';
+import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import storage from '../../utils/storage';
-import { Add, MoreHoriz } from '@mui/icons-material';
-import { darkTheme, lightTheme } from '../../constants/theme';
 import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
-import { v4 as uuidv4 } from 'uuid';
+import { ExpandButton } from '../../styles/DroppedCardStyles';
 import {
+  createTimetableStyle,
   TabTheme,
   tabThemeDark,
   tabThemeLight,
-  createTimetableStyle,
   TimetableTabsContainer,
   TimetableTabContainer,
   StyledTab,
 } from '../../styles/TimetableTabStyles';
+import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
-import { ExpandButton } from '../../styles/DroppedCardStyles';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -52,12 +52,17 @@ const TimetableTabs: React.FC = () => {
   }, [isDarkMode]);
 
   // Helper function to set the timetable state
-  const setTimetableState = (selectedCourses: CourseData[], selectedClasses: SelectedClasses, createdEvents: CreatedEvents, timetableIndex: number) => {
+  const setTimetableState = (
+    selectedCourses: CourseData[],
+    selectedClasses: SelectedClasses,
+    createdEvents: CreatedEvents,
+    timetableIndex: number
+  ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
     setCreatedEvents(createdEvents);
     setSelectedTimetable(timetableIndex);
-  }
+  };
 
   /**
    * Timetable handlers
@@ -162,7 +167,7 @@ const TimetableTabs: React.FC = () => {
             onContextMenu={(e) => handleRightTabClick(e, index)}
             icon={
               selectedTimetable === index ? (
-                <ExpandButton onClick={handleMenuClick} sx={{ color: 'primary', opacity: '70%', }}>
+                <ExpandButton onClick={handleMenuClick} sx={{ color: 'primary', opacity: '70%' }}>
                   <MoreHoriz />
                 </ExpandButton>
               ) : (

@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, DialogContent, DialogTitle, ListItem } from '@mui/material';
 import { styled } from '@mui/system';
 
 export const StyledButtonText = styled(Box)`
@@ -27,4 +27,44 @@ export const ColorIndicatorBox = styled(Box, {
 
 export const StyledButtonContainer = styled(Box)`
   padding-left: 16px;
+`;
+
+export const StyledTopIcons = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 10px 10px 0px 10px;
+`;
+
+export const StyledDialogButtons = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-right: 5px;
+`;
+
+export const StyledDialogTitle = styled(DialogTitle)`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+`;
+
+export const StyledDialogContent = styled(DialogContent)`
+  padding: 20px;
+`;
+
+export const StyledTitleContainer = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 0px 10px 0px 10px;
+`;
+
+export const StyledListItem = styled(ListItem)`
+  padding-top: 8px;
 `;

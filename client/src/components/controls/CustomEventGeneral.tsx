@@ -3,7 +3,8 @@ import { ListItemIcon, TextField } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { daysShort } from '../../constants/timetable';
 import { CustomEventGeneralProps } from '../../interfaces/PropTypes';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItem } from '../../styles/ControlStyles';
 import { areValidEventTimes } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 

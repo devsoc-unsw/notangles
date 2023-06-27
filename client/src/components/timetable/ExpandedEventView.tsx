@@ -18,8 +18,14 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import {
+  StyledDialogContent,
+  StyledDialogTitle,
+  StyledListItem,
+  StyledTitleContainer,
+  StyledTopIcons,
+} from '../../styles/ControlStyles';
+import { ExecuteButton, StyledListItemText } from '../../styles/CustomEventStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
@@ -30,6 +36,10 @@ import DropdownOption from './DropdownOption';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
+`;
+
+const StyledEventLink = styled(TextField)`
+  flex-grow: 1;
 `;
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
@@ -197,15 +207,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
         <>
-          <StyledDialogTitle>
-            <StyledTitleContainer>
-              <Grid container justifyContent="flex-end" alignItems="center">
-                <IconButton aria-label="close" onClick={handleCloseDialog}>
-                  <Close />
-                </IconButton>
-              </Grid>
-            </StyledTitleContainer>
-          </StyledDialogTitle>
+          <StyledTopIcons>
+            <Grid container justifyContent="flex-end" alignItems="center">
+              <IconButton aria-label="close" onClick={handleCloseDialog}>
+                <Close />
+              </IconButton>
+            </Grid>
+          </StyledTopIcons>
           <StyledDialogContent>
             <ListItem>
               <ListItemIcon>
@@ -314,21 +322,19 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             setIsEditing={setIsEditing}
             setOpenSaveDialog={setOpenSaveDialog}
           />
+          <StyledTopIcons>
+            <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
+              <Edit />
+            </IconButton>
+            <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
+              <Delete />
+            </IconButton>
+            <IconButton aria-label="close" onClick={handleCloseDialog}>
+              <Close />
+            </IconButton>
+          </StyledTopIcons>
           <StyledDialogTitle>
-            <StyledTitleContainer>
-              <>{name}</>
-              <Grid container justifyContent="flex-end" alignItems="center">
-                <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
-                  <Edit />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
-                  <Delete />
-                </IconButton>
-                <IconButton aria-label="close" onClick={handleCloseDialog}>
-                  <Close />
-                </IconButton>
-              </Grid>
-            </StyledTitleContainer>
+            <StyledTitleContainer>{name}</StyledTitleContainer>
           </StyledDialogTitle>
           <StyledDialogContent>
             {description.length > 0 && (
@@ -354,10 +360,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               </Typography>
             </StyledListItem>
             <StyledListItem>
-              <ListItemIcon>
+              <StyledListItemIcon isDarkMode={isDarkMode}>
                 <Link />
-              </ListItemIcon>
-              <TextField
+              </StyledListItemIcon>
+              <StyledEventLink
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -376,7 +382,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 }}
                 size="small"
                 value={btoa(JSON.stringify(eventPeriod))}
-              />
+              ></StyledEventLink>
             </StyledListItem>
           </StyledDialogContent>
         </>

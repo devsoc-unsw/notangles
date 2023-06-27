@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Delete, Undo } from '@mui/icons-material';
-import { IconButton, Tooltip, Dialog, Button, Box, styled } from '@mui/material';
+import { Delete, Redo, Undo } from '@mui/icons-material';
+import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { StyledDialogContent, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { StyledDialogButtons, StyledTitleContainer, StyledDialogContent } from '../../styles/ControlStyles';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import {
-  duplicateClasses,
-  areIdenticalTimetables,
-  extractHistoryInfo,
-  createDefaultTimetable,
-  TimetableActions,
   ActionsPointer,
+  areIdenticalTimetables,
+  createDefaultTimetable,
+  duplicateClasses,
+  extractHistoryInfo,
+  TimetableActions,
 } from '../../utils/timetableHelpers';
 
 // Two actions are created when the page first loads
@@ -35,15 +35,6 @@ const History: React.FC = () => {
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
-
-  const StyledDialogButtons = styled(Box)`
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding-bottom: 5px;
-    padding-right: 5px;
-  `;
 
   const setTimetableState = (
     courses: CourseData[],
@@ -224,11 +215,7 @@ const History: React.FC = () => {
     }
 
     if (isMacOS && event.metaKey) {
-      if (!event.shiftKey &&
-        event.key === 'z' &&
-        !disableLeft &&
-        actionsPointer.current[currentTimetable.id] > 1
-      ) {
+      if (!event.shiftKey && event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
         changeHistory(-1);
       }
       if (
