@@ -113,7 +113,7 @@ const App: React.FC = () => {
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120; // milliseconds
+  const fetchCooldown: number = 120; // 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
@@ -385,24 +385,32 @@ const App: React.FC = () => {
   };
 
   /**
+   * Upon switching timetable, reset default bounds
+   */
+  useEffect(() => {
+    setEarliestStartTime(getDefaultStartTime(isConvertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(isConvertToLocalTimezone));
+  }, [selectedTimetable]);
+
+  /**
    *  Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
    */
   const updateTimetableDaysAndTimes = () => {
-    setEarliestStartTime(
+    setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
-        earliestStartTime
+        prev
       )
     );
 
-    setLatestEndTime(
+    setLatestEndTime((prev: number) =>
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
-        latestEndTime
+        prev
       )
     );
 

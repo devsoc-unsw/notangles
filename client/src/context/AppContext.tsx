@@ -57,10 +57,12 @@ export interface IAppContext {
   setDays(callback: (oldDays: string[]) => string[]): void;
 
   earliestStartTime: number;
-  setEarliestStartTime: (newEarliestStartTime: number) => void;
+  setEarliestStartTime(newEarliestStartTime: number): void;
+  setEarliestStartTime(callback: (oldEarliestStartTime: number) => number): void;
 
   latestEndTime: number;
-  setLatestEndTime: (newLatestEndTime: number) => void;
+  setLatestEndTime(newLatestEndTime: number): void;
+  setLatestEndTime(callback: (oldLatestEndTime: number) => number): void;
 
   term: string;
   setTerm: (newTerm: string) => void;
