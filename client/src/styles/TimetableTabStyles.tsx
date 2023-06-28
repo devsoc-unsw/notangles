@@ -2,6 +2,7 @@ import { Box, Tab, Tabs, Theme, styled, Snackbar } from '@mui/material';
 
 export const TimetableTabsContainer = styled(Box)`
   padding-top: 10px;
+  padding-left: 66px;
   overflow: auto;
 `;
 
@@ -100,6 +101,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       '&:hover': {
         backgroundColor: `${tabTheme.tabHoverColor}`,
       },
+      borderRight: `1px solid ${theme.palette.secondary.main}`,
     };
   };
 
