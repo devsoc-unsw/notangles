@@ -1,9 +1,9 @@
-import { Box, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { Add, MoreHoriz } from '@mui/icons-material';
+import { MoreHoriz } from '@mui/icons-material';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { TimetableData } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
@@ -36,74 +36,12 @@ const TimetableTabs: React.FC = () => {
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
-  const dragTab = React.useRef<any>(null);
-  const dragOverTab = React.useRef<any>(null);
 
-  const { AddIconStyle, TabContainerStyle2, TabStyle } = createTimetableStyle(tabTheme, theme);
-
-  const TabStyle2 = (index: Number) => {
-    let style = {
-      boxShadow: '',
-      maxWidth: '360px',
-      minHeight: '42px',
-      minWidth: '118px',
-      padding: '3px 16px',
-      backgroundColor: '',
-      borderStyle: 'solid',
-      borderWidth: '0px',
-      borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor}`,
-      color: `${tabTheme.tabTextColor}`,
-      margin: '0 0 0 0',
-      marginLeft: '-2px',
-      transition: 'background-color 0.1s',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: '500',
-      fontFamily: "Roboto,Helvetica,Arial",
-      lineHeight: '1.25',
-      letterSpacing: '0.02857em',
-      flexShrink: '0',
-      zIndex: '',
-      '&:active': {
-        cursor: 'move',
-      },
-      '&:hover': {
-        backgroundColor: `${tabTheme.tabHoverColor}`,
-      },
-    };
-
-    if (index === 0) {
-      style.marginLeft = '0px';
-    }
-
-    if (index === selectedTimetable) {
-      style.color = `#3a76f8`;
-      style.backgroundColor = `${tabTheme.tabBackgroundColor}`;
-      style.boxShadow = `inset 0 0 7px ${theme.palette.primary.main}`;
-      style.borderWidth = '1px';
-      style.borderColor = `${theme.palette.primary.main}`;
-      style.zIndex = '1';
-    }
-
-    return style;
-  };
-
-  const ScrollbarStyle = {
-    paddingTop: '10px',
-    overflow: 'auto',
-    "::-webkit-scrollbar": {
-      height: '5px'
-    }
-  }
+  const { AddIconStyle, TabsWrapperStyle, TabContainerStyle, TabStyle, MoreHorizWrapper } = createTimetableStyle(tabTheme, theme);
 
   useEffect(() => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
-
 
   /**
    * Timetable handlers
@@ -158,18 +96,8 @@ const TimetableTabs: React.FC = () => {
   };
 
   // Reordering the tabs when they are dragged and dropped
-  const handleSortTabs = () => {
-    const newTimetables = [...displayTimetables];
-    const draggedItem = newTimetables[dragTab.current];
-    newTimetables.splice(dragTab.current, 1);
-    newTimetables.splice(dragOverTab.current, 0, draggedItem);
-    setDisplayTimetables(newTimetables);
-    setSelectedTimetable(dragOverTab.current);
-    dragTab.current = dragOverTab.current;
-  };
-
-  const handleSortTabs2 = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
+  const handleSortTabs = (result: DropResult) => {
+    const { destination, source } = result;
 
     if (!destination) {
       return;
@@ -187,28 +115,12 @@ const TimetableTabs: React.FC = () => {
     newTimetables.splice(source.index, 1);
     newTimetables.splice(destination.index, 0, draggedItem);
     setDisplayTimetables(newTimetables);
-    handleSwitchTimetables2(newTimetables, destination.index);
+
+    setSelectedCourses(newTimetables[destination.index].selectedCourses);
+    setSelectedClasses(newTimetables[destination.index].selectedClasses);
+    setCreatedEvents(newTimetables[destination.index].createdEvents);
+    setSelectedTimetable(destination.index);
   }
-
-  // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
-  const handleSwitchTimetables2 = (newTimetables: TimetableData[], timetableIndex: number) => {
-    setSelectedCourses(newTimetables[timetableIndex].selectedCourses);
-    setSelectedClasses(newTimetables[timetableIndex].selectedClasses);
-    setCreatedEvents(newTimetables[timetableIndex].createdEvents);
-    setSelectedTimetable(timetableIndex);
-  };
-
-  // Handle drag start (triggers whenever a tab is clicked)
-  const handleTabDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    dragTab.current = index;
-    handleSwitchTimetables(dragTab.current);
-  };
-
-  // Handle drag enter (triggers whenever the user drags over another tab)
-  const handleTabDragEnter = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    dragOverTab.current = index;
-    handleSortTabs();
-  };
 
   /**
    * Dropdown menu tab handlers
@@ -228,17 +140,17 @@ const TimetableTabs: React.FC = () => {
   };
 
   return (
-    <Box sx={ScrollbarStyle}>
-      <Box sx={TabContainerStyle2}>
+    <Box sx={TabContainerStyle}>
+      <Box sx={TabsWrapperStyle}>
         <DragDropContext
-          onDragEnd={handleSortTabs2}
+          onDragEnd={handleSortTabs}
         >
           <Droppable droppableId='tabs' direction='horizontal'>
             {props => (
               <Box
                 ref={props.innerRef}
                 {...props.droppableProps}
-                sx={TabContainerStyle2}
+                sx={{ display: 'flex' }}
               >
                 {displayTimetables.map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
@@ -248,13 +160,13 @@ const TimetableTabs: React.FC = () => {
                         {...props.draggableProps}
                         {...props.dragHandleProps}
                         key={index}
-                        sx={TabStyle2(index)}
+                        sx={TabStyle(index, selectedTimetable)}
                         onClick={() => handleSwitchTimetables(index)}
                         onContextMenu={(e) => handleRightTabClick(e, index)}>
                         {timetable.name}
                         {
                           selectedTimetable === index ? (
-                            <span style={{ marginLeft: '8px' }} onClick={handleMenuClick}>
+                            <span style={MoreHorizWrapper} onClick={handleMenuClick}>
                               <MoreHoriz />
                             </span>
                           ) : (
