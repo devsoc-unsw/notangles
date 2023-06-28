@@ -71,12 +71,11 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
           <LocationOn />
         </ListItemIcon>
         <TextField
-          id="outlined-required"
-          label="Location"
+          id="outlined-basic"
+          label="Location (optional)"
           onChange={(e) => setLocation(e.target.value)}
           variant="outlined"
           fullWidth
-          required
           defaultValue={location}
         />
       </StyledListItem>

@@ -238,7 +238,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               <TextField
                 fullWidth={true}
                 label="Description (optional)"
-                id="outlined-required"
+                id="outlined-basic"
                 variant="outlined"
                 value={newDescription}
                 multiline
@@ -254,8 +254,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               </ListItemIcon>
               <TextField
                 fullWidth={true}
-                id="outlined-required"
-                required
+                label="Location (optional)"
+                id="outlined-basic"
                 variant="outlined"
                 value={newLocation}
                 onChange={(e) => {
@@ -308,7 +308,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             variant="contained"
             color="primary"
             onClick={() => handleUpdateEvent(eventPeriod.event.id)}
-            disabled={newName === '' || newLocation === '' || newDays.length === 0}
+            disabled={newName === '' || newDays.length === 0}
           >
             <Save />
             SAVE
