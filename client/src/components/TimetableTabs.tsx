@@ -106,8 +106,16 @@ const TimetableTabs: React.FC = () => {
     backgroundColor: `${tabTheme.containerBackground}`,
     borderRadius: '10px 10px 0 0',
     display: 'flex',
-    width: 'max-content'
+    width: 'max-content',
   };
+
+  const ScrollbarStyle = {
+    paddingTop: '10px',
+    overflow: 'auto',
+    "::-webkit-scrollbar": {
+      height: '5px'
+    }
+  }
 
 
   //FOR LATER WHEN WE WANT TO STYLE OUR TABS FURTHER
@@ -547,20 +555,24 @@ const TimetableTabs: React.FC = () => {
     newTimetables.splice(source.index, 1);
     newTimetables.splice(destination.index, 0, draggedItem);
     setDisplayTimetables(newTimetables);
-    setSelectedTimetable(destination.index);
+    handleSwitchTimetables2(newTimetables, destination.index);
   }
 
-  const sorting = () => {
-    console.log(displayTimetables);
-    setDisplayTimetables(displayTimetables);
-  }
+  // EXPERIMENTAL: Handles the switching timetables by changing the selectedCourses, selectedClasses and createdEvents to display.
+  const handleSwitchTimetables2 = (newTimetables: TimetableData[], timetableIndex: number) => {
+    setSelectedCourses(newTimetables[timetableIndex].selectedCourses);
+    setSelectedClasses(newTimetables[timetableIndex].selectedClasses);
+    setCreatedEvents(newTimetables[timetableIndex].createdEvents);
+    setSelectedTimetable(timetableIndex);
+  };
+
 
   const initialItems = ["🍅 Tomato", "🥒 Cucumber", "🧀 Cheese", "🥬 Lettuce"];
   const [items, setItems] = useState(initialItems);
 
 
   return (
-    <Box sx={{ paddingTop: '10px', overflow: 'auto' }}>
+    <Box sx={ScrollbarStyle}>
       <Menu
         anchorReference={anchorEl === null ? 'anchorPosition' : 'anchorEl'}
         anchorEl={anchorEl}
