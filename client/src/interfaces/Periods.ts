@@ -119,13 +119,6 @@ export interface DuplicateClassData {
   periodIndex: number;
 }
 
-// export interface Action {
-//   timetables: TimetableData[];
-//   selected: number;
-//   courses: CourseData[];
-//   classes: SelectedClasses;
-//   events: CreatedEvents;
-// }
 export interface Action {
   name: string;
   courses: CourseData[];

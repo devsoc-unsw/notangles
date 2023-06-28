@@ -10,7 +10,7 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
-import { TimetableTabs } from './components/TimetableTabs';
+import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
@@ -19,7 +19,6 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
-  timetableWidth,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -101,7 +100,6 @@ const App: React.FC = () => {
     setCoursesList,
     setLastUpdated,
     selectedTimetable,
-    setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
   } = useContext(AppContext);
@@ -112,7 +110,7 @@ const App: React.FC = () => {
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   /**
-   * Attemps callback() several times before raising error. Intended for unreliable fetches
+   * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
   const fetchCooldown: number = 120; // milliseconds
@@ -218,8 +216,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;

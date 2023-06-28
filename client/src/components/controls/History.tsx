@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Redo, Delete, Undo, ResetTv } from '@mui/icons-material';
-import { IconButton, Tooltip, Dialog, DialogTitle, DialogActions, Button } from '@mui/material';
+import { Redo, Delete, Undo } from '@mui/icons-material';
+import { IconButton, Tooltip, Dialog, DialogTitle, DialogActions, Button, Box, Tab } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { StyledTabPanel } from '../../styles/CustomEventStyles';
+import { TabContext, TabList } from '@mui/lab';
 import {
   Action,
   Activity,
@@ -14,15 +16,13 @@ import {
   TimetableData,
 } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
-import { allowedNodeEnvironmentFlags } from 'process';
-import { disable } from 'workbox-navigation-preload';
 
 type TimetableActions = Record<string, Action[]>;
 type ActionsPointer = Record<string, number>;
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
-const initialIndex = 2;
+const initialIndex = 1;
 const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
@@ -37,8 +37,7 @@ const History: React.FC = () => {
     useContext(AppContext);
 
   const timetableActions = useRef<TimetableActions>({});
-  // const actionsPointer = useRef(-initialIndex); // set to -initialIndex as it will increment predictably as app starts up
-  const actionsPointer = useRef<ActionsPointer>({}); // set to -initialIndex as it will increment predictably as app starts up
+  const actionsPointer = useRef<ActionsPointer>({});
 
   const dontAdd = useRef(false);
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
@@ -145,10 +144,10 @@ const History: React.FC = () => {
     }
 
     const currentTimetable = displayTimetables[selectedTimetable];
-    // If history does not exist, chuck it in
+    // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
       timetableActions.current[currentTimetable.id] = [];
-      actionsPointer.current[currentTimetable.id] = -1;
+      actionsPointer.current[currentTimetable.id] = -initialIndex;
     }
 
     if (
@@ -162,7 +161,7 @@ const History: React.FC = () => {
         createdEvents
       ) &&
       timetableActions.current[currentTimetable.id][actionsPointer.current[currentTimetable.id]].name ===
-        displayTimetables[selectedTimetable].name
+      displayTimetables[selectedTimetable].name
     ) {
       return;
     }
@@ -205,15 +204,6 @@ const History: React.FC = () => {
     if (actionsPointer.current[currentTimetable.id] < 1) {
       disableStatus.current = true;
     } else {
-      /*
-      const currentClasses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].classes;
-      const currentEvents = timetableActions.current[timetableId][actionsPointer.current[timetableId]].events;
-      const nCourses = timetableActions.current[timetableId][actionsPointer.current[timetableId]].courses.length;
-      
-      const nEvents = Object.values(currentEvents).length;
-      const nClasses = Object.values(currentClasses).length;
-      */
-
       const nCourses = selectedCourses.length;
       const nEvents = Object.values(createdEvents).length;
       const nClasses = Object.values(selectedClasses).length;
@@ -243,7 +233,7 @@ const History: React.FC = () => {
     setDisableLeft(actionsPointer.current[timetableId] === undefined || actionsPointer.current[timetableId] < 1);
     setDisableRight(
       actionsPointer.current[timetableId] === undefined ||
-        actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
+      actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length
     );
   }, [selectedTimetable]);
 
@@ -276,12 +266,6 @@ const History: React.FC = () => {
     setSelectedClasses({});
     setCreatedEvents({});
 
-    /*
-    for (let i = 0; i < displayTimetables.length; i++) {
-      setSelectedTimetable(i);
-      clearOne();
-    }
-    */
     setSelectedTimetable(0);
     setDisplayTimetables([
       {
@@ -368,33 +352,41 @@ const History: React.FC = () => {
   return (
     <>
       <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>
-        <DialogTitle sx={{ alignSelf: 'center', paddingTop: '10px', paddingBottom: '0px' }}>Clear Timetables</DialogTitle>
-        <DialogActions sx={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-          <Button
-            id="clear-current-button"
-            sx={ModalButtonStyle}
-            variant="contained"
-            disabled={disableReset.current}
-            onClick={() => {
-              clearOne();
-              setClearOpen(false);
-            }}
-          >
-            Current
-          </Button>
-          <Button
-            id="clear-all-button"
-            sx={ModalButtonStyle}
-            variant="contained"
-            disabled={disableReset.all}
-            onClick={() => {
-              clearAll();
-              setClearOpen(false);
-            }}
-          >
-            All
-          </Button>
-        </DialogActions>
+        <TabContext value={"Clear Timetables"}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList centered>
+              <Tab label="Clear Timetables" value="Clear Timetables" />
+            </TabList>
+          </Box>
+          <StyledTabPanel value="Clear Timetables">
+            <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button
+                id="clear-current-button"
+                sx={ModalButtonStyle}
+                variant="contained"
+                disabled={disableReset.current}
+                onClick={() => {
+                  clearOne();
+                  setClearOpen(false);
+                }}
+              >
+                Current
+              </Button>
+              <Button
+                id="clear-all-button"
+                sx={ModalButtonStyle}
+                variant="contained"
+                disabled={disableReset.all}
+                onClick={() => {
+                  clearAll();
+                  setClearOpen(false);
+                }}
+              >
+                All
+              </Button>
+            </DialogActions>
+          </StyledTabPanel>
+        </TabContext>
       </Dialog>
       <Tooltip title={clearTooltip}>
         <IconButton
