@@ -98,7 +98,14 @@ const EventShareModal = () => {
         setErrorVisibility(true);
         setEventPreview(false);
         setEvent({ name: '', location: '', color: '' });
+        navigate('/');
       }
+    } else {
+      setAlertMsg('Invalid event link');
+      setErrorVisibility(true);
+      setEventPreview(false);
+      setEvent({ name: '', location: '', color: '' });
+      navigate('/');
     }
   };
 
