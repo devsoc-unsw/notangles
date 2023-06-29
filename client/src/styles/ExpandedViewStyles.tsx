@@ -16,9 +16,9 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiSvgIcon-root': {
     color: theme.palette.grey[300],
   },
-  '& .MuiFormControl-root': {
-    borderColor: theme.palette.grey[300],
-  },
+  // '& .MuiFormControl-root': {
+  //   borderColor: theme.palette.grey[300],
+  // },
   '& .MuiInputBase-root': {
     color: theme.palette.grey[300],
   },
