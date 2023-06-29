@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Dialog, Typography, Card, Grid, CardProps } from '@mui/material';
 import { styled } from '@mui/system';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../styles/ExpandedViewStyles';
@@ -11,6 +11,7 @@ import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import { createEventObj, parseAndCreateEventObj } from '../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../utils/eventTimes';
+import { EventPeriod } from '../interfaces/Periods';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 40px 20px;
@@ -32,61 +33,57 @@ const StyledLocationOn = styled(LocationOn)`
 
 const EventShareModal = () => {
   let { encrypted } = useParams();
+  const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(true);
-  const handleClose = () => setOpen(false);
-
+  const [link, setLink] = useState('');
   const [eventPreview, setEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
 
-  const [eventName, setEventName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
-  const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
-  const [eventDays, setEventDays] = useState<Array<string>>([]);
-  const [link, setLink] = useState<string>('');
-  const [color, setColor] = useState<string>('#1F7E8C');
+  const updateDays = (day: number) => {
+    if (day == 5 || day == 6) {
+      const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
+    }
+  };
 
-  // const updateDays = (day: number) => {
-  //   if (day == 5 || day == 6) {
-  //     const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  //     setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
-  //   }
-  // };
+  const createLinkEvent = (
+    name: string,
+    location: string,
+    description: string,
+    color: string,
+    day: number,
+    startTime: number,
+    endTime: number
+  ) => {
+    // if duplicate event, return error
+    if (Object.values(createdEvents).some((event) => event.event.name === name)) {
+      setAlertMsg('Event already exists');
+      setErrorVisibility(true);
+      return;
+    }
+    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
+    setCreatedEvents({
+      ...createdEvents,
+      [newEvent.event.id]: newEvent,
+    });
 
-  // const createLinkEvent = (
-  //   name: string,
-  //   location: string,
-  //   description: string,
-  //   color: string,
-  //   day: number,
-  //   startTime: number,
-  //   endTime: number
-  // ) => {
-  //   const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
-  //   setCreatedEvents({
-  //     ...createdEvents,
-  //     [newEvent.event.id]: newEvent,
-  //   });
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime)));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime)));
+    updateDays(day);
+    return newEvent;
+  };
 
-  //   setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime)));
-  //   setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime)));
-
-  //   updateDays(day);
-
-  //   return newEvent;
-  // };
-
+  /**
+   * Displays event preview if link is valid
+   */
   const checkRender = (link: string) => {
     setLink(link);
-
     var isBase64 = require('is-base64');
     if (isBase64(link) && link.length > 0) {
-      console.log('isBase64');
       try {
         const linkEvent = JSON.parse(atob(link));
         setEventPreview(true);
@@ -106,36 +103,40 @@ const EventShareModal = () => {
     }
   }, []);
 
-  // const saveToTimetable = () => {
-  //   console.log('saveToTimetable');
-  //   try {
-  //     const linkEvent = JSON.parse(atob(link));
-  //     const newEvent = createLinkEvent(
-  //       linkEvent.event.name,
-  //       linkEvent.event.location,
-  //       linkEvent.event.description,
-  //       linkEvent.event.color,
-  //       linkEvent.time.day,
-  //       linkEvent.time.start,
-  //       linkEvent.time.end
-  //     );
-  //     newEvents[newEvent.event.id] = newEvent;
-  //   } catch {
-  //     setAlertMsg('Invalid event link');
-  //     setErrorVisibility(true);
-  //     return;
-  //   }
-  // };
+  const saveToTimetable = () => {
+    try {
+      const linkEvent = JSON.parse(atob(link));
+      const newEvent = createLinkEvent(
+        linkEvent.event.name,
+        linkEvent.event.location,
+        linkEvent.event.description,
+        linkEvent.event.color,
+        linkEvent.time.day,
+        linkEvent.time.start,
+        linkEvent.time.end
+      );
+    } catch {
+      setAlertMsg('Invalid event link');
+      setErrorVisibility(true);
+      return;
+    }
+    // TODO: Close modal and navigate to timetable
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+    navigate('/');
+  };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleCloseModal}>
       <StyledDialogTitle>
         <StyledTitleContainer>
           <Grid container justifyContent="flex-end" alignItems="center">
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Add this event to your calendar?
             </Typography>
-            <IconButton aria-label="close" onClick={handleClose}>
+            <IconButton aria-label="close" onClick={handleCloseModal}>
               <Close />
             </IconButton>
           </Grid>
@@ -153,7 +154,7 @@ const EventShareModal = () => {
           </PreviewCard>
         )}
       </StyledDialogContent>
-      <ExecuteButton variant="contained" color="primary">
+      <ExecuteButton variant="contained" color="primary" onClick={() => saveToTimetable()}>
         <Save />
         SAVE
       </ExecuteButton>

@@ -8,7 +8,6 @@ import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
-import { useLocation } from 'react-router-dom';
 import EventShareModal from './components/EventShareModal';
 
 Sentry.init({
