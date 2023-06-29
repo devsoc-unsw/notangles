@@ -16,7 +16,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
-import CustomEventLink from './CustomEventLink';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -35,7 +34,6 @@ const CustomEvent: React.FC = () => {
   const [classCode, setClassCode] = useState<string>('');
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
-  const [link, setLink] = useState<string>('');
   const [color, setColor] = useState<string>('#1F7E8C');
 
   // NO pre-selected fields when event popover is opened from controls bar
@@ -116,9 +114,6 @@ const CustomEvent: React.FC = () => {
     setClassesCodes([]);
     setClassesList([]);
 
-    // Reset info about the link event
-    setLink('');
-
     // Close the popovers
     setColorPickerAnchorEl(null);
     setCreateEventAnchorEl(null);
@@ -163,24 +158,6 @@ const CustomEvent: React.FC = () => {
         );
         newEvents[newEvent.event.id] = newEvent;
       });
-    } else {
-      try {
-        const linkEvent = JSON.parse(atob(link));
-        const newEvent = createLinkEvent(
-          linkEvent.event.name,
-          linkEvent.event.location,
-          linkEvent.event.description,
-          linkEvent.event.color,
-          linkEvent.time.day,
-          linkEvent.time.start,
-          linkEvent.time.end
-        );
-        newEvents[newEvent.event.id] = newEvent;
-      } catch {
-        setAlertMsg('Invalid event link');
-        setErrorVisibility(true);
-        return;
-      }
     }
 
     setEventType('General');
@@ -198,9 +175,6 @@ const CustomEvent: React.FC = () => {
     setClassCode('');
     setClassesList([]);
     setClassesCodes([]);
-
-    // Reset info about the link event
-    setLink('');
 
     // Close the popover
     setColorPickerAnchorEl(null);
@@ -229,30 +203,6 @@ const CustomEvent: React.FC = () => {
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     updateDays(daysShort.indexOf(day));
-
-    return newEvent;
-  };
-
-  const createLinkEvent = (
-    name: string,
-    location: string,
-    description: string,
-    color: string,
-    day: number,
-    startTime: number,
-    endTime: number
-  ) => {
-    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
-
-    setCreatedEvents({
-      ...createdEvents,
-      [newEvent.event.id]: newEvent,
-    });
-
-    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime)));
-    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime)));
-
-    updateDays(day);
 
     return newEvent;
   };
@@ -295,7 +245,6 @@ const CustomEvent: React.FC = () => {
               <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
                 <Tab label="General" value="General" />
                 <Tab label="Tutoring" value="Tutoring" />
-                <Tab label="Via Link" value="Via Link" />
               </TabList>
             </Box>
             <StyledTabPanel value="General">
@@ -331,19 +280,14 @@ const CustomEvent: React.FC = () => {
                 setClassCode={setClassCode}
               />
             </StyledTabPanel>
-            <StyledTabPanel value="Via Link">
-              <CustomEventLink link={link} setLink={setLink} setAlertMsg={setAlertMsg} setErrorVisibility={setErrorVisibility} />
-            </StyledTabPanel>
           </TabContext>
-          {eventType !== 'Via Link' && (
-            <ColorPicker
-              color={color}
-              setColor={setColor}
-              colorPickerAnchorEl={colorPickerAnchorEl}
-              handleOpenColorPicker={handleOpenColorPicker}
-              handleCloseColorPicker={handleCloseColorPicker}
-            />
-          )}
+          <ColorPicker
+            color={color}
+            setColor={setColor}
+            colorPickerAnchorEl={colorPickerAnchorEl}
+            handleOpenColorPicker={handleOpenColorPicker}
+            handleCloseColorPicker={handleCloseColorPicker}
+          />
         </StyledList>
         <ExecuteButton
           variant="contained"
@@ -351,8 +295,7 @@ const CustomEvent: React.FC = () => {
           disableElevation
           disabled={
             (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
-            (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
-            (eventType === 'Via Link' && link === '')
+            (eventType === 'Tutoring' && (courseCode === '' || classCode === ''))
           }
           onClick={createEvents}
         >

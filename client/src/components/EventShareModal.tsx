@@ -60,7 +60,15 @@ const EventShareModal = () => {
     endTime: number
   ) => {
     // if duplicate event, return error
-    if (Object.values(createdEvents).some((event) => event.event.name === name)) {
+    if (
+      Object.values(createdEvents).some((event) => event.event.name === name) &&
+      Object.values(createdEvents).some((event) => event.time.day === day) &&
+      Object.values(createdEvents).some((event) => event.time.start === startTime) &&
+      Object.values(createdEvents).some((event) => event.time.end === endTime) &&
+      Object.values(createdEvents).some((event) => event.event.location === location) &&
+      Object.values(createdEvents).some((event) => event.event.description === description) &&
+      Object.values(createdEvents).some((event) => event.event.color === color)
+    ) {
       setAlertMsg('Event already exists');
       setErrorVisibility(true);
       return;
@@ -120,7 +128,7 @@ const EventShareModal = () => {
       setErrorVisibility(true);
       return;
     }
-    // TODO: Close modal and navigate to timetable
+    handleCloseModal();
   };
 
   const handleCloseModal = () => {
