@@ -102,6 +102,8 @@ const App: React.FC = () => {
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
+    courseData,
+    setCourseData,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -247,18 +249,22 @@ const App: React.FC = () => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
       let newSelectedCourses = [...selectedCourses];
+      let newCourseData = courseData;
 
       // Update the existing courses with the new data (for changing timezones).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
+          newCourseData.map.set(addedCourse.code, addedCourse);
         } else {
           newSelectedCourses.push(addedCourse);
+          newCourseData.map.set(addedCourse.code, addedCourse);
         }
       });
 
       setSelectedCourses(newSelectedCourses);
+      setCourseData(newCourseData);
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -340,6 +346,10 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    let newCourseData = courseData
+    storage.set('courseData', newCourseData);
+    console.log(storage.get('courseData'));
+    console.log(newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);

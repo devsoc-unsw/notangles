@@ -9,6 +9,7 @@ const defaults: Record<string, any> = {
   isHideClassInfo: false,
   isHideExamClasses: false,
   isConvertToLocalTimezone: true,
+  courseData: {map: new Map()},
   timetables: createDefaultTimetable(),
 };
 

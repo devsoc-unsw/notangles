@@ -2,9 +2,10 @@ import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { TimetableData } from '../interfaces/Periods';
+import { CourseData, CourseDataMap, TimetableData } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
+import { ICourseContext } from './CourseContext';
 
 export interface IAppContext {
   is12HourMode: boolean;
@@ -87,6 +88,9 @@ export interface IAppContext {
 
   displayTimetables: TimetableData[];
   setDisplayTimetables: (newDisplayTimetable: any) => void;
+
+  courseData: CourseDataMap;
+  setCourseData: (newCourseData: CourseDataMap) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -167,6 +171,9 @@ export const AppContext = createContext<IAppContext>({
 
   displayTimetables: [],
   setDisplayTimetables: () => {},
+
+  courseData: {map: new Map()},
+  setCourseData: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -206,6 +213,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
+  const [courseData, setCourseData] = useState<CourseDataMap>({map: new Map()});
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -260,6 +268,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
+    courseData,
+    setCourseData,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
