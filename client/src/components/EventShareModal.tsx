@@ -4,18 +4,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Dialog, Typography, Card, Grid, CardProps } from '@mui/material';
 import { styled } from '@mui/system';
 import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../styles/ExpandedViewStyles';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../styles/CustomEventStyles';
+import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
 import { IconButton } from '@mui/material';
 import { Close, Save, LocationOn } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
-import { createEventObj, parseAndCreateEventObj } from '../utils/createEvent';
-import { areValidEventTimes, createDateWithTime } from '../utils/eventTimes';
-import { EventPeriod } from '../interfaces/Periods';
+import { createEventObj } from '../utils/createEvent';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 40px 20px;
-  margin: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -139,16 +136,14 @@ const EventShareModal = () => {
   return (
     <Dialog open={open} onClose={handleCloseModal}>
       <StyledDialogTitle>
-        <StyledTitleContainer>
-          <Grid container justifyContent="flex-end" alignItems="center">
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add this event to your calendar?
-            </Typography>
-            <IconButton aria-label="close" onClick={handleCloseModal}>
-              <Close />
-            </IconButton>
-          </Grid>
-        </StyledTitleContainer>
+        <Grid container justifyContent="flex-end" alignItems="center">
+          <Typography id="modal-modal-title" variant="h6" component="h2" color="#616161">
+            Add this event to your calendar?
+          </Typography>
+          <IconButton aria-label="close" onClick={handleCloseModal}>
+            <Close />
+          </IconButton>
+        </Grid>
       </StyledDialogTitle>
       <StyledDialogContent>
         {eventPreview && (
