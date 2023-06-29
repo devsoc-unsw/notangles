@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AccessTime, Close, ContentCopy, Delete, Edit, Event, Link, LocationOn, Notes, Save } from '@mui/icons-material';
 import {
-  Dialog,
   Grid,
   IconButton,
   InputAdornment,
@@ -19,7 +18,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
@@ -194,7 +193,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
   return (
-    <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+    <StyledDialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
         <>
           <StyledDialogTitle>
@@ -381,7 +380,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           </StyledDialogContent>
         </>
       )}
-    </Dialog>
+    </StyledDialog>
   );
 };
 

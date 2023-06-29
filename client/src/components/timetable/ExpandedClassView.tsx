@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, SelectChangeEvent, Typography } from '@mui/material';
+import { Grid, IconButton, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData, ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps } from '../../interfaces/PropTypes';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
@@ -121,7 +121,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   };
 
   return (
-    <Dialog
+    <StyledDialog
       maxWidth="sm"
       open={popupOpen}
       onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
@@ -179,7 +179,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
           </Grid>
         </Grid>
       </StyledDialogContent>
-    </Dialog>
+    </StyledDialog>
   );
 };
 
