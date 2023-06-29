@@ -350,7 +350,7 @@ const CustomEvent: React.FC = () => {
           color="primary"
           disableElevation
           disabled={
-            (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
+            (eventType === 'General' && (eventName === '' || eventDays.length === 0)) ||
             (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
             (eventType === 'Via Link' && link === '')
           }

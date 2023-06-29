@@ -339,7 +339,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         </Tooltip>
       </StyledMenu>
       {/* Rename timetable Dialog  */}
-      <Dialog open={renameOpen} maxWidth="sm" onClose={() => handleRenameClose(false)}>
+      <Dialog open={renameOpen} maxWidth="sm" onClose={() => { handleRenameClose(false); handleMenuClose() }}>
         <StyledTopIcons>
           <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
             <Close />
