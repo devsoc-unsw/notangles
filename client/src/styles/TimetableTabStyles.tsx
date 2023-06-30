@@ -62,7 +62,7 @@ export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme
   transition: background - color 0.1s;
   border - radius: 50 %;
   zIndex: 100;
-  backgroundColor: ${(props) => (props.tabTheme.containerBackground.toString())};
+  background-color: ${(props) => (props.tabTheme.containerBackground.toString())};
   opacity: 0.75;
   &:hover {
     background-color: ${(props) => (props.tabTheme.tabHoverColor.toString())};
