@@ -1,4 +1,5 @@
-import { Theme } from '@mui/material';
+import { Box, BoxProps, Button, IconButton, IconButtonProps } from '@mui/material';
+import { Theme, styled } from '@mui/material';
 
 export type TabTheme = {
   containerBackground: String;
@@ -27,30 +28,54 @@ export const tabThemeDark: TabTheme = {
   tabSelectedText: '#ffffff',
 };
 
+export const TabsSection = styled(Box)`
+  padding-top: 10px;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    height: 5px
+  }
+`;
+
+export const TabsWrapper = styled(Box) <BoxProps & { tabTheme: TabTheme }>`
+  background-color: ${(props) => (props.tabTheme.containerBackground.toString())};
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  width: max-content;
+`;
+
+export const StyledTabs = styled(Box)`
+  display: flex;
+`;
+
+export const StyledSpan = styled('span')`
+  margin-left: 8px;
+  padding-top: 3px;
+`;
+
+
+export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
+  position: sticky;
+  right: 0px;
+  padding: 10px;
+  min - width: 50px;
+  mineheight: 50px;
+  transition: background - color 0.1s;
+  border - radius: 50 %;
+  zIndex: 100;
+  backgroundColor: ${(props) => (props.tabTheme.containerBackground.toString())};
+  opacity: 0.75;
+  &:hover {
+    background-color: ${(props) => (props.tabTheme.tabHoverColor.toString())};
+  }
+`;
+
+export const StyledModalButton = styled(Button)`
+  margin: 10px;
+  width: 80px;
+  align-self: center;
+`;
+
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const AddIconStyle = {
-    position: 'sticky',
-    right: '0px',
-    padding: '10px',
-    minWidth: '50px',
-    minHeight: '50px',
-    transition: 'background-color 0.1s',
-    borderRadius: '50%',
-    zIndex: '100',
-    backgroundColor: `${tabTheme.containerBackground}`,
-    opacity: 0.75,
-    '&:hover': {
-      backgroundColor: `${tabTheme.tabHoverColor}`,
-    },
-  };
-
-  const TabsWrapperStyle = {
-    backgroundColor: `${tabTheme.containerBackground}`,
-    borderRadius: '10px 10px 0 0',
-    display: 'flex',
-    width: 'max-content',
-  };
-
   const TabStyle = (index: Number, selectedTimetableIndex: Number) => {
     let style = {
       boxShadow: '',
@@ -62,8 +87,8 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       borderStyle: 'solid',
       borderWidth: '0px',
       borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor}`,
-      color: `${tabTheme.tabTextColor}`,
+      borderColor: `${tabTheme.tabBorderColor} `,
+      color: `${tabTheme.tabTextColor} `,
       margin: '0 0 0 0',
       marginLeft: '-2px',
       transition: 'background-color 0.1s',
@@ -78,12 +103,12 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       letterSpacing: '0.02857em',
       flexShrink: '0',
       zIndex: '',
-      borderRight: `1px solid ${theme.palette.secondary.main}`,
+      borderRight: `1px solid ${theme.palette.secondary.main} `,
       '&:active': {
         cursor: 'move',
       },
       '&:hover': {
-        backgroundColor: `${tabTheme.tabHoverColor}`,
+        backgroundColor: `${tabTheme.tabHoverColor} `,
       },
     };
 
@@ -93,30 +118,16 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
 
     if (index === selectedTimetableIndex) {
       style.color = `#3a76f8`;
-      style.backgroundColor = `${tabTheme.tabBackgroundColor}`;
-      style.boxShadow = `inset 0 0 7px ${theme.palette.primary.main}`;
+      style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
+      style.boxShadow = `inset 0 0 7px ${theme.palette.primary.main} `;
       style.borderWidth = '1px';
-      style.borderColor = `${theme.palette.primary.main}`;
+      style.borderColor = `${theme.palette.primary.main} `;
       style.zIndex = '1';
+      style.borderRight = `1px solid ${theme.palette.primary.main} `;
     }
 
     return style;
   };
 
-  const TabContainerStyle = {
-    paddingTop: '10px',
-    overflow: 'auto',
-    "::-webkit-scrollbar": {
-      height: '5px'
-    }
-  }
-
-  const MoreHorizWrapper = {
-    marginLeft: '8px',
-    paddingTop: '3px'
-  }
-
-  const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
-
-  return { AddIconStyle, TabsWrapperStyle, TabContainerStyle, TabStyle, ModalButtonStyle, MoreHorizWrapper };
+  return { TabStyle };
 };

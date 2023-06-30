@@ -9,7 +9,7 @@ import { darkTheme, lightTheme } from '../../constants/theme';
 import { Activity, ClassData, TimetableData, InInventory, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { createEventObj } from '../../utils/createEvent';
 import { v4 as uuidv4 } from 'uuid';
-import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle } from '../../styles/TimetableTabStyles';
+import { TabTheme, tabThemeDark, tabThemeLight, StyledModalButton } from '../../styles/TimetableTabStyles';
 import { StyledTabPanel } from '../../styles/CustomEventStyles';
 import { TabContext, TabList } from '@mui/lab';
 import { EditNote } from '@mui/icons-material';
@@ -49,8 +49,6 @@ export const EditTabPopups: React.FC = () => {
     const [renamedErr, setRenamedErr] = useState<boolean>(false);
     const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
     let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
-
-    const { ModalButtonStyle } = createTimetableStyle(tabTheme, theme);
 
     /**
      * DEEP COPY FUNCTIONS - Helper functions used when copying/deleting timetables 
@@ -373,9 +371,8 @@ export const EditTabPopups: React.FC = () => {
                     </Box>
                     <StyledTabPanel value="Delete Timetable">
                         <DialogActions sx={{ justifyContent: 'center' }}>
-                            <Button
+                            <StyledModalButton
                                 id="confirm-delete-button"
-                                sx={ModalButtonStyle}
                                 variant="contained"
                                 onClick={() => {
                                     handleDeleteTimetable(selectedTimetable);
@@ -383,10 +380,10 @@ export const EditTabPopups: React.FC = () => {
                                 }}
                             >
                                 Yes
-                            </Button>
-                            <Button sx={ModalButtonStyle} variant="contained" onClick={handleMenuClose}>
+                            </StyledModalButton>
+                            <StyledModalButton variant="contained" onClick={handleMenuClose}>
                                 No
-                            </Button>
+                            </StyledModalButton>
                         </DialogActions>
                     </StyledTabPanel>
                 </TabContext>
