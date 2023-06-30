@@ -78,6 +78,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       letterSpacing: '0.02857em',
       flexShrink: '0',
       zIndex: '',
+      borderRight: `1px solid ${theme.palette.secondary.main}`,
       '&:active': {
         cursor: 'move',
       },
