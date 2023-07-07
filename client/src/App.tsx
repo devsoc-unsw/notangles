@@ -256,10 +256,15 @@ const App: React.FC = () => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
-          newCourseData.map.set(addedCourse.code, addedCourse);
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
         } else {
           newSelectedCourses.push(addedCourse);
-          newCourseData.map.set(addedCourse.code, addedCourse);
+
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
         }
       });
 
@@ -279,6 +284,21 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
+    const newCourseData = courseData.map.filter((targetCourse) => {
+      for (const timetable of displayTimetables) {
+        for (const course of timetable.selectedCourses) {
+          console.log(course.code + targetCourse.code);
+          if (course.code === courseCode) {
+            return true;
+          }
+        } 
+      }
+      console.log("removed" + courseCode);
+      return false;
+    });
+    // for (const timetable in displayTimetables) {
+
+    // }
     setSelectedClasses((prev) => {
       prev = { ...prev };
       delete prev[courseCode];
@@ -346,7 +366,7 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
-    let newCourseData = courseData
+    let newCourseData = courseData;
     storage.set('courseData', newCourseData);
     console.log(storage.get('courseData'));
     console.log(newCourseData);

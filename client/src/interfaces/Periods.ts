@@ -127,5 +127,5 @@ export interface Action {
 }
 
 export interface CourseDataMap {
-  map: Map<string, CourseData>;
+  map: CourseData[];
 }

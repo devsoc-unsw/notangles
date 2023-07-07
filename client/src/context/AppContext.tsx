@@ -172,7 +172,7 @@ export const AppContext = createContext<IAppContext>({
   displayTimetables: [],
   setDisplayTimetables: () => {},
 
-  courseData: {map: new Map()},
+  courseData: {map: []},
   setCourseData: () => {},
 });
 
@@ -213,7 +213,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
-  const [courseData, setCourseData] = useState<CourseDataMap>({map: new Map()});
+  const [courseData, setCourseData] = useState<CourseDataMap>({map: []});
 
   const initialContext: IAppContext = {
     is12HourMode,
