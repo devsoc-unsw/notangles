@@ -19,6 +19,7 @@ import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import LocationDropdown from './LocationDropdown';
+import ColorPicker from '../controls/ColorPicker';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -47,13 +48,34 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 
   This is currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically of type PeriodData
 */
-const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
+  const [color, setColor] = useState<string>(assignedColors[code]);
 
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
+
+  // To reload initial color picker after useColorMapper instantiates context
+  useEffect(() => {
+    setColor(assignedColors[code]);
+  }, [assignedColors]);
+
+  // Bit of a hack to make color picker smoother - only update assigned colors upon closing color picker
+  useEffect(() => {
+    setAssignedColors({...assignedColors, [code]: color});
+   }, [colorPickerAnchorEl]);
+
+
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
+    setColorPickerAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseColorPicker = () => {
+    setColorPickerAnchorEl(null);
+  };
   /**
    * @param currPeriod The currently selected period
    * @param courses The currently selected courses
@@ -183,7 +205,17 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
           </StyledListItemIcon>
           <Typography>
             Capacity {currClass.enrolments} / {currClass.capacity}
-          </Typography>
+          </Typography>          
+        </StyledListItem>
+
+        <StyledListItem>         
+          <ColorPicker
+            color={color}
+            setColor={setColor}
+            colorPickerAnchorEl={colorPickerAnchorEl}
+            handleOpenColorPicker={handleOpenColorPicker}
+            handleCloseColorPicker={handleCloseColorPicker}
+            />
         </StyledListItem>
       </StyledDialogContent>
     </Dialog>

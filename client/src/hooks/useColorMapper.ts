@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { colors } from '../constants/timetable';
+import { CourseContext } from '../context/CourseContext';
 
 const defaultColor = colors[colors.length - 1];
 
@@ -13,14 +14,21 @@ const defaultColor = colors[colors.length - 1];
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.code))
  */
 const useColorMapper = (courseCodes: string[]): Record<string, string> => {
-  const [assignedColors, setAssignedColors] = useState<Record<string, string>>({});
+  const {assignedColors, setAssignedColors} = useContext(CourseContext);
 
   useEffect(() => {
     const takenColors = new Set<string>();
     const newAssignedColors: Record<string, string> = {};
 
     courseCodes.forEach((item) => {
-      const color = colors.find((c) => !takenColors.has(c));
+      let color;
+      // Conditional prevents user-set color from being overwritten
+      if (item in assignedColors) {
+        color = assignedColors[item];
+      } else {
+        color = colors.find((c) => !takenColors.has(c));
+      }
+
       newAssignedColors[item] = color || defaultColor;
       if (color) {
         takenColors.add(color);

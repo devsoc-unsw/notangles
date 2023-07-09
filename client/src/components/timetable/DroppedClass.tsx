@@ -228,7 +228,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           )}
         </StyledCardInner>
       </StyledCard>
-      {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
+      {classCard.type === 'class' && <ExpandedView code={classCard.courseCode} classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
       {/* For right click menu on a class card */}
       <StyledMenu
         open={contextMenu != null}

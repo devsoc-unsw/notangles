@@ -494,6 +494,7 @@ const App: React.FC = () => {
   }, [isConvertToLocalTimezone]);
 
   const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
+
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {
     body: {

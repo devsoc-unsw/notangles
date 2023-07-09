@@ -107,6 +107,7 @@ export interface DroppedCardsProps {
 }
 
 export interface ExpandedClassViewProps {
+  code: string;
   classPeriod: ClassPeriod;
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
