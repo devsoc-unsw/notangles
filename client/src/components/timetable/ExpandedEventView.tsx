@@ -345,12 +345,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 <Typography>{description}</Typography>
               </StyledListItem>
             )}
-            <StyledListItem>
-              <StyledListItemIcon isDarkMode={isDarkMode}>
+           {location && <StyledListItem>
+                <StyledListItemIcon isDarkMode={isDarkMode}>
                 <LocationOn />
               </StyledListItemIcon>
               <Typography>{location}</Typography>
-            </StyledListItem>
+            </StyledListItem>}
             <StyledListItem>
               <StyledListItemIcon isDarkMode={isDarkMode}>
                 <AccessTime />
