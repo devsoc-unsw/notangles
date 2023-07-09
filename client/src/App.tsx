@@ -284,11 +284,12 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
-    const newCourseData = courseData.map.filter((targetCourse) => {
+    const newCourseData = courseData;
+    newCourseData.map = courseData.map.filter((targetCourse) => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
           console.log(course.code + targetCourse.code);
-          if (course.code === courseCode) {
+          if (course.code.localeCompare(courseCode)) {
             return true;
           }
         } 
@@ -296,6 +297,7 @@ const App: React.FC = () => {
       console.log("removed" + courseCode);
       return false;
     });
+    setCourseData(newCourseData);
     // for (const timetable in displayTimetables) {
 
     // }
