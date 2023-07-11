@@ -102,6 +102,8 @@ const App: React.FC = () => {
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
+    courseData,
+    setCourseData,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -113,7 +115,7 @@ const App: React.FC = () => {
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120; // milliseconds
+  const fetchCooldown: number = 120; // 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
@@ -247,18 +249,27 @@ const App: React.FC = () => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
       let newSelectedCourses = [...selectedCourses];
+      let newCourseData = courseData;
 
       // Update the existing courses with the new data (for changing timezones).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
         } else {
           newSelectedCourses.push(addedCourse);
+
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
         }
       });
 
       setSelectedCourses(newSelectedCourses);
+      setCourseData(newCourseData);
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -273,6 +284,23 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
+    const newCourseData = courseData;
+    newCourseData.map = courseData.map.filter((targetCourse) => {
+      for (const timetable of displayTimetables) {
+        for (const course of timetable.selectedCourses) {
+          console.log(course.code + targetCourse.code);
+          if (course.code.localeCompare(courseCode)) {
+            return true;
+          }
+        } 
+      }
+      console.log("removed" + courseCode);
+      return false;
+    });
+    setCourseData(newCourseData);
+    // for (const timetable in displayTimetables) {
+
+    // }
     setSelectedClasses((prev) => {
       prev = { ...prev };
       delete prev[courseCode];
@@ -340,6 +368,10 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    let newCourseData = courseData;
+    storage.set('courseData', newCourseData);
+    console.log(storage.get('courseData'));
+    console.log(newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);
@@ -385,24 +417,32 @@ const App: React.FC = () => {
   };
 
   /**
+   * Upon switching timetable, reset default bounds
+   */
+  useEffect(() => {
+    setEarliestStartTime(getDefaultStartTime(isConvertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(isConvertToLocalTimezone));
+  }, [selectedTimetable]);
+
+  /**
    *  Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
    */
   const updateTimetableDaysAndTimes = () => {
-    setEarliestStartTime(
+    setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
-        earliestStartTime
+        prev
       )
     );
 
-    setLatestEndTime(
+    setLatestEndTime((prev: number) =>
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
-        latestEndTime
+        prev
       )
     );
 

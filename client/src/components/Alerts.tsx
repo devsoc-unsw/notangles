@@ -28,9 +28,9 @@ const Alerts: React.FC = () => {
 
   const getAutoSeverity = () => {
     if (alertMsg === 'Success!') return 'success';
-    if (alertMsg === 'Copied to clipboard!') return 'success';
+    if (alertMsg === 'Copied to clipboard!') return 'success'; // for copying a custom event link
     if (alertMsg.startsWith('Could not')) return 'warning';
-    if (alertMsg.startsWith('Delete')) return 'info';
+    if (alertMsg.startsWith('Delete')) return 'info'; // for deleting a timetable
     return 'error';
   };
 

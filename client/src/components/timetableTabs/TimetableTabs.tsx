@@ -1,16 +1,26 @@
-import { Box, IconButton, Tooltip } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
+import { MoreHoriz } from '@mui/icons-material';
+import { Tooltip, Box } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import storage from '../../utils/storage';
-import { MoreHoriz } from '@mui/icons-material';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { TimetableData } from '../../interfaces/Periods';
+import { CourseData, TimetableData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
 import { v4 as uuidv4 } from 'uuid';
-import { TabTheme, tabThemeDark, tabThemeLight, createTimetableStyle, TabsSection, TabsWrapper, StyledTabs, StyledIconButton, StyledSpan } from '../../styles/TimetableTabStyles';
-import { EditTabPopups } from './EditTabPopups';
+import {
+  TabTheme,
+  tabThemeDark,
+  tabThemeLight,
+  createTimetableStyle,
+  TabsSection,
+  TabsWrapper,
+  StyledTabs,
+  StyledIconButton,
+  StyledSpan
+} from '../../styles/TimetableTabStyles';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import AddIcon from '@mui/icons-material/Add';
+import TimetableTabContextMenu from './TimetableTabContextMenu';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -23,11 +33,10 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
     setAlertMsg,
     setErrorVisibility,
-    setAnchorElement,
-    setAnchorCoords,
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
@@ -42,6 +51,19 @@ const TimetableTabs: React.FC = () => {
   useEffect(() => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
+
+  // Helper function to set the timetable state
+  const setTimetableState = (
+    selectedCourses: CourseData[],
+    selectedClasses: SelectedClasses,
+    createdEvents: CreatedEvents,
+    timetableIndex: number
+  ) => {
+    setSelectedCourses(selectedCourses);
+    setSelectedClasses(selectedClasses);
+    setCreatedEvents(createdEvents);
+    setSelectedTimetable(timetableIndex);
+  };
 
   /**
    * Timetable handlers
@@ -66,12 +88,8 @@ const TimetableTabs: React.FC = () => {
 
       setDisplayTimetables([...displayTimetables, newTimetable]);
 
-      // Should switch current timetable to the new timetable
-      setSelectedTimetable(nextIndex);
       // Clearing the selected courses, classes and created events for the new timetable
-      setSelectedCourses([]);
-      setSelectedClasses({});
-      setCreatedEvents({});
+      setTimetableState([], {}, {}, nextIndex);
     }
   };
 
@@ -85,14 +103,12 @@ const TimetableTabs: React.FC = () => {
   }, []);
 
   /**
-  * Drag and drop functions for rearranging timetable tabs
-  */
+   * Drag and drop functions for rearranging timetable tabs
+   */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetables: TimetableData[], timetableIndex: number) => {
-    setSelectedCourses(timetables[timetableIndex].selectedCourses);
-    setSelectedClasses(timetables[timetableIndex].selectedClasses);
-    setCreatedEvents(timetables[timetableIndex].createdEvents);
-    setSelectedTimetable(timetableIndex);
+    const { selectedCourses, selectedClasses, createdEvents } = timetables[timetableIndex];
+    setTimetableState(selectedCourses, selectedClasses, createdEvents, timetableIndex);
   };
 
   // Reordering the tabs when they are dragged and dropped
@@ -123,8 +139,9 @@ const TimetableTabs: React.FC = () => {
    * Dropdown menu tab handlers
    */
   // Left click handler for the three dots icon (editing the timetable tab)
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElement(event.currentTarget);
+  const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setAnchorElement({ x: e.clientX, y: e.clientY });
   };
 
   // Right clicking a tab will switch to that tab and open the menu
@@ -133,7 +150,7 @@ const TimetableTabs: React.FC = () => {
     handleSwitchTimetables(displayTimetables, index);
 
     // Anchoring the menu to the mouse position
-    setAnchorCoords({ x: event.clientX, y: event.clientY });
+    setAnchorElement({ x: event.clientX, y: event.clientY });
   };
 
   return (
@@ -178,6 +195,7 @@ const TimetableTabs: React.FC = () => {
             )}
           </Droppable>
         </DragDropContext>
+        <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetabletip}>
           <StyledIconButton
             tabTheme={tabTheme}
@@ -187,9 +205,8 @@ const TimetableTabs: React.FC = () => {
             <AddIcon />
           </StyledIconButton>
         </Tooltip>
-      </TabsWrapper>
-      <EditTabPopups />
-    </TabsSection>
+      </TabsWrapper >
+    </TabsSection >
   );
 };
 export { TimetableTabs };

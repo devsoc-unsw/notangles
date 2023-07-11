@@ -2,9 +2,10 @@ import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { TimetableData } from '../interfaces/Periods';
+import { CourseData, CourseDataMap, TimetableData } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
+import { ICourseContext } from './CourseContext';
 
 export interface IAppContext {
   is12HourMode: boolean;
@@ -57,10 +58,12 @@ export interface IAppContext {
   setDays(callback: (oldDays: string[]) => string[]): void;
 
   earliestStartTime: number;
-  setEarliestStartTime: (newEarliestStartTime: number) => void;
+  setEarliestStartTime(newEarliestStartTime: number): void;
+  setEarliestStartTime(callback: (oldEarliestStartTime: number) => number): void;
 
   latestEndTime: number;
-  setLatestEndTime: (newLatestEndTime: number) => void;
+  setLatestEndTime(newLatestEndTime: number): void;
+  setLatestEndTime(callback: (oldLatestEndTime: number) => number): void;
 
   term: string;
   setTerm: (newTerm: string) => void;
@@ -86,97 +89,91 @@ export interface IAppContext {
   displayTimetables: TimetableData[];
   setDisplayTimetables: (newDisplayTimetable: any) => void;
 
-  anchorElement: null | HTMLElement;
-  setAnchorElement: (newAnchorElement: null | HTMLElement) => void;
-
-  anchorCoords: null | { x: number; y: number };
-  setAnchorCoords: (newAnchorCoord: null | { x: number; y: number }) => void;
+  courseData: CourseDataMap;
+  setCourseData: (newCourseData: CourseDataMap) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
   is12HourMode: false,
-  setIs12HourMode: () => { },
+  setIs12HourMode: () => {},
 
   isDarkMode: false,
-  setIsDarkMode: () => { },
+  setIsDarkMode: () => {},
 
   isSquareEdges: false,
-  setIsSquareEdges: () => { },
+  setIsSquareEdges: () => {},
 
   isShowOnlyOpenClasses: false,
-  setisShowOnlyOpenClasses: () => { },
+  setisShowOnlyOpenClasses: () => {},
 
   isDefaultUnscheduled: false,
-  setIsDefaultUnscheduled: () => { },
+  setIsDefaultUnscheduled: () => {},
 
   isHideClassInfo: false,
-  setIsHideClassInfo: () => { },
+  setIsHideClassInfo: () => {},
 
   isHideExamClasses: false,
-  setIsHideExamClasses: () => { },
+  setIsHideExamClasses: () => {},
 
   isConvertToLocalTimezone: true,
-  setIsConvertToLocalTimezone: () => { },
+  setIsConvertToLocalTimezone: () => {},
 
   alertMsg: '',
-  setAlertMsg: () => { },
+  setAlertMsg: () => {},
 
-  alertFunction: () => { },
-  setAlertFunction: () => { },
+  alertFunction: () => {},
+  setAlertFunction: () => {},
 
   errorVisibility: false,
-  setErrorVisibility: () => { },
+  setErrorVisibility: () => {},
 
   infoVisibility: false,
-  setInfoVisibility: () => { },
+  setInfoVisibility: () => {},
 
   autoVisibility: false,
-  setAutoVisibility: () => { },
+  setAutoVisibility: () => {},
 
   lastUpdated: 0,
-  setLastUpdated: () => { },
+  setLastUpdated: () => {},
 
   isDrag: false,
-  setIsDrag: () => { },
+  setIsDrag: () => {},
 
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-  setDays: () => { },
+  setDays: () => {},
 
   earliestStartTime: getDefaultStartTime(true),
-  setEarliestStartTime: () => { },
+  setEarliestStartTime: () => {},
 
   latestEndTime: getDefaultEndTime(true),
-  setLatestEndTime: () => { },
+  setLatestEndTime: () => {},
 
   term: `T0`,
-  setTerm: () => { },
+  setTerm: () => {},
 
   termName: `Term 0`,
-  setTermName: () => { },
+  setTermName: () => {},
 
   termNumber: 0,
-  setTermNumber: () => { },
+  setTermNumber: () => {},
 
   year: '0000',
-  setYear: () => { },
+  setYear: () => {},
 
   firstDayOfTerm: '0000-00-00',
-  setFirstDayOfTerm: () => { },
+  setFirstDayOfTerm: () => {},
 
   coursesList: [],
-  setCoursesList: () => { },
+  setCoursesList: () => {},
 
   selectedTimetable: 0,
-  setSelectedTimetable: () => { },
+  setSelectedTimetable: () => {},
 
   displayTimetables: [],
-  setDisplayTimetables: () => { },
+  setDisplayTimetables: () => {},
 
-  anchorElement: null,
-  setAnchorElement: () => { },
-
-  anchorCoords: null,
-  setAnchorCoords: () => { },
+  courseData: {map: []},
+  setCourseData: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -199,7 +196,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
   const [alertMsg, setAlertMsg] = useState<string>('');
-  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => { });
+  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
@@ -216,8 +213,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
-  const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
-  const [anchorCoords, setAnchorCoords] = useState<null | { x: number; y: number }>(null);
+  const [courseData, setCourseData] = useState<CourseDataMap>({map: []});
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -272,10 +268,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
-    anchorElement,
-    setAnchorElement,
-    anchorCoords,
-    setAnchorCoords,
+    courseData,
+    setCourseData,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

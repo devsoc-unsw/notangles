@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import { FileCopy, Edit, Delete, ContentCopy, ContentPaste } from '@mui/icons-material';
-import { MenuItem, Divider, ListItemIcon, ListItemText } from '@mui/material';
+import { ContentCopy, ContentPaste, Delete, Edit, FileCopy } from '@mui/icons-material';
+import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod, EventMetadata } from '../../interfaces/Periods';
+import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
 import { StyledMenu } from '../../styles/CustomEventStyles';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
@@ -52,7 +52,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   return (
     <StyledMenu
-      open={contextMenu != null}
+      open={contextMenu !== null}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}

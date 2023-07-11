@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, IconButton, IconButtonProps } from '@mui/material';
+import { Box, BoxProps, Button, IconButton, IconButtonProps, Snackbar } from '@mui/material';
 import { Theme, styled } from '@mui/material';
 
 export type TabTheme = {
@@ -28,8 +28,16 @@ export const tabThemeDark: TabTheme = {
   tabSelectedText: '#ffffff',
 };
 
+export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
+  '& .MuiSnackbarContent-root': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#444444' : '#ffffff',
+    color: theme.palette.mode === 'dark' ? '#ffffff' : '#2f2f2f',
+  },
+}));
+
 export const TabsSection = styled(Box)`
   padding-top: 10px;
+  padding-left: 66px;
   overflow: auto;
   &::-webkit-scrollbar {
     height: 5px
@@ -52,12 +60,11 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-
 export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
-  min - width: 50px;
+  min-width: 50px;
   mineheight: 50px;
   transition: background - color 0.1s;
   border - radius: 50 %;

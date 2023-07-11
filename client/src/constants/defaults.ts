@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { createDefaultTimetable } from '../utils/timetableHelpers';
 
 const defaults: Record<string, any> = {
   is12HourMode: true,
@@ -9,15 +9,8 @@ const defaults: Record<string, any> = {
   isHideClassInfo: false,
   isHideExamClasses: false,
   isConvertToLocalTimezone: true,
-  timetables: [
-    {
-      name: 'My timetable',
-      id: uuidv4(),
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-    },
-  ],
+  courseData: {map: []},
+  timetables: createDefaultTimetable(),
 };
 
 export default defaults;

@@ -15,6 +15,10 @@ type Change = { date: String; changes: String[] };
 
 const changelog: Change[] = [
   {
+    date: 'June 21, 2023',
+    changes: ['Multiple timetables can be created by a user at the same time'],
+  },
+  {
     date: 'June 3, 2023',
     changes: ['Can edit, copy, paste, duplicate and delete events by right clicking'],
   },

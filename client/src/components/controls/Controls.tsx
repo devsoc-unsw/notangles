@@ -14,6 +14,7 @@ const SelectWrapper = styled(Box)`
   grid-column: 1 / -1;
   grid-row: 1;
   padding-top: 20px;
+  padding-left: 66px;
 `;
 
 const AutotimetablerWrapper = styled(Box)`
