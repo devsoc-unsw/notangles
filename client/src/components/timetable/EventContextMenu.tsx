@@ -62,13 +62,13 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
     >
       <MenuItem onClick={handleEditEvent}>
         <ListItemIcon>
-            <Edit fontSize="small"/>
+            <Edit />
         </ListItemIcon>
         <ListItemText>Edit</ListItemText>
       </MenuItem>
       <MenuItem onClick={handleCopyEvent}>
         <ListItemIcon>
-            <ContentCopy fontSize="small"/>
+            <ContentCopy />
         </ListItemIcon>
         <ListItemText>Copy</ListItemText>
       </MenuItem>
@@ -76,20 +76,20 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
         disabled={copiedEvent === null}
         onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
         <ListItemIcon>
-            <ContentPaste fontSize="small"/>
+            <ContentPaste />
         </ListItemIcon>
         <ListItemText>Paste</ListItemText>
       </MenuItem>
       <MenuItem onClick={handleDuplicateEvent}>
         <ListItemIcon>
-            <FileCopy fontSize="small"/>
+            <FileCopy />
         </ListItemIcon>
         <ListItemText>Duplicate</ListItemText>
       </MenuItem>
       <Divider />
       <MenuItem onClick={handleDeleteEvent}>
         <ListItemIcon>
-            <Delete fontSize="small" />
+            <Delete />
         </ListItemIcon>
         <ListItemText>Delete</ListItemText>
       </MenuItem>

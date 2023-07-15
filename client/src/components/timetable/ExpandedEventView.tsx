@@ -17,7 +17,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
-import { ExecuteButton, StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ExecuteButton, StyledListItem, StyledListItemIcon, StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
@@ -27,9 +27,6 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
-  color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
-`;
 
 const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   eventPeriod,

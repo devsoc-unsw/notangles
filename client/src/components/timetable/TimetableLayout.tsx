@@ -10,7 +10,7 @@ import {
   unknownErrorMessage,
 } from '../../constants/timetable';
 import { ContentPaste } from '@mui/icons-material';
-import { StyledMenu } from '../../styles/CustomEventStyles';
+import { StyledMenu, StyledListItem } from '../../styles/CustomEventStyles';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
@@ -300,7 +300,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
       >
         <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
           <ListItemIcon>
-              <ContentPaste fontSize="small"/>
+              <ContentPaste/>
           </ListItemIcon>
           <ListItemText>Paste</ListItemText>
         </MenuItem>
