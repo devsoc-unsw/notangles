@@ -6,9 +6,9 @@ import {
   InputAdornment,
   ListItem,
   ListItemIcon,
-  ListItemIconProps,
   TextField,
   Typography,
+  Dialog, 
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -18,7 +18,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import { ExecuteButton, StyledListItem, StyledListItemIcon, StyledListItemText } from '../../styles/CustomEventStyles';
-import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
@@ -190,7 +190,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
   return (
-    <StyledDialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+    <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
         <>
           <StyledDialogTitle>
@@ -350,9 +350,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               </Typography>
             </StyledListItem>
             <StyledListItem>
-              <ListItemIcon>
+              <StyledListItemIcon isDarkMode={isDarkMode}>
                 <Link />
-              </ListItemIcon>
+              </StyledListItemIcon>
               <TextField
                 InputProps={{
                   endAdornment: (
@@ -377,7 +377,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           </StyledDialogContent>
         </>
       )}
-    </StyledDialog>
+    </Dialog>
   );
 };
 
