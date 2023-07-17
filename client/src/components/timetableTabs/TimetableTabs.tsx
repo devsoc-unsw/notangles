@@ -69,7 +69,6 @@ const TimetableTabs: React.FC = () => {
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
-    // Limiting users to have a maximum of 13 timetables
     if (displayTimetables.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
@@ -95,7 +94,6 @@ const TimetableTabs: React.FC = () => {
   // Fetching the saved timetables from local storage
   useEffect(() => {
     const savedTimetables = storage.get('timetables');
-    // checking if a save exists and if so update the timetables to display.
     if (savedTimetables) {
       setDisplayTimetables(savedTimetables);
     }
