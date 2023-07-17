@@ -57,7 +57,7 @@ export const handlePasteEvent = (
 ) => {
   if (!copiedEvent) return;
   const { name, location, description, color, day, start, end } = { ...copiedEvent.event, ...copiedEvent.time };
-  const newEvent = createEventObj(name, location, description, color, day + 1, start, end);
+  const newEvent = createEventObj(name, location, description, color, day + 1, start, end, copiedEvent.subtype);
   setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
   setContextMenu(null);
 };

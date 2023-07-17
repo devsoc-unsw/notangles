@@ -26,7 +26,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleDuplicateEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(name, location, description, color, day, start, end);
+    const newEvent = createEventObj(name, location, description, color, day, start, end, eventPeriod.subtype);
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
   };
@@ -45,7 +45,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleCopyEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(name, location, description, color, day, start, end);
+    const newEvent = createEventObj(name, location, description, color, day, start, end, eventPeriod.subtype);
     setCopiedEvent(newEvent);
     setContextMenu(null);
   };

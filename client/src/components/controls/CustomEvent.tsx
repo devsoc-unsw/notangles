@@ -7,7 +7,7 @@ import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CoursesList } from '../../interfaces/Courses';
-import { ClassData, EventPeriod } from '../../interfaces/Periods';
+import { ClassData, EventPeriod, EventSubtype } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
@@ -144,7 +144,7 @@ const CustomEvent: React.FC = () => {
 
       // Create an event for each day that is selected in the dropdown option
       for (const day of eventDays) {
-        const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime);
+        const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime, 'General');
         newEvents[newEvent.event.id] = newEvent;
       }
     } else if (eventType === 'Tutoring') {
@@ -159,7 +159,8 @@ const CustomEvent: React.FC = () => {
           color,
           daysShort[period.time.day - 1],
           createDateWithTime(period.time.start),
-          createDateWithTime(period.time.end)
+          createDateWithTime(period.time.end),
+          'Tutoring'
         );
         newEvents[newEvent.event.id] = newEvent;
       });
@@ -173,7 +174,8 @@ const CustomEvent: React.FC = () => {
           linkEvent.event.color,
           linkEvent.time.day,
           linkEvent.time.start,
-          linkEvent.time.end
+          linkEvent.time.end,
+          linkEvent.subtype,
         );
         newEvents[newEvent.event.id] = newEvent;
       } catch {
@@ -216,9 +218,10 @@ const CustomEvent: React.FC = () => {
     color: string,
     day: string,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
+    subtype: EventSubtype,
   ) => {
-    const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTime, endTime);
+    const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTime, endTime, subtype);
 
     setCreatedEvents({
       ...createdEvents,
@@ -240,9 +243,10 @@ const CustomEvent: React.FC = () => {
     color: string,
     day: number,
     startTime: number,
-    endTime: number
+    endTime: number,
+    subtype: EventSubtype,
   ) => {
-    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
+    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime, subtype);
 
     setCreatedEvents({
       ...createdEvents,

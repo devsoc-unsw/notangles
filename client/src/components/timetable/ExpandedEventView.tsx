@@ -134,6 +134,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       ...createdEvents,
       [id]: {
         type: 'event',
+        subtype: eventPeriod.subtype,
         event: {
           id: id,
           name: newName,
@@ -155,7 +156,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
     // Create an event for each day that is selected in the dropdown option
     for (const day of newDays) {
-      const newEvent = parseAndCreateEventObj(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
+      const newEvent = parseAndCreateEventObj(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime, eventPeriod.subtype);
       updatedEventData[newEvent.event.id] = newEvent;
     }
 
