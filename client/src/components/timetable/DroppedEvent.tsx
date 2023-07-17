@@ -54,8 +54,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   };
 
   const onDown = (eventDown: any) => {
-    if (eventDown.button === 2 || contextMenu) return;
-
+    if (eventDown.button === 2 || contextMenu || eventPeriod.subtype === 'Tutoring') return;
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
