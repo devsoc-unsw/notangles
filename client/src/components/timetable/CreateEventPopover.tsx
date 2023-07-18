@@ -69,7 +69,16 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       endTimeToCreateAs = initialEndTime;
     }
 
-    const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTimeToCreateAs, endTimeToCreateAs, 'General');
+    const newEvent = parseAndCreateEventObj(
+      eventName,
+      location,
+      description,
+      color,
+      day,
+      startTimeToCreateAs,
+      endTimeToCreateAs,
+      'General'
+    );
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
