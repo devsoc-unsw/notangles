@@ -58,7 +58,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       onClose={() => setContextMenu(null)}
       autoFocus={false}
     >
-      <MenuItem onClick={handleEditEvent}>
+      <MenuItem onClick={handleEditEvent} disabled={eventPeriod.subtype === 'Tutoring'}>
         <ListItemIcon>
           <Edit fontSize="small" />
         </ListItemIcon>
