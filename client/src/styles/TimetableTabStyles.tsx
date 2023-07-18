@@ -40,12 +40,12 @@ export const TabsSection = styled(Box)`
   padding-left: 66px;
   overflow: auto;
   &::-webkit-scrollbar {
-    height: 5px
+    height: 5px;
   }
 `;
 
-export const TabsWrapper = styled(Box) <BoxProps & { tabTheme: TabTheme }>`
-  background-color: ${(props) => (props.tabTheme.containerBackground.toString())};
+export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
+  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
   width: max-content;
@@ -60,19 +60,19 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
   min-width: 50px;
-  mineheight: 50px;
+  min-height: 50px;
   transition: background - color 0.1s;
-  border - radius: 50 %;
-  zIndex: 100;
-  background-color: ${(props) => (props.tabTheme.containerBackground.toString())};
+  border-radius: 50;
+  z-index: 100;
+  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   opacity: 0.75;
   &:hover {
-    background-color: ${(props) => (props.tabTheme.tabHoverColor.toString())};
+    background-color: ${(props) => props.tabTheme.tabHoverColor.toString()};
   }
 `;
 
@@ -105,7 +105,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       textTransform: 'uppercase',
       fontSize: '0.875rem',
       fontWeight: '500',
-      fontFamily: "Roboto,Helvetica,Arial",
+      fontFamily: 'Roboto,Helvetica,Arial',
       lineHeight: '1.25',
       letterSpacing: '0.02857em',
       flexShrink: '0',
