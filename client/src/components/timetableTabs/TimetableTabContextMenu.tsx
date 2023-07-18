@@ -75,7 +75,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
    */
   // Handler for deleting a timetable
   const handleDeleteTimetable = (targetIndex: number) => {
-    // If only one tab then prevent the delete
     if (displayTimetables.length > 1) {
       prevTimetables = {
         selected: selectedTimetable,
@@ -90,7 +89,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }),
       };
 
-      // Deleting the current tab will remain on the same index unless it is the last tab
       let newIndex = targetIndex;
       if (newIndex === displayTimetables.length - 1) {
         newIndex = targetIndex - 1;
@@ -134,7 +132,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   // Handle closing the rename dialog
   const handleRenameClose = (clickedOk: boolean) => {
-    // Checks if the user clicked out of the dialog or submitted a new name
     if (!clickedOk) {
       setRenameOpen(false);
       return;
@@ -142,7 +139,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     if (renamedErr) return;
 
-    // updating the timetable name in the state and local storage
     let newTimetables = [...displayTimetables];
     newTimetables[selectedTimetable].name = renamedString;
 
@@ -162,14 +158,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
-    // Limiting users to have a maximum of 13 timetables
     if (displayTimetables.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[selectedTimetable];
 
-      // Creating the duplicated timetable
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
         id: uuidv4(),
@@ -178,14 +172,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         createdEvents: duplicateEvents(currentTimetable.createdEvents),
       };
 
-      // Inserting the duplicate timetable after the current one
       const newTimetables = [
         ...displayTimetables.slice(0, selectedTimetable + 1),
         newTimetable,
         ...displayTimetables.slice(selectedTimetable + 1),
       ];
 
-      // Update the state variables
       storage.set('timetables', newTimetables);
       setDisplayTimetables(newTimetables);
       const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
@@ -204,7 +196,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        // Preventing creating a timetable when the delete or rename popups are open
         if (event.key === 'Enter' && !deleteOpen && !renameOpen) {
           event.preventDefault();
           createButton?.focus();
@@ -215,7 +206,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleCreateTimetableShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleCreateTimetableShortcut);
     };
@@ -226,7 +216,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
       // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        // Preventing deletion of timetable when the rename popup is open
         if (event.key === 'Backspace' && !renameOpen) {
           setDeleteOpen(true);
         }
@@ -235,7 +224,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleDeletePopupShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeletePopupShortcut);
     };
@@ -244,7 +232,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey to confirm delete prompt by pressing enter button
   useEffect(() => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
-      // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
       const deleteConfirm = document.getElementById('confirm-delete-button');
       if (deleteOpen && event.key === 'Enter') {
         event.preventDefault();
@@ -255,7 +242,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleDeleteEnterShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeleteEnterShortcut);
     };
@@ -264,7 +250,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey to confirm rename by pressing enter button
   useEffect(() => {
     const handleRenameEnterShortcut = (event: KeyboardEvent) => {
-      // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
       const renameConfirm = document.getElementById('confirm-rename-button');
       if (renameOpen && event.key === 'Enter') {
         event.preventDefault();
