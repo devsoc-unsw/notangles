@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs, Theme, styled, Snackbar } from '@mui/material';
 
 export const TimetableTabsContainer = styled(Box)`
-  padding-top: 10px;
+  padding-top: 20px;
   padding-left: 66px;
   overflow: auto;
 `;
