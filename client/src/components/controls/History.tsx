@@ -250,7 +250,6 @@ const History: React.FC = () => {
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
-            disabled={disableReset.all}
             onClick={() => {
               setClearOpen(false);
             }}
@@ -258,7 +257,7 @@ const History: React.FC = () => {
             CANCEL
           </Button>
           <Button
-            disabled={disableReset.current}
+            disabled={disableReset.all}
             onClick={() => {
               clearAll();
               setClearOpen(false);
@@ -270,7 +269,7 @@ const History: React.FC = () => {
       </Dialog>
       <Tooltip title={clearTooltip}>
         <IconButton
-          disabled={disableReset.all && disableReset.current}
+          disabled={disableReset.all}
           color="inherit"
           onClick={() => setClearOpen(true)}
           size="large"
