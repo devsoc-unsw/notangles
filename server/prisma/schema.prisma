@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId       String      @id
+  createdAt    DateTime    @default(now())
+  deleteUserAt DateTime // Temporary, Max's TTL method
+  timetables   Timetable[]
+}
+
+model Event {
+  id          String  @id
+  name        String
+  location    String?
+  description String?
+  color       String  @default("#1F7E8C")
+
+  // Event Time
+  day         String
+  start       DateTime
+  end         DateTime
+  timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  timetableId String?
+}
+
+model Class {
+  id          String     @unique
+  classType   String // e.g. Lecture, Tutorial, Laboratory, etc. Not putting into enum because there are other whacky classTypes 
+  courseName  String?
+  Timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  timetableId String?
+}
+
+model Timetable {
+  id              String   @id
+  name            String
+  selectedCourses String[]
+  selectedClasses Class[]
+  createdEvents   Event[]
+  user            User     @relation(fields: [userId], references: [userId])
+  userId          String
+}
+
+// future: add settings for individual timetables, rounded corners, show only open classes etc?

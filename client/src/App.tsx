@@ -9,6 +9,7 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
+import { v4 as uuidv4 } from 'uuid';
 import Navbar from './components/navbar/Navbar';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
@@ -422,7 +423,40 @@ const App: React.FC = () => {
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
+  
+  useEffect(() => {
+    let userId = storage.get('userId');
+    if (!userId) {
+      const newId: string = uuidv4();
+      storage.set('userId', newId);
+      // fetchReliably(createNewUserId(newId));
+    }
 
+
+    
+  }, []);
+
+  const createNewUserId = async (uuid: string) => {
+    try {
+        const response = await fetch('graphql?', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: uuid }), // Replace with your request body
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed');
+        }
+
+        const data = await response.json();
+        // Do something with the received data
+        console.log(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+  }
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);

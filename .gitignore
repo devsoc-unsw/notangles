@@ -73,3 +73,5 @@ typings/
 # Mac stuff
 .DS_Store
 
+# OldServer for now
+old_server/
