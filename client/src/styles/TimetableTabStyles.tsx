@@ -17,23 +17,6 @@ export const StyledTab = styled(Tab)`
   min-width: 150px;
   border-radius: 10px 10px 0 0;
   transition: background-color 0.1s;
-  /* .MuiOutlinedInput-root {
-    fieldset {
-      background-color: red;
-    }
-
-    &.Mui-selected fieldset {
-      background-color: red;
-    }
-    &:hover fieldset {
-      background-color: red;
-    }
-    &:active fieldset {
-      cursor: move;
-    }
-  } */
-
-  /* border-style: solid; */
 `;
 
 export type TabTheme = {

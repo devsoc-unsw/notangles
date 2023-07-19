@@ -180,7 +180,7 @@ const History: React.FC = () => {
   };
 
   /**
-   * Resets all timetables - leave one default
+   * Resets all timetables - leave one as default
    */
   const clearAll = () => {
     setTimetableState([], {}, {}, createDefaultTimetable(), 0);

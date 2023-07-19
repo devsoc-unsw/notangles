@@ -218,8 +218,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -256,15 +256,11 @@ const App: React.FC = () => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
         } else {
           newSelectedCourses.push(addedCourse);
-
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
+        }
+        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+          newCourseData.map.push(addedCourse);
         }
       });
 
