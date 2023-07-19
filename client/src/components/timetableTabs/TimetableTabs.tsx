@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { MoreHoriz } from '@mui/icons-material';
+import { v4 as uuidv4 } from 'uuid';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { Add, MoreHoriz } from '@mui/icons-material';
 import { Tooltip, Box } from '@mui/material';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import storage from '../../utils/storage';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { CourseData, TimetableData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
-import { v4 as uuidv4 } from 'uuid';
 import {
   TabTheme,
   tabThemeDark,
@@ -16,10 +16,9 @@ import {
   TabsWrapper,
   StyledTabs,
   StyledIconButton,
-  StyledSpan
+  StyledSpan,
 } from '../../styles/TimetableTabStyles';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import AddIcon from '@mui/icons-material/Add';
+import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 
 const TimetableTabs: React.FC = () => {
@@ -117,10 +116,7 @@ const TimetableTabs: React.FC = () => {
       return;
     }
 
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
 
@@ -131,7 +127,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables(newTimetables);
 
     handleSwitchTimetables(newTimetables, destination.index);
-  }
+  };
 
   /**
    * Dropdown menu tab handlers
@@ -154,15 +150,10 @@ const TimetableTabs: React.FC = () => {
   return (
     <TabsSection>
       <TabsWrapper tabTheme={tabTheme}>
-        <DragDropContext
-          onDragEnd={handleSortTabs}
-        >
-          <Droppable droppableId='tabs' direction='horizontal'>
-            {props => (
-              <StyledTabs
-                ref={props.innerRef}
-                {...props.droppableProps}
-              >
+        <DragDropContext onDragEnd={handleSortTabs}>
+          <Droppable droppableId="tabs" direction="horizontal">
+            {(props) => (
+              <StyledTabs ref={props.innerRef} {...props.droppableProps}>
                 {displayTimetables.map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
@@ -173,17 +164,16 @@ const TimetableTabs: React.FC = () => {
                         key={index}
                         sx={TabStyle(index, selectedTimetable)}
                         onClick={() => handleSwitchTimetables(displayTimetables, index)}
-                        onContextMenu={(e) => handleRightTabClick(e, index)}>
+                        onContextMenu={(e) => handleRightTabClick(e, index)}
+                      >
                         {timetable.name}
-                        {
-                          selectedTimetable === index ? (
-                            <StyledSpan onClick={handleMenuClick}>
-                              <MoreHoriz />
-                            </StyledSpan>
-                          ) : (
-                            <></>
-                          )
-                        }
+                        {selectedTimetable === index ? (
+                          <StyledSpan onClick={handleMenuClick}>
+                            <MoreHoriz />
+                          </StyledSpan>
+                        ) : (
+                          <></>
+                        )}
                       </Box>
                     )}
                   </Draggable>
@@ -195,16 +185,12 @@ const TimetableTabs: React.FC = () => {
         </DragDropContext>
         <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetabletip}>
-          <StyledIconButton
-            tabTheme={tabTheme}
-            id="create-timetables-button"
-            onClick={handleCreateTimetable}
-          >
-            <AddIcon />
+          <StyledIconButton tabTheme={tabTheme} id="create-timetables-button" onClick={handleCreateTimetable}>
+            <Add />
           </StyledIconButton>
         </Tooltip>
-      </TabsWrapper >
-    </TabsSection >
+      </TabsWrapper>
+    </TabsSection>
   );
 };
 export { TimetableTabs };

@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
 
+import { ControlsProps } from '../../interfaces/PropTypes';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
-import { ControlsProps } from '../../interfaces/PropTypes';
 
 const SelectWrapper = styled(Box)`
   display: flex;

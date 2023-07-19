@@ -115,7 +115,7 @@ const App: React.FC = () => {
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120; // 
+  const fetchCooldown: number = 120;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
@@ -218,8 +218,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -266,6 +266,9 @@ const App: React.FC = () => {
             newCourseData.map.push(addedCourse);
           }
         }
+        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+          newCourseData.map.push(addedCourse);
+        }
       });
 
       setSelectedCourses(newSelectedCourses);
@@ -288,19 +291,15 @@ const App: React.FC = () => {
     newCourseData.map = courseData.map.filter((targetCourse) => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
-          console.log(course.code + targetCourse.code);
           if (course.code.localeCompare(courseCode)) {
             return true;
           }
-        } 
+        }
       }
-      console.log("removed" + courseCode);
       return false;
     });
     setCourseData(newCourseData);
-    // for (const timetable in displayTimetables) {
 
-    // }
     setSelectedClasses((prev) => {
       prev = { ...prev };
       delete prev[courseCode];
@@ -370,8 +369,6 @@ const App: React.FC = () => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
     let newCourseData = courseData;
     storage.set('courseData', newCourseData);
-    console.log(storage.get('courseData'));
-    console.log(newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);

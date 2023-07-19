@@ -1,3 +1,6 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -10,15 +13,12 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import storage from '../../utils/storage';
-import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
-import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
-import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
-import { v4 as uuidv4 } from 'uuid';
+import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
+import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
+import storage from '../../utils/storage';
 import {
   StyledDialogButtons,
   StyledDialogContent,
@@ -26,8 +26,8 @@ import {
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
-import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
+import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -89,10 +89,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }),
       };
 
-      let newIndex = targetIndex;
-      if (newIndex === displayTimetables.length - 1) {
-        newIndex = targetIndex - 1;
-      }
+      const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1: targetIndex;
 
       const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       // Updating the timetables state to the new timetable index
@@ -123,7 +120,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const handleRenameOpen = () => {
-    let timetableName = displayTimetables[selectedTimetable].name;
+    const timetableName = displayTimetables[selectedTimetable].name;
     setRenamedString(timetableName);
     setRenamedHelper(`${timetableName.length}/30`);
     timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
@@ -323,8 +320,16 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           </MenuItem>
         </Tooltip>
       </StyledMenu>
+
       {/* Rename timetable Dialog  */}
-      <Dialog open={renameOpen} maxWidth="sm" onClose={() => { handleRenameClose(false); handleMenuClose() }}>
+      <Dialog
+        open={renameOpen}
+        maxWidth="sm"
+        onClose={() => {
+          handleRenameClose(false);
+          handleMenuClose();
+        }}
+      >
         <StyledTopIcons>
           <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
             <Close />

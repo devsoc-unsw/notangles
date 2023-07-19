@@ -180,7 +180,7 @@ const History: React.FC = () => {
   };
 
   /**
-   * Resets all timetables - leave one default
+   * Resets all timetables - leave one as default
    */
   const clearAll = () => {
     setTimetableState([], {}, {}, createDefaultTimetable(), 0);
@@ -250,7 +250,6 @@ const History: React.FC = () => {
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
-            disabled={disableReset.all}
             onClick={() => {
               setClearOpen(false);
             }}
@@ -258,7 +257,7 @@ const History: React.FC = () => {
             CANCEL
           </Button>
           <Button
-            disabled={disableReset.current}
+            disabled={disableReset.all}
             onClick={() => {
               clearAll();
               setClearOpen(false);
@@ -269,12 +268,7 @@ const History: React.FC = () => {
         </StyledDialogButtons>
       </Dialog>
       <Tooltip title={clearTooltip}>
-        <IconButton
-          disabled={disableReset.all && disableReset.current}
-          color="inherit"
-          onClick={() => setClearOpen(true)}
-          size="large"
-        >
+        <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
           <Delete />
         </IconButton>
       </Tooltip>
