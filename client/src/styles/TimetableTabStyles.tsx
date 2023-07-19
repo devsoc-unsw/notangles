@@ -37,14 +37,14 @@ export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
 
 export const TabsSection = styled(Box)`
   padding-top: 10px;
-  padding-left: 66px;
+  margin-left: 66px;
   overflow: auto;
   &::-webkit-scrollbar {
     height: 5px;
   }
 `;
 
-export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
+export const TabsWrapper = styled(Box) <BoxProps & { tabTheme: TabTheme }>`
   background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -60,7 +60,7 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
