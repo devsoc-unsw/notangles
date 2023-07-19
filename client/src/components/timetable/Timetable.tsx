@@ -12,13 +12,13 @@ import { TimetableLayout } from './TimetableLayout';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
-})<{
+}) <{
   rows: number;
   cols: number;
 }>`
   display: grid;
   min-width: ${timetableWidth}px;
-  padding: ${contentPadding}px;
+  padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: 1px;

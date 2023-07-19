@@ -3,7 +3,8 @@ import { Link, LocationOn } from '@mui/icons-material';
 import { ListItemIcon, TextField, Card, CardProps } from '@mui/material';
 import { styled } from '@mui/system';
 import { CustomEventLinkProp } from '../../interfaces/PropTypes';
-import { StyledListItem, StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItem } from '../../styles/ControlStyles';
+import { StyledListItemText } from '../../styles/CustomEventStyles';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 40px 20px;

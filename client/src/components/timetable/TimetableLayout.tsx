@@ -25,7 +25,7 @@ export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : c
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-})<{
+}) <{
   x: number;
   y: number;
   yTo?: number;
@@ -44,7 +44,6 @@ const BaseCell = styled('div', {
   outline: solid ${({ theme }) => theme.palette.secondary.main} 1px;
   outline-offset: -0.5px;
 
-  border-top-left-radius: ${({ theme, x, y }) => (x === 2 && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 2 && isEndY ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, isEndX, y }) => (isEndX && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (isEndX && isEndY ? theme.shape.borderRadius : 0)}px;
@@ -61,14 +60,14 @@ const DayCell = styled(BaseCell)`
 
 const InventoryCell = styled(DayCell)`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
-  border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-top-right-radius: ${({ theme, y }) => 0}px; //(y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-})<{ is12HourMode: boolean }>`
+}) <{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};

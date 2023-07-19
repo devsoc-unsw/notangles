@@ -186,7 +186,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             <Grid item xs={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               {/* only display location on card if event not less than one hour */}
-              {!isLessThanOneHour && (
+              {!isLessThanOneHour && eventPeriod.event.location && (
                 <StyledCardInfo>
                   <StyledLocationIcon />
                   {eventPeriod.event.location}
@@ -196,7 +196,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)}>
+            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}

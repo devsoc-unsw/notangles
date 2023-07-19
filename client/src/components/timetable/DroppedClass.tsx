@@ -222,7 +222,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {classCard.type === 'class' && fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)}>
+            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
+
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -15,8 +16,8 @@ import { createEventObj, parseAndCreateEventObj } from '../../utils/createEvent'
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
-import CustomEventTutoring from './CustomEventTutoring';
 import CustomEventLink from './CustomEventLink';
+import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -350,7 +351,7 @@ const CustomEvent: React.FC = () => {
           color="primary"
           disableElevation
           disabled={
-            (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
+            (eventType === 'General' && (eventName === '' || eventDays.length === 0)) ||
             (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
             (eventType === 'Via Link' && link === '')
           }
