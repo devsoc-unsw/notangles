@@ -61,3 +61,13 @@ export const handlePasteEvent = (
   setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
   setContextMenu(null);
 };
+
+export const handleDeleteEvent = (
+  createdEvents: CreatedEvents,
+  setCreatedEvents: (createdEvents: CreatedEvents) => void,
+  eventPeriod: EventPeriod
+) => {
+  const updatedEventData = { ...createdEvents };
+  delete updatedEventData[eventPeriod.event.id];
+  setCreatedEvents(updatedEventData);
+};

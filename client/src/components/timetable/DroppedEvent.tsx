@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
+import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
@@ -15,9 +15,11 @@ import {
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
-import { handleContextMenu } from '../../utils/cardsContextMenu';
+import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 import EventContextMenu from './EventContextMenu';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { CourseContext } from '../../context/CourseContext';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -41,6 +43,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
+
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -166,15 +170,34 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           handleContextMenu(e, copiedEvent, setCopiedEvent, eventPeriod.time.day - 1, eventPeriod.time.start, setContextMenu);
         }}
       >
-        <EventContextMenu
-          eventPeriod={eventPeriod}
-          contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
-          setPopupOpen={setPopupOpen}
-          setIsEditing={setIsEditing}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
-        />
+        {eventPeriod.subtype !== 'Tutoring' ? 
+          <EventContextMenu
+            eventPeriod={eventPeriod}
+            contextMenu={contextMenu}
+            setContextMenu={setContextMenu}
+            setPopupOpen={setPopupOpen}
+            setIsEditing={setIsEditing}
+            setCopiedEvent={setCopiedEvent}
+            copiedEvent={copiedEvent}
+          />
+          : <>
+            <StyledMenu
+              open={contextMenu != null}
+              anchorReference="anchorPosition"
+              anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+              onClose={() => setContextMenu(null)}
+              autoFocus={false}
+            >
+              <MenuItem onClick={() => handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod)}>
+                <ListItemIcon>
+                  <Delete fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </StyledMenu>
+          </>
+        }
+
         <StyledCardInner
           hasClash={false}
           isSquareEdges={isSquareEdges}
