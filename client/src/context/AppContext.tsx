@@ -71,6 +71,9 @@ export interface IAppContext {
   termName: string;
   setTermName: (newTermName: string) => void;
 
+  termNames: string[];
+  setTermNames: (newTermNames: string[]) => void;
+
   termNumber: number;
   setTermNumber: (newTermNumber: number) => void;
 
@@ -95,85 +98,88 @@ export interface IAppContext {
 
 export const AppContext = createContext<IAppContext>({
   is12HourMode: false,
-  setIs12HourMode: () => {},
+  setIs12HourMode: () => { },
 
   isDarkMode: false,
-  setIsDarkMode: () => {},
+  setIsDarkMode: () => { },
 
   isSquareEdges: false,
-  setIsSquareEdges: () => {},
+  setIsSquareEdges: () => { },
 
   isShowOnlyOpenClasses: false,
-  setisShowOnlyOpenClasses: () => {},
+  setisShowOnlyOpenClasses: () => { },
 
   isDefaultUnscheduled: false,
-  setIsDefaultUnscheduled: () => {},
+  setIsDefaultUnscheduled: () => { },
 
   isHideClassInfo: false,
-  setIsHideClassInfo: () => {},
+  setIsHideClassInfo: () => { },
 
   isHideExamClasses: false,
-  setIsHideExamClasses: () => {},
+  setIsHideExamClasses: () => { },
 
   isConvertToLocalTimezone: true,
-  setIsConvertToLocalTimezone: () => {},
+  setIsConvertToLocalTimezone: () => { },
 
   alertMsg: '',
-  setAlertMsg: () => {},
+  setAlertMsg: () => { },
 
-  alertFunction: () => {},
-  setAlertFunction: () => {},
+  alertFunction: () => { },
+  setAlertFunction: () => { },
 
   errorVisibility: false,
-  setErrorVisibility: () => {},
+  setErrorVisibility: () => { },
 
   infoVisibility: false,
-  setInfoVisibility: () => {},
+  setInfoVisibility: () => { },
 
   autoVisibility: false,
-  setAutoVisibility: () => {},
+  setAutoVisibility: () => { },
 
   lastUpdated: 0,
-  setLastUpdated: () => {},
+  setLastUpdated: () => { },
 
   isDrag: false,
-  setIsDrag: () => {},
+  setIsDrag: () => { },
 
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-  setDays: () => {},
+  setDays: () => { },
 
   earliestStartTime: getDefaultStartTime(true),
-  setEarliestStartTime: () => {},
+  setEarliestStartTime: () => { },
 
   latestEndTime: getDefaultEndTime(true),
-  setLatestEndTime: () => {},
+  setLatestEndTime: () => { },
 
   term: `T0`,
-  setTerm: () => {},
+  setTerm: () => { },
 
   termName: `Term 0`,
-  setTermName: () => {},
+  setTermName: () => { },
+
+  termNames: ['Term 0'],
+  setTermNames: () => { },
 
   termNumber: 0,
-  setTermNumber: () => {},
+  setTermNumber: () => { },
 
   year: '0000',
-  setYear: () => {},
+  setYear: () => { },
 
   firstDayOfTerm: '0000-00-00',
-  setFirstDayOfTerm: () => {},
+  setFirstDayOfTerm: () => { },
 
   coursesList: [],
-  setCoursesList: () => {},
+  setCoursesList: () => { },
 
   selectedTimetable: 0,
-  setSelectedTimetable: () => {},
+  setSelectedTimetable: () => { },
 
   displayTimetables: [],
-  setDisplayTimetables: () => {},
+  setDisplayTimetables: () => { },
 
-  courseData: {map: []},
-  setCourseData: () => {},
+  courseData: { map: [] },
+  setCourseData: () => { },
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -196,7 +202,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
   const [alertMsg, setAlertMsg] = useState<string>('');
-  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
+  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => { });
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
@@ -208,12 +214,13 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [termNumber, setTermNumber] = useState<number>(Number(termData.termNumber) || 0);
   const [term, setTerm] = useState<string>(termData.term || `T0`);
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
+  const [termNames, setTermNames] = useState<string[]>([`Term ${termNumber}`]);
   const [year, setYear] = useState<string>(termData.year || '0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
-  const [courseData, setCourseData] = useState<CourseDataMap>({map: []});
+  const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -256,6 +263,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTerm,
     termName,
     setTermName,
+    termNames,
+    setTermNames,
     termNumber,
     setTermNumber,
     year,

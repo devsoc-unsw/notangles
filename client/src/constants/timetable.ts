@@ -31,12 +31,27 @@ export const getAvailableTermDetails = async () => {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
     const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
+    console.log(termDateRes)
 
+    // testing how to get prev/current term data --> can potentially make use of freerooms api
+    // startdate/freerooms gets the start date of the current term
+    // /currentterm can be used to get the current terms id
+    const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/freerooms`));
+    const prevTermRes = await prevTermDate.text();
+    const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
+    const prevTermIdRes = await prevTermId.text();
+    console.log(prevTermRes);
+    console.log(prevTermIdRes);
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
     let matched = termDateRes.match(regexp);
     if (matched != null) {
       year = matched[3];
+    }
+
+    matched = prevTermRes.match(regexp);
+    if (matched != null) {
+      let prevYear = matched[3]
     }
 
     const termDateSplit = termDateRes.split('/');
@@ -54,6 +69,26 @@ export const getAvailableTermDetails = async () => {
       term = termIdRes;
       termNumber = 0; // This is a summer term.
     }
+
+    const prevDateSplit = prevTermRes.split('/');
+    let prevFirstDate = prevDateSplit.reverse().join('-');
+    let prevTermName = `Summer Term`;
+    let prevTermNum = 0;
+    let prevTerm = `T${prevTermNum}`;
+
+    if (prevTermIdRes.length === REGULAR_TERM_STR_LEN) {
+      // This is not a summer term.
+      termNumber = parseInt(prevTermIdRes.substring(1));
+      term = `T${termNumber}`;
+      prevTermName = `Term ${termNumber}`;
+    } else {
+      // This is a summer term.
+      prevTermName = `Summer Term`;
+      term = termIdRes;
+      termNumber = 0; // This is a summer term.
+    }
+
+    const termNames = [prevTermName, termName]
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
@@ -63,6 +98,7 @@ export const getAvailableTermDetails = async () => {
         termNumber: termNumber,
         termName: termName,
         firstDayOfTerm: firstDayOfTerm,
+        termNames: termNames
       })
     );
 
@@ -72,6 +108,7 @@ export const getAvailableTermDetails = async () => {
       termNumber: termNumber,
       year: year,
       firstDayOfTerm: firstDayOfTerm,
+      termNames: termNames
     };
   } catch (e) {
     throw new NetworkError('Could not connect to timetable scraper!');

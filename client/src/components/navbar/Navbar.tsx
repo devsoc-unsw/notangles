@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, useMediaQuery, useTheme, FormControl, MenuItem, Select, InputLabel } from '@mui/material';
 import { styled } from '@mui/system';
 
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -51,9 +51,14 @@ const Weak = styled('span')`
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, year } = useContext(AppContext);
+  const { term, termName, year, setTermName, termNames } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const selectTerm = (e: any) => {
+    // need to handle selecting that corresponding term n reloading term data/resetting timetable?
+    setTermName(e.target.value.split(', ')[0]);
+  }
 
   return (
     <NavbarBox>
@@ -66,7 +71,23 @@ const Navbar: React.FC = () => {
           />
           <NavbarTitle variant="h6">
             Notangles
-            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Age</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={isMobile ? term : termName.concat(', ', year)}
+                label="terms"
+                onChange={selectTerm}
+              >
+                {
+                  termNames.map((term, index) => {
+                    return <MenuItem key={index} value={term.concat(', ', year)}>{term.concat(', ', year)}</MenuItem>;
+                  })
+                }
+              </Select>
+            </FormControl>
+            {/* <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak> */}
           </NavbarTitle>
           <CustomModal
             title="About"

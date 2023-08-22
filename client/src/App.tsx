@@ -96,6 +96,7 @@ const App: React.FC = () => {
     firstDayOfTerm,
     setFirstDayOfTerm,
     setTermName,
+    setTermNames,
     setTermNumber,
     setCoursesList,
     setLastUpdated,
@@ -143,12 +144,14 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+      // let { term, termName, termNumber, year, firstDayOfTerm, termNames } = termData;
+      let { term, termName, termNumber, year, firstDayOfTerm, termNames } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
+      setTermNames(termNames);
     };
 
     fetchReliably(fetchTermData);
@@ -218,8 +221,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-            course.activities[activity].find((x) => x.periods.length) ??
-            null;
+          course.activities[activity].find((x) => x.periods.length) ??
+          null;
       });
 
       return prev;
