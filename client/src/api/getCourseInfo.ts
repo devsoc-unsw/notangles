@@ -86,7 +86,7 @@ const getCourseInfo = async (
 ): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
-    const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/${courseCode}/`));
+    const data = await timeoutPromise(1500, fetch(`${baseURL}/courses/${courseCode}/`));
 
     // Remove any leftover courses from localStorage if they are not offered in the current term
     // which is why a 400 error is returned
