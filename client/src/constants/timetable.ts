@@ -49,9 +49,10 @@ export const getAvailableTermDetails = async () => {
       year = matched[3];
     }
 
+    let prevYear = ''
     matched = prevTermRes.match(regexp);
     if (matched != null) {
-      let prevYear = matched[3]
+      prevYear = matched[3]
     }
 
     const termDateSplit = termDateRes.split('/');
@@ -78,17 +79,19 @@ export const getAvailableTermDetails = async () => {
 
     if (prevTermIdRes.length === REGULAR_TERM_STR_LEN) {
       // This is not a summer term.
-      termNumber = parseInt(prevTermIdRes.substring(1));
-      term = `T${termNumber}`;
-      prevTermName = `Term ${termNumber}`;
+      prevTermNum = parseInt(prevTermIdRes.substring(1));
+      prevTerm = `T${prevTermNum}`;
+      prevTermName = `Term ${prevTermNum}`;
     } else {
       // This is a summer term.
       prevTermName = `Summer Term`;
-      term = termIdRes;
-      termNumber = 0; // This is a summer term.
+      prevTerm = termIdRes;
+      prevTermNum = 0; // This is a summer term.
     }
 
-    const termNames = [prevTermName, termName]
+    const termsData = {
+      prevTerm: { year: prevYear, term: prevTerm, termName: prevTermName }, newTerm: { year: year, term: term, termName: termName }
+    }
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
@@ -98,7 +101,7 @@ export const getAvailableTermDetails = async () => {
         termNumber: termNumber,
         termName: termName,
         firstDayOfTerm: firstDayOfTerm,
-        termNames: termNames
+        termsData: termsData
       })
     );
 
@@ -108,7 +111,7 @@ export const getAvailableTermDetails = async () => {
       termNumber: termNumber,
       year: year,
       firstDayOfTerm: firstDayOfTerm,
-      termNames: termNames
+      termsData: termsData
     };
   } catch (e) {
     throw new NetworkError('Could not connect to timetable scraper!');

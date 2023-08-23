@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react';
 
 import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseData, CourseDataMap, TimetableData } from '../interfaces/Periods';
+import { CourseData, CourseDataMap, TimetableData, TermDataMap } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 import { ICourseContext } from './CourseContext';
@@ -73,6 +73,9 @@ export interface IAppContext {
 
   termNames: string[];
   setTermNames: (newTermNames: string[]) => void;
+
+  termsData: TermDataMap,
+  setTermsData: (newTermData: TermDataMap) => void,
 
   termNumber: number;
   setTermNumber: (newTermNumber: number) => void;
@@ -160,6 +163,9 @@ export const AppContext = createContext<IAppContext>({
   termNames: ['Term 0'],
   setTermNames: () => { },
 
+  termsData: { prevTerm: { year: '', term: '', termName: '' }, newTerm: { year: '', term: '', termName: '' } },
+  setTermsData: () => { },
+
   termNumber: 0,
   setTermNumber: () => { },
 
@@ -215,6 +221,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [term, setTerm] = useState<string>(termData.term || `T0`);
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [termNames, setTermNames] = useState<string[]>([`Term ${termNumber}`]);
+  const [termsData, setTermsData] = useState<TermDataMap>({ prevTerm: { year: '', term: '', termName: '' }, newTerm: { year: '', term: '', termName: '' } });
   const [year, setYear] = useState<string>(termData.year || '0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
@@ -265,6 +272,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTermName,
     termNames,
     setTermNames,
+    termsData,
+    setTermsData,
     termNumber,
     setTermNumber,
     year,

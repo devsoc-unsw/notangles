@@ -51,15 +51,20 @@ const Weak = styled('span')`
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, year, setTermName, termNames } = useContext(AppContext);
+  const { term, termName, setTermName, year, setTerm, setYear, termsData } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const selectTerm = (e: any) => {
     // need to handle selecting that corresponding term n reloading term data/resetting timetable?
-    setTermName(e.target.value.split(', ')[0]);
+    let newTermName = e.target.value.split(', ')[0]
+    let termNum = 'T' + newTermName.split(' ')[1]
+    let newYear = e.target.value.split(', ')[1]
+    setTerm(termNum)
+    setYear(newYear)
+    setTermName(newTermName)
   }
-
+  console.log(termsData)
   return (
     <NavbarBox>
       <StyledNavBar enableColorOnDark position="fixed">
@@ -71,24 +76,25 @@ const Navbar: React.FC = () => {
           />
           <NavbarTitle variant="h6">
             Notangles
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Age</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={isMobile ? term : termName.concat(', ', year)}
-                label="terms"
-                onChange={selectTerm}
-              >
-                {
-                  termNames.map((term, index) => {
-                    return <MenuItem key={index} value={term.concat(', ', year)}>{term.concat(', ', year)}</MenuItem>;
-                  })
-                }
-              </Select>
-            </FormControl>
             {/* <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak> */}
           </NavbarTitle>
+          <FormControl>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={isMobile ? term : termName.concat(', ', year)}
+              label="terms"
+              onChange={selectTerm}
+            >
+              {/* {
+                termNames.map((term, index) => {
+                  return <MenuItem key={index} value={term.concat(', ', year)}>{term.concat(', ', year)}</MenuItem>;
+                })
+              } */}
+              <MenuItem key={0} value={termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}>{termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}</MenuItem>
+              <MenuItem key={1} value={termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}>{termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}</MenuItem>
+            </Select>
+          </FormControl>
           <CustomModal
             title="About"
             showIcon={<Info />}

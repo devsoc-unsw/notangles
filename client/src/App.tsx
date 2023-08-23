@@ -97,6 +97,7 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermNames,
+    setTermsData,
     setTermNumber,
     setCoursesList,
     setLastUpdated,
@@ -145,17 +146,17 @@ const App: React.FC = () => {
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
       // let { term, termName, termNumber, year, firstDayOfTerm, termNames } = termData;
-      let { term, termName, termNumber, year, firstDayOfTerm, termNames } = termData;
+      let { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      setTermNames(termNames);
+      setTermsData(termsData);
     };
 
     fetchReliably(fetchTermData);
-  }, []);
+  }, [term, year]);
 
   useEffect(() => {
     /**

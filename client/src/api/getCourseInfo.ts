@@ -85,6 +85,7 @@ const getCourseInfo = async (
   isConvertToLocalTimezone: boolean
 ): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
+  console.log('curr term = ' + term)
   try {
     const data = await timeoutPromise(1500, fetch(`${baseURL}/courses/${courseCode}/`));
 
