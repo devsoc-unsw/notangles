@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   Action,
   Activity,
@@ -8,7 +9,6 @@ import {
   SelectedClasses,
   TimetableData,
 } from '../interfaces/Periods';
-import { v4 as uuidv4 } from 'uuid';
 import { createEventObj } from './createEvent';
 
 export type TimetableActions = Record<string, Action[]>;

@@ -13,7 +13,7 @@ export const StyledControlsButton = styled('div')`
 
 export const ColorIndicatorBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
-})<{
+}) <{
   backgroundColor: string;
 }>`
   width: 35px;
@@ -46,13 +46,11 @@ export const StyledDialogButtons = styled(Box)`
 `;
 
 export const StyledDialogTitle = styled(DialogTitle)`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  padding: 8px 12px 8px 24px;
 `;
 
 export const StyledDialogContent = styled(DialogContent)`
-  padding: 20px;
+  padding-bottom: 20px;
 `;
 
 export const StyledTitleContainer = styled(Box)`
@@ -62,7 +60,7 @@ export const StyledTitleContainer = styled(Box)`
   align-items: center;
   height: 100%;
   width: 100%;
-  padding: 0px 10px 0px 10px;
+  padding-bottom: 10px;
 `;
 
 export const StyledListItem = styled(ListItem)`

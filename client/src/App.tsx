@@ -115,7 +115,7 @@ const App: React.FC = () => {
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120; // 
+  const fetchCooldown: number = 120;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
@@ -262,9 +262,14 @@ const App: React.FC = () => {
         } else {
           newSelectedCourses.push(addedCourse);
 
+          /*
           if (!courseData.map.find((i) => i.code === addedCourse.code)) {
             newCourseData.map.push(addedCourse);
           }
+          */
+        }
+        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+          newCourseData.map.push(addedCourse);
         }
       });
 
@@ -284,19 +289,19 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
-    const newCourseData = courseData.map.filter((targetCourse) => {
+    const newCourseData = courseData;
+    newCourseData.map = courseData.map.filter((targetCourse) => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
-          if (course.code === courseCode) {
+          if (course.code.localeCompare(courseCode)) {
             return true;
           }
-        } 
+        }
       }
       return false;
     });
-    // for (const timetable in displayTimetables) {
+    setCourseData(newCourseData);
 
-    // }
     setSelectedClasses((prev) => {
       prev = { ...prev };
       delete prev[courseCode];

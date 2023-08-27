@@ -180,7 +180,11 @@ const History: React.FC = () => {
   };
 
   /**
+<<<<<<< HEAD
    * Resets all timetables - leave one default
+=======
+   * Resets all timetables - leave one as default
+>>>>>>> origin
    */
   const clearAll = () => {
     setTimetableState([], {}, {}, createDefaultTimetable(), 0);
@@ -237,6 +241,25 @@ const History: React.FC = () => {
     window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
   }, [disableLeft, disableRight]);
 
+  // Hotkey to confirm delete all timetables by pressing enter button
+  useEffect(() => {
+    const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
+      const deleteConfirm = document.getElementById('confirm-delete-button');
+      if (clearOpen && event.key === 'Enter') {
+        event.preventDefault();
+        deleteConfirm?.focus();
+        deleteConfirm?.click();
+      }
+    };
+
+    document.addEventListener('keydown', handleDeleteEnterShortcut);
+
+    // Removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('keydown', handleDeleteEnterShortcut);
+    };
+  }, [clearOpen]);
+
   let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
   let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
   let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
@@ -250,7 +273,6 @@ const History: React.FC = () => {
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
-            disabled={disableReset.all}
             onClick={() => {
               setClearOpen(false);
             }}
@@ -258,7 +280,8 @@ const History: React.FC = () => {
             CANCEL
           </Button>
           <Button
-            disabled={disableReset.current}
+            disabled={disableReset.all}
+            id="confirm-delete-button"
             onClick={() => {
               clearAll();
               setClearOpen(false);
@@ -269,12 +292,7 @@ const History: React.FC = () => {
         </StyledDialogButtons>
       </Dialog>
       <Tooltip title={clearTooltip}>
-        <IconButton
-          disabled={disableReset.all && disableReset.current}
-          color="inherit"
-          onClick={() => setClearOpen(true)}
-          size="large"
-        >
+        <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
           <Delete />
         </IconButton>
       </Tooltip>

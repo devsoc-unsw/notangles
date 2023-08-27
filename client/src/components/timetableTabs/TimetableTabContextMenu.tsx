@@ -1,3 +1,6 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -10,15 +13,12 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import storage from '../../utils/storage';
-import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
-import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
-import { TimetableData, CourseData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
-import { v4 as uuidv4 } from 'uuid';
+import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
+import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
+import storage from '../../utils/storage';
 import {
   StyledDialogButtons,
   StyledDialogContent,
@@ -26,8 +26,8 @@ import {
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
-import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
+import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -77,7 +77,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
    */
   // Handler for deleting a timetable
   const handleDeleteTimetable = (targetIndex: number) => {
-    // If only one tab then prevent the delete
     if (displayTimetables.length > 1) {
       prevTimetables = {
         selected: selectedTimetable,
@@ -93,12 +92,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }),
       };
 
-      // Deleting the current tab will remain on the same index unless it is the last tab
-      let newIndex = targetIndex;
-      if (newIndex === displayTimetables.length - 1) {
-        newIndex = targetIndex - 1;
-      }
-
+      const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1: targetIndex;
       const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newTimetables);
@@ -128,7 +122,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const handleRenameOpen = () => {
-    let timetableName = displayTimetables[selectedTimetable].name;
+    const timetableName = displayTimetables[selectedTimetable].name;
     setRenamedString(timetableName);
     setRenamedHelper(`${timetableName.length}/30`);
     timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
@@ -145,7 +139,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     if (renamedErr) return;
 
-    // updating the timetable name in the state and local storage
     let newTimetables = [...displayTimetables];
     newTimetables[selectedTimetable].name = renamedString;
 
@@ -165,14 +158,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
-    // Limiting users to have a maximum of 13 timetables
     if (displayTimetables.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[selectedTimetable];
 
-      // Creating the duplicated timetable
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
         id: uuidv4(),
@@ -182,14 +173,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         assignedColors: currentTimetable.assignedColors
       };
 
-      // Inserting the duplicate timetable after the current one
       const newTimetables = [
         ...displayTimetables.slice(0, selectedTimetable + 1),
         newTimetable,
         ...displayTimetables.slice(selectedTimetable + 1),
       ];
 
-      // Update the state variables
       storage.set('timetables', newTimetables);
       setDisplayTimetables(newTimetables);
       const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
@@ -208,7 +197,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       // Ctrl+Enter on Windows or Cmd+Enter on Mac creates new timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        // Preventing creating a timetable when the delete or rename popups are open
         if (event.key === 'Enter' && !deleteOpen && !renameOpen) {
           event.preventDefault();
           createButton?.focus();
@@ -219,7 +207,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleCreateTimetableShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleCreateTimetableShortcut);
     };
@@ -230,7 +217,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
       // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
       if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        // Preventing deletion of timetable when the rename popup is open
         if (event.key === 'Backspace' && !renameOpen) {
           setDeleteOpen(true);
         }
@@ -239,7 +225,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleDeletePopupShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeletePopupShortcut);
     };
@@ -248,7 +233,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey to confirm delete prompt by pressing enter button
   useEffect(() => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
-      // If the enter button is pressed (while the delete dialog is open) then automatically deletes the timetable
       const deleteConfirm = document.getElementById('confirm-delete-button');
       if (deleteOpen && event.key === 'Enter') {
         event.preventDefault();
@@ -259,7 +243,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     document.addEventListener('keydown', handleDeleteEnterShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeleteEnterShortcut);
     };
@@ -268,7 +251,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey to confirm rename by pressing enter button
   useEffect(() => {
     const handleRenameEnterShortcut = (event: KeyboardEvent) => {
-      // If the enter button is pressed (while the rename dialog is open) then automatically renames the timetable
       const renameConfirm = document.getElementById('confirm-rename-button');
       if (renameOpen && event.key === 'Enter') {
         event.preventDefault();
@@ -342,8 +324,16 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           </MenuItem>
         </Tooltip>
       </StyledMenu>
+
       {/* Rename timetable Dialog  */}
-      <Dialog open={renameOpen} maxWidth="sm" onClose={() => { handleRenameClose(false); handleMenuClose() }}>
+      <Dialog
+        open={renameOpen}
+        maxWidth="sm"
+        onClose={() => {
+          handleRenameClose(false);
+          handleMenuClose();
+        }}
+      >
         <StyledTopIcons>
           <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
             <Close />
