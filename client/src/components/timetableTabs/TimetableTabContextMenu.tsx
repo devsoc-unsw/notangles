@@ -86,6 +86,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
             selectedCourses: timetable.selectedCourses,
             selectedClasses: duplicateClasses(timetable.selectedClasses),
             createdEvents: timetable.createdEvents,
+            assignedColors: {},
           };
         }),
       };

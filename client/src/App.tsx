@@ -106,7 +106,7 @@ const App: React.FC = () => {
     setCourseData,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors } =
     useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
@@ -287,13 +287,11 @@ const App: React.FC = () => {
     const newCourseData = courseData.map.filter((targetCourse) => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
-          console.log(course.code + targetCourse.code);
           if (course.code === courseCode) {
             return true;
           }
         } 
       }
-      console.log("removed" + courseCode);
       return false;
     });
     // for (const timetable in displayTimetables) {
@@ -368,8 +366,6 @@ const App: React.FC = () => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
     let newCourseData = courseData;
     storage.set('courseData', newCourseData);
-    console.log(storage.get('courseData'));
-    console.log(newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);
@@ -386,6 +382,13 @@ const App: React.FC = () => {
     setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
 
+  useUpdateEffect(() => {
+    console.log(displayTimetables);
+    displayTimetables[selectedTimetable].assignedColors = assignedColors;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [assignedColors]);
+ 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
@@ -493,7 +496,7 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
+  useColorMapper(selectedCourses.map((course) => course.code));
 
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {

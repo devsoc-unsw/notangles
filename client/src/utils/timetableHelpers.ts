@@ -141,6 +141,7 @@ const createDefaultTimetable = (): TimetableData[] => {
       selectedCourses: [],
       selectedClasses: {},
       createdEvents: {},
+      assignedColors: {},
     },
   ];
 };

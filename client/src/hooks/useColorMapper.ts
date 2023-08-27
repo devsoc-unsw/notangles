@@ -13,25 +13,32 @@ const defaultColor = colors[colors.length - 1];
  * @example
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.code))
  */
-const useColorMapper = (courseCodes: string[]): Record<string, string> => {
+const useColorMapper = (courseCodes: string[]): void => {
   const {assignedColors, setAssignedColors} = useContext(CourseContext);
 
   useEffect(() => {
     const takenColors = new Set<string>();
+    
+    // Do a filter to remove any courses that have since been deleted
     const newAssignedColors: Record<string, string> = {};
-
-    courseCodes.forEach((item) => {
-      let color;
-      // Conditional prevents user-set color from being overwritten
-      if (item in assignedColors) {
-        color = assignedColors[item];
-      } else {
-        color = colors.find((c) => !takenColors.has(c));
+    Object.entries(assignedColors).forEach(e => {
+      const [key, value] = e;
+      if (courseCodes.includes(key)) {
+        newAssignedColors[key] = value;
+        takenColors.add(value); 
       }
+    }) 
 
-      newAssignedColors[item] = color || defaultColor;
-      if (color) {
-        takenColors.add(color);
+    courseCodes.forEach((course) => {
+      let color;
+
+      if (!(course in newAssignedColors)) {
+        color = colors.find((c) => !takenColors.has(c));
+        newAssignedColors[course] = color || defaultColor;
+        
+        if (color) {
+          takenColors.add(color);
+        }
       }
     });
 
@@ -39,8 +46,6 @@ const useColorMapper = (courseCodes: string[]): Record<string, string> => {
       setAssignedColors(newAssignedColors);
     }
   }, [courseCodes]);
-
-  return assignedColors;
 };
 
 export default useColorMapper;
