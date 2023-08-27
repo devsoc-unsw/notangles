@@ -126,6 +126,7 @@ export interface Action {
   courses: CourseData[];
   classes: SelectedClasses;
   events: CreatedEvents;
+  assignedColors: Record<string, string>;
 }
 
 export interface CourseDataMap {

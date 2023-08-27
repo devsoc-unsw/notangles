@@ -25,7 +25,7 @@ const History: React.FC = () => {
   const [disableReset, setDisableReset] = useState({ current: true, all: true });
   const [clearOpen, setClearOpen] = useState(false);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors, setAssignedColors } =
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } =
     useContext(AppContext);
@@ -41,11 +41,13 @@ const History: React.FC = () => {
     classes: SelectedClasses,
     events: CreatedEvents,
     timetableArg: TimetableData[] | ((prev: TimetableData[]) => void),
+    assignedColors: Record<string, string>,
     selected?: number
   ) => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
     setCreatedEvents(events);
+    setAssignedColors(assignedColors);
     setDisplayTimetables(timetableArg);
 
     if (selected !== undefined) {
@@ -102,6 +104,7 @@ const History: React.FC = () => {
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
       events: { ...createdEvents },
+      assignedColors: { ...assignedColors }
     });
 
     incrementActionsPointer(1);
@@ -175,19 +178,15 @@ const History: React.FC = () => {
       });
     };
 
-    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
-    setTimetableState(courses, classes, events, modifyTimetableName);
+    const { courses, classes, events, colors } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
+    setTimetableState(courses, classes, events, modifyTimetableName, colors);
   };
 
   /**
-<<<<<<< HEAD
-   * Resets all timetables - leave one default
-=======
    * Resets all timetables - leave one as default
->>>>>>> origin
    */
   const clearAll = () => {
-    setTimetableState([], {}, {}, createDefaultTimetable(), 0);
+    setTimetableState([], {}, {}, createDefaultTimetable(), {}, 0);
   };
 
   /**
