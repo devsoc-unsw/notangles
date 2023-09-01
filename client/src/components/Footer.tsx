@@ -10,7 +10,7 @@ const FooterContainer = styled(Box)`
   margin-bottom: 25px;
 
   & div {
-    margin: 1vh 0;
+    margin: 1vh 30vh;
   }
 `;
 
@@ -58,6 +58,12 @@ const Footer: React.FC = () => {
         </Link>
       </div>
       {lastUpdated !== 0 && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
+      <br></br>
+      <div>
+        Notangles is a UNSW timetable planner, brought to you by CSESoc Dev. It's an easy to use drag-and-drop tool that allows
+        you to plan your course classes and add to your calendar, even before term class registration opens! We have many features
+        including support for custom events, auto-timetabling, creation of multiple timetables and sharing events with friends.
+      </div>
     </FooterContainer>
   );
 };
