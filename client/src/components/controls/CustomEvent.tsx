@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
+
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';

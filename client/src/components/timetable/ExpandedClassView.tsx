@@ -1,13 +1,19 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, SelectChangeEvent, Typography } from '@mui/material';
+import { Dialog, Grid, IconButton, ListItemIcon, ListItemIconProps, SelectChangeEvent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData, ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
 import { ExpandedClassViewProps } from '../../interfaces/PropTypes';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ExpandedViewStyles';
+import {
+  StyledDialogContent,
+  StyledDialogTitle,
+  StyledListItem,
+  StyledTitleContainer,
+  StyledTopIcons,
+} from '../../styles/ControlStyles';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
@@ -16,6 +22,10 @@ import LocationDropdown from './LocationDropdown';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
+`;
+
+const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+  color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
 /**
@@ -41,7 +51,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
-  const { days, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
 
   /**
@@ -126,58 +136,55 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
       open={popupOpen}
       onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
     >
+      <StyledTopIcons>
+        <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
+          <Close />
+        </IconButton>
+      </StyledTopIcons>
       <StyledDialogTitle>
         <StyledTitleContainer>
           {currClass.courseCode} — {currClass.courseName}
-          <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
-            <Close />
-          </IconButton>
         </StyledTitleContainer>
       </StyledDialogTitle>
       <StyledDialogContent>
-        <Grid container direction="column" spacing={2}>
-          <Grid item container direction="row" spacing={2}>
-            <Grid item>
-              <DesktopMac />
-            </Grid>
-            <Grid item>
-              <Typography>
-                {classPeriod && classPeriod.activity} (
-                {classPeriod && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item container direction="row" spacing={2} wrap="nowrap">
-            <Grid item>
-              <AccessTime />
-            </Grid>
-            <Grid item>
-              <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
-            </Grid>
-          </Grid>
-          <Grid item container direction="row" spacing={2} alignItems="center">
-            <Grid item>
-              <LocationOn />
-            </Grid>
-            <StyledDropdownContainer item>
-              <LocationDropdown
-                selectedIndex={selectedIndex}
-                sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}
-                handleChange={handleLocationChange}
-              />
-            </StyledDropdownContainer>
-          </Grid>
-          <Grid item container direction="row" spacing={2} alignItems="center">
-            <Grid item>
-              <PeopleAlt />
-            </Grid>
-            <Grid item>
-              <Typography>
-                Capacity {currClass.enrolments} / {currClass.capacity}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <StyledListItem>
+          <StyledListItemIcon isDarkMode={isDarkMode}>
+            <DesktopMac />
+          </StyledListItemIcon>
+          <Typography>
+            {classPeriod && classPeriod.activity} (
+            {classPeriod && duplicateClassData.current.sectionsAndLocations.at(selectedIndex)?.at(0)})
+          </Typography>
+        </StyledListItem>
+
+        <StyledListItem>
+          <StyledListItemIcon isDarkMode={isDarkMode}>
+            <AccessTime />
+          </StyledListItemIcon>
+          <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
+        </StyledListItem>
+
+        <StyledListItem>
+          <StyledListItemIcon isDarkMode={isDarkMode}>
+            <LocationOn />
+          </StyledListItemIcon>
+          <StyledDropdownContainer item>
+            <LocationDropdown
+              selectedIndex={selectedIndex}
+              sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}
+              handleChange={handleLocationChange}
+            />
+          </StyledDropdownContainer>
+        </StyledListItem>
+
+        <StyledListItem>
+          <StyledListItemIcon isDarkMode={isDarkMode}>
+            <PeopleAlt />
+          </StyledListItemIcon>
+          <Typography>
+            Capacity {currClass.enrolments} / {currClass.capacity}
+          </Typography>
+        </StyledListItem>
       </StyledDialogContent>
     </Dialog>
   );

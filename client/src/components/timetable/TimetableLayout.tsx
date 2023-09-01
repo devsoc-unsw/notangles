@@ -25,7 +25,7 @@ export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : c
 
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
-})<{
+}) <{
   x: number;
   y: number;
   yTo?: number;
@@ -44,8 +44,7 @@ const BaseCell = styled('div', {
   outline: solid ${({ theme }) => theme.palette.secondary.main} 1px;
   outline-offset: -0.5px;
 
-  border-top-left-radius: ${({ theme, x, y }) => (x === 1 && y === 1 ? theme.shape.borderRadius : 0)}px;
-  border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 1 && isEndY ? theme.shape.borderRadius : 0)}px;
+  border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 2 && isEndY ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, isEndX, y }) => (isEndX && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (isEndX && isEndY ? theme.shape.borderRadius : 0)}px;
 `;
@@ -56,27 +55,31 @@ const GridCell = styled(BaseCell)`
 
 const DayCell = styled(BaseCell)`
   padding: ${headerPadding}px 0;
+  border-bottom: 2px solid ${({ theme }) => theme.palette.secondary.main};
 `;
 
 const InventoryCell = styled(DayCell)`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
-  border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-top-right-radius: ${({ theme, y }) => 0}px; //(y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
 
 const HourCell = styled(GridCell, {
   shouldForwardProp: (prop) => prop !== 'is12HourMode',
-})<{ is12HourMode: boolean }>`
+}) <{ is12HourMode: boolean }>`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
+  margin-top: -${rowHeight / 2 + 1}px;
+  outline: none;
 `;
 
 const ToggleCell = styled(BaseCell)`
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: center;
+  outline: none;
 
   & span {
     grid-column: 1;
@@ -171,7 +174,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
 
   const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} isEndY={i === hours.length - 1}>
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>
       {hour}
     </HourCell>
   ));

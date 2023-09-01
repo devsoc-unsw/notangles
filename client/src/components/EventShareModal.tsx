@@ -5,9 +5,9 @@ import { styled } from '@mui/system';
 import { Close, LocationOn, Save } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
+import { StyledDialogContent, StyledDialogTitle } from '../styles/ControlStyles';
 import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
 import { StyledCardName } from '../styles/DroppedCardStyles';
-import { StyledDialogContent, StyledDialogTitle } from '../styles/ExpandedViewStyles';
 import { createEventObj } from '../utils/createEvent';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
