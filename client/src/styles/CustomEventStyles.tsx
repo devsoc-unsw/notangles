@@ -1,5 +1,6 @@
 import { TabPanel } from '@mui/lab';
-import { Button, ListItem, ListItemText, Menu, MenuProps } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
 import { alpha, styled } from '@mui/system';
 
 export const DropdownButton = styled(Button)`
@@ -35,6 +36,14 @@ export const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
+export const RedDeleteIcon = styled(Delete)`
+  color: red;
+`;
+
+export const RedListItemText = styled(ListItemText)`
+  color: red;
+`;
+
 export const StyledMenu = styled((props: MenuProps) => (
   <Menu
     elevation={0}
@@ -68,11 +77,11 @@ export const StyledMenu = styled((props: MenuProps) => (
           marginLeft: theme.spacing(-0.5),
         },
         '& .MuiTypography-root': {
-          fontSize: 13,
+          fontSize: 14,
           marginLeft: theme.spacing(-2),
         },
         '&:hover': {
-          backgroundColor: 'rgb(97, 97, 97, 0.35) !important',
+          backgroundColor: 'rgb(157, 157, 157, 0.35) !important',
         },
         '&:active': {
           backgroundColor: alpha(theme.palette.grey[300], 0.5),

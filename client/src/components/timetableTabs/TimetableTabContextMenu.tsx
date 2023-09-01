@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ContentCopy, Edit, Delete, Save, Close, EditNote } from '@mui/icons-material';
+import { Close, Edit, EditNote, FileCopy, Save } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -17,7 +17,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
-import { ExecuteButton, StyledMenu } from '../../styles/CustomEventStyles';
+import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import storage from '../../utils/storage';
 import {
   StyledDialogButtons,
@@ -89,7 +89,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }),
       };
 
-      const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1: targetIndex;
+      const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1 : targetIndex;
 
       const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
       // Updating the timetables state to the new timetable index
@@ -306,7 +306,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         </MenuItem>
         <MenuItem onClick={handleDuplicateTimetable}>
           <ListItemIcon>
-            <ContentCopy fontSize="small" />
+            <FileCopy fontSize="small" />
           </ListItemIcon>
           <ListItemText>Duplicate</ListItemText>
         </MenuItem>
@@ -314,9 +314,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         <Tooltip title={deleteTimetabletip}>
           <MenuItem onClick={() => setDeleteOpen(true)}>
             <ListItemIcon>
-              <Delete fontSize="small" sx={{ color: 'red', opacity: '85%' }} />
+              <RedDeleteIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText sx={{ color: 'red', opacity: '85%' }}>Delete</ListItemText>
+            <RedListItemText>Delete</RedListItemText>
           </MenuItem>
         </Tooltip>
       </StyledMenu>

@@ -4,7 +4,6 @@ import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/translateCard';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const transitionName = 'class';
 
@@ -59,7 +58,9 @@ export const StyledCard = styled('div', {
   z-index: 100;
   cursor: grab;
   padding: 1px;
-  transition: ${defaultTransition}, z-index 0s;
+  transition:
+    ${defaultTransition},
+    z-index 0s;
 
   /* uncomment me whoever decides to fix <CSSTransition>
   &.${transitionName}-enter {
@@ -99,7 +100,9 @@ export const StyledCardInner = styled(Card, {
   color: white;
   font-size: 0.9rem;
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : `${borderRadius}px`)};
-  transition: ${defaultTransition}, z-index 0s;
+  transition:
+    ${defaultTransition},
+    z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
   outline-offset: -3px;
