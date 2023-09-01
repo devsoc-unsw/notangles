@@ -41,6 +41,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
   const createEvent = (day: string) => {
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
@@ -75,7 +76,8 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     });
     return newEvent;
   };
-  const setDefaultEventFields = (): void => {
+
+  const assignDefaultEventFields = (): void => {
     setEventName('');
     setLocation('');
     setDescription('');
@@ -89,11 +91,12 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     setIsInitialStartTime(true);
     setIsInitialEndTime(true);
   };
+
   const createEvents = () => {
     if (!areValidEventTimes(startTime, endTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);
-      setDefaultEventFields();
+      assignDefaultEventFields();
       return;
     }
 
@@ -117,7 +120,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     }
 
     setCreatedEvents({ ...createdEvents, ...newEvents });
-    setDefaultEventFields();
+    assignDefaultEventFields();
 
     // Close all popovers when Create button is clicked
     handleClose();
@@ -178,7 +181,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
         variant="contained"
         color="primary"
         disableElevation
-        disabled={eventName === '' || location === '' || (eventDays.length === 0 && initialDay === '')}
+        disabled={eventName === '' || (eventDays.length === 0 && initialDay === '')}
         onClick={createEvents}
       >
         <Add />

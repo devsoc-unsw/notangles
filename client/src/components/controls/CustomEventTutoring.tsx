@@ -2,7 +2,7 @@ import { Event } from '@mui/icons-material';
 import ClassIcon from '@mui/icons-material/Class';
 import { Autocomplete, ListItemIcon, TextField } from '@mui/material';
 import { CustomEventTutoringProp } from '../../interfaces/PropTypes';
-import { StyledListItem } from '../../styles/CustomEventStyles';
+import { StyledListItem } from '../../styles/ControlStyles';
 
 const CustomEventTutoring: React.FC<CustomEventTutoringProp> = ({ coursesCodes, classesCodes, setCourseCode, setClassCode }) => {
   return (

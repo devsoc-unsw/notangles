@@ -345,9 +345,9 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 
-let selectClass: ClassHandler = () => {};
-let removeClass: ClassHandler = () => {};
-let updateEventTime: EventTimeHandler = () => {};
+let selectClass: ClassHandler = () => { };
+let removeClass: ClassHandler = () => { };
+let updateEventTime: EventTimeHandler = () => { };
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -533,7 +533,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
   return result;
 };
 
-let onScroll = (_?: Event) => {};
+let onScroll = (_?: Event) => { };
 
 /**
  * @returns The div enclosing the timetable grid

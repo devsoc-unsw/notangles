@@ -27,7 +27,6 @@ export const ExpandButton = styled(Button)`
   padding: 0;
   opacity: 40%;
   border-radius: 2px;
-  color: #f5f5f5;
 
   &:hover {
     opacity: 100%;

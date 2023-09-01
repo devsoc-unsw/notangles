@@ -1,6 +1,6 @@
 import { TabPanel } from '@mui/lab';
-import { Button, ListItem, ListItemIcon, ListItemIconProps, ListItemText, Menu, MenuProps } from '@mui/material';
-import { styled, alpha } from '@mui/system';
+import { Button, ListItem, ListItemText, Menu, MenuProps } from '@mui/material';
+import { alpha, styled } from '@mui/system';
 
 export const DropdownButton = styled(Button)`
   && {
@@ -17,14 +17,6 @@ export const DropdownButton = styled(Button)`
 
 export const StyledTabPanel = styled(TabPanel)`
   padding-bottom: 0;
-`;
-
-export const StyledListItem = styled(ListItem)`
-  padding-top: 8px;
-`;
-
-export const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
-  color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
 export const StyledListItemText = styled(ListItemText)`
@@ -45,38 +37,47 @@ export const ExecuteButton = styled(Button)`
 
 export const StyledMenu = styled((props: MenuProps) => (
   <Menu
-    elevation={0.5}
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'left',
+    }}
     {...props}
   />
 ))(({ theme }) => ({
   '& .MuiPaper-root': {
     borderRadius: 10,
+    borderWidth: 'thin',
     boxShadow: '0 0 2px 1px rgb(0, 0, 0, 0.2)',
     minWidth: 130,
     opacity: '0.9 !important',
     '& .MuiList-root': {
-        '& .MuiMenuItem-root': {
-            listStyle: 'none',
-            height: '25px',
-            marginLeft: theme.spacing(0.5),
-            marginRight: theme.spacing(0.5),
-            borderRadius: 5,
-            marginBottom: '2px',
-          '& .MuiSvgIcon-root': {
-            fontSize: 15,
-            marginLeft: theme.spacing(-0.5),
-          },
-          '& .MuiTypography-root': {
-            fontSize: 13,
-            marginLeft: theme.spacing(-2),
-          },
-          "&:hover": {
-            backgroundColor: 'rgb(97, 97, 97, 0.35) !important',
-          },
-          '&:active': {
-            backgroundColor: alpha(theme.palette.grey[300], 0.5)
-          },
+      '& .MuiMenuItem-root': {
+        listStyle: 'none',
+        height: '25px',
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5),
+        borderRadius: 5,
+        marginBottom: '2px',
+        '& .MuiSvgIcon-root': {
+          fontSize: 15,
+          marginLeft: theme.spacing(-0.5),
         },
+        '& .MuiTypography-root': {
+          fontSize: 13,
+          marginLeft: theme.spacing(-2),
+        },
+        '&:hover': {
+          backgroundColor: 'rgb(97, 97, 97, 0.35) !important',
+        },
+        '&:active': {
+          backgroundColor: alpha(theme.palette.grey[300], 0.5),
+        },
+      },
     },
   },
 }));

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { MoreHoriz } from '@mui/icons-material';
-import { Grid, Menu, MenuItem } from '@mui/material';
+import { ContentPaste, MoreHoriz } from '@mui/icons-material';
+import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -15,11 +15,12 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
+import { StyledMenu } from '../../styles/CustomEventStyles';
+import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -221,21 +222,28 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {classCard.type === 'class' && fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)}>
+            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
         </StyledCardInner>
       </StyledCard>
       {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
-      <Menu
+      {/* For right click menu on a class card */}
+      <StyledMenu
         open={contextMenu != null}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}
+        autoFocus={false}
       >
-        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>Paste</MenuItem>
-      </Menu>
+        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+          <ListItemIcon>
+            <ContentPaste fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Paste</ListItemText>
+        </MenuItem>
+      </StyledMenu>
     </>
   );
 };

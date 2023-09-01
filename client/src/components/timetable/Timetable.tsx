@@ -4,11 +4,11 @@ import { styled } from '@mui/system';
 import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
+import { EventPeriod } from '../../interfaces/Periods';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
-import { EventPeriod } from '../../interfaces/Periods';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -18,7 +18,7 @@ const StyledTimetable = styled(Box, {
 }>`
   display: grid;
   min-width: ${timetableWidth}px;
-  padding: ${contentPadding}px;
+  padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: 1px;
