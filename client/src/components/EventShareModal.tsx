@@ -1,14 +1,13 @@
-import React from 'react';
-import { useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Dialog, Typography, Card, Grid, CardProps } from '@mui/material';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Card, CardProps, Dialog, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../styles/ExpandedViewStyles';
-import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
-import { IconButton } from '@mui/material';
-import { Close, Save, LocationOn } from '@mui/icons-material';
+import { Close, LocationOn, Save } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
+import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
+import { StyledCardName } from '../styles/DroppedCardStyles';
+import { StyledDialogContent, StyledDialogTitle } from '../styles/ExpandedViewStyles';
 import { createEventObj } from '../utils/createEvent';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
@@ -39,6 +38,12 @@ const EventShareModal = () => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
     useContext(AppContext);
+
+  useEffect(() => {
+    if (encrypted) {
+      checkRender(encrypted);
+    }
+  }, []);
 
   const updateDays = (day: number) => {
     if (day == 5 || day == 6) {
@@ -109,16 +114,10 @@ const EventShareModal = () => {
     }
   };
 
-  React.useEffect(() => {
-    if (encrypted) {
-      checkRender(encrypted);
-    }
-  }, []);
-
   const saveToTimetable = () => {
     try {
       const linkEvent = JSON.parse(atob(link));
-      const newEvent = createLinkEvent(
+      createLinkEvent(
         linkEvent.event.name,
         linkEvent.event.location,
         linkEvent.event.description,
@@ -156,8 +155,7 @@ const EventShareModal = () => {
         {eventPreview && (
           <PreviewCard bgColour={event.color}>
             <StyledListItemText>
-              <strong>{event.name}</strong>
-              <br />
+              <StyledCardName>{event.name}</StyledCardName>
               <StyledLocationOn />
               {event.location}
             </StyledListItemText>
