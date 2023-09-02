@@ -9,9 +9,12 @@ import { StyledDialogContent, StyledDialogTitle } from '../styles/ControlStyles'
 import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
 import { StyledCardName } from '../styles/DroppedCardStyles';
 import { createEventObj } from '../utils/createEvent';
+import { StyledTopIcons } from '../styles/ControlStyles';
+import { DialogTitle } from '@mui/material';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
-  padding: 40px 20px;
+  padding: 24px 16px;
+  margin: 0 16px 20px 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -25,6 +28,10 @@ const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
 
 const StyledLocationOn = styled(LocationOn)`
   font-size: 12px;
+`;
+
+const StyledPreviewTitle = styled(DialogTitle)`
+  padding: 8px 16px 8px 16px;
 `;
 
 const EventShareModal = () => {
@@ -61,7 +68,6 @@ const EventShareModal = () => {
     startTime: number,
     endTime: number
   ) => {
-    // if duplicate event, return error
     if (
       Object.values(createdEvents).some((event) => event.event.name === name) &&
       Object.values(createdEvents).some((event) => event.time.day === day) &&
@@ -141,17 +147,19 @@ const EventShareModal = () => {
 
   return (
     <Dialog open={open} onClose={handleCloseModal}>
-      <StyledDialogTitle>
+      <StyledTopIcons>
         <Grid container justifyContent="flex-end" alignItems="center">
-          <Typography id="modal-modal-title" variant="h6" component="h2" color="#616161">
-            Add this event to your calendar?
-          </Typography>
           <IconButton aria-label="close" onClick={handleCloseModal}>
             <Close />
           </IconButton>
         </Grid>
-      </StyledDialogTitle>
+      </StyledTopIcons>
       <StyledDialogContent>
+        <StyledPreviewTitle>
+          <Typography id="modal-modal-title" variant="h6">
+            Add this event to your calendar?
+          </Typography>
+        </StyledPreviewTitle>
         {eventPreview && (
           <PreviewCard bgColour={event.color}>
             <StyledListItemText>

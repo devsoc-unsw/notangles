@@ -12,7 +12,7 @@ import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
-import { createEventObj, parseAndCreateEventObj } from '../../utils/createEvent';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';

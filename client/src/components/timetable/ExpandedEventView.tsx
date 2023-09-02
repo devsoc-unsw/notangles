@@ -205,7 +205,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   // link sharing url for custom events
-  const url = 'localhost:3000/event/' + btoa(JSON.stringify(eventPeriod));
+  const url = window.location.href + 'event/' + btoa(JSON.stringify(eventPeriod));
 
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
