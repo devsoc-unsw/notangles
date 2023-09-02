@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { LocationOn, MoreHoriz } from '@mui/icons-material';
+import { MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { styled } from '@mui/system';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
@@ -18,12 +17,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 import EventContextMenu from './EventContextMenu';
-
-const StyledLocationIcon = styled(LocationOn)`
-  vertical-align: text-bottom;
-  font-size: inherit;
-  padding-bottom: 0.1em;
-`;
+import { StyledLocationIcon } from '../../styles/CustomEventStyles';
 
 const DroppedEvent: React.FC<DroppedEventProps> = ({
   eventId,

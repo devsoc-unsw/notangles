@@ -1,6 +1,7 @@
+import { LocationOn } from '@mui/icons-material';
 import { TabPanel } from '@mui/lab';
-import { Button, ListItem, ListItemText, Menu, MenuProps } from '@mui/material';
-import { alpha, styled } from '@mui/system';
+import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
+import { styled } from '@mui/system';
 
 export const DropdownButton = styled(Button)`
   && {
@@ -33,6 +34,12 @@ export const ExecuteButton = styled(Button)`
   height: 40px;
   width: 100%;
   border-radius: 0px 0px 5px 5px;
+`;
+
+export const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: text-bottom;
+  font-size: inherit;
+  padding-bottom: 0.1em;
 `;
 
 export const StyledMenu = styled((props: MenuProps) => (
