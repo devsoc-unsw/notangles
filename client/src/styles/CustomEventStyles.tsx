@@ -1,5 +1,6 @@
 import { TabPanel } from '@mui/lab';
-import { Button, ListItem, ListItemText, Menu, MenuProps } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
 import { alpha, styled } from '@mui/system';
 
 export const DropdownButton = styled(Button)`
@@ -35,6 +36,14 @@ export const ExecuteButton = styled(Button)`
   border-radius: 0px 0px 5px 5px;
 `;
 
+export const RedDeleteIcon = styled(Delete)`
+  color: red;
+`;
+
+export const RedListItemText = styled(ListItemText)`
+  color: red;
+`;
+
 export const StyledMenu = styled((props: MenuProps) => (
   <Menu
     elevation={0}
@@ -52,12 +61,31 @@ export const StyledMenu = styled((props: MenuProps) => (
   '& .MuiPaper-root': {
     borderRadius: 10,
     borderWidth: 'thin',
-    minWidth: 180,
-    boxShadow: '11px 10px 14px -3px rgba(0,0,0,0.1)',
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        marginRight: theme.spacing(1.5),
+    boxShadow: '0 0 2px 1px rgb(0, 0, 0, 0.2)',
+    minWidth: 130,
+    opacity: '0.9 !important',
+    '& .MuiList-root': {
+      '& .MuiMenuItem-root': {
+        listStyle: 'none',
+        height: '25px',
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(0.5),
+        borderRadius: 5,
+        marginBottom: '2px',
+        '& .MuiSvgIcon-root': {
+          fontSize: 15,
+          marginLeft: theme.spacing(-0.5),
+        },
+        '& .MuiTypography-root': {
+          fontSize: 14,
+          marginLeft: theme.spacing(-2),
+        },
+        '&:hover': {
+          backgroundColor: 'rgb(157, 157, 157, 0.35) !important',
+        },
+        '&:active': {
+          backgroundColor: alpha(theme.palette.grey[300], 0.5),
+        },
       },
     },
   },
