@@ -62,7 +62,7 @@ const DayCell = styled(BaseCell)`
 
 const InventoryCell = styled(DayCell)`
   border-top-left-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
-  border-top-right-radius: ${({ theme, y }) => 0}px; //(y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-top-right-radius: ${({ theme, y }) => (y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, y }) => (y !== 1 ? theme.shape.borderRadius : 0)}px;
 `;
