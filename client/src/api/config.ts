@@ -20,4 +20,5 @@ const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.PROD]: { timetable: `${LIVE}/api`, auto: `${LIVE}/auto` },
 });
 
-export const API_URL: Config = API_CONFIG[process.env.REACT_APP_ENVIRONMENT || Env.DEV];
+console.log(import.meta.env);
+export const API_URL: Config = API_CONFIG[import.meta.env.VITE_APP_ENVIRONMENT || Env.DEV];
