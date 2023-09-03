@@ -10,7 +10,7 @@ const FooterContainer = styled(Box)`
   margin-bottom: 25px;
 
   & div {
-    max-width: 50%;
+    max-width: 700px;
     margin: 0 auto;
   }
 `;
