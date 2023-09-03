@@ -75,8 +75,8 @@ const baseTheme = ({
   },
 });
 
-export const lightTheme = createTheme(
-  baseTheme({
+export const lightTheme = createTheme({
+  ...baseTheme({
     mode: 'light',
     background: {
       main: '#fafafa',
@@ -88,10 +88,24 @@ export const lightTheme = createTheme(
       dark: '#999999',
     },
   }),
-);
+  typography: {
+    fontFamily: [
+      '"Roboto Flex Variable"',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+  },
+});
 
-export const darkTheme = createTheme(
-  baseTheme({
+export const darkTheme = createTheme({
+  ...baseTheme({
     mode: 'dark',
     background: {
       main: '#212121',
@@ -103,4 +117,18 @@ export const darkTheme = createTheme(
       dark: '#808080',
     },
   }),
-);
+  typography: {
+    fontFamily: [
+      '"Roboto Flex Variable"',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+  },
+});
