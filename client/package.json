@@ -39,7 +39,6 @@
     "react-transition-group": "4.4.5",
     "react-window": "1.8.9",
     "uuid": "9.0.0",
-    "uuidv4": "6.2.13",
     "web-vitals": "3.4.0",
     "workbox-background-sync": "7.0.0",
     "workbox-broadcast-update": "7.0.0",
