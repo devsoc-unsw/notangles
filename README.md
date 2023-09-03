@@ -34,7 +34,7 @@ Navigate into `/client`, install packages with `pnpm i`, then run one of the fol
 
 If you need to test the autotimetabler, both `pnpm start` and `pnpm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
 
-You can then access the client at `http://localhost:3000` in your favourite web browser.
+You can then access the client at `http://localhost:5173` in your favourite web browser.
 
 ### Running the back-end
 
