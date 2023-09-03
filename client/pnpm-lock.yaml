@@ -14,6 +14,9 @@ dependencies:
   '@emotion/styled':
     specifier: 11.11.0
     version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.21)(react@18.2.0)
+  '@fontsource-variable/roboto-flex':
+    specifier: 5.0.8
+    version: 5.0.8
   '@mui/icons-material':
     specifier: 5.14.7
     version: 5.14.7(@mui/material@5.14.7)(@types/react@18.2.21)(react@18.2.0)
@@ -749,6 +752,10 @@ packages:
 
   /@floating-ui/utils@0.1.1:
     resolution: {integrity: sha512-m0G6wlnhm/AX0H12IOWtK8gASEMffnX08RtKkCgTdHb9JpHKGloI7icFfLg9ZmQeavcvR0PKmzxClyuFPSjKWw==}
+    dev: false
+
+  /@fontsource-variable/roboto-flex@5.0.8:
+    resolution: {integrity: sha512-zSnE0htmk1tlKqVNfMGWJfxgLxLYQH9eYNvXFzWJ3GuDMXVBEiKuaYytkrItaP/svX3t5y8qsIXC+cpflsfvWQ==}
     dev: false
 
   /@jest/expect-utils@29.6.4:

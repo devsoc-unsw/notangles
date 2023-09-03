@@ -1,3 +1,4 @@
+import '@fontsource-variable/roboto-flex';
 import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import React from 'react';

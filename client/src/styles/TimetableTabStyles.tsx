@@ -43,7 +43,7 @@ export const TabsSection = styled(Box)`
   }
 `;
 
-export const TabsWrapper = styled(Box) <BoxProps & { tabTheme: TabTheme }>`
+export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
   background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -59,7 +59,7 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
@@ -104,7 +104,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       textTransform: 'uppercase',
       fontSize: '0.875rem',
       fontWeight: '500',
-      fontFamily: 'Roboto,Helvetica,Arial',
+      fontFamily: '"Roboto Flex Variable",Helvetica,Arial',
       lineHeight: '1.25',
       letterSpacing: '0.02857em',
       flexShrink: '0',
