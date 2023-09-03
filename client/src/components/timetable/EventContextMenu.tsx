@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
-import { ContentCopy, ContentPaste, Delete, Edit, FileCopy } from '@mui/icons-material';
+import { ContentCopy, ContentPaste, Edit, FileCopy } from '@mui/icons-material';
 import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
+import React, { useContext } from 'react';
+
 import { CourseContext } from '../../context/CourseContext';
 import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';

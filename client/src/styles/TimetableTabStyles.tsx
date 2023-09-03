@@ -1,12 +1,12 @@
 import { Box, BoxProps, Button, IconButton, IconButtonProps, Snackbar, styled, Theme } from '@mui/material';
 
 export type TabTheme = {
-  containerBackground: String;
-  tabBorderColor: String;
-  tabTextColor: String;
-  tabHoverColor: String;
-  tabBackgroundColor: String;
-  tabSelectedText: String;
+  containerBackground: string;
+  tabBorderColor: string;
+  tabTextColor: string;
+  tabHoverColor: string;
+  tabBackgroundColor: string;
+  tabSelectedText: string;
 };
 
 export const tabThemeLight: TabTheme = {
@@ -82,8 +82,8 @@ export const StyledModalButton = styled(Button)`
 `;
 
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const TabStyle = (index: Number, selectedTimetableIndex: Number) => {
-    let style = {
+  const TabStyle = (index: number, selectedTimetableIndex: number) => {
+    const style = {
       boxShadow: '',
       maxWidth: '360px',
       minHeight: '42px',

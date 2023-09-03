@@ -1,10 +1,18 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import { AddRounded, CheckRounded, CloseRounded, PersonOutline, SearchRounded, VideocamOutlined } from '@mui/icons-material';
+import {
+  AddRounded,
+  CheckRounded,
+  CloseRounded,
+  PersonOutline,
+  SearchRounded,
+  VideocamOutlined,
+} from '@mui/icons-material';
 import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
+
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -153,7 +161,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       selectedCourses
         .map((x) => x.code) // Get the course code of each course
         .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
-        .filter((overview): overview is CourseOverview => overview !== undefined)
+        .filter((overview): overview is CourseOverview => overview !== undefined),
     );
   }, [selectedCourses, coursesList]);
 
@@ -186,7 +194,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     // If there are courses selected, filter the default options to include courses in the same area of study
     defaultOptions = defaultOptions.filter(
-      (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course)
+      (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course),
     );
   }
 
@@ -285,7 +293,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    []
+    [],
   );
 
   const theme = useTheme<ThemeType>();
@@ -315,7 +323,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           <li {...props}>
             <StyledOption>
               <StyledIcon>
-                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? <CheckRounded /> : <AddRounded />}
+                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                  <CheckRounded />
+                ) : (
+                  <AddRounded />
+                )}
               </StyledIcon>
               <span>{option.code}</span>
               <Weak>{!(isMedium || isTiny) && option.name}</Weak>

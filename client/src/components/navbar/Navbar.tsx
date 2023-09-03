@@ -7,7 +7,6 @@ import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';

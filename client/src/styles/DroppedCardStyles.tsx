@@ -1,5 +1,6 @@
 import { Button, Card, Grid, List } from '@mui/material';
 import { styled } from '@mui/system';
+
 import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
@@ -14,8 +15,13 @@ export const classTransformStyle = (
   y?: number,
   clashIndex?: number,
   width?: number,
-  cellWidth: number = 0
-) => `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
+  cellWidth: number = 0,
+) =>
+  `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(
+    card,
+    earliestStartTime,
+    y,
+  )})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -35,7 +41,7 @@ export const ExpandButton = styled(Button)`
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
-      prop.toString()
+      prop.toString(),
     ),
 })<{
   card: ClassCard | EventPeriod;
@@ -88,7 +94,8 @@ export const StyledCard = styled('div', {
 `;
 
 export const StyledCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) =>
+    !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
 })<{
   hasClash: boolean;
   isSquareEdges: boolean;

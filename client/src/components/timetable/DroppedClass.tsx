@@ -1,12 +1,14 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ContentPaste, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData, CourseData, ClassPeriod } from '../../interfaces/Periods';
+import { ClassData, ClassPeriod, CourseData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
@@ -15,7 +17,6 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
-import { StyledMenu } from '../../styles/CustomEventStyles';
 import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
@@ -159,7 +160,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
-    activityMaxPeriods = Math.max(...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length));
+    activityMaxPeriods = Math.max(
+      ...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length),
+    );
   }
 
   return (
@@ -193,7 +196,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             setCopiedEvent,
             (classCard as ClassPeriod).time.day - 1,
             (classCard as ClassPeriod).time.start,
-            setContextMenu
+            setContextMenu,
           );
         }}
       >
@@ -228,7 +231,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           )}
         </StyledCardInner>
       </StyledCard>
-      {classCard.type === 'class' && <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />}
+      {classCard.type === 'class' && (
+        <ExpandedView classPeriod={classCard} popupOpen={popupOpen} handleClose={handleClose} />
+      )}
       {/* For right click menu on a class card */}
       <StyledMenu
         open={contextMenu != null}

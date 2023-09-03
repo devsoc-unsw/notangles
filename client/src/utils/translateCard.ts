@@ -18,7 +18,7 @@ export const classTranslateX = (
   nDays?: number,
   clashIndex?: number,
   width?: number,
-  cellWidth?: number
+  cellWidth?: number,
 ) => {
   // This classCard is for a scheduled class
   if (isScheduledPeriod(card) && clashIndex !== undefined && width && cellWidth) {

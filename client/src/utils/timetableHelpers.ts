@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+
 import {
   Action,
   Activity,
@@ -45,7 +46,7 @@ const duplicateEvents = (oldEvents: CreatedEvents) => {
       period.event.color,
       period.time.day,
       period.time.start,
-      period.time.end
+      period.time.end,
     );
     newEvents[newEvent.event.id] = newEvent;
   });
@@ -107,7 +108,11 @@ const areIdenticalEvents = (curr: CreatedEvents, next: CreatedEvents) => {
   return true;
 };
 
-const extractHistoryInfo = (timetableId: string, timetableActions: TimetableActions, actionsPointer: ActionsPointer) => {
+const extractHistoryInfo = (
+  timetableId: string,
+  timetableActions: TimetableActions,
+  actionsPointer: ActionsPointer,
+) => {
   const courses = timetableActions[timetableId][actionsPointer[timetableId]].courses;
   const classes = duplicateClasses(timetableActions[timetableId][actionsPointer[timetableId]].classes);
   const events = timetableActions[timetableId][actionsPointer[timetableId]].events;
@@ -119,7 +124,7 @@ const areIdenticalTimetables = (
   currentPointer: number,
   selectedClasses: SelectedClasses,
   createdEvents: CreatedEvents,
-  currentTimetable: TimetableData
+  currentTimetable: TimetableData,
 ): boolean => {
   // This signifies that history has not been instantiated for this timetable yet, but will be at the end of the useEffect in history.ts
   if (currentPointer === -1) {
@@ -146,11 +151,11 @@ const createDefaultTimetable = (): TimetableData[] => {
 };
 
 export {
-  duplicateClasses,
-  duplicateEvents,
   areIdenticalClasses,
   areIdenticalEvents,
   areIdenticalTimetables,
-  extractHistoryInfo,
   createDefaultTimetable,
+  duplicateClasses,
+  duplicateEvents,
+  extractHistoryInfo,
 };

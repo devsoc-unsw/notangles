@@ -1,13 +1,15 @@
 import '@fontsource-variable/roboto-flex';
+import './index.css';
+
 import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import App from './App';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({

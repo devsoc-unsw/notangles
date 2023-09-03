@@ -87,7 +87,7 @@ export const lightTheme = createTheme(
       main: '#bdbdbd',
       dark: '#999999',
     },
-  })
+  }),
 );
 
 export const darkTheme = createTheme(
@@ -102,5 +102,5 @@ export const darkTheme = createTheme(
       main: '#616161',
       dark: '#808080',
     },
-  })
+  }),
 );
