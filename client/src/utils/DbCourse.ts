@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
 import { getTimeZoneOffset } from '../constants/timetable';
 import { DbCourse, DbTimes } from '../interfaces/Database';

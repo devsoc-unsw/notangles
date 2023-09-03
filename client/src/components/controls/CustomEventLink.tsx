@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { Link, LocationOn } from '@mui/icons-material';
-import { ListItemIcon, TextField, Card, CardProps } from '@mui/material';
+import { Card, CardProps, ListItemIcon, TextField } from '@mui/material';
 import { styled } from '@mui/system';
+import isBase64 from 'is-base64';
+import { useState } from 'react';
 import { CustomEventLinkProp } from '../../interfaces/PropTypes';
 import { StyledListItem } from '../../styles/ControlStyles';
 import { StyledListItemText } from '../../styles/CustomEventStyles';
@@ -30,7 +31,6 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
 
   const checkRender = (link: string) => {
     setLink(link);
-    var isBase64 = require('is-base64');
     if (isBase64(link) && link.length > 0) {
       try {
         const linkEvent = JSON.parse(atob(link));

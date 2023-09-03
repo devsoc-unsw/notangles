@@ -1,9 +1,9 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AddRounded, CheckRounded, CloseRounded, PersonOutline, SearchRounded, VideocamOutlined } from '@mui/icons-material';
 import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
