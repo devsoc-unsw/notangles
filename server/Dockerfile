@@ -11,6 +11,7 @@ RUN pnpm run build
 
 
 FROM node:20.5.1-alpine
+RUN npm i -g pnpm
 WORKDIR /server
 
 ENV NODE_ENV production
