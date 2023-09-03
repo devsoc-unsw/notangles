@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useState } from 'react';
 
-import notanglesLogo from '../../assets/notangles_1.png';
 import notanglesLogoGif from '../../assets/notangles.gif';
+import notanglesLogo from '../../assets/notangles_1.png';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 
@@ -61,6 +61,7 @@ const Navbar: React.FC = () => {
         <Toolbar>
           <LogoImg
             src={currLogo}
+            alt="Notangles logo"
             onMouseOver={() => setCurrLogo(notanglesLogoGif)}
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
