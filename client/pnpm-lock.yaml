@@ -62,7 +62,7 @@ dependencies:
   is-base64:
     specifier: ^1.1.0
     version: 1.1.0
-  lodash:
+  lodash-es:
     specifier: 4.17.21
     version: 4.17.21
   react:
@@ -136,9 +136,9 @@ devDependencies:
   '@types/jest':
     specifier: 29.5.4
     version: 29.5.4
-  '@types/lodash':
-    specifier: ^4.14.197
-    version: 4.14.197
+  '@types/lodash-es':
+    specifier: 4.17.9
+    version: 4.17.9
   '@types/node':
     specifier: 20.5.9
     version: 20.5.9
@@ -1490,6 +1490,12 @@ packages:
       pretty-format: 29.6.3
     dev: true
 
+  /@types/lodash-es@4.17.9:
+    resolution: {integrity: sha512-ZTcmhiI3NNU7dEvWLZJkzG6ao49zOIjEgIE0RgV7wbPxU0f2xT3VSAHw2gmst8swH6V0YkLRGp4qPlX/6I90MQ==}
+    dependencies:
+      '@types/lodash': 4.14.197
+    dev: true
+
   /@types/lodash@4.14.197:
     resolution: {integrity: sha512-BMVOiWs0uNxHVlHBgzTIqJYmj+PgCo4euloGF+5m4okL3rEYzM2EEv78mw8zWSMM57dM7kVIgJ2QDvwHSoCI5g==}
     dev: true
@@ -2647,8 +2653,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  /lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
     dev: false
 
   /loose-envify@1.4.0:
