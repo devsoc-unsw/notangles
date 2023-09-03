@@ -15,7 +15,7 @@ Students often find it hard to plan out their classes such that they end up in t
 Before you start, make sure that you have the following software installed.
 
 - Git (standard on Linux) or GitHub Desktop
-- Node.js and npm (usually bundled with Node.js)
+- Node.js and pnpm (install with `npm i -g pnpm`)
 - Python
 
 ### Setup
@@ -26,19 +26,19 @@ Clone the repository:
 
 ### Running the front-end
 
-Navigate into `/client`, install packages with `npm i`, then run one of the follow commands:
+Navigate into `/client`, install packages with `pnpm i`, then run one of the follow commands:
 
-- `npm start` (if you already have the timetable server running locally; connects to that)
+- `pnpm start` (if you already have the timetable server running locally; connects to that)
 
-- `npm run start:mock` (if you don’t have the timetable server running locally; connects to our real server)
+- `pnpm run start:mock` (if you don’t have the timetable server running locally; connects to our real server)
 
-If you need to test the autotimetabler, both `npm start` and `npm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
+If you need to test the autotimetabler, both `pnpm start` and `pnpm run start:mock` will connect to the local autotimetabling server. Make sure to start it up with the steps below.
 
 You can then access the client at `http://localhost:3000` in your favourite web browser.
 
 ### Running the back-end
 
-Navigate into `/server`, install packages with `npm i`, then run `npm start`. The server will be hosted at `http://localhost:3001`
+Navigate into `/server`, install packages with `pnpm i`, then run `pnpm start`. The server will be hosted at `http://localhost:3001`
 
 ### Running the auto-timetabler
 
