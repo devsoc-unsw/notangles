@@ -10,7 +10,8 @@ const FooterContainer = styled(Box)`
   margin-bottom: 25px;
 
   & div {
-    margin: 1vh 20vh;
+    max-width: 700px;
+    margin: 0 auto;
   }
 `;
 
