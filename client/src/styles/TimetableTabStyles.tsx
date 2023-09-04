@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { Theme } from '@mui/material';
-
-export type TabTheme = {
-  containerBackground: String;
-  tabBorderColor: String;
-  tabTextColor: String;
-  tabHoverColor: String;
-  tabBackgroundColor: String;
-  tabSelectedText: String;
-=======
 import { Box, BoxProps, Button, IconButton, IconButtonProps, Snackbar, styled, Theme } from '@mui/material';
 
 export type TabTheme = {
@@ -18,7 +7,6 @@ export type TabTheme = {
   tabHoverColor: string;
   tabBackgroundColor: string;
   tabSelectedText: string;
->>>>>>> dev
 };
 
 export const tabThemeLight: TabTheme = {
@@ -39,52 +27,6 @@ export const tabThemeDark: TabTheme = {
   tabSelectedText: '#ffffff',
 };
 
-<<<<<<< HEAD
-export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const AddIconStyle = {
-    position: 'sticky',
-    right: '0px',
-    padding: '10px',
-    minWidth: '50px',
-    minHeight: '50px',
-    transition: 'background-color 0.1s',
-    borderRadius: '50%',
-    zIndex: '100',
-    backgroundColor: `${tabTheme.containerBackground}`,
-    opacity: 0.75,
-    '&:hover': {
-      backgroundColor: `${tabTheme.tabHoverColor}`,
-    },
-  };
-
-  const TabContainerStyle = {
-    backgroundColor: `${tabTheme.containerBackground}`,
-    borderRadius: '10px 10px 0 0',
-  };
-
-  const TabStyle = (index: Number) => {
-    let style = {
-      minHeight: '50px',
-      minWidth: '150px',
-      paddingTop: '3px',
-      paddingBottom: '3px',
-      borderStyle: 'solid',
-      borderWidth: '0px',
-      borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor}`,
-      color: `${tabTheme.tabTextColor}`,
-      margin: '0 0 0 0',
-      marginLeft: '-2px',
-      transition: 'background-color 0.1s',
-      '&.Mui-selected': {
-        color: `${tabTheme.tabSelectedText}`,
-        backgroundColor: `${tabTheme.tabBackgroundColor}`,
-        boxShadow: `inset 0 0 7px ${theme.palette.primary.main}`,
-        borderWidth: '1px',
-        borderColor: `${theme.palette.primary.main}`,
-        zIndex: '1',
-      },
-=======
 export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
   '& .MuiSnackbarContent-root': {
     backgroundColor: theme.palette.mode === 'dark' ? '#444444' : '#ffffff',
@@ -168,16 +110,11 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       flexShrink: '0',
       zIndex: '',
       borderRight: `1px solid ${theme.palette.secondary.main} `,
->>>>>>> dev
       '&:active': {
         cursor: 'move',
       },
       '&:hover': {
-<<<<<<< HEAD
-        backgroundColor: `${tabTheme.tabHoverColor}`,
-=======
         backgroundColor: `${tabTheme.tabHoverColor} `,
->>>>>>> dev
       },
     };
 
@@ -185,14 +122,6 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       style.marginLeft = '0px';
     }
 
-<<<<<<< HEAD
-    return style;
-  };
-
-  const ModalButtonStyle = { margin: '10px', width: '80px', alignSelf: 'center' };
-
-  return { AddIconStyle, TabContainerStyle, TabStyle, ModalButtonStyle };
-=======
     if (index === selectedTimetableIndex) {
       style.color = `#3a76f8`;
       style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
@@ -207,5 +136,4 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
   };
 
   return { TabStyle };
->>>>>>> dev
 };

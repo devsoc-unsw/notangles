@@ -43,7 +43,7 @@ export const StyledCard = styled('div', {
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
       prop.toString(),
     ),
-}) <{
+})<{
   card: ClassCard | EventPeriod;
   nDays: number;
   y?: number;
@@ -94,14 +94,9 @@ export const StyledCard = styled('div', {
 `;
 
 export const StyledCardInner = styled(Card, {
-<<<<<<< HEAD
-  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
-}) <{
-=======
   shouldForwardProp: (prop) =>
     !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
 })<{
->>>>>>> dev
   hasClash: boolean;
   isSquareEdges: boolean;
   clashColour: string;
