@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useState } from 'react';
+
 import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -18,7 +19,7 @@ const StyledTimetable = styled(Box, {
 }>`
   display: grid;
   min-width: ${timetableWidth}px;
-  padding: ${contentPadding}px;
+  padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
   grid-gap: 1px;
@@ -46,7 +47,8 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
 
   // Calculate the correct number of rows, accounting for when the earliest start time is later than latest end time.
   // E.g. starting at 7pm and ending at 4am.
-  const numRows = latestEndTime > earliestStartTime ? latestEndTime - earliestStartTime : 24 - earliestStartTime + latestEndTime;
+  const numRows =
+    latestEndTime > earliestStartTime ? latestEndTime - earliestStartTime : 24 - earliestStartTime + latestEndTime;
 
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">

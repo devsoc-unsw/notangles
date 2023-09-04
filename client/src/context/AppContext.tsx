@@ -1,7 +1,8 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 
-import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
+import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
+import { CourseDataMap, TimetableData } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -33,6 +34,9 @@ export interface IAppContext {
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
+  alertFunction: () => void;
+  setAlertFunction: (newAlertFunction: () => void) => void;
+
   errorVisibility: boolean;
   setErrorVisibility: (newErrorVisibility: boolean) => void;
 
@@ -53,10 +57,12 @@ export interface IAppContext {
   setDays(callback: (oldDays: string[]) => string[]): void;
 
   earliestStartTime: number;
-  setEarliestStartTime: (newEarliestStartTime: number) => void;
+  setEarliestStartTime(newEarliestStartTime: number): void;
+  setEarliestStartTime(callback: (oldEarliestStartTime: number) => number): void;
 
   latestEndTime: number;
-  setLatestEndTime: (newLatestEndTime: number) => void;
+  setLatestEndTime(newLatestEndTime: number): void;
+  setLatestEndTime(callback: (oldLatestEndTime: number) => number): void;
 
   term: string;
   setTerm: (newTerm: string) => void;
@@ -75,6 +81,15 @@ export interface IAppContext {
 
   coursesList: CoursesList;
   setCoursesList: (newCoursesList: CoursesList) => void;
+
+  selectedTimetable: number;
+  setSelectedTimetable: (newSelectedTimetable: number) => void;
+
+  displayTimetables: TimetableData[];
+  setDisplayTimetables: (newDisplayTimetable: any) => void;
+
+  courseData: CourseDataMap;
+  setCourseData: (newCourseData: CourseDataMap) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -104,6 +119,9 @@ export const AppContext = createContext<IAppContext>({
 
   alertMsg: '',
   setAlertMsg: () => {},
+
+  alertFunction: () => {},
+  setAlertFunction: () => {},
 
   errorVisibility: false,
   setErrorVisibility: () => {},
@@ -146,6 +164,15 @@ export const AppContext = createContext<IAppContext>({
 
   coursesList: [],
   setCoursesList: () => {},
+
+  selectedTimetable: 0,
+  setSelectedTimetable: () => {},
+
+  displayTimetables: [],
+  setDisplayTimetables: () => {},
+
+  courseData: { map: [] },
+  setCourseData: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -166,8 +193,11 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
-  const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
+  const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(
+    storage.get('isConvertToLocalTimezone'),
+  );
   const [alertMsg, setAlertMsg] = useState<string>('');
+  const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
@@ -182,6 +212,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [year, setYear] = useState<string>(termData.year || '0000');
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
+  const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
+  const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
+  const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
+
   const initialContext: IAppContext = {
     is12HourMode,
     setIs12HourMode,
@@ -201,6 +235,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setIsConvertToLocalTimezone,
     alertMsg,
     setAlertMsg,
+    alertFunction,
+    setAlertFunction,
     errorVisibility,
     setErrorVisibility,
     infoVisibility,
@@ -229,6 +265,12 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setFirstDayOfTerm,
     coursesList,
     setCoursesList,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
+    courseData,
+    setCourseData,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

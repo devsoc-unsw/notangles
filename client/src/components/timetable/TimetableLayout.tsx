@@ -1,7 +1,8 @@
-import React, { useContext, useRef, useState } from 'react';
 import { ContentPaste } from '@mui/icons-material';
-import { MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useRef, useState } from 'react';
+
 import {
   classMargin,
   daysShort,
@@ -15,10 +16,10 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { TimetableLayoutProps } from '../../interfaces/PropTypes';
 import { StyledMenu } from '../../styles/CustomEventStyles';
-import { parseAndCreateEventObj } from '../../utils/createEvent';
-import { createDateWithTime } from '../../utils/eventTimes';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
+import { parseAndCreateEventObj } from '../../utils/createEvent';
+import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
@@ -37,14 +38,15 @@ const BaseCell = styled('div', {
   grid-row: ${({ y }) => y} / ${({ y, yTo }) => yTo || y};
   background: ${({ theme }) => theme.palette.background.default};
   z-index: 10;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   outline: solid ${({ theme }) => theme.palette.secondary.main} 1px;
   outline-offset: -0.5px;
 
-  border-top-left-radius: ${({ theme, x, y }) => (x === 2 && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 2 && isEndY ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, isEndX, y }) => (isEndX && y === 1 ? theme.shape.borderRadius : 0)}px;
   border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (isEndX && isEndY ? theme.shape.borderRadius : 0)}px;
@@ -123,7 +125,7 @@ const generateHours = (
   is12HourMode: boolean,
   setAlertMsg: (newErrorMsg: string) => void,
   setErrorVisibility: (newVisibility: boolean) => void,
-  isConvertToLocalTimezone: boolean
+  isConvertToLocalTimezone: boolean,
 ): string[] => {
   const [min, max] = range;
 
@@ -161,8 +163,15 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
-  const { is12HourMode, days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
-    useContext(AppContext);
+  const {
+    is12HourMode,
+    days,
+    earliestStartTime,
+    latestEndTime,
+    setAlertMsg,
+    setErrorVisibility,
+    isConvertToLocalTimezone,
+  } = useContext(AppContext);
 
   const hoursRange = [
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
@@ -173,7 +182,13 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const eventStartTime = useRef<Date>(createDateWithTime(9));
   const eventEndTime = useRef<Date>(createDateWithTime(10));
 
-  const hours: string[] = generateHours(hoursRange, is12HourMode, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone);
+  const hours: string[] = generateHours(
+    hoursRange,
+    is12HourMode,
+    setAlertMsg,
+    setErrorVisibility,
+    isConvertToLocalTimezone,
+  );
   const hourCells = hours.map((hour, i) => (
     <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>
       {hour}
@@ -189,7 +204,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   dayCells.push(
     <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
       Unscheduled
-    </InventoryCell>
+    </InventoryCell>,
   );
 
   const handleOpen = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -257,7 +272,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
           handleContextMenu(e, copiedEvent, setCopiedEvent, x, y + earliestStartTime, setContextMenu);
         }}
       />
-    ))
+    )),
   );
 
   otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);

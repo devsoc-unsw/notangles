@@ -1,5 +1,6 @@
 import { Button, Card, Grid, List } from '@mui/material';
 import { styled } from '@mui/system';
+
 import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
 import { ClassCard, defaultTransition, elevatedScale, getDefaultShadow, getElevatedShadow } from '../utils/Drag';
@@ -14,8 +15,13 @@ export const classTransformStyle = (
   y?: number,
   clashIndex?: number,
   width?: number,
-  cellWidth: number = 0
-) => `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(card, earliestStartTime, y)})`;
+  cellWidth: number = 0,
+) =>
+  `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(
+    card,
+    earliestStartTime,
+    y,
+  )})`;
 
 export const ExpandButton = styled(Button)`
   position: absolute;
@@ -26,7 +32,6 @@ export const ExpandButton = styled(Button)`
   padding: 0;
   opacity: 40%;
   border-radius: 2px;
-  color: #f5f5f5;
 
   &:hover {
     opacity: 100%;
@@ -36,7 +41,7 @@ export const ExpandButton = styled(Button)`
 export const StyledCard = styled('div', {
   shouldForwardProp: (prop) =>
     !['card', 'nDays', 'y', 'earliestStartTime', 'isSquareEdges', 'clashIndex', 'cardWidth', 'cellWidth'].includes(
-      prop.toString()
+      prop.toString(),
     ),
 })<{
   card: ClassCard | EventPeriod;
@@ -59,7 +64,9 @@ export const StyledCard = styled('div', {
   z-index: 100;
   cursor: grab;
   padding: 1px;
-  transition: ${defaultTransition}, z-index 0s;
+  transition:
+    ${defaultTransition},
+    z-index 0s;
 
   /* uncomment me whoever decides to fix <CSSTransition>
   &.${transitionName}-enter {
@@ -87,7 +94,8 @@ export const StyledCard = styled('div', {
 `;
 
 export const StyledCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
+  shouldForwardProp: (prop) =>
+    !['hasClash', 'isSquareEdges', 'clashColour', 'backgroundColour'].includes(prop.toString()),
 })<{
   hasClash: boolean;
   isSquareEdges: boolean;
@@ -99,7 +107,9 @@ export const StyledCardInner = styled(Card, {
   color: white;
   font-size: 0.9rem;
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : `${borderRadius}px`)};
-  transition: ${defaultTransition}, z-index 0s;
+  transition:
+    ${defaultTransition},
+    z-index 0s;
   backface-visibility: hidden;
   outline: ${({ clashColour }) => `solid ${clashColour} ${borderWidth}px`};
   outline-offset: -3px;

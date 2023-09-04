@@ -1,7 +1,8 @@
 import { Box, Button, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
-import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+
 import { ColorPickerProps } from '../../interfaces/PropTypes';
+import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
   color,

@@ -15,11 +15,11 @@ import { API_URL } from './config';
  */
 const convertTimesToList = (dbClassWeeks: string, dbClassTimesList: number[]) => {
   for (let k = 0; k < dbClassWeeks.length; k++) {
-    let times = dbClassWeeks.split(',');
+    const times = dbClassWeeks.split(',');
     times.map((time) => {
       if (time.includes('-')) {
         // Convert ranges into numbers
-        let [min, max] = time.split('-');
+        const [min, max] = time.split('-');
         for (let j = parseInt(min); j < parseInt(max); j++) {
           dbClassTimesList.push(j);
         }
@@ -55,7 +55,7 @@ const sortUnique = (arr: number[]): number[] => {
   if (arr.length === 0) return arr;
   arr = arr.sort((a, b) => a - b);
 
-  let ret = [arr[0]];
+  const ret = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
     if (arr[i - 1] !== arr[i]) {
       ret.push(arr[i]);
@@ -82,7 +82,7 @@ const getCourseInfo = async (
   year: string,
   term: string,
   courseCode: CourseCode,
-  isConvertToLocalTimezone: boolean
+  isConvertToLocalTimezone: boolean,
 ): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
   try {
@@ -91,10 +91,10 @@ const getCourseInfo = async (
     // Remove any leftover courses from localStorage if they are not offered in the current term
     // which is why a 400 error is returned
     if (data.status === 400) {
-      const selectedCourses = storage.get('selectedCourses');
+      const selectedCourses = storage.get('timetables')[0].selectedCourses;
       if (selectedCourses.includes(courseCode)) {
         delete selectedCourses[courseCode];
-        storage.set('selectedCourses', selectedCourses);
+        storage.set('timetables[0].selectedCourses', selectedCourses);
       } else {
         throw new NetworkError('Internal server error');
       }
@@ -109,8 +109,8 @@ const getCourseInfo = async (
 
       for (let i = 0; i < dbClass.times.length - 1; i += 1) {
         for (let j = i + 1; j < dbClass.times.length; j += 1) {
-          let dbClassTimesOne = dbClass.times[i];
-          let dbClassTimesTwo = dbClass.times[j];
+          const dbClassTimesOne = dbClass.times[i];
+          const dbClassTimesTwo = dbClass.times[j];
 
           if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
             let dbClassTimesList: number[] = [];
