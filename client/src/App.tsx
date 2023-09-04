@@ -1,17 +1,18 @@
-import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+import React, { useContext, useEffect } from 'react';
+
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
-import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
+import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
   daysLong,
@@ -41,7 +42,9 @@ const ContentWrapper = styled(Box)`
   padding-top: 64px; // for nav bar
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
   min-height: 50vh;
   box-sizing: border-box;
   display: flex;
@@ -144,7 +147,7 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+      const { term, termName, termNumber, year, firstDayOfTerm } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
@@ -237,20 +240,20 @@ const App: React.FC = () => {
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
-    callback?: (_selectedCourses: CourseData[]) => void
+    callback?: (_selectedCourses: CourseData[]) => void,
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
         getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
-        })
-      )
+        }),
+      ),
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
-      let newSelectedCourses = [...selectedCourses];
-      let newCourseData = courseData;
+      const newSelectedCourses = [...selectedCourses];
+      const newCourseData = courseData;
 
       // Update the existing courses with the new data (for changing timezones).
       addedCourses.forEach((addedCourse) => {
@@ -356,7 +359,7 @@ const App: React.FC = () => {
           });
         });
         setSelectedClasses(newSelectedClasses);
-      }
+      },
     );
     setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
   };
@@ -368,7 +371,7 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
-    let newCourseData = courseData;
+    const newCourseData = courseData;
     storage.set('courseData', newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
@@ -431,8 +434,8 @@ const App: React.FC = () => {
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
-        prev
-      )
+        prev,
+      ),
     );
 
     setLatestEndTime((prev: number) =>
@@ -440,8 +443,8 @@ const App: React.FC = () => {
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
-        prev
-      )
+        prev,
+      ),
     );
 
     setDays(
@@ -451,9 +454,9 @@ const App: React.FC = () => {
           getLatestDotW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
           days.length, // Saturday and/or Sunday columns persist until the next reload even if they aren't needed anymore
-          5 // default
-        )
-      )
+          5, // default
+        ),
+      ),
     );
   };
 
@@ -537,7 +540,9 @@ const App: React.FC = () => {
                 <Outlet />
                 <TimetableTabs />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
+                <ICSButton
+                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                >
                   save to calendar
                 </ICSButton>
                 <Footer />

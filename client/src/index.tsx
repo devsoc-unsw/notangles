@@ -1,19 +1,22 @@
-import React from 'react';
+import '@fontsource-variable/roboto-flex';
+import './index.css';
+
+import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import App from './App';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import './index.css';
 import * as swRegistration from './serviceWorkerRegistration';
 import EventShareModal from './components/EventShareModal';
 
 Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_INGEST_CLIENT,
+  dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
   integrations: [new BrowserTracing()],
-  tracesSampleRate: Number(process.env.REACT_APP_SENTRY_TRACE_RATE_CLIENT),
+  tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
 const Root: React.FC = () => (

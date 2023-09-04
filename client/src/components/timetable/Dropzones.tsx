@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -66,8 +67,8 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
           color={color}
           earliestStartTime={earliestStartTime}
         />
-      ))
-    )
+      )),
+    ),
   );
 
   return <>{dropzones}</>;
@@ -78,7 +79,12 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (
-    <DropzoneGroup key={course.code} course={course} color={assignedColors[course.code]} earliestStartTime={earliestStartTime} />
+    <DropzoneGroup
+      key={course.code}
+      course={course}
+      color={assignedColors[course.code]}
+      earliestStartTime={earliestStartTime}
+    />
   ));
 
   const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
@@ -92,7 +98,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
       x={-2}
       color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
       earliestStartTime={earliestStartTime}
-    />
+    />,
   );
   return <>{dropzones}</>;
 };

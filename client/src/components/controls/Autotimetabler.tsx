@@ -1,4 +1,3 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDropDown, ArrowDropUp, Close, FlashOn, Info } from '@mui/icons-material';
 import {
   Button,
@@ -16,6 +15,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import getAutoTimetable from '../../api/getAutoTimetable';
 import { unknownErrorMessage, weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -78,8 +79,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     targetActivities.current = selectedCourses
       .map((v) =>
         Object.entries(v.activities).filter(
-          ([activity, classes]) => !activity.startsWith('Lecture') && !activity.startsWith('Exam')
-        )
+          ([activity, classes]) => !activity.startsWith('Lecture') && !activity.startsWith('Exam'),
+        ),
       )
       .reduce((a, b) => a.concat(b))
       .map(([activity, classes]) => classes)
@@ -100,29 +101,33 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
               .reduce((a, b) => a.concat(b), []), // extracts the period's day and start time for all periods of a class for all classes of an activity (classData[]) and then reduces that list of list of lists into a single list
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
-          } as PeriodInfo)
+          }) as PeriodInfo,
       ),
       'in person': targetActivities.current.map(
         (value, index) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
             periodTimes: value
-              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]))
+              .filter(
+                (v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0]),
+              )
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
               .reduce((a, b) => a.concat(b), []),
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
-          } as PeriodInfo)
+          }) as PeriodInfo,
       ),
       online: targetActivities.current.map(
         (value, index) =>
           ({
             periodsPerClass: value.at(0)?.periods.length ?? 0,
             periodTimes: value
-              .filter((v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]))
+              .filter(
+                (v) => !hasMode[index][1] || v.periods.some((p) => p.locations.length && 'Online' === p.locations[0]),
+              )
               .map((c) => c.periods.map((p) => [p.time.day, p.time.start]).reduce((p1, p2) => p1.concat(p2), []))
               .reduce((a, b) => a.concat(b), []),
             durations: value.at(0)?.periods.map((p) => p.time.end - p.time.start) ?? [],
-          } as PeriodInfo)
+          }) as PeriodInfo,
       ),
     };
   }, [selectedCourses]);
@@ -182,7 +187,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             periodsPerClass: 1,
             periodTimes: [eventPeriod.time.day, eventPeriod.time.start],
             durations: [eventPeriod.time.end - eventPeriod.time.start],
-          } as PeriodInfo)
+          }) as PeriodInfo,
       ),
     ];
 
@@ -198,7 +203,8 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
         // Find each class specified by the autotimetabler and update the timetable
         const allocatedClass = targetActivities.current[index].find(
-          (c) => c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c)
+          (c) =>
+            c.periods.length && c.periods[0].time.day === day && c.periods[0].time.start === start && rightLocation(c),
         );
 
         if (allocatedClass !== undefined) handleSelectClass(allocatedClass);
@@ -257,12 +263,13 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                   <Link href="https://en.wikipedia.org/wiki/Constraint_programming" target="_blank">
                     constraint programming
                   </Link>{' '}
-                  algorithm to allocate your classes clashlessly based on the courses and constraints you provide, failing when
-                  there are no clashless solutions.
+                  algorithm to allocate your classes clashlessly based on the courses and constraints you provide,
+                  failing when there are no clashless solutions.
                 </p>
                 <p>
-                  If a course lacks an <code>ONLINE</code> offering, its <code>IN PERSON</code> classes may be scheduled instead,
-                  and vice-versa. <em>Currently</em>, the autotimetabler won't schedule certain types of classes like Lectures.
+                  If a course lacks an <code>ONLINE</code> offering, its <code>IN PERSON</code> classes may be scheduled
+                  instead, and vice-versa. <em>Currently</em>, the autotimetabler won't schedule certain types of
+                  classes like Lectures.
                 </p>
                 <p>Autotimetabler may lack full support for certain courses.</p>
               </Typography>

@@ -1,7 +1,7 @@
-import React from 'react';
 import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
 

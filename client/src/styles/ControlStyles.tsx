@@ -13,7 +13,7 @@ export const StyledControlsButton = styled('div')`
 
 export const ColorIndicatorBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
-}) <{
+})<{
   backgroundColor: string;
 }>`
   width: 35px;

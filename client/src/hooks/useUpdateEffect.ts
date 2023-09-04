@@ -1,7 +1,7 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 // https://stackoverflow.com/a/55075818/1526448
-const useUpdateEffect = (effect: Function, dependencies: any[] = []) => {
+const useUpdateEffect = (effect: () => void, dependencies: unknown[] = []) => {
   const isInitialMount = useRef(true);
 
   useEffect(() => {

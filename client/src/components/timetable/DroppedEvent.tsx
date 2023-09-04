@@ -1,7 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { MoreHoriz } from '@mui/icons-material';
+import { LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import { styled } from '@mui/system';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
@@ -13,11 +15,16 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
-import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
-import ExpandedEventView from './ExpandedEventView';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
-import { StyledLocationIcon } from '../../styles/CustomEventStyles';
+import ExpandedEventView from './ExpandedEventView';
+
+const StyledLocationIcon = styled(LocationOn)`
+  vertical-align: text-bottom;
+  font-size: inherit;
+  padding-bottom: 0.1em;
+`;
 
 const DroppedEvent: React.FC<DroppedEventProps> = ({
   eventId,
@@ -158,7 +165,14 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           setFullscreenVisible(false);
         }}
         onContextMenu={(e) => {
-          handleContextMenu(e, copiedEvent, setCopiedEvent, eventPeriod.time.day - 1, eventPeriod.time.start, setContextMenu);
+          handleContextMenu(
+            e,
+            copiedEvent,
+            setCopiedEvent,
+            eventPeriod.time.day - 1,
+            eventPeriod.time.start,
+            setContextMenu,
+          );
         }}
       >
         <EventContextMenu

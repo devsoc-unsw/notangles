@@ -1,10 +1,11 @@
 import { Event, LocationOn, Notes } from '@mui/icons-material';
 import { ListItemIcon, TextField } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
+
 import { daysShort } from '../../constants/timetable';
 import { CustomEventGeneralProps } from '../../interfaces/PropTypes';
-import { StyledListItemText } from '../../styles/CustomEventStyles';
 import { StyledListItem } from '../../styles/ControlStyles';
+import { StyledListItemText } from '../../styles/CustomEventStyles';
 import { areValidEventTimes } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 

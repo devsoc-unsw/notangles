@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
@@ -91,8 +91,15 @@ const CustomEvent: React.FC = () => {
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
+  const {
+    setAlertMsg,
+    setErrorVisibility,
+    setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
+  } = useContext(AppContext);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setCreateEventAnchorEl(event.currentTarget);
@@ -156,10 +163,28 @@ const CustomEvent: React.FC = () => {
           color,
           daysShort[period.time.day - 1],
           createDateWithTime(period.time.start),
-          createDateWithTime(period.time.end)
+          createDateWithTime(period.time.end),
         );
         newEvents[newEvent.event.id] = newEvent;
       });
+    } else {
+      try {
+        const linkEvent = JSON.parse(atob(link));
+        const newEvent = createLinkEvent(
+          linkEvent.event.name,
+          linkEvent.event.location,
+          linkEvent.event.description,
+          linkEvent.event.color,
+          linkEvent.time.day,
+          linkEvent.time.start,
+          linkEvent.time.end,
+        );
+        newEvents[newEvent.event.id] = newEvent;
+      } catch {
+        setAlertMsg('Invalid event link');
+        setErrorVisibility(true);
+        return;
+      }
     }
 
     setEventType('General');
@@ -192,7 +217,7 @@ const CustomEvent: React.FC = () => {
     color: string,
     day: string,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ) => {
     const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTime, endTime);
 
@@ -201,7 +226,9 @@ const CustomEvent: React.FC = () => {
       [newEvent.event.id]: newEvent,
     });
 
-    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    setEarliestStartTime(
+      Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
+    );
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     if (daysShort.indexOf(day) == 5 || daysShort.indexOf(day) == 6) {
@@ -272,6 +299,14 @@ const CustomEvent: React.FC = () => {
                 classesCodes={classesCodes}
                 setCourseCode={setCourseCode}
                 setClassCode={setClassCode}
+              />
+            </StyledTabPanel>
+            <StyledTabPanel value="Via Link">
+              <CustomEventLink
+                link={link}
+                setLink={setLink}
+                setAlertMsg={setAlertMsg}
+                setErrorVisibility={setErrorVisibility}
               />
             </StyledTabPanel>
           </TabContext>

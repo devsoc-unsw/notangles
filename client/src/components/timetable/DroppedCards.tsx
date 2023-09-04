@@ -1,4 +1,5 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -9,7 +10,12 @@ import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
 
-const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass, setCopiedEvent, copiedEvent }) => {
+const DroppedCards: React.FC<DroppedCardsProps> = ({
+  assignedColors,
+  handleSelectClass,
+  setCopiedEvent,
+  copiedEvent,
+}) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
@@ -120,7 +126,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
           cellWidth={cellWidth}
           setCopiedEvent={setCopiedEvent}
           copiedEvent={copiedEvent}
-        />
+        />,
       );
       cardKeys.set(classCard, key);
     } catch (err) {
@@ -151,7 +157,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
           cellWidth={cellWidth}
           setCopiedEvent={setCopiedEvent}
           copiedEvent={copiedEvent}
-        />
+        />,
       );
     } catch (err) {
       setAlertMsg(unknownErrorMessage);
