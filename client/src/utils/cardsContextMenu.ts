@@ -17,7 +17,7 @@ export const handleContextMenu = (
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void,
   day: number,
   startTime: number,
-  setContextMenu: (contextMenu: null | { x: number; y: number }) => void
+  setContextMenu: (contextMenu: null | { x: number; y: number }) => void,
 ) => {
   e.preventDefault();
   setContextMenu({ x: e.clientX, y: e.clientY });
@@ -53,7 +53,7 @@ export const handlePasteEvent = (
   copiedEvent: EventPeriod | null,
   setContextMenu: (contextMenu: null | { x: number; y: number }) => void,
   createdEvents: CreatedEvents,
-  setCreatedEvents: (createdEvents: CreatedEvents) => void
+  setCreatedEvents: (createdEvents: CreatedEvents) => void,
 ) => {
   if (!copiedEvent) return;
   const { name, location, description, color, day, start, end } = { ...copiedEvent.event, ...copiedEvent.time };

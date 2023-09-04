@@ -1,11 +1,28 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
-import { Dialog, Grid, IconButton, ListItemIcon, ListItemIconProps, SelectChangeEvent, Typography } from '@mui/material';
+import {
+  Dialog,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  ListItemIconProps,
+  SelectChangeEvent,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { ClassData, ClassPeriod, ClassTime, CourseData, DuplicateClassData, Location, Section } from '../../interfaces/Periods';
+import {
+  ClassData,
+  ClassPeriod,
+  ClassTime,
+  CourseData,
+  DuplicateClassData,
+  Location,
+  Section,
+} from '../../interfaces/Periods';
 import { ExpandedClassViewProps } from '../../interfaces/PropTypes';
 import {
   StyledDialogContent,
@@ -34,7 +51,13 @@ const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode
  * @returns A string detailing when a class runs
  */
 const getTimeData = (time: ClassTime, days: string[]) => {
-  return [days.at(time.day - 1), to24Hour(time.start), '\u2013', to24Hour(time.end), `(Weeks ${time.weeksString})`].join(' ');
+  return [
+    days.at(time.day - 1),
+    to24Hour(time.start),
+    '\u2013',
+    to24Hour(time.end),
+    `(Weeks ${time.weeksString})`,
+  ].join(' ');
 };
 
 /*
@@ -74,7 +97,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
       const periodIndex = currClass.periods.findIndex((period) => areDuplicatePeriods(period, currPeriod));
 
       const duplicateClasses = currCourse.activities[currPeriod.activity].filter((classData) =>
-        classData.periods.some((period, index) => index === periodIndex && areDuplicatePeriods(period, currPeriod))
+        classData.periods.some((period, index) => index === periodIndex && areDuplicatePeriods(period, currPeriod)),
       );
 
       const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((duplicate) => [
@@ -115,7 +138,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
 
     // Update the value of the location dropdown
     setSelectedIndex(
-      duplicateClassData.current.sectionsAndLocations.findIndex(([section]) => currClass && section === currClass.section)
+      duplicateClassData.current.sectionsAndLocations.findIndex(
+        ([section]) => currClass && section === currClass.section,
+      ),
     );
   }, [classPeriod]);
 
@@ -126,7 +151,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   const handleLocationChange = (e: SelectChangeEvent<number>) => {
     setSelectedIndex(e.target.value as number);
     const newPeriod =
-      duplicateClassData.current.duplicateClasses[e.target.value as number].periods[duplicateClassData.current.periodIndex];
+      duplicateClassData.current.duplicateClasses[e.target.value as number].periods[
+        duplicateClassData.current.periodIndex
+      ];
     if (isScheduledPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
 
@@ -137,7 +164,10 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
       onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
     >
       <StyledTopIcons>
-        <IconButton aria-label="close" onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}>
+        <IconButton
+          aria-label="close"
+          onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+        >
           <Close />
         </IconButton>
       </StyledTopIcons>

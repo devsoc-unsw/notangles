@@ -1,22 +1,23 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Add, MoreHoriz } from '@mui/icons-material';
-import { Tooltip, Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { v4 as uuidv4 } from 'uuid';
+
+import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { darkTheme, lightTheme } from '../../constants/theme';
-import { CourseData, TimetableData, SelectedClasses, CreatedEvents } from '../../interfaces/Periods';
+import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import {
+  createTimetableStyle,
+  StyledIconButton,
+  StyledSpan,
+  StyledTabs,
+  TabsSection,
+  TabsWrapper,
   TabTheme,
   tabThemeDark,
   tabThemeLight,
-  createTimetableStyle,
-  TabsSection,
-  TabsWrapper,
-  StyledTabs,
-  StyledIconButton,
-  StyledSpan,
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
@@ -39,7 +40,7 @@ const TimetableTabs: React.FC = () => {
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
-  let addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
+  const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
@@ -56,7 +57,7 @@ const TimetableTabs: React.FC = () => {
     selectedCourses: CourseData[],
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
-    timetableIndex: number
+    timetableIndex: number,
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);

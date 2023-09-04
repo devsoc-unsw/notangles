@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+
 import { daysShort } from '../constants/timetable';
 import { EventPeriod } from '../interfaces/Periods';
 
@@ -21,7 +22,7 @@ export const createEventObj = (
   color: string,
   day: number,
   startTime: number,
-  endTime: number
+  endTime: number,
 ): EventPeriod => {
   const newEvent: EventPeriod = {
     type: 'event',
@@ -61,7 +62,7 @@ export const parseAndCreateEventObj = (
   color: string,
   day: string,
   startTime: Date,
-  endTime: Date
+  endTime: Date,
 ): EventPeriod => {
   const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
   const eventDay = daysShort.indexOf(day) + 1;

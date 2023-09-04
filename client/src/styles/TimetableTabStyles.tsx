@@ -1,12 +1,12 @@
 import { Box, BoxProps, Button, IconButton, IconButtonProps, Snackbar, styled, Theme } from '@mui/material';
 
 export type TabTheme = {
-  containerBackground: String;
-  tabBorderColor: String;
-  tabTextColor: String;
-  tabHoverColor: String;
-  tabBackgroundColor: String;
-  tabSelectedText: String;
+  containerBackground: string;
+  tabBorderColor: string;
+  tabTextColor: string;
+  tabHoverColor: string;
+  tabBackgroundColor: string;
+  tabSelectedText: string;
 };
 
 export const tabThemeLight: TabTheme = {
@@ -43,7 +43,7 @@ export const TabsSection = styled(Box)`
   }
 `;
 
-export const TabsWrapper = styled(Box) <BoxProps & { tabTheme: TabTheme }>`
+export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
   background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -59,7 +59,7 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton) <IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
@@ -82,8 +82,8 @@ export const StyledModalButton = styled(Button)`
 `;
 
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const TabStyle = (index: Number, selectedTimetableIndex: Number) => {
-    let style = {
+  const TabStyle = (index: number, selectedTimetableIndex: number) => {
+    const style = {
       boxShadow: '',
       maxWidth: '360px',
       minHeight: '42px',
@@ -104,7 +104,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       textTransform: 'uppercase',
       fontSize: '0.875rem',
       fontWeight: '500',
-      fontFamily: 'Roboto,Helvetica,Arial',
+      fontFamily: '"Roboto Flex Variable",Helvetica,Arial',
       lineHeight: '1.25',
       letterSpacing: '0.02857em',
       flexShrink: '0',

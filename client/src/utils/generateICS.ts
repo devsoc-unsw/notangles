@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 import { createEvents, DateArray } from 'ics';
+
 import type { ClassPeriod, CourseData, CreatedEvents, EventPeriod, SelectedClasses } from '../interfaces/Periods';
 
 /**
@@ -13,7 +14,7 @@ export const downloadIcsFile = async (
   courses: CourseData[],
   createdEvents: CreatedEvents,
   classes: SelectedClasses,
-  firstDayOfTerm: string
+  firstDayOfTerm: string,
 ): Promise<void> => {
   if (classes === null) {
     return;
@@ -46,7 +47,13 @@ export const downloadIcsFile = async (
  * @param week The week the class/event is on
  * @returns An array of numbers representing details about the class/event
  */
-const generateDateArray = (firstDayOfTerm: string, timezone: number, hour: number, day: number, week: number): DateArray => {
+const generateDateArray = (
+  firstDayOfTerm: string,
+  timezone: number,
+  hour: number,
+  day: number,
+  week: number,
+): DateArray => {
   // 0 index days and weeks
   const currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
     .subtract(timezone, 'h')
@@ -79,12 +86,12 @@ const getClassEvents = (courses: CourseData[], classes: SelectedClasses): [Class
   const allClasses = courses.flatMap((course) =>
     Object.keys(course.activities)
       .filter((possibleActivity) => classes[course.code] !== null && classes[course.code][possibleActivity] !== null)
-      .map((activities) => classes[course.code][activities])
+      .map((activities) => classes[course.code][activities]),
   );
 
   return allClasses.flatMap((classTime) =>
     // this cant actually be null, i just filtered it, ts is dumb
-    classTime!.periods.flatMap((period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number]))
+    classTime!.periods.flatMap((period) => period.time.weeks.map((week) => [period, week] as [ClassPeriod, number])),
   );
 };
 
@@ -96,6 +103,6 @@ const getClassEvents = (courses: CourseData[], classes: SelectedClasses): [Class
 const getCreatedEvents = (createdEvents: CreatedEvents): [EventPeriod, number][] => {
   // assume that we are ignoring week 6!
   return Object.entries(createdEvents).flatMap(([_, period]) =>
-    [1, 2, 3, 4, 5, 7, 8, 9, 10].map((week) => [period, week] as [EventPeriod, number])
+    [1, 2, 3, 4, 5, 7, 8, 9, 10].map((week) => [period, week] as [EventPeriod, number]),
   );
 };
