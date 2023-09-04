@@ -23,7 +23,7 @@ const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
   const [disableRight, setDisableRight] = useState(true);
-  const [disableReset, setDisableReset] = useState({ current: true, all: true });
+  const [disableDelete, setDisableDelete] = useState(true);
   const [clearOpen, setClearOpen] = useState(false);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -108,45 +108,15 @@ const History: React.FC = () => {
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents, displayTimetables]);
 
-  //Disables reset timetable button when there is no courses, classes and events selected.
+  // Disable delete button and its keyboard shortcut iff there is only one timetable
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
       return;
     }
 
-    const disableStatus = { current: true, all: true };
-
-    // More than one timetable is resetAll-able
-    if (displayTimetables.length > 1) {
-      disableStatus.all = false;
-    }
-
-    // Current timetable being non-empty is resetAll and resetOne-able
-    const currentTimetable = displayTimetables[selectedTimetable];
-    // if new timetable has been created then set reset to be true since no courses, classes or events selected
-    if (actionsPointer.current[currentTimetable.id] < 1) {
-      disableStatus.current = true;
-    } else {
-      const nCourses = selectedCourses.length;
-      const nEvents = Object.values(createdEvents).length;
-      const nClasses = Object.values(selectedClasses).length;
-
-      disableStatus.current = nCourses === 0 && nEvents === 0 && nClasses === 0;
-      disableStatus.all = nCourses === 0 && nEvents === 0 && nClasses === 0;
-
-      // If only name is different to default, than still reset-allable but not reset-oneable
-      if (currentTimetable.name !== 'My timetable') {
-        disableStatus.all = false;
-      }
-
-      // If there is history attached to the single timetable, then we can reset everything as well
-      if (timetableActions.current[currentTimetable.id].length > 1) {
-        disableStatus.all = false;
-      }
-    }
-    setDisableReset(disableStatus);
-  }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents, displayTimetables]);
+    setDisableDelete(!(displayTimetables.length > 1));
+  }, [displayTimetables]);
 
   useEffect(() => {
     if (displayTimetables.length < 1) {
@@ -203,6 +173,7 @@ const History: React.FC = () => {
 
     event.preventDefault();
 
+    // For Windows
     if (!isMacOS && event.ctrlKey) {
       if (event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
         changeHistory(-1);
@@ -215,10 +186,11 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
+        setClearOpen(true);
       }
     }
 
+    // For Mac
     if (isMacOS && event.metaKey) {
       if (!event.shiftKey && event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
         changeHistory(-1);
@@ -232,7 +204,7 @@ const History: React.FC = () => {
         changeHistory(1);
       }
       if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
+        setClearOpen(true);
       }
     }
   };
@@ -281,7 +253,7 @@ const History: React.FC = () => {
             CANCEL
           </Button>
           <Button
-            disabled={disableReset.all}
+            disabled={disableDelete}
             id="confirm-delete-button"
             onClick={() => {
               clearAll();
@@ -293,7 +265,7 @@ const History: React.FC = () => {
         </StyledDialogButtons>
       </Dialog>
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
+        <IconButton disabled={disableDelete} color="inherit" onClick={() => setClearOpen(true)} size="large">
           <Delete />
         </IconButton>
       </Tooltip>
