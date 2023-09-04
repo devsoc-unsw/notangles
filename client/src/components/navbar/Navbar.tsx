@@ -1,4 +1,4 @@
-import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { Description, Info, Security, Settings as SettingsIcon, HelpRounded } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
@@ -12,6 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import Support from './Support';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -68,6 +69,14 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
+
+          <CustomModal
+            title="Support"
+            showIcon={<HelpRounded />}
+            description={'Support'}
+            content={<Support />}
+          />
+
           <CustomModal
             title="About"
             showIcon={<Info />}
