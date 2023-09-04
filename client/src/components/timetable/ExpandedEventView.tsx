@@ -383,6 +383,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
+            {eventPeriod.subtype !== 'Tutoring' && 
             <StyledListItem>
               <StyledListItemIcon isDarkMode={isDarkMode}>
                 <Link />
@@ -407,7 +408,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 size="small"
                 value={btoa(JSON.stringify(eventPeriod))}
               ></StyledEventLink>
-            </StyledListItem>
+            </StyledListItem>}
           </StyledDialogContent>
         </>
       )}
