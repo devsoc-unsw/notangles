@@ -1,5 +1,13 @@
 import { daysLong } from '../constants/timetable';
-import { ClassData, ClassPeriod, ClassTime, CreatedEvents, EventPeriod, EventTime, SelectedClasses } from '../interfaces/Periods';
+import {
+  ClassData,
+  ClassPeriod,
+  ClassTime,
+  CreatedEvents,
+  EventPeriod,
+  EventTime,
+  SelectedClasses,
+} from '../interfaces/Periods';
 import { ClassCard } from './Drag';
 
 // Confluence docs regarding clashes: https://compclub.atlassian.net/wiki/spaces/N/pages/2227634185/Timetable+Clashes
@@ -11,7 +19,8 @@ import { ClassCard } from './Drag';
  */
 const hasTimeOverlap = (period1: ClassTime | EventTime, period2: ClassTime | EventTime) =>
   period1.day === period2.day &&
-  ((period1.end > period2.start && period1.start < period2.end) || (period2.end > period1.start && period2.start < period1.end));
+  ((period1.end > period2.start && period1.start < period2.end) ||
+    (period2.end > period1.start && period2.start < period1.end));
 
 /**
  * @param currSelectedClasses The currently selected classes
@@ -32,7 +41,7 @@ const getClassPeriods = (currSelectedClasses: Record<string, ClassData | null>[]
 const findClashingPeriods = (
   clashes: Set<ClassPeriod | EventPeriod>,
   periods1: (ClassPeriod | EventPeriod)[],
-  periods2: (ClassPeriod | EventPeriod)[]
+  periods2: (ClassPeriod | EventPeriod)[],
 ) => {
   periods1.forEach((period1) => {
     periods2.forEach((period2) => {
@@ -65,8 +74,8 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
 const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents) => {
   const clashes: Set<ClassPeriod | EventPeriod> = new Set();
 
-  let currSelectedClasses = Object.values(selectedClasses);
-  let eventPeriods = Object.values(createdEvents);
+  const currSelectedClasses = Object.values(selectedClasses);
+  const eventPeriods = Object.values(createdEvents);
 
   if (currSelectedClasses !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);
@@ -155,9 +164,12 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  * the index of the card in its clash group (to maintain the chronological order of clashing periods)
  * and the colour of the border of the card (red for non-permitted clash, orange for permitted clash, none for a custom event).
  */
-export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>, card: ClassCard | EventPeriod) => {
-  let cardWidth = 100;
-  let clashIndex = 0;
+export const getClashInfo = (
+  groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
+  card: ClassCard | EventPeriod,
+) => {
+  const cardWidth = 100;
+  const clashIndex = 0;
   let clashColour = 'orange';
 
   const defaultValues = [cardWidth, clashIndex, 'transparent'];
@@ -165,11 +177,7 @@ export const getClashInfo = (groupedClashes: Record<number, (ClassPeriod | Event
   if (card.type !== 'inventory') {
     let clashGroup = undefined;
 
-    try {
-      clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
-    } catch (err) {
-      throw err;
-    }
+    clashGroup = groupedClashes[card.time.day - 1].find((group) => group.includes(card));
 
     if (!clashGroup) return defaultValues;
 

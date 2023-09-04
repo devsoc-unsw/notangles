@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useContext } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 

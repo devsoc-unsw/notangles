@@ -6,4 +6,7 @@ import { ClassPeriod } from '../interfaces/Periods';
  * @returns Whether the two periods are duplicates i.e. occur at the same time and day but at different locations
  */
 export const areDuplicatePeriods = (a: ClassPeriod, b: ClassPeriod) =>
-  a.subActivity === b.subActivity && a.time.day === b.time.day && a.time.start === b.time.start && a.time.end === b.time.end;
+  a.subActivity === b.subActivity &&
+  a.time.day === b.time.day &&
+  a.time.start === b.time.start &&
+  a.time.end === b.time.end;

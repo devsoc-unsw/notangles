@@ -1,11 +1,10 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 
-import { getDefaultStartTime, getDefaultEndTime } from '../constants/timetable';
+import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseData, CourseDataMap, TimetableData } from '../interfaces/Periods';
+import { CourseDataMap, TimetableData } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
-import { ICourseContext } from './CourseContext';
 
 export interface IAppContext {
   is12HourMode: boolean;
@@ -172,7 +171,7 @@ export const AppContext = createContext<IAppContext>({
   displayTimetables: [],
   setDisplayTimetables: () => {},
 
-  courseData: {map: []},
+  courseData: { map: [] },
   setCourseData: () => {},
 });
 
@@ -194,7 +193,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
-  const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(storage.get('isConvertToLocalTimezone'));
+  const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(
+    storage.get('isConvertToLocalTimezone'),
+  );
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
@@ -213,7 +214,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
-  const [courseData, setCourseData] = useState<CourseDataMap>({map: []});
+  const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
     is12HourMode,

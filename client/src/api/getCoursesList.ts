@@ -1,9 +1,9 @@
 // https://timetable.csesoc.unsw.edu.au/api/terms/2022-T1/courses/
 
 import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/Courses';
-import { API_URL } from './config';
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
+import { API_URL } from './config';
 
 const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({

@@ -1,5 +1,6 @@
-import React, { createContext, useMemo, useState } from 'react';
-import { CourseData, SelectedClasses, CreatedEvents } from '../interfaces/Periods';
+import { createContext, useMemo, useState } from 'react';
+
+import { CourseData, CreatedEvents, SelectedClasses } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
 export interface ICourseContext {

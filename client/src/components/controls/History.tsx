@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Delete, Redo, Undo } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { StyledDialogButtons, StyledTitleContainer, StyledDialogContent } from '../../styles/ControlStyles';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
+import { StyledDialogButtons, StyledDialogContent, StyledTitleContainer } from '../../styles/ControlStyles';
 import {
   ActionsPointer,
   areIdenticalTimetables,
@@ -259,9 +260,9 @@ const History: React.FC = () => {
     };
   }, [clearOpen]);
 
-  let clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
-  let undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
-  let redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
+  const clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
+  const undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
+  const redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
 
   return (
     <>
