@@ -95,14 +95,6 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
-  // Fetching the saved timetables from local storage
-  useEffect(() => {
-    const savedTimetables = storage.get('timetables');
-    if (savedTimetables) {
-      setDisplayTimetables(savedTimetables);
-    }
-  }, []);
-
   /**
    * Drag and drop functions for rearranging timetable tabs
    */

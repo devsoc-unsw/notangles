@@ -31,6 +31,7 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { cloneDeep } from 'lodash-es';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -169,6 +170,42 @@ const App: React.FC = () => {
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
   }, [year]);
+
+  const test = () => {
+    const newTs = [];
+
+    const timetables = storage.get('timetables');
+    for (const t of timetables) {
+      const t_string = JSON.stringify(t);
+      const t_clone = {...t};
+      const t_deepClone = cloneDeep(t);
+      const t_structured = structuredClone(t);
+      const t_parsed = JSON.parse(t_string);
+      const t_assign = Object.assign(t);
+      const t_freeze = Object.freeze(t);
+
+      if (newTs.length == 0) {
+        console.log(t);
+        console.log(t_clone);
+        console.log(t_deepClone);
+        console.log(t_structured);
+        console.log(t_parsed);
+        console.log(t_assign);
+        console.log(t_freeze);
+      }
+
+      newTs.push({...t_freeze});
+    }
+
+    return newTs;
+  }
+  // Fetching the saved timetables from local storage
+  useEffect(() => {
+    const savedTimetables = test();
+    if (savedTimetables) {
+      setDisplayTimetables(savedTimetables);
+    }
+  }, []);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
@@ -391,7 +428,6 @@ const App: React.FC = () => {
   }, [createdEvents]);
 
   useUpdateEffect(() => {
-    console.log(displayTimetables);
     displayTimetables[selectedTimetable].assignedColors = assignedColors;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
