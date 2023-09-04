@@ -1,5 +1,6 @@
-import React from 'react';
 import { FormControl, MenuItem, Select, Typography } from '@mui/material';
+import React from 'react';
+
 import { LocationDropdownProps } from '../../interfaces/PropTypes';
 
 const LocationDropdown: React.FC<LocationDropdownProps> = ({ selectedIndex, sectionsAndLocations, handleChange }) => {

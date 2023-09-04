@@ -125,3 +125,7 @@ export interface Action {
   classes: SelectedClasses;
   events: CreatedEvents;
 }
+
+export interface CourseDataMap {
+  map: CourseData[];
+}

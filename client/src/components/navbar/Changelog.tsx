@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Timeline,
   TimelineConnector,
@@ -10,10 +9,15 @@ import {
 } from '@mui/lab';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
 
-type Change = { date: String; changes: String[] };
+type Change = { date: string; changes: string[] };
 
 const changelog: Change[] = [
+  {
+    date: 'July 19, 2023',
+    changes: ['Multiple timetables can be created by a user at the same time'],
+  },
   {
     date: 'June 3, 2023',
     changes: ['Can edit, copy, paste, duplicate and delete events by right clicking'],
@@ -114,7 +118,10 @@ const changelog: Change[] = [
   },
   {
     date: 'March 26, 2022',
-    changes: ['Added ability to sort search results alphabetically', 'Hid Saturday column if courses had no Saturday classes'],
+    changes: [
+      'Added ability to sort search results alphabetically',
+      'Hid Saturday column if courses had no Saturday classes',
+    ],
   },
   {
     date: 'March 18, 2022',

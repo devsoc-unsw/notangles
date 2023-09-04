@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+
 import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -15,8 +16,8 @@ import { createEventObj, parseAndCreateEventObj } from '../../utils/createEvent'
 import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
-import CustomEventTutoring from './CustomEventTutoring';
 import CustomEventLink from './CustomEventLink';
+import CustomEventTutoring from './CustomEventTutoring';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -91,8 +92,15 @@ const CustomEvent: React.FC = () => {
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
+  const {
+    setAlertMsg,
+    setErrorVisibility,
+    setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
+  } = useContext(AppContext);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setCreateEventAnchorEl(event.currentTarget);
@@ -159,7 +167,7 @@ const CustomEvent: React.FC = () => {
           color,
           daysShort[period.time.day - 1],
           createDateWithTime(period.time.start),
-          createDateWithTime(period.time.end)
+          createDateWithTime(period.time.end),
         );
         newEvents[newEvent.event.id] = newEvent;
       });
@@ -173,7 +181,7 @@ const CustomEvent: React.FC = () => {
           linkEvent.event.color,
           linkEvent.time.day,
           linkEvent.time.start,
-          linkEvent.time.end
+          linkEvent.time.end,
         );
         newEvents[newEvent.event.id] = newEvent;
       } catch {
@@ -216,7 +224,7 @@ const CustomEvent: React.FC = () => {
     color: string,
     day: string,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ) => {
     const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTime, endTime);
 
@@ -225,7 +233,9 @@ const CustomEvent: React.FC = () => {
       [newEvent.event.id]: newEvent,
     });
 
-    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    setEarliestStartTime(
+      Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
+    );
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     updateDays(daysShort.indexOf(day));
@@ -240,7 +250,7 @@ const CustomEvent: React.FC = () => {
     color: string,
     day: number,
     startTime: number,
-    endTime: number
+    endTime: number,
   ) => {
     const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
 
@@ -263,7 +273,9 @@ const CustomEvent: React.FC = () => {
     // (which is understandable since it's breaking React best practices by not being purely functional)
     if (day == 5 || day == 6) {
       const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
+      setDays((prev: string[]) =>
+        prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day),
+      );
     }
   };
 
@@ -332,7 +344,12 @@ const CustomEvent: React.FC = () => {
               />
             </StyledTabPanel>
             <StyledTabPanel value="Via Link">
-              <CustomEventLink link={link} setLink={setLink} setAlertMsg={setAlertMsg} setErrorVisibility={setErrorVisibility} />
+              <CustomEventLink
+                link={link}
+                setLink={setLink}
+                setAlertMsg={setAlertMsg}
+                setErrorVisibility={setErrorVisibility}
+              />
             </StyledTabPanel>
           </TabContext>
           {eventType !== 'Via Link' && (
@@ -350,7 +367,7 @@ const CustomEvent: React.FC = () => {
           color="primary"
           disableElevation
           disabled={
-            (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
+            (eventType === 'General' && (eventName === '' || eventDays.length === 0)) ||
             (eventType === 'Tutoring' && (courseCode === '' || classCode === '')) ||
             (eventType === 'Via Link' && link === '')
           }

@@ -1,5 +1,6 @@
 import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
+
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
 
@@ -214,4 +215,9 @@ export interface CustomEventLinkProp {
   setLink: (link: string) => void;
   setAlertMsg: (msg: string) => void;
   setErrorVisibility: (bool: boolean) => void;
+}
+
+export interface TimetableTabContextMenuProps {
+  anchorElement: null | { x: number; y: number };
+  setAnchorElement: (anchorElement: null | { x: number; y: number }) => void;
 }

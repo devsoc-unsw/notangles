@@ -99,7 +99,8 @@ export const toPx = (value: number) => `${value}px`;
 export const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
   const isSquareEdges = storage.get('isSquareEdges');
-  element.style.boxShadow = lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
+  element.style.boxShadow =
+    lightTheme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };
 
 /**
@@ -259,7 +260,7 @@ const getIsElevated = (cardData: ClassCard | EventPeriod) => {
 const initialZIndex = 100;
 const initialElevatedZIndex = 750;
 const elevatedZIndexOffset = initialElevatedZIndex - initialZIndex;
-let zIndex = initialZIndex;
+const zIndex = initialZIndex;
 
 /**
  * @returns The zIndex to use for an elevated card
@@ -298,7 +299,11 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
  * @param element The HTML element corresponding to the dropzone for that period
  * @param isInventory Whether the dropzone is the unscheduled column
  */
-export const registerDropzone = (classPeriod: ClassPeriod | InInventory, element: HTMLElement, isInventory?: boolean) => {
+export const registerDropzone = (
+  classPeriod: ClassPeriod | InInventory,
+  element: HTMLElement,
+  isInventory?: boolean,
+) => {
   dropzones.set(classPeriod, element);
   if (isInventory) inventoryElement = element;
 };
@@ -419,7 +424,8 @@ const updateDropTarget = (now?: boolean) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
       // Avoids card oscillating between inventory and timetable (because moving between inventory changes card height)
-      if (dropElement === inventoryElement && area < inventoryDropIntersection * dragRect.width * dragRect.height) area = 0;
+      if (dropElement === inventoryElement && area < inventoryDropIntersection * dragRect.width * dragRect.height)
+        area = 0;
 
       return { classPeriod, area };
     })
@@ -451,7 +457,7 @@ const updateDropTarget = (now?: boolean) => {
 
     if (isScheduledPeriod(newDropTarget)) {
       // Moved over a valid dropzone for a scheduled class
-      let newTime = newDropTarget.time;
+      const newTime = newDropTarget.time;
       if (
         !currentClassTime ||
         newTime.day !== currentClassTime.day ||
@@ -611,7 +617,7 @@ export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
   event?: MouseEvent & TouchEvent,
-  givenEventId?: string
+  givenEventId?: string,
 ) => {
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
@@ -772,7 +778,7 @@ window.addEventListener(
       }
     }
   },
-  { passive: false }
+  { passive: false },
 );
 
 /**
@@ -801,19 +807,27 @@ const drop = () => {
         const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
 
         // Get the grid coordinates of the dragTarget when released
-        const [colIndex, rowIndex] = [Math.floor(displacementx / itemRect.width), Math.round(displacementy / itemRect.height)];
+        const [colIndex, rowIndex] = [
+          Math.floor(displacementx / itemRect.width),
+          Math.round(displacementy / itemRect.height),
+        ];
 
         const eventLength = dragTarget.time.end - dragTarget.time.start;
 
         // Ensure we released inside the grid
-        if (colIndex >= 0 && colIndex < numDays && rowIndex >= 0 && rowIndex + eventLength <= latestEndTime - earliestStartTime) {
+        if (
+          colIndex >= 0 &&
+          colIndex < numDays &&
+          rowIndex >= 0 &&
+          rowIndex + eventLength <= latestEndTime - earliestStartTime
+        ) {
           updateEventTime(
             {
               day: 1 + colIndex,
               start: rowIndex + earliestStartTime,
               end: eventLength + rowIndex + earliestStartTime,
             } as EventTime,
-            eventId
+            eventId,
           );
         }
       }

@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from 'react';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+import React, { useContext, useEffect } from 'react';
+
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
@@ -11,8 +12,8 @@ import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import { v4 as uuidv4 } from 'uuid';
 import Navbar from './components/navbar/Navbar';
-import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import Timetable from './components/timetable/Timetable';
+import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
   daysLong,
@@ -41,7 +42,9 @@ const ContentWrapper = styled(Box)`
   padding-top: 64px; // for nav bar
   padding-left: ${contentPadding}px;
   padding-right: ${contentPadding}px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
   min-height: 50vh;
   box-sizing: border-box;
   display: flex;
@@ -103,6 +106,8 @@ const App: React.FC = () => {
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
+    courseData,
+    setCourseData,
   } = useContext(AppContext);
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
@@ -114,7 +119,7 @@ const App: React.FC = () => {
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120; // milliseconds
+  const fetchCooldown: number = 120;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
     for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
@@ -142,7 +147,7 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      let { term, termName, termNumber, year, firstDayOfTerm } = termData;
+      const { term, termName, termNumber, year, firstDayOfTerm } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
@@ -217,8 +222,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -235,31 +240,43 @@ const App: React.FC = () => {
   const handleSelectCourse = async (
     data: string | string[],
     noInit?: boolean,
-    callback?: (_selectedCourses: CourseData[]) => void
+    callback?: (_selectedCourses: CourseData[]) => void,
   ) => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
         getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
-        })
-      )
+        }),
+      ),
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
-      let newSelectedCourses = [...selectedCourses];
+      const newSelectedCourses = [...selectedCourses];
+      const newCourseData = courseData;
 
       // Update the existing courses with the new data (for changing timezones).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
         } else {
           newSelectedCourses.push(addedCourse);
+
+          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+            newCourseData.map.push(addedCourse);
+          }
+        }
+        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+          newCourseData.map.push(addedCourse);
         }
       });
 
       setSelectedCourses(newSelectedCourses);
+      setCourseData(newCourseData);
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -274,6 +291,19 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
+    const newCourseData = courseData;
+    newCourseData.map = courseData.map.filter((targetCourse) => {
+      for (const timetable of displayTimetables) {
+        for (const course of timetable.selectedCourses) {
+          if (course.code.localeCompare(courseCode)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+    setCourseData(newCourseData);
+
     setSelectedClasses((prev) => {
       prev = { ...prev };
       delete prev[courseCode];
@@ -329,7 +359,7 @@ const App: React.FC = () => {
           });
         });
         setSelectedClasses(newSelectedClasses);
-      }
+      },
     );
     setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
   };
@@ -341,6 +371,8 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    const newCourseData = courseData;
+    storage.set('courseData', newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);
@@ -386,25 +418,33 @@ const App: React.FC = () => {
   };
 
   /**
+   * Upon switching timetable, reset default bounds
+   */
+  useEffect(() => {
+    setEarliestStartTime(getDefaultStartTime(isConvertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(isConvertToLocalTimezone));
+  }, [selectedTimetable]);
+
+  /**
    *  Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
    */
   const updateTimetableDaysAndTimes = () => {
-    setEarliestStartTime(
+    setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
-        earliestStartTime
-      )
+        prev,
+      ),
     );
 
-    setLatestEndTime(
+    setLatestEndTime((prev: number) =>
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
-        latestEndTime
-      )
+        prev,
+      ),
     );
 
     setDays(
@@ -414,49 +454,46 @@ const App: React.FC = () => {
           getLatestDotW(selectedCourses),
           ...Object.entries(createdEvents).map(([_, eventPeriod]) => eventPeriod.time.day),
           days.length, // Saturday and/or Sunday columns persist until the next reload even if they aren't needed anymore
-          5 // default
-        )
-      )
+          5, // default
+        ),
+      ),
     );
   };
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
-  
-  useEffect(() => {
-    let userId = storage.get('userId');
-    if (!userId) {
-      const newId: string = uuidv4();
-      storage.set('userId', newId);
-      // fetchReliably(createNewUserId(newId));
-    }
 
+  // useEffect(() => {
+  //   let userId = storage.get('userId');
+  //   if (!userId) {
+  //     const newId: string = uuidv4();
+  //     storage.set('userId', newId);
+  //     // fetchReliably(createNewUserId(newId));
+  //   }
+  // }, []);
 
-    
-  }, []);
+  // const createNewUserId = async (uuid: string) => {
+  //   try {
+  //     const response = await fetch('graphql?', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ userId: uuid }), // Replace with your request body
+  //     });
 
-  const createNewUserId = async (uuid: string) => {
-    try {
-        const response = await fetch('graphql?', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: uuid }), // Replace with your request body
-        });
+  //     if (!response.ok) {
+  //       throw new Error('Request failed');
+  //     }
 
-        if (!response.ok) {
-          throw new Error('Request failed');
-        }
-
-        const data = await response.json();
-        // Do something with the received data
-        console.log(data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-  }
+  //     const data = await response.json();
+  //     // Do something with the received data
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
@@ -532,7 +569,9 @@ const App: React.FC = () => {
                 />
                 <TimetableTabs />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
+                <ICSButton
+                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                >
                   save to calendar
                 </ICSButton>
                 <Footer />

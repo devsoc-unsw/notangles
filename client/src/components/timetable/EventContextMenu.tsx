@@ -1,10 +1,11 @@
+import { ContentCopy, ContentPaste, Edit, FileCopy } from '@mui/icons-material';
+import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import React, { useContext } from 'react';
-import { FileCopy, Edit, Delete, ContentCopy, ContentPaste } from '@mui/icons-material';
-import { MenuItem, Divider, ListItemIcon, ListItemText } from '@mui/material';
+
 import { CourseContext } from '../../context/CourseContext';
-import { EventPeriod, EventMetadata } from '../../interfaces/Periods';
+import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
-import { StyledMenu } from '../../styles/CustomEventStyles';
+import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { createEventObj } from '../../utils/createEvent';
 
@@ -52,7 +53,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   return (
     <StyledMenu
-      open={contextMenu != null}
+      open={contextMenu !== null}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}
@@ -88,9 +89,9 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       <Divider />
       <MenuItem onClick={handleDeleteEvent}>
         <ListItemIcon>
-          <Delete fontSize="small" />
+          <RedDeleteIcon fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Delete</ListItemText>
+        <RedListItemText>Delete</RedListItemText>
       </MenuItem>
     </StyledMenu>
   );

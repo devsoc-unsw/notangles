@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { styled } from '@mui/system';
 import { Box, Link } from '@mui/material';
+import { styled } from '@mui/system';
+import React, { useContext } from 'react';
 
 import { AppContext } from '../context/AppContext';
 
@@ -10,7 +10,8 @@ const FooterContainer = styled(Box)`
   margin-bottom: 25px;
 
   & div {
-    margin: 1vh 0;
+    max-width: 700px;
+    margin: 0 auto;
   }
 `;
 
@@ -42,7 +43,20 @@ const Footer: React.FC = () => {
 
   return (
     <FooterContainer>
-      <div>While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or reliability.</div>
+      <div>
+        <h1 style={{ fontSize: '14px' }}>Notangles - UNSW Timetable Planner</h1>
+        <p>
+          Notangles is a UNSW timetable planner, brought to you by CSESoc Dev. It's an easy to use drag-and-drop tool
+          that allows you to plan your course classes and add to your calendar, even before term class registration
+          opens! We have many features including support for custom events, auto-timetabling, creation of multiple
+          timetables and sharing events with friends.
+        </p>
+      </div>
+      <br></br>
+      <div>
+        While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
+        reliability.
+      </div>
       <div>
         Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
         <Link target="_blank" href="mailto:notangles@csesoc.org.au">

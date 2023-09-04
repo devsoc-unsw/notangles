@@ -32,9 +32,9 @@ export const getAvailableTermDetails = async () => {
     const termDateRes = await termDateFetch.text();
     const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
 
-    let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
+    const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
-    let matched = termDateRes.match(regexp);
+    const matched = termDateRes.match(regexp);
     if (matched != null) {
       year = matched[3];
     }
@@ -63,7 +63,7 @@ export const getAvailableTermDetails = async () => {
         termNumber: termNumber,
         termName: termName,
         firstDayOfTerm: firstDayOfTerm,
-      })
+      }),
     );
 
     return {
@@ -108,7 +108,9 @@ export const getTimeZoneOffset = (isConvertToLocalTimezone: boolean): number => 
   const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
 
   const offset =
-    (formattedSydDate.getHours() * 60 + formattedSydDate.getMinutes() - (localDate.getHours() * 60 + localDate.getMinutes())) /
+    (formattedSydDate.getHours() * 60 +
+      formattedSydDate.getMinutes() -
+      (localDate.getHours() * 60 + localDate.getMinutes())) /
     60;
 
   return offset;

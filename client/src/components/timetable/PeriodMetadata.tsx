@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
 import { LocationOn, PeopleAlt, Warning } from '@mui/icons-material';
 import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/system';
+import React, { useContext } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';

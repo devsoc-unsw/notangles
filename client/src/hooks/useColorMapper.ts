@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
 import { colors } from '../constants/timetable';
 
 const defaultColor = colors[colors.length - 1];

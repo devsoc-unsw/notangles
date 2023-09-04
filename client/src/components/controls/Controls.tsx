@@ -1,12 +1,12 @@
-import React from 'react';
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
 
+import { ControlsProps } from '../../interfaces/PropTypes';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
-import { ControlsProps } from '../../interfaces/PropTypes';
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -14,6 +14,7 @@ const SelectWrapper = styled(Box)`
   grid-column: 1 / -1;
   grid-row: 1;
   padding-top: 20px;
+  padding-left: 66px;
 `;
 
 const AutotimetablerWrapper = styled(Box)`
@@ -33,12 +34,21 @@ const HistoryWrapper = styled(Box)`
   margin-left: 3px;
 `;
 
-const Controls: React.FC<ControlsProps> = ({ assignedColors, handleSelectClass, handleSelectCourse, handleRemoveCourse }) => {
+const Controls: React.FC<ControlsProps> = ({
+  assignedColors,
+  handleSelectClass,
+  handleSelectCourse,
+  handleRemoveCourse,
+}) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
         <SelectWrapper>
-          <CourseSelect assignedColors={assignedColors} handleSelect={handleSelectCourse} handleRemove={handleRemoveCourse} />
+          <CourseSelect
+            assignedColors={assignedColors}
+            handleSelect={handleSelectCourse}
+            handleRemove={handleRemoveCourse}
+          />
         </SelectWrapper>
       </Grid>
       <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={6}>

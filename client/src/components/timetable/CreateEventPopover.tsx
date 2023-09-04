@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
 import { Add } from '@mui/icons-material';
 import { Popover } from '@mui/material';
+import React, { useContext, useState } from 'react';
+
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -38,12 +39,21 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
   const [color, setColor] = useState<string>('#1F7E8C');
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
+  const {
+    setAlertMsg,
+    setErrorVisibility,
+    setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
+  } = useContext(AppContext);
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
-    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
+    setEarliestStartTime(
+      Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
+    );
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
     // Updating the days of the week must be handled here otherwise
@@ -69,7 +79,15 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       endTimeToCreateAs = initialEndTime;
     }
 
-    const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTimeToCreateAs, endTimeToCreateAs);
+    const newEvent = parseAndCreateEventObj(
+      eventName,
+      location,
+      description,
+      color,
+      day,
+      startTimeToCreateAs,
+      endTimeToCreateAs,
+    );
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
@@ -181,7 +199,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
         variant="contained"
         color="primary"
         disableElevation
-        disabled={eventName === '' || location === '' || (eventDays.length === 0 && initialDay === '')}
+        disabled={eventName === '' || (eventDays.length === 0 && initialDay === '')}
         onClick={createEvents}
       >
         <Add />
