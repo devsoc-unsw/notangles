@@ -5,8 +5,8 @@ import React, { useContext } from 'react';
 import { CourseContext } from '../../context/CourseContext';
 import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
-import { handleDeleteEvent, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
+import { handleDeleteEvent, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { createEventObj } from '../../utils/createEvent';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({

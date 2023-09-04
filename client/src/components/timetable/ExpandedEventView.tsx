@@ -186,7 +186,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
         day,
         newStartTime,
         newEndTime,
-        eventPeriod.subtype
+        eventPeriod.subtype,
       );
       updatedEventData[newEvent.event.id] = newEvent;
     }
@@ -345,9 +345,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             setOpenSaveDialog={setOpenSaveDialog}
           />
           <StyledTopIcons>
-            {eventPeriod.subtype !== 'Tutoring' && <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
-              <Edit />
-            </IconButton>}
+            {eventPeriod.subtype !== 'Tutoring' && (
+              <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
+                <Edit />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
               <Delete />
             </IconButton>
@@ -383,32 +385,33 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
-            {eventPeriod.subtype !== 'Tutoring' && 
-            <StyledListItem>
-              <StyledListItemIcon isDarkMode={isDarkMode}>
-                <Link />
-              </StyledListItemIcon>
-              <StyledEventLink
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => {
-                          navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
-                          setAutoVisibility(true);
-                          setAlertMsg('Copied to clipboard!');
-                        }}
-                      >
-                        <ContentCopy />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  readOnly: true,
-                }}
-                size="small"
-                value={btoa(JSON.stringify(eventPeriod))}
-              ></StyledEventLink>
-            </StyledListItem>}
+            {eventPeriod.subtype !== 'Tutoring' && (
+              <StyledListItem>
+                <StyledListItemIcon isDarkMode={isDarkMode}>
+                  <Link />
+                </StyledListItemIcon>
+                <StyledEventLink
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => {
+                            navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                            setAutoVisibility(true);
+                            setAlertMsg('Copied to clipboard!');
+                          }}
+                        >
+                          <ContentCopy />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                    readOnly: true,
+                  }}
+                  size="small"
+                  value={btoa(JSON.stringify(eventPeriod))}
+                ></StyledEventLink>
+              </StyledListItem>
+            )}
           </StyledDialogContent>
         </>
       )}

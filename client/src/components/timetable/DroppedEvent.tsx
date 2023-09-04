@@ -1,11 +1,14 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
@@ -14,12 +17,10 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
-import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMenu';
-import ExpandedEventView from './ExpandedEventView';
+import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
-import { StyledMenu } from '../../styles/CustomEventStyles';
-import { CourseContext } from '../../context/CourseContext';
+import ExpandedEventView from './ExpandedEventView';
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -177,7 +178,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           );
         }}
       >
-        {eventPeriod.subtype !== 'Tutoring' ? 
+        {eventPeriod.subtype !== 'Tutoring' ? (
           <EventContextMenu
             eventPeriod={eventPeriod}
             contextMenu={contextMenu}
@@ -187,7 +188,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             setCopiedEvent={setCopiedEvent}
             copiedEvent={copiedEvent}
           />
-          : <>
+        ) : (
+          <>
             <StyledMenu
               open={contextMenu != null}
               anchorReference="anchorPosition"
@@ -203,7 +205,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
               </MenuItem>
             </StyledMenu>
           </>
-        }
+        )}
 
         <StyledCardInner
           hasClash={false}

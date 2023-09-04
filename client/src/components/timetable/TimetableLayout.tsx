@@ -228,7 +228,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
       daysShort[x],
       createDateWithTime(earliestStartTime + y),
       createDateWithTime(earliestStartTime + y + 1),
-      'General'
+      'General',
     );
 
     setTempEventId(newEvent.event.id);
