@@ -5,12 +5,13 @@ import { styled } from '@mui/system';
 import { Close, LocationOn, Save } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
-import { StyledDialogContent, StyledDialogTitle } from '../styles/ControlStyles';
+import { StyledDialogContent } from '../styles/ControlStyles';
 import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
 import { StyledCardName } from '../styles/DroppedCardStyles';
 import { createEventObj } from '../utils/createEvent';
 import { StyledTopIcons } from '../styles/ControlStyles';
 import { DialogTitle } from '@mui/material';
+import { resizeWeekArray } from '../utils/eventTimes';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 24px 16px;
@@ -52,12 +53,13 @@ const EventShareModal = () => {
     }
   }, []);
 
-  const updateDays = (day: number) => {
-    if (day == 5 || day == 6) {
-      const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
-    }
-  };
+  // const updateDays = (day: number) => {
+  //   if (day == 5 || day == 6) {
+  //     const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  //     console.log(MondayToSunday.slice(day));
+  //     setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
+  //   }
+  // };
 
   const createLinkEvent = (
     name: string,
@@ -89,7 +91,9 @@ const EventShareModal = () => {
 
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime)));
-    updateDays(day);
+    if (day == 5 || day == 6) {
+      setDays((prev: string[]) => (prev.length > day ? [...prev] : resizeWeekArray(day)));
+    }
     return newEvent;
   };
 

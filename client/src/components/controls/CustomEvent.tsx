@@ -17,6 +17,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
+import { resizeWeekArray } from '../../utils/eventTimes';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -203,19 +204,11 @@ const CustomEvent: React.FC = () => {
     setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)));
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
-    updateDays(daysShort.indexOf(day));
+    if (daysShort.indexOf(day) == 5 || daysShort.indexOf(day) == 6) {
+      setDays((prev: string[]) => (daysShort.indexOf(day) ? [...prev] : resizeWeekArray(daysShort.indexOf(day))));
+    }
 
     return newEvent;
-  };
-
-  const updateDays = (day: number) => {
-    // Updating the days of the week must be handled here otherwise
-    // DroppedCards will not have the updated days and it will crash
-    // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (day == 5 || day == 6) {
-      const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
-    }
   };
 
   return (
