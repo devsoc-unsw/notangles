@@ -1,21 +1,21 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, CardProps, Dialog, Grid, IconButton, Typography } from '@mui/material';
+import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
-import { Close, LocationOn, Save } from '@mui/icons-material';
+import { Add, Close, LocationOn } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
-import { StyledDialogContent } from '../styles/ControlStyles';
+import { StyledDialogTitle, StyledTitleContainer } from '../styles/ControlStyles';
 import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
 import { StyledCardName } from '../styles/DroppedCardStyles';
 import { createEventObj } from '../utils/createEvent';
 import { StyledTopIcons } from '../styles/ControlStyles';
-import { DialogTitle } from '@mui/material';
 import { resizeWeekArray } from '../utils/eventTimes';
+import { StyledLocationIcon } from '../styles/CustomEventStyles';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 24px 16px;
-  margin: 0 16px 20px 16px;
+  margin: 0 60px 25px 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -31,17 +31,13 @@ const StyledLocationOn = styled(LocationOn)`
   font-size: 12px;
 `;
 
-const StyledPreviewTitle = styled(DialogTitle)`
-  padding: 8px 16px 8px 16px;
-`;
-
 const EventShareModal = () => {
   let { encrypted } = useParams();
   const navigate = useNavigate();
 
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const [link, setLink] = useState('');
-  const [eventPreview, setEventPreview] = useState(false);
+  const [showEventPreview, setShowEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
@@ -52,14 +48,6 @@ const EventShareModal = () => {
       checkRender(encrypted);
     }
   }, []);
-
-  // const updateDays = (day: number) => {
-  //   if (day == 5 || day == 6) {
-  //     const MondayToSunday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  //     console.log(MondayToSunday.slice(day));
-  //     setDays((prev: string[]) => (prev.length > MondayToSunday.slice(day).length ? [...prev] : MondayToSunday.slice(day)));
-  //   }
-  // };
 
   const createLinkEvent = (
     name: string,
@@ -106,19 +94,19 @@ const EventShareModal = () => {
     if (isBase64(link) && link.length > 0) {
       try {
         const linkEvent = JSON.parse(atob(link));
-        setEventPreview(true);
+        setShowEventPreview(true);
         setEvent({ name: linkEvent.event.name, location: linkEvent.event.location, color: linkEvent.event.color });
       } catch {
         setAlertMsg('Invalid event link');
         setErrorVisibility(true);
-        setEventPreview(false);
+        setShowEventPreview(false);
         setEvent({ name: '', location: '', color: '' });
         navigate('/');
       }
     } else {
       setAlertMsg('Invalid event link');
       setErrorVisibility(true);
-      setEventPreview(false);
+      setShowEventPreview(false);
       setEvent({ name: '', location: '', color: '' });
       navigate('/');
     }
@@ -152,31 +140,25 @@ const EventShareModal = () => {
   return (
     <Dialog open={open} onClose={handleCloseModal}>
       <StyledTopIcons>
-        <Grid container justifyContent="flex-end" alignItems="center">
-          <IconButton aria-label="close" onClick={handleCloseModal}>
-            <Close />
-          </IconButton>
-        </Grid>
+        <IconButton aria-label="close" onClick={handleCloseModal}>
+          <Close />
+        </IconButton>
       </StyledTopIcons>
-      <StyledDialogContent>
-        <StyledPreviewTitle>
-          <Typography id="modal-modal-title" variant="h6">
-            Add this event to your calendar?
-          </Typography>
-        </StyledPreviewTitle>
-        {eventPreview && (
-          <PreviewCard bgColour={event.color}>
-            <StyledListItemText>
-              <StyledCardName>{event.name}</StyledCardName>
-              <StyledLocationOn />
-              {event.location}
-            </StyledListItemText>
-          </PreviewCard>
-        )}
-      </StyledDialogContent>
+      <StyledDialogTitle>
+        <StyledTitleContainer>Add this event to your calendar?</StyledTitleContainer>
+      </StyledDialogTitle>
+      {showEventPreview && (
+        <PreviewCard bgColour={event.color}>
+          <StyledListItemText>
+            <StyledCardName>{event.name}</StyledCardName>
+            <StyledLocationIcon />
+            {event.location}
+          </StyledListItemText>
+        </PreviewCard>
+      )}
       <ExecuteButton variant="contained" color="primary" onClick={() => saveToTimetable()}>
-        <Save />
-        SAVE
+        <Add />
+        Add
       </ExecuteButton>
     </Dialog>
   );

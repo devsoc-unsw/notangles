@@ -181,7 +181,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
         variant="contained"
         color="primary"
         disableElevation
-        disabled={eventName === ''|| (eventDays.length === 0 && initialDay === '')}
+        disabled={eventName === '' || (eventDays.length === 0 && initialDay === '')}
         onClick={createEvents}
       >
         <Add />

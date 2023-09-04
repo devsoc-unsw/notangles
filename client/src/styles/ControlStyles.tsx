@@ -46,7 +46,7 @@ export const StyledDialogButtons = styled(Box)`
 `;
 
 export const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 12px 8px 24px;
+  padding: 8px 24px 8px 24px;
 `;
 
 export const StyledDialogContent = styled(DialogContent)`
