@@ -69,14 +69,12 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
-
           <CustomModal
             title="Support"
             showIcon={<HelpRounded />}
             description={'Support'}
             content={<Support />}
           />
-
           <CustomModal
             title="About"
             showIcon={<Info />}
