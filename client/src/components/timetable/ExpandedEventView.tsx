@@ -345,7 +345,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             setOpenSaveDialog={setOpenSaveDialog}
           />
           <StyledTopIcons>
-            <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
+            <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing || eventPeriod.subtype === 'Tutoring'}>
               <Edit />
             </IconButton>
             <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
@@ -356,20 +356,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             </IconButton>
           </StyledTopIcons>
           <StyledDialogTitle>
-            <StyledTitleContainer>
-              <>{name}</>
-              <Grid container justifyContent="flex-end" alignItems="center">
-                <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing || eventPeriod.subtype === 'Tutoring'}>
-                  <Edit />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
-                  <Delete />
-                </IconButton>
-                <IconButton aria-label="close" onClick={handleCloseDialog} >
-                  <Close />
-                </IconButton>
-              </Grid>
-            </StyledTitleContainer>
+            <StyledTitleContainer>{name}</StyledTitleContainer>
           </StyledDialogTitle>
           <StyledDialogContent>
             {description.length > 0 && (
