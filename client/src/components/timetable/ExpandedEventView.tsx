@@ -345,9 +345,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             setOpenSaveDialog={setOpenSaveDialog}
           />
           <StyledTopIcons>
-            <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing || eventPeriod.subtype === 'Tutoring'}>
+            {eventPeriod.subtype !== 'Tutoring' && <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
               <Edit />
-            </IconButton>
+            </IconButton>}
             <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
               <Delete />
             </IconButton>
