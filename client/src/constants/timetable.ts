@@ -44,7 +44,7 @@ export const getAvailableTermDetails = async () => {
     console.log(prevTermIdRes);
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
-    const matched = termDateRes.match(regexp);
+    let matched = termDateRes.match(regexp);
     if (matched != null) {
       year = matched[3];
     }
