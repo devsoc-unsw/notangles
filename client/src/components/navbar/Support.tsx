@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Link,
   Paper,
   Tab,
   Table,
@@ -12,10 +13,18 @@ import {
   Typography,
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
+import useGif from '../../assets/how_to_use.gif';
 
 const StyledTypography = styled(Typography)`
   margin-top: 10px;
   margin-bottom: 10px;
+`;
+
+const HowToUseImg = styled('img')`
+  display: block;
+  margin: 10px auto 10px;
+  width: 100%;
+  border-radius: 2%;
 `;
 
 interface TabPanelProps {
@@ -67,11 +76,33 @@ const Support: React.FC = () => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <p>Use it</p>
+        <HowItWorks />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <KeyboardShortcut />
       </CustomTabPanel>
+    </>
+  );
+};
+
+const HowItWorks = () => {
+  return (
+    <>
+      <StyledTypography variant="h6">How it works</StyledTypography>
+      <Typography gutterBottom variant="body2">
+        Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures
+        which you aren’t going to watch live) to the unscheduled column. Struggling to find an ideal timetable? Try out
+        our auto-timetabling feature!
+      </Typography>
+      <HowToUseImg src={useGif} alt="how to use gif" />
+      <Typography gutterBottom variant="body2">
+        Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need
+        to officially enroll at&nbsp;
+        <Link href="https://my.unsw.edu.au/" target="_blank">
+          myUNSW
+        </Link>
+        .
+      </Typography>
     </>
   );
 };

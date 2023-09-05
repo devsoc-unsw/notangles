@@ -2,15 +2,6 @@ import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
-import useGif from '../../assets/how_to_use.gif';
-
-const HowToUseImg = styled('img')`
-  display: block;
-  margin: 10px auto 10px;
-  width: 100%;
-  border-radius: 2%;
-`;
-
 const StyledTypography = styled(Typography)`
   margin-top: 10px;
   margin-bottom: 10px;
@@ -43,21 +34,6 @@ const About: React.FC = () => {
         , it was created by CSESoc Projects – a place for student-led projects where you can learn something new, and
         make some friends along the way. Notangles is free and{' '}
         <Link href="https://github.com/csesoc/notangles">open-source</Link>.
-      </Typography>
-      <StyledTypography variant="h6">How it works</StyledTypography>
-      <Typography gutterBottom variant="body2">
-        Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures
-        which you aren’t going to watch live) to the unscheduled column. Struggling to find an ideal timetable? Try out
-        our auto-timetabling feature!
-      </Typography>
-      <HowToUseImg src={useGif} alt="how to use gif" />
-      <Typography gutterBottom variant="body2">
-        Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need
-        to officially enroll at&nbsp;
-        <Link href="https://my.unsw.edu.au/" target="_blank">
-          myUNSW
-        </Link>
-        .
       </Typography>
       <StyledTypography variant="h6">Future developments</StyledTypography>
       <FeatList>
