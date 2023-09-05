@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Timeline,
   TimelineConnector,
@@ -10,8 +9,9 @@ import {
 } from '@mui/lab';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
 
-type Change = { date: String; changes: String[] };
+type Change = { date: string; changes: string[] };
 
 const changelog: Change[] = [
   {
@@ -118,7 +118,10 @@ const changelog: Change[] = [
   },
   {
     date: 'March 26, 2022',
-    changes: ['Added ability to sort search results alphabetically', 'Hid Saturday column if courses had no Saturday classes'],
+    changes: [
+      'Added ability to sort search results alphabetically',
+      'Hid Saturday column if courses had no Saturday classes',
+    ],
   },
   {
     date: 'March 18, 2022',

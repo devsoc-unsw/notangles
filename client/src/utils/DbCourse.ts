@@ -1,5 +1,6 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
+
 import { getTimeZoneOffset } from '../constants/timetable';
 import { DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
@@ -57,7 +58,12 @@ const enumerateWeeks = (weeks: string): number[] =>
     return stops.length === 2 ? range(stops[0], stops[1]) : stops[0];
   });
 
-const convertToLocalDayTime = (day: number, start: number, end: number, isConvertToLocalTimezone: boolean): number[] => {
+const convertToLocalDayTime = (
+  day: number,
+  start: number,
+  end: number,
+  isConvertToLocalTimezone: boolean,
+): number[] => {
   const offset = getTimeZoneOffset(isConvertToLocalTimezone);
 
   let newDay = day;

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
 import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 import { styled } from '@mui/system';
+import React, { useEffect, useRef } from 'react';
 
 import { borderRadius } from '../../constants/theme';
 import { ClassPeriod, InInventory } from '../../interfaces/Periods';
@@ -9,7 +9,8 @@ import { defaultTransition, registerDropzone, unregisterDropzone } from '../../u
 import { classTranslateY, getClassHeight } from '../../utils/translateCard';
 
 const StyledDropzone = styled('div', {
-  shouldForwardProp: (prop) => !['classPeriod', 'x', 'color', 'isInventory', 'earliestStartTime'].includes(prop.toString()),
+  shouldForwardProp: (prop) =>
+    !['classPeriod', 'x', 'color', 'isInventory', 'earliestStartTime'].includes(prop.toString()),
 })<{
   classPeriod: ClassPeriod | InInventory;
   x: number;
@@ -31,7 +32,9 @@ const StyledDropzone = styled('div', {
   margin-bottom: ${1 / devicePixelRatio}px;
   background-color: ${({ color }) => color};
   opacity: 0;
-  transition: ${defaultTransition}, z-index 0s;
+  transition:
+    ${defaultTransition},
+    z-index 0s;
   border-bottom-right-radius: ${({ isInventory }) => (isInventory ? borderRadius : 0)}px;
 `;
 

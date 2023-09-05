@@ -1,5 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { AccessTime, Close, ContentCopy, Delete, Edit, Event, Link, LocationOn, Notes, Save } from '@mui/icons-material';
+import {
+  AccessTime,
+  Close,
+  ContentCopy,
+  Delete,
+  Edit,
+  Event,
+  Link,
+  LocationOn,
+  Notes,
+  Save,
+} from '@mui/icons-material';
 import {
   Dialog,
   Grid,
@@ -13,6 +23,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
+import React, { useContext, useState } from 'react';
+
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -165,7 +177,15 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
     // Create an event for each day that is selected in the dropdown option
     for (const day of newDays) {
-      const newEvent = parseAndCreateEventObj(newName, newLocation, newDescription, newColor, day, newStartTime, newEndTime);
+      const newEvent = parseAndCreateEventObj(
+        newName,
+        newLocation,
+        newDescription,
+        newColor,
+        day,
+        newStartTime,
+        newEndTime,
+      );
       updatedEventData[newEvent.event.id] = newEvent;
     }
 
@@ -345,12 +365,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 <Typography>{description}</Typography>
               </StyledListItem>
             )}
-           {location && <StyledListItem>
+            {location && (
+              <StyledListItem>
                 <StyledListItemIcon isDarkMode={isDarkMode}>
-                <LocationOn />
-              </StyledListItemIcon>
-              <Typography>{location}</Typography>
-            </StyledListItem>}
+                  <LocationOn />
+                </StyledListItemIcon>
+                <Typography>{location}</Typography>
+              </StyledListItem>
+            )}
             <StyledListItem>
               <StyledListItemIcon isDarkMode={isDarkMode}>
                 <AccessTime />
