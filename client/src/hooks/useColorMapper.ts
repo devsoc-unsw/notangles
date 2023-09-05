@@ -1,6 +1,4 @@
-import { useEffect, useContext } from 'react';
 import { colors } from '../constants/timetable';
-import { CourseContext } from '../context/CourseContext';
 
 const defaultColor = colors[colors.length - 1];
 
@@ -13,39 +11,28 @@ const defaultColor = colors[colors.length - 1];
  * @example
  * const assignedColors = useColorMapper(selectedCourses.map(course => course.code))
  */
-const useColorMapper = (courseCodes: string[]): void => {
-  const {assignedColors, setAssignedColors} = useContext(CourseContext);
+const useColorMapper = (courseCodes: string[], assignedColors: Record<string, string>): Record<string, string> => {
+  const takenColors = new Set<string>();
+  const newAssignedColors: Record<string, string> = {};
 
-  useEffect(() => {
-    const takenColors = new Set<string>();
-    
-    // Do a filter to remove any courses that have since been deleted
-    const newAssignedColors: Record<string, string> = {};
-    Object.entries(assignedColors).forEach(e => {
-      const [key, value] = e;
-      if (courseCodes.includes(key)) {
-        newAssignedColors[key] = value;
-        takenColors.add(value); 
-      }
-    }) 
-
-    courseCodes.forEach((course) => {
-      let color;
-
-      if (!(course in newAssignedColors)) {
-        color = colors.find((c) => !takenColors.has(c));
-        newAssignedColors[course] = color || defaultColor;
-        
-        if (color) {
-          takenColors.add(color);
-        }
-      }
-    });
-
-    if (JSON.stringify(assignedColors) !== JSON.stringify(newAssignedColors)) {
-      setAssignedColors(newAssignedColors);
+  courseCodes.forEach((course) => {
+    let color;
+    if (course in assignedColors) {
+      color = assignedColors[course];
+      newAssignedColors[course] = color || defaultColor;
     }
-  }, [courseCodes]);
+
+    if (!(course in newAssignedColors)) {
+      color = colors.find((c) => !takenColors.has(c));
+      newAssignedColors[course] = color || defaultColor;
+    }
+
+    if (color) {
+      takenColors.add(color);
+    }
+  });
+
+  return newAssignedColors;
 };
 
 export default useColorMapper;

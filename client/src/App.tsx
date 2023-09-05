@@ -1,5 +1,5 @@
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { styled } from '@mui/system';
+import { display, styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
@@ -110,7 +110,7 @@ const App: React.FC = () => {
     setCourseData,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors } =
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors, setAssignedColors } =
     useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
@@ -171,37 +171,9 @@ const App: React.FC = () => {
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
   }, [year]);
 
-  const test = () => {
-    const newTs = [];
-
-    const timetables = storage.get('timetables');
-    for (const t of timetables) {
-      const t_string = JSON.stringify(t);
-      const t_clone = {...t};
-      const t_deepClone = cloneDeep(t);
-      const t_structured = structuredClone(t);
-      const t_parsed = JSON.parse(t_string);
-      const t_assign = Object.assign(t);
-      const t_freeze = Object.freeze(t);
-
-      if (newTs.length == 0) {
-        console.log(t);
-        console.log(t_clone);
-        console.log(t_deepClone);
-        console.log(t_structured);
-        console.log(t_parsed);
-        console.log(t_assign);
-        console.log(t_freeze);
-      }
-
-      newTs.push({...t_freeze});
-    }
-
-    return newTs;
-  }
   // Fetching the saved timetables from local storage
   useEffect(() => {
-    const savedTimetables = test();
+    const savedTimetables = storage.get('timetables');
     if (savedTimetables) {
       setDisplayTimetables(savedTimetables);
     }
@@ -302,11 +274,6 @@ const App: React.FC = () => {
         } else {
           newSelectedCourses.push(addedCourse);
 
-          /*
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
-          */
         }
         if (!courseData.map.find((i) => i.code === addedCourse.code)) {
           newCourseData.map.push(addedCourse);
@@ -315,6 +282,10 @@ const App: React.FC = () => {
 
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
+
+      if (displayTimetables.length > 0) {
+        setAssignedColors(useColorMapper(newSelectedCourses.map(c => c.code), assignedColors));
+      }
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -341,6 +312,10 @@ const App: React.FC = () => {
       return false;
     });
     setCourseData(newCourseData);
+
+    if (displayTimetables.length > 0) {
+      setAssignedColors(useColorMapper(newSelectedCourses.map(c => c.code), assignedColors));
+    }
 
     setSelectedClasses((prev) => {
       prev = { ...prev };
@@ -400,6 +375,7 @@ const App: React.FC = () => {
       },
     );
     setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
+    setAssignedColors(storage.get('timetables')[selectedTimetable].assignedColors);
   };
 
   useEffect(() => {
@@ -539,8 +515,6 @@ const App: React.FC = () => {
   useEffect(() => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
-
-  useColorMapper(selectedCourses.map((course) => course.code));
 
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {
