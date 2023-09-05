@@ -23,4 +23,4 @@ RUN pnpm install --production
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start:production"]
+CMD ["pnpm", "run", "start:prod"]
