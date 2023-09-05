@@ -33,6 +33,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
     setAlertMsg,
     setErrorVisibility,
+    term
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
@@ -82,6 +83,8 @@ const TimetableTabs: React.FC = () => {
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
+        // TODO: add termId here and set to the current term
+        termId: term,
       };
       storage.set('timetables', [...displayTimetables, newTimetable]);
 

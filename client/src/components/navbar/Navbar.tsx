@@ -50,19 +50,24 @@ const Weak = styled('span')`
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, setTermName, year, setTerm, setYear, termsData } = useContext(AppContext);
+  const { term, termName, setTermName, year, setTerm, setYear, termsData, selectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const selectTerm = (e: any) => {
-    // need to handle selecting that corresponding term n reloading term data/resetting timetable?
+    // // TODO: need to handle selecting that corresponding term n reloading term data/resetting timetable?
     let newTermName = e.target.value.split(', ')[0]
     let termNum = 'T' + newTermName.split(' ')[1]
     let newYear = e.target.value.split(', ')[1]
+    // // TODO:fix this so that we switch the termId for the current tab
+    // // TODO:implement error message to ask user if they want to reset the current timetable (if it has any data) b4 switching terms
+    /// displayTimetables[selectedTimetable].termId = ... then amke sure to set the new state...
+    // 
     setTerm(termNum)
     setYear(newYear)
     setTermName(newTermName)
   }
+
   console.log(termsData)
   return (
     <NavbarBox>
@@ -91,6 +96,7 @@ const Navbar: React.FC = () => {
                   return <MenuItem key={index} value={term.concat(', ', year)}>{term.concat(', ', year)}</MenuItem>;
                 })
               } */}
+              {/* // TODO: fix this to remove dropdown if prevTerm = newTerm*/}
               <MenuItem key={0} value={termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}>{termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}</MenuItem>
               <MenuItem key={1} value={termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}>{termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}</MenuItem>
             </Select>

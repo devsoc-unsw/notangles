@@ -43,6 +43,7 @@ export interface TimetableData {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
+  termId: string
 }
 
 export interface InventoryData {
