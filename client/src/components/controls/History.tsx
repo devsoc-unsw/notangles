@@ -17,7 +17,7 @@ import {
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
-const initialIndex = 1;
+const initialIndex = 2;
 const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
@@ -26,7 +26,7 @@ const History: React.FC = () => {
   const [disableReset, setDisableReset] = useState({ current: true, all: true });
   const [clearOpen, setClearOpen] = useState(false);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors, setAssignedColors } =
+  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } =
     useContext(AppContext);
@@ -42,13 +42,11 @@ const History: React.FC = () => {
     classes: SelectedClasses,
     events: CreatedEvents,
     timetableArg: TimetableData[] | ((prev: TimetableData[]) => void),
-    assignedColors: Record<string, string>,
     selected?: number
   ) => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
     setCreatedEvents(events);
-    setAssignedColors(assignedColors);
     setDisplayTimetables(timetableArg);
 
     if (selected !== undefined) {
@@ -82,6 +80,8 @@ const History: React.FC = () => {
     }
 
     const currentTimetable = displayTimetables[selectedTimetable];
+    console.log(displayTimetables);
+    console.log(selectedTimetable);
 
     // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
@@ -104,8 +104,7 @@ const History: React.FC = () => {
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
-      events: { ...createdEvents },
-      assignedColors: { ...assignedColors }
+      events: { ...createdEvents }
     });
 
     incrementActionsPointer(1);
@@ -179,15 +178,15 @@ const History: React.FC = () => {
       });
     };
 
-    const { courses, classes, events, colors } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
-    setTimetableState(courses, classes, events, modifyTimetableName, colors);
+    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
+    setTimetableState(courses, classes, events, modifyTimetableName );
   };
 
   /**
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
-    setTimetableState([], {}, {}, createDefaultTimetable(), {}, 0);
+    setTimetableState([], {}, {}, createDefaultTimetable(), 0);
   };
 
   /**

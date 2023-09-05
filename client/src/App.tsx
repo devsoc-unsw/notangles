@@ -1,5 +1,5 @@
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { display, styled } from '@mui/system';
+import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
@@ -31,7 +31,6 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { cloneDeep } from 'lodash-es';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -115,6 +114,7 @@ const App: React.FC = () => {
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
+  console.log(assignedColors)
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
@@ -312,10 +312,6 @@ const App: React.FC = () => {
       return false;
     });
     setCourseData(newCourseData);
-
-    if (displayTimetables.length > 0) {
-      setAssignedColors(useColorMapper(newSelectedCourses.map(c => c.code), assignedColors));
-    }
 
     setSelectedClasses((prev) => {
       prev = { ...prev };
