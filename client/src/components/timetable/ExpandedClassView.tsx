@@ -255,7 +255,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
               setAssignedColors({...assignedColors, [code]: color});
               handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
             }}
-            disabled={false}
+            disabled={color === assignedColors[code]}
           >
             <Save />
             SAVE
