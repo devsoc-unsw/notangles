@@ -283,14 +283,6 @@ const CustomEvent: React.FC = () => {
                 setClassCode={setClassCode}
               />
             </StyledTabPanel>
-            <StyledTabPanel value="Via Link">
-              <CustomEventLink
-                link={link}
-                setLink={setLink}
-                setAlertMsg={setAlertMsg}
-                setErrorVisibility={setErrorVisibility}
-              />
-            </StyledTabPanel>
           </TabContext>
           <ColorPicker
             color={color}
