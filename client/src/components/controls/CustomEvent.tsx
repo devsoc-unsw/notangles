@@ -167,24 +167,6 @@ const CustomEvent: React.FC = () => {
         );
         newEvents[newEvent.event.id] = newEvent;
       });
-    } else {
-      try {
-        const linkEvent = JSON.parse(atob(link));
-        const newEvent = createLinkEvent(
-          linkEvent.event.name,
-          linkEvent.event.location,
-          linkEvent.event.description,
-          linkEvent.event.color,
-          linkEvent.time.day,
-          linkEvent.time.start,
-          linkEvent.time.end,
-        );
-        newEvents[newEvent.event.id] = newEvent;
-      } catch {
-        setAlertMsg('Invalid event link');
-        setErrorVisibility(true);
-        return;
-      }
     }
 
     setEventType('General');
