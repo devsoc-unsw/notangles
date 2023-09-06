@@ -116,8 +116,7 @@ const extractHistoryInfo = (
   const courses = timetableActions[timetableId][actionsPointer[timetableId]].courses;
   const classes = duplicateClasses(timetableActions[timetableId][actionsPointer[timetableId]].classes);
   const events = timetableActions[timetableId][actionsPointer[timetableId]].events;
-  const colors = timetableActions[timetableId][actionsPointer[timetableId]].assignedColors;
-  return { courses: courses, classes: classes, events: events, colors: colors };
+  return { courses: courses, classes: classes, events: events };
 };
 
 const areIdenticalTimetables = (

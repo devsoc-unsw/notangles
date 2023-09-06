@@ -114,7 +114,6 @@ const App: React.FC = () => {
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
-  console.log(assignedColors)
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */

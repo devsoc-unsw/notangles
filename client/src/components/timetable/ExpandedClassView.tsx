@@ -1,4 +1,4 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Save } from '@mui/icons-material';
 import {
   Dialog,
   Grid,
@@ -37,6 +37,7 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import LocationDropdown from './LocationDropdown';
 import ColorPicker from '../controls/ColorPicker';
+import { ExecuteButton } from '../../styles/CustomEventStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -78,19 +79,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
-
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   // To reload initial color picker after useColorMapper instantiates context
   useEffect(() => {
     setColor(assignedColors[code]);
   }, [assignedColors]);
-
-  // Bit of a hack to make color picker smoother - only update assigned colors upon closing color picker
-  useEffect(() => {
-    setAssignedColors({...assignedColors, [code]: color});
-   }, [colorPickerAnchorEl]);
-
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -99,6 +93,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const handleCloseColorPicker = () => {
     setColorPickerAnchorEl(null);
   };
+
+  // Upon closing the ECV, change color back to assigned color if user selected color but did not save
+  const handleCloseWrapper = (value: ClassData): void => {
+    handleClose(value);
+    setColor(assignedColors[code]);
+  }
   /**
    * @param currPeriod The currently selected period
    * @param courses The currently selected courses
@@ -183,12 +183,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
     <Dialog
       maxWidth="sm"
       open={popupOpen}
-      onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+      onClose={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
     >
       <StyledTopIcons>
         <IconButton
           aria-label="close"
-          onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+          onClick={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
         >
           <Close />
         </IconButton>
@@ -248,6 +248,18 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             />
         </StyledListItem>
       </StyledDialogContent>
+      <ExecuteButton
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setAssignedColors({...assignedColors, [code]: color});
+              handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
+            }}
+            disabled={false}
+          >
+            <Save />
+            SAVE
+          </ExecuteButton>
     </Dialog>
   );
 };
