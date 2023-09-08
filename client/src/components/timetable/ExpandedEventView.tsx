@@ -46,7 +46,7 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+const StyledListItemIcon = styled(ListItemIcon) <ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
@@ -132,7 +132,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setNewEndTime(createDateWithTime(eventTime.end));
   };
 
-  useEventDrag(updateEventTime);
+  const unscheduleEvent = (id: string) => {
+    console.log('hi', id);
+    // CHange to turning event into inventory item somehow
+    // handleDeleteEvent(id)
+  }
+
+  useEventDrag(updateEventTime, unscheduleEvent);
 
   const handleUpdateEvent = (id: string) => {
     if (!areValidEventTimes(newStartTime, newEndTime)) {

@@ -1,3 +1,4 @@
+import { FoodBank } from '@mui/icons-material';
 import { contentPadding, lightTheme } from '../constants/theme';
 import { timetableWidth } from '../constants/timetable';
 import {
@@ -213,6 +214,8 @@ const eventCards = new Map<EventPeriod, HTMLElement>();
  * Updates the CSS for the dropzones to render them as valid or invalid based on the current drop target
  */
 const updateDropzones = () => {
+  console.log('updating');
+  // console.log(dropzones);
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     if (dropTarget?.type === 'event') return;
 
@@ -231,6 +234,10 @@ const updateDropzones = () => {
         opacity = classPeriod ? '0.4' : '0';
       }
     }
+
+    if (!classPeriod && !isScheduledPeriod(dropTarget)) {
+      console.log('hello', element, canDrop, isDropTarget, opacity);
+    } // is inventory, and drop target is inventory class
 
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
@@ -273,6 +280,7 @@ const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
  */
 const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
+    // console.log(cardData);
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
@@ -282,6 +290,7 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     }
 
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
+    // element.style.color = 'pink';
 
     const inner = element.children[0] as HTMLElement;
     inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
@@ -349,10 +358,12 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
+type EventUnscheduleHandler = (recordKey: string) => void;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
 let updateEventTime: EventTimeHandler = () => {};
+let unscheduledEvent: EventUnscheduleHandler = () => {};
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -368,8 +379,9 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
  * Sets the update event handler function (from App)
  * @param eventTimeHandler The event handler to use
  */
-export const useEventDrag = (eventTimeHandler: EventTimeHandler) => {
+export const useEventDrag = (eventTimeHandler: EventTimeHandler, eventUnscheduleHandler: EventUnscheduleHandler) => {
   updateEventTime = eventTimeHandler;
+  unscheduledEvent = eventUnscheduleHandler;
 };
 
 const updateDelay = 30; // The delay between drop target updates
@@ -469,6 +481,7 @@ const updateDropTarget = (now?: boolean) => {
       }
     } else if (isScheduledPeriod(dragTarget)) {
       // A scheduled class was moved to the inventory
+      console.log('hovered over inventory');
       currentClassTime = undefined;
       removeClass(getClassDataFromPeriod(dragTarget)!);
     }
@@ -557,6 +570,23 @@ let clientX = 0;
 let clientY = 0;
 let lastFrame = Date.now();
 
+// EXPERIMENT
+const makeUnscheduledDropZone = () => {
+  let opacity = '0';
+  // if (isOverInventory() === 5) {
+  //   opacity = '0.85';
+  // } else {
+  //   opacity = '0';
+  // }
+  // console.log(isOverInventory());
+  if (inventoryElement !== null) {
+    inventoryElement.style.opacity = '0.85';
+    inventoryElement.style.pointerEvents = 'auto';
+    inventoryElement.style.zIndex = '700';
+  }
+  // console.log('exploring', inventoryElement);
+};
+
 /**
  * The amount each card has to be translated by changes if the screen has been scrolled.
  * This handler function calculates how far the timetable has been moved
@@ -619,6 +649,8 @@ export const setDragTarget = (
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
 ) => {
+  // console.log('set target');
+  // console.log(cardData);
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
 
@@ -684,9 +716,12 @@ export const setDragTarget = (
     if (cardData?.type !== 'event') {
       dragSource = cardData;
       updateCards(classCards);
+      // for some reason this gets called on cards too, will not say anything
       updateDropzones();
     } else {
+      // console.log('updatecards');
       updateCards(eventCards);
+      makeUnscheduledDropZone();
     }
   }
 };
@@ -781,10 +816,7 @@ window.addEventListener(
   { passive: false },
 );
 
-/**
- * Handler function to drop a card into a dropzone
- */
-const drop = () => {
+const isOverInventory = () => {
   if (dragElement) {
     const { style } = dragElement;
     style.transition = defaultTransition;
@@ -807,10 +839,51 @@ const drop = () => {
         const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
 
         // Get the grid coordinates of the dragTarget when released
+        return Math.floor(displacementx / itemRect.width);
+        // const [colIndex, rowIndex] = [
+        //   Math.floor(displacementx / itemRect.width),
+        //   Math.round(displacementy / itemRect.height),
+        // ];
+      }
+    }
+  }
+  return null;
+};
+
+/**
+ * Handler function to drop a card into a dropzone
+ */
+const drop = () => {
+  if (dragElement) {
+    const { style } = dragElement;
+    style.transition = defaultTransition;
+    style.left = toPx(0);
+    style.top = toPx(0);
+
+    if (dragTarget?.type === 'event') {
+      makeUnscheduledDropZone();
+      console.log('event');
+      // Snap an event to the nearest grid cell and update its time accordingly
+      const gridChildren = dragElement.parentElement?.parentElement?.children;
+      const dragrect = dragElement.children[0].getBoundingClientRect();
+
+      if (gridChildren && dragTarget) {
+        const baserect = gridChildren[1].getBoundingClientRect();
+
+        // x and y displacement of the drag target from the start-point of the grid
+        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
+        const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
+
+        // Get the size of an arbitrary grid cell
+        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
+
+        // Get the grid coordinates of the dragTarget when released
         const [colIndex, rowIndex] = [
           Math.floor(displacementx / itemRect.width),
           Math.round(displacementy / itemRect.height),
         ];
+
+        // console.log(colIndex, rowIndex);
 
         const eventLength = dragTarget.time.end - dragTarget.time.start;
 
@@ -829,6 +902,12 @@ const drop = () => {
             } as EventTime,
             eventId,
           );
+        } else {
+          if (colIndex == 5) {
+            console.log('event over inventory');
+            unscheduledEvent(dragTarget.event.id);
+            // updateEventTime(null, eventId);
+          }
         }
       }
     }

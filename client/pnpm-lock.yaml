@@ -68,6 +68,9 @@ dependencies:
   lodash-es:
     specifier: 4.17.21
     version: 4.17.21
+  pnpm:
+    specifier: 8.7.4
+    version: 8.7.4
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -3997,6 +4000,12 @@ packages:
       mlly: 1.4.1
       pathe: 1.1.1
     dev: true
+
+  /pnpm@8.7.4:
+    resolution: {integrity: sha512-/bQ5bXp8l7krhm2QXQVGuPjzNC/Z/p0fK4kw8aIrqG0YthTS9akRKGHiWyaHX623lntCriHBZZPqhbXczqSNVg==}
+    engines: {node: '>=16.14'}
+    hasBin: true
+    dev: false
 
   /postcss@8.4.29:
     resolution: {integrity: sha512-cbI+jaqIeu/VGqXEarWkRCCffhjgXc0qjBtXpqJhTBohMUjUQnbBr0xqX3vEKudc4iviTewcJo5ajcec5+wdJw==}

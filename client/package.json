@@ -37,6 +37,7 @@
     "ics": "3.4.0",
     "is-base64": "^1.1.0",
     "lodash-es": "4.17.21",
+    "pnpm": "8.7.4",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
