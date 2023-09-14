@@ -11,6 +11,7 @@ import {
   Save,
 } from '@mui/icons-material';
 import {
+  Button,
   Dialog,
   Grid,
   IconButton,
@@ -21,7 +22,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useState } from 'react';
 
@@ -31,6 +32,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import {
+  StyledButtonContainer,
   StyledDialogContent,
   StyledDialogTitle,
   StyledListItem,
@@ -225,6 +227,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
+
+  const handleSaveNewTutorialColor = () => {
+    handleUpdateEvent(eventPeriod.event.id);
+    handleCloseDialog();
+  }
+
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
@@ -413,6 +421,26 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               </StyledListItem>
             )}
           </StyledDialogContent>
+          {eventPeriod.subtype === 'Tutoring' && (
+            <Box display="flex" justifyContent="center" alignItems="center" paddingBottom={1}>
+              <ColorPicker
+                color={newColor}
+                setColor={setNewColor}
+                colorPickerAnchorEl={colorPickerAnchorEl}
+                handleOpenColorPicker={handleOpenColorPicker}
+                handleCloseColorPicker={handleCloseColorPicker}
+              />
+              <div>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleSaveNewTutorialColor}
+                >
+                  Save
+                </Button>
+              </div>
+            </Box>
+          )}
         </>
       )}
     </Dialog>
