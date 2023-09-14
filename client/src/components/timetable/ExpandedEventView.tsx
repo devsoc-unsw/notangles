@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -77,6 +77,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
   const [newColor, setNewColor] = useState<string>(color as string);
+  const [isNewColorSaved, setIsNewColorSaved] = useState<boolean>(false); //For Tutorial Cards
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
@@ -218,6 +219,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       handleClose();
     }
 
+    if (!isNewColorSaved) setNewColor(color);
+
     setIsEditing(false);
     setIsChanged(false);
   };
@@ -228,10 +231,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
 
-  const handleSaveNewTutorialColor = () => {
-    handleUpdateEvent(eventPeriod.event.id);
-    handleCloseDialog();
-  }
+  useEffect(() => {
+    if (isNewColorSaved) {
+      handleUpdateEvent(eventPeriod.event.id);
+      handleCloseDialog();
+      setIsNewColorSaved(false);
+    }
+  }, [isNewColorSaved]);
 
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
@@ -431,11 +437,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 handleCloseColorPicker={handleCloseColorPicker}
               />
               <div>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleSaveNewTutorialColor}
-                >
+                <Button variant="outlined" size="small" onClick={() => setIsNewColorSaved(true)}>
                   Save
                 </Button>
               </div>
