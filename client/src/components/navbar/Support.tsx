@@ -14,6 +14,11 @@ import {
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import useGif from '../../assets/how_to_use.gif';
+import createAClass1 from '../../assets/how_to_create_class_1.png';
+import createAClass2 from '../../assets/how_to_create_class_2.png';
+import createAClass3a from '../../assets/how_to_create_class_3a.png';
+import createAClass3b from '../../assets/how_to_create_class_3b.png';
+import createAClass4 from '../../assets/how_to_create_class_4.png';
 
 const StyledTypography = styled(Typography)`
   margin-top: 10px;
@@ -53,6 +58,7 @@ const Support: React.FC = () => {
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
         {...other}
+
       >
         {value === index && (
           <Box sx={{ p: 3 }}>
@@ -71,45 +77,49 @@ const Support: React.FC = () => {
     <>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange}>
-          <Tab label="How it Works" {...a11yProps(0)} />
-          <Tab label="Keyboard Shortcuts" {...a11yProps(1)} />
+          <Tab label="Create a Class" {...a11yProps(0)} />
+          <Tab label="Create an Event" {...a11yProps(1)} />
+          <Tab label="Event Sharing" {...a11yProps(2)} />
+          <Tab label="Keyboard Shortcuts" {...a11yProps(3)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <HowItWorks />
+        <HowToCreateAClass />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
+        <HowToCreateAClass />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        <HowToCreateAClass />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={3}>
         <KeyboardShortcut />
       </CustomTabPanel>
     </>
   );
 };
 
-const HowItWorks = () => {
+const HowToCreateAClass = () => {
   return (
     <>
-      <StyledTypography variant="h6">How it works</StyledTypography>
-      <Typography gutterBottom variant="body2">
-        Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures
-        which you aren’t going to watch live) to the unscheduled column. Struggling to find an ideal timetable? Try out
-        our auto-timetabling feature!
+      <StyledTypography variant="h6">How to create a class</StyledTypography>
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 1. Select your courses in the top left search bar
+        <HowToUseImg src={createAClass1} alt="how to create a class step 1" />
       </Typography>
-      <HowToUseImg src={useGif} alt="how to use gif" />
-      <Typography gutterBottom variant="body2">
-        Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need
-        to officially enroll at&nbsp;
-        <Link href="https://my.unsw.edu.au/" target="_blank">
-          myUNSW
-        </Link>
-        .
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 2. Drag-and-drop classes to customise your timetable
+        <HowToUseImg src={createAClass2} alt="how to create a class step 2" />
+      </Typography>
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
+        <HowToUseImg src={createAClass3a} alt="how to create a class step 3a" />
+        <HowToUseImg src={createAClass3b} alt="how to create a class step 3b" />
       </Typography>
 
-      <StyledTypography variant="h6">Event Links</StyledTypography>
-      <Typography gutterBottom variant="body2">
-        Step 1. Find a friend
-      </Typography>
-      <Typography gutterBottom variant="body2">
-        Step 2. You made it past step 1?
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
+        <HowToUseImg src={createAClass4} alt="how to create a class step 4" />
       </Typography>
     </>
   );

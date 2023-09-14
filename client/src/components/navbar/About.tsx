@@ -35,6 +35,14 @@ const About: React.FC = () => {
         make some friends along the way. Notangles is free and{' '}
         <Link href="https://github.com/csesoc/notangles">open-source</Link>.
       </Typography>
+      <Typography gutterBottom variant="body2">
+        Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need
+        to officially enroll at&nbsp;
+        <Link href="https://my.unsw.edu.au/" target="_blank">
+          myUNSW
+        </Link>
+        .
+      </Typography>
       <StyledTypography variant="h6">Future developments</StyledTypography>
       <FeatList>
         <li> Sync your timetable with friends</li>
