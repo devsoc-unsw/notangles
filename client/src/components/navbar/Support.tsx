@@ -103,6 +103,14 @@ const HowItWorks = () => {
         </Link>
         .
       </Typography>
+
+      <StyledTypography variant="h6">Event Links</StyledTypography>
+      <Typography gutterBottom variant="body2">
+        Step 1. Find a friend
+      </Typography>
+      <Typography gutterBottom variant="body2">
+        Step 2. You made it past step 1?
+      </Typography>
     </>
   );
 };
