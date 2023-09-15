@@ -17,7 +17,7 @@ import {
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
-const initialIndex = 2;
+const initialIndex = 1;
 const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
 const History: React.FC = () => {
@@ -54,6 +54,7 @@ const History: React.FC = () => {
     }
   };
 
+  const currentTimetable = displayTimetables[selectedTimetable];
   /**
    * Update the index of the current action
    * @param direction Which way to update (1 for increment, -1 for decrement)
@@ -98,13 +99,13 @@ const History: React.FC = () => {
       timetableActions.current[currentTimetable.id] = currentActions.slice(0, currentPointer + 1);
     }
 
-    currentActions.push({
+    timetableActions.current[currentTimetable.id].push({
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
       events: { ...createdEvents }
     });
-
+    
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents, displayTimetables]);
 
