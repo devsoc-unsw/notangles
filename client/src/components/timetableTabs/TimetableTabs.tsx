@@ -71,11 +71,11 @@ const TimetableTabs: React.FC = () => {
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
-    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+    if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
-      const nextIndex = displayTimetables.length;
+      const nextIndex = displayTimetables[term].length;
 
       const newTimetable: TimetableData = {
         name: 'New Timetable',
@@ -83,12 +83,16 @@ const TimetableTabs: React.FC = () => {
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
-        // TODO: add termId here and set to the current term
-        termId: term,
       };
-      storage.set('timetables', [...displayTimetables, newTimetable]);
 
-      setDisplayTimetables([...displayTimetables, newTimetable]);
+      const addingNewTimetables = {
+        ...displayTimetables,
+        [term]: [...displayTimetables[term], newTimetable]
+      }
+      console.log(addingNewTimetables)
+      storage.set('timetables', addingNewTimetables);
+
+      setDisplayTimetables(addingNewTimetables);
 
       // Clearing the selected courses, classes and created events for the new timetable
       setTimetableState([], {}, {}, nextIndex);
@@ -124,11 +128,17 @@ const TimetableTabs: React.FC = () => {
       return;
     }
 
-    const newTimetables = [...displayTimetables];
+    const newTimetables = [...displayTimetables[term]];
     const draggedItem = newTimetables[source.index];
     newTimetables.splice(source.index, 1);
     newTimetables.splice(destination.index, 0, draggedItem);
-    setDisplayTimetables(newTimetables);
+
+    const rearrangedTimetables = {
+      ...displayTimetables,
+      [term]: newTimetables
+    }
+
+    setDisplayTimetables(rearrangedTimetables);
 
     handleSwitchTimetables(newTimetables, destination.index);
   };
@@ -145,11 +155,14 @@ const TimetableTabs: React.FC = () => {
   // Right clicking a tab will switch to that tab and open the menu
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
     event.preventDefault();
-    handleSwitchTimetables(displayTimetables, index);
+    handleSwitchTimetables(displayTimetables[term], index);
 
     // Anchoring the menu to the mouse position
     setAnchorElement({ x: event.clientX, y: event.clientY });
   };
+  console.log(displayTimetables);
+  console.log(displayTimetables['T2']);
+  console.log(displayTimetables['T3']);
 
   return (
     <TabsSection>
@@ -158,7 +171,7 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {displayTimetables.map((timetable: TimetableData, index: number) => (
+                {displayTimetables[term].map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
                       <Box
@@ -167,7 +180,7 @@ const TimetableTabs: React.FC = () => {
                         {...props.dragHandleProps}
                         key={index}
                         sx={TabStyle(index, selectedTimetable)}
-                        onClick={() => handleSwitchTimetables(displayTimetables, index)}
+                        onClick={() => handleSwitchTimetables(displayTimetables[term], index)}
                         onContextMenu={(e) => handleRightTabClick(e, index)}
                       >
                         {timetable.name}

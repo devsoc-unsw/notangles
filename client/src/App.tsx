@@ -31,6 +31,7 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -99,7 +100,6 @@ const App: React.FC = () => {
     firstDayOfTerm,
     setFirstDayOfTerm,
     setTermName,
-    setTermNames,
     setTermsData,
     setTermNumber,
     setCoursesList,
@@ -148,7 +148,6 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      // let { term, termName, termNumber, year, firstDayOfTerm, termNames } = termData;
       let { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
       setTerm(term);
       setTermName(termName);
@@ -156,10 +155,19 @@ const App: React.FC = () => {
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
       setTermsData(termsData);
+      const oldData = storage.get('timetables');
+      const newTimetableTerms = {
+        ...oldData,
+        [termsData.prevTerm.term]: createDefaultTimetable(),
+        [termsData.newTerm.term]: createDefaultTimetable(),
+      }
+      console.log(newTimetableTerms)
+      setDisplayTimetables(newTimetableTerms)
+      storage.set('timetables', newTimetableTerms);
     };
 
     fetchReliably(fetchTermData);
-  }, [term, year]);
+  }, [year]);
 
   useEffect(() => {
     /**
@@ -172,7 +180,7 @@ const App: React.FC = () => {
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
-  }, [year]);
+  }, [term, year]);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
@@ -296,7 +304,7 @@ const App: React.FC = () => {
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
     newCourseData.map = courseData.map.filter((targetCourse) => {
-      for (const timetable of displayTimetables) {
+      for (const timetable of displayTimetables[term]) {
         for (const course of timetable.selectedCourses) {
           if (course.code.localeCompare(courseCode)) {
             return true;
@@ -322,10 +330,10 @@ const App: React.FC = () => {
    */
   const updateTimetableEvents = () => {
     handleSelectCourse(
-      storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
       (newSelectedCourses) => {
-        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[term][selectedTimetable].selectedClasses;
 
         const savedClasses: SavedClasses = {};
 
@@ -364,7 +372,7 @@ const App: React.FC = () => {
         setSelectedClasses(newSelectedClasses);
       },
     );
-    setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
+    setCreatedEvents(storage.get('timetables')[term][selectedTimetable].createdEvents);
   };
 
   useEffect(() => {
@@ -373,29 +381,50 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    const newDisplayTimetables = {
+      ...displayTimetables,
+      [term]: displayTimetables[term].map((timetable, index) => {
+        return index === selectedTimetable ?
+          { ...timetable, selectedCourses: selectedCourses }
+          : timetable;
+      })
+    }
     const newCourseData = courseData;
     storage.set('courseData', newCourseData);
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
+    storage.set('timetables', newDisplayTimetables);
+    setDisplayTimetables(newDisplayTimetables);
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].selectedClasses = selectedClasses;
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
+    const newDisplayTimetables = {
+      ...displayTimetables,
+      [term]: displayTimetables[term].map((timetable, index) => {
+        return index === selectedTimetable ?
+          { ...timetable, selectedClasses: selectedClasses }
+          : timetable;
+      })
+    }
+    storage.set('timetables', newDisplayTimetables);
+    setDisplayTimetables(newDisplayTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].createdEvents = createdEvents;
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
+    const newDisplayTimetables = {
+      ...displayTimetables,
+      [term]: displayTimetables[term].map((timetable, index) => {
+        return index === selectedTimetable ?
+          { ...timetable, createdEvents: createdEvents }
+          : timetable;
+      })
+    }
+    storage.set('timetables', newDisplayTimetables);
+    setDisplayTimetables(newDisplayTimetables);
   }, [createdEvents]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-  }, [displayTimetables]);
+  }, [displayTimetables[term]]);
 
   /**
    * Get the latest day of the week a course has classes on

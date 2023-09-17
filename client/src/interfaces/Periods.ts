@@ -43,7 +43,6 @@ export interface TimetableData {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
-  termId: string
 }
 
 export interface InventoryData {
@@ -140,4 +139,8 @@ export interface CourseDataMap {
 export interface TermDataMap {
   prevTerm: TermData;
   newTerm: TermData;
+}
+
+export interface DisplayTimetablesMap {
+  [key: string]: TimetableData[];
 }

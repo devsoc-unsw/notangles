@@ -1,5 +1,6 @@
 import { Delete, Redo, Undo } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { display } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
@@ -28,7 +29,7 @@ const History: React.FC = () => {
 
   const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
-  const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables } =
+  const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
     useContext(AppContext);
 
   const timetableActions = useRef<TimetableActions>({});
@@ -47,7 +48,13 @@ const History: React.FC = () => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
     setCreatedEvents(events);
-    setDisplayTimetables(timetableArg);
+
+    const updatedDisplayTimetables = {
+      ...displayTimetables,
+      [term]: timetableArg
+    }
+
+    setDisplayTimetables(updatedDisplayTimetables);
 
     if (selected !== undefined) {
       setSelectedTimetable(selected);
@@ -59,7 +66,7 @@ const History: React.FC = () => {
    * @param direction Which way to update (1 for increment, -1 for decrement)
    */
   const incrementActionsPointer = (direction: number) => {
-    const timetableId = displayTimetables[selectedTimetable].id;
+    const timetableId = displayTimetables[term][selectedTimetable].id;
     actionsPointer.current[timetableId] += direction;
     setDisableLeft(actionsPointer.current[timetableId] < 1);
     setDisableRight(actionsPointer.current[timetableId] + 1 >= timetableActions.current[timetableId].length);
@@ -75,11 +82,13 @@ const History: React.FC = () => {
       return; // Prevents adding change induced by clicking redo/undo
     }
 
-    if (selectedTimetable >= displayTimetables.length) {
+    console.log(term)
+    console.log(displayTimetables)
+    if (selectedTimetable >= displayTimetables[term].length) {
       return;
     }
 
-    const currentTimetable = displayTimetables[selectedTimetable];
+    const currentTimetable = displayTimetables[term][selectedTimetable];
 
     // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
@@ -99,7 +108,7 @@ const History: React.FC = () => {
     }
 
     currentActions.push({
-      name: displayTimetables[selectedTimetable].name,
+      name: displayTimetables[term][selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
       events: { ...createdEvents },
@@ -118,12 +127,12 @@ const History: React.FC = () => {
     const disableStatus = { current: true, all: true };
 
     // More than one timetable is resetAll-able
-    if (displayTimetables.length > 1) {
+    if (displayTimetables[term].length > 1) {
       disableStatus.all = false;
     }
 
     // Current timetable being non-empty is resetAll and resetOne-able
-    const currentTimetable = displayTimetables[selectedTimetable];
+    const currentTimetable = displayTimetables[term][selectedTimetable];
     // if new timetable has been created then set reset to be true since no courses, classes or events selected
     if (actionsPointer.current[currentTimetable.id] < 1) {
       disableStatus.current = true;
@@ -149,11 +158,11 @@ const History: React.FC = () => {
   }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents, displayTimetables]);
 
   useEffect(() => {
-    if (displayTimetables.length < 1) {
+    if (displayTimetables[term].length < 1) {
       return;
     }
 
-    const timetableId = displayTimetables[selectedTimetable].id;
+    const timetableId = displayTimetables[term][selectedTimetable].id;
     const currentPointer = actionsPointer.current[timetableId];
     setDisableLeft(currentPointer === undefined || currentPointer < 1);
     setDisableRight(currentPointer === undefined || currentPointer + 1 >= timetableActions.current[timetableId].length);
@@ -167,7 +176,7 @@ const History: React.FC = () => {
     incrementActionsPointer(direction);
     dontAdd.current = true;
 
-    const timetableId = displayTimetables[selectedTimetable].id;
+    const timetableId = displayTimetables[term][selectedTimetable].id;
     const modifyTimetableName = (prev: TimetableData[]) => {
       return prev.map((timetable) => {
         return timetable.id === timetableId
@@ -199,7 +208,7 @@ const History: React.FC = () => {
     // event.metaKey corresponds to the Cmd key on Mac
     if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
 
-    const currentTimetable = displayTimetables[selectedTimetable];
+    const currentTimetable = displayTimetables[term][selectedTimetable];
 
     event.preventDefault();
 

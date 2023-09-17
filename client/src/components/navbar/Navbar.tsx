@@ -1,5 +1,6 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography, useMediaQuery, useTheme, FormControl, MenuItem, Select, InputLabel } from '@mui/material';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -7,6 +8,7 @@ import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
@@ -50,7 +52,24 @@ const Weak = styled('span')`
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, setTermName, year, setTerm, setYear, termsData, selectedTimetable, displayTimetables, setDisplayTimetables } = useContext(AppContext);
+
+  const {
+    term,
+    termName,
+    setTermName,
+    year,
+    setTerm,
+    setYear,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
+    termsData
+  } = useContext(AppContext);
+
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } =
+    useContext(CourseContext);
+
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -61,14 +80,20 @@ const Navbar: React.FC = () => {
     let newYear = e.target.value.split(', ')[1]
     // // TODO:fix this so that we switch the termId for the current tab
     // // TODO:implement error message to ask user if they want to reset the current timetable (if it has any data) b4 switching terms
-    /// displayTimetables[selectedTimetable].termId = ... then amke sure to set the new state...
-    // 
+    // NEW IDEA: TODO: use arrow buttons to switch between terms - we shld keep independent timetables for each term and change/restore these when we switch between the terms
+
+    console.log(term, termNum)
     setTerm(termNum)
     setYear(newYear)
     setTermName(newTermName)
+    console.log(`current = ${term}, num = ${termNum}`)
+    setSelectedTimetable(0);
+    setSelectedClasses(displayTimetables[termNum][0].selectedClasses);
+    setCreatedEvents(displayTimetables[termNum][0].createdEvents);
+    setSelectedCourses(displayTimetables[termNum][0].selectedCourses);
   }
 
-  console.log(termsData)
+  let termData = new Set([termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year), termsData.newTerm.termName.concat(', ', termsData.newTerm.year)]);
   return (
     <NavbarBox>
       <StyledNavBar enableColorOnDark position="fixed">
@@ -91,14 +116,11 @@ const Navbar: React.FC = () => {
               label="terms"
               onChange={selectTerm}
             >
-              {/* {
-                termNames.map((term, index) => {
-                  return <MenuItem key={index} value={term.concat(', ', year)}>{term.concat(', ', year)}</MenuItem>;
+              {
+                Array.from(termData).map((term, index) => {
+                  return <MenuItem key={index} value={term}>{term}</MenuItem>;
                 })
-              } */}
-              {/* // TODO: fix this to remove dropdown if prevTerm = newTerm*/}
-              <MenuItem key={0} value={termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}>{termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year)}</MenuItem>
-              <MenuItem key={1} value={termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}>{termsData.newTerm.termName.concat(', ', termsData.newTerm.year)}</MenuItem>
+              }
             </Select>
           </FormControl>
           <CustomModal

@@ -31,7 +31,7 @@ export const getAvailableTermDetails = async () => {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
     const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
-    console.log(termDateRes)
+    // console.log(termDateRes)
 
     // testing how to get prev/current term data --> can potentially make use of freerooms api
     // startdate/freerooms gets the start date of the current term
@@ -40,8 +40,8 @@ export const getAvailableTermDetails = async () => {
     const prevTermRes = await prevTermDate.text();
     const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
     const prevTermIdRes = await prevTermId.text();
-    console.log(prevTermRes);
-    console.log(prevTermIdRes);
+    // console.log(prevTermRes);
+    // console.log(prevTermIdRes);
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
     let matched = termDateRes.match(regexp);
@@ -79,7 +79,12 @@ export const getAvailableTermDetails = async () => {
 
     if (prevTermIdRes.length === REGULAR_TERM_STR_LEN) {
       // This is not a summer term.
-      prevTermNum = parseInt(prevTermIdRes.substring(1));
+      // prevTermNum = parseInt(prevTermIdRes.substring(1));
+      // prevTerm = `T${prevTermNum}`;
+      // prevTermName = `Term ${prevTermNum}`;
+
+      // TODO: hardcoded for now to be Term 2
+      prevTermNum = 2
       prevTerm = `T${prevTermNum}`;
       prevTermName = `Term ${prevTermNum}`;
     } else {
