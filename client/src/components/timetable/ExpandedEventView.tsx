@@ -12,6 +12,7 @@ import {
 } from '@mui/icons-material';
 import {
   Dialog,
+  Popover,
   Grid,
   IconButton,
   InputAdornment,
@@ -224,7 +225,18 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
   return (
-    <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
+    <Popover
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      open={popupOpen}
+      onClose={handleCloseDialog}
+    >
       {isEditing ? (
         <>
           <StyledTopIcons>
@@ -409,7 +421,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           </StyledDialogContent>
         </>
       )}
-    </Dialog>
+    </Popover>
   );
 };
 

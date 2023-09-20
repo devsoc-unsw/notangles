@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemIconProps,
   SelectChangeEvent,
+  Popover,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -158,8 +159,15 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
   };
 
   return (
-    <Dialog
-      maxWidth="sm"
+    <Popover
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
       open={popupOpen}
       onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
     >
@@ -216,7 +224,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
           </Typography>
         </StyledListItem>
       </StyledDialogContent>
-    </Dialog>
+    </Popover>
   );
 };
 
