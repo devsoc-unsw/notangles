@@ -87,10 +87,10 @@ const Support: React.FC = () => {
         <HowToCreateAClass />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <HowToCreateAClass />
+        <HowToCreateAnEvent />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <HowToCreateAClass />
+        <></>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
         <KeyboardShortcut />
@@ -100,6 +100,32 @@ const Support: React.FC = () => {
 };
 
 const HowToCreateAClass = () => {
+  return (
+    <>
+      <StyledTypography variant="h6">How to create a class</StyledTypography>
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 1. Select your courses in the top left search bar
+        <HowToUseImg src={createAClass1} alt="how to create a class step 1" />
+      </Typography>
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 2. Drag-and-drop classes to customise your timetable
+        <HowToUseImg src={createAClass2} alt="how to create a class step 2" />
+      </Typography>
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
+        <HowToUseImg src={createAClass3a} alt="how to create a class step 3a" />
+        <HowToUseImg src={createAClass3b} alt="how to create a class step 3b" />
+      </Typography>
+
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
+        <HowToUseImg src={createAClass4} alt="how to create a class step 4" />
+      </Typography>
+    </>
+  );
+};
+
+const HowToCreateAnEvent = () => {
   return (
     <>
       <StyledTypography variant="h6">How to create a class</StyledTypography>
