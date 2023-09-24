@@ -64,7 +64,6 @@ const TimetablesFlag: React.FC = () => {
 
   return (
   <>
-    <Typography>asdfasdf</Typography>
     <Dialog
     maxWidth="xs"
     open={flagDialogOpen}
