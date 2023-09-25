@@ -1,5 +1,5 @@
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { styled } from '@mui/system';
+import { display, styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
@@ -113,6 +113,15 @@ const App: React.FC = () => {
     useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
+  /**
+   * Supports migration from non-assigned colors to assignedColors so timetable does not break. Can be removed after a few weeks when everyone has migrated
+   */
+  if (assignedColors === undefined) {
+    const colors = useColorMapper(displayTimetables[selectedTimetable].selectedCourses.map(c => c.code), {});
+    displayTimetables[selectedTimetable].assignedColors = colors;
+    setAssignedColors(colors);
+  };
 
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
