@@ -98,7 +98,7 @@ const History: React.FC = () => {
       timetableActions.current[currentTimetable.id] = currentActions.slice(0, currentPointer + 1);
     }
 
-    currentActions.push({
+    timetableActions.current[currentTimetable.id].push({
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
