@@ -93,8 +93,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setIsChanged(true);
   };
 
-  console.log(eventPeriod);
-
   const isSpecialEvent = (name: string, color: string, start: number, end: number, day: number, location: string) => {
     return (
       name.includes('Levelling Up at CSESoc Projects Fair') &&
@@ -407,7 +405,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                         onClick={() => {
                           navigator.clipboard.writeText(
                             isSpecialEvent(name, color, start, end, day, location)
-                              ? 'level{eyJ0e}'
+                              ? 'levelup{eyJ0e}'
                               : btoa(JSON.stringify(eventPeriod)),
                           );
                           setAutoVisibility(true);
@@ -423,7 +421,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 size="small"
                 value={
                   isSpecialEvent(name, color, start, end, day, location)
-                    ? 'level{eyJ0e}'
+                    ? 'levelup{eyJ0e}'
                     : btoa(JSON.stringify(eventPeriod))
                 }
               ></StyledEventLink>
