@@ -1,24 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { SettingsDto, UserDTO, EventDto, TimetableDto } from './dto';
 
 @Injectable()
 export class UserService {
-  findAllFriends(userId: string) {
-    return { friends: 'none tbh.' };
+  getUserInfo(userId: string): UserDTO {
+    return null;
   }
 
-  friendUsers(senderId: string, sendeeId: string) {
-    return { senderId, sendeeId };
+  getUserSettings(userId: string): SettingsDto {
+    return null;
   }
 
-  unfriendUsers(senderId: string, sendeeId: string) {
-    return { senderId, sendeeId };
+  setUserSettings(userId: string, setting: SettingsDto): void {}
+
+  getUserTimetables(userId: string): TimetableDto[] {
+    return null;
   }
 
-  sendFriendRequest(senderId: string, sendeeId: string) {
-    return { senderId, sendeeId };
-  }
+  createUserTimetable(
+    timetableId: string,
+    selectedCourses: string[],
+    selectedClasses: any[],
+    createdEvents: EventDto[],
+  ): void {}
 
-  deleteFriendRequest(requestId: string) {
-    return { requestId };
-  }
+  editUserTimetable(userId: string, timetable: TimetableDto): void {}
 }
