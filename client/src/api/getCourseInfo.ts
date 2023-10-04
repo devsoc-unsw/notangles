@@ -85,17 +85,16 @@ const getCourseInfo = async (
   isConvertToLocalTimezone: boolean,
 ): Promise<CourseData> => {
   const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
-  console.log('curr term = ' + term)
   try {
     const data = await timeoutPromise(1500, fetch(`${baseURL}/courses/${courseCode}/`));
 
     // Remove any leftover courses from localStorage if they are not offered in the current term
     // which is why a 400 error is returned
     if (data.status === 400) {
-      const selectedCourses = storage.get('timetables')[0].selectedCourses;
+      const selectedCourses = storage.get('timetables')[term][0].selectedCourses;
       if (selectedCourses.includes(courseCode)) {
         delete selectedCourses[courseCode];
-        storage.set('timetables[0].selectedCourses', selectedCourses);
+        storage.set(`timetables[${term}][0].selectedCourses`, selectedCourses);
       } else {
         throw new NetworkError('Internal server error');
       }

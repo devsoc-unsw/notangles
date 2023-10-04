@@ -82,15 +82,14 @@ const Navbar: React.FC = () => {
     // // TODO:implement error message to ask user if they want to reset the current timetable (if it has any data) b4 switching terms
     // NEW IDEA: TODO: use arrow buttons to switch between terms - we shld keep independent timetables for each term and change/restore these when we switch between the terms
 
-    console.log(term, termNum)
     setTerm(termNum)
     setYear(newYear)
     setTermName(newTermName)
-    console.log(`current = ${term}, num = ${termNum}`)
-    setSelectedTimetable(0);
-    setSelectedClasses(displayTimetables[termNum][0].selectedClasses);
-    setCreatedEvents(displayTimetables[termNum][0].createdEvents);
-    setSelectedCourses(displayTimetables[termNum][0].selectedCourses);
+    const defaultStartTimetable = 0;
+    setSelectedTimetable(defaultStartTimetable);
+    setSelectedClasses(displayTimetables[termNum][defaultStartTimetable].selectedClasses);
+    setCreatedEvents(displayTimetables[termNum][defaultStartTimetable].createdEvents);
+    setSelectedCourses(displayTimetables[termNum][defaultStartTimetable].selectedCourses);
   }
 
   let termData = new Set([termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year), termsData.newTerm.termName.concat(', ', termsData.newTerm.year)]);

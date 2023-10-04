@@ -96,7 +96,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       const newDisplayTimetables = {
         ...displayTimetables,
         [term]: displayTimetables[term].filter((timetable: TimetableData, index: number) => {
-          index !== targetIndex
+          return index !== targetIndex
         }),
       };
 

@@ -161,7 +161,6 @@ const App: React.FC = () => {
         [termsData.prevTerm.term]: createDefaultTimetable(),
         [termsData.newTerm.term]: createDefaultTimetable(),
       }
-      console.log(newTimetableTerms)
       setDisplayTimetables(newTimetableTerms)
       storage.set('timetables', newTimetableTerms);
     };
@@ -285,7 +284,6 @@ const App: React.FC = () => {
           newCourseData.map.push(addedCourse);
         }
       });
-
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
 
@@ -381,50 +379,69 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
-    const newDisplayTimetables = {
-      ...displayTimetables,
-      [term]: displayTimetables[term].map((timetable, index) => {
-        return index === selectedTimetable ?
-          { ...timetable, selectedCourses: selectedCourses }
-          : timetable;
-      })
-    }
+    // console.log('updating selected courses')
+    // console.log(displayTimetables);
+    // const newDisplayTimetables = {
+    //   ...displayTimetables,
+    //   [term]: displayTimetables[term].map((timetable, index) => {
+    //     return index === selectedTimetable ?
+    //       { ...timetable, selectedCourses: selectedCourses }
+    //       : timetable;
+    //   })
+    // }
+    // console.log(newDisplayTimetables);
+    // storage.set('courseData', courseData);
+    // storage.set('timetables', newDisplayTimetables);
+    // setDisplayTimetables(newDisplayTimetables);
+    // console.log(storage.get('timetables')[term][selectedTimetable])
+    displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
     const newCourseData = courseData;
     storage.set('courseData', newCourseData);
-    storage.set('timetables', newDisplayTimetables);
-    setDisplayTimetables(newDisplayTimetables);
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
-    const newDisplayTimetables = {
-      ...displayTimetables,
-      [term]: displayTimetables[term].map((timetable, index) => {
-        return index === selectedTimetable ?
-          { ...timetable, selectedClasses: selectedClasses }
-          : timetable;
-      })
-    }
-    storage.set('timetables', newDisplayTimetables);
-    setDisplayTimetables(newDisplayTimetables);
+    // console.log('updating selected classes')
+    // console.log(displayTimetables);
+    // const newDisplayTimetables = {
+    //   ...displayTimetables,
+    //   [term]: displayTimetables[term].map((timetable, index) => {
+    //     return index === selectedTimetable ?
+    //       { ...timetable, selectedClasses: selectedClasses }
+    //       : timetable;
+    //   })
+    // }
+    // console.log(newDisplayTimetables);
+    // storage.set('timetables', newDisplayTimetables);
+    // setDisplayTimetables(newDisplayTimetables);
+    // console.log(storage.get('timetables')[term][selectedTimetable])
+    // console.log(displayTimetables[term][selectedTimetable])
+    displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
-    const newDisplayTimetables = {
-      ...displayTimetables,
-      [term]: displayTimetables[term].map((timetable, index) => {
-        return index === selectedTimetable ?
-          { ...timetable, createdEvents: createdEvents }
-          : timetable;
-      })
-    }
-    storage.set('timetables', newDisplayTimetables);
-    setDisplayTimetables(newDisplayTimetables);
+    // const newDisplayTimetables = {
+    //   ...displayTimetables,
+    //   [term]: displayTimetables[term].map((timetable, index) => {
+    //     return index === selectedTimetable ?
+    //       { ...timetable, createdEvents: createdEvents }
+    //       : timetable;
+    //   })
+    // }
+    // storage.set('timetables', newDisplayTimetables);
+    // setDisplayTimetables(newDisplayTimetables);
+    displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-  }, [displayTimetables[term]]);
+  }, [displayTimetables]);
 
   /**
    * Get the latest day of the week a course has classes on

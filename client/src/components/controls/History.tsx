@@ -1,11 +1,10 @@
 import { Delete, Redo, Undo } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
-import { display } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
+import { CourseData, CreatedEvents, SelectedClasses, DisplayTimetablesMap } from '../../interfaces/Periods';
 import { StyledDialogButtons, StyledDialogContent, StyledTitleContainer } from '../../styles/ControlStyles';
 import {
   ActionsPointer,
@@ -42,19 +41,13 @@ const History: React.FC = () => {
     courses: CourseData[],
     classes: SelectedClasses,
     events: CreatedEvents,
-    timetableArg: TimetableData[] | ((prev: TimetableData[]) => void),
+    timetableArg: DisplayTimetablesMap,
     selected?: number,
   ) => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
     setCreatedEvents(events);
-
-    const updatedDisplayTimetables = {
-      ...displayTimetables,
-      [term]: timetableArg
-    }
-
-    setDisplayTimetables(updatedDisplayTimetables);
+    setDisplayTimetables(timetableArg);
 
     if (selected !== undefined) {
       setSelectedTimetable(selected);
@@ -82,8 +75,6 @@ const History: React.FC = () => {
       return; // Prevents adding change induced by clicking redo/undo
     }
 
-    console.log(term)
-    console.log(displayTimetables)
     if (selectedTimetable >= displayTimetables[term].length) {
       return;
     }
@@ -107,7 +98,7 @@ const History: React.FC = () => {
       timetableActions.current[currentTimetable.id] = currentActions.slice(0, currentPointer + 1);
     }
 
-    currentActions.push({
+    timetableActions.current[currentTimetable.id].push({
       name: displayTimetables[term][selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
@@ -130,6 +121,7 @@ const History: React.FC = () => {
     if (displayTimetables[term].length > 1) {
       disableStatus.all = false;
     }
+    console.log(displayTimetables, term, selectedTimetable);
 
     // Current timetable being non-empty is resetAll and resetOne-able
     const currentTimetable = displayTimetables[term][selectedTimetable];
@@ -176,28 +168,41 @@ const History: React.FC = () => {
     incrementActionsPointer(direction);
     dontAdd.current = true;
 
-    const timetableId = displayTimetables[term][selectedTimetable].id;
-    const modifyTimetableName = (prev: TimetableData[]) => {
-      return prev.map((timetable) => {
-        return timetable.id === timetableId
-          ? { ...timetable, name: timetableActions.current[timetableId][actionsPointer.current[timetableId]].name }
+    const modifiedTimetableId = displayTimetables[term][selectedTimetable].id;
+    // const modifyTimetableName = (prev: TimetableData[]) => {
+    //   return prev.map((timetable) => {
+    //     return timetable.id === timetableId
+    //       ? { ...timetable, name: timetableActions.current[timetableId][actionsPointer.current[timetableId]].name }
+    //       : timetable;
+    //   });
+    // };
+    const modifiedTimetableName = {
+      ...displayTimetables,
+      [term]: displayTimetables[term].map((timetable) => {
+        return timetable.id === modifiedTimetableId
+          ? { ...timetable, name: timetableActions.current[modifiedTimetableId][actionsPointer.current[modifiedTimetableId]].name }
           : timetable;
-      });
-    };
+      })
+    }
 
     const { courses, classes, events } = extractHistoryInfo(
-      timetableId,
+      modifiedTimetableId,
       timetableActions.current,
       actionsPointer.current,
     );
-    setTimetableState(courses, classes, events, modifyTimetableName);
+
+    setTimetableState(courses, classes, events, modifiedTimetableName);
   };
 
   /**
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
-    setTimetableState([], {}, {}, createDefaultTimetable(), 0);
+    const newDisplayTimetables = {
+      ...displayTimetables,
+      [term]: createDefaultTimetable()
+    }
+    setTimetableState([], {}, {}, newDisplayTimetables, 0);
   };
 
   /**

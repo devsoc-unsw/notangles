@@ -89,7 +89,6 @@ const TimetableTabs: React.FC = () => {
         ...displayTimetables,
         [term]: [...displayTimetables[term], newTimetable]
       }
-      console.log(addingNewTimetables)
       storage.set('timetables', addingNewTimetables);
 
       setDisplayTimetables(addingNewTimetables);
@@ -160,9 +159,6 @@ const TimetableTabs: React.FC = () => {
     // Anchoring the menu to the mouse position
     setAnchorElement({ x: event.clientX, y: event.clientY });
   };
-  console.log(displayTimetables);
-  console.log(displayTimetables['T2']);
-  console.log(displayTimetables['T3']);
 
   return (
     <TabsSection>
