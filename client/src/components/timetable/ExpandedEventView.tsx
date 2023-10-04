@@ -47,6 +47,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import TutorialColorPicker from '../controls/TutorialColorPicker';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -422,24 +423,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             )}
           </StyledDialogContent>
           {eventPeriod.subtype === 'Tutoring' && (
-            <Box display="flex" justifyContent="center" alignItems="center" paddingBottom={1}>
-              <ColorPicker
-                color={newColor}
-                setColor={setNewColor}
-                colorPickerAnchorEl={colorPickerAnchorEl}
-                handleOpenColorPicker={handleOpenColorPicker}
-                handleCloseColorPicker={handleCloseColorPicker}
-              />
-              <div>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleSaveNewTutorialColor}
-                >
-                  Save
-                </Button>
-              </div>
-            </Box>
+            <TutorialColorPicker
+              color={newColor}
+              setColor={setNewColor}
+              colorPickerAnchorEl={colorPickerAnchorEl}
+              handleOpenColorPicker={handleOpenColorPicker}
+              handleCloseColorPicker={handleCloseColorPicker}
+              handleSaveNewTutorialColor={handleSaveNewTutorialColor}
+            />
           )}
         </>
       )}
