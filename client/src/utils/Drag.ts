@@ -15,7 +15,7 @@ import {
 import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
-export type EventCard = EventPeriod | EventInventoryPeriod
+export type EventCard = EventPeriod;
 
 export const transitionTime = 350;
 const heightTransitionTime = 150;

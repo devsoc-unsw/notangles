@@ -92,7 +92,7 @@ export interface DroppedClassProps {
 
 export interface DroppedEventProps {
   eventId: string;
-  eventPeriod: EventPeriod | EventInventoryPeriod;
+  eventPeriod: EventPeriod;
   cardWidth: number;
   clashIndex: number;
   cellWidth: number; // width of a grid cell

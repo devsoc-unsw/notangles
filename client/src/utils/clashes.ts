@@ -66,7 +66,7 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
   }
 };
 
-const getEventPeriods = (eventPeriods: (EventInventoryPeriod | EventPeriod)[]) => {
+const getEventPeriods = (eventPeriods: (EventPeriod)[]) => {
   return eventPeriods.filter((event) => (event ? event.type === 'event' : []));
   // return eventPeriods
   //   .flatMap((activities) => Object.values(activities))
@@ -178,7 +178,7 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  */
 export const getClashInfo = (
   groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
-  card: ClassCard | EventPeriod | EventInventoryPeriod,
+  card: ClassCard | EventPeriod,
 ) => {
   const cardWidth = 100;
   const clashIndex = 0;
