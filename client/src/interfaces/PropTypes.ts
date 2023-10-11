@@ -2,7 +2,7 @@ import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
 
 import { ClassCard } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventInventoryPeriod, EventPeriod, InInventory, Location, Section } from './Periods';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -92,7 +92,7 @@ export interface DroppedClassProps {
 
 export interface DroppedEventProps {
   eventId: string;
-  eventPeriod: EventPeriod;
+  eventPeriod: EventPeriod | EventInventoryPeriod;
   cardWidth: number;
   clashIndex: number;
   cellWidth: number; // width of a grid cell

@@ -121,6 +121,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
+        type: 'event',
         time: { ...eventTime },
       },
     });
@@ -133,7 +134,17 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   const unscheduleEvent = (id: string) => {
-    console.log('hi', id);
+    setCreatedEvents({
+      ...createdEvents,
+      [id]: {
+        ...createdEvents[id],
+        type: 'inventory',
+        time: null,
+      },
+    });
+
+    console.log('unschedule', id);
+
     // CHange to turning event into inventory item somehow
     // handleDeleteEvent(id)
   }

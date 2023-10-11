@@ -143,6 +143,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     if (!classCards.includes(classCard)) cardKeys.delete(classCard);
   });
 
+
   // Generate events
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
     try {

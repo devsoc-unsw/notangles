@@ -4,6 +4,7 @@ import {
   ClassPeriod,
   ClassTime,
   CreatedEvents,
+  EventInventoryPeriod,
   EventPeriod,
   EventTime,
   SelectedClasses,
@@ -65,6 +66,13 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
   }
 };
 
+const getEventPeriods = (eventPeriods: (EventInventoryPeriod | EventPeriod)[]) => {
+  return eventPeriods.filter((event) => (event ? event.type === 'event' : []));
+  // return eventPeriods
+  //   .flatMap((activities) => Object.values(activities))
+  //   .flatMap((classData) => (classData ? classData.periods : []));
+};
+
 /**
  * A clash can be between two classes, two custom events, or a class and a custom event
  * @param selectedClasses The currently selected classes
@@ -77,18 +85,22 @@ const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEven
   const currSelectedClasses = Object.values(selectedClasses);
   const eventPeriods = Object.values(createdEvents);
 
+  // filter out unscheduled events
+
   if (currSelectedClasses !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);
     findClashingPeriods(clashes, classPeriods, classPeriods);
   }
 
   if (eventPeriods !== null) {
-    findClashingPeriods(clashes, eventPeriods, eventPeriods);
+    const selectedEventPeriods = getEventPeriods(eventPeriods);
+    findClashingPeriods(clashes, selectedEventPeriods, eventPeriods);
   }
 
   if (currSelectedClasses !== null && eventPeriods !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);
-    findClashingPeriods(clashes, classPeriods, eventPeriods);
+    const selectedEventPeriods = getEventPeriods(eventPeriods);
+    findClashingPeriods(clashes, classPeriods, selectedEventPeriods);
   }
 
   return Array.from(clashes);
@@ -166,7 +178,7 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
  */
 export const getClashInfo = (
   groupedClashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
-  card: ClassCard | EventPeriod,
+  card: ClassCard | EventPeriod | EventInventoryPeriod,
 ) => {
   const cardWidth = 100;
   const clashIndex = 0;

@@ -6,6 +6,7 @@ import {
   ClassPeriod,
   ClassTime,
   CourseData,
+  EventInventoryPeriod,
   EventPeriod,
   EventTime,
   InInventory,
@@ -14,6 +15,7 @@ import {
 import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
+export type EventCard = EventPeriod | EventInventoryPeriod
 
 export const transitionTime = 350;
 const heightTransitionTime = 150;
@@ -214,7 +216,7 @@ const eventCards = new Map<EventPeriod, HTMLElement>();
  * Updates the CSS for the dropzones to render them as valid or invalid based on the current drop target
  */
 const updateDropzones = () => {
-  console.log('updating');
+  // console.log('updating');
   // console.log(dropzones);
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     if (dropTarget?.type === 'event') return;
@@ -236,7 +238,7 @@ const updateDropzones = () => {
     }
 
     if (!classPeriod && !isScheduledPeriod(dropTarget)) {
-      console.log('hello', element, canDrop, isDropTarget, opacity);
+      // console.log('hello', element, canDrop, isDropTarget, opacity);
     } // is inventory, and drop target is inventory class
 
     element.style.opacity = opacity;
@@ -334,7 +336,7 @@ let updateTimeout: number;
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
+export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) => {
   data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
@@ -348,7 +350,7 @@ export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
+export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement) => {
   if (data.type === 'event') {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
@@ -481,7 +483,7 @@ const updateDropTarget = (now?: boolean) => {
       }
     } else if (isScheduledPeriod(dragTarget)) {
       // A scheduled class was moved to the inventory
-      console.log('hovered over inventory');
+      console.log('unschedule class');
       currentClassTime = undefined;
       removeClass(getClassDataFromPeriod(dragTarget)!);
     }
@@ -644,7 +646,7 @@ let eventId = '';
  * @param givenEventId The ID of the event being dragged around
  */
 export const setDragTarget = (
-  cardData: ClassCard | EventPeriod | null,
+  cardData: ClassCard | EventCard | null,
   courseData: CourseData | null,
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
@@ -862,7 +864,7 @@ const drop = () => {
 
     if (dragTarget?.type === 'event') {
       makeUnscheduledDropZone();
-      console.log('event');
+      // console.log('event');
       // Snap an event to the nearest grid cell and update its time accordingly
       const gridChildren = dragElement.parentElement?.parentElement?.children;
       const dragrect = dragElement.children[0].getBoundingClientRect();
@@ -885,28 +887,28 @@ const drop = () => {
 
         // console.log(colIndex, rowIndex);
 
-        const eventLength = dragTarget.time.end - dragTarget.time.start;
-
-        // Ensure we released inside the grid
-        if (
-          colIndex >= 0 &&
-          colIndex < numDays &&
-          rowIndex >= 0 &&
-          rowIndex + eventLength <= latestEndTime - earliestStartTime
-        ) {
-          updateEventTime(
-            {
-              day: 1 + colIndex,
-              start: rowIndex + earliestStartTime,
-              end: eventLength + rowIndex + earliestStartTime,
-            } as EventTime,
-            eventId,
-          );
+        if (colIndex == 5) {
+          console.log('event over inventory');
+          unscheduledEvent(dragTarget.event.id);
+          // updateEventTime(null, eventId);
         } else {
-          if (colIndex == 5) {
-            console.log('event over inventory');
-            unscheduledEvent(dragTarget.event.id);
-            // updateEventTime(null, eventId);
+          const eventLength = dragTarget.time.end - dragTarget.time.start;
+
+          // Ensure we released inside the grid
+          if (
+            colIndex >= 0 &&
+            colIndex < numDays &&
+            rowIndex >= 0 &&
+            rowIndex + eventLength <= latestEndTime - earliestStartTime
+          ) {
+            updateEventTime(
+              {
+                day: 1 + colIndex,
+                start: rowIndex + earliestStartTime,
+                end: eventLength + rowIndex + earliestStartTime,
+              } as EventTime,
+              eventId,
+            );
           }
         }
       }

@@ -7,7 +7,7 @@ export type EventCode = string;
 export type Status = 'Open' | 'Full' | 'On Hold';
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
-export type CreatedEvents = Record<EventCode, EventPeriod>;
+export type CreatedEvents = Record<EventCode, EventPeriod | EventInventoryPeriod>;
 export type EventMetadata = EventData & EventTime;
 
 export interface CourseData {
@@ -69,10 +69,16 @@ export interface InventoryPeriod {
   activity: Activity;
 }
 
+export interface EventInventoryPeriod {
+  type: 'inventory';
+  event: EventData;
+  time: null;
+}
 export interface EventPeriod {
   type: 'event';
   event: EventData;
   time: EventTime;
+  // time: EventTime | InInventory;
 }
 
 export interface EventTime {
