@@ -5,6 +5,7 @@ import {
   Activity,
   ClassData,
   CreatedEvents,
+  EventPeriod,
   EventTime,
   InInventory,
   SelectedClasses,
@@ -130,6 +131,10 @@ const areIdenticalTimetables = (
   if (currentPointer === -1) {
     return false;
   }
+  console.log(createdEvents);
+  const scheduledEvents = Object.values(createdEvents).filter((ev) => ev.type === 'event');
+  console.log(scheduledEvents);
+
   return (
     currentActions.length > 0 &&
     areIdenticalClasses(currentActions[currentPointer].classes, selectedClasses) &&

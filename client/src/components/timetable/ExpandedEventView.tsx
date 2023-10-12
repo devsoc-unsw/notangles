@@ -134,14 +134,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   const unscheduleEvent = (id: string) => {
-    // setCreatedEvents({
-    //   ...createdEvents,
-    //   [id]: {
-    //     ...createdEvents[id],
-    //     type: 'inventory',
-    //     time: null,
-    //   },
-    // });
+    setCreatedEvents({
+      ...createdEvents,
+      [id]: {
+        ...createdEvents[id],
+        type: 'inventoryEvent'
+      },
+    });
 
     console.log('unschedule', id);
 

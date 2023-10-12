@@ -145,7 +145,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
 
 
   // Generate events
-  Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
+  Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.type === 'event').forEach(([key, eventPeriod]) => {
     try {
       const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
       droppedEvents.push(

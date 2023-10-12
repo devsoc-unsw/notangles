@@ -70,12 +70,12 @@ export interface InventoryPeriod {
 }
 
 export interface EventInventoryPeriod {
-  type: 'inventory';
+  type: 'inventoryEvent';
   event: EventData;
   time: null;
 }
 export interface EventPeriod {
-  type: 'event';
+  type: 'event' | 'inventoryEvent';
   event: EventData;
   time: EventTime;
   // time: EventTime | InInventory;
