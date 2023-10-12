@@ -45,7 +45,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import { is } from 'date-fns/locale';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -91,17 +90,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const handleFormat = (newFormats: string[]) => {
     setNewDays(newFormats);
     setIsChanged(true);
-  };
-
-  const isSpecialEvent = (name: string, color: string, start: number, end: number, day: number, location: string) => {
-    return (
-      name.includes('Levelling Up at CSESoc Projects Fair') &&
-      color === '#a04bd5' &&
-      day == 2 &&
-      start == 14.5 &&
-      end == 16.5 &&
-      location.includes('Design Studio')
-    );
   };
 
   /**
@@ -403,11 +391,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => {
-                          navigator.clipboard.writeText(
-                            isSpecialEvent(name, color, start, end, day, location)
-                              ? 'levelup{eyJ0e}'
-                              : btoa(JSON.stringify(eventPeriod)),
-                          );
+                          navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
                           setAutoVisibility(true);
                           setAlertMsg('Copied to clipboard!');
                         }}
@@ -419,11 +403,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                   readOnly: true,
                 }}
                 size="small"
-                value={
-                  isSpecialEvent(name, color, start, end, day, location)
-                    ? 'levelup{eyJ0e}'
-                    : btoa(JSON.stringify(eventPeriod))
-                }
+                value={btoa(JSON.stringify(eventPeriod))}
               ></StyledEventLink>
             </StyledListItem>
           </StyledDialogContent>
