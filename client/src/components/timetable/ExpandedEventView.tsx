@@ -13,6 +13,7 @@ import {
 import {
   Button,
   Dialog,
+  Divider,
   Grid,
   IconButton,
   InputAdornment,
@@ -47,7 +48,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import TutorialColorPicker from '../controls/TutorialColorPicker';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -232,7 +232,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const handleSaveNewTutorialColor = () => {
     handleUpdateEvent(eventPeriod.event.id);
     handleCloseDialog();
-  }
+  };
 
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
@@ -394,44 +394,52 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
-            {eventPeriod.subtype !== 'Tutoring' && (
-              <StyledListItem>
-                <StyledListItemIcon isDarkMode={isDarkMode}>
-                  <Link />
-                </StyledListItemIcon>
-                <StyledEventLink
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => {
-                            navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
-                            setAutoVisibility(true);
-                            setAlertMsg('Copied to clipboard!');
-                          }}
-                        >
-                          <ContentCopy />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    readOnly: true,
-                  }}
-                  size="small"
-                  value={btoa(JSON.stringify(eventPeriod))}
-                ></StyledEventLink>
-              </StyledListItem>
+            {eventPeriod.subtype !== 'Tutoring' ? (
+              <>
+                <StyledListItem>
+                  <StyledListItemIcon isDarkMode={isDarkMode}>
+                    <Link />
+                  </StyledListItemIcon>
+                  <StyledEventLink
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                              setAutoVisibility(true);
+                              setAlertMsg('Copied to clipboard!');
+                            }}
+                          >
+                            <ContentCopy />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                      readOnly: true,
+                    }}
+                    size="small"
+                    value={btoa(JSON.stringify(eventPeriod))}
+                  ></StyledEventLink>
+                </StyledListItem>
+              </>
+            ) : (
+              <div>
+                <div style={{ padding: '10px' }}>
+                  <Divider />
+                </div>
+                <StyledListItem>
+                  <ColorPicker
+                    color={newColor}
+                    setColor={setNewColor}
+                    colorPickerAnchorEl={colorPickerAnchorEl}
+                    handleOpenColorPicker={handleOpenColorPicker}
+                    handleCloseColorPicker={handleCloseColorPicker}
+                    handleSaveNewTutorialColor={handleSaveNewTutorialColor}
+                  />
+                </StyledListItem>
+              </div>
             )}
           </StyledDialogContent>
-          {eventPeriod.subtype === 'Tutoring' && (
-            <TutorialColorPicker
-              color={newColor}
-              setColor={setNewColor}
-              colorPickerAnchorEl={colorPickerAnchorEl}
-              handleOpenColorPicker={handleOpenColorPicker}
-              handleCloseColorPicker={handleCloseColorPicker}
-              handleSaveNewTutorialColor={handleSaveNewTutorialColor}
-            />
-          )}
         </>
       )}
     </Dialog>

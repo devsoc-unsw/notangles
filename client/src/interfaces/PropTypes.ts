@@ -152,6 +152,7 @@ export interface ColorPickerProps {
   colorPickerAnchorEl: HTMLElement | null;
   handleOpenColorPicker: (event: React.MouseEvent<HTMLElement>) => void;
   handleCloseColorPicker: () => void;
+  handleSaveNewTutorialColor?: () => void;
 }
 
 export interface CustomEventGeneralProps {
