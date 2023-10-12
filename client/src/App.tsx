@@ -13,7 +13,6 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import TimetablesFlag from './components/ctfs/TimetablesFlag';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
   daysLong,
@@ -544,7 +543,6 @@ const App: React.FC = () => {
                 >
                   save to calendar
                 </ICSButton>
-                <TimetablesFlag />
                 <Footer />
                 <Alerts />
               </Content>
