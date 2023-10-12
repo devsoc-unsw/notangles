@@ -862,7 +862,7 @@ const drop = () => {
     style.left = toPx(0);
     style.top = toPx(0);
 
-    if (dragTarget?.type === 'event') {
+    if (dragTarget?.type === 'event' || dragTarget?.type === 'inventoryEvent') {
       makeUnscheduledDropZone();
       // console.log('event');
       // Snap an event to the nearest grid cell and update its time accordingly
