@@ -20,12 +20,19 @@ export const classTranslateX = (
   width?: number,
   cellWidth?: number,
 ) => {
+  console.log(card.type);
+  if (card.type === 'inventoryEvent' && nDays) {
+    console.log('hi');
+    // console.log(card, `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`);
+    return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
+  }
   // This classCard is for a scheduled class
   if (isScheduledPeriod(card) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
     // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
+    // console.log(card, (cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing));
     return `${(cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
@@ -35,6 +42,7 @@ export const classTranslateX = (
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
     // plus the margin separating the days of the week from unscheduled section
+    console.log(card, `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`);
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
 
@@ -68,6 +76,7 @@ export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
  * @returns The CSS for the number of pixels to translate vertically
  */
 export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStartTime: number, y?: number) => {
+  //TODO: SOMETHING TO DO WITH UNSCHEDULED EVENTS, FIX THE Y
   let result = 0;
 
   // The height of the card in hours relative to the default height of one (hour)

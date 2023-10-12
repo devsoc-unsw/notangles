@@ -138,7 +138,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
-        type: 'inventoryEvent'
+        type: 'inventoryEvent',
       },
     });
 
