@@ -21,6 +21,7 @@ export const getAvailableTermDetails = async () => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
+
   let year = termData.year || '0000';
   let termNumber = Number(termData.termNumber) || 1;
   let term = termData.termName || `T${termNumber}`;
@@ -31,17 +32,12 @@ export const getAvailableTermDetails = async () => {
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
     const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
-    // console.log(termDateRes)
 
-    // testing how to get prev/current term data --> can potentially make use of freerooms api
-    // startdate/freerooms gets the start date of the current term
-    // /currentterm can be used to get the current terms id
     const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/freerooms`));
     const prevTermRes = await prevTermDate.text();
     const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
     const prevTermIdRes = await prevTermId.text();
-    // console.log(prevTermRes);
-    // console.log(prevTermIdRes);
+
     let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
     let matched = termDateRes.match(regexp);
@@ -97,6 +93,7 @@ export const getAvailableTermDetails = async () => {
     const termsData = {
       prevTerm: { year: prevYear, term: prevTerm, termName: prevTermName }, newTerm: { year: year, term: term, termName: termName }
     }
+
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',

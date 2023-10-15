@@ -121,7 +121,6 @@ const History: React.FC = () => {
     if (displayTimetables[term].length > 1) {
       disableStatus.all = false;
     }
-    console.log(displayTimetables, term, selectedTimetable);
 
     // Current timetable being non-empty is resetAll and resetOne-able
     const currentTimetable = displayTimetables[term][selectedTimetable];

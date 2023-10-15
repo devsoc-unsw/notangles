@@ -1,6 +1,5 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme, FormControl, MenuItem, Select, InputLabel } from '@mui/material';
-import { createDefaultTimetable } from '../../utils/timetableHelpers';
+import { AppBar, Toolbar, Typography, useMediaQuery, useTheme, FormControl, MenuItem, Select } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -39,16 +38,6 @@ const NavbarTitle = styled(Typography)`
   z-index: 1201;
 `;
 
-const Weak = styled('span')`
-  font-weight: 300;
-  opacity: 0.8;
-  margin-left: 15px;
-  font-size: 90%;
-  vertical-align: middle;
-  position: relative;
-  bottom: 1px;
-  z-index: 1201;
-`;
 
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
@@ -60,10 +49,8 @@ const Navbar: React.FC = () => {
     year,
     setTerm,
     setYear,
-    selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
-    setDisplayTimetables,
     termsData
   } = useContext(AppContext);
 
@@ -74,18 +61,15 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const selectTerm = (e: any) => {
-    // // TODO: need to handle selecting that corresponding term n reloading term data/resetting timetable?
+    const defaultStartTimetable = 0;
+
     let newTermName = e.target.value.split(', ')[0]
     let termNum = 'T' + newTermName.split(' ')[1]
     let newYear = e.target.value.split(', ')[1]
-    // // TODO:fix this so that we switch the termId for the current tab
-    // // TODO:implement error message to ask user if they want to reset the current timetable (if it has any data) b4 switching terms
-    // NEW IDEA: TODO: use arrow buttons to switch between terms - we shld keep independent timetables for each term and change/restore these when we switch between the terms
 
     setTerm(termNum)
     setYear(newYear)
     setTermName(newTermName)
-    const defaultStartTimetable = 0;
     setSelectedTimetable(defaultStartTimetable);
     setSelectedClasses(displayTimetables[termNum][defaultStartTimetable].selectedClasses);
     setCreatedEvents(displayTimetables[termNum][defaultStartTimetable].createdEvents);
@@ -105,14 +89,10 @@ const Navbar: React.FC = () => {
           />
           <NavbarTitle variant="h6">
             Notangles
-            {/* <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak> */}
           </NavbarTitle>
           <FormControl>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
               value={isMobile ? term : termName.concat(', ', year)}
-              label="terms"
               onChange={selectTerm}
             >
               {
