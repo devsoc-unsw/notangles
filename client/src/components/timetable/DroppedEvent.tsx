@@ -28,6 +28,7 @@ const StyledLocationIcon = styled(LocationOn)`
 
 const DroppedEvent: React.FC<DroppedEventProps> = ({
   eventId,
+  y,
   eventPeriod,
   cardWidth,
   clashIndex,
@@ -142,11 +143,14 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
+  // console.log(eventPeriod, y)
+
   return (
     <>
       <StyledCard
         card={eventPeriod}
         nDays={days.length}
+        y={y}
         earliestStartTime={earliestStartTime}
         isSquareEdges={isSquareEdges}
         cardWidth={cardWidth}
@@ -203,7 +207,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
               <TouchRipple ref={rippleRef} />
             </Grid>
           </StyledCardInnerGrid>
-          {fullscreenVisible && (
+          {fullscreenVisible && eventPeriod.type === 'event' && (
             <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
               <MoreHoriz fontSize="large" />
             </ExpandButton>

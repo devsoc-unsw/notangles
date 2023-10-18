@@ -351,7 +351,7 @@ export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) 
  * @param element The HTML element corresponding to the card for that period
  */
 export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement) => {
-  if (data.type === 'event') {
+  if (data.type.includes('event')) {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
     if (classCards.get(data) === element) classCards.delete(data);

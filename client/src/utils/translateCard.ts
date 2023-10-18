@@ -20,10 +20,7 @@ export const classTranslateX = (
   width?: number,
   cellWidth?: number,
 ) => {
-  console.log(card.type);
   if (card.type === 'inventoryEvent' && nDays) {
-    console.log('hi');
-    // console.log(card, `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`);
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
   // This classCard is for a scheduled class
@@ -32,7 +29,6 @@ export const classTranslateX = (
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
     // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
-    // console.log(card, (cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing));
     return `${(cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
@@ -42,7 +38,6 @@ export const classTranslateX = (
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
     // plus the margin separating the days of the week from unscheduled section
-    console.log(card, `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`);
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
 
@@ -64,8 +59,13 @@ export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
  * @param card The card
  * @returns The scale factor of a card's height based on its duration relative to a standard one hour class
  */
-export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
-  card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
+export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) => {
+  if (card && card.type === 'inventoryEvent') {
+    return 1;
+  } else {
+    return card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
+  }
+};
 
 /**
  * Translates a card vertically from the top left hand corner of the timetable
@@ -82,7 +82,11 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(classCard);
 
-  if (isScheduledPeriod(classCard)) {
+  if (classCard.type === 'inventoryEvent' && y !== undefined) {
+    // This classCard is for an unscheduled event, i.e. it belongs in the inventory
+    // Use the specified y-value
+    result = y;
+  } else if (isScheduledPeriod(classCard)) {
     // This classCard is for a scheduled class
     // The number of rows to offset down
     const offsetRows = classCard.time.start - earliestStartTime;

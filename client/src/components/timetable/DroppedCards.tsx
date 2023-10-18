@@ -6,7 +6,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { Activity, CourseCode } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
-import { ClassCard, morphCards } from '../../utils/Drag';
+import { ClassCard, morphCards, EventCard } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
 
@@ -29,7 +29,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const classCards: ClassCard[] = [];
 
   const keyCounter = useRef(0);
-  const inventoryCards = useRef<ClassCard[]>([]);
+  const inventoryCards = useRef<(ClassCard | EventCard)[]>([]);
 
   const droppedCardsRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +65,14 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     });
   });
 
+  Object.entries(createdEvents).forEach(([_, eventPeriod]) => {
+    if (eventPeriod.type === 'inventoryEvent' && !inventoryCards.current.includes(eventPeriod)) {
+      inventoryCards.current.push(eventPeriod);
+    }
+  });
+
   // Clear any inventory cards which no longer exist
-  inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card));
+  inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card) || Object.values(createdEvents).includes(card));
 
   const prevCardKeys = new Map(cardKeys);
   morphCards(prevClassCards.current, classCards).forEach((morphCard, i) => {
@@ -151,6 +157,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
       droppedEvents.push(
         <DroppedEvent
           key={key}
+          y={eventPeriod.type === 'inventoryEvent' ? inventoryCards.current.indexOf(eventPeriod) : undefined}
           eventId={key}
           eventPeriod={eventPeriod}
           cardWidth={cardWidth as number}

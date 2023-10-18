@@ -199,7 +199,7 @@ const App: React.FC = () => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
       prev[classData.courseCode][classData.activity] = null;
-      console.log(prev)
+      // console.log(prev)
       return prev;
     });
   };
@@ -429,7 +429,7 @@ const App: React.FC = () => {
    *  Update the bounds of the timetable (start time, end time, number of days) whenever a change is made to the timetable
    */
   const updateTimetableDaysAndTimes = () => {
-    console.log(...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time).map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)));
+    // console.log(...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time).map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)));
     setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),

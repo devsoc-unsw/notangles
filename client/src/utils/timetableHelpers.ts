@@ -131,9 +131,9 @@ const areIdenticalTimetables = (
   if (currentPointer === -1) {
     return false;
   }
-  console.log(createdEvents);
+  // console.log(createdEvents);
   const scheduledEvents = Object.values(createdEvents).filter((ev) => ev.type === 'event');
-  console.log(scheduledEvents);
+  // console.log(scheduledEvents);
 
   return (
     currentActions.length > 0 &&
