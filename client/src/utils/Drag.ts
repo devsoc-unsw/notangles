@@ -39,7 +39,7 @@ export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is
 let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
 let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
 let dropTarget: ClassCard | EventPeriod | null = null; // The period the dragTarget is currently hovering over/last hovered over
-let dragSource: ClassCard | null = null; // The original period of the dragTarget
+let dragSource: ClassCard | EventPeriod | null = null; // The original period of the dragTarget
 let dragElement: HTMLElement | null = null; // The HTML element associated with the dragTarget
 let inventoryElement: HTMLElement | null = null; // The HTML element that is the unscheduled column
 let lastX = 0; // The current x-coordinate of the dragTarget
@@ -219,7 +219,7 @@ const updateDropzones = () => {
   // console.log('updating');
   // console.log(dropzones);
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
-    if (dropTarget?.type === 'event') return;
+    if (dropTarget && 'event' in dropTarget) return;
 
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
@@ -337,10 +337,10 @@ let updateTimeout: number;
  * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) => {
-  data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
+  'event' in data ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
-  const cards = data.type === 'event' ? eventCards : classCards;
+  const cards = 'event' in data ? eventCards : classCards;
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => updateCards(cards), 0);
 };
@@ -351,7 +351,7 @@ export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) 
  * @param element The HTML element corresponding to the card for that period
  */
 export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement) => {
-  if (data.type.includes('event')) {
+  if ('event' in data) {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
     if (classCards.get(data) === element) classCards.delete(data);
@@ -405,7 +405,7 @@ const updateDropTarget = (now?: boolean) => {
     !dragTargetCourse ||
     !dragTarget ||
     !dragElement ||
-    dragTarget.type === 'event' ||
+    'event' in dragTarget ||
     (!now && Date.now() - lastUpdate < updateDelay)
   ) {
     return;
@@ -433,7 +433,7 @@ const updateDropTarget = (now?: boolean) => {
 
   // Find the period with the greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
-    .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
+    .filter(([classPeriod]) => dragTarget && !('event' in dragTarget) && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
@@ -462,7 +462,8 @@ const updateDropTarget = (now?: boolean) => {
   // newDropTarget is the actual period that is associated with the result
   // It may be a ClassPeriod (i.e. the same period as result) if the class is moved to a dropzone in the timetable
   // It may be an InventoryPeriod if the class is moved to the inventory
-  const newDropTarget = result !== null ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
+  const newDropTarget =
+    result !== null || 'event' in dragTarget ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
 
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
     // Card moved over a valid period
@@ -517,7 +518,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
 
     if (to.includes(fromCard)) {
       match = fromCard;
-    } else if (fromCard.type !== 'event') {
+    } else if (!('event' in fromCard)) {
       const fromElement = dropzones.get(fromCard);
 
       if (fromElement) {
@@ -818,40 +819,6 @@ window.addEventListener(
   { passive: false },
 );
 
-const isOverInventory = () => {
-  if (dragElement) {
-    const { style } = dragElement;
-    style.transition = defaultTransition;
-    style.left = toPx(0);
-    style.top = toPx(0);
-
-    if (dragTarget?.type === 'event') {
-      // Snap an event to the nearest grid cell and update its time accordingly
-      const gridChildren = dragElement.parentElement?.parentElement?.children;
-      const dragrect = dragElement.children[0].getBoundingClientRect();
-
-      if (gridChildren && dragTarget) {
-        const baserect = gridChildren[1].getBoundingClientRect();
-
-        // x and y displacement of the drag target from the start-point of the grid
-        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
-        const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
-
-        // Get the size of an arbitrary grid cell
-        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
-
-        // Get the grid coordinates of the dragTarget when released
-        return Math.floor(displacementx / itemRect.width);
-        // const [colIndex, rowIndex] = [
-        //   Math.floor(displacementx / itemRect.width),
-        //   Math.round(displacementy / itemRect.height),
-        // ];
-      }
-    }
-  }
-  return null;
-};
-
 /**
  * Handler function to drop a card into a dropzone
  */
@@ -862,7 +829,7 @@ const drop = () => {
     style.left = toPx(0);
     style.top = toPx(0);
 
-    if (dragTarget?.type === 'event' || dragTarget?.type === 'inventoryEvent') {
+    if (dragTarget && 'event' in dragTarget) {
       makeUnscheduledDropZone();
       // console.log('event');
       // Snap an event to the nearest grid cell and update its time accordingly
