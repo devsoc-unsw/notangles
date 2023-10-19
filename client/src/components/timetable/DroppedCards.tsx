@@ -72,7 +72,13 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   });
 
   // Clear any inventory cards which no longer exist
-  inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card) || Object.values(createdEvents).includes(card));
+  inventoryCards.current = inventoryCards.current.filter((card) => {
+    if ('event' in card) {
+      return Object.values(createdEvents).includes(card);
+    } else {
+      return classCards.includes(card);
+    }
+  });
 
   const prevCardKeys = new Map(cardKeys);
   morphCards(prevClassCards.current, classCards).forEach((morphCard, i) => {
