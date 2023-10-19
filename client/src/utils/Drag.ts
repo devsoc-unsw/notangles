@@ -216,8 +216,6 @@ const eventCards = new Map<EventPeriod, HTMLElement>();
  * Updates the CSS for the dropzones to render them as valid or invalid based on the current drop target
  */
 const updateDropzones = () => {
-  // console.log('updating');
-  // console.log(dropzones);
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
     if (dropTarget && 'event' in dropTarget) return;
 
@@ -237,9 +235,9 @@ const updateDropzones = () => {
       }
     }
 
-    if (!classPeriod && !isScheduledPeriod(dropTarget)) {
-      // console.log('hello', element, canDrop, isDropTarget, opacity);
-    } // is inventory, and drop target is inventory class
+    // if (!classPeriod && !isScheduledPeriod(dropTarget)) {
+    //   // console.log('hello', element, canDrop, isDropTarget, opacity);
+    // } // is inventory, and drop target is inventory class
 
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
@@ -282,7 +280,6 @@ const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
  */
 const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
-    // console.log(cardData);
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
