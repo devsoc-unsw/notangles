@@ -206,8 +206,8 @@ devDependencies:
     specifier: 0.10.0
     version: 0.10.0
   vite-plugin-svgr:
-    specifier: 3.3.0
-    version: 3.3.0(typescript@5.2.2)(vite@4.4.9)
+    specifier: 4.1.0
+    version: 4.1.0(typescript@5.2.2)(vite@4.4.9)
   vite-tsconfig-paths:
     specifier: 4.2.1
     version: 4.2.1(typescript@5.2.2)(vite@4.4.9)
@@ -4835,8 +4835,8 @@ packages:
       - terser
     dev: true
 
-  /vite-plugin-svgr@3.3.0(typescript@5.2.2)(vite@4.4.9):
-    resolution: {integrity: sha512-vWZMCcGNdPqgziYFKQ3Y95XP0d0YGp28+MM3Dp9cTa/px5CKcHHrIoPl2Jw81rgVm6/ZUNONzjXbZQZ7Kw66og==}
+  /vite-plugin-svgr@4.1.0(typescript@5.2.2)(vite@4.4.9):
+    resolution: {integrity: sha512-v7Qic+FWmCChgQNGSI4V8X63OEYsdUoLt66iqIcHozq9bfK/Dwmr0V+LBy1NE8CE98Y8HouEBJ+pto4AMfN5xw==}
     peerDependencies:
       vite: ^2.6.0 || 3 || 4
     dependencies:
