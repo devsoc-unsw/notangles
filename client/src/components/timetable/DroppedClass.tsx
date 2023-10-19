@@ -165,7 +165,6 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     );
   }
 
-
   return (
     <>
       <StyledCard

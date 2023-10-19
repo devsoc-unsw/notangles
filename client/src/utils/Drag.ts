@@ -6,7 +6,6 @@ import {
   ClassPeriod,
   ClassTime,
   CourseData,
-  EventInventoryPeriod,
   EventPeriod,
   EventTime,
   InInventory,
@@ -289,7 +288,6 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     }
 
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
-    // element.style.color = 'pink';
 
     const inner = element.children[0] as HTMLElement;
     inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
@@ -572,19 +570,11 @@ let lastFrame = Date.now();
 
 // EXPERIMENT
 const makeUnscheduledDropZone = () => {
-  let opacity = '0';
-  // if (isOverInventory() === 5) {
-  //   opacity = '0.85';
-  // } else {
-  //   opacity = '0';
-  // }
-  // console.log(isOverInventory());
   if (inventoryElement !== null) {
     inventoryElement.style.opacity = '0.85';
     inventoryElement.style.pointerEvents = 'auto';
     inventoryElement.style.zIndex = '700';
   }
-  // console.log('exploring', inventoryElement);
 };
 
 /**
@@ -828,7 +818,6 @@ const drop = () => {
 
     if (dragTarget && 'event' in dragTarget) {
       makeUnscheduledDropZone();
-      // console.log('event');
       // Snap an event to the nearest grid cell and update its time accordingly
       const gridChildren = dragElement.parentElement?.parentElement?.children;
       const dragrect = dragElement.children[0].getBoundingClientRect();

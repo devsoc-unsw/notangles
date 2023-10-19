@@ -143,8 +143,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
 
-  // console.log(eventPeriod, y)
-
   return (
     <>
       <StyledCard

@@ -76,7 +76,6 @@ export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
  * @returns The CSS for the number of pixels to translate vertically
  */
 export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStartTime: number, y?: number) => {
-  //TODO: SOMETHING TO DO WITH UNSCHEDULED EVENTS, FIX THE Y
   let result = 0;
 
   // The height of the card in hours relative to the default height of one (hour)

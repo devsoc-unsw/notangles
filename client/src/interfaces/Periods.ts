@@ -69,16 +69,10 @@ export interface InventoryPeriod {
   activity: Activity;
 }
 
-export interface EventInventoryPeriod {
-  type: 'inventoryEvent';
-  event: EventData;
-  time: null;
-}
 export interface EventPeriod {
   type: 'event' | 'inventoryEvent';
   event: EventData;
   time: EventTime;
-  // time: EventTime | InInventory;
 }
 
 export interface EventTime {

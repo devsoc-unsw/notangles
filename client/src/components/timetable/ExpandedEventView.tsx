@@ -141,11 +141,6 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
         type: 'inventoryEvent',
       },
     });
-
-    console.log('unschedule', id);
-
-    // CHange to turning event into inventory item somehow
-    // handleDeleteEvent(id)
   }
 
   useEventDrag(updateEventTime, unscheduleEvent);

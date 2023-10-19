@@ -67,9 +67,6 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
 
 const getEventPeriods = (eventPeriods: EventPeriod[]) => {
   return eventPeriods.filter((event) => (event ? event.type === 'event' : []));
-  // return eventPeriods
-  //   .flatMap((activities) => Object.values(activities))
-  //   .flatMap((classData) => (classData ? classData.periods : []));
 };
 
 /**
@@ -82,7 +79,7 @@ const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEven
   const clashes: Set<ClassPeriod | EventPeriod> = new Set();
 
   const currSelectedClasses = Object.values(selectedClasses);
-  const eventPeriods = Object.values(createdEvents).filter((ev) => ev.time !== null);
+  const eventPeriods = Object.values(createdEvents).filter((ev) => ev.type == 'event');
 
   // filter out unscheduled events
 
