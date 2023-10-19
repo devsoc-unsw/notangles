@@ -4,7 +4,6 @@ import {
   ClassPeriod,
   ClassTime,
   CreatedEvents,
-  EventInventoryPeriod,
   EventPeriod,
   EventTime,
   SelectedClasses,

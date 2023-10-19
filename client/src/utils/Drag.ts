@@ -39,7 +39,7 @@ export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is
 let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
 let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
 let dropTarget: ClassCard | EventPeriod | null = null; // The period the dragTarget is currently hovering over/last hovered over
-let dragSource: ClassCard | null = null; // The original period of the dragTarget
+let dragSource: ClassCard | EventPeriod | null = null; // The original period of the dragTarget
 let dragElement: HTMLElement | null = null; // The HTML element associated with the dragTarget
 let inventoryElement: HTMLElement | null = null; // The HTML element that is the unscheduled column
 let lastX = 0; // The current x-coordinate of the dragTarget
@@ -216,10 +216,8 @@ const eventCards = new Map<EventPeriod, HTMLElement>();
  * Updates the CSS for the dropzones to render them as valid or invalid based on the current drop target
  */
 const updateDropzones = () => {
-  // console.log('updating');
-  // console.log(dropzones);
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
-    if (dropTarget?.type === 'event') return;
+    if (dropTarget && 'event' in dropTarget) return;
 
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
@@ -237,9 +235,9 @@ const updateDropzones = () => {
       }
     }
 
-    if (!classPeriod && !isScheduledPeriod(dropTarget)) {
-      // console.log('hello', element, canDrop, isDropTarget, opacity);
-    } // is inventory, and drop target is inventory class
+    // if (!classPeriod && !isScheduledPeriod(dropTarget)) {
+    //   // console.log('hello', element, canDrop, isDropTarget, opacity);
+    // } // is inventory, and drop target is inventory class
 
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
@@ -282,7 +280,6 @@ const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
  */
 const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
-    // console.log(cardData);
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
@@ -337,7 +334,7 @@ let updateTimeout: number;
  * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) => {
-  data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
+  'event' in data ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
   const cards = data.type === 'event' ? eventCards : classCards;
@@ -351,7 +348,7 @@ export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) 
  * @param element The HTML element corresponding to the card for that period
  */
 export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement) => {
-  if (data.type.includes('event')) {
+  if ('event' in data) {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
     if (classCards.get(data) === element) classCards.delete(data);
@@ -433,7 +430,7 @@ const updateDropTarget = (now?: boolean) => {
 
   // Find the period with the greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
-    .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
+    .filter(([classPeriod]) => dragTarget && !('event' in dragTarget) && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
@@ -462,7 +459,8 @@ const updateDropTarget = (now?: boolean) => {
   // newDropTarget is the actual period that is associated with the result
   // It may be a ClassPeriod (i.e. the same period as result) if the class is moved to a dropzone in the timetable
   // It may be an InventoryPeriod if the class is moved to the inventory
-  const newDropTarget = result !== null ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
+  const newDropTarget =
+    result !== null || 'event' in dragTarget ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
 
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
     // Card moved over a valid period
@@ -517,7 +515,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
 
     if (to.includes(fromCard)) {
       match = fromCard;
-    } else if (fromCard.type !== 'event') {
+    } else if (!('event' in fromCard)) {
       const fromElement = dropzones.get(fromCard);
 
       if (fromElement) {
