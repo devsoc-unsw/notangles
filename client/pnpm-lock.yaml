@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@axa-fr/react-oidc':
+    specifier: 7.7.0
+    version: 7.7.0(react@18.2.0)
   '@date-io/date-fns':
     specifier: 2.17.0
     version: 2.17.0(date-fns@2.30.0)
@@ -229,6 +232,29 @@ packages:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.19
     dev: true
+
+  /@axa-fr/oidc-client-service-worker@7.7.0:
+    resolution: {integrity: sha512-+ZxB2xvdpPA77Hn5Ls/G03uJJCrF+yaXyZAr2uLX8cpcdNucGe+vg1YgIhvy5zxPRA3hnLrbtlOxo5SpSdfVTg==}
+    dev: false
+
+  /@axa-fr/oidc-client@7.7.0:
+    resolution: {integrity: sha512-kYKbGZlTtU3TL5sRWdu3xAJ6O4lkaUe7VtrW4XpAQJUbj2qjQbGp7kmHoAeH9y6wtPOnpiUHjByWyuw7E91UYw==}
+    requiresBuild: true
+    dependencies:
+      '@axa-fr/oidc-client-service-worker': 7.7.0
+    dev: false
+
+  /@axa-fr/react-oidc@7.7.0(react@18.2.0):
+    resolution: {integrity: sha512-/UNjjQmrszJoZ6GCcgma1qpZVMnC9vca5HNwR/zlbRa1KVkD0inb5H1crFARcioBrI5v9TFy8dH47W3HrEnqmA==}
+    requiresBuild: true
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@axa-fr/oidc-client': 7.7.0
+      '@axa-fr/oidc-client-service-worker': 7.7.0
+      base64-js: 1.5.1
+      react: 18.2.0
+    dev: false
 
   /@babel/code-frame@7.22.13:
     resolution: {integrity: sha512-XktuhWlJ5g+3TJXc5upd9Ks1HutSArik6jf2eAjYFyIOf4ej3RN+184cZbzDvbPnuTJIUhPKKJE3cIsYTiAT3w==}
@@ -2371,6 +2397,10 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
+
+  /base64-js@1.5.1:
+    resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+    dev: false
 
   /brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}

@@ -1,3 +1,6 @@
+import { render } from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { OidcProvider } from '@axa-fr/react-oidc';
 import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -552,36 +555,59 @@ const App: React.FC = () => {
     },
   };
 
+  const oidcConfig = {
+    client_id: 'ASK JARRED',
+    redirect_uri: window.location.origin + '/test1',
+    silent_redirect_uri: window.location.origin + '/test2',
+    scope: 'openid',
+    authority: 'https://id.csesoc.unsw.edu.au/.well-known/openid-configuration',
+    authority_configuration: {
+      authorization_endpoint: 'https://id.csesoc.unsw.edu.au/oauth2/auth',
+      token_endpoint: 'https://id.csesoc.unsw.edu.au/oauth2/token',
+      // userinfo_endpoint: String,
+      // end_session_endpoint: String,
+      // revocation_endpoint: String,
+      // check_session_iframe: String,
+      issuer: 'csesoc',
+    },
+    // service_worker_relative_url: '/OidcServiceWorker.js',
+    service_worker_only: false,
+    demonstrating_proof_of_possession: false,
+  };
+
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <GlobalStyles styles={globalStyle} />
-          <StyledApp>
-            <Navbar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={assignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <TimetableTabs />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Footer />
-                <Alerts />
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </LocalizationProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <OidcProvider {...oidcConfig}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <GlobalStyles styles={globalStyle} />
+            <StyledApp>
+              <Navbar />
+
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={assignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <TimetableTabs />
+                  <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  <ICSButton
+                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                  >
+                    save to calendar
+                  </ICSButton>
+                  <Footer />
+                  <Alerts />
+                </Content>
+              </ContentWrapper>
+            </StyledApp>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </OidcProvider>
   );
 };
 
