@@ -8,7 +8,11 @@ export class UserController {
 
   @Get('profile/:userId')
   getUserInfo(@Param('userId') userId: string) {
-    return this.userService.getUserInfo(userId);
+    try {
+      return this.userService.getUserInfo(userId);
+    } catch (e) {
+      return e;
+    }
   }
 
   @Get('settings/:userId')
