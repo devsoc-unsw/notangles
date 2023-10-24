@@ -14,7 +14,14 @@ model User {
   userId       String      @id
   createdAt    DateTime    @default(now())
   deleteUserAt DateTime // Temporary, Max's TTL method
-  timetables   Timetable[]
+  google_uid   String
+  lastLogin    DateTime?
+  firstname    String?
+  lastname     String?
+  email        String
+  profileURL   String?
+  timetable    Timetable[]
+  settings     Settings?
 }
 
 model Event {
@@ -22,7 +29,7 @@ model Event {
   name        String
   location    String?
   description String?
-  color       String  @default("#1F7E8C")
+  colour      String  @default("#1F7E8C")
 
   // Event Time
   day         String
@@ -48,6 +55,22 @@ model Timetable {
   createdEvents   Event[]
   user            User     @relation(fields: [userId], references: [userId])
   userId          String
+}
+
+// Weak entity
+model Settings {
+  userId                    String  @unique
+  user                      User    @relation(fields: [userId], references: [userId])
+  is12HourMode              Boolean
+  isDarkMode                Boolean
+  isSquareEdges             Boolean
+  isHideFullClasses         Boolean
+  isDefaultUnscheduled      Boolean
+  isHideClassInfo           Boolean
+  isSortAlphabetic          Boolean
+  isShowOnlyOpenClasses     Boolean
+  isHideExamClasses         Boolean
+  isConvertToLocalTimezone  Boolean
 }
 
 // future: add settings for individual timetables, rounded corners, show only open classes etc?

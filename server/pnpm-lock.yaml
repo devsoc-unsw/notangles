@@ -76,6 +76,9 @@ devDependencies:
   '@types/node':
     specifier: 18.17.12
     version: 18.17.12
+  dotenv:
+    specifier: 16.3.1
+    version: 16.3.1
   prettier:
     specifier: 3.0.3
     version: 3.0.3
@@ -1419,6 +1422,11 @@ packages:
   /diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
+    dev: true
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
     dev: true
 
   /ee-first@1.1.1:
