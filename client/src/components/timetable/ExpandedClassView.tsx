@@ -247,7 +247,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
               colorPickerAnchorEl={colorPickerAnchorEl}
               handleOpenColorPicker={handleOpenColorPicker}
               handleCloseColorPicker={handleCloseColorPicker}
-              handleSaveNewTutorialColor={() => {
+              handleSaveNewColor={() => {
                 setAssignedColors({ ...assignedColors, [code]: color });
                 handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
               }}

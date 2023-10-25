@@ -229,7 +229,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
 
-  const handleSaveNewTutorialColor = () => {
+  const handleSaveNewColor = () => {
     handleUpdateEvent(eventPeriod.event.id);
     handleCloseDialog();
   };
@@ -432,7 +432,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                     colorPickerAnchorEl={colorPickerAnchorEl}
                     handleOpenColorPicker={handleOpenColorPicker}
                     handleCloseColorPicker={handleCloseColorPicker}
-                    handleSaveNewTutorialColor={handleSaveNewTutorialColor}
+                    handleSaveNewColor={handleSaveNewColor}
                   />
                 </StyledListItem>
               </>

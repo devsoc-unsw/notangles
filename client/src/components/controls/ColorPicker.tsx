@@ -10,7 +10,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   colorPickerAnchorEl,
   handleOpenColorPicker,
   handleCloseColorPicker,
-  handleSaveNewTutorialColor
+  handleSaveNewColor
 }) => {
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -30,10 +30,10 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           >
             Choose Colour
           </Button>
-          {handleSaveNewTutorialColor && <Button
+          {handleSaveNewColor && <Button
             variant="outlined"
             size="small"
-            onClick={handleSaveNewTutorialColor}
+            onClick={handleSaveNewColor}
           >
             Save
           </Button>}
