@@ -1,4 +1,4 @@
-import { Box, Button, ListItem, Popover, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
 
 import { ColorPickerProps } from '../../interfaces/PropTypes';
@@ -10,6 +10,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   colorPickerAnchorEl,
   handleOpenColorPicker,
   handleCloseColorPicker,
+  handleSaveNewTutorialColor
 }) => {
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -19,15 +20,24 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
       <ColorIndicatorBox backgroundColor={color} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
-        <Button
-          disableElevation
-          variant="contained"
-          size="small"
-          aria-describedby={colorPickerPopoverId}
-          onClick={handleOpenColorPicker}
-        >
-          Choose Colour
-        </Button>
+        <ButtonGroup>
+          <Button
+            disableElevation
+            variant="contained"
+            size="small"
+            aria-describedby={colorPickerPopoverId}
+            onClick={handleOpenColorPicker}
+          >
+            Choose Colour
+          </Button>
+          {handleSaveNewTutorialColor && <Button
+            variant="outlined"
+            size="small"
+            onClick={handleSaveNewTutorialColor}
+          >
+            Save
+          </Button>}
+        </ButtonGroup>
       </StyledButtonContainer>
       <Popover
         id={colorPickerPopoverId}

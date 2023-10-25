@@ -11,7 +11,7 @@ jobs:
       matrix:
         component: [client, server]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
@@ -41,7 +41,7 @@ jobs:
     name: 'Check Dependencies (auto-timetabler-server)'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10.4'
