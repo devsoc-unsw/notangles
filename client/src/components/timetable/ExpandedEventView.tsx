@@ -423,10 +423,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 </StyledListItem>
               </>
             ) : (
-              <div>
-                <div style={{ padding: '10px' }}>
-                  <Divider />
-                </div>
+              <>
+                <Divider style={{ padding: '10px' }} />
                 <StyledListItem>
                   <ColorPicker
                     color={newColor}
@@ -437,7 +435,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                     handleSaveNewTutorialColor={handleSaveNewTutorialColor}
                   />
                 </StyledListItem>
-              </div>
+              </>
             )}
           </StyledDialogContent>
         </>

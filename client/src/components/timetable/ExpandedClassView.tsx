@@ -1,6 +1,7 @@
 import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Save } from '@mui/icons-material';
 import {
   Dialog,
+  Divider,
   Grid,
   IconButton,
   ListItemIcon,
@@ -98,7 +99,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const handleCloseWrapper = (value: ClassData): void => {
     handleClose(value);
     setColor(assignedColors[code]);
-  }
+  };
   /**
    * @param currPeriod The currently selected period
    * @param courses The currently selected courses
@@ -235,31 +236,25 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
           </StyledListItemIcon>
           <Typography>
             Capacity {currClass.enrolments} / {currClass.capacity}
-          </Typography>          
+          </Typography>
         </StyledListItem>
-
-        <StyledListItem>         
-          <ColorPicker
-            color={color}
-            setColor={setColor}
-            colorPickerAnchorEl={colorPickerAnchorEl}
-            handleOpenColorPicker={handleOpenColorPicker}
-            handleCloseColorPicker={handleCloseColorPicker}
+        <>
+          <Divider style={{ padding: '10px' }} />
+          <StyledListItem style={{ justifyContent: 'center' }}>
+            <ColorPicker
+              color={color}
+              setColor={setColor}
+              colorPickerAnchorEl={colorPickerAnchorEl}
+              handleOpenColorPicker={handleOpenColorPicker}
+              handleCloseColorPicker={handleCloseColorPicker}
+              handleSaveNewTutorialColor={() => {
+                setAssignedColors({ ...assignedColors, [code]: color });
+                handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
+              }}
             />
-        </StyledListItem>
+          </StyledListItem>
+        </>
       </StyledDialogContent>
-      <ExecuteButton
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setAssignedColors({...assignedColors, [code]: color});
-              handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
-            }}
-            disabled={color === assignedColors[code]}
-          >
-            <Save />
-            SAVE
-          </ExecuteButton>
     </Dialog>
   );
 };
