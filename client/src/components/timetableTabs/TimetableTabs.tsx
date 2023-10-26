@@ -162,35 +162,42 @@ const TimetableTabs: React.FC = () => {
 
   return (
     <TabsSection>
-      <TabsWrapper tabTheme={tabTheme}>
+      <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
         <DragDropContext onDragEnd={handleSortTabs}>
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
                 {Object.keys(displayTimetables).length > 0 ? displayTimetables[term].map((timetable: TimetableData, index: number) => (
-                  <Draggable draggableId={index.toString()} index={index}>
-                    {(props) => (
-                      <Box
-                        ref={props.innerRef}
-                        {...props.draggableProps}
-                        {...props.dragHandleProps}
-                        key={index}
-                        sx={TabStyle(index, selectedTimetable)}
-                        onClick={() => handleSwitchTimetables(displayTimetables[term], index)}
-                        onContextMenu={(e) => handleRightTabClick(e, index)}
-                      >
-                        {timetable.name}
-                        {selectedTimetable === index ? (
-                          <StyledSpan onClick={handleMenuClick}>
-                            <MoreHoriz />
-                          </StyledSpan>
-                        ) : (
-                          <></>
-                        )}
-                      </Box>
-                    )}
+                  <Draggable draggableId={index.toString()} index={index} key={index}>
+                    {(props) => {
+                      if (props.draggableProps.style?.transform) {
+                        let shift = props.draggableProps.style?.transform.split(",")[0];
+                        // forcing horizontal movement
+                        props.draggableProps.style.transform = shift + ", 0)";
+                      }
+                      return (
+                        <Box
+                          onMouseDown={() => handleSwitchTimetables(displayTimetables[term], index)}
+                          onContextMenu={(e) => handleRightTabClick(e, index)}
+                          ref={props.innerRef}
+                          {...props.draggableProps}
+                          {...props.dragHandleProps}
+                          sx={TabStyle(index, selectedTimetable)}
+                        >
+                          {timetable.name}
+                          {selectedTimetable === index ? (
+                            <StyledSpan onClick={handleMenuClick}>
+                              <MoreHoriz />
+                            </StyledSpan>
+                          ) : (
+                            <></>
+                          )}
+                        </Box>
+                      );
+                    }}
                   </Draggable>
                 )) : null}
+
                 {props.placeholder}
               </StyledTabs>
             )}
