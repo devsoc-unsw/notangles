@@ -12,7 +12,6 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 
-
 const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
@@ -37,7 +36,6 @@ const NavbarTitle = styled(Typography)`
   z-index: 1201;
 `;
 
-
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
 
@@ -51,9 +49,7 @@ const Navbar: React.FC = () => {
             onMouseOver={() => setCurrLogo(notanglesLogoGif)}
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
-          <NavbarTitle variant="h6">
-            Notangles
-          </NavbarTitle>
+          <NavbarTitle variant="h6">Notangles</NavbarTitle>
           <TermSelect />
           <CustomModal
             title="About"
@@ -71,7 +67,7 @@ const Navbar: React.FC = () => {
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
         </Toolbar>
       </StyledNavBar>
-    </NavbarBox >
+    </NavbarBox>
   );
 };
 
