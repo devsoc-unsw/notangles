@@ -8,9 +8,8 @@ import { AuthController } from './auth.controller';
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',
   useFactory: async (authService: AuthService) => {
-    const client = await buildOpenIdClient(); // secret sauce! build the dynamic client before injecting it into the strategy for use in the constructor super call.
-    const strategy = new OidcStrategy(authService, client);
-    return strategy;
+    const client = await buildOpenIdClient();
+    return new OidcStrategy(authService, client);
   },
   inject: [AuthService]
 };
