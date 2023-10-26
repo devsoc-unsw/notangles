@@ -212,7 +212,8 @@ const CustomEvent: React.FC = () => {
     );
     setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
 
-    if (daysShort.indexOf(day) == 5 || daysShort.indexOf(day) == 6) {
+    // Update displayed days on timetable if new event time out of current displayed days
+    if (daysShort.indexOf(day) === 5 || daysShort.indexOf(day) === 6) {
       setDays((prev: string[]) => (daysShort.indexOf(day) ? [...prev] : resizeWeekArray(daysShort.indexOf(day))));
     }
 
@@ -296,8 +297,8 @@ const CustomEvent: React.FC = () => {
           color="primary"
           disableElevation
           disabled={
-            (eventType === 'General' && (eventName === '' || location === '' || eventDays.length === 0)) ||
-            (eventType === 'Tutoring' && (courseCode === '' || classCode === ''))
+            (eventType === 'General' && (!eventName || eventDays.length === 0)) ||
+            (eventType === 'Tutoring' && (!courseCode || !classCode))
           }
           onClick={createEvents}
         >
