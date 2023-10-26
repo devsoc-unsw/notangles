@@ -6,8 +6,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
-  imports: [AuthModule, UserModule, FriendModule, PrismaModule],
+  imports: [ConfigModule.forRoot(), AuthModule, UserModule, FriendModule, PrismaModule],
   controllers: [AppController],
   providers: [AppService],
 })

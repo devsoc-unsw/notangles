@@ -21,7 +21,7 @@ export class UserService {
       const data = {
         ...userData,
         createdAt: userData.createdAt.toISOString(),
-        deleteUserAt: userData.deleteUserAt.toISOString(),
+        // deleteUserAt: userData.deleteUserAt.toISOString(),
         lastLogin: userData.lastLogin.toISOString(),
         loggedIn: true, // Change this later
         friends: [], // Need to add friends relation to the DB

@@ -73,4 +73,11 @@ model Settings {
   isConvertToLocalTimezone Boolean
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text // MediumText may be needed for MySql
+  expiresAt DateTime
+}
+
 // future: add settings for individual timetables, rounded corners, show only open classes etc?

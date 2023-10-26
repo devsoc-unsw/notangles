@@ -13,8 +13,6 @@ export class UserDTO {
   //@IsString()
   //status: string;
 
-  @IsString()
-  google_uid: string;
 
   @IsString()
   firstname: string;
