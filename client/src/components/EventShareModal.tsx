@@ -159,7 +159,7 @@ const EventShareModal = () => {
         <PreviewCard bgColour={event.color}>
           <StyledListItemText>
             <StyledCardName>{event.name}</StyledCardName>
-            <StyledLocationIcon />
+            {event.location && <StyledLocationIcon />}
             {event.location}
           </StyledListItemText>
         </PreviewCard>
@@ -172,3 +172,8 @@ const EventShareModal = () => {
   );
 };
 export default EventShareModal;
+
+// { event.location && (
+//   <StyledLocationIcon />
+//   {event.location}
+// )}
