@@ -167,7 +167,7 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {displayTimetables[term].map((timetable: TimetableData, index: number) => (
+                {Object.keys(displayTimetables).length > 0 ? displayTimetables[term].map((timetable: TimetableData, index: number) => (
                   <Draggable draggableId={index.toString()} index={index}>
                     {(props) => (
                       <Box
@@ -190,7 +190,7 @@ const TimetableTabs: React.FC = () => {
                       </Box>
                     )}
                   </Draggable>
-                ))}
+                )) : null}
                 {props.placeholder}
               </StyledTabs>
             )}

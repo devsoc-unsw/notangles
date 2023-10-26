@@ -67,6 +67,17 @@ export const getAvailableTermDetails = async () => {
       termNumber = 0; // This is a summer term.
     }
 
+    // // TODO: hardcoding to see behaviour of preserving prev timetable if the data exists
+    // termName = `Summer Term`;
+    // term = "Summer";
+    // termNumber = 0; // This is a summer term.
+
+    // TODO: hardcoding to see behaviour of preserving prev timetable for new year
+    // termNumber = 1;
+    // term = `T${termNumber}`;
+    // termName = `Term ${termNumber}`;
+    // year = "2024"
+
     const prevDateSplit = prevTermRes.split('/');
     let prevFirstDate = prevDateSplit.reverse().join('-');
     let prevTermName = `Summer Term`;
@@ -75,14 +86,20 @@ export const getAvailableTermDetails = async () => {
 
     if (prevTermIdRes.length === REGULAR_TERM_STR_LEN) {
       // This is not a summer term.
-      // prevTermNum = parseInt(prevTermIdRes.substring(1));
-      // prevTerm = `T${prevTermNum}`;
-      // prevTermName = `Term ${prevTermNum}`;
-
-      // TODO: hardcoded for now to be Term 2
-      prevTermNum = 2
+      prevTermNum = parseInt(prevTermIdRes.substring(1));
       prevTerm = `T${prevTermNum}`;
       prevTermName = `Term ${prevTermNum}`;
+
+      // TODO: hardcoded for now to be Term 2
+      prevTermNum = 2;
+      prevTerm = `T${prevTermNum}`;
+      prevTermName = `Term ${prevTermNum}`;
+
+      // TODO: testing restoring across years
+      // prevTermName = `Summer Term`;
+      // prevTerm = "Summer";
+      // prevTermNum = 0; // This is a summer term.
+
     } else {
       // This is a summer term.
       prevTermName = `Summer Term`;

@@ -158,10 +158,13 @@ const App: React.FC = () => {
       const oldData = storage.get('timetables');
 
       // avoid overwriting data from previous save
+      // TODO: need to check if this logic is correct - do we want to preserve more than just the prev timetable data
       const newTimetableTerms = {
-        ...oldData,
-        ...(oldData.hasOwnProperty(termsData.prevTerm.term) ? {} : { [termsData.prevTerm.term]: createDefaultTimetable() }),
-        ...(oldData.hasOwnProperty(termsData.newTerm.term) ? {} : { [termsData.newTerm.term]: createDefaultTimetable() }),
+        // ...oldData,
+        // ...(oldData.hasOwnProperty(termsData.prevTerm.term) ? {} : { [termsData.prevTerm.term]: createDefaultTimetable() }),
+        // ...(oldData.hasOwnProperty(termsData.newTerm.term) ? {} : { [termsData.newTerm.term]: createDefaultTimetable() }),
+        ...({ [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term) ? oldData[termsData.prevTerm.term] : createDefaultTimetable() }),
+        ...({ [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term) ? oldData[termsData.newTerm.term] : createDefaultTimetable() }),
       }
 
       setDisplayTimetables(newTimetableTerms)
@@ -169,7 +172,7 @@ const App: React.FC = () => {
     };
 
     fetchReliably(fetchTermData);
-  }, [year]);
+  }, []);
 
   useEffect(() => {
     /**
