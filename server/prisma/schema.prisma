@@ -11,17 +11,17 @@ datasource db {
 }
 
 model User {
-  userId       String      @id
-  createdAt    DateTime    @default(now())
-  deleteUserAt DateTime // Temporary, Max's TTL method
-  google_uid   String
-  lastLogin    DateTime?
-  firstname    String?
-  lastname     String?
-  email        String
-  profileURL   String?
-  timetable    Timetable[]
-  settings     Settings?
+  userId         String      @id // same as zid
+  createdAt      DateTime    @default(now())
+  lastLogin      DateTime?   @default(now())
+  firstname      String?
+  lastname       String?
+  email          String
+  profileURL     String?
+  timetable      Timetable[]
+  settings       Settings?
+  friends        User[]      @relation("UserFriends")
+  friendRequests User[]      @relation("UserFriends")
 }
 
 model Event {
@@ -43,34 +43,34 @@ model Class {
   id          String     @unique
   classType   String // e.g. Lecture, Tutorial, Laboratory, etc. Not putting into enum because there are other whacky classTypes 
   courseName  String?
-  Timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
 }
 
 model Timetable {
-  id              String   @id
+  id              String   @id @unique
   name            String
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]
-  user            User     @relation(fields: [userId], references: [userId])
+  user            User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId          String
 }
 
 // Weak entity
 model Settings {
-  userId                    String  @unique
-  user                      User    @relation(fields: [userId], references: [userId])
-  is12HourMode              Boolean
-  isDarkMode                Boolean
-  isSquareEdges             Boolean
-  isHideFullClasses         Boolean
-  isDefaultUnscheduled      Boolean
-  isHideClassInfo           Boolean
-  isSortAlphabetic          Boolean
-  isShowOnlyOpenClasses     Boolean
-  isHideExamClasses         Boolean
-  isConvertToLocalTimezone  Boolean
+  userId                   String  @unique
+  user                     User    @relation(fields: [userId], references: [userId])
+  is12HourMode             Boolean
+  isDarkMode               Boolean
+  isSquareEdges            Boolean
+  isHideFullClasses        Boolean
+  isDefaultUnscheduled     Boolean
+  isHideClassInfo          Boolean
+  isSortAlphabetic         Boolean
+  isShowOnlyOpenClasses    Boolean
+  isHideExamClasses        Boolean
+  isConvertToLocalTimezone Boolean
 }
 
 // future: add settings for individual timetables, rounded corners, show only open classes etc?
