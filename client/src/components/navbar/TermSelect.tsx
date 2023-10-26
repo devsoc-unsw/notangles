@@ -4,29 +4,35 @@ import React, { useContext } from 'react';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { styled } from '@mui/system';
 
+const StyledSelect = styled(Select)(({ theme }) => ({
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'white',
+  },
+  '.MuiSelect-icon': {
+    color: 'white',
+  },
+  '&:focus': {
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'white',
+    },
+  },
+}));
 
 const TermSelect: React.FC = () => {
+  const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
+    useContext(AppContext);
 
-  const {
-    term,
-    termName,
-    setTermName,
-    year,
-    setTerm,
-    setYear,
-    setSelectedTimetable,
-    displayTimetables,
-    termsData
-  } = useContext(AppContext);
-
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } =
-    useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
 
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const termData = new Set([termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year), termsData.newTerm.termName.concat(', ', termsData.newTerm.year)]);
+  const termData = new Set([
+    termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year),
+    termsData.newTerm.termName.concat(', ', termsData.newTerm.year),
+  ]);
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
@@ -35,9 +41,9 @@ const TermSelect: React.FC = () => {
     let termNum = 'T' + newTermName.split(' ')[1];
     let newYear = e.target.value.split(', ')[1];
 
-    if (e.target.value.includes("Summer")) {
+    if (e.target.value.includes('Summer')) {
       // This is a summer term.
-      termNum = "Summer";
+      termNum = 'Summer';
     }
 
     setTerm(termNum);
@@ -47,29 +53,30 @@ const TermSelect: React.FC = () => {
     setSelectedClasses(displayTimetables[termNum][defaultStartTimetable].selectedClasses);
     setCreatedEvents(displayTimetables[termNum][defaultStartTimetable].createdEvents);
     setSelectedCourses(displayTimetables[termNum][defaultStartTimetable].selectedCourses);
-  }
+  };
 
   return (
-    <FormControl>
-      <InputLabel sx={{ marginTop: 1, color: 'white' }}>Select your term</InputLabel>
-      <Select
-        label="Select your term"
+    <FormControl sx={{ paddingRight: '15px' }}>
+      <InputLabel id="select-term-label" sx={{ color: 'white' }}>
+        Select term
+      </InputLabel>
+      <StyledSelect
+        size="small"
+        labelId="select-term-label"
+        id="select-term"
+        sx={{ color: 'white' }}
+        label="Select term"
         value={isMobile ? term : termName.concat(', ', year)}
-        sx={{
-          marginTop: 1,
-          color: 'white',
-          '.MuiSelect-icon': {
-            color: 'white'
-          },
-        }}
         onChange={selectTerm}
       >
-        {
-          Array.from(termData).map((term, index) => {
-            return <MenuItem key={index} value={term}>{term}</MenuItem>;
-          })
-        }
-      </Select>
+        {Array.from(termData).map((term, index) => {
+          return (
+            <MenuItem key={index} value={term}>
+              {term}
+            </MenuItem>
+          );
+        })}
+      </StyledSelect>
     </FormControl>
   );
 };
