@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-// import { Postgres, Prisma } from '@sentry/node/types/tracing/integrations';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import * as session from 'express-session';
 import * as passport from 'passport';
