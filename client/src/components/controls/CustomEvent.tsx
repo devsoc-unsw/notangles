@@ -13,11 +13,10 @@ import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
-import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
+import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
-import { resizeWeekArray } from '../../utils/eventTimes';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
