@@ -1,17 +1,15 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Add, Close, LocationOn } from '@mui/icons-material';
 import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
-import { Add, Close, LocationOn } from '@mui/icons-material';
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
-import { StyledDialogTitle, StyledTitleContainer } from '../styles/ControlStyles';
-import { ExecuteButton, StyledListItemText } from '../styles/CustomEventStyles';
+import { StyledDialogTitle, StyledTitleContainer, StyledTopIcons } from '../styles/ControlStyles';
+import { ExecuteButton, StyledListItemText, StyledLocationIcon } from '../styles/CustomEventStyles';
 import { StyledCardName } from '../styles/DroppedCardStyles';
 import { createEventObj } from '../utils/createEvent';
-import { StyledTopIcons } from '../styles/ControlStyles';
 import { resizeWeekArray } from '../utils/eventTimes';
-import { StyledLocationIcon } from '../styles/CustomEventStyles';
 import isBase64 from 'is-base64';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
@@ -66,20 +64,23 @@ const EventShareModal = () => {
     startTime: number,
     endTime: number,
   ) => {
+    const eventValues = Object.values(createdEvents);
+
     if (
-      Object.values(createdEvents).some((event) => event.event.name === name) &&
-      Object.values(createdEvents).some((event) => event.time.day === day) &&
-      Object.values(createdEvents).some((event) => event.time.start === startTime) &&
-      Object.values(createdEvents).some((event) => event.time.end === endTime) &&
-      Object.values(createdEvents).some((event) => event.event.location === location) &&
-      Object.values(createdEvents).some((event) => event.event.description === description) &&
-      Object.values(createdEvents).some((event) => event.event.color === color)
+      eventValues.some((event) => event.event.name === name) &&
+      eventValues.some((event) => event.time.day === day) &&
+      eventValues.some((event) => event.time.start === startTime) &&
+      eventValues.some((event) => event.time.end === endTime) &&
+      eventValues.some((event) => event.event.location === location) &&
+      eventValues.some((event) => event.event.description === description) &&
+      eventValues.some((event) => event.event.color === color)
     ) {
       setAlertMsg('Event already exists');
       setErrorVisibility(true);
       return;
     }
     const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
+
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
@@ -172,8 +173,3 @@ const EventShareModal = () => {
   );
 };
 export default EventShareModal;
-
-// { event.location && (
-//   <StyledLocationIcon />
-//   {event.location}
-// )}
