@@ -11,6 +11,7 @@ import App from './App';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import * as swRegistration from './serviceWorkerRegistration';
+import EventShareModal from './components/EventShareModal';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
@@ -23,7 +24,9 @@ const Root: React.FC = () => (
     <CourseContextProvider>
       <BrowserRouter>
         <Routes>
-          <Route element={<App />} path="/" />
+          <Route element={<App />} path="/">
+            <Route path="/event/:encrypted" element={<EventShareModal />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>
