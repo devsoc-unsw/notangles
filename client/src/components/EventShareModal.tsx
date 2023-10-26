@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
@@ -12,6 +12,7 @@ import { createEventObj } from '../utils/createEvent';
 import { StyledTopIcons } from '../styles/ControlStyles';
 import { resizeWeekArray } from '../utils/eventTimes';
 import { StyledLocationIcon } from '../styles/CustomEventStyles';
+import isBase64 from 'is-base64';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 24px 16px;
@@ -40,8 +41,15 @@ const EventShareModal = () => {
   const [showEventPreview, setShowEventPreview] = useState(false);
   const [event, setEvent] = useState({ name: '', location: '', color: '' });
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { setAlertMsg, setErrorVisibility, setDays, earliestStartTime, setEarliestStartTime, latestEndTime, setLatestEndTime } =
-    useContext(AppContext);
+  const {
+    setAlertMsg,
+    setErrorVisibility,
+    setDays,
+    earliestStartTime,
+    setEarliestStartTime,
+    latestEndTime,
+    setLatestEndTime,
+  } = useContext(AppContext);
 
   useEffect(() => {
     if (encrypted) {
@@ -56,7 +64,7 @@ const EventShareModal = () => {
     color: string,
     day: number,
     startTime: number,
-    endTime: number
+    endTime: number,
   ) => {
     if (
       Object.values(createdEvents).some((event) => event.event.name === name) &&
@@ -90,7 +98,7 @@ const EventShareModal = () => {
    */
   const checkRender = (link: string) => {
     setLink(link);
-    var isBase64 = require('is-base64');
+
     if (isBase64(link) && link.length > 0) {
       try {
         const linkEvent = JSON.parse(atob(link));
@@ -122,7 +130,7 @@ const EventShareModal = () => {
         linkEvent.event.color,
         linkEvent.time.day,
         linkEvent.time.start,
-        linkEvent.time.end
+        linkEvent.time.end,
       );
     } catch {
       setAlertMsg('Invalid event link');
