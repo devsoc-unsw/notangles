@@ -18,4 +18,7 @@ export class EventDto {
   location: string;
   description: string;
   colour: string;
+  day: string;
+  start: Date;
+  end: Date;
 }

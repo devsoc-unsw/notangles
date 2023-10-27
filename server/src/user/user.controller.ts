@@ -35,6 +35,8 @@ export class UserController {
 
   @Post('timetable')
   createUserTimetable(
+    @Body('zid') zid: string,
+    @Body('timetableName') timetableName: string,
     @Body('timetableId') timetableId: string,
     @Body('selectedCourses') selectedCourses: string[],
     @Body('selectedClasses') selectedClasses: any[], // change type later

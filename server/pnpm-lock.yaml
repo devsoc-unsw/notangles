@@ -65,6 +65,9 @@ dependencies:
   ts-protoc-gen:
     specifier: 0.15.0
     version: 0.15.0
+  uuid:
+    specifier: 9.0.1
+    version: 9.0.1
 
 devDependencies:
   '@types/express':
@@ -3188,6 +3191,11 @@ packages:
   /utils-merge@1.0.1:
     resolution: {integrity: sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=}
     engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
     dev: false
 
   /v8-compile-cache-lib@3.0.1:
