@@ -10,11 +10,8 @@ import { SettingsDto } from './settings.dto';
 import { TimetableDto } from './timetable.dto';
 
 export class UserDTO {
-  //@IsString()
-  //status: string;
-
   @IsString()
-  google_uid: string;
+  zid: string;
 
   @IsString()
   firstname: string;

@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  userId         String      @id // same as zid
+  zid            String      @id // same as zid
   createdAt      DateTime    @default(now())
   lastLogin      DateTime?   @default(now())
   firstname      String?
@@ -53,14 +53,14 @@ model Timetable {
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]
-  user            User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  userId          String
+  user            User     @relation(fields: [zid], references: [zid], onDelete: Cascade)
+  zid             String
 }
 
 // Weak entity
 model Settings {
-  userId                   String  @unique
-  user                     User    @relation(fields: [userId], references: [userId])
+  zid                      String  @unique
+  user                     User    @relation(fields: [zid], references: [zid])
   is12HourMode             Boolean
   isDarkMode               Boolean
   isSquareEdges            Boolean
