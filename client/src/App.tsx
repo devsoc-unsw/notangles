@@ -32,6 +32,7 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { Outlet } from 'react-router-dom';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -567,6 +568,7 @@ const App: React.FC = () => {
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
                 />
+                <Outlet />
                 <TimetableTabs />
                 <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 <ICSButton
