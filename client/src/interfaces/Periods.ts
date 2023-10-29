@@ -39,7 +39,6 @@ export interface TimetableData {
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
   assignedColors: Record<string, string>;
-
 }
 
 export interface InventoryData {

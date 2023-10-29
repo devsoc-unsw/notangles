@@ -79,7 +79,7 @@ const EventShareModal = () => {
       setErrorVisibility(true);
       return;
     }
-    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime);
+    const newEvent = createEventObj(name, location, description, color, day, startTime, endTime, 'General');
 
     setCreatedEvents({
       ...createdEvents,
