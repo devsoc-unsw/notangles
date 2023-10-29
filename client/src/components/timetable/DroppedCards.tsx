@@ -65,6 +65,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     });
   });
 
+  // Push all unscheduled events to the inventory
   Object.entries(createdEvents).forEach(([_, eventPeriod]) => {
     if (eventPeriod.type === 'inventoryEvent' && !inventoryCards.current.includes(eventPeriod)) {
       inventoryCards.current.push(eventPeriod);

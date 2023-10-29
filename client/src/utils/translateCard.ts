@@ -20,9 +20,11 @@ export const classTranslateX = (
   width?: number,
   cellWidth?: number,
 ) => {
+  // This classCard is for an unscheduled event (see how to reduce repetition later)
   if (card.type === 'inventoryEvent' && nDays) {
     return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
   }
+
   // This classCard is for a scheduled class
   if (isScheduledPeriod(card) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;

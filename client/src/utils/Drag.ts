@@ -1,5 +1,5 @@
 import { contentPadding, lightTheme } from '../constants/theme';
-import { daysLong, timetableWidth } from '../constants/timetable';
+import { timetableWidth } from '../constants/timetable';
 import {
   ClassData,
   ClassPeriod,
@@ -278,7 +278,6 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     if (isElevated) {
       element.style.zIndex = getElevatedZIndex();
     } else if (Number(element.style.zIndex) >= initialElevatedZIndex) {
-      console;
       element.style.zIndex = String(Number(element.style.zIndex) - elevatedZIndexOffset);
     }
 
@@ -357,8 +356,8 @@ type GetInventoryIndexHandler = () => number;
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
 let updateEventTime: EventTimeHandler = () => {};
-let unscheduledEvent: EventUnscheduleHandler = () => {};
-let scheduledEvent: EventScheduleHandler = () => {};
+let unscheduleEvent: EventUnscheduleHandler = () => {};
+let scheduleEvent: EventScheduleHandler = () => {};
 let getInventoryIndex: GetInventoryIndexHandler = () => {
   return Number(null);
 };
@@ -384,8 +383,8 @@ export const useEventDrag = (
   getInventoryIndexHandler: GetInventoryIndexHandler,
 ) => {
   updateEventTime = eventTimeHandler;
-  unscheduledEvent = eventUnscheduleHandler;
-  scheduledEvent = eventScheduleHandler;
+  unscheduleEvent = eventUnscheduleHandler;
+  scheduleEvent = eventScheduleHandler;
   getInventoryIndex = getInventoryIndexHandler;
 };
 
@@ -403,17 +402,20 @@ let lastRecHeight = -1;
  * @param now Whether to force an update
  */
 const updateDropTarget = (now?: boolean) => {
-  // Snap event to unscheduled so height is reduced, it makes things a bit slower though :(
+  // Ensure that event 'snaps' to required height when hovered over or away from inventory column
+  // It makes things drag seem a bit slower so not sure if we want to keep it :((
   if (!now && Date.now() - lastUpdate < updateDelay) {
     return;
   }
+
   if (dragTarget && 'event' in dragTarget) {
     if (getColIndex() === getInventoryIndex()) {
+      // Only unschedule events that haven't been unscheduled already
       if (dragTarget.type === 'event') {
-        unscheduledEvent(dragTarget.event.id);
+        unscheduleEvent(dragTarget.event.id);
       }
     } else {
-      scheduledEvent(dragTarget.event.id);
+      scheduleEvent(dragTarget.event.id);
     }
   }
 
@@ -589,7 +591,9 @@ let clientX = 0;
 let clientY = 0;
 let lastFrame = Date.now();
 
-// EXPERIMENT
+/**
+ * Ensure unscheduled drop zone is created when user drags an event
+ */
 const makeUnscheduledDropZone = () => {
   if (inventoryElement !== null) {
     inventoryElement.style.opacity = '0.85';
@@ -707,7 +711,7 @@ export const setDragTarget = (
       prevHeight = -1;
       resizeObserver.observe(dragElement);
 
-      if (cardData.type !== 'event') {
+      if (cardData.type !== 'event' && cardData.type !== 'inventoryEvent') {
         if (cardData.type === 'class') {
           currentClassTime = cardData.time;
         } else {
@@ -722,10 +726,10 @@ export const setDragTarget = (
     dragTarget = cardData;
     dropTarget = cardData;
 
+    // This seems to bug out if I use (cardData && !('event' in cardData))
     if (cardData?.type !== 'event' && cardData?.type !== 'inventoryEvent') {
       dragSource = cardData;
       updateCards(classCards);
-      // for some reason this gets called on cards too, will not say anything
       updateDropzones();
     } else {
       updateCards(eventCards);
@@ -824,6 +828,7 @@ window.addEventListener(
   { passive: false },
 );
 
+// HELP too hungry to figure out how to avoid repetition rn
 const getColIndex = () => {
   if (dragElement) {
     if (dragTarget && 'event' in dragTarget) {
@@ -881,9 +886,9 @@ const drop = () => {
           Math.round(displacementy / itemRect.height),
         ];
 
-        // Don't unschedule an event that is already in inventory
         if (colIndex === getInventoryIndex() && dragTarget.type !== 'inventoryEvent') {
-          unscheduledEvent(dragTarget.event.id);
+          // Unschedule event
+          unscheduleEvent(dragTarget.event.id);
         } else {
           const eventLength = dragTarget.time.end - dragTarget.time.start;
 

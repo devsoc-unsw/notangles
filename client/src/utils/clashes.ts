@@ -65,8 +65,13 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
   }
 };
 
-const getEventPeriods = (eventPeriods: EventPeriod[]) => {
-  return eventPeriods.filter((event) => (event ? event.type === 'event' : []));
+/**
+ * Get scheduled events only so clashes don't happen with unscheduled events
+ * @param createdEvents The created custom events
+ * @returns A list of scheduled custom events
+ */
+const getScheduledEventPeriods = (createdEvents: EventPeriod[]) => {
+  return createdEvents.filter((event) => (event ? event.type === 'event' : []));
 };
 
 /**
@@ -81,21 +86,19 @@ const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEven
   const currSelectedClasses = Object.values(selectedClasses);
   const eventPeriods = Object.values(createdEvents).filter((ev) => ev.type == 'event');
 
-  // filter out unscheduled events
-
   if (currSelectedClasses !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);
     findClashingPeriods(clashes, classPeriods, classPeriods);
   }
 
   if (eventPeriods !== null) {
-    const selectedEventPeriods = getEventPeriods(eventPeriods);
+    const selectedEventPeriods = getScheduledEventPeriods(eventPeriods);
     findClashingPeriods(clashes, selectedEventPeriods, eventPeriods);
   }
 
   if (currSelectedClasses !== null && eventPeriods !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);
-    const selectedEventPeriods = getEventPeriods(eventPeriods);
+    const selectedEventPeriods = getScheduledEventPeriods(eventPeriods);
     findClashingPeriods(clashes, classPeriods, selectedEventPeriods);
   }
 

@@ -130,7 +130,6 @@ const areIdenticalTimetables = (
   if (currentPointer === -1) {
     return false;
   }
-
   return (
     currentActions.length > 0 &&
     areIdenticalClasses(currentActions[currentPointer].classes, selectedClasses) &&
