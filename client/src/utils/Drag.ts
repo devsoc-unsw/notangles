@@ -233,10 +233,6 @@ const updateDropzones = () => {
       }
     }
 
-    // if (!classPeriod && !isScheduledPeriod(dropTarget)) {
-    //   // console.log('hello', element, canDrop, isDropTarget, opacity);
-    // } // is inventory, and drop target is inventory class
-
     element.style.opacity = opacity;
     element.style.pointerEvents = canDrop ? 'auto' : 'none';
     element.style.zIndex = canDrop ? '700' : '50';
@@ -280,7 +276,6 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
-      // console.log(cardData);
       element.style.zIndex = getElevatedZIndex();
     } else if (Number(element.style.zIndex) >= initialElevatedZIndex) {
       console;
@@ -414,7 +409,6 @@ const updateDropTarget = (now?: boolean) => {
   }
   if (dragTarget && 'event' in dragTarget) {
     if (getColIndex() === getInventoryIndex()) {
-      // console.log('unschedule');
       if (dragTarget.type === 'event') {
         unscheduledEvent(dragTarget.event.id);
       }
@@ -507,7 +501,6 @@ const updateDropTarget = (now?: boolean) => {
       }
     } else if (isScheduledPeriod(dragTarget)) {
       // A scheduled class was moved to the inventory
-      console.log('unschedule class');
       currentClassTime = undefined;
       removeClass(getClassDataFromPeriod(dragTarget)!);
     }
@@ -667,8 +660,6 @@ export const setDragTarget = (
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
 ) => {
-  // console.log('set target');
-  // console.log(cardData);
   if (cardData !== dragTarget) {
     const scrollElement = getScrollElement();
 
@@ -737,7 +728,6 @@ export const setDragTarget = (
       // for some reason this gets called on cards too, will not say anything
       updateDropzones();
     } else {
-      // console.log('updatecards');
       updateCards(eventCards);
       makeUnscheduledDropZone();
     }
@@ -893,11 +883,7 @@ const drop = () => {
 
         // Don't unschedule an event that is already in inventory
         if (colIndex === getInventoryIndex() && dragTarget.type !== 'inventoryEvent') {
-          // console.log();
-          // console.log('event over inventory');
           unscheduledEvent(dragTarget.event.id);
-          console.log(dragTarget);
-          // updateEventTime(null, eventId);
         } else {
           const eventLength = dragTarget.time.end - dragTarget.time.start;
 
