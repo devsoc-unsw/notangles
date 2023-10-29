@@ -703,7 +703,7 @@ export const setDragTarget = (
     dragTarget = cardData;
     dropTarget = cardData;
 
-    if (cardData?.type !== 'event') {
+    if (cardData?.type !== 'event' && cardData?.type !== 'inventoryEvent') {
       dragSource = cardData;
       updateCards(classCards);
       // for some reason this gets called on cards too, will not say anything
