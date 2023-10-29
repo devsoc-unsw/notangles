@@ -11,9 +11,7 @@ import {
   Save,
 } from '@mui/icons-material';
 import {
-  Button,
   Dialog,
-  Divider,
   Grid,
   IconButton,
   InputAdornment,
@@ -23,7 +21,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Box, styled } from '@mui/system';
+import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useState } from 'react';
 
@@ -33,7 +31,6 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventTime } from '../../interfaces/Periods';
 import { ExpandedEventViewProps } from '../../interfaces/PropTypes';
 import {
-  StyledButtonContainer,
   StyledDialogContent,
   StyledDialogTitle,
   StyledListItem,
@@ -48,6 +45,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import { ColorDivider } from '../../styles/ExpandedViewStyles';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -424,7 +422,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
               </>
             ) : (
               <>
-                <Divider style={{ padding: '10px' }} />
+                <ColorDivider />
                 <StyledListItem>
                   <ColorPicker
                     color={newColor}

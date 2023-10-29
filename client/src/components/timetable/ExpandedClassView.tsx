@@ -38,7 +38,7 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import LocationDropdown from './LocationDropdown';
 import ColorPicker from '../controls/ColorPicker';
-import { ExecuteButton } from '../../styles/CustomEventStyles';
+import { ColorDivider, ColorListItem } from '../../styles/ExpandedViewStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -239,8 +239,8 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
           </Typography>
         </StyledListItem>
         <>
-          <Divider style={{ padding: '10px' }} />
-          <StyledListItem style={{ justifyContent: 'center' }}>
+          <ColorDivider />
+          <ColorListItem>
             <ColorPicker
               color={color}
               setColor={setColor}
@@ -252,7 +252,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
                 handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
               }}
             />
-          </StyledListItem>
+          </ColorListItem>
         </>
       </StyledDialogContent>
     </Dialog>
