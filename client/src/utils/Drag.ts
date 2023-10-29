@@ -250,13 +250,12 @@ const updateDropzones = () => {
  * @returns Whether the card associated with that period is currently being dragged around
  */
 const getIsElevated = (cardData: ClassCard | EventPeriod) => {
-  if (cardData.type !== 'event' && dragTarget?.type !== 'event') {
+  if (!('event' in cardData) && dragTarget && !('event' in dragTarget)) {
     const isMatchingClasses =
       isScheduledPeriod(cardData) &&
       isScheduledPeriod(dragTarget) &&
       cardData.courseCode === dragTarget.courseCode &&
       cardData.activity === dragTarget.activity;
-
     return dragTarget !== null && (cardData === dragTarget || isMatchingClasses);
   } else {
     return dragTarget !== null && cardData === dragTarget;
@@ -282,8 +281,10 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
     const isElevated = getIsElevated(cardData);
 
     if (isElevated) {
+      // console.log(cardData);
       element.style.zIndex = getElevatedZIndex();
     } else if (Number(element.style.zIndex) >= initialElevatedZIndex) {
+      console;
       element.style.zIndex = String(Number(element.style.zIndex) - elevatedZIndexOffset);
     }
 
@@ -838,9 +839,8 @@ const drop = () => {
           Math.round(displacementy / itemRect.height),
         ];
 
-        // console.log(colIndex, rowIndex);
-
-        if (colIndex == 5) {
+        // Don't unschedule an event that is already in inventory
+        if (colIndex == 5 && dragTarget.type !== 'inventoryEvent') {
           console.log('event over inventory');
           unscheduledEvent(dragTarget.event.id);
           // updateEventTime(null, eventId);
