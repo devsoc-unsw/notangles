@@ -434,7 +434,7 @@ const App: React.FC = () => {
     setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
-        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time).map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)),
+        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event').map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
         prev,
       ),
@@ -443,7 +443,7 @@ const App: React.FC = () => {
     setLatestEndTime((prev: number) =>
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
-        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time!.end)),
+        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event').map(([_, eventPeriod]) => Math.ceil(eventPeriod.time!.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
         prev,
       ),
@@ -454,7 +454,7 @@ const App: React.FC = () => {
         0,
         Math.max(
           getLatestDotW(selectedCourses),
-          ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time).map(([_, eventPeriod]) => eventPeriod.time!.day),
+          ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event').map(([_, eventPeriod]) => eventPeriod.time!.day),
           days.length, // Saturday and/or Sunday columns persist until the next reload even if they aren't needed anymore
           5, // default
         ),

@@ -77,7 +77,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const [newColor, setNewColor] = useState<string>(color as string);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { days, isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -134,7 +134,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   const unscheduleEvent = (id: string) => {
-    console.log('remove event')
+    // console.log('remove event')
     setCreatedEvents({
       ...createdEvents,
       [id]: {
@@ -154,7 +154,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     });
   }
 
-  useEventDrag(updateEventTime, unscheduleEvent, scheduleEvent);
+  const getInventoryIndex = () => {
+    return days.length;
+  }
+
+  useEventDrag(updateEventTime, unscheduleEvent, scheduleEvent, getInventoryIndex);
 
   const handleUpdateEvent = (id: string) => {
     console.log('bring back event')

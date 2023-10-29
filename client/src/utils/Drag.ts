@@ -1,5 +1,5 @@
 import { contentPadding, lightTheme } from '../constants/theme';
-import { timetableWidth } from '../constants/timetable';
+import { daysLong, timetableWidth } from '../constants/timetable';
 import {
   ClassData,
   ClassPeriod,
@@ -357,12 +357,16 @@ type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 type EventUnscheduleHandler = (recordKey: string) => void;
 type EventScheduleHandler = (recordKey: string) => void;
+type GetInventoryIndexHandler = () => number;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
 let updateEventTime: EventTimeHandler = () => {};
 let unscheduledEvent: EventUnscheduleHandler = () => {};
 let scheduledEvent: EventScheduleHandler = () => {};
+let getInventoryIndex: GetInventoryIndexHandler = () => {
+  return Number(null);
+};
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -382,10 +386,12 @@ export const useEventDrag = (
   eventTimeHandler: EventTimeHandler,
   eventUnscheduleHandler: EventUnscheduleHandler,
   eventScheduleHandler: EventScheduleHandler,
+  getInventoryIndexHandler: GetInventoryIndexHandler,
 ) => {
   updateEventTime = eventTimeHandler;
   unscheduledEvent = eventUnscheduleHandler;
   scheduledEvent = eventScheduleHandler;
+  getInventoryIndex = getInventoryIndexHandler;
 };
 
 const updateDelay = 30; // The delay between drop target updates
@@ -403,10 +409,15 @@ let lastRecHeight = -1;
  */
 const updateDropTarget = (now?: boolean) => {
   // Snap event to unscheduled so height is reduced, it makes things a bit slower though :(
+  if (!now && Date.now() - lastUpdate < updateDelay) {
+    return;
+  }
   if (dragTarget && 'event' in dragTarget) {
-    if (getColIndex() === 5) {
-      console.log('unschedule');
-      unscheduledEvent(dragTarget.event.id);
+    if (getColIndex() === getInventoryIndex()) {
+      // console.log('unschedule');
+      if (dragTarget.type === 'event') {
+        unscheduledEvent(dragTarget.event.id);
+      }
     } else {
       scheduledEvent(dragTarget.event.id);
     }
@@ -881,9 +892,11 @@ const drop = () => {
         ];
 
         // Don't unschedule an event that is already in inventory
-        if (colIndex === 5 && dragTarget.type !== 'inventoryEvent') {
-          console.log('event over inventory');
+        if (colIndex === getInventoryIndex() && dragTarget.type !== 'inventoryEvent') {
+          // console.log();
+          // console.log('event over inventory');
           unscheduledEvent(dragTarget.event.id);
+          console.log(dragTarget);
           // updateEventTime(null, eventId);
         } else {
           const eventLength = dragTarget.time.end - dragTarget.time.start;
