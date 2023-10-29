@@ -234,6 +234,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     delete updatedEventData[id];
     setCreatedEvents(updatedEventData);
   };
+
+  // link sharing url for custom events
+  const url = window.location.href + 'event/' + btoa(JSON.stringify(eventPeriod));
+
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
       {isEditing ? (
@@ -402,7 +406,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => {
-                          navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                          navigator.clipboard.writeText(url);
                           setAutoVisibility(true);
                           setAlertMsg('Copied to clipboard!');
                         }}
@@ -414,8 +418,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                   readOnly: true,
                 }}
                 size="small"
-                value={btoa(JSON.stringify(eventPeriod))}
-              ></StyledEventLink>
+                value={url}
+              />
             </StyledListItem>
           </StyledDialogContent>
         </>
