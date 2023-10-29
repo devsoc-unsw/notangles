@@ -13,7 +13,6 @@ import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import TimetablesFlag from './components/ctfs/TimetablesFlag';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
 import {
   daysLong,
@@ -110,8 +109,16 @@ const App: React.FC = () => {
     setCourseData,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents, assignedColors, setAssignedColors } =
-    useContext(CourseContext);
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    createdEvents,
+    setCreatedEvents,
+    assignedColors,
+    setAssignedColors,
+  } = useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -119,10 +126,13 @@ const App: React.FC = () => {
    * Supports migration from non-assigned colors to assignedColors so timetable does not break. Can be removed after a few weeks when everyone has migrated
    */
   if (assignedColors === undefined) {
-    const colors = useColorMapper(displayTimetables[selectedTimetable].selectedCourses.map(c => c.code), {});
+    const colors = useColorMapper(
+      displayTimetables[selectedTimetable].selectedCourses.map((c) => c.code),
+      {},
+    );
     displayTimetables[selectedTimetable].assignedColors = colors;
     setAssignedColors(colors);
-  };
+  }
 
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
@@ -239,8 +249,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -282,7 +292,6 @@ const App: React.FC = () => {
           }
         } else {
           newSelectedCourses.push(addedCourse);
-
         }
         if (!courseData.map.find((i) => i.code === addedCourse.code)) {
           newCourseData.map.push(addedCourse);
@@ -293,7 +302,12 @@ const App: React.FC = () => {
       setCourseData(newCourseData);
 
       if (displayTimetables.length > 0) {
-        setAssignedColors(useColorMapper(newSelectedCourses.map(c => c.code), assignedColors));
+        setAssignedColors(
+          useColorMapper(
+            newSelectedCourses.map((c) => c.code),
+            assignedColors,
+          ),
+        );
       }
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
@@ -413,7 +427,7 @@ const App: React.FC = () => {
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [assignedColors]);
- 
+
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
@@ -568,7 +582,6 @@ const App: React.FC = () => {
                 >
                   save to calendar
                 </ICSButton>
-                <TimetablesFlag />
                 <Footer />
                 <Alerts />
               </Content>
