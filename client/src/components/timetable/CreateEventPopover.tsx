@@ -59,11 +59,11 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
     // (which is understandable since it's breaking React best practices by not being purely functional)
-    if (daysShort.indexOf(day) == 5) {
+    if (daysShort.indexOf(day) === 5) {
       const MondayToSaturday: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
       setDays((prev: string[]) => (prev.length > MondayToSaturday.length ? [...prev] : MondayToSaturday));
-    } else if (daysShort.indexOf(day) == 6) {
+    } else if (daysShort.indexOf(day) === 6) {
       setDays(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
     }
 

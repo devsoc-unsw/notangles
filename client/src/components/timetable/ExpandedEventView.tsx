@@ -231,6 +231,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     handleUpdateEvent(eventPeriod.event.id);
     handleCloseDialog();
   };
+  // link sharing url for custom events
+  const url = window.location.href + 'event/' + btoa(JSON.stringify(eventPeriod));
 
   return (
     <Dialog open={popupOpen} maxWidth="sm" onClose={handleCloseDialog}>
@@ -416,7 +418,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                       readOnly: true,
                     }}
                     size="small"
-                    value={btoa(JSON.stringify(eventPeriod))}
+                    value={url}
                   ></StyledEventLink>
                 </StyledListItem>
               </>
