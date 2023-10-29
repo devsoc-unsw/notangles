@@ -63,6 +63,7 @@ export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
   if (card && card.type === 'inventoryEvent') {
     return 1;
   } else {
+    // console.log(card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1);
     return card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
   }
 };

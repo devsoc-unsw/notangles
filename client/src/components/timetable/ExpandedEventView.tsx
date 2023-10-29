@@ -134,6 +134,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   const unscheduleEvent = (id: string) => {
+    console.log('remove event')
     setCreatedEvents({
       ...createdEvents,
       [id]: {
@@ -143,9 +144,20 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     });
   }
 
-  useEventDrag(updateEventTime, unscheduleEvent);
+  const scheduleEvent = (id: string) => {
+    setCreatedEvents({
+      ...createdEvents,
+      [id]: {
+        ...createdEvents[id],
+        type: 'event',
+      },
+    });
+  }
+
+  useEventDrag(updateEventTime, unscheduleEvent, scheduleEvent);
 
   const handleUpdateEvent = (id: string) => {
+    console.log('bring back event')
     if (!areValidEventTimes(newStartTime, newEndTime)) {
       setAlertMsg('End time is earlier than start time');
       setErrorVisibility(true);

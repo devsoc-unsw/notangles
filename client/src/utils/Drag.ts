@@ -1,4 +1,3 @@
-import { FoodBank } from '@mui/icons-material';
 import { contentPadding, lightTheme } from '../constants/theme';
 import { timetableWidth } from '../constants/timetable';
 import {
@@ -357,11 +356,13 @@ export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 type EventUnscheduleHandler = (recordKey: string) => void;
+type EventScheduleHandler = (recordKey: string) => void;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
 let updateEventTime: EventTimeHandler = () => {};
 let unscheduledEvent: EventUnscheduleHandler = () => {};
+let scheduledEvent: EventScheduleHandler = () => {};
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -377,9 +378,14 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
  * Sets the update event handler function (from App)
  * @param eventTimeHandler The event handler to use
  */
-export const useEventDrag = (eventTimeHandler: EventTimeHandler, eventUnscheduleHandler: EventUnscheduleHandler) => {
+export const useEventDrag = (
+  eventTimeHandler: EventTimeHandler,
+  eventUnscheduleHandler: EventUnscheduleHandler,
+  eventScheduleHandler: EventScheduleHandler,
+) => {
   updateEventTime = eventTimeHandler;
   unscheduledEvent = eventUnscheduleHandler;
+  scheduledEvent = eventScheduleHandler;
 };
 
 const updateDelay = 30; // The delay between drop target updates
@@ -396,6 +402,16 @@ let lastRecHeight = -1;
  * @param now Whether to force an update
  */
 const updateDropTarget = (now?: boolean) => {
+  // Snap event to unscheduled so height is reduced, it makes things a bit slower though :(
+  if (dragTarget && 'event' in dragTarget) {
+    if (getColIndex() === 5) {
+      console.log('unschedule');
+      unscheduledEvent(dragTarget.event.id);
+    } else {
+      scheduledEvent(dragTarget.event.id);
+    }
+  }
+
   // Cancel update if the dragTarget is an event, there is no drag happening, or the update is too soon (except if now is true)
   if (
     !dragTargetCourse ||
@@ -807,6 +823,31 @@ window.addEventListener(
   { passive: false },
 );
 
+const getColIndex = () => {
+  if (dragElement) {
+    if (dragTarget && 'event' in dragTarget) {
+      // Snap an event to the nearest grid cell and update its time accordingly
+      const gridChildren = dragElement.parentElement?.parentElement?.children;
+      const dragrect = dragElement.children[0].getBoundingClientRect();
+
+      if (gridChildren && dragTarget) {
+        const baserect = gridChildren[1].getBoundingClientRect();
+
+        // x and y displacement of the drag target from the start-point of the grid
+        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
+
+        // Get the size of an arbitrary grid cell
+        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
+
+        // Get the grid coordinates of the dragTarget when released
+        const colIndex = Math.floor(displacementx / itemRect.width);
+
+        return colIndex;
+      }
+    }
+  }
+};
+
 /**
  * Handler function to drop a card into a dropzone
  */
@@ -840,7 +881,7 @@ const drop = () => {
         ];
 
         // Don't unschedule an event that is already in inventory
-        if (colIndex == 5 && dragTarget.type !== 'inventoryEvent') {
+        if (colIndex === 5 && dragTarget.type !== 'inventoryEvent') {
           console.log('event over inventory');
           unscheduledEvent(dragTarget.event.id);
           // updateEventTime(null, eventId);

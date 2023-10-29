@@ -177,6 +177,7 @@ const App: React.FC = () => {
    * @param classData The data for the new class
    */
   const handleSelectClass = (classData: ClassData) => {
+    console.log('bring back')
     setSelectedClasses((prev) => {
       prev = { ...prev };
 
@@ -197,6 +198,7 @@ const App: React.FC = () => {
    * @param classData The data for the unscheduled class
    */
   const handleRemoveClass = (classData: ClassData) => {
+    console.log('remove')
     setSelectedClasses((prev) => {
       prev = { ...prev };
       prev[classData.courseCode][classData.activity] = null;
