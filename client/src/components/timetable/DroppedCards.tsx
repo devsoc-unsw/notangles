@@ -3,10 +3,10 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode } from '../../interfaces/Periods';
+import { Activity, CourseCode, EventPeriod } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
-import { ClassCard, morphCards, EventCard } from '../../utils/Drag';
+import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
 
@@ -29,7 +29,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const classCards: ClassCard[] = [];
 
   const keyCounter = useRef(0);
-  const inventoryCards = useRef<(ClassCard | EventCard)[]>([]);
+  const inventoryCards = useRef<(ClassCard | EventPeriod)[]>([]);
 
   const droppedCardsRef = useRef<HTMLDivElement>(null);
 

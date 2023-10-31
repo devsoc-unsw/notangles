@@ -15,6 +15,10 @@ type Change = { date: string; changes: string[] };
 
 const changelog: Change[] = [
   {
+    date: 'October 31, 2023',
+    changes: ['Custom events can  be unscheduled'],
+  },
+  {
     date: 'July 19, 2023',
     changes: ['Multiple timetables can be created by a user at the same time'],
   },

@@ -13,7 +13,6 @@ import {
 import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
-export type EventCard = EventPeriod;
 
 export const transitionTime = 350;
 const heightTransitionTime = 150;
@@ -330,7 +329,7 @@ let updateTimeout: number;
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) => {
+export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   'event' in data ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
@@ -344,7 +343,7 @@ export const registerCard = (data: ClassCard | EventCard, element: HTMLElement) 
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const unregisterCard = (data: ClassCard | EventCard, element: HTMLElement) => {
+export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
   if ('event' in data) {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
@@ -408,13 +407,13 @@ let lastRecHeight = -1;
  */
 const updateDropTarget = (now?: boolean) => {
   // Ensure that event 'snaps' to required height when hovered over or away from inventory column
-  // It makes things drag seem a bit slower so not sure if we want to keep it :((
+  // I feel like it makes dragging events seem a bit slower so not sure if we want to keep it :((
   if (!now && Date.now() - lastUpdate < updateDelay) {
     return;
   }
 
   if (dragTarget && 'event' in dragTarget) {
-    if (getColIndex() === getInventoryIndex()) {
+    if (getGridIndex()?.colIndex === getInventoryIndex()) {
       // Only unschedule events that haven't been unscheduled already
       if (dragTarget.type === 'event') {
         unscheduleEvent(dragTarget.event.id);
@@ -664,7 +663,7 @@ let eventId = '';
  * @param givenEventId The ID of the event being dragged around
  */
 export const setDragTarget = (
-  cardData: ClassCard | EventCard | null,
+  cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
@@ -833,8 +832,8 @@ window.addEventListener(
   { passive: false },
 );
 
-// HELP too hungry to figure out how to avoid repetition rn
-const getColIndex = () => {
+// Please help me figure out how to reduce repetition in drop with this function
+const getGridIndex = () => {
   if (dragElement) {
     if (dragTarget && 'event' in dragTarget) {
       // Snap an event to the nearest grid cell and update its time accordingly
@@ -846,14 +845,18 @@ const getColIndex = () => {
 
         // x and y displacement of the drag target from the start-point of the grid
         const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
+        const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
 
         // Get the size of an arbitrary grid cell
         const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
 
         // Get the grid coordinates of the dragTarget when released
-        const colIndex = Math.floor(displacementx / itemRect.width);
+        const [colIndex, rowIndex] = [
+          Math.floor(displacementx / itemRect.width),
+          Math.round(displacementy / itemRect.height),
+        ];
 
-        return colIndex;
+        return { colIndex, rowIndex };
       }
     }
   }
