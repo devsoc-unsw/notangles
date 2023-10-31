@@ -57,11 +57,7 @@ export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
  * @returns The scale factor of a card's height based on its duration relative to a standard one hour class
  */
 export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) => {
-  if (card && card.type === 'inventoryEvent') {
-    return 1;
-  } else {
-    return card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
-  }
+  return card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
 };
 
 /**
