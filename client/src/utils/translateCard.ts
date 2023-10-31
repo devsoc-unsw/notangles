@@ -20,7 +20,7 @@ export const classTranslateX = (
   width?: number,
   cellWidth?: number,
 ) => {
-  // This classCard is for a scheduled class
+  // This card is for a scheduled class/event
   if (isScheduledPeriod(card) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
 
@@ -30,7 +30,7 @@ export const classTranslateX = (
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
-  // This classCard is for an unscheduled class, i.e. it belongs in the inventory
+  // This card is for an unscheduled class/event, i.e. it belongs in the inventory
   if (nDays) {
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
@@ -56,8 +56,9 @@ export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
  * @param card The card
  * @returns The scale factor of a card's height based on its duration relative to a standard one hour class
  */
-export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) =>
-  card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
+export const getHeightFactor = (card?: ClassCard | EventPeriod | InInventory) => {
+  return card && isScheduledPeriod(card) ? card.time.end - card.time.start : 1;
+};
 
 /**
  * Translates a card vertically from the top left hand corner of the timetable
@@ -74,14 +75,14 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
   const heightFactor = getHeightFactor(classCard);
 
   if (isScheduledPeriod(classCard)) {
-    // This classCard is for a scheduled class
+    // This classCard is for a scheduled class/event
     // The number of rows to offset down
     const offsetRows = classCard.time.start - earliestStartTime;
 
     // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;
   } else if (y) {
-    // This classCard is for an unscheduled class, i.e. it belongs in the inventory
+    // This classCard is for an unscheduled class/event, i.e. it belongs in the inventory
     // Use the specified y-value
     result = y;
   }

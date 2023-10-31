@@ -92,6 +92,7 @@ export interface DroppedClassProps {
 
 export interface DroppedEventProps {
   eventId: string;
+  y?: number;
   eventPeriod: EventPeriod;
   cardWidth: number;
   clashIndex: number;

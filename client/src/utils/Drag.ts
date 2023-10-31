@@ -30,13 +30,18 @@ export const getElevatedShadow = (_: boolean) => 24; // How much shadow each car
  * @param data The period
  * @returns Whether the period is unscheduled
  */
-export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod =>
-  data !== null && (data as ClassPeriod).time !== undefined;
+export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod => {
+  if (data && 'event' in data) {
+    return data.type === 'event';
+  } else {
+    return data !== null && (data as ClassPeriod).time !== undefined;
+  }
+};
 
 let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
 let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
 let dropTarget: ClassCard | EventPeriod | null = null; // The period the dragTarget is currently hovering over/last hovered over
-let dragSource: ClassCard | null = null; // The original period of the dragTarget
+let dragSource: ClassCard | EventPeriod | null = null; // The original period of the dragTarget
 let dragElement: HTMLElement | null = null; // The HTML element associated with the dragTarget
 let inventoryElement: HTMLElement | null = null; // The HTML element that is the unscheduled column
 let lastX = 0; // The current x-coordinate of the dragTarget
@@ -214,7 +219,7 @@ const eventCards = new Map<EventPeriod, HTMLElement>();
  */
 const updateDropzones = () => {
   Array.from(dropzones.entries()).forEach(([classPeriod, element]) => {
-    if (dropTarget?.type === 'event') return;
+    if (dropTarget && 'event' in dropTarget) return;
 
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
@@ -244,13 +249,12 @@ const updateDropzones = () => {
  * @returns Whether the card associated with that period is currently being dragged around
  */
 const getIsElevated = (cardData: ClassCard | EventPeriod) => {
-  if (cardData.type !== 'event' && dragTarget?.type !== 'event') {
+  if (!('event' in cardData) && dragTarget && !('event' in dragTarget)) {
     const isMatchingClasses =
       isScheduledPeriod(cardData) &&
       isScheduledPeriod(dragTarget) &&
       cardData.courseCode === dragTarget.courseCode &&
       cardData.activity === dragTarget.activity;
-
     return dragTarget !== null && (cardData === dragTarget || isMatchingClasses);
   } else {
     return dragTarget !== null && cardData === dragTarget;
@@ -326,10 +330,10 @@ let updateTimeout: number;
  * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
-  data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
+  'event' in data ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
-  const cards = data.type === 'event' ? eventCards : classCards;
+  const cards = 'event' in data ? eventCards : classCards;
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => updateCards(cards), 0);
 };
@@ -340,7 +344,7 @@ export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement
  * @param element The HTML element corresponding to the card for that period
  */
 export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
-  if (data.type === 'event') {
+  if ('event' in data) {
     if (eventCards.get(data) === element) eventCards.delete(data);
   } else {
     if (classCards.get(data) === element) classCards.delete(data);
@@ -349,10 +353,18 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
+type EventUnscheduleHandler = (recordKey: string) => void;
+type EventScheduleHandler = (recordKey: string) => void;
+type GetInventoryIndexHandler = () => number;
 
 let selectClass: ClassHandler = () => {};
 let removeClass: ClassHandler = () => {};
 let updateEventTime: EventTimeHandler = () => {};
+let unscheduleEvent: EventUnscheduleHandler = () => {};
+let scheduleEvent: EventScheduleHandler = () => {};
+let getInventoryIndex: GetInventoryIndexHandler = () => {
+  return Number(null);
+};
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -368,8 +380,16 @@ export const useDrag = (selectHandler: ClassHandler, removeHandler: ClassHandler
  * Sets the update event handler function (from App)
  * @param eventTimeHandler The event handler to use
  */
-export const useEventDrag = (eventTimeHandler: EventTimeHandler) => {
+export const useEventDrag = (
+  eventTimeHandler: EventTimeHandler,
+  eventUnscheduleHandler: EventUnscheduleHandler,
+  eventScheduleHandler: EventScheduleHandler,
+  getInventoryIndexHandler: GetInventoryIndexHandler,
+) => {
   updateEventTime = eventTimeHandler;
+  unscheduleEvent = eventUnscheduleHandler;
+  scheduleEvent = eventScheduleHandler;
+  getInventoryIndex = getInventoryIndexHandler;
 };
 
 const updateDelay = 30; // The delay between drop target updates
@@ -386,12 +406,29 @@ let lastRecHeight = -1;
  * @param now Whether to force an update
  */
 const updateDropTarget = (now?: boolean) => {
+  // Ensure that event 'snaps' to required height when hovered over or away from inventory column
+  // I feel like it makes dragging events seem a bit slower so not sure if we want to keep it :((
+  if (!now && Date.now() - lastUpdate < updateDelay) {
+    return;
+  }
+
+  if (dragTarget && 'event' in dragTarget) {
+    if (getGridIndex()?.colIndex === getInventoryIndex()) {
+      // Only unschedule events that haven't been unscheduled already
+      if (dragTarget.type === 'event') {
+        unscheduleEvent(dragTarget.event.id);
+      }
+    } else {
+      scheduleEvent(dragTarget.event.id);
+    }
+  }
+
   // Cancel update if the dragTarget is an event, there is no drag happening, or the update is too soon (except if now is true)
   if (
     !dragTargetCourse ||
     !dragTarget ||
     !dragElement ||
-    dragTarget.type === 'event' ||
+    'event' in dragTarget ||
     (!now && Date.now() - lastUpdate < updateDelay)
   ) {
     return;
@@ -419,7 +456,7 @@ const updateDropTarget = (now?: boolean) => {
 
   // Find the period with the greatest area of intersection
   const bestMatch = Array.from(dropzones.entries())
-    .filter(([classPeriod]) => dragTarget && dragTarget.type !== 'event' && checkCanDrop(dragTarget, classPeriod))
+    .filter(([classPeriod]) => dragTarget && !('event' in dragTarget) && checkCanDrop(dragTarget, classPeriod))
     .map(([classPeriod, dropElement]) => {
       let area = dragElement ? getIntersectionArea(dragRect, dropElement.getBoundingClientRect()) : 0;
 
@@ -448,7 +485,8 @@ const updateDropTarget = (now?: boolean) => {
   // newDropTarget is the actual period that is associated with the result
   // It may be a ClassPeriod (i.e. the same period as result) if the class is moved to a dropzone in the timetable
   // It may be an InventoryPeriod if the class is moved to the inventory
-  const newDropTarget = result !== null ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
+  const newDropTarget =
+    result !== null || 'event' in dragTarget ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
 
   if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
     // Card moved over a valid period
@@ -502,7 +540,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
 
     if (to.includes(fromCard)) {
       match = fromCard;
-    } else if (fromCard.type !== 'event') {
+    } else if (!('event' in fromCard)) {
       const fromElement = dropzones.get(fromCard);
 
       if (fromElement) {
@@ -556,6 +594,17 @@ const scrollSpeed = 0.32;
 let clientX = 0;
 let clientY = 0;
 let lastFrame = Date.now();
+
+/**
+ * Ensure unscheduled drop zone is created when user drags an event
+ */
+const makeUnscheduledDropZone = () => {
+  if (inventoryElement !== null) {
+    inventoryElement.style.opacity = '0.85';
+    inventoryElement.style.pointerEvents = 'auto';
+    inventoryElement.style.zIndex = '700';
+  }
+};
 
 /**
  * The amount each card has to be translated by changes if the screen has been scrolled.
@@ -666,7 +715,7 @@ export const setDragTarget = (
       prevHeight = -1;
       resizeObserver.observe(dragElement);
 
-      if (cardData.type !== 'event') {
+      if (cardData.type !== 'event' && cardData.type !== 'inventoryEvent') {
         if (cardData.type === 'class') {
           currentClassTime = cardData.time;
         } else {
@@ -681,12 +730,14 @@ export const setDragTarget = (
     dragTarget = cardData;
     dropTarget = cardData;
 
-    if (cardData?.type !== 'event') {
+    // This seems to bug out if I use (cardData && !('event' in cardData))
+    if (cardData?.type !== 'event' && cardData?.type !== 'inventoryEvent') {
       dragSource = cardData;
       updateCards(classCards);
       updateDropzones();
     } else {
       updateCards(eventCards);
+      makeUnscheduledDropZone();
     }
   }
 };
@@ -781,17 +832,10 @@ window.addEventListener(
   { passive: false },
 );
 
-/**
- * Handler function to drop a card into a dropzone
- */
-const drop = () => {
+// Please help me figure out how to reduce repetition in drop with this function
+const getGridIndex = () => {
   if (dragElement) {
-    const { style } = dragElement;
-    style.transition = defaultTransition;
-    style.left = toPx(0);
-    style.top = toPx(0);
-
-    if (dragTarget?.type === 'event') {
+    if (dragTarget && 'event' in dragTarget) {
       // Snap an event to the nearest grid cell and update its time accordingly
       const gridChildren = dragElement.parentElement?.parentElement?.children;
       const dragrect = dragElement.children[0].getBoundingClientRect();
@@ -812,23 +856,66 @@ const drop = () => {
           Math.round(displacementy / itemRect.height),
         ];
 
-        const eventLength = dragTarget.time.end - dragTarget.time.start;
+        return { colIndex, rowIndex };
+      }
+    }
+  }
+};
 
-        // Ensure we released inside the grid
-        if (
-          colIndex >= 0 &&
-          colIndex < numDays &&
-          rowIndex >= 0 &&
-          rowIndex + eventLength <= latestEndTime - earliestStartTime
-        ) {
-          updateEventTime(
-            {
-              day: 1 + colIndex,
-              start: rowIndex + earliestStartTime,
-              end: eventLength + rowIndex + earliestStartTime,
-            } as EventTime,
-            eventId,
-          );
+/**
+ * Handler function to drop a card into a dropzone
+ */
+const drop = () => {
+  if (dragElement) {
+    const { style } = dragElement;
+    style.transition = defaultTransition;
+    style.left = toPx(0);
+    style.top = toPx(0);
+
+    if (dragTarget && 'event' in dragTarget) {
+      makeUnscheduledDropZone();
+      // Snap an event to the nearest grid cell and update its time accordingly
+      const gridChildren = dragElement.parentElement?.parentElement?.children;
+      const dragrect = dragElement.children[0].getBoundingClientRect();
+
+      if (gridChildren && dragTarget) {
+        const baserect = gridChildren[1].getBoundingClientRect();
+
+        // x and y displacement of the drag target from the start-point of the grid
+        const displacementx = dragrect.x + dragrect.width / 2 - baserect.x;
+        const displacementy = dragrect.y - (baserect.y + baserect.height + 1);
+
+        // Get the size of an arbitrary grid cell
+        const itemRect = gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect();
+
+        // Get the grid coordinates of the dragTarget when released
+        const [colIndex, rowIndex] = [
+          Math.floor(displacementx / itemRect.width),
+          Math.round(displacementy / itemRect.height),
+        ];
+
+        if (colIndex === getInventoryIndex() && dragTarget.type !== 'inventoryEvent') {
+          // Unschedule event
+          unscheduleEvent(dragTarget.event.id);
+        } else {
+          const eventLength = dragTarget.time.end - dragTarget.time.start;
+
+          // Ensure we released inside the grid
+          if (
+            colIndex >= 0 &&
+            colIndex < numDays &&
+            rowIndex >= 0 &&
+            rowIndex + eventLength <= latestEndTime - earliestStartTime
+          ) {
+            updateEventTime(
+              {
+                day: 1 + colIndex,
+                start: rowIndex + earliestStartTime,
+                end: eventLength + rowIndex + earliestStartTime,
+              } as EventTime,
+              eventId,
+            );
+          }
         }
       }
     }

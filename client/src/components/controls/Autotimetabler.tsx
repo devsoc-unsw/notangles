@@ -181,14 +181,16 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     // We treat events as single-period classes with a sole time slot
     timetableData['periodInfoList'] = [
       ...periodInfoPerMode.current[`${classMode}`],
-      ...Object.values(createdEvents).map(
-        (eventPeriod) =>
-          ({
-            periodsPerClass: 1,
-            periodTimes: [eventPeriod.time.day, eventPeriod.time.start],
-            durations: [eventPeriod.time.end - eventPeriod.time.start],
-          }) as PeriodInfo,
-      ),
+      ...Object.values(createdEvents)
+        .filter((eventPeriod) => eventPeriod.type === 'event')
+        .map(
+          (eventPeriod) =>
+            ({
+              periodsPerClass: 1,
+              periodTimes: [eventPeriod.time.day, eventPeriod.time.start],
+              durations: [eventPeriod.time.end - eventPeriod.time.start],
+            }) as PeriodInfo,
+        ),
     ];
 
     try {
