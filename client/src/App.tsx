@@ -27,7 +27,7 @@ import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
-import { Activity, ClassData, CourseCode, CourseData, EventData, InInventory, SelectedClasses } from './interfaces/Periods';
+import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -432,7 +432,9 @@ const App: React.FC = () => {
     setEarliestStartTime((prev: number) =>
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
-        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event').map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)),
+        ...Object.entries(createdEvents)
+          .filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event')
+          .map(([_, eventPeriod]) => Math.floor(eventPeriod.time!.start)),
         getDefaultStartTime(isConvertToLocalTimezone),
         prev,
       ),
@@ -441,7 +443,9 @@ const App: React.FC = () => {
     setLatestEndTime((prev: number) =>
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
-        ...Object.entries(createdEvents).filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event').map(([_, eventPeriod]) => Math.ceil(eventPeriod.time!.end)),
+        ...Object.entries(createdEvents)
+          .filter(([_, eventPeriod]) => eventPeriod.time && eventPeriod.type === 'event')
+          .map(([_, eventPeriod]) => Math.ceil(eventPeriod.time!.end)),
         getDefaultEndTime(isConvertToLocalTimezone),
         prev,
       ),
