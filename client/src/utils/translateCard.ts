@@ -20,12 +20,7 @@ export const classTranslateX = (
   width?: number,
   cellWidth?: number,
 ) => {
-  // This classCard is for an unscheduled event (see how to reduce repetition later)
-  if (card.type === 'inventoryEvent' && nDays) {
-    return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
-  }
-
-  // This classCard is for a scheduled class
+  // This card is for a scheduled class/event
   if (isScheduledPeriod(card) && clashIndex !== undefined && width && cellWidth) {
     const numClashing = 100 / width;
 
@@ -35,7 +30,7 @@ export const classTranslateX = (
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
-  // This classCard is for an unscheduled class, i.e. it belongs in the inventory
+  // This card is for an unscheduled class/event, i.e. it belongs in the inventory
   if (nDays) {
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
@@ -83,19 +78,15 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
   // The height of the card in hours relative to the default height of one (hour)
   const heightFactor = getHeightFactor(classCard);
 
-  if (classCard.type === 'inventoryEvent' && y !== undefined) {
-    // This classCard is for an unscheduled event, i.e. it belongs in the inventory
-    // Use the specified y-value
-    result = y;
-  } else if (isScheduledPeriod(classCard)) {
-    // This classCard is for a scheduled class
+  if (isScheduledPeriod(classCard)) {
+    // This classCard is for a scheduled class/event
     // The number of rows to offset down
     const offsetRows = classCard.time.start - earliestStartTime;
 
     // Calculate translation percentage (relative to height)
     result = offsetRows / heightFactor;
   } else if (y) {
-    // This classCard is for an unscheduled class, i.e. it belongs in the inventory
+    // This classCard is for an unscheduled class/event, i.e. it belongs in the inventory
     // Use the specified y-value
     result = y;
   }

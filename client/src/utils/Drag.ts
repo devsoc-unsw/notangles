@@ -31,8 +31,13 @@ export const getElevatedShadow = (_: boolean) => 24; // How much shadow each car
  * @param data The period
  * @returns Whether the period is unscheduled
  */
-export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod =>
-  data !== null && (data as ClassPeriod).time !== undefined;
+export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod => {
+  if (data && 'event' in data) {
+    return data.type === 'event';
+  } else {
+    return data !== null && (data as ClassPeriod).time !== undefined;
+  }
+};
 
 let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
 let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
