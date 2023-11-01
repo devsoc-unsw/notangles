@@ -7,25 +7,31 @@ const maximumZidNumber = 9e7;
 const minimumZidNumber = 1e7;
 
 const getZid = (): number => {
-  return Math.floor(Math.random() * (maximumZidNumber - minimumZidNumber + 1) + minimumZidNumber);
-}
+  return Math.floor(
+    Math.random() * (maximumZidNumber - minimumZidNumber + 1) +
+      minimumZidNumber,
+  );
+};
 // TODO
-const generateTimetable = async () => {} 
+const generateTimetable = async () => {};
 
-const generateUsers = async (numUsers: number, generateTimetablesForAllUsers? : boolean) => {
+const generateUsers = async (
+  numUsers: number,
+  generateTimetablesForAllUsers?: boolean,
+) => {
   for (let i = 0; i < numUsers; i++) {
-    const zid = getZid().toString(); 
+    const zid = getZid().toString();
     const user = await prisma.user.upsert({
-        where: { userId: zid},   
-        update: {},
-        create: {
-        userId: zid,
+      where: { zid: zid },
+      update: {},
+      create: {
+        zid: zid,
         email: `z${zid}@unsw.edu.au`,
-      }
+      },
     });
     console.log(user);
   }
-}
+};
 
 async function main() {
   generateUsers(2);
@@ -40,4 +46,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
