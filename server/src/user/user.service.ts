@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsDto, UserDTO, EventDto, TimetableDto } from './dto';
+import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -94,17 +94,17 @@ export class UserService {
     _zid: string,
     _name: string,
     _selectedCourses: string[],
-    _selectedClasses: any[],
+    _selectedClasses: ClassDto[],
     _createdEvents: EventDto[],
   ): Promise<void> {
     try {
       // Since we are using UUID to generate IDs, collisions are unlikely and upsert doesn't really make sense - use create instead
-      const newUUID = uuidv4();
+      const generatedId = uuidv4();
 
       // Store timetables
       await prisma.timetable.create({
         data: {
-          id: newUUID,
+          id: generatedId,
           name: _name,
           selectedCourses: _selectedCourses,
           zid: _zid,
@@ -112,10 +112,42 @@ export class UserService {
       });
 
       // Store created events
-      // TBD: Upsert many - look for a better way to do this by firing 1 query rather than x queries
+      await prisma.event.createMany({
+        data: _createdEvents.map((e) => {
+          return { ...e, timetableId: generatedId };
+        }),
+      });
+
       // Store classes
-    } catch (e) {}
+      await prisma.class.createMany({
+        data: _selectedClasses.map((c) => {
+          return { ...c, timetableId: generatedId };
+        }),
+      });
+
+      return Promise.resolve();
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  editUserTimetable(zid: string, timetable: TimetableDto): void {}
+  // TBD: Need to think about how to do this one
+  async editUserTimetable(
+    _zid: string,
+    _timetable: TimetableDto,
+  ): Promise<void> {}
+
+  async deleteUserTimetable(_timetableId: string): Promise<void> {
+    try {
+      await prisma.timetable.delete({
+        where: {
+          id: _timetableId,
+        },
+      });
+
+      return Promise.resolve();
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }
