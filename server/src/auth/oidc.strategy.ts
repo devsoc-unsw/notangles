@@ -20,7 +20,7 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
     super({
       client: client,
       params: {
-        redirect_uri: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI,
+        redirect_uris: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI,
         scope: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE,
       },
       passReqToCallback: false,
@@ -32,7 +32,7 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
 
   async validate(tokenset: TokenSet): Promise<any> {
     const userinfo: UserinfoResponse = await this.client.userinfo(tokenset);
-
+    console.log("test");
     try {
       const id_token = tokenset.id_token
       const access_token = tokenset.access_token

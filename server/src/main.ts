@@ -34,7 +34,7 @@ async function bootstrap() {
   app.use(passport.session());
   
 
-  await app.listen(3003); // reminder to change it back to 3001
+  await app.listen(3001); // reminder to change it back to 3001
 }
 
 bootstrap();
