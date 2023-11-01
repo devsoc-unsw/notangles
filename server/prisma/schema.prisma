@@ -35,7 +35,7 @@ model Event {
   day         String
   start       DateTime
   end         DateTime
-  timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
 }
 

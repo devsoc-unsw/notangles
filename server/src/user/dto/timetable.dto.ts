@@ -8,7 +8,6 @@ export class TimetableDto {
   @IsArray()
   @IsString({ each: true })
   selectedCourses: string[];
-
   events: EventDto[];
 }
 
@@ -21,4 +20,10 @@ export class EventDto {
   day: string;
   start: Date;
   end: Date;
+}
+
+export class ClassDto {
+  id: string;
+  classType: string;
+  courseName: string;
 }
