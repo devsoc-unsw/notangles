@@ -1,5 +1,5 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -12,6 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import { User } from '../../interfaces/Users';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -51,8 +52,21 @@ const Weak = styled('span')`
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
+  const userData: User = {};
+  const [user, setUser] = useState(userData);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const login = () => {
+    window.location.replace('http://localhost:3001/api/login');
+  };
+  const logout = () => {
+    window.location.replace('http://localhost:3001/api/logout');
+  };
+  // https://stackoverflow.com/a/32108184/1098564
+  const isEmpty = (obj: Object) => {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  };
 
   return (
     <NavbarBox>
@@ -82,6 +96,15 @@ const Navbar: React.FC = () => {
             content={<Privacy />}
           />
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
+          {isEmpty(user) ? (
+            <Button color="warning" onClick={login}>
+              Login
+            </Button>
+          ) : (
+            <Button color="warning" onClick={logout}>
+              Logout
+            </Button>
+          )}
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>

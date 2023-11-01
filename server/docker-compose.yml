@@ -1,16 +1,16 @@
 version: '3.7'
 services:
-  server:
-    container_name: notangles-server
-    image: notangles-server
-    restart: always
-    build: .
-    depends_on:
-      - database.notangles-db
-    ports:
-      - '3001:3001'
-    links:
-      - database.notangles-db
+  # server:
+  #   container_name: notangles-server
+  #   image: notangles-server
+  #   restart: always
+  #   build: .
+  #   depends_on:
+  #     - database.notangles-db
+  #   ports:
+  #     - '3001:3001'
+  #   links:
+  #     - database.notangles-db
 
   database.notangles-db:
     container_name: notangles-database
