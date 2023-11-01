@@ -58,10 +58,10 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const login = () => {
-    window.location.replace('http://localhost:3001/api/login');
+    window.location.replace('http://localhost:3001/api/auth/login');
   };
   const logout = () => {
-    window.location.replace('http://localhost:3001/api/logout');
+    window.location.replace('http://localhost:3001/api/auth/logout');
   };
   // https://stackoverflow.com/a/32108184/1098564
   const isEmpty = (obj: Object) => {
