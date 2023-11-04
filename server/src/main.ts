@@ -1,18 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import * as session from 'express-session';
 import * as passport from 'passport';
-// import { PrismaClient } from '@prisma/client';
-
-const { PrismaClient } = require('@prisma/client');
+import { AppModule } from './app.module';
+const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: 'http://localhost:5173', // Replace with your frontend domain
+    origin: 'http://localhost:5173', // Replace this in production.
     credentials: true, // Allow credentials (e.g., cookies) to be sent with the request
   });
   app.useGlobalPipes(new ValidationPipe());

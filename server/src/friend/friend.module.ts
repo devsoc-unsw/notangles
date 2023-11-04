@@ -4,6 +4,6 @@ import { FriendController } from './friend.controller';
 
 @Module({
   providers: [FriendService],
-  controllers: [FriendController]
+  controllers: [FriendController],
 })
 export class FriendModule {}

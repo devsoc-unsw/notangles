@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class friendDto {
   @IsString()
@@ -10,10 +10,8 @@ export class friendDto {
   sendeeId: string;
 }
 
-
-export class friendRequestDto { 
+export class friendRequestDto {
   @IsString()
   @IsNotEmpty()
   requestId: string;
-
 }

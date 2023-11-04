@@ -13,7 +13,6 @@ export class UserDTO {
   //@IsString()
   //status: string;
 
-
   @IsString()
   firstname: string;
 

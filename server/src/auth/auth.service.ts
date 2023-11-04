@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Get,
-  Injectable,
-  Request,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Injectable, Request, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { LoginGuard } from './login.guard';
 import { Issuer } from 'openid-client';
-import { AuthDto } from './dtos';
-import { log } from 'console';
 import { REDIRECT_LINK } from 'src/constants';
 
 @Injectable()

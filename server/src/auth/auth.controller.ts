@@ -1,12 +1,9 @@
 import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
-import { LoginGuard } from './login.guard';
-import { Issuer } from 'openid-client';
-import { AuthDto } from './dtos';
-import { log } from 'console';
 import { REDIRECT_LINK } from 'src/constants';
 import { AuthService } from './auth.service';
+import { LoginGuard } from './login.guard';
 
 @Controller('auth')
 export class AuthController {
