@@ -82,8 +82,16 @@ const Navbar: React.FC = () => {
   const login = () => {
     window.location.replace('http://localhost:3001/api/auth/login');
   };
-  const logout = () => {
-    window.location.replace('http://localhost:3001/api/auth/logout');
+  const logout = async () => {
+    // window.location.replace('http://localhost:3001/api/auth/logout');
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/logout', {
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    window.location.replace('http://localhost:5173');
     setUser({});
   };
   // https://stackoverflow.com/a/32108184/1098564
@@ -105,6 +113,7 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
+
           <CustomModal
             title="About"
             showIcon={<Info />}
@@ -125,7 +134,7 @@ const Navbar: React.FC = () => {
             </Button>
           ) : (
             <Button color="warning" onClick={logout}>
-              Logout
+              {user} Logout
             </Button>
           )}
         </Toolbar>
