@@ -4,7 +4,9 @@ import { AppModule } from './app.module';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client';
+
+const { PrismaClient } = require('@prisma/client');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
