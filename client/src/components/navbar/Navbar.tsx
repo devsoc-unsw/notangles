@@ -1,7 +1,7 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -12,6 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import { User } from '../../interfaces/Users';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -51,8 +52,44 @@ const Weak = styled('span')`
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
+  const userData = {};
+  const [user, setUser] = useState(userData);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  useEffect(() => {
+    async function runAsync() {
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/user', {
+          credentials: 'include',
+        });
+        const userResponse = await response.text();
+        console.log(userResponse);
+        if (userResponse !== '') {
+          console.log(userResponse);
+          setUser(JSON.parse(userResponse));
+        } else {
+          setUser({});
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // Execute the created function directly
+    runAsync();
+    // https://stackoverflow.com/a/55854902/1098564
+    // eslint-disable-next-line
+  }, []);
+  const login = () => {
+    window.location.replace('http://localhost:3001/api/auth/login');
+  };
+  const logout = () => {
+    window.location.replace('http://localhost:3001/api/auth/logout');
+    setUser({});
+  };
+  // https://stackoverflow.com/a/32108184/1098564
+  const isEmpty = (obj: Object) => {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  };
 
   return (
     <NavbarBox>
@@ -82,6 +119,15 @@ const Navbar: React.FC = () => {
             content={<Privacy />}
           />
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
+          {isEmpty(user) ? (
+            <Button color="warning" onClick={login}>
+              Login
+            </Button>
+          ) : (
+            <Button color="warning" onClick={logout}>
+              Logout
+            </Button>
+          )}
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>
