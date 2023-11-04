@@ -1,4 +1,5 @@
 export interface User {
+<<<<<<< HEAD
   id_token?: string;
   access_token?: string;
   refresh_token?: string;
@@ -7,4 +8,7 @@ export interface User {
 
 export interface UserInfo {
   name?: string;
+=======
+  zid: string;
+>>>>>>> NTGL-be-oidc-cleanup
 }

@@ -1,7 +1,7 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -52,16 +52,46 @@ const Weak = styled('span')`
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
-  const userData: User = {};
+  const userData = {};
   const [user, setUser] = useState(userData);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  useEffect(() => {
+    async function runAsync() {
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/user', {
+          credentials: 'include',
+        });
+        const userResponse = await response.text();
+        console.log(userResponse);
+        if (userResponse !== '') {
+          console.log(userResponse);
+          setUser(JSON.parse(userResponse));
+        } else {
+          setUser({});
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // Execute the created function directly
+    runAsync();
+    // https://stackoverflow.com/a/55854902/1098564
+    // eslint-disable-next-line
+  }, []);
   const login = () => {
     window.location.replace('http://localhost:3001/api/auth/login');
   };
-  const logout = () => {
-    window.location.replace('http://localhost:3001/api/auth/logout');
+  const logout = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/logout', {
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    window.location.replace('http://localhost:5173');
+    setUser({});
   };
   // https://stackoverflow.com/a/32108184/1098564
   const isEmpty = (obj: Object) => {
@@ -82,6 +112,7 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
+
           <CustomModal
             title="About"
             showIcon={<Info />}
@@ -102,7 +133,7 @@ const Navbar: React.FC = () => {
             </Button>
           ) : (
             <Button color="warning" onClick={logout}>
-              Logout
+              {user} Logout
             </Button>
           )}
         </Toolbar>
