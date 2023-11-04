@@ -52,7 +52,7 @@ const Weak = styled('span')`
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
-  const userData = {};
+  const userData: User = { zid: '' };
   const [user, setUser] = useState(userData);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -66,9 +66,9 @@ const Navbar: React.FC = () => {
         console.log(userResponse);
         if (userResponse !== '') {
           console.log(userResponse);
-          setUser(JSON.parse(userResponse));
+          setUser({ zid: JSON.parse(userResponse) });
         } else {
-          setUser({});
+          setUser({ zid: '' });
         }
       } catch (error) {
         console.log(error);
@@ -91,11 +91,12 @@ const Navbar: React.FC = () => {
       console.log(error);
     }
     window.location.replace('http://localhost:5173');
-    setUser({});
+    setUser({ zid: '' });
   };
   // https://stackoverflow.com/a/32108184/1098564
-  const isEmpty = (obj: Object) => {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  const isEmpty = (currUser: User) => {
+    return currUser.zid === '';
+    //return Object.keys(obj).length === 0 && obj.constructor === Object;
   };
 
   return (
@@ -127,13 +128,14 @@ const Navbar: React.FC = () => {
             content={<Privacy />}
           />
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
+
           {isEmpty(user) ? (
             <Button color="warning" onClick={login}>
               Login
             </Button>
           ) : (
             <Button color="warning" onClick={logout}>
-              {user} Logout
+              {user.zid} Logout
             </Button>
           )}
         </Toolbar>
