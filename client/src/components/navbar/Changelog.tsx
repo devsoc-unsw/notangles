@@ -15,8 +15,24 @@ type Change = { date: string; changes: string[] };
 
 const changelog: Change[] = [
   {
+    date: 'October 26, 2023',
+    changes: ['Users can now share an event via link'],
+  },
+  {
+    date: 'September 2, 2023',
+    changes: ['Right click popup for events redesigned'],
+  },
+  {
+    date: 'September 2, 2023',
+    changes: ['Information about Notangles added to bottom of page and added keywords to meta tags to improve SEO'],
+  },
+  {
     date: 'July 19, 2023',
     changes: ['Multiple timetables can be created by a user at the same time'],
+  },
+  {
+    date: 'June 27, 2023',
+    changes: ['Timetable times shifted onto timetable grid lines'],
   },
   {
     date: 'June 3, 2023',
