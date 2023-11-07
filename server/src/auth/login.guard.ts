@@ -7,6 +7,7 @@ export class LoginGuard extends AuthGuard('oidc') {
 
     const result = (await super.canActivate(context)) as boolean;
     const request = context.switchToHttp().getRequest();
+    console.log("testtest");
     await super.logIn(request);
     return result;
   }

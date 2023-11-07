@@ -20,7 +20,6 @@ export class AuthController {
 
   @Get('/user')
   user(@Request() req) {
-    
     return req.user;
   }
 
