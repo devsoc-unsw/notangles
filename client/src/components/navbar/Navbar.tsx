@@ -1,5 +1,5 @@
-import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Description, Info, Security, Login, Logout, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, Button, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -130,13 +130,19 @@ const Navbar: React.FC = () => {
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
 
           {isEmpty(user) ? (
-            <Button color="warning" onClick={login}>
-              Login
-            </Button>
+            <Tooltip title="Login">
+              <Button color="inherit" onClick={login}>
+                <Login sx={{mr: "8px"}}/>
+                Login
+              </Button>
+            </Tooltip>
           ) : (
-            <Button color="warning" onClick={logout}>
-              {user.zid} Logout
-            </Button>
+            <Tooltip title="Logout">
+              <Button color="inherit" onClick={logout}>
+                <Logout sx={{mr: "8px"}}/>
+                {user.zid} Logout
+              </Button>
+            </Tooltip>
           )}
         </Toolbar>
       </StyledNavBar>
