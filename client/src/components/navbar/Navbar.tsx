@@ -137,10 +137,10 @@ const Navbar: React.FC = () => {
               </Button>
             </Tooltip>
           ) : (
-            <Tooltip title="Logout">
+            <Tooltip title={user.zid}>
               <Button color="inherit" onClick={logout}>
                 <Logout sx={{mr: "8px"}}/>
-                {user.zid} Logout
+                Logout
               </Button>
             </Tooltip>
           )}
