@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"@types/openid-client": "^3.7.0"
+	}
+}

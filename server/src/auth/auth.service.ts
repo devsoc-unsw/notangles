@@ -1,14 +1,14 @@
 import { Injectable, Request, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { Issuer } from 'openid-client';
+import { BaseClient, Issuer } from 'openid-client';
 import { REDIRECT_LINK } from 'src/constants';
 
 @Injectable()
 export class AuthService {
   async logout(@Request() req, @Res() res: Response): Promise<void> {
-    const id_token = req.user ? req.user.id_token : undefined;
+    const id_token: string = req.user ? req.user.id_token : undefined;
 
-    const TrustIssuer = await Issuer.discover(
+    const TrustIssuer: Issuer<BaseClient> = await Issuer.discover(
       `${process.env.OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER}/.well-known/openid-configuration`,
     );
 
@@ -18,7 +18,8 @@ export class AuthService {
 
     req.logout((err) => {
       req.session.destroy(async (error: any) => {
-        const end_session_endpoint = TrustIssuer.metadata.end_session_endpoint;
+        const end_session_endpoint: string =
+          TrustIssuer.metadata.end_session_endpoint;
         if (end_session_endpoint) {
           res.redirect(
             end_session_endpoint +
