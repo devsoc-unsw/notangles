@@ -35,7 +35,7 @@ model Event {
   day         String
   start       DateTime
   end         DateTime
-  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   timetableId String?
 }
 
@@ -43,7 +43,7 @@ model Class {
   id          String     @unique
   classType   String // e.g. Lecture, Tutorial, Laboratory, etc. Not putting into enum because there are other whacky classTypes 
   courseName  String?
-  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   timetableId String?
 }
 

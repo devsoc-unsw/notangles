@@ -131,11 +131,72 @@ export class UserService {
     }
   }
 
-  // TBD: Need to think about how to do this one
+  // NEEDS CHECKING! THIS MIGHT BE A BAD WAY TO DO THIS
   async editUserTimetable(
     _zid: string,
     _timetable: TimetableDto,
-  ): Promise<void> {}
+  ): Promise<void> {
+    try {
+      // First, update our timetable's metadata
+      const { timetableId, name, selectedCourses, selectedClasses, events } =
+        _timetable;
+
+      await prisma.timetable.update({
+        where: {
+          id: timetableId,
+        },
+        data: {
+          name: name,
+          selectedCourses: selectedCourses,
+          selectedClasses: {
+            deleteMany: {
+              id: { notIn: selectedClasses.map((c) => c.id) },
+            },
+          },
+          createdEvents: {
+            deleteMany: {
+              id: { notIn: events.map((e) => e.id) },
+            },
+          },
+        },
+      });
+
+      // Note: Update many will not work as we are update with different data
+      // Currently implementing as an upsert in a loop, unless there is a better way to do it
+      // The alternative would be dropping all related event/class records and then creating them again- would this be faster??
+      // https://github.com/prisma/prisma/discussions/12389
+      // https://stackoverflow.com/questions/71408235/how-is-upsertmany-implemented-in-prisma-orm
+      await prisma.$transaction(
+        selectedClasses.map((c) =>
+          prisma.class.upsert({
+            where: { id: c.id, timetableId: timetableId },
+            update: {
+              classType: c.classType,
+              courseName: c.courseName,
+            },
+            create: { ...c },
+          }),
+        ),
+      );
+
+      await prisma.$transaction(
+        events.map((e) =>
+          prisma.event.upsert({
+            where: { id: e.id },
+            update: {
+              name: e.name,
+              location: e.location,
+              description: e.description,
+              colour: e.colour,
+            },
+            create: { ...e },
+          }),
+        ),
+      );
+    } catch (e) {
+      throw new Error('');
+    }
+  }
 
   async deleteUserTimetable(_timetableId: string): Promise<void> {
     try {

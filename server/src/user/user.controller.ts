@@ -7,7 +7,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile/:userId')
-  getUserInfo(@Param('userId') userId: string) {
+  async getUserInfo(@Param('userId') userId: string) {
     try {
       return this.userService.getUserInfo(userId);
     } catch (e) {
@@ -16,12 +16,12 @@ export class UserController {
   }
 
   @Get('settings/:userId')
-  getUserSettings(@Param('userId') userId: string) {
+  async getUserSettings(@Param('userId') userId: string) {
     return this.userService.getUserSettings(userId);
   }
 
   @Put('settings')
-  setUserSettings(
+  async setUserSettings(
     @Body('userId') userId: string,
     @Body('setting') setting: SettingsDto,
   ) {
@@ -29,12 +29,12 @@ export class UserController {
   }
 
   @Get('timetable/:userId')
-  getUserTimetables(@Param('userId') userId: string) {
+  async getUserTimetables(@Param('userId') userId: string) {
     return null;
   }
 
   @Post('timetable')
-  createUserTimetable(
+  async createUserTimetable(
     @Body('zid') zid: string,
     @Body('timetableName') timetableName: string,
     @Body('timetableId') timetableId: string,
@@ -46,7 +46,7 @@ export class UserController {
   }
 
   @Put('timetable')
-  editUserTimetable(
+  async editUserTimetable(
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
