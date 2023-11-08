@@ -25,7 +25,7 @@ import NetworkError from '../../interfaces/NetworkError';
 import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import { AutotimetableProps } from '../../interfaces/PropTypes';
 import { StyledButtonText, StyledControlsButton } from '../../styles/ControlStyles';
-import { DropdownButton } from '../../styles/CustomEventStyles';
+import { dropdownButton } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
@@ -224,10 +224,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
-        <StyledButtonText>AUTO-TIMETABLE</StyledButtonText>
-        {open ? <ArrowDropUp /> : <ArrowDropDown />}
-      </DropdownButton>
+      <button onClick={handleClick} className={dropdownButton}>
+        <div className="m-3 text-white">Auto-Timetable {open ? <ArrowDropUp /> : <ArrowDropDown />}</div>
+      </button>
       <Popover
         id={popoverId}
         open={open}

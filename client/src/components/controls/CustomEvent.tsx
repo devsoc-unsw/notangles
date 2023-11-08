@@ -10,7 +10,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { CoursesList } from '../../interfaces/Courses';
 import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
-import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
+import { dropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../utils/eventTimes';
@@ -222,12 +222,17 @@ const CustomEvent: React.FC = () => {
 
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
+      <button onClick={handleOpen} className={dropdownButton}>
+        <div className="m-3 text-white">
+          Create Event {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
+        </div>
+      </button>
+      {/* <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
-      </DropdownButton>
+      </DropdownButton> */}
       <Popover
         id={popoverId}
         open={openCreateEventPopover}
@@ -238,7 +243,7 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right',
         }}
       >

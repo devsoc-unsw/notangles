@@ -3,18 +3,20 @@ import { TabPanel } from '@mui/lab';
 import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
 import { alpha, styled } from '@mui/system';
 
-export const DropdownButton = styled(Button)`
-  && {
-    width: 100%;
-    height: 55px;
-    margin-top: 20px;
-    margin-right: 10px;
-    text-align: left;
-    &:hover {
-      background-color: #598dff;
-    }
-  }
-`;
+export const dropdownButton = 'bg-blue-500 hover:bg-blue-400 text-left rounded-lg w-full mr-2.5 mt-5 h-14';
+
+// export const DropdownButton = styled(Button)`
+//   && {
+//     width: 100%;
+//     height: 55px;
+//     margin-top: 20px;
+//     margin-right: 10px;
+//     text-align: left;
+//     &:hover {
+//       background-color: #598dff;
+//     }
+//   }
+// `;
 
 export const StyledTabPanel = styled(TabPanel)`
   padding-bottom: 0;
