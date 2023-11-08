@@ -225,7 +225,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   return (
     <StyledControlsButton>
       <button onClick={handleClick} className={dropdownButton}>
-        <div className="m-3 text-white">Auto-Timetable {open ? <ArrowDropUp /> : <ArrowDropDown />}</div>
+        <div className="m-3 flex justify-between text-white">
+          Auto-Timetable {open ? <ArrowDropUp /> : <ArrowDropDown />}
+        </div>
       </button>
       <Popover
         id={popoverId}

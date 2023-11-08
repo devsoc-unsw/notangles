@@ -223,7 +223,7 @@ const CustomEvent: React.FC = () => {
   return (
     <StyledControlsButton>
       <button onClick={handleOpen} className={dropdownButton}>
-        <div className="m-3 text-white">
+        <div className="m-3 flex justify-between text-white">
           Create Event {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
         </div>
       </button>
