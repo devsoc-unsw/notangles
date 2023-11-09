@@ -15,11 +15,8 @@ export class AuthController {
 
   @Get('/user')
   user(@Request() req, @Res() res: Response) {
-    if (req.user) {
-      return res.json(req.user.userinfo.sub);
-    }
-
-    return res.json(req.user);
+    const userInfo = req.user ? res.json(req.user.userinfo.sub) : res.json(req.user);
+    return userInfo;
   }
 
   @UseGuards(LoginGuard)
