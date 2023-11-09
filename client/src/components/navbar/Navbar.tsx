@@ -50,6 +50,33 @@ const Weak = styled('span')`
 `;
 
 const Navbar: React.FC = () => {
+  useEffect(() => {
+    console.log("TESTASYNC");
+    // Create a scoped async function in the hook
+    async function runAsync() {
+      try {
+        
+        const response = await fetch('http://localhost:3001/api/auth/user', {
+          credentials: 'same-origin'
+        });
+        const userResponse = await response.text();
+        console.log(userResponse + " THIS IS AN IMPORTANT MSG BRUH"); 
+        // setUser(JSON.parse(userResponse))
+        
+        if (userResponse) {
+          console.log("WHAT");
+        }
+      } catch(error) {
+        // add better error handling here
+        console.log("SOME ERROR BRUH " + error);
+      }
+    }
+    // Execute the created function directly
+    runAsync()
+  // https://stackoverflow.com/a/55854902/1098564  
+  // eslint-disable-next-line
+  }, []);
+
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
   const userData: User = { zid: '' };
