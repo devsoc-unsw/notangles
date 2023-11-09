@@ -1,5 +1,5 @@
-import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Button, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Description, Info, Security, Login, Logout, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, Button, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -79,20 +79,51 @@ const Navbar: React.FC = () => {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const { term, termName, year } = useContext(AppContext);
-  const userData: User = {};
+  const userData: User = { zid: '' };
   const [user, setUser] = useState(userData);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  useEffect(() => {
+    async function runAsync() {
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/user', {
+          credentials: 'include',
+        });
+        const userResponse = await response.text();
+        console.log(userResponse);
+        if (userResponse !== '') {
+          console.log(userResponse);
+          setUser({ zid: JSON.parse(userResponse) });
+        } else {
+          setUser({ zid: '' });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // Execute the created function directly
+    runAsync();
+    // https://stackoverflow.com/a/55854902/1098564
+    // eslint-disable-next-line
+  }, []);
   const login = () => {
     window.location.replace('http://localhost:3001/api/auth/login');
   };
-  const logout = () => {
-    window.location.replace('http://localhost:3001/api/auth/logout');
+  const logout = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/logout', {
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    window.location.replace('http://localhost:5173');
+    setUser({ zid: '' });
   };
   // https://stackoverflow.com/a/32108184/1098564
-  const isEmpty = (obj: Object) => {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
+  const isEmpty = (currUser: User) => {
+    return currUser.zid === '';
+    //return Object.keys(obj).length === 0 && obj.constructor === Object;
   };
 
   return (
@@ -109,6 +140,7 @@ const Navbar: React.FC = () => {
             Notangles
             <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
           </NavbarTitle>
+
           <CustomModal
             title="About"
             showIcon={<Info />}
@@ -123,14 +155,21 @@ const Navbar: React.FC = () => {
             content={<Privacy />}
           />
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
+
           {isEmpty(user) ? (
-            <Button color="warning" onClick={login}>
-              Login
-            </Button>
+            <Tooltip title="Login">
+              <Button color="inherit" onClick={login}>
+                <Login sx={{mr: "8px"}}/>
+                Login
+              </Button>
+            </Tooltip>
           ) : (
-            <Button color="warning" onClick={logout}>
-              Logout
-            </Button>
+            <Tooltip title={user.zid}>
+              <Button color="inherit" onClick={logout}>
+                <Logout sx={{mr: "8px"}}/>
+                Logout
+              </Button>
+            </Tooltip>
           )}
         </Toolbar>
       </StyledNavBar>

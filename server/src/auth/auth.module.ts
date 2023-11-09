@@ -11,7 +11,7 @@ const OidcStrategyFactory = {
     const client = await buildOpenIdClient();
     return new OidcStrategy(authService, client);
   },
-  inject: [AuthService]
+  inject: [AuthService],
 };
 
 @Module({
