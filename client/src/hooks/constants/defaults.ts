@@ -1,4 +1,4 @@
-import { createDefaultTimetable } from '../utils/timetableHelpers';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 
 const defaults: Record<string, any> = {
   is12HourMode: true,
