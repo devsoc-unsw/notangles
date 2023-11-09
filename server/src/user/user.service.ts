@@ -166,33 +166,31 @@ export class UserService {
       // The alternative would be dropping all related event/class records and then creating them again- would this be faster??
       // https://github.com/prisma/prisma/discussions/12389
       // https://stackoverflow.com/questions/71408235/how-is-upsertmany-implemented-in-prisma-orm
-      await prisma.$transaction(
+      await prisma.$transaction([
         selectedClasses.map((c) =>
-          prisma.class.upsert({
-            where: { id: c.id, timetableId: timetableId },
-            update: {
-              classType: c.classType,
-              courseName: c.courseName,
-            },
-            create: { ...c },
-          }),
-        ),
+        prisma.class.upsert({
+          where: { id: c.id, timetableId: timetableId },
+          update: {
+            classType: c.classType,
+            courseName: c.courseName,
+          },
+          create: { ...c },
+        }),
+      ), 
+      events.map((e) =>
+      prisma.event.upsert({
+        where: { id: e.id },
+        update: {
+          name: e.name,
+          location: e.location,
+          description: e.description,
+          colour: e.colour,
+        },
+        create: { ...e },
+      }),
+    )] 
       );
 
-      await prisma.$transaction(
-        events.map((e) =>
-          prisma.event.upsert({
-            where: { id: e.id },
-            update: {
-              name: e.name,
-              location: e.location,
-              description: e.description,
-              colour: e.colour,
-            },
-            create: { ...e },
-          }),
-        ),
-      );
     } catch (e) {
       throw new Error('');
     }
