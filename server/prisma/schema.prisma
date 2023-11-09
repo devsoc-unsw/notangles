@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  userId         String      @id // same as zid
+  zid            String      @id // same as zid
   createdAt      DateTime    @default(now())
   lastLogin      DateTime?   @default(now())
   firstname      String?
@@ -36,7 +36,7 @@ model Event {
   day         String
   start       DateTime
   end         DateTime
-  timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   timetableId String?
 }
 
@@ -44,7 +44,7 @@ model Class {
   id          String     @unique
   classType   String // e.g. Lecture, Tutorial, Laboratory, etc. Not putting into enum because there are other whacky classTypes 
   courseName  String?
-  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   timetableId String?
 }
 
@@ -54,14 +54,14 @@ model Timetable {
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]
-  user            User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  userId          String
+  user            User     @relation(fields: [zid], references: [zid], onDelete: Cascade)
+  zid             String
 }
 
 // Weak entity
 model Settings {
-  userId                   String  @unique
-  user                     User    @relation(fields: [userId], references: [userId])
+  zid                      String  @unique
+  user                     User    @relation(fields: [zid], references: [zid])
   is12HourMode             Boolean
   isDarkMode               Boolean
   isSquareEdges            Boolean

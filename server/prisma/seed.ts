@@ -24,10 +24,10 @@ const generateUsers = async (
   for (let i = 0; i < numUsers; i++) {
     const zid = getZid().toString();
     const user = await prisma.user.upsert({
-      where: { userId: zid },
+      where: { zid: zid },
       update: {},
       create: {
-        userId: zid,
+        zid: zid,
         email: `z${zid}@unsw.edu.au`,
       },
     });

@@ -1,53 +1,60 @@
 import { Controller, Get, Put, Param, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EventDto, SettingsDto, TimetableDto } from './dto';
+import { ClassDto, EventDto, SettingsDto, TimetableDto } from './dto';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile/:userId')
-  getUserInfo(@Param('userId') userId: string) {
+  async getUserInfo(@Param('userId') userId: string) {
     try {
-      return this.userService.getUserInfo(userId);
+      return await this.userService.getUserInfo(userId);
     } catch (e) {
       return e;
     }
   }
 
   @Get('settings/:userId')
-  getUserSettings(@Param('userId') userId: string) {
-    return this.userService.getUserSettings(userId);
+  async getUserSettings(@Param('userId') userId: string) {
+    return await this.userService.getUserSettings(userId);
   }
 
   @Put('settings')
-  setUserSettings(
+  async setUserSettings(
     @Body('userId') userId: string,
     @Body('setting') setting: SettingsDto,
   ) {
-    this.userService.setUserSettings(userId, setting);
+    return await this.userService.setUserSettings(userId, setting);
   }
 
   @Get('timetable/:userId')
-  getUserTimetables(@Param('userId') userId: string) {
-    return null;
+  async getUserTimetables(@Param('userId') userId: string) {
+    return await this.userService.getUserTimetables(userId);
   }
 
   @Post('timetable')
-  createUserTimetable(
-    @Body('timetableId') timetableId: string,
+  async createUserTimetable(
+    @Body('zid') zid: string,
+    @Body('timetableName') timetableName: string,
     @Body('selectedCourses') selectedCourses: string[],
-    @Body('selectedClasses') selectedClasses: any[], // change type later
+    @Body('selectedClasses') selectedClasses: ClassDto[], // change type later
     @Body('createdEvents') createdEvents: EventDto[],
   ) {
-    console.log(timetableId, selectedCourses, selectedClasses, createdEvents);
+    return await this.userService.createUserTimetable(
+      zid,
+      timetableName,
+      selectedCourses,
+      selectedClasses,
+      createdEvents,
+    );
   }
 
   @Put('timetable')
-  editUserTimetable(
+  async editUserTimetable(
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
-    console.log(userId, timetable);
+    return await this.userService.editUserTimetable(userId, timetable);
   }
 }
