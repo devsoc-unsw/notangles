@@ -30,7 +30,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   };
 
   return (
-    <ListItem key={optionName}>
+    <ListItem key={optionName} sx={{ p: 0 }}>
       <Grid container spacing={0}>
         <Grid item xs={12}>
           <ListItemText primary={optionName} />

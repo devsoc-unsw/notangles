@@ -17,6 +17,8 @@ import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../u
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
+import { TimePicker } from '@mui/x-date-pickers';
+import DropdownOption from '../timetable/DropdownOption';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -191,6 +193,11 @@ const CustomEvent: React.FC = () => {
     handleClose();
   };
 
+  const handleFormat = (newFormats: string[]) => {
+    setEventDays(newFormats);
+    setIsInitialDay(false);
+  };
+
   const createEvent = (
     eventName: string,
     location: string,
@@ -274,7 +281,7 @@ const CustomEvent: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-3">
+              <div className="col-span-3 justify-self-end">
                 <button type="button" className="flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
                   o
                   <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -287,6 +294,88 @@ const CustomEvent: React.FC = () => {
           <div className='flex flex-col'>
             <div className='mb-1'>
               Details
+            </div>
+            <div className='relative mb-4'>
+              <input placeholder='Event Name *' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              </input>
+              <div className="absolute inset-y-0 left-0 pl-3  
+                    flex items-center  
+                    pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+              </div>
+            </div>
+            <div className='relative mb-4'>
+              <input placeholder='Description' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              </input>
+              <div className="absolute inset-y-0 left-0 pl-3  
+                    flex items-center  
+                    pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+                </svg>
+              </div>
+            </div>
+            <div className='relative'>
+              <input placeholder='Location' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              </input>
+              <div className="absolute inset-y-0 left-0 pl-3  
+                    flex items-center  
+                    pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-12">
+            <div className="col-span-7">
+              <div>
+                Start
+              </div>
+              <div>
+                <TimePicker
+                  sx={{ width: '140px' }}
+                // Displays time as the time of the grid the user pressed
+                // when popover has just been opened
+                />
+              </div>
+            </div>
+            <div className="col-span-5">
+              <div>
+                End
+              </div>
+              <div>
+                <TimePicker
+                  sx={{ width: '140px' }}
+                // Displays time as the time of the grid the user pressed
+                // when popover has just been opened
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <DropdownOption
+              optionName="Days"
+              optionState={eventDays}
+              setOptionState={handleFormat}
+              optionChoices={daysShort}
+              multiple={true}
+              noOff
+            />
+          </div>
+          <div className="grid grid-cols-12">
+            <div className="col-span-6">
+            </div>
+            <div className="col-span-6 flex justify-between">
+              <button className='h-12'>Cancel</button>
+              <button className='bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'>
+                <div className="text-white">
+                  Continue
+                </div>
+              </button>
             </div>
           </div>
         </div>
