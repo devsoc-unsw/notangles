@@ -255,8 +255,8 @@ const CustomEvent: React.FC = () => {
         }}
       >
         <div className="px-8 pt-8 flex flex-col space-y-3">
-          <div className='flex'>
-            <div className='w-[300px] font-bold text-xl'>
+          <div className='flex justify-between'>
+            <div className='font-bold text-xl'>
               Create an event
             </div>
             <button>
@@ -269,112 +269,70 @@ const CustomEvent: React.FC = () => {
             <div className='mb-1'>
               Event type
             </div>
-            <div className="grid grid-cols-12">
+            <div className="grid grid-cols-12 gap-4">
               <div className="col-span-9">
                 <div>
-                  <select className="w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    <option>General Event</option>
-                    <option>Tutoring</option>
+                  <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <option value="General">General Event</option>
+                    <option value="Tutoring">Tutoring</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    {/* <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg> */}
-                  </div>
                 </div>
               </div>
               <div className="col-span-3 justify-self-end">
-                <button type="button" className="flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                  o
-                  <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                {/* <button type="button" className="flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true"> */}
+                <ColorPicker
+                  color={color}
+                  setColor={setColor}
+                  colorPickerAnchorEl={colorPickerAnchorEl}
+                  handleOpenColorPicker={handleOpenColorPicker}
+                  handleCloseColorPicker={handleCloseColorPicker}
+                />
+                {/* <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
-          <div className='flex flex-col'>
-            <div className='mb-1'>
-              Details
-            </div>
-            <div className='relative mb-4'>
-              <input placeholder='Event Name *' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              </input>
-              <div className="absolute inset-y-0 left-0 pl-3  
-                    flex items-center  
-                    pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                </svg>
-              </div>
-            </div>
-            <div className='relative mb-4'>
-              <input placeholder='Description' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              </input>
-              <div className="absolute inset-y-0 left-0 pl-3  
-                    flex items-center  
-                    pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
-                </svg>
-              </div>
-            </div>
-            <div className='relative'>
-              <input placeholder='Location' className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              </input>
-              <div className="absolute inset-y-0 left-0 pl-3  
-                    flex items-center  
-                    pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-12">
-            <div className="col-span-7">
-              <div>
-                Start
-              </div>
-              <div>
-                <TimePicker
-                  sx={{ width: '140px' }}
-                // Displays time as the time of the grid the user pressed
-                // when popover has just been opened
-                />
-              </div>
-            </div>
-            <div className="col-span-5">
-              <div>
-                End
-              </div>
-              <div>
-                <TimePicker
-                  sx={{ width: '140px' }}
-                // Displays time as the time of the grid the user pressed
-                // when popover has just been opened
-                />
-              </div>
-            </div>
-          </div>
-          <div>
-            <DropdownOption
-              optionName="Days"
-              optionState={eventDays}
-              setOptionState={handleFormat}
-              optionChoices={daysShort}
-              multiple={true}
-              noOff
-            />
-          </div>
+          {eventType === 'General' ?
+            <CustomEventGeneral
+              eventName={eventName}
+              setEventName={setEventName}
+              location={location}
+              setLocation={setLocation}
+              description={description}
+              setDescription={setDescription}
+              startTime={startTime}
+              setStartTime={setStartTime}
+              endTime={endTime}
+              setEndTime={setEndTime}
+              eventDays={eventDays}
+              setEventDays={setEventDays}
+              initialStartTime={createDateWithTime(9)}
+              initialEndTime={createDateWithTime(10)}
+              initialDay={''}
+              isInitialStartTime={isInitialStartTime}
+              setIsInitialStartTime={setIsInitialStartTime}
+              isInitialEndTime={isInitialEndTime}
+              setIsInitialEndTime={setIsInitialEndTime}
+              isInitialDay={isInitialDay}
+              setIsInitialDay={setIsInitialDay}
+            /> :
+            <button></button>}
           <div className="grid grid-cols-12">
             <div className="col-span-6">
             </div>
             <div className="col-span-6 flex justify-between">
-              <button className='h-12'>Cancel</button>
-              <button className='bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'>
-                <div className="text-white">
-                  Continue
-                </div>
+              <button className='h-12' onClick={handleClose}>Cancel</button>
+              <button
+                className='disabled:bg-[#e0e0e0] disabled:text-[#a6a6a6] text-white bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'
+                disabled={
+                  (eventType === 'General' && (!eventName || eventDays.length === 0)) ||
+                  (eventType === 'Tutoring' && (!courseCode || !classCode))
+                }
+                onClick={createEvents}
+              >
+                Continue
               </button>
             </div>
           </div>

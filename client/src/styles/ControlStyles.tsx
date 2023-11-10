@@ -13,12 +13,12 @@ export const StyledControlsButton = styled('div')`
 
 export const ColorIndicatorBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
-})<{
+}) <{
   backgroundColor: string;
 }>`
-  width: 35px;
-  height: 35px;
-  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
   background-color: ${({ backgroundColor }) => backgroundColor};
   &:hover {
     cursor: pointer;
