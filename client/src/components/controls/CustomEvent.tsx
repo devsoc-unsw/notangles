@@ -17,8 +17,6 @@ import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../u
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
-import { TimePicker } from '@mui/x-date-pickers';
-import DropdownOption from '../timetable/DropdownOption';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -44,7 +42,7 @@ const CustomEvent: React.FC = () => {
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
-  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
+  const { year, term, isConvertToLocalTimezone, coursesList, isDarkMode } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
@@ -254,86 +252,86 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <div className="px-8 pt-8 flex flex-col space-y-3">
-          <div className='flex justify-between'>
-            <div className='font-bold text-xl'>
-              Create an event
+        <div className={(isDarkMode ? 'dark' : '')}>
+          <div className={"px-8 pt-8 flex flex-col space-y-4 dark:bg-[#252c37]"}>
+            <div className='flex justify-between'>
+              <div className='font-bold text-xl '>
+                Create an event
+              </div>
+              <button>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            <button>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div className='flex flex-col'>
-            <div className='mb-1'>
-              Event type
-            </div>
-            <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-9">
-                <div>
-                  <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <div className='flex flex-col'>
+              <div className='mb-1'>
+                Event type
+              </div>
+              <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-9">
+                  <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                     <option value="General">General Event</option>
                     <option value="Tutoring">Tutoring</option>
                   </select>
                 </div>
-              </div>
-              <div className="col-span-3 justify-self-end">
-                <ColorPicker
-                  color={color}
-                  setColor={setColor}
-                  colorPickerAnchorEl={colorPickerAnchorEl}
-                  handleOpenColorPicker={handleOpenColorPicker}
-                  handleCloseColorPicker={handleCloseColorPicker}
-                />
+                <div className="col-span-3 justify-self-end">
+                  <ColorPicker
+                    color={color}
+                    setColor={setColor}
+                    colorPickerAnchorEl={colorPickerAnchorEl}
+                    handleOpenColorPicker={handleOpenColorPicker}
+                    handleCloseColorPicker={handleCloseColorPicker}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          {eventType === 'General' ?
-            <CustomEventGeneral
-              eventName={eventName}
-              setEventName={setEventName}
-              location={location}
-              setLocation={setLocation}
-              description={description}
-              setDescription={setDescription}
-              startTime={startTime}
-              setStartTime={setStartTime}
-              endTime={endTime}
-              setEndTime={setEndTime}
-              eventDays={eventDays}
-              setEventDays={setEventDays}
-              initialStartTime={createDateWithTime(9)}
-              initialEndTime={createDateWithTime(10)}
-              initialDay={''}
-              isInitialStartTime={isInitialStartTime}
-              setIsInitialStartTime={setIsInitialStartTime}
-              isInitialEndTime={isInitialEndTime}
-              setIsInitialEndTime={setIsInitialEndTime}
-              isInitialDay={isInitialDay}
-              setIsInitialDay={setIsInitialDay}
-            /> :
-            <CustomEventTutoring
-              coursesCodes={coursesCodes}
-              classesCodes={classesCodes}
-              setCourseCode={setCourseCode}
-              setClassCode={setClassCode}
-            />}
-          <div className="grid grid-cols-12">
-            <div className="col-span-6">
-            </div>
-            <div className="col-span-6 flex justify-between">
-              <button className='h-12' onClick={handleClose}>Cancel</button>
-              <button
-                className='disabled:bg-[#e0e0e0] disabled:text-[#a6a6a6] text-white bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'
-                disabled={
-                  (eventType === 'General' && (!eventName || eventDays.length === 0)) ||
-                  (eventType === 'Tutoring' && (!courseCode || !classCode))
-                }
-                onClick={createEvents}
-              >
-                Continue
-              </button>
+            {eventType === 'General' ?
+              <CustomEventGeneral
+                eventName={eventName}
+                setEventName={setEventName}
+                location={location}
+                setLocation={setLocation}
+                description={description}
+                setDescription={setDescription}
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+                eventDays={eventDays}
+                setEventDays={setEventDays}
+                initialStartTime={createDateWithTime(9)}
+                initialEndTime={createDateWithTime(10)}
+                initialDay={''}
+                isInitialStartTime={isInitialStartTime}
+                setIsInitialStartTime={setIsInitialStartTime}
+                isInitialEndTime={isInitialEndTime}
+                setIsInitialEndTime={setIsInitialEndTime}
+                isInitialDay={isInitialDay}
+                setIsInitialDay={setIsInitialDay}
+              /> :
+              <CustomEventTutoring
+                coursesCodes={coursesCodes}
+                classesCodes={classesCodes}
+                setCourseCode={setCourseCode}
+                setClassCode={setClassCode}
+              />}
+            <div className="grid grid-cols-12">
+              <div className="col-span-6">
+              </div>
+              <div className="col-span-6 flex justify-between">
+                <button className='h-12' onClick={handleClose}>Cancel</button>
+                <button
+                  className='dark:disabled:bg-gray-600 disabled:bg-[#e0e0e0] disabled:text-[#a6a6a6] text-white bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'
+                  disabled={
+                    (eventType === 'General' && (!eventName || eventDays.length === 0)) ||
+                    (eventType === 'Tutoring' && (!courseCode || !classCode))
+                  }
+                  onClick={createEvents}
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           </div>
         </div>

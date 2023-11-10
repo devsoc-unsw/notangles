@@ -18,7 +18,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   return (
     <>
       <button type="button"
-        className="flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        className="flex justify-between dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         aria-describedby={colorPickerPopoverId}
         onClick={handleOpenColorPicker}
       >

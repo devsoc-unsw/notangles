@@ -5,7 +5,6 @@ import React from 'react';
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
 
 const StyledOptionToggle = styled(ToggleButtonGroup)`
-  margin-top: 10px;
   width: 100%;
 `;
 

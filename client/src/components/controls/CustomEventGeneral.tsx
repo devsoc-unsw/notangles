@@ -48,7 +48,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Event Name *'
             defaultValue={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
@@ -64,7 +64,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Description'
             defaultValue={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
@@ -80,7 +80,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Location'
             defaultValue={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
