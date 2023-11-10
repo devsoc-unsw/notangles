@@ -222,9 +222,9 @@ const CustomEvent: React.FC = () => {
 
   return (
     <StyledControlsButton>
-      <button onClick={handleOpen} className={dropdownButton}>
+      <button onClick={handleOpen} className={dropdownButton} data-popover-target="popover">
         <div className="m-3 flex justify-between text-white">
-          Create Event {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
+          CREATE EVENT {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
         </div>
       </button>
       {/* <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
@@ -234,6 +234,64 @@ const CustomEvent: React.FC = () => {
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton> */}
       <Popover
+        id={popoverId}
+        open={openCreateEventPopover}
+        anchorEl={createEventAnchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <div className="px-8 pt-8 flex flex-col space-y-3">
+          <div className='flex'>
+            <div className='w-[300px] font-bold text-xl'>
+              Create an event
+            </div>
+            <button>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className='flex flex-col'>
+            <div className='mb-1'>
+              Event type
+            </div>
+            <div className="grid grid-cols-12">
+              <div className="col-span-9">
+                <div>
+                  <select className="w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <option>General Event</option>
+                    <option>Tutoring</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    {/* <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg> */}
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-3">
+                <button type="button" className="flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                  o
+                  <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col'>
+            <div className='mb-1'>
+              Details
+            </div>
+          </div>
+        </div>
+      </Popover>
+      {/* <Popover
         id={popoverId}
         open={openCreateEventPopover}
         anchorEl={createEventAnchorEl}
@@ -310,8 +368,8 @@ const CustomEvent: React.FC = () => {
           <Add />
           CREATE
         </ExecuteButton>
-      </Popover>
-    </StyledControlsButton>
+      </Popover> */}
+    </StyledControlsButton >
   );
 };
 
