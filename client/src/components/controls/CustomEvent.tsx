@@ -318,7 +318,12 @@ const CustomEvent: React.FC = () => {
               isInitialDay={isInitialDay}
               setIsInitialDay={setIsInitialDay}
             /> :
-            <button></button>}
+            <CustomEventTutoring
+              coursesCodes={coursesCodes}
+              classesCodes={classesCodes}
+              setCourseCode={setCourseCode}
+              setClassCode={setClassCode}
+            />}
           <div className="grid grid-cols-12">
             <div className="col-span-6">
             </div>
