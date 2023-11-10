@@ -13,7 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
-import useGif from '../../assets/how_to_use.gif';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 import createAClass1 from '../../assets/how_to_create_class_1.png';
 import createAClass2 from '../../assets/how_to_create_class_2.png';
 import createAClass3a from '../../assets/how_to_create_class_3a.png';
@@ -58,7 +59,6 @@ const Support: React.FC = () => {
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
         {...other}
-
       >
         {value === index && (
           <Box sx={{ p: 3 }}>
@@ -99,28 +99,45 @@ const Support: React.FC = () => {
   );
 };
 
+const getCarouselProps = () => ({
+  infiniteLoop: true,
+  showStatus: false, //removes 'x out of y'
+  showThumbs: false,
+});
+
 const HowToCreateAClass = () => {
   return (
     <>
-      <StyledTypography variant="h6">How to create a class</StyledTypography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 1. Select your courses in the top left search bar
-        <HowToUseImg src={createAClass1} alt="how to create a class step 1" />
-      </Typography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 2. Drag-and-drop classes to customise your timetable
-        <HowToUseImg src={createAClass2} alt="how to create a class step 2" />
-      </Typography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
-        <HowToUseImg src={createAClass3a} alt="how to create a class step 3a" />
-        <HowToUseImg src={createAClass3b} alt="how to create a class step 3b" />
-      </Typography>
+      <StyledTypography variant="h6">How to Create a Class</StyledTypography>
 
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
-        <HowToUseImg src={createAClass4} alt="how to create a class step 4" />
-      </Typography>
+      <Carousel {...getCarouselProps()}>
+        <div>
+          <img src={createAClass1} />
+          <Typography gutterBottom variant="body2" paddingBottom={3}>
+            Step 1. Select your courses in the top left search bar
+          </Typography>
+        </div>
+        <div>
+          <img src={createAClass2} />
+          <Typography gutterBottom variant="body2" paddingBottom={3}>
+            Step 2. Drag-and-drop classes to customise your timetable
+          </Typography>
+        </div>
+        <div>
+          <img src={createAClass3a} />
+          <Typography gutterBottom variant="body2" paddingBottom={3}>
+            Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
+          </Typography>
+        </div>
+        <div>
+          <img src={createAClass4} />
+          <Typography gutterBottom variant="body2" paddingBottom={3}>
+            <Typography gutterBottom variant="body2" paddingBottom={3}>
+              Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
+            </Typography>
+          </Typography>
+        </div>
+      </Carousel>
     </>
   );
 };
