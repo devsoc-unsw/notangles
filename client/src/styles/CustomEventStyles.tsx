@@ -16,7 +16,7 @@ export const StyledSelect = styled('select') <{ isDarkMode: boolean }>`
   -moz-appearance: none;
   background-image: ${(props) => (props.isDarkMode ? darkModeArrow : lightModeArrow)};
   background-size: 20px 20px;
-  background-position: right 10px top 50%;
+  background-position: right 12px top 50%;
   background-repeat: no-repeat;
 `
 
