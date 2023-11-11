@@ -5,7 +5,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { daysShort } from '../../constants/timetable';
 import { CustomEventGeneralProps } from '../../interfaces/PropTypes';
 import { StyledListItem } from '../../styles/ControlStyles';
-import { StyledListItemText } from '../../styles/CustomEventStyles';
+import { StyledListItemText, styledInput } from '../../styles/CustomEventStyles';
 import { areValidEventTimes } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
 
@@ -48,7 +48,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Event Name *'
             defaultValue={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className={styledInput}
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
@@ -64,7 +64,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Description'
             defaultValue={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className={styledInput}
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
@@ -80,7 +80,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             placeholder='Location'
             defaultValue={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] pl-12 pr-4 py-2 font-medium w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className={styledInput}
           >
           </input>
           <div className="absolute inset-y-0 left-0 pl-3  
@@ -132,7 +132,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
       <div>
         <DropdownOption
           optionName="Days"
-          optionState={eventDays}
+          optionState={isInitialDay ? [initialDay] : eventDays}
           setOptionState={handleFormat}
           optionChoices={daysShort}
           multiple={true}

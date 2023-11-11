@@ -10,7 +10,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { CoursesList } from '../../interfaces/Courses';
 import { ClassData, EventPeriod } from '../../interfaces/Periods';
 import { StyledControlsButton } from '../../styles/ControlStyles';
-import { dropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
+import { dropdownButton, ExecuteButton, StyledSelect, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../utils/eventTimes';
@@ -253,12 +253,12 @@ const CustomEvent: React.FC = () => {
         }}
       >
         <div className={(isDarkMode ? 'dark' : '')}>
-          <div className={"px-8 pt-8 flex flex-col space-y-4 dark:bg-[#252c37]"}>
+          <div className={"px-8 py-6 flex flex-col space-y-4 dark:bg-[#252c37]"}>
             <div className='flex justify-between'>
               <div className='font-bold text-xl '>
                 Create an event
               </div>
-              <button>
+              <button onClick={handleClose}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -270,10 +270,11 @@ const CustomEvent: React.FC = () => {
               </div>
               <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-9">
-                  <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] w-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                  <StyledSelect isDarkMode={isDarkMode} value={eventType} onChange={(e) => setEventType(e.target.value)} className="dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] w-full h-full flex justify-between gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                     <option value="General">General Event</option>
                     <option value="Tutoring">Tutoring</option>
-                  </select>
+                    <option>Import from Notangles</option>
+                  </StyledSelect>
                 </div>
                 <div className="col-span-3 justify-self-end">
                   <ColorPicker
@@ -322,7 +323,7 @@ const CustomEvent: React.FC = () => {
               <div className="col-span-6 flex justify-between">
                 <button className='h-12' onClick={handleClose}>Cancel</button>
                 <button
-                  className='dark:disabled:bg-gray-600 disabled:bg-[#e0e0e0] disabled:text-[#a6a6a6] text-white bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] mb-4 h-12'
+                  className='dark:disabled:bg-gray-600 disabled:bg-[#e0e0e0] disabled:text-[#a6a6a6] text-white bg-blue-500 hover:bg-blue-400 rounded-md w-[100px] h-12'
                   disabled={
                     (eventType === 'General' && (!eventName || eventDays.length === 0)) ||
                     (eventType === 'Tutoring' && (!courseCode || !classCode))

@@ -1,5 +1,7 @@
+import React, { useContext } from 'react';
 import { Box, Button, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import { AppContext } from '../../context/AppContext';
 
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
@@ -14,16 +16,17 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+  const { isDarkMode } = useContext(AppContext);
 
   return (
     <>
       <button type="button"
-        className="flex justify-between dark:bg-[#323e4d] dark:text-[#eef0f2] dark:ring-[#404f63] gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        className="flex justify-between items-center dark:bg-[#323e4d] h-full dark:text-[#eef0f2] dark:ring-[#404f63] gap-x-1.5 rounded-md bg-[#f8f8f8] px-3 py-2 text-md font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         aria-describedby={colorPickerPopoverId}
         onClick={handleOpenColorPicker}
       >
         <ColorIndicatorBox backgroundColor={color} onClick={handleOpenColorPicker} />
-        <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <svg className="my-auto h-5 w-5 text-gray-400 items-center" viewBox="0 0 20 20" fill={isDarkMode ? "white" : "black"} aria-hidden="true">
           <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
         </svg>
       </button>
