@@ -4,6 +4,17 @@ import timeoutPromise from '../utils/timeoutPromise';
 
 const REGULAR_TERM_STR_LEN = 2;
 
+const parseYear = (termDate: string) => {
+  let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
+
+  let matched = termDate.match(regexp);
+  let extractedYear = ''
+  if (matched != null) {
+    extractedYear = matched[3];
+  }
+  return extractedYear;
+}
+
 /**
  * @returns The details of the latest term there is data for
  */
@@ -24,91 +35,60 @@ export const getAvailableTermDetails = async () => {
 
   let year = termData.year || '0000';
   let termNumber = Number(termData.termNumber) || 1;
-  let term = termData.termName || `T${termNumber}`;
-  let termName = `Term ${termNumber}`;
   let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
+  const parseTermData = (termId: string) => {
+    let termNum;
+    let term = termData.termName || `T${termNumber}`;
+    let termName = `Term ${termNumber}`;
+
+    if (termId.length === REGULAR_TERM_STR_LEN) {
+      // This is not a summer term.
+      termNum = parseInt(termId.substring(1));
+      term = `T${termNum}`;
+      termName = `Term ${termNum}`;
+    } else {
+      // This is a summer term.
+      termName = `Summer Term`;
+      term = termId;
+      termNum = 0;
+    }
+
+    return { term: term, termName: termName, termNum: termNum };
+  }
+
   try {
+    // notangles api gets the latest term start date available from the scraper
     const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
     const termDateRes = await termDateFetch.text();
-    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
 
+    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
+    const termIdRes = await termIdFetch.text();
+
+    // freerooms api gets the current term date and not the new term date
     const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/freerooms`));
     const prevTermRes = await prevTermDate.text();
+
     const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
     const prevTermIdRes = await prevTermId.text();
 
-    let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
-
-    let matched = termDateRes.match(regexp);
-    if (matched != null) {
-      year = matched[3];
+    let extractedCurrYear = parseYear(termDateRes);
+    if (extractedCurrYear.length > 0) {
+      year = extractedCurrYear;
     }
 
-    let prevYear = ''
-    matched = prevTermRes.match(regexp);
-    if (matched != null) {
-      prevYear = matched[3]
-    }
+    let prevYear = parseYear(prevTermRes);
 
     const termDateSplit = termDateRes.split('/');
     firstDayOfTerm = termDateSplit.reverse().join('-');
 
-    const termIdRes = await termIdFetch.text();
-    if (termIdRes.length === REGULAR_TERM_STR_LEN) {
-      // This is not a summer term.
-      termNumber = parseInt(termIdRes.substring(1));
-      term = `T${termNumber}`;
-      termName = `Term ${termNumber}`;
-    } else {
-      // This is a summer term.
-      termName = `Summer Term`;
-      term = termIdRes;
-      termNumber = 0; // This is a summer term.
-    }
 
-    // // TODO: hardcoding to see behaviour of preserving prev timetable if the data exists
-    // termName = `Summer Term`;
-    // term = "Summer";
-    // termNumber = 0; // This is a summer term.
-
-    // TODO: hardcoding to see behaviour of preserving prev timetable for new year
-    // termNumber = 1;
-    // term = `T${termNumber}`;
-    // termName = `Term ${termNumber}`;
-    // year = "2024"
-
-    const prevDateSplit = prevTermRes.split('/');
-    let prevFirstDate = prevDateSplit.reverse().join('-');
-    let prevTermName = `Summer Term`;
-    let prevTermNum = 0;
-    let prevTerm = `T${prevTermNum}`;
-
-    if (prevTermIdRes.length === REGULAR_TERM_STR_LEN) {
-      // This is not a summer term.
-      prevTermNum = parseInt(prevTermIdRes.substring(1));
-      prevTerm = `T${prevTermNum}`;
-      prevTermName = `Term ${prevTermNum}`;
-
-      // TODO: hardcoded for now to be Term 2
-      prevTermNum = 2;
-      prevTerm = `T${prevTermNum}`;
-      prevTermName = `Term ${prevTermNum}`;
-
-      // TODO: testing restoring across years
-      // prevTermName = `Summer Term`;
-      // prevTerm = "Summer";
-      // prevTermNum = 0; // This is a summer term.
-
-    } else {
-      // This is a summer term.
-      prevTermName = `Summer Term`;
-      prevTerm = termIdRes;
-      prevTermNum = 0; // This is a summer term.
-    }
+    const newTerm = parseTermData(termIdRes);
+    const prevTerm = parseTermData(prevTermIdRes);
 
     const termsData = {
-      prevTerm: { year: prevYear, term: prevTerm, termName: prevTermName }, newTerm: { year: year, term: term, termName: termName }
+      prevTerm: { year: prevYear, term: prevTerm.term, termName: prevTerm.termName },
+      newTerm: { year: year, term: newTerm.term, termName: newTerm.termName }
     }
 
     // Store the term details in local storage.
@@ -116,19 +96,19 @@ export const getAvailableTermDetails = async () => {
       'termData',
       JSON.stringify({
         year: year,
-        term: term,
-        termNumber: termNumber,
-        termName: termName,
+        term: newTerm.term,
+        termNumber: newTerm.termNum,
+        termName: newTerm.termName,
         firstDayOfTerm: firstDayOfTerm,
         termsData: termsData
       })
     );
 
     return {
-      term: term,
-      termName: termName,
-      termNumber: termNumber,
       year: year,
+      term: newTerm.term,
+      termNumber: newTerm.termNum,
+      termName: newTerm.termName,
       firstDayOfTerm: firstDayOfTerm,
       termsData: termsData
     };

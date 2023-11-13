@@ -75,7 +75,7 @@ const History: React.FC = () => {
       return; // Prevents adding change induced by clicking redo/undo
     }
 
-    if (selectedTimetable >= displayTimetables[term].length) {
+    if (selectedTimetable >= displayTimetables[term]?.length) {
       return;
     }
 

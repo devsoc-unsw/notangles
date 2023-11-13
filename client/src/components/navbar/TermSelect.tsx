@@ -30,9 +30,10 @@ const TermSelect: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const termData = new Set([
-    termsData.prevTerm.termName.concat(', ', termsData.prevTerm.year),
-    termsData.newTerm.termName.concat(', ', termsData.newTerm.year),
+    `${termsData.newTerm.termName}, ${termsData.newTerm.year}`,
+    ...(termsData.prevTerm.termName.length > 0 ? [`${termsData.prevTerm.termName}, ${termsData.prevTerm.year}`] : []),
   ]);
+
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
