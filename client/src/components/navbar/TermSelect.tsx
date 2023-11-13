@@ -30,8 +30,8 @@ const TermSelect: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const termData = new Set([
-    `${termsData.newTerm.termName}, ${termsData.newTerm.year}`,
     ...(termsData.prevTerm.termName.length > 0 ? [`${termsData.prevTerm.termName}, ${termsData.prevTerm.year}`] : []),
+    `${termsData.newTerm.termName}, ${termsData.newTerm.year}`,
   ]);
 
 
