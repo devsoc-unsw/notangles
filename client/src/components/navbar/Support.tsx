@@ -15,15 +15,25 @@ import { Box, styled } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 
-import createClass1 from '../../assets/support/createEvent/create_class_1.png';
-import createClass2 from '../../assets/support/createEvent/create_class_2.png';
-import createClass3 from '../../assets/support/createEvent/create_class_3.png';
-import createClass4 from '../../assets/support/createEvent/create_class_4.png';
+import createClass1 from '../../assets/support/createClass/create_class_1.png';
+import createClass2 from '../../assets/support/createClass/create_class_2.png';
+import createClass3 from '../../assets/support/createClass/create_class_3.png';
+import createClass4 from '../../assets/support/createClass/create_class_4.png';
 
 import shareEvent1 from '../../assets/support/shareEvent/share_event_1.png';
 import shareEvent2 from '../../assets/support/shareEvent/share_event_2.png';
 import shareEvent3 from '../../assets/support/shareEvent/share_event_3.png';
 import shareEvent4 from '../../assets/support/shareEvent/share_event_4.png';
+
+import createEvent1 from '../../assets/support/createEvent/create_event_1.png';
+import createEvent2 from '../../assets/support/createEvent/create_event_2.png';
+import createEvent3 from '../../assets/support/createEvent/create_event_3.png';
+import createEvent4 from '../../assets/support/createEvent/create_event_4.png';
+import createEvent5 from '../../assets/support/createEvent/create_event_5.png';
+import createEvent6 from '../../assets/support/createEvent/create_event_6.png';
+import createEvent7 from '../../assets/support/createEvent/create_event_7.png';
+import createEvent8 from '../../assets/support/createEvent/create_event_8.png';
+import createEventBonus from '../../assets/support/createEvent/create_event_bonus.png';
 
 const StyledTypography = styled(Typography)`
   margin-top: 10px;
@@ -154,13 +164,16 @@ const HowToCreateAClass = () => {
 const HowToEventShare = () => {
   const carouselCards: CarouselCard[] = [
     { step: 'Step 1. On the event you want to share, click the more options.', imageSource: shareEvent1 },
-    { step: 'Step 2. Select the duplicate button. This will copy the event link to your clipboard which you can then share to your friends.', imageSource: shareEvent2 },
+    {
+      step: 'Step 2. Select the duplicate button. This will copy the event link to your clipboard which you can then share to your friends.',
+      imageSource: shareEvent2,
+    },
     {
       step: 'Step 3. When your friend enters the event link in their URL, the event will pop up! ',
       imageSource: shareEvent3,
     },
     {
-      step: 'Step 4. The event is successfully added to your friend\'s timetable',
+      step: "Step 4. The event is successfully added to your friend's timetable",
       imageSource: shareEvent4,
     },
   ];
@@ -178,27 +191,50 @@ const HowToEventShare = () => {
 };
 
 const HowToCreateAnEvent = () => {
+  const carouselCards: CarouselCard[] = [
+    { step: 'Step 1. Click on the \'Create Event\' button.', imageSource: createEvent1 },
+    {
+      step: 'Step 2. Enter the name of your event.',
+      imageSource: createEvent2,
+    },
+    {
+      step: 'Step 3. Optionally enter a description and location of your event.',
+      imageSource: createEvent3,
+    },
+    {
+      step: 'Step 4. Enter the starting and ending time of your event. The ending time must be after the starting time.',
+      imageSource: createEvent4,
+    },
+    {
+      step: 'Step 5. Select the days of the week the event will occur in.',
+      imageSource: createEvent5,
+    },
+    {
+      step: 'Step 6. Choose the colour of your event.',
+      imageSource: createEvent6,
+    },
+    {
+      step: 'Step 7. Click the \'Create\' button.',
+      imageSource: createEvent7,
+    },
+    {
+      step: 'Step 8. Your event has been successfully created!',
+      imageSource: createEvent8,
+    },
+    {
+      step: 'BONUS: You can double tap on any cell and quickly create an event on that cell!',
+      imageSource: createEventBonus,
+    },
+  ];
+
   return (
     <>
-      <StyledTypography variant="h6">How to create a class</StyledTypography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 1. Select your courses in the top left search bar
-        <HowToUseImg src={createClass1} alt="how to create a class step 1" />
-      </Typography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 2. Drag-and-drop classes to customise your timetable
-        <HowToUseImg src={createClass2} alt="how to create a class step 2" />
-      </Typography>
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
-        <HowToUseImg src={createClass3} alt="how to create a class step 3a" />
-        <HowToUseImg src={createClass3} alt="how to create a class step 3b" />
-      </Typography>
-
-      <Typography gutterBottom variant="body2" paddingBottom={3}>
-        Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
-        <HowToUseImg src={createClass4} alt="how to create a class step 4" />
-      </Typography>
+      <StyledTypography variant="h6">How to Share an Event</StyledTypography>
+      <Carousel {...getCarouselProps()}>
+        {carouselCards.map((card, _i) => {
+          return createCarouselCard(card);
+        })}
+      </Carousel>
     </>
   );
 };
