@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Link,
   Paper,
   Tab,
   Table,
@@ -15,11 +14,16 @@ import {
 import { Box, styled } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
-import createAClass1 from '../../assets/how_to_create_class_1.png';
-import createAClass2 from '../../assets/how_to_create_class_2.png';
-import createAClass3a from '../../assets/how_to_create_class_3a.png';
-import createAClass3b from '../../assets/how_to_create_class_3b.png';
-import createAClass4 from '../../assets/how_to_create_class_4.png';
+
+import createClass1 from '../../assets/support/createEvent/create_class_1.png';
+import createClass2 from '../../assets/support/createEvent/create_class_2.png';
+import createClass3 from '../../assets/support/createEvent/create_class_3.png';
+import createClass4 from '../../assets/support/createEvent/create_class_4.png';
+
+import shareEvent1 from '../../assets/support/shareEvent/share_event_1.png';
+import shareEvent2 from '../../assets/support/shareEvent/share_event_2.png';
+import shareEvent3 from '../../assets/support/shareEvent/share_event_3.png';
+import shareEvent4 from '../../assets/support/shareEvent/share_event_4.png';
 
 const StyledTypography = styled(Typography)`
   margin-top: 10px;
@@ -90,7 +94,7 @@ const Support: React.FC = () => {
         <HowToCreateAnEvent />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <></>
+        <HowToEventShare />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
         <KeyboardShortcut />
@@ -105,38 +109,69 @@ const getCarouselProps = () => ({
   showThumbs: false,
 });
 
+type CarouselCard = {
+  step: string;
+  imageSource: string;
+};
+
+const createCarouselCard = (card: CarouselCard) => {
+  return (
+    <div>
+      <img src={card.imageSource} />
+      <Typography gutterBottom variant="body2" paddingBottom={3}>
+        {card.step}
+      </Typography>
+    </div>
+  );
+};
+
 const HowToCreateAClass = () => {
+  const carouselCards: CarouselCard[] = [
+    { step: 'Step 1. Select your courses in the top left search bar', imageSource: createClass1 },
+    { step: 'Step 2. Drag-and-drop classes to customise your timetable', imageSource: createClass2 },
+    {
+      step: 'Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column',
+      imageSource: createClass3,
+    },
+    {
+      step: 'Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!',
+      imageSource: createClass4,
+    },
+  ];
+
   return (
     <>
       <StyledTypography variant="h6">How to Create a Class</StyledTypography>
-
       <Carousel {...getCarouselProps()}>
-        <div>
-          <img src={createAClass1} />
-          <Typography gutterBottom variant="body2" paddingBottom={3}>
-            Step 1. Select your courses in the top left search bar
-          </Typography>
-        </div>
-        <div>
-          <img src={createAClass2} />
-          <Typography gutterBottom variant="body2" paddingBottom={3}>
-            Step 2. Drag-and-drop classes to customise your timetable
-          </Typography>
-        </div>
-        <div>
-          <img src={createAClass3a} />
-          <Typography gutterBottom variant="body2" paddingBottom={3}>
-            Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
-          </Typography>
-        </div>
-        <div>
-          <img src={createAClass4} />
-          <Typography gutterBottom variant="body2" paddingBottom={3}>
-            <Typography gutterBottom variant="body2" paddingBottom={3}>
-              Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
-            </Typography>
-          </Typography>
-        </div>
+        {carouselCards.map((card, _i) => {
+          return createCarouselCard(card);
+        })}
+      </Carousel>
+    </>
+  );
+};
+
+const HowToEventShare = () => {
+  const carouselCards: CarouselCard[] = [
+    { step: 'Step 1. On the event you want to share, click the more options.', imageSource: shareEvent1 },
+    { step: 'Step 2. Select the duplicate button. This will copy the event link to your clipboard which you can then share to your friends.', imageSource: shareEvent2 },
+    {
+      step: 'Step 3. When your friend enters the event link in their URL, the event will pop up! ',
+      imageSource: shareEvent3,
+    },
+    {
+      step: 'Step 4. The event is successfully added to your friend\'s timetable',
+      imageSource: shareEvent4,
+    },
+  ];
+
+  return (
+    <>
+      <StyledTypography variant="h6">How to Share an Event</StyledTypography>
+      <Carousel {...getCarouselProps()}>
+        {carouselCards.map((card, _i) => {
+          return createCarouselCard(card);
+        })}
       </Carousel>
     </>
   );
@@ -148,21 +183,21 @@ const HowToCreateAnEvent = () => {
       <StyledTypography variant="h6">How to create a class</StyledTypography>
       <Typography gutterBottom variant="body2" paddingBottom={3}>
         Step 1. Select your courses in the top left search bar
-        <HowToUseImg src={createAClass1} alt="how to create a class step 1" />
+        <HowToUseImg src={createClass1} alt="how to create a class step 1" />
       </Typography>
       <Typography gutterBottom variant="body2" paddingBottom={3}>
         Step 2. Drag-and-drop classes to customise your timetable
-        <HowToUseImg src={createAClass2} alt="how to create a class step 2" />
+        <HowToUseImg src={createClass2} alt="how to create a class step 2" />
       </Typography>
       <Typography gutterBottom variant="body2" paddingBottom={3}>
         Step 3. Drag clutter (like lectures you are going to watch live) to the unscheduled column
-        <HowToUseImg src={createAClass3a} alt="how to create a class step 3a" />
-        <HowToUseImg src={createAClass3b} alt="how to create a class step 3b" />
+        <HowToUseImg src={createClass3} alt="how to create a class step 3a" />
+        <HowToUseImg src={createClass3} alt="how to create a class step 3b" />
       </Typography>
 
       <Typography gutterBottom variant="body2" paddingBottom={3}>
         Step 4. Struggling to find an ideal timetable? Try out our auto-timetabling feature!
-        <HowToUseImg src={createAClass4} alt="how to create a class step 4" />
+        <HowToUseImg src={createClass4} alt="how to create a class step 4" />
       </Typography>
     </>
   );
