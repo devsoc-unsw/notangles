@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:21.0.0-alpine as builder
+FROM node:21.3.0-alpine as builder
 RUN npm i -g pnpm
 WORKDIR /server
 
@@ -10,7 +10,7 @@ COPY . .
 RUN pnpm run build
 
 
-FROM node:21.0.0-alpine
+FROM node:21.3.0-alpine
 RUN npm i -g pnpm
 WORKDIR /server
 
