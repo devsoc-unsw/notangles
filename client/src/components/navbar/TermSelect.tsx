@@ -1,10 +1,10 @@
-import { useMediaQuery, useTheme, FormControl, MenuItem, Select, InputLabel } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 import React, { useContext } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { styled } from '@mui/system';
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   '& .MuiOutlinedInput-notchedOutline': {
@@ -34,13 +34,12 @@ const TermSelect: React.FC = () => {
     `${termsData.newTerm.termName}, ${termsData.newTerm.year}`,
   ]);
 
-
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
 
-    let newTermName = e.target.value.split(', ')[0];
+    const newTermName = e.target.value.split(', ')[0];
     let termNum = 'T' + newTermName.split(' ')[1];
-    let newYear = e.target.value.split(', ')[1];
+    const newYear = e.target.value.split(', ')[1];
 
     if (e.target.value.includes('Summer')) {
       // This is a summer term.
