@@ -108,6 +108,7 @@ export interface DroppedCardsProps {
 }
 
 export interface ExpandedClassViewProps {
+  code: string;
   classPeriod: ClassPeriod;
   popupOpen: boolean;
   handleClose: (value: ClassData) => void;
@@ -152,6 +153,7 @@ export interface ColorPickerProps {
   colorPickerAnchorEl: HTMLElement | null;
   handleOpenColorPicker: (event: React.MouseEvent<HTMLElement>) => void;
   handleCloseColorPicker: () => void;
+  handleSaveNewColor?: () => void;
 }
 
 export interface CustomEventGeneralProps {

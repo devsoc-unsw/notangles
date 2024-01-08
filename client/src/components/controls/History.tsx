@@ -42,7 +42,7 @@ const History: React.FC = () => {
     classes: SelectedClasses,
     events: CreatedEvents,
     timetableArg: TimetableData[] | ((prev: TimetableData[]) => void),
-    selected?: number,
+    selected?: number
   ) => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
@@ -54,6 +54,7 @@ const History: React.FC = () => {
     }
   };
 
+  const currentTimetable = displayTimetables[selectedTimetable];
   /**
    * Update the index of the current action
    * @param direction Which way to update (1 for increment, -1 for decrement)
@@ -102,9 +103,9 @@ const History: React.FC = () => {
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
-      events: { ...createdEvents },
+      events: { ...createdEvents }
     });
-
+    
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents, displayTimetables]);
 
@@ -176,12 +177,8 @@ const History: React.FC = () => {
       });
     };
 
-    const { courses, classes, events } = extractHistoryInfo(
-      timetableId,
-      timetableActions.current,
-      actionsPointer.current,
-    );
-    setTimetableState(courses, classes, events, modifyTimetableName);
+    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
+    setTimetableState(courses, classes, events, modifyTimetableName );
   };
 
   /**

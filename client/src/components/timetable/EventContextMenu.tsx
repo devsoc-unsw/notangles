@@ -6,7 +6,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
-import { handlePasteEvent } from '../../utils/cardsContextMenu';
+import { handleDeleteEvent, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { createEventObj } from '../../utils/createEvent';
 
 const EventContextMenu: React.FC<EventContextMenuProps> = ({
@@ -27,15 +27,9 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleDuplicateEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(name, location, description, color, day, start, end);
+    const newEvent = createEventObj(name, location, description, color, day, start, end, eventPeriod.subtype);
     setCreatedEvents({ ...createdEvents, [newEvent.event.id]: newEvent });
     setContextMenu(null);
-  };
-
-  const handleDeleteEvent = () => {
-    const updatedEventData = { ...createdEvents };
-    delete updatedEventData[eventPeriod.event.id];
-    setCreatedEvents(updatedEventData);
   };
 
   const handleEditEvent = () => {
@@ -46,7 +40,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   const handleCopyEvent = () => {
     if (eventPeriod === undefined) return;
-    const newEvent = createEventObj(name, location, description, color, day, start, end);
+    const newEvent = createEventObj(name, location, description, color, day, start, end, eventPeriod.subtype);
     setCopiedEvent(newEvent);
     setContextMenu(null);
   };
@@ -59,7 +53,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       onClose={() => setContextMenu(null)}
       autoFocus={false}
     >
-      <MenuItem onClick={handleEditEvent}>
+      <MenuItem onClick={handleEditEvent} disabled={eventPeriod.subtype === 'Tutoring'}>
         <ListItemIcon>
           <Edit fontSize="small" />
         </ListItemIcon>
@@ -87,7 +81,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
         <ListItemText>Duplicate</ListItemText>
       </MenuItem>
       <Divider />
-      <MenuItem onClick={handleDeleteEvent}>
+      <MenuItem onClick={() => handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod)}>
         <ListItemIcon>
           <RedDeleteIcon fontSize="small" />
         </ListItemIcon>

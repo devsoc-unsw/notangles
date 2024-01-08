@@ -1,6 +1,7 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Save } from '@mui/icons-material';
 import {
   Dialog,
+  Divider,
   Grid,
   IconButton,
   ListItemIcon,
@@ -36,6 +37,8 @@ import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import LocationDropdown from './LocationDropdown';
+import ColorPicker from '../controls/ColorPicker';
+import { ColorDivider, ColorListItem } from '../../styles/ExpandedViewStyles';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -70,13 +73,33 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 
   This is currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically of type PeriodData
 */
-const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popupOpen, handleClose }) => {
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
+  const [color, setColor] = useState<string>(assignedColors[code]);
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
+  // To reload initial color picker after useColorMapper instantiates context
+  useEffect(() => {
+    setColor(assignedColors[code]);
+  }, [assignedColors]);
+
+  const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
+    setColorPickerAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseColorPicker = () => {
+    setColorPickerAnchorEl(null);
+  };
+
+  // Upon closing the ECV, change color back to assigned color if user selected color but did not save
+  const handleCloseWrapper = (value: ClassData): void => {
+    handleClose(value);
+    setColor(assignedColors[code]);
+  };
   /**
    * @param currPeriod The currently selected period
    * @param courses The currently selected courses
@@ -161,12 +184,12 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
     <Dialog
       maxWidth="sm"
       open={popupOpen}
-      onClose={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+      onClose={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
     >
       <StyledTopIcons>
         <IconButton
           aria-label="close"
-          onClick={() => handleClose(duplicateClassData.current.duplicateClasses[selectedIndex])}
+          onClick={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
         >
           <Close />
         </IconButton>
@@ -215,6 +238,22 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ classPeriod, popu
             Capacity {currClass.enrolments} / {currClass.capacity}
           </Typography>
         </StyledListItem>
+        <>
+          <ColorDivider />
+          <ColorListItem>
+            <ColorPicker
+              color={color}
+              setColor={setColor}
+              colorPickerAnchorEl={colorPickerAnchorEl}
+              handleOpenColorPicker={handleOpenColorPicker}
+              handleCloseColorPicker={handleCloseColorPicker}
+              handleSaveNewColor={() => {
+                setAssignedColors({ ...assignedColors, [code]: color });
+                handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
+              }}
+            />
+          </ColorListItem>
+        </>
       </StyledDialogContent>
     </Dialog>
   );
