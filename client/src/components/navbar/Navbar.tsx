@@ -1,17 +1,16 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
-import { ThemeType } from '../../constants/theme';
-import { AppContext } from '../../context/AppContext';
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import TermSelect from './TermSelect';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -37,22 +36,8 @@ const NavbarTitle = styled(Typography)`
   z-index: 1201;
 `;
 
-const Weak = styled('span')`
-  font-weight: 300;
-  opacity: 0.8;
-  margin-left: 15px;
-  font-size: 90%;
-  vertical-align: middle;
-  position: relative;
-  bottom: 1px;
-  z-index: 1201;
-`;
-
 const Navbar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, year } = useContext(AppContext);
-  const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <NavbarBox>
@@ -64,10 +49,8 @@ const Navbar: React.FC = () => {
             onMouseOver={() => setCurrLogo(notanglesLogoGif)}
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
-          <NavbarTitle variant="h6">
-            Notangles
-            <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
-          </NavbarTitle>
+          <NavbarTitle variant="h6">Notangles</NavbarTitle>
+          <TermSelect />
           <CustomModal
             title="About"
             showIcon={<Info />}
