@@ -79,6 +79,11 @@ const History: React.FC = () => {
       return;
     }
 
+    // waiting for timetable data to render
+    if (!(term in displayTimetables)) {
+      return;
+    }
+
     const currentTimetable = displayTimetables[term][selectedTimetable];
 
     // Create object if it doesn't exist
@@ -149,7 +154,8 @@ const History: React.FC = () => {
   }, [selectedTimetable, selectedCourses, selectedClasses, createdEvents, displayTimetables]);
 
   useEffect(() => {
-    if (displayTimetables[term].length < 1) {
+    // waiting for timetable data to render with valid term data
+    if (!(term in displayTimetables) || displayTimetables[term].length < 1) {
       return;
     }
 

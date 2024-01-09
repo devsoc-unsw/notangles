@@ -220,7 +220,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
-  const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({ [termData.term]: [] });
+  const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({ [termData.term.length > 0 ? termData.term : "0"]: [] });
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
