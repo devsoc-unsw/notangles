@@ -33,7 +33,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
     setAlertMsg,
     setErrorVisibility,
-    term
+    term,
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
@@ -87,8 +87,8 @@ const TimetableTabs: React.FC = () => {
 
       const addingNewTimetables = {
         ...displayTimetables,
-        [term]: [...displayTimetables[term], newTimetable]
-      }
+        [term]: [...displayTimetables[term], newTimetable],
+      };
       storage.set('timetables', addingNewTimetables);
 
       setDisplayTimetables(addingNewTimetables);
@@ -134,8 +134,8 @@ const TimetableTabs: React.FC = () => {
 
     const rearrangedTimetables = {
       ...displayTimetables,
-      [term]: newTimetables
-    }
+      [term]: newTimetables,
+    };
 
     setDisplayTimetables(rearrangedTimetables);
 
@@ -167,36 +167,38 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {Object.keys(displayTimetables).length > 0 ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
-                  <Draggable draggableId={index.toString()} index={index} key={index}>
-                    {(props) => {
-                      if (props.draggableProps.style?.transform) {
-                        let shift = props.draggableProps.style?.transform.split(",")[0];
-                        // forcing horizontal movement
-                        props.draggableProps.style.transform = shift + ", 0)";
-                      }
-                      return (
-                        <Box
-                          onMouseDown={() => handleSwitchTimetables(displayTimetables[term], index)}
-                          onContextMenu={(e) => handleRightTabClick(e, index)}
-                          ref={props.innerRef}
-                          {...props.draggableProps}
-                          {...props.dragHandleProps}
-                          sx={TabStyle(index, selectedTimetable)}
-                        >
-                          {timetable.name}
-                          {selectedTimetable === index ? (
-                            <StyledSpan onClick={handleMenuClick}>
-                              <MoreHoriz />
-                            </StyledSpan>
-                          ) : (
-                            <></>
-                          )}
-                        </Box>
-                      );
-                    }}
-                  </Draggable>
-                )) : null}
+                {Object.keys(displayTimetables).length > 0
+                  ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
+                      <Draggable draggableId={index.toString()} index={index} key={index}>
+                        {(props) => {
+                          if (props.draggableProps.style?.transform) {
+                            const shift = props.draggableProps.style?.transform.split(',')[0];
+                            // forcing horizontal movement
+                            props.draggableProps.style.transform = shift + ', 0)';
+                          }
+                          return (
+                            <Box
+                              onMouseDown={() => handleSwitchTimetables(displayTimetables[term], index)}
+                              onContextMenu={(e) => handleRightTabClick(e, index)}
+                              ref={props.innerRef}
+                              {...props.draggableProps}
+                              {...props.dragHandleProps}
+                              sx={TabStyle(index, selectedTimetable)}
+                            >
+                              {timetable.name}
+                              {selectedTimetable === index ? (
+                                <StyledSpan onClick={handleMenuClick}>
+                                  <MoreHoriz />
+                                </StyledSpan>
+                              ) : (
+                                <></>
+                              )}
+                            </Box>
+                          );
+                        }}
+                      </Draggable>
+                    ))
+                  : null}
                 {props.placeholder}
               </StyledTabs>
             )}

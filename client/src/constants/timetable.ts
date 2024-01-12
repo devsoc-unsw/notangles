@@ -5,15 +5,15 @@ import timeoutPromise from '../utils/timeoutPromise';
 const REGULAR_TERM_STR_LEN = 2;
 
 const parseYear = (termDate: string) => {
-  let regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
+  const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
-  let matched = termDate.match(regexp);
-  let extractedYear = ''
+  const matched = termDate.match(regexp);
+  let extractedYear = '';
   if (matched != null) {
     extractedYear = matched[3];
   }
   return extractedYear;
-}
+};
 
 /**
  * @returns The details of the latest term there is data for
@@ -34,7 +34,7 @@ export const getAvailableTermDetails = async () => {
   }
 
   let year = termData.year || '0000';
-  let termNumber = Number(termData.termNumber) || 1;
+  const termNumber = Number(termData.termNumber) || 1;
   let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
   const parseTermData = (termId: string) => {
@@ -55,7 +55,7 @@ export const getAvailableTermDetails = async () => {
     }
 
     return { term: term, termName: termName, termNum: termNum };
-  }
+  };
 
   try {
     // notangles api gets the latest term start date available from the scraper
@@ -72,24 +72,23 @@ export const getAvailableTermDetails = async () => {
     const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
     const prevTermIdRes = await prevTermId.text();
 
-    let extractedCurrYear = parseYear(termDateRes);
+    const extractedCurrYear = parseYear(termDateRes);
     if (extractedCurrYear.length > 0) {
       year = extractedCurrYear;
     }
 
-    let prevYear = parseYear(prevTermRes);
+    const prevYear = parseYear(prevTermRes);
 
     const termDateSplit = termDateRes.split('/');
     firstDayOfTerm = termDateSplit.reverse().join('-');
-
 
     const newTerm = parseTermData(termIdRes);
     const prevTerm = parseTermData(prevTermIdRes);
 
     const termsData = {
       prevTerm: { year: prevYear, term: prevTerm.term, termName: prevTerm.termName },
-      newTerm: { year: year, term: newTerm.term, termName: newTerm.termName }
-    }
+      newTerm: { year: year, term: newTerm.term, termName: newTerm.termName },
+    };
 
     // Store the term details in local storage.
     localStorage.setItem(
@@ -100,8 +99,8 @@ export const getAvailableTermDetails = async () => {
         termNumber: newTerm.termNum,
         termName: newTerm.termName,
         firstDayOfTerm: firstDayOfTerm,
-        termsData: termsData
-      })
+        termsData: termsData,
+      }),
     );
 
     return {
@@ -110,7 +109,7 @@ export const getAvailableTermDetails = async () => {
       termNumber: newTerm.termNum,
       termName: newTerm.termName,
       firstDayOfTerm: firstDayOfTerm,
-      termsData: termsData
+      termsData: termsData,
     };
   } catch (e) {
     throw new NetworkError('Could not connect to timetable scraper!');

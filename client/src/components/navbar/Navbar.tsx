@@ -1,7 +1,7 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';

@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CourseData, CreatedEvents, SelectedClasses, DisplayTimetablesMap } from '../../interfaces/Periods';
+import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
 import { StyledDialogButtons, StyledDialogContent, StyledTitleContainer } from '../../styles/ControlStyles';
 import {
   ActionsPointer,
@@ -113,7 +113,7 @@ const History: React.FC = () => {
     incrementActionsPointer(1);
   }, [selectedClasses, isDrag, createdEvents, displayTimetables]);
 
-  //Disables reset timetable button when there is no courses, classes and events selected.
+  // Disables reset timetable button when there is no courses, classes and events selected.
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
@@ -174,21 +174,17 @@ const History: React.FC = () => {
     dontAdd.current = true;
 
     const modifiedTimetableId = displayTimetables[term][selectedTimetable].id;
-    // const modifyTimetableName = (prev: TimetableData[]) => {
-    //   return prev.map((timetable) => {
-    //     return timetable.id === timetableId
-    //       ? { ...timetable, name: timetableActions.current[timetableId][actionsPointer.current[timetableId]].name }
-    //       : timetable;
-    //   });
-    // };
     const modifiedTimetableName = {
       ...displayTimetables,
       [term]: displayTimetables[term].map((timetable) => {
         return timetable.id === modifiedTimetableId
-          ? { ...timetable, name: timetableActions.current[modifiedTimetableId][actionsPointer.current[modifiedTimetableId]].name }
+          ? {
+              ...timetable,
+              name: timetableActions.current[modifiedTimetableId][actionsPointer.current[modifiedTimetableId]].name,
+            }
           : timetable;
-      })
-    }
+      }),
+    };
 
     const { courses, classes, events } = extractHistoryInfo(
       modifiedTimetableId,
@@ -205,8 +201,8 @@ const History: React.FC = () => {
   const clearAll = () => {
     const newDisplayTimetables = {
       ...displayTimetables,
-      [term]: createDefaultTimetable()
-    }
+      [term]: createDefaultTimetable(),
+    };
     setTimetableState([], {}, {}, newDisplayTimetables, 0);
   };
 

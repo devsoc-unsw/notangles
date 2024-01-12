@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
@@ -32,7 +33,6 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import { Outlet } from 'react-router-dom';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -149,7 +149,7 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      let { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
+      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
