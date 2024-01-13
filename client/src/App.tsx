@@ -330,6 +330,13 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
+    if (!storage.get('timetables')[term]) {
+      // data stored in local storage not up to date with current term
+      let updatedWithTerms = { [term]: storage.get('timetables') };
+      storage.set('timetables',updatedWithTerms);
+      return;
+    }
+    
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
