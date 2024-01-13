@@ -333,10 +333,11 @@ const App: React.FC = () => {
     if (!storage.get('timetables')[term]) {
       // data stored in local storage not up to date with current term
       let updatedWithTerms = { [term]: storage.get('timetables') };
-      storage.set('timetables',updatedWithTerms);
-      return;
+
+      storage.set('timetables', updatedWithTerms);
+      setDisplayTimetables(updatedWithTerms);
     }
-    
+
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
