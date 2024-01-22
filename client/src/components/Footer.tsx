@@ -46,10 +46,10 @@ const Footer: React.FC = () => {
       <div>
         <h1 style={{ fontSize: '14px' }}>Notangles - UNSW Timetable Planner</h1>
         <p>
-          Notangles is a UNSW timetable planner, brought to you by CSESoc Dev. It's an easy to use drag-and-drop tool
-          that allows you to plan your course classes and add to your calendar, even before term class registration
-          opens! We have many features including support for custom events, auto-timetabling, creation of multiple
-          timetables and sharing events with friends.
+          Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy to use drag-and-drop tool that
+          allows you to plan your course classes and add to your calendar, even before term class registration opens! We
+          have many features including support for custom events, auto-timetabling, creation of multiple timetables and
+          sharing events with friends.
         </p>
       </div>
       <br></br>
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
         reliability.
       </div>
       <div>
-        Made by &gt;_ CSESoc UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
+        Made by &lt;devsoc/&gt; UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
         <Link target="_blank" href="mailto:notangles@csesoc.org.au">
           Email
         </Link>
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
           Feedback
         </Link>
         &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://github.com/csesoc/notangles">
+        <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
           Source
         </Link>
       </div>
