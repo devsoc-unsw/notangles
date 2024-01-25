@@ -11,7 +11,7 @@ import { AppContext } from '../context/AppContext';
 const FooterContainer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  padding-bottom: 25px;
+  margin-bottom: 25px;
   // background: ${({ theme }) => theme.palette.primary.main};
 
   & div {
