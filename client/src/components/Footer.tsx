@@ -12,6 +12,7 @@ const FooterContainer = styled(Box)`
   & div {
     max-width: 700px;
     margin: 0 auto;
+    line-height: 1.5;
   }
 `;
 
@@ -59,13 +60,11 @@ const Footer: React.FC = () => {
       </div>
       <div>
         Made by &lt;devsoc/&gt; UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="mailto:notangles@csesoc.org.au">
+        <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
           Email
         </Link>
         &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-          Feedback
-        </Link>
+        <Link href="https://forms.gle/rV3QCwjsEbLNyESE6">Feedback</Link>
         &nbsp;&nbsp;•&nbsp;&nbsp;
         <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
           Source
