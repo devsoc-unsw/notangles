@@ -1,3 +1,7 @@
+import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import { Box, Link } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext } from 'react';
@@ -7,7 +11,8 @@ import { AppContext } from '../context/AppContext';
 const FooterContainer = styled(Box)`
   text-align: center;
   font-size: 12px;
-  margin-bottom: 25px;
+  padding-bottom: 25px;
+  // background: ${({ theme }) => theme.palette.primary.main};
 
   & div {
     max-width: 700px;
@@ -58,19 +63,28 @@ const Footer: React.FC = () => {
         While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
         reliability.
       </div>
-      <div>
-        Made by &lt;devsoc/&gt; UNSW&nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
-          Email
-        </Link>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link href="https://forms.gle/rV3QCwjsEbLNyESE6">Feedback</Link>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
-          Source
-        </Link>
-      </div>
       {lastUpdated !== 0 && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
+      <br />
+      <div>
+        Made by &lt;devsoc/&gt; UNSW
+        <div>
+          <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
+            <MailOutlineOutlinedIcon />
+          </Link>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <Link href="https://www.facebook.com/devsocUNSW">
+            <FacebookRoundedIcon />
+          </Link>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <Link href="https://www.instagram.com/devsoc_unsw/">
+            <InstagramIcon />
+          </Link>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
+            <GitHubIcon />
+          </Link>
+        </div>
+      </div>
     </FooterContainer>
   );
 };
