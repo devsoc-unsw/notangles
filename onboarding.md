@@ -1,6 +1,6 @@
 # Onboarding
 
-Welcome to CSESoc Projects and the Notangles team! This page will come in handy when you’re running Notangles locally, and working on your own features.
+Welcome to DevSoc and the Notangles team! This page will come in handy when you’re running Notangles locally, and working on your own features.
 
 ## Your setup
 
