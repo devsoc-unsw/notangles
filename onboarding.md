@@ -37,14 +37,13 @@ Before you start, make sure that you have the following software installed.
 - [Docker](https://www.docker.com/) (only needed if you are working on the back-end)
   - [Instructions if you’re using WSL on Windows](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers)
 
-
 ## Getting the source code
 
-We manage our source code with a version control system called [Git](https://git-scm.com/). Every time we *commit* new code, it gets added to a history of commits, so we can get old code back if needed. This code is then hosted on [GitHub](https://github.com/csesoc/notangles), so any code you *push* is backed up, and can be *pulled* by other team members. Git has other features like branches, which allow us to work on different versions of the same codebase at the same time, and merge them together later.
+We manage our source code with a version control system called [Git](https://git-scm.com/). Every time we _commit_ new code, it gets added to a history of commits, so we can get old code back if needed. This code is then hosted on [GitHub](https://github.com/devsoc-unsw/notangles), so any code you _push_ is backed up, and can be _pulled_ by other team members. Git has other features like branches, which allow us to work on different versions of the same codebase at the same time, and merge them together later.
 
-First of all, make sure that you have been added to the [Notangles repository](https://github.com/csesoc/notangles) on GitHub. While anyone can read our open-source codebase, you’ll need permissions to push changes.
+First of all, make sure that you have been added to the [Notangles repository](https://github.com/devsoc-unsw/notangles) on GitHub. While anyone can read our open-source codebase, you’ll need permissions to push changes.
 
-Once you’re in, summon a terminal and clone the repository by running `git clone git@github.com:csesoc/notangles.git`. (You can also use GitHub Desktop.) After that, navigate into the newly-cloned repository by running `cd notangles`.
+Once you’re in, summon a terminal and clone the repository by running `git clone git@github.com:devsoc-unsw/notangles.git`. (You can also use GitHub Desktop.) After that, navigate into the newly-cloned repository by running `cd notangles`.
 
 Then, run `cd client && npm install && cd ../server && npm install && cd ../scraper && npm install && cd ..`, which installs all the dependencies that the project needs.
 
@@ -89,6 +88,6 @@ Then, push the branch to the Notangles repository by running `git push -u origin
 
 When you’re done with the issue, [create a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) on GitHub, then assign as reviewers the team lead, and members with experience in the area.
 
-When your pull request has been approved and merged into the *dev* branch, you can archive the card on Trello. All archived cards can be referenced from “archived items”, under “more” in the Trello menu.
+When your pull request has been approved and merged into the _dev_ branch, you can archive the card on Trello. All archived cards can be referenced from “archived items”, under “more” in the Trello menu.
 
-As a side note, **make sure to always pull from *dev*** before you do any work! This is so you can get the latest code to work on, with all the new changes from other team members.
+As a side note, **make sure to always pull from _dev_** before you do any work! This is so you can get the latest code to work on, with all the new changes from other team members.
