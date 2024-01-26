@@ -49,7 +49,7 @@ const About: React.FC = () => {
       </Typography>
       <Typography gutterBottom variant='body2'>
         Notangles is free and{' '}
-        <Link href='https://github.com/csesoc/notangles'>open-source</Link>.
+        <Link href='https://github.com/devsoc-unsw/notangles'>open-source</Link>.
       </Typography>
       <StyledTypography variant='h6'>How it works</StyledTypography>
       <Typography gutterBottom variant='body2'>
