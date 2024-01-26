@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
       {lastUpdated !== 0 && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
       <br />
       <div>
-        <b>Made by &lt;devsoc/&gt; UNSW</b>
+        <b>UNSW Software Development Society (DevSoc)</b>
         <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: '3px' }}>
           <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
             <MailOutlineOutlinedIcon />
