@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
           Feedback
         </Link>
         &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://github.com/csesoc/notangles">
+        <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
           Source
         </Link>
       </div>
