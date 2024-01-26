@@ -22,7 +22,7 @@ Before you start, make sure that you have the following software installed.
 
 Clone the repository:
 
-`git clone git@github.com:csesoc/notangles.git`
+`git clone git@github.com:devsoc-unsw/notangles.git`
 
 ### Running the front-end
 
