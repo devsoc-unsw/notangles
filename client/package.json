@@ -16,7 +16,7 @@
     "style": "prettier --write 'src/**/*.{ts,tsx}' && eslint --fix 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
-    "@date-io/date-fns": "2.17.0",
+    "@date-io/date-fns": "3.0.0",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@fontsource-variable/roboto-flex": "5.0.8",
