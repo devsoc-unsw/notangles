@@ -22,7 +22,7 @@ const Sponsors = () => {
 
   return (
     <div>
-      <h1 style={{ fontSize: '14px' }}>Our Sponsors</h1>
+      <h1 style={{ fontSize: '18px' }}>Our Sponsors</h1>
       <Grid container spacing={2} direction="row" justifyContent="center" alignItems="center">
         <SponsorImg src={tiktok} alt="tiktok logo" />
         <SponsorImg src={macquarie} alt="macquarie logo" />
