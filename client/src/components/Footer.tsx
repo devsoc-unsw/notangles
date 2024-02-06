@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
         While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
         reliability.
       </div>
-      {lastUpdated !== 0 && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
+      {lastUpdated && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
       <br />
       <div>
         <b>UNSW Software Development Society (DevSoc)</b>
