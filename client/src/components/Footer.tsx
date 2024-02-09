@@ -1,4 +1,8 @@
-import { Box, Link } from '@mui/material';
+import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
+import { Box, Link, Stack } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext } from 'react';
 
@@ -12,6 +16,7 @@ const FooterContainer = styled(Box)`
   & div {
     max-width: 700px;
     margin: 0 auto;
+    line-height: 1.5;
   }
 `;
 
@@ -45,33 +50,35 @@ const Footer: React.FC = () => {
     <FooterContainer>
       <div>
         <h1 style={{ fontSize: '14px' }}>Notangles - UNSW Timetable Planner</h1>
-        <p>
-          Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy to use drag-and-drop tool
-          that allows you to plan your course classes and add to your calendar, even before term class registration
-          opens! We have many features including support for custom events, auto-timetabling, creation of multiple
-          timetables and sharing events with friends.
-        </p>
+        Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy to use drag-and-drop tool that
+        allows you to plan your course classes and add to your calendar, even before term class registration opens! We
+        have many features including support for custom events, auto-timetabling, creation of multiple timetables and
+        sharing events with friends.
       </div>
-      <br></br>
+      <br />
       <div>
         While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
         reliability.
       </div>
+      {lastUpdated && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
+      <br />
       <div>
-        Made by Software Development Society (DevSoc)&nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="mailto:notangles@csesoc.org.au">
-          Email
-        </Link>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://forms.gle/rV3QCwjsEbLNyESE6">
-          Feedback
-        </Link>
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-        <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
-          Source
-        </Link>
+        <b>UNSW Software Development Society (DevSoc)</b>
+        <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: '3px' }}>
+          <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
+            <MailOutlineOutlinedIcon />
+          </Link>
+          <Link href="https://www.facebook.com/devsocUNSW">
+            <FacebookRoundedIcon />
+          </Link>
+          <Link href="https://www.instagram.com/devsoc_unsw/">
+            <InstagramIcon />
+          </Link>
+          <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
+            <GitHubIcon />
+          </Link>
+        </Stack>
       </div>
-      {lastUpdated !== 0 && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
     </FooterContainer>
   );
 };
