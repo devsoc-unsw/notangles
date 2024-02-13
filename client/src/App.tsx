@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
@@ -11,6 +12,7 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
+import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
@@ -31,7 +33,6 @@ import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClass
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { Outlet } from 'react-router-dom';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -292,7 +293,7 @@ const App: React.FC = () => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
-    newCourseData.map = courseData.map.filter((targetCourse) => {
+    newCourseData.map = courseData.map.filter(() => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
           if (course.code.localeCompare(courseCode)) {
@@ -551,6 +552,7 @@ const App: React.FC = () => {
                 >
                   save to calendar
                 </ICSButton>
+                <Sponsors />
                 <Footer />
                 <Alerts />
               </Content>

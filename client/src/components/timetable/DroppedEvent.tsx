@@ -166,6 +166,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         onMouseLeave={() => {
           setFullscreenVisible(false);
         }}
+        onDoubleClick={() => setPopupOpen(true)}
         onContextMenu={(e) => {
           handleContextMenu(
             e,
