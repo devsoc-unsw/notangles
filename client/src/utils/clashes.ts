@@ -75,7 +75,8 @@ const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEven
   const clashes: Set<ClassPeriod | EventPeriod> = new Set();
 
   const currSelectedClasses = Object.values(selectedClasses);
-  const eventPeriods = Object.values(createdEvents);
+  // Unscheduled events should not cause clashes
+  const eventPeriods = Object.values(createdEvents).filter((ev) => ev.type === 'event');
 
   if (currSelectedClasses !== null) {
     const classPeriods = getClassPeriods(currSelectedClasses);

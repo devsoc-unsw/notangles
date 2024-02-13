@@ -70,7 +70,7 @@ export interface InventoryPeriod {
 }
 
 export interface EventPeriod {
-  type: 'event';
+  type: 'event' | 'inventoryEvent';
   event: EventData;
   time: EventTime;
 }

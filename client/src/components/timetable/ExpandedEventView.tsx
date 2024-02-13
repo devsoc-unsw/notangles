@@ -46,7 +46,7 @@ import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
 
-const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+const StyledListItemIcon = styled(ListItemIcon) <ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 
@@ -77,7 +77,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const [newColor, setNewColor] = useState<string>(color as string);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { days, isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -121,6 +121,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       ...createdEvents,
       [id]: {
         ...createdEvents[id],
+        type: 'event',
         time: { ...eventTime },
       },
     });
@@ -132,7 +133,31 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setNewEndTime(createDateWithTime(eventTime.end));
   };
 
-  useEventDrag(updateEventTime);
+  const unscheduleEvent = (id: string) => {
+    setCreatedEvents({
+      ...createdEvents,
+      [id]: {
+        ...createdEvents[id],
+        type: 'inventoryEvent',
+      },
+    });
+  }
+
+  const scheduleEvent = (id: string) => {
+    setCreatedEvents({
+      ...createdEvents,
+      [id]: {
+        ...createdEvents[id],
+        type: 'event',
+      },
+    });
+  }
+
+  const getInventoryIndex = () => {
+    return days.length;
+  }
+
+  useEventDrag(updateEventTime, unscheduleEvent, scheduleEvent, getInventoryIndex);
 
   const handleUpdateEvent = (id: string) => {
     if (!areValidEventTimes(newStartTime, newEndTime)) {
