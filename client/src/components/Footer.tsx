@@ -64,7 +64,7 @@ const Footer: React.FC = () => {
       <br />
       <div>
         <b>UNSW Software Development Society (DevSoc)</b>
-        <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: '3px' }}>
+        <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: '4px' }}>
           <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
             <MailOutlineOutlinedIcon />
           </Link>
