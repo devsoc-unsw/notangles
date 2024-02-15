@@ -26,7 +26,7 @@ const Sponsors = () => {
     {
       name: 'Macquarie',
       logo: isDarkMode ? macquarieDark : macquarieLight,
-      link: 'https://www.macquarie.com/au/en.html',
+      link: 'https://www.macquarie.com',
     },
   ];
 
