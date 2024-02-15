@@ -68,10 +68,10 @@ const Footer: React.FC = () => {
           <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
             <MailOutlineOutlinedIcon />
           </Link>
-          <Link href="https://www.facebook.com/devsocUNSW">
+          <Link target="_blank" href="https://www.facebook.com/devsocUNSW">
             <FacebookRoundedIcon />
           </Link>
-          <Link href="https://www.instagram.com/devsoc_unsw/">
+          <Link target="_blank" href="https://www.instagram.com/devsoc_unsw/">
             <InstagramIcon />
           </Link>
           <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
