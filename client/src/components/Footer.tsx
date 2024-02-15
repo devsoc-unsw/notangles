@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
   return (
     <FooterContainer>
       <div>
-        <h1 style={{ fontSize: '14px' }}>Notangles - UNSW Timetable Planner</h1>
+        <h1 style={{ fontSize: '15px' }}>Notangles - UNSW Timetable Planner</h1>
         Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy to use drag-and-drop tool that
         allows you to plan your course classes and add to your calendar, even before term class registration opens! We
         have many features including support for custom events, auto-timetabling, creation of multiple timetables and
