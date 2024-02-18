@@ -27,7 +27,15 @@ import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
-import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import {
+  Activity,
+  ClassData,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+  TimetableData,
+} from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -128,7 +136,7 @@ const App: React.FC = () => {
    */
   if (assignedColors === undefined) {
     const colors = useColorMapper(
-      displayTimetables[selectedTimetable].selectedCourses.map((c) => c.code),
+      displayTimetables[selectedTimetable].selectedCourses.map((course) => course.code),
       {},
     );
     displayTimetables[selectedTimetable].assignedColors = colors;
@@ -193,7 +201,7 @@ const App: React.FC = () => {
 
   // Fetching the saved timetables from local storage
   useEffect(() => {
-    const savedTimetables = storage.get('timetables');
+    const savedTimetables: TimetableData[] = storage.get('timetables');
     if (savedTimetables) {
       setDisplayTimetables(savedTimetables);
     }
@@ -305,7 +313,7 @@ const App: React.FC = () => {
       if (displayTimetables.length > 0) {
         setAssignedColors(
           useColorMapper(
-            newSelectedCourses.map((c) => c.code),
+            newSelectedCourses.map((course) => course.code),
             assignedColors,
           ),
         );
