@@ -22,6 +22,8 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
 
+const RIGHT_CLICK = 2;
+
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
   font-size: inherit;
@@ -59,7 +61,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   };
 
   const onDown = (eventDown: any) => {
-    if (eventDown.button === 2 || contextMenu || eventPeriod.subtype === 'Tutoring') return;
+    if (eventDown.button === RIGHT_CLICK || contextMenu || eventPeriod.subtype === 'Tutoring') return;
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
@@ -191,7 +193,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         ) : (
           <>
             <StyledMenu
-              open={contextMenu != null}
+              open={contextMenu !== null}
               anchorReference="anchorPosition"
               anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
               onClose={() => setContextMenu(null)}
