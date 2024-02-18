@@ -42,7 +42,7 @@ const History: React.FC = () => {
     classes: SelectedClasses,
     events: CreatedEvents,
     timetableArg: TimetableData[] | ((prev: TimetableData[]) => void),
-    selected?: number,
+    selected?: number
   ) => {
     setSelectedCourses(courses);
     setSelectedClasses(classes);
@@ -102,7 +102,7 @@ const History: React.FC = () => {
       name: displayTimetables[selectedTimetable].name,
       courses: [...selectedCourses],
       classes: duplicateClasses(selectedClasses),
-      events: { ...createdEvents },
+      events: { ...createdEvents }
     });
 
     incrementActionsPointer(1);
@@ -176,11 +176,7 @@ const History: React.FC = () => {
       });
     };
 
-    const { courses, classes, events } = extractHistoryInfo(
-      timetableId,
-      timetableActions.current,
-      actionsPointer.current,
-    );
+    const { courses, classes, events } = extractHistoryInfo(timetableId, timetableActions.current, actionsPointer.current);
     setTimetableState(courses, classes, events, modifyTimetableName);
   };
 
