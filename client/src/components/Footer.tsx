@@ -62,23 +62,21 @@ const Footer: React.FC = () => {
       </div>
       {lastUpdated && <div>Data last updated {getRelativeTime(lastUpdated)} ago.</div>}
       <br />
-      <div>
-        <b>UNSW Software Development Society (DevSoc)</b>
-        <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginTop: '4px' }}>
-          <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
-            <MailOutlineOutlinedIcon />
-          </Link>
-          <Link target="_blank" href="https://www.facebook.com/devsocUNSW">
-            <FacebookRoundedIcon />
-          </Link>
-          <Link target="_blank" href="https://www.instagram.com/devsoc_unsw/">
-            <InstagramIcon />
-          </Link>
-          <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
-            <GitHubIcon />
-          </Link>
-        </Stack>
-      </div>
+      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} style={{ marginBottom: '10px' }}>
+        <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
+          <MailOutlineOutlinedIcon />
+        </Link>
+        <Link target="_blank" href="https://www.facebook.com/devsocUNSW">
+          <FacebookRoundedIcon />
+        </Link>
+        <Link target="_blank" href="https://www.instagram.com/devsoc_unsw/">
+          <InstagramIcon />
+        </Link>
+        <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
+          <GitHubIcon />
+        </Link>
+      </Stack>
+      <b>&#169; UNSW Software Development Society 2024</b>
     </FooterContainer>
   );
 };
