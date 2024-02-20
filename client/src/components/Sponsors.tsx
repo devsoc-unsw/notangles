@@ -21,7 +21,7 @@ const Sponsors = () => {
     {
       name: 'TikTok',
       logo: isDarkMode ? tiktokDark : tiktokLight,
-      link: 'https://www.tiktok.com',
+      link: 'https://careers.tiktok.com/',
     },
     {
       name: 'Macquarie',
