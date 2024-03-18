@@ -8,6 +8,21 @@ import macquarieDark from '../assets/sponsors/macquarie_logo_white.svg';
 import tiktokLight from '../assets/sponsors/tiktok_logo.svg';
 import tiktokDark from '../assets/sponsors/tiktok_logo_white.svg';
 import { AppContext } from '../context/AppContext';
+import styled from '@mui/system/styled';
+
+const TitleText = styled('h1')`
+  font-size: 18px;
+`;
+
+const StyledSponsorLogo = styled('img')`
+  object-fit: contain;
+  aspect-ratio: 14/3;
+  height: auto;
+  width: 12em;
+  @media (min-width: 600px) {
+    width: 16em;
+  }
+`;
 
 const Sponsors = () => {
   const { isDarkMode } = useContext(AppContext);
@@ -32,7 +47,7 @@ const Sponsors = () => {
 
   return (
     <div>
-      <h1 style={{ fontSize: '18px' }}>Our Sponsors</h1>
+      <TitleText>Our Sponsors</TitleText>
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -43,16 +58,7 @@ const Sponsors = () => {
         {sponsorData.map((sponsor, index) => {
           return (
             <Link target="_blank" href={sponsor.link} key={index}>
-              <Box
-                component="img"
-                src={sponsor.logo}
-                alt={sponsor.name}
-                sx={{
-                  width: { xs: '12em', sm: '15em' },
-                  objectFit: 'contain',
-                  aspectRatio: '14/3',
-                }}
-              />
+              <StyledSponsorLogo src={sponsor.logo} alt={sponsor.name} />
             </Link>
           );
         })}
