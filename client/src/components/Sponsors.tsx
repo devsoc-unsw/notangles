@@ -1,4 +1,4 @@
-import { Link, Stack } from '@mui/material';
+import { Box, Link, Stack } from '@mui/material';
 import { useContext } from 'react';
 
 import janeStreetLight from '../assets/sponsors/jane_street.svg';
@@ -32,18 +32,27 @@ const Sponsors = () => {
 
   return (
     <div>
-      <h1 style={{ fontSize: '14px' }}>Proudly Supported By</h1>
+      <h1 style={{ fontSize: '18px' }}>Our Sponsors</h1>
       <Stack
         justifyContent="center"
         alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
-        marginY={2}
-        spacing={5}
+        marginY={{ xs: 1, sm: 2 }}
+        spacing={{ xs: 1, sm: 2 }}
       >
-        {sponsorData.map((sponsor) => {
+        {sponsorData.map((sponsor, index) => {
           return (
-            <Link target="_blank" href={sponsor.link}>
-              <img src={sponsor.logo} alt={sponsor.name} width={200} />
+            <Link target="_blank" href={sponsor.link} key={index}>
+              <Box
+                component="img"
+                src={sponsor.logo}
+                alt={sponsor.name}
+                sx={{
+                  width: { xs: '12em', sm: '15em' },
+                  objectFit: 'contain',
+                  aspectRatio: '14/3',
+                }}
+              />
             </Link>
           );
         })}
