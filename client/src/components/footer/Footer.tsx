@@ -8,9 +8,9 @@ import FooterLinks from './FooterLinks';
 const FooterContainer = styled(Box)`
   text-align: left;
   font-size: 12px;
-  margin-bottom: 25px;
   max-width: 95%;
   margin: 0 auto;
+  margin-bottom: 25px;
 
   & div Box {
     line-height: 1.5;
