@@ -11,7 +11,7 @@ const FooterContainer = styled(Box)`
   margin-bottom: 25px;
   max-width: 95%;
 
-  & div {
+  & div Box {
     line-height: 1.5;
   }
 `;

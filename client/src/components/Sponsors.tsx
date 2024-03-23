@@ -24,6 +24,7 @@ const StyledSponsorLogo = styled('img')`
   aspect-ratio: 14/3;
   height: auto;
   width: 12em;
+
   @media (min-width: 600px) {
     width: 16em;
   }
