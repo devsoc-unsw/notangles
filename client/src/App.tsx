@@ -10,7 +10,7 @@ import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
-import Footer from './components/Footer';
+import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
