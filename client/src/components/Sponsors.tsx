@@ -13,6 +13,10 @@ import { AppContext } from '../context/AppContext';
 const SponsorBox = styled(Box)`
   padding-top: 10px;
   padding-bottom: 20px;
+
+  @media (max-width: 600px) {
+    padding: 0px;
+  }
 `;
 
 const TitleText = styled('h1')`
@@ -58,8 +62,8 @@ const Sponsors = () => {
         justifyContent="center"
         alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
-        marginY={{ xs: 2, sm: 3 }}
-        spacing={{ xs: 1, sm: 2 }}
+        marginY={3}
+        spacing={{ xs: 1.5, sm: 2 }}
       >
         {sponsorData.map((sponsor, index) => {
           return (
