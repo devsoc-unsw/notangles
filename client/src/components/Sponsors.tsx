@@ -1,4 +1,5 @@
 import { Box, Link, Stack } from '@mui/material';
+import styled from '@mui/system/styled';
 import { useContext } from 'react';
 
 import janeStreetLight from '../assets/sponsors/jane_street.svg';
@@ -8,7 +9,11 @@ import macquarieDark from '../assets/sponsors/macquarie_logo_white.svg';
 import tiktokLight from '../assets/sponsors/tiktok_logo.svg';
 import tiktokDark from '../assets/sponsors/tiktok_logo_white.svg';
 import { AppContext } from '../context/AppContext';
-import styled from '@mui/system/styled';
+
+const SponsorBox = styled(Box)`
+  padding-top: 10px;
+  padding-bottom: 20px;
+`;
 
 const TitleText = styled('h1')`
   font-size: 18px;
@@ -46,13 +51,13 @@ const Sponsors = () => {
   ];
 
   return (
-    <div>
+    <SponsorBox>
       <TitleText>Our Sponsors</TitleText>
       <Stack
         justifyContent="center"
         alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
-        marginY={{ xs: 1, sm: 2 }}
+        marginY={{ xs: 2, sm: 3 }}
         spacing={{ xs: 1, sm: 2 }}
       >
         {sponsorData.map((sponsor, index) => {
@@ -63,7 +68,7 @@ const Sponsors = () => {
           );
         })}
       </Stack>
-    </div>
+    </SponsorBox>
   );
 };
 

@@ -2,8 +2,8 @@ import { Box, Divider, Stack } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
-import FooterLinks from './FooterLinks';
 import FooterInfo from './FooterInfo';
+import FooterLinks from './FooterLinks';
 
 const FooterContainer = styled(Box)`
   text-align: left;
