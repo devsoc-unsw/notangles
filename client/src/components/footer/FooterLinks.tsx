@@ -5,6 +5,8 @@ import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import { Link, Stack } from '@mui/material';
 import React from 'react';
 
+import DiscordIcon from './DiscordIcon';
+
 const FooterLinks: React.FC = () => {
   return (
     <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
@@ -18,6 +20,9 @@ const FooterLinks: React.FC = () => {
         </Link>
         <Link target="_blank" href="https://www.instagram.com/devsoc_unsw/">
           <InstagramIcon />
+        </Link>
+        <Link target="_blank" href="https://discord.gg/u9p34WUTcs">
+          <DiscordIcon />
         </Link>
         <Link target="_blank" href="https://github.com/devsoc-unsw/notangles">
           <GitHubIcon />
