@@ -41,6 +41,7 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -109,6 +110,7 @@ const App: React.FC = () => {
     firstDayOfTerm,
     setFirstDayOfTerm,
     setTermName,
+    setTermsData,
     setTermNumber,
     setCoursesList,
     setLastUpdated,
@@ -137,10 +139,10 @@ const App: React.FC = () => {
    */
   if (assignedColors === undefined) {
     const colors = useColorMapper(
-      displayTimetables[selectedTimetable].selectedCourses.map((course) => course.code),
+      displayTimetables[term][selectedTimetable].selectedCourses.map((course) => course.code),
       {},
     );
-    displayTimetables[selectedTimetable].assignedColors = colors;
+    displayTimetables[term][selectedTimetable].assignedColors = colors;
     setAssignedColors(colors);
   }
 
@@ -176,12 +178,31 @@ const App: React.FC = () => {
      */
     const fetchTermData = async () => {
       const termData = await getAvailableTermDetails();
-      const { term, termName, termNumber, year, firstDayOfTerm } = termData;
+      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
+      setTermsData(termsData);
+      const oldData = storage.get('timetables');
+
+      // avoid overwriting data from previous save
+      const newTimetableTerms = {
+        ...{
+          [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
+            ? oldData[termsData.prevTerm.term]
+            : createDefaultTimetable(),
+        },
+        ...{
+          [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
+            ? oldData[termsData.newTerm.term]
+            : createDefaultTimetable(),
+        },
+      };
+
+      setDisplayTimetables(newTimetableTerms);
+      storage.set('timetables', newTimetableTerms);
     };
 
     fetchReliably(fetchTermData);
@@ -198,7 +219,7 @@ const App: React.FC = () => {
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
-  }, [year]);
+  }, [term, year]);
 
   // Fetching the saved timetables from local storage
   useEffect(() => {
@@ -292,7 +313,7 @@ const App: React.FC = () => {
       const newSelectedCourses = [...selectedCourses];
       const newCourseData = courseData;
 
-      // Update the existing courses with the new data (for changing timezones).
+      // Update the existing courses with the new data (for changing timezone).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
@@ -307,11 +328,10 @@ const App: React.FC = () => {
           newCourseData.map.push(addedCourse);
         }
       });
-
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
 
-      if (displayTimetables.length > 0) {
+      if (displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(
             newSelectedCourses.map((course) => course.code),
@@ -335,7 +355,7 @@ const App: React.FC = () => {
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
     newCourseData.map = courseData.map.filter(() => {
-      for (const timetable of displayTimetables) {
+      for (const timetable of displayTimetables[term]) {
         for (const course of timetable.selectedCourses) {
           if (course.code.localeCompare(courseCode)) {
             return true;
@@ -360,11 +380,20 @@ const App: React.FC = () => {
    * Populate selected courses, classes and created events with the data saved in local storage
    */
   const updateTimetableEvents = () => {
+    if (!storage.get('timetables')[term]) {
+      // data stored in local storage not up to date with current term
+      const updatedWithTerms = { [term]: storage.get('timetables') };
+
+      storage.set('timetables', updatedWithTerms);
+      setDisplayTimetables(updatedWithTerms);
+    }
+
     handleSelectCourse(
-      storage.get('timetables')[selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
       (newSelectedCourses) => {
-        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[selectedTimetable].selectedClasses;
+        const timetableSelectedClasses: SelectedClasses =
+          storage.get('timetables')[term][selectedTimetable].selectedClasses;
 
         const savedClasses: SavedClasses = {};
 
@@ -403,8 +432,8 @@ const App: React.FC = () => {
         setSelectedClasses(newSelectedClasses);
       },
     );
-    setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
-    setAssignedColors(storage.get('timetables')[selectedTimetable].assignedColors);
+    setCreatedEvents(storage.get('timetables')[term][selectedTimetable].createdEvents);
+    setAssignedColors(storage.get('timetables')[term][selectedTimetable].assignedColors);
   };
 
   useEffect(() => {
@@ -413,7 +442,7 @@ const App: React.FC = () => {
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].selectedCourses = selectedCourses;
+    displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
     const newCourseData = courseData;
     storage.set('courseData', newCourseData);
     storage.set('timetables', displayTimetables);
@@ -421,19 +450,19 @@ const App: React.FC = () => {
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].selectedClasses = selectedClasses;
+    displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].createdEvents = createdEvents;
+    displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
 
   useUpdateEffect(() => {
-    displayTimetables[selectedTimetable].assignedColors = assignedColors;
+    displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [assignedColors]);

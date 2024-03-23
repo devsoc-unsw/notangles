@@ -33,6 +33,7 @@ const TimetableTabs: React.FC = () => {
     setDisplayTimetables,
     setAlertMsg,
     setErrorVisibility,
+    term,
   } = useContext(AppContext);
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
@@ -72,11 +73,11 @@ const TimetableTabs: React.FC = () => {
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
-    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+    if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
-      const nextIndex = displayTimetables.length;
+      const nextIndex = displayTimetables[term].length;
 
       const newTimetable: TimetableData = {
         name: 'New Timetable',
@@ -86,9 +87,14 @@ const TimetableTabs: React.FC = () => {
         createdEvents: {},
         assignedColors: {},
       };
-      storage.set('timetables', [...displayTimetables, newTimetable]);
 
-      setDisplayTimetables([...displayTimetables, newTimetable]);
+      const addingNewTimetables = {
+        ...displayTimetables,
+        [term]: [...displayTimetables[term], newTimetable],
+      };
+      storage.set('timetables', addingNewTimetables);
+
+      setDisplayTimetables(addingNewTimetables);
 
       // Clearing the selected courses, classes and created events for the new timetable
       setTimetableState([], {}, {}, {}, nextIndex);
@@ -116,11 +122,17 @@ const TimetableTabs: React.FC = () => {
       return;
     }
 
-    const newTimetables = [...displayTimetables];
+    const newTimetables = [...displayTimetables[term]];
     const draggedItem = newTimetables[source.index];
     newTimetables.splice(source.index, 1);
     newTimetables.splice(destination.index, 0, draggedItem);
-    setDisplayTimetables(newTimetables);
+
+    const rearrangedTimetables = {
+      ...displayTimetables,
+      [term]: newTimetables,
+    };
+
+    setDisplayTimetables(rearrangedTimetables);
 
     handleSwitchTimetables(newTimetables, destination.index);
   };
@@ -137,7 +149,7 @@ const TimetableTabs: React.FC = () => {
   // Right clicking a tab will switch to that tab and open the menu
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
     event.preventDefault();
-    handleSwitchTimetables(displayTimetables, index);
+    handleSwitchTimetables(displayTimetables[term], index);
 
     // Anchoring the menu to the mouse position
     setAnchorElement({ x: event.clientX, y: event.clientY });
@@ -145,35 +157,43 @@ const TimetableTabs: React.FC = () => {
 
   return (
     <TabsSection>
-      <TabsWrapper tabTheme={tabTheme}>
+      <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
         <DragDropContext onDragEnd={handleSortTabs}>
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {displayTimetables.map((timetable: TimetableData, index: number) => (
-                  <Draggable draggableId={index.toString()} index={index}>
-                    {(props) => (
-                      <Box
-                        ref={props.innerRef}
-                        {...props.draggableProps}
-                        {...props.dragHandleProps}
-                        key={index}
-                        sx={TabStyle(index, selectedTimetable)}
-                        onClick={() => handleSwitchTimetables(displayTimetables, index)}
-                        onContextMenu={(e) => handleRightTabClick(e, index)}
-                      >
-                        {timetable.name}
-                        {selectedTimetable === index ? (
-                          <StyledSpan onClick={handleMenuClick}>
-                            <MoreHoriz />
-                          </StyledSpan>
-                        ) : (
-                          <></>
-                        )}
-                      </Box>
-                    )}
-                  </Draggable>
-                ))}
+                {Object.keys(displayTimetables).length > 0
+                  ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
+                      <Draggable draggableId={index.toString()} index={index} key={index}>
+                        {(props) => {
+                          if (props.draggableProps.style?.transform) {
+                            const shift = props.draggableProps.style?.transform.split(',')[0];
+                            // forcing horizontal movement
+                            props.draggableProps.style.transform = shift + ', 0)';
+                          }
+                          return (
+                            <Box
+                              onMouseDown={() => handleSwitchTimetables(displayTimetables[term], index)}
+                              onContextMenu={(e) => handleRightTabClick(e, index)}
+                              ref={props.innerRef}
+                              {...props.draggableProps}
+                              {...props.dragHandleProps}
+                              sx={TabStyle(index, selectedTimetable)}
+                            >
+                              {timetable.name}
+                              {selectedTimetable === index ? (
+                                <StyledSpan onClick={handleMenuClick}>
+                                  <MoreHoriz />
+                                </StyledSpan>
+                              ) : (
+                                <></>
+                              )}
+                            </Box>
+                          );
+                        }}
+                      </Draggable>
+                    ))
+                  : null}
                 {props.placeholder}
               </StyledTabs>
             )}

@@ -20,6 +20,12 @@ export interface CourseData {
   inventoryData: Record<Activity, InventoryPeriod>;
 }
 
+export interface TermData {
+  year: string,
+  term: string,
+  termName: string,
+}
+
 export interface ClassData {
   id: string;
   courseCode: CourseCode;
@@ -131,4 +137,13 @@ export interface Action {
 
 export interface CourseDataMap {
   map: CourseData[];
+}
+
+export interface TermDataMap {
+  prevTerm: TermData;
+  newTerm: TermData;
+}
+
+export interface DisplayTimetablesMap {
+  [key: string]: TimetableData[];
 }
