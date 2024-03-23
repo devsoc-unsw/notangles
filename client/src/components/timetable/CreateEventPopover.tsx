@@ -87,6 +87,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       day,
       startTimeToCreateAs,
       endTimeToCreateAs,
+      'General',
     );
     setCreatedEvents({
       ...createdEvents,

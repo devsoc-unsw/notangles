@@ -1,12 +1,14 @@
-import { LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
+import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
+import { CourseContext } from '../../context/CourseContext';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
+import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
@@ -15,10 +17,12 @@ import {
   StyledCardInnerGrid,
   StyledCardName,
 } from '../../styles/DroppedCardStyles';
-import { handleContextMenu } from '../../utils/cardsContextMenu';
+import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
+
+const RIGHT_CLICK = 2;
 
 const StyledLocationIcon = styled(LocationOn)`
   vertical-align: text-bottom;
@@ -43,6 +47,8 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
 
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
 
@@ -55,8 +61,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   };
 
   const onDown = (eventDown: any) => {
-    if (eventDown.button === 2 || contextMenu) return;
-
+    if (eventDown.button === RIGHT_CLICK || contextMenu || eventPeriod.subtype === 'Tutoring') return;
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
@@ -176,15 +181,35 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           );
         }}
       >
-        <EventContextMenu
-          eventPeriod={eventPeriod}
-          contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
-          setPopupOpen={setPopupOpen}
-          setIsEditing={setIsEditing}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
-        />
+        {eventPeriod.subtype !== 'Tutoring' ? (
+          <EventContextMenu
+            eventPeriod={eventPeriod}
+            contextMenu={contextMenu}
+            setContextMenu={setContextMenu}
+            setPopupOpen={setPopupOpen}
+            setIsEditing={setIsEditing}
+            setCopiedEvent={setCopiedEvent}
+            copiedEvent={copiedEvent}
+          />
+        ) : (
+          <>
+            <StyledMenu
+              open={contextMenu !== null}
+              anchorReference="anchorPosition"
+              anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
+              onClose={() => setContextMenu(null)}
+              autoFocus={false}
+            >
+              <MenuItem onClick={() => handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod)}>
+                <ListItemIcon>
+                  <Delete fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </StyledMenu>
+          </>
+        )}
+
         <StyledCardInner
           hasClash={false}
           isSquareEdges={isSquareEdges}

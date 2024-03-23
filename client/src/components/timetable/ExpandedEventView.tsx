@@ -45,6 +45,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import { ColorDivider } from '../../styles/ExpandedViewStyles';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -156,6 +157,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       ...createdEvents,
       [id]: {
         type: 'event',
+        subtype: eventPeriod.subtype,
         event: {
           id: id,
           name: newName,
@@ -185,6 +187,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
         day,
         newStartTime,
         newEndTime,
+        eventPeriod.subtype,
       );
       updatedEventData[newEvent.event.id] = newEvent;
     }
@@ -224,6 +227,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
     setCreatedEvents(updatedEventData);
   };
 
+  const handleSaveNewColor = () => {
+    handleUpdateEvent(eventPeriod.event.id);
+    handleCloseDialog();
+  };
   // link sharing url for custom events
   const url = window.location.href + 'event/' + btoa(JSON.stringify(eventPeriod));
 
@@ -347,9 +354,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             setOpenSaveDialog={setOpenSaveDialog}
           />
           <StyledTopIcons>
-            <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
-              <Edit />
-            </IconButton>
+            {eventPeriod.subtype !== 'Tutoring' && (
+              <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
+                <Edit />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
               <Delete />
             </IconButton>
@@ -385,31 +394,49 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                 {daysLong[day - 1]} {to24Hour(start)} {'\u2013'} {to24Hour(end)}
               </Typography>
             </StyledListItem>
-            <StyledListItem>
-              <StyledListItemIcon isDarkMode={isDarkMode}>
-                <Link />
-              </StyledListItemIcon>
-              <StyledEventLink
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => {
-                          navigator.clipboard.writeText(url);
-                          setAutoVisibility(true);
-                          setAlertMsg('Copied to clipboard!');
-                        }}
-                      >
-                        <ContentCopy />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  readOnly: true,
-                }}
-                size="small"
-                value={url}
-              />
-            </StyledListItem>
+            {eventPeriod.subtype !== 'Tutoring' ? (
+              <>
+                <StyledListItem>
+                  <StyledListItemIcon isDarkMode={isDarkMode}>
+                    <Link />
+                  </StyledListItemIcon>
+                  <StyledEventLink
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                              setAutoVisibility(true);
+                              setAlertMsg('Copied to clipboard!');
+                            }}
+                          >
+                            <ContentCopy />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                      readOnly: true,
+                    }}
+                    size="small"
+                    value={url}
+                  ></StyledEventLink>
+                </StyledListItem>
+              </>
+            ) : (
+              <>
+                <ColorDivider />
+                <StyledListItem>
+                  <ColorPicker
+                    color={newColor}
+                    setColor={setNewColor}
+                    colorPickerAnchorEl={colorPickerAnchorEl}
+                    handleOpenColorPicker={handleOpenColorPicker}
+                    handleCloseColorPicker={handleCloseColorPicker}
+                    handleSaveNewColor={handleSaveNewColor}
+                  />
+                </StyledListItem>
+              </>
+            )}
           </StyledDialogContent>
         </>
       )}

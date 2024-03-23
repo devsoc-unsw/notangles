@@ -36,7 +36,7 @@ const TimetableTabs: React.FC = () => {
     term,
   } = useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
@@ -58,11 +58,13 @@ const TimetableTabs: React.FC = () => {
     selectedCourses: CourseData[],
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
-    timetableIndex: number,
+    assignedColors: Record<string, string>,
+    timetableIndex: number
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
     setCreatedEvents(createdEvents);
+    setAssignedColors(assignedColors);
     setSelectedTimetable(timetableIndex);
   };
 
@@ -83,6 +85,7 @@ const TimetableTabs: React.FC = () => {
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
+        assignedColors: {},
       };
 
       const addingNewTimetables = {
@@ -94,25 +97,17 @@ const TimetableTabs: React.FC = () => {
       setDisplayTimetables(addingNewTimetables);
 
       // Clearing the selected courses, classes and created events for the new timetable
-      setTimetableState([], {}, {}, nextIndex);
+      setTimetableState([], {}, {}, {}, nextIndex);
     }
   };
-
-  // Fetching the saved timetables from local storage
-  useEffect(() => {
-    const savedTimetables = storage.get('timetables');
-    if (savedTimetables) {
-      setDisplayTimetables(savedTimetables);
-    }
-  }, []);
 
   /**
    * Drag and drop functions for rearranging timetable tabs
    */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetables: TimetableData[], timetableIndex: number) => {
-    const { selectedCourses, selectedClasses, createdEvents } = timetables[timetableIndex];
-    setTimetableState(selectedCourses, selectedClasses, createdEvents, timetableIndex);
+    const { selectedCourses, selectedClasses, createdEvents, assignedColors } = timetables[timetableIndex];
+    setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, timetableIndex);
   };
 
   // Reordering the tabs when they are dragged and dropped

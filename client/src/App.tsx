@@ -12,6 +12,7 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/Footer';
 import Navbar from './components/navbar/Navbar';
+import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
@@ -28,7 +29,15 @@ import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
-import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import {
+  Activity,
+  ClassData,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+  TimetableData,
+} from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
@@ -112,10 +121,30 @@ const App: React.FC = () => {
     setCourseData,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
-    useContext(CourseContext);
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    createdEvents,
+    setCreatedEvents,
+    assignedColors,
+    setAssignedColors,
+  } = useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
+  /**
+   * Supports migration from non-assigned colors to assignedColors so timetable does not break. Can be removed after a few weeks when everyone has migrated
+   */
+  if (assignedColors === undefined) {
+    const colors = useColorMapper(
+      displayTimetables[term][selectedTimetable].selectedCourses.map((course) => course.code),
+      {},
+    );
+    displayTimetables[term][selectedTimetable].assignedColors = colors;
+    setAssignedColors(colors);
+  }
 
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
@@ -160,11 +189,19 @@ const App: React.FC = () => {
 
       // avoid overwriting data from previous save
       const newTimetableTerms = {
-        ...({ [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term) ? oldData[termsData.prevTerm.term] : createDefaultTimetable() }),
-        ...({ [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term) ? oldData[termsData.newTerm.term] : createDefaultTimetable() }),
-      }
+        ...{
+          [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
+            ? oldData[termsData.prevTerm.term]
+            : createDefaultTimetable(),
+        },
+        ...{
+          [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
+            ? oldData[termsData.newTerm.term]
+            : createDefaultTimetable(),
+        },
+      };
 
-      setDisplayTimetables(newTimetableTerms)
+      setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
     };
 
@@ -183,6 +220,14 @@ const App: React.FC = () => {
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
   }, [term, year]);
+
+  // Fetching the saved timetables from local storage
+  useEffect(() => {
+    const savedTimetables: TimetableData[] = storage.get('timetables');
+    if (savedTimetables) {
+      setDisplayTimetables(savedTimetables);
+    }
+  }, []);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
@@ -235,8 +280,8 @@ const App: React.FC = () => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
           : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
-          course.activities[activity].find((x) => x.periods.length) ??
-          null;
+            course.activities[activity].find((x) => x.periods.length) ??
+            null;
       });
 
       return prev;
@@ -268,7 +313,7 @@ const App: React.FC = () => {
       const newSelectedCourses = [...selectedCourses];
       const newCourseData = courseData;
 
-      // Update the existing courses with the new data (for changing timezones).
+      // Update the existing courses with the new data (for changing timezone).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
@@ -278,10 +323,6 @@ const App: React.FC = () => {
           }
         } else {
           newSelectedCourses.push(addedCourse);
-
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
         }
         if (!courseData.map.find((i) => i.code === addedCourse.code)) {
           newCourseData.map.push(addedCourse);
@@ -289,6 +330,15 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
+
+      if (displayTimetables[term].length > 0) {
+        setAssignedColors(
+          useColorMapper(
+            newSelectedCourses.map((course) => course.code),
+            assignedColors,
+          ),
+        );
+      }
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -304,7 +354,7 @@ const App: React.FC = () => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
-    newCourseData.map = courseData.map.filter((targetCourse) => {
+    newCourseData.map = courseData.map.filter(() => {
       for (const timetable of displayTimetables[term]) {
         for (const course of timetable.selectedCourses) {
           if (course.code.localeCompare(courseCode)) {
@@ -332,7 +382,7 @@ const App: React.FC = () => {
   const updateTimetableEvents = () => {
     if (!storage.get('timetables')[term]) {
       // data stored in local storage not up to date with current term
-      let updatedWithTerms = { [term]: storage.get('timetables') };
+      const updatedWithTerms = { [term]: storage.get('timetables') };
 
       storage.set('timetables', updatedWithTerms);
       setDisplayTimetables(updatedWithTerms);
@@ -342,7 +392,8 @@ const App: React.FC = () => {
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
       (newSelectedCourses) => {
-        const timetableSelectedClasses: SelectedClasses = storage.get('timetables')[term][selectedTimetable].selectedClasses;
+        const timetableSelectedClasses: SelectedClasses =
+          storage.get('timetables')[term][selectedTimetable].selectedClasses;
 
         const savedClasses: SavedClasses = {};
 
@@ -382,6 +433,7 @@ const App: React.FC = () => {
       },
     );
     setCreatedEvents(storage.get('timetables')[term][selectedTimetable].createdEvents);
+    setAssignedColors(storage.get('timetables')[term][selectedTimetable].assignedColors);
   };
 
   useEffect(() => {
@@ -408,6 +460,12 @@ const App: React.FC = () => {
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
+
+  useUpdateEffect(() => {
+    displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
@@ -516,7 +574,6 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {
     body: {
@@ -565,6 +622,7 @@ const App: React.FC = () => {
                 >
                   save to calendar
                 </ICSButton>
+                <Sponsors />
                 <Footer />
                 <Alerts />
               </Content>

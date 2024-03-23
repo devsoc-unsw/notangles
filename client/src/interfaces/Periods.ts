@@ -5,6 +5,7 @@ export type Section = string;
 export type Location = string;
 export type EventCode = string;
 export type Status = 'Open' | 'Full' | 'On Hold';
+export type EventSubtype = 'General' | 'Tutoring';
 
 export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
 export type CreatedEvents = Record<EventCode, EventPeriod>;
@@ -43,6 +44,7 @@ export interface TimetableData {
   selectedCourses: CourseData[];
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
+  assignedColors: Record<string, string>;
 }
 
 export interface InventoryData {
@@ -77,6 +79,7 @@ export interface InventoryPeriod {
 
 export interface EventPeriod {
   type: 'event';
+  subtype: EventSubtype;
   event: EventData;
   time: EventTime;
 }
