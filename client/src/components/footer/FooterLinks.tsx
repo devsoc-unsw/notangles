@@ -1,7 +1,7 @@
+import EmailIcon from '@mui/icons-material/Email';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import { Link, Stack } from '@mui/material';
 import React from 'react';
 
@@ -13,7 +13,7 @@ const FooterLinks: React.FC = () => {
       <p>© UNSW Software Development Society 2024</p>
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
         <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
-          <MailOutlineOutlinedIcon />
+          <EmailIcon />
         </Link>
         <Link target="_blank" href="https://www.facebook.com/devsocUNSW">
           <FacebookRoundedIcon />
