@@ -107,7 +107,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           ref: migration
       - name: Install yq - portable yaml processor
-        uses: mikefarah/yq@v4.40.4
+        uses: mikefarah/yq@v4.43.1
       - name: Update deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
