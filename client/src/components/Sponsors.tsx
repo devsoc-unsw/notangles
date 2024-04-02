@@ -1,13 +1,13 @@
 import { Box, Link, Stack } from '@mui/material';
-import { useContext } from 'react';
 import styled from '@mui/system/styled';
+import { useContext } from 'react';
 
-import janeStreetDark from '../assets/sponsors/jane_street_white.svg';
-import janeStreetLight from '../assets/sponsors/jane_street.svg';
-import macquarieDark from '../assets/sponsors/macquarie_logo_white.svg';
-import macquarieLight from '../assets/sponsors/macquarie_logo.svg';
-import tiktokDark from '../assets/sponsors/tiktok_logo_white.svg';
-import tiktokLight from '../assets/sponsors/tiktok_logo.svg';
+import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
+import janeStreetWhite from '../assets/sponsors/jane_street_white.svg';
+import macquarieBlack from '../assets/sponsors/macquarie_logo_black.svg';
+import macquarieWhite from '../assets/sponsors/macquarie_logo_white.svg';
+import tiktokBlack from '../assets/sponsors/tiktok_logo_black.svg';
+import tiktokWhite from '../assets/sponsors/tiktok_logo_white.svg';
 import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`
@@ -40,17 +40,17 @@ const Sponsors = () => {
   const sponsorData = [
     {
       name: 'Jane Street',
-      logo: isDarkMode ? janeStreetDark : janeStreetLight,
+      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
       link: 'https://www.janestreet.com/',
     },
     {
       name: 'TikTok',
-      logo: isDarkMode ? tiktokDark : tiktokLight,
+      logo: isDarkMode ? tiktokWhite : tiktokBlack,
       link: 'https://careers.tiktok.com/',
     },
     {
       name: 'Macquarie',
-      logo: isDarkMode ? macquarieDark : macquarieLight,
+      logo: isDarkMode ? macquarieWhite : macquarieBlack,
       link: 'https://www.macquarie.com',
     },
   ];
