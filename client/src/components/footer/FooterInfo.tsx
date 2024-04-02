@@ -1,5 +1,5 @@
-import { Box, Grid, Stack } from '@mui/material';
 import React, { useContext, useState } from 'react';
+import { Grid, Stack } from '@mui/material';
 import { styled } from '@mui/system';
 
 import { AppContext } from '../../context/AppContext';
@@ -13,18 +13,42 @@ interface TitleTextProps {
 const NotanglesLogoImg = styled('img')`
   height: 45px;
   margin-left: -11.5px;
+
+  @media (max-width: 450px) {
+    height: 65px;
+  }
 `;
 
 const BodyText = styled('p')`
   font-size: 12px;
+  line-height: 1.5;
 `;
 
 const SubTitleText = styled('p')`
   font-size: 14px;
+
+  @media (max-width: 450px) {
+    font-size: 13px;
+    line-height: 15px;
+  }
 `;
 
 const TitleText = styled('h2')<TitleTextProps>`
   font-size: ${({ isLarge }) => (isLarge ? '18px' : '15px')};
+
+  @media (max-width: 450px) {
+    font-size: ${({ isLarge }) => (isLarge ? '16px' : '14px')};
+  }
+`;
+
+const NotanglesFooterInfoContainer = styled('div')`
+  margin-left: 5px;
+  line-height: 6px;
+
+  @media (max-width: 450px) {
+    margin-left: 0px;
+    line-height: 1px;
+  }
 `;
 
 const FooterInfo: React.FC = () => {
@@ -65,10 +89,10 @@ const FooterInfo: React.FC = () => {
               onMouseOver={() => setCurrLogo(NotanglesLogoGif)}
               onMouseOut={() => setCurrLogo(NotanglesLogo)}
             />
-            <div style={{ marginLeft: '5px', lineHeight: '6px' }}>
+            <NotanglesFooterInfoContainer>
               <TitleText isLarge>Notangles</TitleText>
               <SubTitleText>UNSW Timetable Planner</SubTitleText>
-            </div>
+            </NotanglesFooterInfoContainer>
           </Stack>
           <BodyText>
             Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy-to-use drag-and-drop tool that
