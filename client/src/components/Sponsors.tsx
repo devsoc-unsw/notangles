@@ -1,13 +1,13 @@
 import { Box, Link, Stack } from '@mui/material';
-import styled from '@mui/system/styled';
 import { useContext } from 'react';
+import styled from '@mui/system/styled';
 
-import janeStreetLight from '../assets/sponsors/jane_street.svg';
 import janeStreetDark from '../assets/sponsors/jane_street_white.svg';
-import macquarieLight from '../assets/sponsors/macquarie_logo.svg';
+import janeStreetLight from '../assets/sponsors/jane_street.svg';
 import macquarieDark from '../assets/sponsors/macquarie_logo_white.svg';
-import tiktokLight from '../assets/sponsors/tiktok_logo.svg';
+import macquarieLight from '../assets/sponsors/macquarie_logo.svg';
 import tiktokDark from '../assets/sponsors/tiktok_logo_white.svg';
+import tiktokLight from '../assets/sponsors/tiktok_logo.svg';
 import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`

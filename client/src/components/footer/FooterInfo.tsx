@@ -1,10 +1,10 @@
+import React, { useContext, useState } from 'react';
 import { Grid, Stack } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
 
-import NotanglesLogoGif from '../../assets/notangles.gif';
-import NotanglesLogo from '../../assets/notangles_1.png';
 import { AppContext } from '../../context/AppContext';
+import NotanglesLogo from '../../assets/notangles_1.png';
+import NotanglesLogoGif from '../../assets/notangles.gif';
 
 interface TitleTextProps {
   isLarge?: boolean;
@@ -41,7 +41,7 @@ const TitleText = styled('h2')<TitleTextProps>`
   }
 `;
 
-const NotanglesContainer = styled('div')`
+const NotanglesFooterInfoContainer = styled('div')`
   margin-left: 5px;
   line-height: 6px;
 
@@ -89,10 +89,10 @@ const FooterInfo: React.FC = () => {
               onMouseOver={() => setCurrLogo(NotanglesLogoGif)}
               onMouseOut={() => setCurrLogo(NotanglesLogo)}
             />
-            <NotanglesContainer>
+            <NotanglesFooterInfoContainer>
               <TitleText isLarge>Notangles</TitleText>
               <SubTitleText>UNSW Timetable Planner</SubTitleText>
-            </NotanglesContainer>
+            </NotanglesFooterInfoContainer>
           </Stack>
           <BodyText>
             Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy-to-use drag-and-drop tool that
