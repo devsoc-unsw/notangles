@@ -21,9 +21,9 @@ export interface CourseData {
 }
 
 export interface TermData {
-  year: string,
-  term: string,
-  termName: string,
+  year: string;
+  term: string;
+  termName: string;
 }
 
 export interface ClassData {

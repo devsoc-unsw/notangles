@@ -1,4 +1,4 @@
-import { Add, Close, LocationOn } from '@mui/icons-material';
+import { Add, Close } from '@mui/icons-material';
 import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
 import isBase64 from 'is-base64';
@@ -25,10 +25,6 @@ const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: white;
-`;
-
-const StyledLocationOn = styled(LocationOn)`
-  font-size: 12px;
 `;
 
 const EventShareModal = () => {
