@@ -2,6 +2,7 @@ import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
+import team from '../../../team.json';
 import useGif from '../../assets/how_to_use.gif';
 
 const HowToUseImg = styled('img')`
@@ -24,6 +25,8 @@ const FeatList = styled('ul')`
 `;
 
 const About: React.FC = () => {
+  const currDirectors = team.directors.sort().map(director => <li>{director}</li>);
+  const currSubcommittee = team.subcommittee.sort().map(subcommittee => <li>{subcommittee}</li>); 
   return (
     <>
       <Typography gutterBottom variant="body2">
@@ -77,20 +80,13 @@ const About: React.FC = () => {
         <strong>Team Directors:</strong>
       </Typography>
       <FeatList>
-        <li>Raiyan Ahmed</li>
-        <li>Shaam Jevan</li>
+        {currDirectors}
       </FeatList>
       <Typography gutterBottom variant="body2">
         <strong>Members:</strong>
       </Typography>
       <FeatList>
-        <li>Chanel Bouchaaya</li>
-        <li>Jasmine Tran</li>
-        <li>Jordan Benjamin</li>
-        <li>Lucy Chhuo</li>
-        <li>Michael Siu</li>
-        <li>Nikki Qin</li>
-        <li>Sohum Shah</li>
+        {currSubcommittee}
       </FeatList>
       <StyledTypography variant="h6">Disclaimer</StyledTypography>
       <Typography gutterBottom variant="body2">
