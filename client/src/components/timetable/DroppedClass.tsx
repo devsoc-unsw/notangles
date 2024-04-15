@@ -169,6 +169,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     <>
       <StyledCard
         ref={element}
+        onDoubleClick={() => setPopupOpen(true)}
         onMouseDown={onDown}
         onTouchStart={(event) => {
           onDown(event);

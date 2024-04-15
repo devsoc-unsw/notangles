@@ -1,44 +1,43 @@
 Notangles
 
-Copyright (C) 2023 CSESoc UNSW 
+Copyright (C) 2024 DevSoc UNSW
 
-This program is free software: you can redistribute it and/or modify it under 
-the terms of the GNU Affero General Public License as published by the Free 
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
 Software Foundation at version 3 of the License.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-PARTICULAR PURPOSE. See the GNU Affero General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along 
-with this program.  If not, see <http://www.gnu.org/licenses/>. 
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# AGPL-v3 License Extension 
+# AGPL-v3 License Extension
 
-1. You may use, copy, modify, and distribute this software under the terms of 
-the AGPL-v3 license, provided that you include this license extension in all 
-copies or substantial portions of the software. 
+1. You may use, copy, modify, and distribute this software under the terms of
+   the AGPL-v3 license, provided that you include this license extension in all
+   copies or substantial portions of the software.
 
-2. You may not use this software for commercial purposes, including but not 
-limited to selling, renting, or licensing the software or any derivative works 
-thereof. 
+2. You may not use this software for commercial purposes, including but not
+   limited to selling, renting, or licensing the software or any derivative works
+   thereof.
 
-3. If you distribute this software, you must make the source code available 
-under the AGPL-v3 license and this license extension, and must include a copy 
-of this license extension with any binary distribution. 
+3. If you distribute this software, you must make the source code available
+   under the AGPL-v3 license and this license extension, and must include a copy
+   of this license extension with any binary distribution.
 
-4. If you modify this software, you must indicate in the source code that 
-changes have been made and provide the modified source code under the terms of 
-the AGPL-v3 license and this license extension. 
+4. If you modify this software, you must indicate in the source code that
+   changes have been made and provide the modified source code under the terms of
+   the AGPL-v3 license and this license extension.
 
 5. This license extension applies to the entire software, including any third-
-party components included in the software. 
+   party components included in the software.
 
 6. If you use this software in a product that is freely available to the
-public, you must give full credit to the original authors of the software by
-prominently displaying the following attribution in the product: "This product
-includes software developed by CSESoc UNSW."
+   public, you must give full credit to the original authors of the software by
+   prominently displaying the following attribution in the product: "This product
+   includes software developed by DevSoc UNSW."
 
-7. This license extension shall not be interpreted to affect the validity or 
-enforceability of the AGPL-v3 license. 
-
+7. This license extension shall not be interpreted to affect the validity or
+   enforceability of the AGPL-v3 license.

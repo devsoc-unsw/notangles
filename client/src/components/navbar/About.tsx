@@ -2,6 +2,7 @@ import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
+import team from '../../../team.json';
 import useGif from '../../assets/how_to_use.gif';
 
 const HowToUseImg = styled('img')`
@@ -24,6 +25,8 @@ const FeatList = styled('ul')`
 `;
 
 const About: React.FC = () => {
+  const currDirectors = team.directors.sort().map(director => <li>{director}</li>);
+  const currSubcommittee = team.subcommittee.sort().map(subcommittee => <li>{subcommittee}</li>); 
   return (
     <>
       <Typography gutterBottom variant="body2">
@@ -41,8 +44,14 @@ const About: React.FC = () => {
           Crossangles
         </Link>
         , it was created by CSESoc Projects – a place for student-led projects where you can learn something new, and
-        make some friends along the way. Notangles is free and{' '}
-        <Link href="https://github.com/csesoc/notangles">open-source</Link>.
+        make some friends along the way.
+      </Typography>
+      <Typography gutterBottom variant="body2">
+        In 2024, Software Development Society has assumed management for Notangles, formed by the creation of a new
+        student society from what was previously known as CSESoc Projects.
+      </Typography>
+      <Typography gutterBottom variant="body2">
+        Notangles is free and <Link href="https://github.com/devsoc-unsw/notangles">open-source</Link>.
       </Typography>
       <StyledTypography variant="h6">How it works</StyledTypography>
       <Typography gutterBottom variant="body2">
@@ -65,26 +74,19 @@ const About: React.FC = () => {
       </FeatList>
       <StyledTypography variant="h6">About the team</StyledTypography>
       <Typography gutterBottom variant="body2">
-        The current 2023 development team consists of two directors and seven members.
+        The current 2024 development team consists of two directors and seven members.
       </Typography>
       <Typography gutterBottom variant="body2">
         <strong>Team Directors:</strong>
       </Typography>
       <FeatList>
-        <li>Manhua Lu</li>
-        <li>Raiyan Ahmed</li>
+        {currDirectors}
       </FeatList>
       <Typography gutterBottom variant="body2">
         <strong>Members:</strong>
       </Typography>
       <FeatList>
-        <li>Eklavya Joshi</li>
-        <li>Jasmine Tran</li>
-        <li>Michael Siu</li>
-        <li>Sally Sun</li>
-        <li>Shaam Jevan</li>
-        <li>Sijin Soon</li>
-        <li>Wanning Cai</li>
+        {currSubcommittee}
       </FeatList>
       <StyledTypography variant="h6">Disclaimer</StyledTypography>
       <Typography gutterBottom variant="body2">
