@@ -12,6 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import AddGroupButton from '../sidebar/AddGroupButton';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -82,6 +83,7 @@ const Navbar: React.FC = () => {
             content={<Privacy />}
           />
           <CustomModal title="Settings" showIcon={<SettingsIcon />} description={'Settings'} content={<Settings />} />
+          <AddGroupButton />
         </Toolbar>
       </StyledNavBar>
     </NavbarBox>
