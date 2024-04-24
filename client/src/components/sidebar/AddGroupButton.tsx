@@ -10,6 +10,7 @@ import {
   Autocomplete,
   Button,
   Checkbox,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -105,7 +106,7 @@ const HiddenUploadFile: React.FC<HiddenUploadFileProps> = ({ setSelectedFileImag
 const AddGroupButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
-  const [selectedMembers, setSelectedMembers] = useState<FriendsType[]>([]);
+  const [selectedFriends, setSelectedFriends] = useState<FriendsType[]>([]);
   const [selectedFileImage, setSelectedFileImage] = useState<null | File>(null);
 
   const handleCreateGroup = () => {
@@ -115,9 +116,13 @@ const AddGroupButton = () => {
   const handleClose = () => {
     setIsOpen(false);
     setGroupName('');
-    setSelectedMembers([]);
+    setSelectedFriends([]);
     setSelectedFileImage(null);
   };
+
+  const handleDeleteSelectedMember = (zID: number) => {
+    setSelectedFriends(selectedFriends.filter((friend) => friend.zID !== zID));
+  }
 
   return (
     <>
@@ -127,7 +132,7 @@ const AddGroupButton = () => {
           <AddIcon />
         </ShowModalButton>
       </Tooltip>
-      
+
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <StyledDialogTitle>
           <StyledTypography variant="h6">Create a Group</StyledTypography>
@@ -168,7 +173,7 @@ const AddGroupButton = () => {
             options={friends}
             disableCloseOnSelect
             fullWidth
-            onChange={(_, value) => setSelectedMembers(value)}
+            onChange={(_, value) => setSelectedFriends(value)}
             getOptionLabel={(option) => option.name}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
@@ -178,9 +183,12 @@ const AddGroupButton = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.name}
+                {option.name} {option.zID}
               </li>
             )}
+            renderTags={(list) => {
+              return list.map((friend) => <Chip label={friend.name} onDelete={(e) => console.log(e)}/>)
+            }}
             renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
           />
         </StyledDialogContent>
