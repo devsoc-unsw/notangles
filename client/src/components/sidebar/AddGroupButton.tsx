@@ -122,7 +122,7 @@ const AddGroupButton = () => {
 
   const handleDeleteSelectedMember = (zID: number) => {
     setSelectedFriends(selectedFriends.filter((friend) => friend.zID !== zID));
-  }
+  };
 
   return (
     <>
@@ -183,11 +183,15 @@ const AddGroupButton = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.name} {option.zID}
+                {option.name}
               </li>
             )}
-            renderTags={(list) => {
-              return list.map((friend) => <Chip label={friend.name} onDelete={(e) => console.log(e)}/>)
+            renderTags={(tagValue, getTagProps) => {
+              return tagValue.map((option, index) => (
+                <Tooltip title={'z' + option.zID}>
+                  <Chip {...getTagProps({ index })} label={option.name} />
+                </Tooltip>
+              ));
             }}
             renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
           />
@@ -214,14 +218,14 @@ interface FriendsType {
 }
 
 const friends: FriendsType[] = [
-  { name: 'Shaam', zID: 1 },
-  { name: 'Ray', zID: 2 },
-  { name: 'hhlu', zID: 3 },
-  { name: 'Sohum', zID: 4 },
-  { name: 'Chanel', zID: 5 },
-  { name: 'Nikki', zID: 6 },
-  { name: 'Micky', zID: 7 },
-  { name: 'Jasmine', zID: 8 },
+  { name: 'Shaam', zID: 532445 },
+  { name: 'Ray', zID: 523495 },
+  { name: 'hhlu', zID: 584290 },
+  { name: 'Sohum', zID: 523840 },
+  { name: 'Chanel', zID: 542567 },
+  { name: 'Nikki', zID: 524596 },
+  { name: 'Micky', zID: 523948 },
+  { name: 'Jasmine', zID: 540938 },
 ];
 
 export default AddGroupButton;
