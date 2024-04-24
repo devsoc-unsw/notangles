@@ -1,7 +1,6 @@
 import {
-  Close,
+  Close as CloseIcon,
   Add as AddIcon,
-  NotesOutlined,
   Edit as EditIcon,
   CheckCircle as CheckCircleIcon,
   RadioButtonUnchecked as RadioButtonUncheckedIcon,
@@ -16,7 +15,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  InputAdornment,
   TextField,
   Tooltip,
   Typography,
@@ -25,19 +23,16 @@ import { styled } from '@mui/system';
 import React, { useState } from 'react';
 
 const StyledDialogTitle = styled(DialogTitle)`
-  background-color: ${({ theme }) => theme.palette.background.paper}; // darkmode
+  background-color: ${({ theme }) => theme.palette.background.paper};
   margin: 0;
   padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 
 const StyledDialogActions = styled(DialogActions)`
   background-color: ${({ theme }) => theme.palette.background.paper}; // darkmode
-`;
-
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  right: 10px;
-  top: 10px;
 `;
 
 const StyledTypography = styled(Typography)`
@@ -136,9 +131,9 @@ const AddGroupButton = () => {
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <StyledDialogTitle>
           <StyledTypography variant="h6">Create a Group</StyledTypography>
-          <CloseButton onClick={handleClose}>
-            <Close />
-          </CloseButton>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
         </StyledDialogTitle>
 
         <StyledDialogContent>
@@ -160,6 +155,7 @@ const AddGroupButton = () => {
               <HiddenUploadFile setSelectedFileImage={setSelectedFileImage} />
             </EditCircleLabel>
           </div>
+
           <TextField
             label="Group Name"
             variant="outlined"
@@ -167,7 +163,6 @@ const AddGroupButton = () => {
             fullWidth
             onChange={(e) => setGroupName(e.target.value)}
           />
-
           <Autocomplete
             multiple
             options={friends}
