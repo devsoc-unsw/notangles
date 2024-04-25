@@ -24,47 +24,49 @@ import React, { useState } from 'react';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
-  margin: 0;
-  padding: 20px;
+  padding: 40px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 `;
 
 const StyledDialogActions = styled(DialogActions)`
-  background-color: ${({ theme }) => theme.palette.background.paper}; // darkmode
-`;
-
-const StyledTypography = styled(Typography)`
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-
-const ShowModalButton = styled(IconButton)`
-  margin-right: 5px;
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  padding: 0px 60px 30px 0px;
 `;
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 20px;
-  margin-top: 20px;
+  padding: 40px 60px;
   gap: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-const CircleOutline = styled('div')`
+const Circle = `
   width: 150px;
   height: 150px;
   border-radius: 999px;
-  border: 0.5px solid black;
-  cursor: pointer;
 `;
 
-const EditCircleLabel = styled('label')`
-  background-color: white;
-  border: 0.5px solid black;
+const CircleOutline = styled('div')`
+  ${Circle}
+  border: 1px solid gray;
+  cursor: pointer;
+  &:hover {
+    border: ${({ theme }) => (theme.palette.mode === 'light' ? '1px solid black' : '1px solid white;')};
+  }
+`;
+
+const CircleImage = styled('img')`
+  ${Circle}
+  object-fit: cover;
+`;
+
+const EditIconCircleLabel = styled('label')`
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  border: 1px solid gray;
   border-radius: 999px;
   width: 35px;
   height: 35px;
@@ -73,9 +75,16 @@ const EditCircleLabel = styled('label')`
   align-items: center;
   position: relative;
   top: -35px;
+  cursor: pointer;
   &:hover {
-    cursor: pointer;
+    border: ${({ theme }) => (theme.palette.mode === 'light' ? '1px solid black' : '1px solid white;')};
   }
+`;
+
+const StyledUploadImageContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 `;
 
 interface HiddenUploadFileProps {
@@ -102,7 +111,7 @@ const AddGroupButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendsType[]>([]);
-  const [selectedFileImage, setSelectedFileImage] = useState<null | File>(null);
+  const [selectedImage, setSelectedImage] = useState<null | File>(null);
 
   const handleCreateGroup = () => {
     // TODO call API
@@ -112,49 +121,38 @@ const AddGroupButton = () => {
     setIsOpen(false);
     setGroupName('');
     setSelectedFriends([]);
-    setSelectedFileImage(null);
-  };
-
-  const handleDeleteSelectedMember = (zID: number) => {
-    setSelectedFriends(selectedFriends.filter((friend) => friend.zID !== zID));
+    setSelectedImage(null);
   };
 
   return (
     <>
-      {/** + Button **/}
       <Tooltip title="Add a Group">
-        <ShowModalButton color="inherit" onClick={() => setIsOpen(true)}>
+        <IconButton color="inherit" onClick={() => setIsOpen(true)}>
           <AddIcon />
-        </ShowModalButton>
+        </IconButton>
       </Tooltip>
 
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <StyledDialogTitle>
-          <StyledTypography variant="h6">Create a Group</StyledTypography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+          <Typography variant="h6">Create a Group</Typography>
+          <div>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
         </StyledDialogTitle>
 
         <StyledDialogContent>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+          <StyledUploadImageContainer>
             <label>
-              <CircleOutline>
-                {selectedFileImage && (
-                  <img
-                    style={{ width: 150, height: 150, borderRadius: 999, objectFit: 'cover' }}
-                    src={URL.createObjectURL(selectedFileImage)}
-                  />
-                )}
-              </CircleOutline>
-
-              <HiddenUploadFile setSelectedFileImage={setSelectedFileImage} />
+              <CircleOutline>{selectedImage && <CircleImage src={URL.createObjectURL(selectedImage)} />}</CircleOutline>
+              <HiddenUploadFile setSelectedFileImage={setSelectedImage} />
             </label>
-            <EditCircleLabel>
+            <EditIconCircleLabel>
               <EditIcon />
-              <HiddenUploadFile setSelectedFileImage={setSelectedFileImage} />
-            </EditCircleLabel>
-          </div>
+              <HiddenUploadFile setSelectedFileImage={setSelectedImage} />
+            </EditIconCircleLabel>
+          </StyledUploadImageContainer>
 
           <TextField
             label="Group Name"
@@ -163,6 +161,7 @@ const AddGroupButton = () => {
             fullWidth
             onChange={(e) => setGroupName(e.target.value)}
           />
+
           <Autocomplete
             multiple
             options={friends}
@@ -192,7 +191,6 @@ const AddGroupButton = () => {
           />
         </StyledDialogContent>
 
-        {/** FOOTER BUTTONS **/}
         <StyledDialogActions>
           <Button variant="text" onClick={handleClose}>
             Cancel
