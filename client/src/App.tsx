@@ -41,6 +41,7 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import GroupsSidebar from './components/sidebar/GroupsSidebar';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -596,6 +597,7 @@ const App: React.FC = () => {
                 <Sponsors />
                 <Footer />
                 <Alerts />
+                <GroupsSidebar />
               </Content>
             </ContentWrapper>
           </StyledApp>

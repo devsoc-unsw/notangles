@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"react-draggable-list": "^4.2.0"
+	}
+}
