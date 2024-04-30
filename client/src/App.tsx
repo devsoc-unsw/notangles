@@ -135,18 +135,6 @@ const App: React.FC = () => {
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   /**
-   * Supports migration from non-assigned colors to assignedColors so timetable does not break. Can be removed after a few weeks when everyone has migrated
-   */
-  if (assignedColors === undefined) {
-    const colors = useColorMapper(
-      displayTimetables[term][selectedTimetable].selectedCourses.map((course) => course.code),
-      {},
-    );
-    displayTimetables[term][selectedTimetable].assignedColors = colors;
-    setAssignedColors(colors);
-  }
-
-  /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
   const maxFetchAttempts: number = 6;
