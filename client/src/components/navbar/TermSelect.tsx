@@ -24,7 +24,7 @@ const TermSelect: React.FC = () => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
 
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -63,6 +63,7 @@ const TermSelect: React.FC = () => {
     setSelectedClasses(displayTimetables[termNum][defaultStartTimetable].selectedClasses);
     setCreatedEvents(displayTimetables[termNum][defaultStartTimetable].createdEvents);
     setSelectedCourses(displayTimetables[termNum][defaultStartTimetable].selectedCourses);
+    setAssignedColors(displayTimetables[termNum][defaultStartTimetable].assignedColors);
   };
 
   return (
