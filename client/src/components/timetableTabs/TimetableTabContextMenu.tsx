@@ -45,7 +45,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setErrorVisibility,
   } = useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } =
+    useContext(CourseContext);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
@@ -65,7 +66,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
     assignedColors: Record<string, string>,
-    timetableIndex: number
+    timetableIndex: number,
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
@@ -110,11 +111,10 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       // If user chooses to undo the deletion then we will restore the previous state
       setAlertFunction(() => () => {
-
         const restoredTimetables = {
           ...displayTimetables,
-          [term]: prevTimetables.timetables
-        }
+          [term]: prevTimetables.timetables,
+        };
 
         setDisplayTimetables(restoredTimetables);
         const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
@@ -155,11 +155,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     const newTimetables = {
       ...displayTimetables,
       [term]: displayTimetables[term].map((timetable, index) => {
-        return index === selectedTimetable ?
-          { ...timetable, name: renamedString } :
-          timetable;
-      })
-    }
+        return index === selectedTimetable ? { ...timetable, name: renamedString } : timetable;
+      }),
+    };
 
     storage.set('timetables', newTimetables);
     setDisplayTimetables(newTimetables);
@@ -189,7 +187,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: duplicateEvents(currentTimetable.createdEvents),
-        assignedColors: currentTimetable.assignedColors
+        assignedColors: currentTimetable.assignedColors,
       };
 
       const newTimetables = [
@@ -200,8 +198,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       const updatedTimetables = {
         ...displayTimetables,
-        [term]: newTimetables
-      }
+        [term]: newTimetables,
+      };
 
       storage.set('timetables', updatedTimetables);
       setDisplayTimetables(updatedTimetables);

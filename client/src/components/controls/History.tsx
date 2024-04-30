@@ -199,7 +199,7 @@ const History: React.FC = () => {
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
-    const newDisplayTimetables = {
+    const newDisplayTimetables: DisplayTimetablesMap = {
       ...displayTimetables,
       [term]: createDefaultTimetable(),
     };

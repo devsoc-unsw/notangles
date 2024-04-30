@@ -58,7 +58,7 @@ const StyledSelect = styled(Box)`
 
 const StyledTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'selectedCourses',
-}) <{
+})<{
   selectedCourses: CourseData[];
 }>`
   .MuiOutlinedInput-root {
@@ -76,7 +76,7 @@ const StyledTextField = styled(TextField, {
 
   label {
     color: ${({ theme, selectedCourses }) =>
-    selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
+      selectedCourses.length < maxAddedCourses ? theme.palette.secondary.dark : 'red'} !important;
     transition: 0.2s;
   }
 `;
@@ -88,7 +88,7 @@ const StyledInputAdornment = styled(InputAdornment)`
 
 const StyledChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
-}) <{
+})<{
   backgroundColor: string;
 }>`
   transition: none !important;

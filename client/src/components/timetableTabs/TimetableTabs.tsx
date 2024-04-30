@@ -7,7 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
+import {
+  CourseData,
+  CreatedEvents,
+  DisplayTimetablesMap,
+  SelectedClasses,
+  TimetableData,
+} from '../../interfaces/Periods';
 import {
   createTimetableStyle,
   StyledIconButton,
@@ -59,7 +65,7 @@ const TimetableTabs: React.FC = () => {
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
     assignedColors: Record<string, string>,
-    timetableIndex: number
+    timetableIndex: number,
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
@@ -88,7 +94,7 @@ const TimetableTabs: React.FC = () => {
         assignedColors: {},
       };
 
-      const addingNewTimetables = {
+      const addingNewTimetables: DisplayTimetablesMap = {
         ...displayTimetables,
         [term]: [...displayTimetables[term], newTimetable],
       };
@@ -122,12 +128,12 @@ const TimetableTabs: React.FC = () => {
       return;
     }
 
-    const newTimetables = [...displayTimetables[term]];
+    const newTimetables: TimetableData[] = [...displayTimetables[term]];
     const draggedItem = newTimetables[source.index];
     newTimetables.splice(source.index, 1);
     newTimetables.splice(destination.index, 0, draggedItem);
 
-    const rearrangedTimetables = {
+    const rearrangedTimetables: DisplayTimetablesMap = {
       ...displayTimetables,
       [term]: newTimetables,
     };
@@ -167,9 +173,9 @@ const TimetableTabs: React.FC = () => {
                       <Draggable draggableId={index.toString()} index={index} key={index}>
                         {(props) => {
                           if (props.draggableProps.style?.transform) {
-                            const shift = props.draggableProps.style?.transform.split(',')[0];
+                            const horizShift = props.draggableProps.style?.transform.match(/(-?\d+)/g)?.map(Number)![0];
                             // forcing horizontal movement
-                            props.draggableProps.style.transform = shift + ', 0)';
+                            props.draggableProps.style.transform = `translate(${horizShift ? horizShift : 0}px, 0)`;
                           }
                           return (
                             <Box

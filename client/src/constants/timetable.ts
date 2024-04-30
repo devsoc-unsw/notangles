@@ -1,5 +1,6 @@
 import { API_URL } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
+import { TermDataMap } from '../interfaces/Periods';
 import timeoutPromise from '../utils/timeoutPromise';
 
 const REGULAR_TERM_STR_LEN = 2;
@@ -85,9 +86,9 @@ export const getAvailableTermDetails = async () => {
     const newTerm = parseTermData(termIdRes);
     const prevTerm = parseTermData(prevTermIdRes);
 
-    const termsData = {
-      prevTerm: { year: prevYear, term: prevTerm.term, termName: prevTerm.termName },
-      newTerm: { year: year, term: newTerm.term, termName: newTerm.termName },
+    const termsData: TermDataMap = {
+      prevTerm: { year: prevYear, term: prevTerm.term },
+      newTerm: { year: year, term: newTerm.term },
     };
 
     // Store the term details in local storage.

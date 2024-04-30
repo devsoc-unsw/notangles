@@ -29,9 +29,19 @@ const TermSelect: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  let prevTermName = `Term ${termsData.prevTerm.term[1]}`;
+  if (prevTermName.includes('Summer')) {
+    prevTermName = 'Summer Term';
+  }
+
+  let newTermName = `Term ${termsData.newTerm.term[1]}`;
+  if (newTermName.includes('Summer')) {
+    newTermName = 'Summer Term';
+  }
+
   const termData = new Set([
-    ...(termsData.prevTerm.termName.length > 0 ? [`${termsData.prevTerm.termName}, ${termsData.prevTerm.year}`] : []),
-    `${termsData.newTerm.termName}, ${termsData.newTerm.year}`,
+    ...(termsData.prevTerm.term.length > 0 ? [`${prevTermName}, ${termsData.prevTerm.year}`] : []),
+    `${newTermName}, ${termsData.newTerm.year}`,
   ]);
 
   const selectTerm = (e: any) => {

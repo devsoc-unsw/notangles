@@ -34,9 +34,9 @@ import {
   ClassData,
   CourseCode,
   CourseData,
+  DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
-  TimetableData,
 } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
@@ -177,8 +177,7 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const termData = await getAvailableTermDetails();
-      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = termData;
+      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
       setTerm(term);
       setTermName(termName);
       setTermNumber(termNumber);
@@ -188,7 +187,7 @@ const App: React.FC = () => {
       const oldData = storage.get('timetables');
 
       // avoid overwriting data from previous save
-      const newTimetableTerms = {
+      const newTimetableTerms: DisplayTimetablesMap = {
         ...{
           [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
             ? oldData[termsData.prevTerm.term]
@@ -223,7 +222,7 @@ const App: React.FC = () => {
 
   // Fetching the saved timetables from local storage
   useEffect(() => {
-    const savedTimetables: TimetableData[] = storage.get('timetables');
+    const savedTimetables: DisplayTimetablesMap = storage.get('timetables');
     if (savedTimetables) {
       setDisplayTimetables(savedTimetables);
     }
