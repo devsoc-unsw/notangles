@@ -1,4 +1,6 @@
 import styled from '@emotion/styled';
+import { Tooltip } from '@mui/material';
+import zIndex from '@mui/material/styles/zIndex';
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
@@ -26,6 +28,22 @@ const ListStyle = {
   padding: 8,
 };
 
+///////////////   COPIED FROM ADDGROUPBUTTON ///////////////
+const Circle = `
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+`;
+
+const CircleOutline = styled('div')`
+  ${Circle}
+  border: 1px solid gray;
+  cursor: pointer;
+  &:hover {
+    border: ${({ theme }) => (theme.palette.mode === 'light' ? '1px solid black' : '1px solid white;')};
+  }
+`;
+//////////////////////////////////////////////////////////////////////////////////////////
 
 const GroupsSidebar = () => {
   const [items, setItems] = useState(DummyGroupData);
@@ -58,7 +76,14 @@ const GroupsSidebar = () => {
                     {...provided.dragHandleProps}
                     style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                   >
-                    {item.groupName}
+                    <Tooltip title={item.groupName} placement='right'>
+                      <img
+                        src={item.groupImageURL}
+                        width={GROUP_CIRCLE_SIZE}
+                        height={GROUP_CIRCLE_SIZE}
+                        style={{ borderRadius: 999 }}
+                      />
+                    </Tooltip>
                   </div>
                 )}
               </Draggable>
@@ -76,7 +101,7 @@ export default GroupsSidebar;
 type DummyGroupDataType = {
   id: string;
   groupName: string;
-  groupImage: string;
+  groupImageURL: string;
   members: string[];
 };
 
@@ -84,19 +109,20 @@ const DummyGroupData: DummyGroupDataType[] = [
   {
     id: '1',
     groupName: 'Group name 1',
-    groupImage: '',
+    groupImageURL:
+      'https://static.vecteezy.com/system/resources/previews/023/506/852/non_2x/cute-kawaii-mushroom-chibi-mascot-cartoon-style-vector.jpg',
     members: ['ray', 'ray2'],
   },
   {
     id: '2',
     groupName: 'Group name 2',
-    groupImage: '',
+    groupImageURL: 'https://wallpapers-clan.com/wp-content/uploads/2022/05/cute-pfp-07.jpg',
     members: ['ray', 'ray2'],
   },
   {
     id: '3',
     groupName: 'Group name 3',
-    groupImage: '',
+    groupImageURL: 'https://wallpapers-clan.com/wp-content/uploads/2023/12/cute-cat-in-custume-pfp-01.jpg',
     members: ['ray', 'ray2'],
   },
 ];
