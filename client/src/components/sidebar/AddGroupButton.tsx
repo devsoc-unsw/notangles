@@ -54,7 +54,6 @@ const Circle = `
 const CircleOutline = styled('div')`
   ${Circle}
   border: 1px solid gray;
-  cursor: pointer;
 `;
 
 const CircleImage = styled('img')`
