@@ -3,7 +3,6 @@ import { IconButton, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
-
 const EditIconCircle = styled('div')`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border: 1px solid gray;
@@ -19,6 +18,10 @@ const EditIconCircle = styled('div')`
   &:hover {
     border: ${({ theme }) => (theme.palette.mode === 'light' ? '1px solid black' : '1px solid white;')};
   }
+`;
+
+const StyledPopoverContent = styled('div')`
+  width: 400px;
 `;
 
 interface EditImagePopOverProps {
@@ -49,7 +52,7 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ groupImageURL, setG
             horizontal: 'center',
           }}
         >
-          <div style={{ width: 400 }}>
+          <StyledPopoverContent>
             <TextField
               placeholder="Enter image address..."
               variant="outlined"
@@ -57,7 +60,7 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ groupImageURL, setG
               fullWidth
               onChange={(e) => setGroupImageURL(e.target.value)}
             />
-          </div>
+          </StyledPopoverContent>
         </Popover>
       </div>
     </EditIconCircle>
