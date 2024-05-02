@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Popover,
   TextField,
   Tooltip,
   Typography,
@@ -54,9 +55,6 @@ const CircleOutline = styled('div')`
   ${Circle}
   border: 1px solid gray;
   cursor: pointer;
-  &:hover {
-    border: ${({ theme }) => (theme.palette.mode === 'light' ? '1px solid black' : '1px solid white;')};
-  }
 `;
 
 const CircleImage = styled('img')`
@@ -64,7 +62,7 @@ const CircleImage = styled('img')`
   object-fit: cover;
 `;
 
-const EditIconCircleLabel = styled('label')`
+const EditIconCircle = styled('div')`
   background-color: ${({ theme }) => theme.palette.background.paper};
   border: 1px solid gray;
   border-radius: 999px;
@@ -87,23 +85,46 @@ const StyledUploadImageContainer = styled('div')`
   align-items: flex-end;
 `;
 
-interface HiddenUploadFileProps {
-  setSelectedFileImage: (file: null | File) => void;
+interface EditImagePopOverProps {
+  groupImageURL: string;
+  setGroupImageURL: (url: string) => void;
 }
 
-const HiddenUploadFile: React.FC<HiddenUploadFileProps> = ({ setSelectedFileImage }) => {
+const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ groupImageURL, setGroupImageURL }) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
   return (
-    <input
-      type="file"
-      style={{ display: 'none' }}
-      accept="image/*"
-      onChange={(event) => {
-        if (event?.target?.files) {
-          if (event?.target?.files.length === 0) return;
-          setSelectedFileImage(event.target.files[0]);
-        }
-      }}
-    />
+    <EditIconCircle>
+      <div>
+        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <EditIcon />
+        </IconButton>
+
+        <Popover
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={() => setAnchorEl(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <div style={{ padding: '10px 20px', width: 400 }}>
+            <TextField
+              placeholder="Enter image address..."
+              variant="outlined"
+              value={groupImageURL}
+              fullWidth
+              onChange={(e) => setGroupImageURL(e.target.value)}
+            />
+          </div>
+        </Popover>
+      </div>
+    </EditIconCircle>
   );
 };
 
@@ -111,7 +132,7 @@ const AddGroupButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendsType[]>([]);
-  const [selectedImage, setSelectedImage] = useState<null | File>(null);
+  const [groupImageURL, setGroupImageURL] = useState('');
 
   const handleCreateGroup = () => {
     // TODO call API
@@ -121,7 +142,7 @@ const AddGroupButton = () => {
     setIsOpen(false);
     setGroupName('');
     setSelectedFriends([]);
-    setSelectedImage(null);
+    setGroupImageURL('');
   };
 
   return (
@@ -145,13 +166,9 @@ const AddGroupButton = () => {
         <StyledDialogContent>
           <StyledUploadImageContainer>
             <label>
-              <CircleOutline>{selectedImage && <CircleImage src={URL.createObjectURL(selectedImage)} />}</CircleOutline>
-              <HiddenUploadFile setSelectedFileImage={setSelectedImage} />
+              <CircleOutline>{<CircleImage src={groupImageURL} />}</CircleOutline>
             </label>
-            <EditIconCircleLabel>
-              <EditIcon />
-              <HiddenUploadFile setSelectedFileImage={setSelectedImage} />
-            </EditIconCircleLabel>
+            <EditImagePopOver groupImageURL={groupImageURL} setGroupImageURL={setGroupImageURL} />
           </StyledUploadImageContainer>
 
           <TextField
