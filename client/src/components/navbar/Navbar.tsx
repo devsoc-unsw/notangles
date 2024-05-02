@@ -12,7 +12,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import AddGroupButton from '../sidebar/AddGroupButton';
+import AddGroupButton from '../sidebar/addGroupDialog/AddGroupDialog';
 
 const LogoImg = styled('img')`
   height: 46px;
