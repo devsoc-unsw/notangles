@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { Tooltip } from '@mui/material';
-import zIndex from '@mui/material/styles/zIndex';
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
@@ -22,11 +21,11 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   ...draggableStyle, // styles we need to apply on draggables
 });
 
-const ListStyle = {
-  background: 'lightgrey',
-  width: 'fit-content',
-  padding: 8,
-};
+const StyledContainer = styled('div')`
+  background: ${({ theme }) => theme.palette.primary.main};
+  width: fit-content;
+  padding: 8px;
+`
 
 ///////////////   COPIED FROM ADDGROUPBUTTON ///////////////
 const Circle = `
@@ -66,7 +65,7 @@ const GroupsSidebar = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={'droppable'}>
         {(provided, snapshot) => (
-          <div {...provided.droppableProps} ref={provided.innerRef} style={ListStyle}>
+          <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
             {items.map((item, idx) => (
               <Draggable key={item.id} draggableId={item.id} index={idx}>
                 {(provided, snapshot) => (
@@ -89,7 +88,7 @@ const GroupsSidebar = () => {
               </Draggable>
             ))}
             {provided.placeholder}
-          </div>
+          </StyledContainer>
         )}
       </Droppable>
     </DragDropContext>
