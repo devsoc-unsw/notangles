@@ -1,29 +1,23 @@
-import { Response, Request } from 'express';
+import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import * as grpc from '@grpc/grpc-js';
 import { TimetableConstraints } from '../proto/autotimetabler_pb';
 import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
-import { config } from '../config';
+import { autoDTO } from './dto/auto.dto';
+import { config } from 'src/config';
 
-interface ReqBodyData {
-  start: number;
-  end: number;
-  days: string;
-  gap: number;
-  maxdays: number,
-  periodInfoList: {
-    periodsPerClass: number;
-    periodTimes: Array<number>;
-    durations: Array<number>;
-  }[]
-}
+@Injectable()
+export class AutoService {
+  async getAutoTimetable(@Body() autoService: autoDTO) {
+    return getAuto(autoService);
+  }
+} 
 
 
-export const getAuto = async (req: Request, res: Response) => {
-  var client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
+export const getAuto = async (data: autoDTO) => {
+  let client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
   const constraints = new TimetableConstraints();
 
-  const data: ReqBodyData = req.body;
   constraints.setStart(data.start);
   constraints.setEnd(data.end);
   constraints.setDays(data.days);
@@ -42,11 +36,10 @@ export const getAuto = async (req: Request, res: Response) => {
 
   client.findBestTimetable(constraints, (err, response) => {
     if (err) {
-      console.log('error was found: ' + err);
-      res.status(502).send('An error occurred when handling the request.')
-
+      console.error('error was found: ' + err);
+      throw new HttpException('An error occurred when handling the request.', HttpStatus.BAD_GATEWAY);
     } else {
-      res.send(JSON.stringify({ given: response.getTimesList(), optimal: response.getOptimal() }));
+      return JSON.stringify({ given: response.getTimesList(), optimal: response.getOptimal()});
     }
   });
 };

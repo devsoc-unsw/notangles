@@ -19,5 +19,4 @@ const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.MOCK]: { timetable: `${LIVE}/api`, auto: `${LOCAL}/auto` },
   [Env.PROD]: { timetable: `${LIVE}/api`, auto: `${LIVE}/auto` },
 });
-
 export const API_URL: Config = API_CONFIG[import.meta.env.VITE_APP_ENVIRONMENT || Env.DEV];

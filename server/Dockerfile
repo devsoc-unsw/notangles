@@ -1,46 +1,25 @@
-# # Dependency versions should be pinned
-# FROM node:21.0.0-alpine as builder
-# RUN npm i -g pnpm
-# WORKDIR /server
-
-# COPY package.json pnpm-lock.yaml ./
-# RUN pnpm i --frozen-lockfile
-
-# COPY . .
-# RUN pnpm run build
-
-
-# FROM node:21.0.0-alpine
-# RUN npm i -g pnpm
-# WORKDIR /server
-
-# ENV NODE_ENV production
-# COPY package.json pnpm-lock.yaml ./
-# RUN pnpm install --production
-
-# # COPY --from=builder /server/dist .
-# # COPY ./src/proto/*.js ./src/proto/
-
-# EXPOSE 3001
-
-# CMD ["pnpm", "run", "start:prod"]
-
-# Use an official Node.js image as the base image
-FROM node:21.0.0-alpine
+# Dependency versions should be pinned
+FROM node:21.0.0-alpine as builder
 RUN npm i -g pnpm
-
-# Set the working directory inside the container
+RUN pnpm install @nestjs/cli
 WORKDIR /server
 
-# Copy package.json and pnpm-lock.yaml to the working directory
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 
-# Copy the rest of the application code
 COPY . .
+RUN pnpm run build
 
-# Expose the port your application listens on
+FROM node:21.0.0-alpine
+WORKDIR /server
+RUN npm i -g pnpm
+
+ENV NODE_ENV production
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --production
+
+COPY --from=builder /server .
+
 EXPOSE 3001
 
-# Command to run your application using PNPM
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "run", "start:prod"]
