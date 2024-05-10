@@ -4,13 +4,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
-import Footer from './components/Footer';
+import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
+import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, lightTheme } from './constants/theme';
@@ -27,11 +29,18 @@ import { CourseContext } from './context/CourseContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
-import { Activity, ClassData, CourseCode, CourseData, InInventory, SelectedClasses } from './interfaces/Periods';
+import {
+  Activity,
+  ClassData,
+  CourseCode,
+  CourseData,
+  InInventory,
+  SelectedClasses,
+  TimetableData,
+} from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { Outlet } from 'react-router-dom';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -110,8 +119,16 @@ const App: React.FC = () => {
     setCourseData,
   } = useContext(AppContext);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
-    useContext(CourseContext);
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    createdEvents,
+    setCreatedEvents,
+    assignedColors,
+    setAssignedColors,
+  } = useContext(CourseContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -170,6 +187,14 @@ const App: React.FC = () => {
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
   }, [year]);
+
+  // Fetching the saved timetables from local storage
+  useEffect(() => {
+    const savedTimetables: TimetableData[] = storage.get('timetables');
+    if (savedTimetables) {
+      setDisplayTimetables(savedTimetables);
+    }
+  }, []);
 
   /**
    * Update the class data for a particular course's activity e.g. when a class is dragged to another dropzone
@@ -265,10 +290,6 @@ const App: React.FC = () => {
           }
         } else {
           newSelectedCourses.push(addedCourse);
-
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
         }
         if (!courseData.map.find((i) => i.code === addedCourse.code)) {
           newCourseData.map.push(addedCourse);
@@ -277,6 +298,15 @@ const App: React.FC = () => {
 
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
+
+      if (displayTimetables.length > 0) {
+        setAssignedColors(
+          useColorMapper(
+            newSelectedCourses.map((course) => course.code),
+            assignedColors,
+          ),
+        );
+      }
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
       if (callback) callback(newSelectedCourses);
@@ -292,7 +322,7 @@ const App: React.FC = () => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
-    newCourseData.map = courseData.map.filter((targetCourse) => {
+    newCourseData.map = courseData.map.filter(() => {
       for (const timetable of displayTimetables) {
         for (const course of timetable.selectedCourses) {
           if (course.code.localeCompare(courseCode)) {
@@ -362,6 +392,7 @@ const App: React.FC = () => {
       },
     );
     setCreatedEvents(storage.get('timetables')[selectedTimetable].createdEvents);
+    setAssignedColors(storage.get('timetables')[selectedTimetable].assignedColors);
   };
 
   useEffect(() => {
@@ -388,6 +419,12 @@ const App: React.FC = () => {
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
   }, [createdEvents]);
+
+  useUpdateEffect(() => {
+    displayTimetables[selectedTimetable].assignedColors = assignedColors;
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+  }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
@@ -496,7 +533,6 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  const assignedColors = useColorMapper(selectedCourses.map((course) => course.code));
   const theme = isDarkMode ? darkTheme : lightTheme;
   const globalStyle = {
     body: {
@@ -545,6 +581,7 @@ const App: React.FC = () => {
                 >
                   save to calendar
                 </ICSButton>
+                <Sponsors />
                 <Footer />
                 <Alerts />
               </Content>

@@ -44,7 +44,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setErrorVisibility,
   } = useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } =
+    useContext(CourseContext);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
@@ -63,11 +64,13 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     selectedCourses: CourseData[],
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
+    assignedColors: Record<string, string>,
     timetableIndex: number,
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
     setCreatedEvents(createdEvents);
+    setAssignedColors(assignedColors);
     setSelectedTimetable(timetableIndex);
   };
 
@@ -86,19 +89,25 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
             selectedCourses: timetable.selectedCourses,
             selectedClasses: duplicateClasses(timetable.selectedClasses),
             createdEvents: timetable.createdEvents,
+            assignedColors: timetable.assignedColors,
           };
         }),
       };
 
       const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1 : targetIndex;
-
       const newTimetables = displayTimetables.filter(
         (timetable: TimetableData, index: number) => index !== targetIndex,
       );
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newTimetables);
-      const { selectedCourses, selectedClasses, createdEvents } = newTimetables[newIndex];
-      setTimetableState(selectedCourses, selectedClasses, createdEvents, newIndex);
+      // Destructure and rename (for clarity, do not shadow context variables)
+      const {
+        selectedCourses: newCourses,
+        selectedClasses: newClasses,
+        createdEvents: newEvents,
+        assignedColors: newColors,
+      } = newTimetables[newIndex];
+      setTimetableState(newCourses, newClasses, newEvents, newColors, newIndex);
 
       setOpenRestoreAlert(true);
 
@@ -106,7 +115,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       setAlertFunction(() => () => {
         setDisplayTimetables(prevTimetables.timetables);
         const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
-        setTimetableState(selectedCourses, selectedClasses, createdEvents, prevTimetables.selected);
+        setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, prevTimetables.selected);
         return;
       });
     } else {
@@ -132,6 +141,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   // Handle closing the rename dialog
   const handleRenameClose = (clickedOk: boolean) => {
+    // Checks if the user clicked out of the dialog or submitted a new name
     if (!clickedOk) {
       setRenameOpen(false);
       return;
@@ -170,6 +180,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: duplicateEvents(currentTimetable.createdEvents),
+        assignedColors: currentTimetable.assignedColors,
       };
 
       const newTimetables = [
@@ -181,7 +192,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       storage.set('timetables', newTimetables);
       setDisplayTimetables(newTimetables);
       const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
-      setTimetableState(selectedCourses, selectedClasses, createdEvents, selectedTimetable + 1);
+      setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, selectedTimetable + 1);
       handleMenuClose();
     }
   };
