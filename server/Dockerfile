@@ -5,7 +5,7 @@ RUN pnpm install @nestjs/cli
 WORKDIR /server
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm i --frozen-lockfile
+RUN pnpm i --no-frozen-lockfile
 
 COPY . .
 RUN pnpm run build
