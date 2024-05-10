@@ -192,7 +192,6 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     ];
 
     try {
-      console.log(timetableData);
       const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
       const results = resultsWithEvents.slice(0, targetActivities.current.length);
 
