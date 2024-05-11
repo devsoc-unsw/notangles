@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    AuthModule,
+    // AuthModule,
     AutoModule,
     UserModule,
     FriendModule,

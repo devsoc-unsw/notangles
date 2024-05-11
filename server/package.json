@@ -29,8 +29,10 @@
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "5.13.0",
     "@quixo3/prisma-session-store": "^3.1.13",
+    "@types/express-session": "^1.18.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
     "express-session": "^1.18.0",
     "google-protobuf": "^3.21.2",
     "grpc_tools_node_protoc_ts": "^5.3.3",
@@ -42,7 +44,7 @@
     "ts-protoc-gen": "^0.15.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0",
+    "@nestjs/cli": "^10.3.2",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
     "@types/express": "^4.17.17",
