@@ -72,4 +72,4 @@ typings/
 
 # Mac stuff
 .DS_Store
-
+server/prisma/migrations/
