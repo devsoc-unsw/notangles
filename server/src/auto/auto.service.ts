@@ -11,11 +11,13 @@ export class AutoService {
   async getAutoTimetable(@Body() autoService: autoDTO) {
     return getAuto(autoService);
   }
-} 
-
+}
 
 export const getAuto = async (data: autoDTO) => {
-  let client = new AutoTimetablerClient(config.auto, grpc.credentials.createInsecure());
+  const client = new AutoTimetablerClient(
+    config.auto,
+    grpc.credentials.createInsecure(),
+  );
   const constraints = new TimetableConstraints();
 
   constraints.setStart(data.start);
@@ -23,23 +25,29 @@ export const getAuto = async (data: autoDTO) => {
   constraints.setDays(data.days);
   constraints.setGap(data.gap);
   constraints.setMaxdays(data.maxdays);
-  
-  data.periodInfoList.forEach(thisPeriod => {
+
+  data.periodInfoList.forEach((thisPeriod) => {
     const thisPeriodInfo = new TimetableConstraints.PeriodInfo();
 
-    thisPeriodInfo.setPeriodsperclass(thisPeriod.periodsPerClass)
-    thisPeriodInfo.setPeriodtimesList(thisPeriod.periodTimes)
-    thisPeriodInfo.setDurationsList(thisPeriod.durations)
-    
-    constraints.addPeriodinfo(thisPeriodInfo)
-  })
+    thisPeriodInfo.setPeriodsperclass(thisPeriod.periodsPerClass);
+    thisPeriodInfo.setPeriodtimesList(thisPeriod.periodTimes);
+    thisPeriodInfo.setDurationsList(thisPeriod.durations);
+
+    constraints.addPeriodinfo(thisPeriodInfo);
+  });
 
   client.findBestTimetable(constraints, (err, response) => {
     if (err) {
       console.error('error was found: ' + err);
-      throw new HttpException('An error occurred when handling the request.', HttpStatus.BAD_GATEWAY);
+      throw new HttpException(
+        'An error occurred when handling the request.',
+        HttpStatus.BAD_GATEWAY,
+      );
     } else {
-      return JSON.stringify({ given: response.getTimesList(), optimal: response.getOptimal()});
+      return JSON.stringify({
+        given: response.getTimesList(),
+        optimal: response.getOptimal(),
+      });
     }
   });
 };

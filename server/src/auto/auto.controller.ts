@@ -1,7 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AutoService } from './auto.service';
 import { autoDTO } from './dto/auto.dto';
-
 
 @Controller('auto')
 export class AutoController {
@@ -11,8 +18,4 @@ export class AutoController {
   create(@Body() userRequestConstraints: autoDTO) {
     return this.autoService.getAutoTimetable(userRequestConstraints);
   }
-
 }
-
-
-
