@@ -3,5 +3,7 @@ npm-debug.log
 test
 .gitignore
 .prettierrc
+.git
 Dockerfile
 README.md
+dist

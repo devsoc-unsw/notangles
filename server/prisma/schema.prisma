@@ -1,9 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -23,6 +19,16 @@ model User {
   settings       Settings?
   friends        User[]      @relation("UserFriends")
   friendRequests User[]      @relation("UserFriends")
+  groups         Group[]     @relation("GroupMember")
+}
+
+model Group {
+  id             String      @id
+  name           String
+  description    String?
+  isPublic       Boolean
+  timetables     Timetable[] @relation("GroupTimetable")
+  members        User[]      @relation("GroupMember")
 }
 
 model Event {
@@ -38,11 +44,12 @@ model Event {
   end         DateTime
   timetable   Timetable? @relation(fields: [timetableId], references: [id])
   timetableId String?
+  groupId     String?   // Added to link an event to a group
 }
 
 model Class {
   id          String     @unique
-  classType   String // e.g. Lecture, Tutorial, Laboratory, etc. Not putting into enum because there are other whacky classTypes 
+  classType   String     // e.g. Lecture, Tutorial, Laboratory, etc.
   courseName  String?
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
@@ -56,9 +63,9 @@ model Timetable {
   createdEvents   Event[]
   user            User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId          String
+  groups          Group[]  @relation("GroupTimetable")
 }
 
-// Weak entity
 model Settings {
   userId                   String  @unique
   user                     User    @relation(fields: [userId], references: [userId])
@@ -80,5 +87,3 @@ model Session {
   data      String   @db.Text // MediumText may be needed for MySql
   expiresAt DateTime
 }
-
-// future: add settings for individual timetables, rounded corners, show only open classes etc?
