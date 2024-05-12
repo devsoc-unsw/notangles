@@ -4,16 +4,16 @@ services:
     container_name: notangles-server
     image: notangles-server
     restart: always
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     depends_on:
-      - database.notangles-db
+      - database.notangles_db
     ports:
       - '3001:3001'
-    links:
-      - database.notangles-db
 
-  database.notangles-db:
-    container_name: notangles-database
+  database.notangles_db:
+    container_name: notangles_database
     restart: always
     image: postgres:alpine
     ports:
@@ -24,6 +24,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
+
 volumes:
   postgres:
     name: server
