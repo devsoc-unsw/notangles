@@ -7,7 +7,7 @@ import {
   SearchRounded,
   VideocamOutlined,
 } from '@mui/icons-material';
-import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -140,6 +140,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const [selectedFaculty, setSelectedFaculty] = useState<string>('');
+
+  let filters = ["COMP", "ACCT", "LAW", "ELEC"];
+
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -171,6 +175,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    */
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
 
+
+  const handleButtonClick = () => {
+    console.log("BUTTON CLICKEDD!!");
+  }
+
   /**
    * @param career The career of the course
    * @returns The shortened career of the course
@@ -189,6 +198,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   // The courses shown when a user clicks on the search bar
   let defaultOptions = coursesList;
+
+
+  // if a school has been selected 
+  // filter by school
+  if (selectedFaculty.length) {
+
+    // If there are courses selected, filter the default options to include courses in the same area of study
+    // defaultOptions = defaultOptions.filter(
+    //   (school) => .includes(getCourseArea(course.code)) && !selectedSchool.includes(school),
+    // );
+  }
+
   if (selectedValue.length) {
     const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
 
@@ -302,6 +323,24 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   return (
     <StyledSelect>
+      {/* <div>
+        <div className='buttons-container'>
+          <button
+            value = {selectedFaculty}
+            onClick={handleButtonClick}
+          >
+          </button>
+        </div>
+        <div className='items'>
+
+        </div>
+
+      </div> */}
+      {/* <Button disableElevation variant="contained" onClick={handleButtonClick}>
+        <Box ml="1px" flexGrow={1} marginTop="3px">
+          TEST
+        </Box>
+      </Button> */}
       <Autocomplete
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
@@ -399,6 +438,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           ))
         }
       />
+      <div>
+        <button onClick={() => handleButtonClick}>Engineering</button>
+        <button onClick={() => handleButtonClick}>Medicine</button>
+        <button onClick={() => handleButtonClick}>Architecture</button>
+        <button onClick={() => handleButtonClick}>Law</button>
+        <button onClick={() => handleButtonClick}>Arts</button>
+      </div>
     </StyledSelect>
   );
 };
