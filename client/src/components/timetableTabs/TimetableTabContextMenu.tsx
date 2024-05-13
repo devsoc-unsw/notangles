@@ -104,6 +104,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newDisplayTimetables);
+
       // Destructure and rename (for clarity, do not shadow context variables)
       const {
         selectedCourses: newCourses,
