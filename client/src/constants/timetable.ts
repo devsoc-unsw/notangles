@@ -59,15 +59,15 @@ export const getAvailableTermDetails = async () => {
   };
 
   try {
-    // notangles api gets the latest term start date available from the scraper
-    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
+    // get the latest/new term start date available from the scraper
+    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availablestartdate`));
     const termDateRes = await termDateFetch.text();
 
     const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
     const termIdRes = await termIdFetch.text();
 
-    // freerooms api gets the current term date and not the new term date
-    const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/freerooms`));
+    // get the current/previous term date
+    const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentstartdate`));
     const prevTermRes = await prevTermDate.text();
 
     const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
