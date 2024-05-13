@@ -23,7 +23,12 @@ const StyledTypography = styled(Typography)`
 `;
 
 const ShowModalButton = styled(IconButton)`
-  margin-right: 5px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  border-radius: 8px;
+  justify-content: flex-start;
+  padding: 12px 12px 12px 12px;
 `;
 
 const StyledDialogContent = styled(DialogContent)`
@@ -31,7 +36,12 @@ const StyledDialogContent = styled(DialogContent)`
   padding: 20px;
 `;
 
-const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description, content }) => {
+const IndividualComponentTypography = styled(Typography)`
+  margin: 0px;
+  fontsize: 16px;
+`;
+
+const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description, content, collapsed }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
@@ -43,6 +53,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description,
       <Tooltip title={title}>
         <ShowModalButton color="inherit" onClick={toggleIsOpen}>
           {showIcon}
+          <IndividualComponentTypography>{collapsed ? "" : title}</IndividualComponentTypography>
         </ShowModalButton>
       </Tooltip>
       <Dialog

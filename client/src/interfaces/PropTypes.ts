@@ -17,6 +17,7 @@ export interface CustomModalProps {
   showIcon: ReactNode;
   description: string;
   content: ReactNode;
+  collapsed: boolean;
 }
 
 export interface CourseSelectProps {
