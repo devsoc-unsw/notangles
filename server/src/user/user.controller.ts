@@ -1,6 +1,6 @@
 import { Controller, Get, Put, Param, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EventDto, SettingsDto, TimetableDto, UserDTO } from './dto';
+import { ClassDto, EventDto, SettingsDto, TimetableDto, UserDTO } from './dto';
 
 @Controller('user')
 export class UserController {
@@ -70,10 +70,28 @@ export class UserController {
     // @Body('timetableId') timetableId: string,
     @Body('userId') userId: string,
     @Body('selectedCourses') selectedCourses: string[],
-    @Body('selectedClasses') selectedClasses: any[], // change type later
+    @Body('selectedClasses') selectedClasses: ClassDto[], // change type later
     @Body('createdEvents') createdEvents: EventDto[],
+    @Body('timetableName') timetableName?: string,
   ) {
-    console.log(selectedCourses, selectedClasses, createdEvents);
+    try {
+      return this.userService
+        .createUserTimetable(
+          userId,
+          selectedCourses,
+          selectedClasses,
+          createdEvents,
+          timetableName,
+        )
+        .then((res) => {
+          return {
+            status: 'Successfully found user and created their new timetable!',
+            data: res,
+          };
+        });
+    } catch (e) {
+      return e;
+    }
   }
 
   @Put('timetable')

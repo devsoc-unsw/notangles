@@ -12,10 +12,20 @@ export class TimetableDto {
   events: EventDto[];
 }
 
+export class ClassDto {
+  // id: string;
+  classType: string;
+  courseName?: string;
+  // timetableId?: string;
+}
+
 export class EventDto {
   id: string; // Frontend generated event id
   name: string;
   location: string;
   description: string;
   colour: string;
+  day: string;
+  start: Date;
+  end: Date;
 }
