@@ -99,6 +99,17 @@ export class UserController {
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
-    console.log(userId, timetable);
+    try {
+      return this.editUserTimetable(userId, timetable).then((res) => {
+        return {
+          status: 'Successfully Edited timetable',
+          data: {
+            id: res,
+          },
+        };
+      });
+    } catch (e) {
+      return e;
+    }
   }
 }

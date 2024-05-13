@@ -8,15 +8,16 @@ export class TimetableDto {
   @IsArray()
   @IsString({ each: true })
   selectedCourses: string[];
-
+  selectedClasses: ClassDto[];
   events: EventDto[];
+  name?: string;
 }
 
 export class ClassDto {
-  // id: string;
+  id?: string; // TODO: double check (currently optional, if generated on the backend during creation of timetable)
   classType: string;
   courseName?: string;
-  // timetableId?: string;
+  timetableId?: string;
 }
 
 export class EventDto {
