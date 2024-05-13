@@ -14,6 +14,7 @@ services:
 
   database.notangles-db:
     container_name: notangles-database
+    hostname: notangles_database
     restart: always
     image: postgres:alpine
     ports:

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SettingsDto, UserDTO, EventDto, TimetableDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaService();
 @Injectable()
@@ -40,6 +41,32 @@ export class UserService {
     }
   }
 
+  async setUserProfile(
+    _userId: string,
+    _email: string,
+    _firstName?: string,
+    _lastName?: string,
+  ): Promise<any> {
+    try {
+      const test = {
+        userId: _userId,
+        firstname: _firstName,
+        lastname: _lastName,
+        email: _email,
+      };
+
+      return Promise.resolve(
+        prisma.user.upsert({
+          where: {
+            userId: _userId,
+          },
+          create: test,
+          update: test,
+        }),
+      );
+    } catch (e) {}
+  }
+
   async getUserSettings(_userId: string): Promise<SettingsDto> {
     try {
       const settings = await prisma.settings.findUniqueOrThrow({
@@ -52,7 +79,24 @@ export class UserService {
     }
   }
 
-  setUserSettings(userId: string, setting: SettingsDto): void {}
+  async setUserSettings(
+    _userId: string,
+    setting: SettingsDto,
+  ): Promise<SettingsDto> {
+    try {
+      return Promise.resolve(
+        prisma.settings.upsert({
+          where: {
+            userId: _userId,
+          },
+          create: { userId: _userId, ...setting },
+          update: setting,
+        }),
+      );
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 
   async getUserTimetables(_userId: string): Promise<TimetableDto[]> {
     try {
@@ -76,11 +120,24 @@ export class UserService {
   }
 
   createUserTimetable(
-    timetableId: string,
     selectedCourses: string[],
     selectedClasses: any[],
     createdEvents: EventDto[],
-  ): void {}
+  ): void {
+    // try {
+    //   // Generate random timetable id
+    //   const timetableId = uuidv4();
+    //   const res = await prisma.timetable.create({
+    //     data: {
+    //       id: timetableId,
+    //       name: 'default', // Probably need this as a parameter
+    //       selectedCourses: '',
+    //     },
+    //   });
+    // } catch (e) {
+    //   throw new Error(e);
+    // }
+  }
 
   editUserTimetable(userId: string, timetable: TimetableDto): void {}
 }
