@@ -1,22 +1,34 @@
 import { FormControl, InputLabel, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
+import { borderColor, styled } from '@mui/system';
 import React, { useContext } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
-const StyledSelect = styled(Select)(({ theme }) => ({
+const StyledInputLabel = styled(InputLabel)(() => ({
+  '&.Mui-focused': {
+    color: 'white',
+  },
+}));
+
+const StyledSelect = styled(Select)(() => ({
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: 'white',
   },
   '.MuiSelect-icon': {
     color: 'white',
   },
-  '&:focus': {
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white',
+  '& .MuiSelect-select': {
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'red',
     },
+  },
+  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'white',
+  },
+  '&:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'white',
   },
 }));
 
@@ -68,9 +80,9 @@ const TermSelect: React.FC = () => {
 
   return (
     <FormControl sx={{ paddingRight: '15px' }}>
-      <InputLabel id="select-term-label" sx={{ color: 'white' }}>
+      <StyledInputLabel id="select-term-label" sx={{ color: 'white' }}>
         Select term
-      </InputLabel>
+      </StyledInputLabel>
       <StyledSelect
         size="small"
         labelId="select-term-label"
