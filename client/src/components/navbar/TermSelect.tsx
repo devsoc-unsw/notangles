@@ -19,11 +19,6 @@ const StyledSelect = styled(Select)(() => ({
   '.MuiSelect-icon': {
     color: 'white',
   },
-  '& .MuiSelect-select': {
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'red',
-    },
-  },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
     borderColor: 'white',
   },
