@@ -1,4 +1,12 @@
-import { Controller, Get, Put, Param, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Param,
+  Post,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ClassDto, EventDto, SettingsDto, TimetableDto, UserDTO } from './dto';
 
@@ -113,10 +121,27 @@ export class UserController {
     @Body('timetable') timetable: TimetableDto,
   ) {
     try {
-      return this.editUserTimetable(userId, timetable).then((id) => {
+      return this.userService
+        .editUserTimetable(userId, timetable)
+        .then((id) => {
+          return {
+            status: 'Successfully edited timetable',
+            data: { id },
+          };
+        });
+    } catch (e) {
+      return e;
+    }
+  }
+
+  // Note - why do we need userId as a param? https://devsoc.atlassian.net/wiki/spaces/N/pages/1575168/Notangles+API
+  @Delete('timetable/:timetableId')
+  deleteUserTimetable(@Param('timetableId') timetableId: string) {
+    try {
+      return this.userService.deleteUserTimetable(timetableId).then((id) => {
         return {
-          status: 'Successfully Edited timetable',
-          data: { id },
+          status: 'Successfully deleted timetable',
+          data: { timetableId: id },
         };
       });
     } catch (e) {

@@ -265,4 +265,18 @@ export class UserService {
       throw new Error(e);
     }
   }
+
+  async deleteUserTimetable(_timetableId: string): Promise<string> {
+    try {
+      await prisma.timetable.delete({
+        where: {
+          id: _timetableId,
+        },
+      });
+
+      return Promise.resolve(_timetableId);
+    } catch (e) {
+      throw new Error(_timetableId);
+    }
+  }
 }
