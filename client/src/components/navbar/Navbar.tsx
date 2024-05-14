@@ -119,7 +119,7 @@ const Navbar: React.FC = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [collapsed, setCollapsed] = useState(true);
-  const ref = useRef<HTMLDivElement>(null);
+  // const ref = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
