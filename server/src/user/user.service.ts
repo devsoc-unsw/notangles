@@ -74,7 +74,7 @@ export class UserService {
 
   async getUserSettings(_userId: string): Promise<SettingsDto> {
     try {
-      const settings = await prisma.settings.findUniqueOrThrow({
+      const { userId, ...settings } = await prisma.settings.findUniqueOrThrow({
         where: { userId: _userId },
       });
 

@@ -43,7 +43,12 @@ export class UserController {
 
   @Get('settings/:userId')
   getUserSettings(@Param('userId') userId: string) {
-    return this.userService.getUserSettings(userId);
+    return this.userService.getUserSettings(userId).then((data) => {
+      return {
+        status: 'Successfully found user and their settings!',
+        data,
+      };
+    });
   }
 
   @Put('settings')
