@@ -15,7 +15,7 @@ import Navbar from './components/navbar/Navbar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, lightTheme, leftContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -48,8 +48,8 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 64px; // for nav bar
-  padding-left: ${contentPadding}px;
+  padding-top: ${contentPadding}px;
+  padding-left: ${leftContentPadding}px;
   padding-right: ${contentPadding}px;
   transition:
     background 0.2s,

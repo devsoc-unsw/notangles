@@ -79,8 +79,9 @@ const FooterInfo: React.FC = () => {
   };
 
   return (
-    <Grid container spacing={0} style={{ textAlign: 'left', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Grid item xs={6}>
+    // <Grid container spacing={0} style={{ textAlign: 'left', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Grid>
+      {/* <Grid item xs={6}>
         <Stack direction="column" spacing={2}>
           <Stack direction="row" alignItems="center">
             <NotanglesLogoImg
@@ -101,9 +102,9 @@ const FooterInfo: React.FC = () => {
             timetables, and sharing events with friends.
           </BodyText>
         </Stack>
-      </Grid>
+      </Grid> */}
       <Grid item xs={5}>
-        <TitleText>Disclaimer</TitleText>
+        {/* <TitleText>Disclaimer</TitleText> */}
         <BodyText>
           While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
           reliability.

@@ -20,9 +20,9 @@ const Footer: React.FC = () => {
   return (
     <FooterContainer>
       <Stack spacing={4}>
-        <Divider />
+        {/* <Divider /> 
         <FooterInfo />
-        <Divider />
+        <Divider /> */}
         <FooterLinks />
       </Stack>
     </FooterContainer>
