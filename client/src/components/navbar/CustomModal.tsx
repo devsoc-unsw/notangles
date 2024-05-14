@@ -50,7 +50,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description,
 
   return (
     <>
-      <Tooltip title={title}>
+      <Tooltip title={collapsed ? title : ""} placement='right'>
         <ShowModalButton color="inherit" onClick={toggleIsOpen}>
           {showIcon}
           <IndividualComponentTypography>{collapsed ? "" : title}</IndividualComponentTypography>

@@ -19,7 +19,7 @@ const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
   margin-top: -2px;
-  margin-left: -11.5px;
+  margin-left: -5.5px;
 `;
 
 const NavbarBox = styled('div')`
@@ -123,7 +123,6 @@ const Navbar: React.FC = () => {
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
-    console.log(collapsed);
   };
 
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
