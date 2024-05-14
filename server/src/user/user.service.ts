@@ -8,16 +8,18 @@ const prisma = new PrismaService();
 export class UserService {
   async getUserInfo(_userId: string): Promise<UserDTO> {
     try {
-      const { userId, ...userData } = await prisma.user.findUniqueOrThrow({
-        where: { userId: _userId },
-        include: {
-          timetable: {
-            include: {
-              createdEvents: true,
+      const { userId, timetable, ...userData } =
+        await prisma.user.findUniqueOrThrow({
+          where: { userId: _userId },
+          include: {
+            timetable: {
+              include: {
+                createdEvents: true,
+                selectedClasses: true,
+              },
             },
           },
-        },
-      });
+        });
 
       const data = {
         ...userData,
@@ -26,9 +28,12 @@ export class UserService {
         lastLogin: userData.lastLogin.toISOString(),
         loggedIn: true, // Change this later
         friends: [], // Need to add friends relation to the DB
-        timetables: userData.timetable.map((t) => {
+        // Annnoying that the DTO and the schema have differently named fields so have to do this
+        timetables: timetable.map((t) => {
           return {
+            name: t.name,
             timetableId: t.id,
+            selectedClasses: t.selectedClasses,
             selectedCourses: t.selectedCourses,
             events: t.createdEvents,
           };

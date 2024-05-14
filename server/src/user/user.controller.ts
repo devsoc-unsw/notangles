@@ -9,7 +9,12 @@ export class UserController {
   @Get('profile/:userId')
   getUserInfo(@Param('userId') userId: string) {
     try {
-      return this.userService.getUserInfo(userId);
+      return this.userService.getUserInfo(userId).then((data) => {
+        return {
+          status: 'Successsfully returned user profile',
+          data,
+        };
+      });
     } catch (e) {
       return e;
     }
@@ -48,10 +53,10 @@ export class UserController {
     @Body('setting') setting: any, //SettingsDto, // This aint working - temp solution, should try transforming this class
   ) {
     try {
-      return this.userService.setUserSettings(userId, setting).then((res) => {
+      return this.userService.setUserSettings(userId, setting).then((data) => {
         return {
           status: 'Successfully edited user settings!',
-          data: res,
+          data,
         };
       });
     } catch (e) {
@@ -100,12 +105,10 @@ export class UserController {
     @Body('timetable') timetable: TimetableDto,
   ) {
     try {
-      return this.editUserTimetable(userId, timetable).then((res) => {
+      return this.editUserTimetable(userId, timetable).then((id) => {
         return {
           status: 'Successfully Edited timetable',
-          data: {
-            id: res,
-          },
+          data: { id },
         };
       });
     } catch (e) {
