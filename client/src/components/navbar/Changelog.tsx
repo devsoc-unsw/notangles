@@ -15,6 +15,10 @@ type Change = { date: string; changes: string[] };
 
 const changelog: Change[] = [
   {
+    date: 'May 14, 2024',
+    changes: ['Users can access data across multiple terms'],
+  },
+  {
     date: 'February 16, 2024',
     changes: ['Footer redesign with icons and sponsor logos'],
   },
