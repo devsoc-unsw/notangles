@@ -71,9 +71,12 @@ export class UserController {
 
   @Get('timetable/:userId')
   getUserTimetables(@Param('userId') userId: string) {
-    return null;
+    return this.userService.getUserTimetables(userId).then((data) => {
+      return { status: `Successfully found user's timetable`, data };
+    });
   }
 
+  // Could look to change params to just TimetableDTO (this would involve making timetableId optional - is this desired?)
   @Post('timetable')
   createUserTimetable(
     // Isn't this one randomly generated?

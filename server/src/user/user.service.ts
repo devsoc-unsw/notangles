@@ -115,7 +115,13 @@ export class UserService {
 
       // Destructure timetables object to make it easier to work with
       const timetables = res.map((t) => {
-        return { ...t, timetableId: t.id, events: t.createdEvents };
+        // Again, we should look into renaming events to createEvents to make this easier
+        const { id, createdEvents, ...otherTimetableProps } = t;
+        return {
+          ...otherTimetableProps,
+          timetableId: id,
+          events: createdEvents,
+        };
       });
 
       return Promise.resolve(timetables);
