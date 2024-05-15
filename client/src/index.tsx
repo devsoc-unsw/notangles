@@ -8,10 +8,10 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import App from './App';
+import EventShareModal from './components/EventShareModal';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import * as swRegistration from './serviceWorkerRegistration';
-import EventShareModal from './components/EventShareModal';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
