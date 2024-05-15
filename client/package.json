@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@date-io/date-fns": "2.17.0",
-<<<<<<< HEAD
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@fontsource-variable/roboto-flex": "5.0.8",
@@ -31,20 +30,6 @@
     "@sentry/node": "7.84.0",
     "@sentry/react": "7.84.0",
     "@sentry/tracing": "7.84.0",
-=======
-    "@emotion/react": "11.11.4",
-    "@emotion/styled": "11.11.5",
-    "@fontsource-variable/roboto-flex": "5.0.15",
-    "@mui/icons-material": "5.15.17",
-    "@mui/lab": "5.0.0-alpha.170",
-    "@mui/material": "5.15.17",
-    "@mui/system": "5.15.15",
-    "@mui/x-date-pickers": "6.19.9",
-    "@sentry/browser": "7.114.0",
-    "@sentry/node": "7.114.0",
-    "@sentry/react": "7.114.0",
-    "@sentry/tracing": "7.114.0",
->>>>>>> b974aff913f9f7d77292a04860204e11763bf2ee
     "@uiw/react-color": "2.1.1",
     "date-fns": "2.30.0",
     "dayjs": "1.11.11",
