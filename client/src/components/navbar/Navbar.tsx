@@ -4,7 +4,6 @@ import { fontWeight, styled } from '@mui/system';
 import React, { useState, useRef, useContext } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
 import FooterInfo from '../footer/FooterInfo';
-import Cog6ToothIcon from '@heroicons/react/24/outline';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { ThemeType } from '../../constants/theme';
@@ -110,7 +109,7 @@ const Navbar: React.FC = () => {
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
-
+  
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
   return (
@@ -131,7 +130,7 @@ const Navbar: React.FC = () => {
           ) : (
             <>
               Notangles
-              <Weak>{isMobile ? term : termName.concat(', ', year)}</Weak>
+              <Weak>{termName.concat(', ', year)}</Weak>
             </>
           )}
         </NavbarTitle>
