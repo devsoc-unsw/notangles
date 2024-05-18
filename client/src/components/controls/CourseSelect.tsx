@@ -136,14 +136,21 @@ const Career = styled('div')`
   opacity: 0.6;
 `;
 
+const FacultyButtonsContainer = styled('div')`
+  display: flex;
+  margin: ${({ theme }) => theme.spacing(2, 0)};
+  width: 100%;
+`;
+
+
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
 
-  let filters = ["COMP", "ACCT", "LAW", "ELEC"];
-
+  // test faculties
+  const faculties = ["Art", "Law", "Medicine", "Engineering"];
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -175,15 +182,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    */
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
 
+  const handleFacultyClick = (faculty: string) => {
+    setSelectedFaculty(faculty);
+    // const filteredOptions = coursesList.filter((option) => option.faculty === faculty);
+    // setOptions(filteredOptions);
+    console.log("HEYY");
+  };
 
-  const handleButtonClick = () => {
-    console.log("BUTTON CLICKEDD!!");
-  }
-
-  /**
-   * @param career The career of the course
-   * @returns The shortened career of the course
-   */
   const getCourseCareer = (career: string) => {
     if (career === 'Undergraduate') {
       return 'UGRD';
@@ -199,15 +204,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   // The courses shown when a user clicks on the search bar
   let defaultOptions = coursesList;
 
-
-  // if a school has been selected 
-  // filter by school
-  if (selectedFaculty.length) {
-
-    // If there are courses selected, filter the default options to include courses in the same area of study
-    // defaultOptions = defaultOptions.filter(
-    //   (school) => .includes(getCourseArea(course.code)) && !selectedSchool.includes(school),
-    // );
+  if (selectedFaculty) {
+    defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
   }
 
   if (selectedValue.length) {
@@ -230,7 +228,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   useEffect(() => {
     setOptions(defaultOptions);
-  }, [coursesList]);
+  }, [coursesList, selectedFaculty]);
 
   /**
    * Filters the list of courses to only include the ones matching the search term
@@ -295,6 +293,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
       return (
         <ListboxContainer ref={ref}>
+          <FacultyButtonsContainer>
+            {faculties.map((faculty, index) => (
+              <Button
+                key={index}
+                onClick={() => handleFacultyClick(faculty)}
+                style={{
+                  margin: '5px',
+                  padding: '10px 20px',
+                  backgroundColor: selectedFaculty === faculty ? 'lightblue' : 'white',
+                  border: '1px solid #ccc',
+                  cursor: 'pointer',
+                }}
+              >
+                {faculty}
+              </Button>
+            ))}
+          </FacultyButtonsContainer>
           <OuterElementContext.Provider value={other}>
             <VariableSizeList
               ref={listRef}
@@ -314,7 +329,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    [],
+    [selectedFaculty],
   );
 
   const theme = useTheme<ThemeType>();
@@ -323,24 +338,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   return (
     <StyledSelect>
-      {/* <div>
-        <div className='buttons-container'>
-          <button
-            value = {selectedFaculty}
-            onClick={handleButtonClick}
-          >
-          </button>
-        </div>
-        <div className='items'>
-
-        </div>
-
-      </div> */}
-      {/* <Button disableElevation variant="contained" onClick={handleButtonClick}>
-        <Box ml="1px" flexGrow={1} marginTop="3px">
-          TEST
-        </Box>
-      </Button> */}
       <Autocomplete
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
@@ -438,13 +435,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           ))
         }
       />
-      <div>
-        <button onClick={() => handleButtonClick}>Engineering</button>
-        <button onClick={() => handleButtonClick}>Medicine</button>
-        <button onClick={() => handleButtonClick}>Architecture</button>
-        <button onClick={() => handleButtonClick}>Law</button>
-        <button onClick={() => handleButtonClick}>Arts</button>
-      </div>
     </StyledSelect>
   );
 };
