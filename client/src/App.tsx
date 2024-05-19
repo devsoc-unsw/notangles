@@ -593,7 +593,7 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <Sidebar />
+            <Sidebar isDarkMode={isDarkMode}/>
             <ContentWrapper>
               <Content>
                 <Controls

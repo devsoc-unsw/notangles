@@ -8,22 +8,22 @@ import { CourseContext } from '../../context/CourseContext';
 
 const StyledInputLabel = styled(InputLabel)(() => ({
   '&.Mui-focused': {
-    color: 'white',
+    color: '#3323e4d',
   },
 }));
 
 const StyledSelect = styled(Select)(() => ({
   '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: '#3323e4d',
   },
   '.MuiSelect-icon': {
-    color: 'white',
+    color: '#3323e4d',
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: '#3323e4d',
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: '#3323e4d',
   },
 }));
 
@@ -75,14 +75,14 @@ const TermSelect: React.FC = () => {
 
   return (
     <FormControl sx={{ paddingRight: '15px' }}>
-      <StyledInputLabel id="select-term-label" sx={{ color: 'white' }}>
+      <StyledInputLabel id="select-term-label" sx={{ color: '#3323e4d' }}>
         Select term
       </StyledInputLabel>
       <StyledSelect
         size="small"
         labelId="select-term-label"
         id="select-term"
-        sx={{ color: 'white' }}
+        sx={{ color: '#3323e4d' }}
         label="Select term"
         value={isMobile ? term : termName.concat(', ', year)}
         onChange={selectTerm}

@@ -1,11 +1,12 @@
 import { Description, Info, Security, Settings as SettingsIcon, CalendarToday, People } from '@mui/icons-material';
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { fontWeight, styled } from '@mui/system';
+import { GlobalStyles, StyledEngineProvider, ThemeProvider, fontWeight, styled } from '@mui/system';
 import React, { useState, useRef, useContext } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
 import FooterInfo from '../footer/FooterInfo';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
+import { darkTheme, lightTheme } from '../../constants/theme';
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import About from './About';
@@ -14,6 +15,7 @@ import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import Tooltip from './Tooltip';
+import TermSelect from './TermSelect';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -22,26 +24,17 @@ const LogoImg = styled('img')`
   margin-left: -5.5px;
 `;
 
-const NavbarBox = styled('div')`
-  flex-grow: 1;
-  position: fixed;
-  margin-left: 0px;
-  z-index: 1201; /* overriding https://material-ui.com/customization/z-index/ */
-`;
-
 const StyledNavBar = styled(AppBar)`
-  background-color: #f8f8f9;
+  background-color: ${({ theme }) => theme.palette.background.paper};
   width: 290px;
   height: 100vh;
-  color: #323e4d;
   left: 0;
 `;
 
 const StyledNavBarCollapsed = styled(AppBar)`
-  background-color: #f8f8f9;
+  background-color: ${({ theme }) => theme.palette.background.paper};
   width: 80px;
   height: 100vh;
-  color: #323e4d;
   left: 0;
 `;
 
@@ -53,16 +46,6 @@ const NavbarTitle = styled(Typography)`
   text-align: center;
   margin-left: -20px;
   align-text: center;
-`;
-
-const Weak = styled('span')`
-  font-weight: 300;
-  opacity: 0.8;
-  font-size: 12px;
-  vertical-align: middle;
-  position: relative;
-  bottom: 1px;
-  z-index: 1201;
 `;
 
 const HeaderContainer = styled('div')`
@@ -99,17 +82,17 @@ const CollapseButton = styled(IconButton)`
   border-radius: 8px;
 `;
 
-const Sidebar: React.FC = () => {
+export interface SidebarProps {
+  isDarkMode: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const { term, termName, year } = useContext(AppContext);
-  const theme = useTheme<ThemeType>();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [collapsed, setCollapsed] = useState(true);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
-  
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
   return (
@@ -130,7 +113,7 @@ const Sidebar: React.FC = () => {
           ) : (
             <>
               Notangles
-              <Weak>{termName.concat(', ', year)}</Weak>
+              {/* <TermSelect /> */}
             </>
           )}
         </NavbarTitle>
@@ -139,7 +122,7 @@ const Sidebar: React.FC = () => {
             <BarsArrowUpIcon
               width={28}
               height={28}
-              color="#323E4D"
+              color="inherit"
               style={{ transform: 'rotate(270deg)' }}
               onClick={() => handleCollapse(true)}
             ></BarsArrowUpIcon>
@@ -182,7 +165,7 @@ const Sidebar: React.FC = () => {
             <BarsArrowUpIcon
               width={28}
               height={28}
-              color="#323E4D"
+              color="inherit"
               style={{ transform: 'rotate(90deg)' }}
               onClick={() => handleCollapse(false)}
             ></BarsArrowUpIcon>
