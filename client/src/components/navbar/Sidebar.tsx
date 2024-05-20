@@ -91,8 +91,24 @@ const Sidebar: React.FC = () => {
 
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setCollapsed(true);
+      }
+    }
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref]);
+
   return (
-    <NavBarComponent>
+    <NavBarComponent ref={ref}>
       <HeaderContainer>
         <a href="/">
           <LogoImg
@@ -102,16 +118,7 @@ const Sidebar: React.FC = () => {
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
         </a>
-        <NavbarTitle variant="h6">
-          {' '}
-          {collapsed ? (
-            ''
-          ) : (
-            <>
-              Notangles
-            </>
-          )}
-        </NavbarTitle>
+        <NavbarTitle variant="h6"> {collapsed ? '' : <>Notangles</>}</NavbarTitle>
         {!collapsed && (
           <CollapseButton>
             <BarsArrowUpIcon
