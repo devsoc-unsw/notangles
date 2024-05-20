@@ -29,6 +29,7 @@ const StyledNavBar = styled(AppBar)`
   width: 290px;
   height: 100vh;
   left: 0;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const StyledNavBarCollapsed = styled(AppBar)`
@@ -93,6 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
+
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
   return (
