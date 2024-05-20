@@ -11,18 +11,30 @@ export class FriendController {
 
   @Post()
   friendUsers(@Body() friendDto: friendDto) {
-    return this.friendService.friendUsers(
-      friendDto.senderId,
-      friendDto.sendeeId,
-    );
+    return this.friendService
+      .friendUsers(friendDto.senderId, friendDto.sendeeId)
+      .then((id) => {
+        return {
+          status: 'Successfully added users as friends!',
+          data: {
+            id,
+          },
+        };
+      });
   }
 
   @Delete()
   unfriendUsers(@Body() friendDTO: friendDto) {
-    return this.friendService.unfriendUsers(
-      friendDTO.senderId,
-      friendDTO.sendeeId,
-    );
+    return this.friendService
+      .unfriendUsers(friendDTO.senderId, friendDTO.sendeeId)
+      .then((id) => {
+        return {
+          status: 'Successfully removed users as friends!',
+          data: {
+            id,
+          },
+        };
+      });
   }
 
   @Post('request')
