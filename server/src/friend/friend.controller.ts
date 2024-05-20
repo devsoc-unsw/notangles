@@ -6,7 +6,12 @@ export class FriendController {
   constructor(private friendService: FriendService) {}
   @Get(':userId')
   findAllFriends(@Param('userId') userId: string) {
-    return this.friendService.findAllFriends(userId);
+    return this.friendService.findAllFriends(userId).then((data) => {
+      return {
+        status: "Found user's friends",
+        data,
+      };
+    });
   }
 
   @Post()

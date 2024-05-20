@@ -4,8 +4,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 const prisma = new PrismaService();
 @Injectable({})
 export class FriendService {
-  findAllFriends(userId: string) {
-    return { friends: 'none tbh.' };
+  async findAllFriends(userId: string) {
+    try {
+      const res = await prisma.user.findUniqueOrThrow({
+        where: { userId },
+        select: {
+          friends: true,
+        },
+      });
+
+      return res.friends;
+    } catch (e) {
+      throw new Error();
+    }
   }
 
   async friendUsers(senderId: string, sendeeId: string): Promise<string> {
