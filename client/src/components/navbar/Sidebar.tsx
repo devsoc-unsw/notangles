@@ -11,8 +11,6 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import Tooltip from './Tooltip';
-import TermSelect from './TermSelect';
 
 const LogoImg = styled('img')`
   height: 46px;
