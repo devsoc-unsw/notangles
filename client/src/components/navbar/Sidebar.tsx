@@ -84,13 +84,12 @@ const CollapseButton = styled(IconButton)`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
-  const ref = useRef<HTMLDivElement>(null);
+
+  const handleCollapse = (val: boolean) => {
+    setCollapsed(val);
+  };
 
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
-
-  function handleCollapse(val: boolean) {
-    setCollapsed(val);
-  }
 
   return (
     <NavBarComponent>
