@@ -1,14 +1,11 @@
-import { Description, Info, Security, Settings as SettingsIcon, CalendarToday, People } from '@mui/icons-material';
-import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { GlobalStyles, StyledEngineProvider, ThemeProvider, fontWeight, styled } from '@mui/system';
-import React, { useState, useRef, useContext } from 'react';
+import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/system';
+import React, { useState, useRef, useEffect } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
 import FooterInfo from '../footer/FooterInfo';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
-import { darkTheme, lightTheme } from '../../constants/theme';
-import { ThemeType } from '../../constants/theme';
-import { AppContext } from '../../context/AppContext';
 import About from './About';
 import Changelog from './Changelog';
 import CustomModal from './CustomModal';
@@ -29,6 +26,7 @@ const StyledNavBar = styled(AppBar)`
   width: 290px;
   height: 100vh;
   left: 0;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const StyledNavBarCollapsed = styled(AppBar)`
@@ -36,6 +34,7 @@ const StyledNavBarCollapsed = styled(AppBar)`
   width: 80px;
   height: 100vh;
   left: 0;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const NavbarTitle = styled(Typography)`
@@ -82,18 +81,16 @@ const CollapseButton = styled(IconButton)`
   border-radius: 8px;
 `;
 
-export interface SidebarProps {
-  isDarkMode: boolean;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
+const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const handleCollapse = (val: boolean) => {
-    setCollapsed(val);
-  };
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
+
+  function handleCollapse(val: boolean) {
+    setCollapsed(val);
+  }
 
   return (
     <NavBarComponent>
@@ -113,7 +110,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isDarkMode }) => {
           ) : (
             <>
               Notangles
-              {/* <TermSelect /> */}
             </>
           )}
         </NavbarTitle>
