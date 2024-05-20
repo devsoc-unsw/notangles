@@ -37,6 +37,7 @@ const StyledNavBarCollapsed = styled(AppBar)`
   width: 80px;
   height: 100vh;
   left: 0;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const NavbarTitle = styled(Typography)`
