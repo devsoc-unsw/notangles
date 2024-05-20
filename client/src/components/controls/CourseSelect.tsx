@@ -7,7 +7,7 @@ import {
   SearchRounded,
   VideocamOutlined,
 } from '@mui/icons-material';
-import { Autocomplete, Box, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -136,10 +136,21 @@ const Career = styled('div')`
   opacity: 0.6;
 `;
 
+const FacultyButtonsContainer = styled('div')`
+  display: flex;
+  margin: ${({ theme }) => theme.spacing(2, 0)};
+  width: 100%;
+`;
+
+
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const [selectedFaculty, setSelectedFaculty] = useState<string>('');
+
+  // test faculties
+  const faculties = ["Art", "Law", "Medicine", "Engineering"];
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -171,10 +182,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    */
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
 
-  /**
-   * @param career The career of the course
-   * @returns The shortened career of the course
-   */
+  const handleFacultyClick = (faculty: string) => {
+    setSelectedFaculty(faculty);
+    // const filteredOptions = coursesList.filter((option) => option.faculty === faculty);
+    // setOptions(filteredOptions);
+    console.log("HEYY");
+  };
+
   const getCourseCareer = (career: string) => {
     if (career === 'Undergraduate') {
       return 'UGRD';
@@ -189,6 +203,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   // The courses shown when a user clicks on the search bar
   let defaultOptions = coursesList;
+
+  if (selectedFaculty) {
+    defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
+  }
+
   if (selectedValue.length) {
     const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
 
@@ -209,7 +228,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   useEffect(() => {
     setOptions(defaultOptions);
-  }, [coursesList]);
+  }, [coursesList, selectedFaculty]);
 
   /**
    * Filters the list of courses to only include the ones matching the search term
@@ -274,6 +293,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
       return (
         <ListboxContainer ref={ref}>
+          <FacultyButtonsContainer>
+            {faculties.map((faculty, index) => (
+              <Button
+                key={index}
+                onClick={() => handleFacultyClick(faculty)}
+                style={{
+                  margin: '5px',
+                  padding: '10px 20px',
+                  backgroundColor: selectedFaculty === faculty ? 'lightblue' : 'white',
+                  border: '1px solid #ccc',
+                  cursor: 'pointer',
+                }}
+              >
+                {faculty}
+              </Button>
+            ))}
+          </FacultyButtonsContainer>
           <OuterElementContext.Provider value={other}>
             <VariableSizeList
               ref={listRef}
@@ -293,7 +329,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    [],
+    [selectedFaculty],
   );
 
   const theme = useTheme<ThemeType>();
