@@ -11,6 +11,7 @@ import Changelog from './Changelog';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
+import TermSelect from './TermSelect';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -57,7 +58,7 @@ const HeaderContainer = styled('div')`
 const SideBarContainer = styled('div')`
   display: flex;
   flex-direction: column;
-  padding: 8px 16px 20px 16px;
+  padding: 20px 16px 20px 16px;
   height: 100%;
 `;
 
@@ -71,17 +72,20 @@ const NavBarFooter = styled('div')`
   display: flex;
   flex-direction: column;
   margin-top: 16px;
-  gap: 16px;
+  gap: 12px;
   font-size: 0.8rem;
 `;
 
 const CollapseButton = styled(IconButton)`
   border-radius: 8px;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
+  const ref = useRef<HTMLDivElement>(null);
+  const termSelectRef = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -89,14 +93,12 @@ const Sidebar: React.FC = () => {
 
   const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
-  const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    function handleClickOutside(event: any) {
+    const handleClickOutside = (event: any) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setCollapsed(true);
       }
-    }
+    };
     // Bind the event listener
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -106,7 +108,8 @@ const Sidebar: React.FC = () => {
   }, [ref]);
 
   return (
-    <NavBarComponent ref={ref}>
+    // <NavBarComponent ref={ref}>
+    <NavBarComponent>
       <HeaderContainer>
         <a href="/">
           <LogoImg
@@ -122,7 +125,6 @@ const Sidebar: React.FC = () => {
             <BarsArrowUpIcon
               width={28}
               height={28}
-              color="inherit"
               style={{ transform: 'rotate(270deg)' }}
               onClick={() => handleCollapse(true)}
             ></BarsArrowUpIcon>
@@ -131,6 +133,7 @@ const Sidebar: React.FC = () => {
       </HeaderContainer>
       <SideBarContainer>
         <NavComponentsContainer>
+          <TermSelect collapsed={collapsed} />
           <CustomModal
             title="About"
             showIcon={<Info />}
@@ -165,7 +168,6 @@ const Sidebar: React.FC = () => {
             <BarsArrowUpIcon
               width={28}
               height={28}
-              color="inherit"
               style={{ transform: 'rotate(90deg)' }}
               onClick={() => handleCollapse(false)}
             ></BarsArrowUpIcon>

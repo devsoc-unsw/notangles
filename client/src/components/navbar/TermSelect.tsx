@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { Collapse, FormControl, InputLabel, MenuItem, Select, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { borderColor, styled } from '@mui/system';
 import React, { useContext } from 'react';
 
@@ -27,7 +27,21 @@ const StyledSelect = styled(Select)(() => ({
   },
 }));
 
-const TermSelect: React.FC = () => {
+const Weak = styled('span')`
+  font-weight: 300;
+  opacity: 0.8;
+  margin-left: 15px;
+  font-size: 90%;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+  z-index: 1201;
+`;
+export interface TermSelectProps {
+  collapsed: boolean;
+}
+
+const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -43,7 +57,7 @@ const TermSelect: React.FC = () => {
 
   let newTermName = `Term ${termsData.newTerm.term[1]}`;
   if (newTermName.includes('Summer')) {
-    newTermName = 'Summer Term';
+    newTermName ='Summer Term';
   }
 
   const termData = new Set([
@@ -74,27 +88,35 @@ const TermSelect: React.FC = () => {
   };
 
   return (
-    <FormControl sx={{ paddingRight: '15px' }}>
-      <StyledInputLabel id="select-term-label" sx={{ color: '#3323e4d' }}>
-        Select term
-      </StyledInputLabel>
-      <StyledSelect
-        size="small"
-        labelId="select-term-label"
-        id="select-term"
-        sx={{ color: '#3323e4d' }}
-        label="Select term"
-        value={isMobile ? term : termName.concat(', ', year)}
-        onChange={selectTerm}
-      >
-        {Array.from(termData).map((term, index) => {
-          return (
-            <MenuItem key={index} value={term}>
-              {term}
-            </MenuItem>
-          );
-        })}
-      </StyledSelect>
+    <FormControl sx={{ width: '100%' }}>
+      {collapsed ? (
+        <>
+          <Weak>{term}</Weak>
+        </>
+      ) : (
+        <>
+          <StyledInputLabel id="select-term-label" sx={{ color: '#3323e4d' }}>
+            Select term
+          </StyledInputLabel>
+          <StyledSelect
+            size="small"
+            labelId="select-term-label"
+            id="select-term"
+            sx={{ color: '#3323e4d' }}
+            label="Select term"
+            value={isMobile ? term : termName.concat(', ', year)}
+            onChange={selectTerm}
+          >
+            {Array.from(termData).map((term, index) => {
+              return (
+                <MenuItem key={index} value={term}>
+                  {term}
+                </MenuItem>
+              );
+            })}
+          </StyledSelect>
+        </>
+      )}
     </FormControl>
   );
 };
