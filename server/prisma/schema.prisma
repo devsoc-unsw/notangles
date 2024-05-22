@@ -21,8 +21,11 @@ model User {
   profileURL     String?
   timetable      Timetable[]
   settings       Settings?
-  friends        User[]      @relation("UserFriends")
-  friendRequests User[]      @relation("UserFriends")
+  friends        User[]      @relation(name: "UserFriends")
+  friendOf       User[]      @relation(name: "UserFriends")
+  outgoing       User[]      @relation(name: "FriendRequests")
+  incoming       User[]      @relation(name: "FriendRequests")
+
 }
 
 model Event {

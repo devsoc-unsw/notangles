@@ -15,7 +15,7 @@ export class FriendService {
 
       return res.friends;
     } catch (e) {
-      throw new Error();
+      throw new Error(e);
     }
   }
 
@@ -94,11 +94,77 @@ export class FriendService {
     }
   }
 
-  sendFriendRequest(senderId: string, sendeeId: string) {
-    return { senderId, sendeeId };
+  // Note: This can also serve as accepting a friend req (lmk if we should decouple these functions)
+  async sendFriendRequest(senderId: string, sendeeId: string) {
+    // Again, how defensive should we be (could potentially add blocking friend reqs to already friended users)
+    try {
+      if (senderId === sendeeId) {
+        throw new Error('Cannot friend yourself');
+      }
+
+      // Check if there's corresponding incoming request first
+      const isIncoming = await prisma.user.findFirst({
+        where: {
+          userId: senderId,
+          incoming: {
+            some: {
+              userId: sendeeId,
+            },
+          },
+        },
+      });
+
+      let status;
+      // If so, we can just friend them
+      if (isIncoming) {
+        // Reversed order because the current sender has an incoming req, so they are the "sendee" of that transaction
+        await this.deleteFriendRequest(sendeeId, senderId);
+        await this.friendUsers(senderId, sendeeId);
+        status = 'Successfully accepted friend request';
+      } else {
+        // Else, send outgoing friend request
+        await prisma.user.update({
+          where: {
+            userId: senderId,
+          },
+          data: {
+            outgoing: {
+              connect: {
+                userId: sendeeId,
+              },
+            },
+          },
+        });
+        status = 'Successfully sent friend request';
+      }
+
+      return Promise.resolve({
+        status,
+        sendeeId,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  deleteFriendRequest(requestId: string) {
-    return { requestId };
+  // sendee = receiver = incoming (f-req is coming into the sendee, so sendee is the id of user who made this api req)
+  async deleteFriendRequest(senderId: string, sendeeId: string) {
+    try {
+      await prisma.user.update({
+        where: {
+          userId: sendeeId,
+        },
+        data: {
+          incoming: {
+            disconnect: {
+              userId: senderId,
+            },
+          },
+        },
+      });
+      return Promise.resolve(senderId);
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { friendDto, friendRequestDto } from './dto';
+import { friendDto } from './dto';
 import { FriendService } from './friend.service';
 @Controller('friend')
 export class FriendController {
@@ -15,9 +15,9 @@ export class FriendController {
   }
 
   @Post()
-  friendUsers(@Body() friendDto: friendDto) {
+  friendUsers(@Body() friendDTO: friendDto) {
     return this.friendService
-      .friendUsers(friendDto.senderId, friendDto.sendeeId)
+      .friendUsers(friendDTO.senderId, friendDTO.sendeeId)
       .then((id) => {
         return {
           status: 'Successfully added users as friends!',
@@ -51,7 +51,16 @@ export class FriendController {
   }
 
   @Delete('request')
-  deleteFriendRequest(@Body() friendRequestDto: friendRequestDto) {
-    return this.friendService.deleteFriendRequest(friendRequestDto.requestId);
+  deleteFriendRequest(@Body() friendDTO: friendDto) {
+    return this.friendService
+      .deleteFriendRequest(friendDTO.senderId, friendDTO.sendeeId)
+      .then((id) => {
+        return {
+          status: 'Successfully rejected friend request!',
+          data: {
+            id,
+          },
+        };
+      });
   }
 }
