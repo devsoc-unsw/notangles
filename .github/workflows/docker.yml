@@ -114,12 +114,24 @@ jobs:
         run: |
           git config user.name "CSESoc CD"
           git config user.email "technical@csesoc.org.au"
-          git checkout -b update/notangles/${{ github.sha }}
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles/deploy-frontend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles/deploy-backend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles/deploy-auto-timetabler.yml
-          git add . 
-          git commit -m "feat(notangles): update images" 
-          git push -u origin update/notangles/${{ github.sha }}
-          gh pr create -B migration --title "feat(notangles): update images" --body "Updates the images for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
+          
+          if [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            git checkout -b update/notanglesstaging/${{ github.sha }}
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles-staging/deploy-frontend.yml
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles-staging/deploy-backend.yml
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles-staging/deploy-auto-timetabler.yml
+            git add . 
+            git commit -m "feat(notanglesstaging): update images" 
+            git push -u origin update/notanglesstaging/${{ github.sha }}
+            gh pr create -B staging --title "feat(notanglesstaging): update images" --body "Updates the images for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            git checkout -b update/notangles/${{ github.sha }}
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles/deploy-frontend.yml
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles/deploy-backend.yml
+            yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles/deploy-auto-timetabler.yml
+            git add . 
+            git commit -m "feat(notangles): update images" 
+            git push -u origin update/notangles/${{ github.sha }}
+            gh pr create -B develop --title "feat(notangles): update images" --body "Updates the images for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
+          fi
           gh pr merge $(cat URL) --squash -d
