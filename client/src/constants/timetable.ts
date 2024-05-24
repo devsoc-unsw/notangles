@@ -1,8 +1,20 @@
 import { API_URL } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
+import { TermDataMap } from '../interfaces/Periods';
 import timeoutPromise from '../utils/timeoutPromise';
 
 const REGULAR_TERM_STR_LEN = 2;
+
+const parseYear = (termDate: string) => {
+  const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
+
+  const matched = termDate.match(regexp);
+  let extractedYear = '';
+  if (matched != null) {
+    extractedYear = matched[3];
+  }
+  return extractedYear;
+};
 
 /**
  * @returns The details of the latest term there is data for
@@ -21,57 +33,84 @@ export const getAvailableTermDetails = async () => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
+
   let year = termData.year || '0000';
-  let termNumber = Number(termData.termNumber) || 1;
-  let term = termData.termName || `T${termNumber}`;
-  let termName = `Term ${termNumber}`;
+  const termNumber = Number(termData.termNumber) || 1;
   let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
-  try {
-    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/startdate/notangles`));
-    const termDateRes = await termDateFetch.text();
-    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
+  const parseTermData = (termId: string) => {
+    let termNum;
+    let term = termData.termName || `T${termNumber}`;
+    let termName = `Term ${termNumber}`;
 
-    const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
-
-    const matched = termDateRes.match(regexp);
-    if (matched != null) {
-      year = matched[3];
+    if (termId.length === REGULAR_TERM_STR_LEN) {
+      // This is not a summer term.
+      termNum = parseInt(termId.substring(1));
+      term = `T${termNum}`;
+      termName = `Term ${termNum}`;
+    } else {
+      // This is a summer term.
+      termName = `Summer Term`;
+      term = termId;
+      termNum = 0;
     }
+
+    return { term: term, termName: termName, termNum: termNum };
+  };
+
+  try {
+    // get the latest/new term start date available from the scraper
+    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availablestartdate`));
+    const termDateRes = await termDateFetch.text();
+
+    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
+    const termIdRes = await termIdFetch.text();
+
+    // get the current/previous term date
+    const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentstartdate`));
+    const prevTermRes = await prevTermDate.text();
+
+    const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
+    const prevTermIdRes = await prevTermId.text();
+
+    const extractedCurrYear = parseYear(termDateRes);
+    if (extractedCurrYear.length > 0) {
+      year = extractedCurrYear;
+    }
+
+    const prevYear = parseYear(prevTermRes);
 
     const termDateSplit = termDateRes.split('/');
     firstDayOfTerm = termDateSplit.reverse().join('-');
 
-    const termIdRes = await termIdFetch.text();
-    if (termIdRes.length === REGULAR_TERM_STR_LEN) {
-      // This is not a summer term.
-      termNumber = parseInt(termIdRes.substring(1));
-      term = `T${termNumber}`;
-      termName = `Term ${termNumber}`;
-    } else {
-      // This is a summer term.
-      termName = `Summer Term`;
-      term = termIdRes;
-      termNumber = 0; // This is a summer term.
-    }
+    const newTerm = parseTermData(termIdRes);
+    const prevTerm = parseTermData(prevTermIdRes);
+
+    const termsData: TermDataMap = {
+      prevTerm: { year: prevYear, term: prevTerm.term },
+      newTerm: { year: year, term: newTerm.term },
+    };
+
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
       JSON.stringify({
         year: year,
-        term: term,
-        termNumber: termNumber,
-        termName: termName,
+        term: newTerm.term,
+        termNumber: newTerm.termNum,
+        termName: newTerm.termName,
         firstDayOfTerm: firstDayOfTerm,
+        termsData: termsData,
       }),
     );
 
     return {
-      term: term,
-      termName: termName,
-      termNumber: termNumber,
       year: year,
+      term: newTerm.term,
+      termNumber: newTerm.termNum,
+      termName: newTerm.termName,
       firstDayOfTerm: firstDayOfTerm,
+      termsData: termsData,
     };
   } catch (e) {
     throw new NetworkError('Could not connect to timetable scraper!');

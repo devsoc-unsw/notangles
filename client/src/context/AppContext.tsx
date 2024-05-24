@@ -2,7 +2,7 @@ import { createContext, useState } from 'react';
 
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseDataMap, TimetableData } from '../interfaces/Periods';
+import { CourseDataMap, DisplayTimetablesMap, TermDataMap } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -70,6 +70,9 @@ export interface IAppContext {
   termName: string;
   setTermName: (newTermName: string) => void;
 
+  termsData: TermDataMap;
+  setTermsData: (newTermData: TermDataMap) => void;
+
   termNumber: number;
   setTermNumber: (newTermNumber: number) => void;
 
@@ -85,7 +88,7 @@ export interface IAppContext {
   selectedTimetable: number;
   setSelectedTimetable: (newSelectedTimetable: number) => void;
 
-  displayTimetables: TimetableData[];
+  displayTimetables: DisplayTimetablesMap;
   setDisplayTimetables: (newDisplayTimetable: any) => void;
 
   courseData: CourseDataMap;
@@ -153,6 +156,9 @@ export const AppContext = createContext<IAppContext>({
   termName: `Term 0`,
   setTermName: () => {},
 
+  termsData: { prevTerm: { year: '', term: '' }, newTerm: { year: '', term: '' } },
+  setTermsData: () => {},
+
   termNumber: 0,
   setTermNumber: () => {},
 
@@ -168,7 +174,7 @@ export const AppContext = createContext<IAppContext>({
   selectedTimetable: 0,
   setSelectedTimetable: () => {},
 
-  displayTimetables: [],
+  displayTimetables: {},
   setDisplayTimetables: () => {},
 
   courseData: { map: [] },
@@ -210,10 +216,16 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [term, setTerm] = useState<string>(termData.term || `T0`);
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [year, setYear] = useState<string>(termData.year || '0000');
+  const [termsData, setTermsData] = useState<TermDataMap>({
+    prevTerm: { year: '', term: '' },
+    newTerm: { year: year, term: term },
+  });
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
-  const [displayTimetables, setDisplayTimetables] = useState<TimetableData[]>([]);
+  const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({
+    [termData.term.length > 0 ? termData.term : '0']: [],
+  });
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
@@ -257,6 +269,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTerm,
     termName,
     setTermName,
+    termsData,
+    setTermsData,
     termNumber,
     setTermNumber,
     year,
