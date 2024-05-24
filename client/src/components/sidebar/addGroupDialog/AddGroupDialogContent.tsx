@@ -1,15 +1,14 @@
 import React from 'react';
 import { CheckCircle as CheckCircleIcon, RadioButtonUnchecked as RadioButtonUncheckedIcon } from '@mui/icons-material';
-import { Autocomplete, Checkbox, Chip, DialogContent, TextField, Tooltip } from '@mui/material';
+import { Autocomplete, Checkbox, Chip, DialogContent, Switch, TextField, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import EditImagePopOver from './EditImagePopOver';
 import { friends } from './dummyData';
 import { FriendType } from './AddGroupDialog';
 
-
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 40px 60px;
+  padding: 30px 30px;
   gap: 20px;
   display: flex;
   flex-direction: column;
@@ -38,11 +37,20 @@ const StyledUploadImageContainer = styled('div')`
   align-items: flex-end;
 `;
 
+const StyledPrivacyContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+`;
+
 interface AddGroupDialoContentProps {
   groupImageURL: string;
   setGroupImageURL: (url: string) => void;
   setGroupName: (groupName: string) => void;
   setSelectedFriends: (friends: FriendType[]) => void;
+  isPrivate: boolean;
+  setIsPrivate: (isPrivate: boolean) => void;
 }
 
 const AddGroupDialogContent: React.FC<AddGroupDialoContentProps> = ({
@@ -50,6 +58,8 @@ const AddGroupDialogContent: React.FC<AddGroupDialoContentProps> = ({
   setGroupImageURL,
   setGroupName,
   setSelectedFriends,
+  isPrivate,
+  setIsPrivate,
 }) => {
   return (
     <StyledDialogContent>
@@ -95,6 +105,11 @@ const AddGroupDialogContent: React.FC<AddGroupDialoContentProps> = ({
         }}
         renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
       />
+
+      <StyledPrivacyContainer>
+        <div>Private Group</div>
+        <Switch checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
+      </StyledPrivacyContainer>
     </StyledDialogContent>
   );
 };

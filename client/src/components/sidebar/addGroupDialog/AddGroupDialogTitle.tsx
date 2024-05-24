@@ -5,7 +5,7 @@ import { styled } from '@mui/system';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 40px;
+  padding: 30px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
