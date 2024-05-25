@@ -29,6 +29,7 @@ model Group {
   id          String          @id @default(uuid())
   name        String
   description String?
+  imageURL    String?
   visibility  GroupVisibility @default(PRIVATE)
   timetables  Timetable[]     @relation("group_timetables")
   members     User[]          @relation("group_members")

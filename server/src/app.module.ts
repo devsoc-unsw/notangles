@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
 import { ConfigModule } from '@nestjs/config';
+import { GroupModule } from './group/group.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -15,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
     UserModule,
     FriendModule,
     PrismaModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
