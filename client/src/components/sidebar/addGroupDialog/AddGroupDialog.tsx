@@ -12,7 +12,7 @@ export interface FriendType {
   zID: string;
 }
 
-export enum Privacy {
+export enum Visibility {
   PRIVATE = 'private',
   PUBLIC = 'public',
 }
@@ -22,7 +22,7 @@ const AddGroupDialog = () => {
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendType[]>([]);
   const [groupImageURL, setGroupImageURL] = useState('');
-  const [privacy, setPrivacy] = useState<Privacy>(Privacy.PRIVATE);
+  const [visibility, setVisibility] = useState<Visibility>(Visibility.PRIVATE);
 
   const handleCreateGroup = async () => {
     try {
@@ -35,7 +35,7 @@ const AddGroupDialog = () => {
         body: JSON.stringify({
           groupData: {
             name: groupName,
-            visibility: 'PRIVATE',
+            visibility: visibility,
             timetableIDs: ['0', '1', '2'],
             memberIDs: selectedFriends.map((friend) => friend.zID),
             groupAdmins: ['0'],
@@ -46,6 +46,8 @@ const AddGroupDialog = () => {
       });
 
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      console.log('group created success')
+      handleClose();
     } catch (error) {
       throw new NetworkError("Couldn't get response");
     }
@@ -56,6 +58,7 @@ const AddGroupDialog = () => {
     setGroupName('');
     setSelectedFriends([]);
     setGroupImageURL('');
+    setVisibility(Visibility.PRIVATE);
   };
 
   return (
@@ -73,8 +76,8 @@ const AddGroupDialog = () => {
           setGroupImageURL={setGroupImageURL}
           setGroupName={setGroupName}
           setSelectedFriends={setSelectedFriends}
-          setPrivacy={setPrivacy}
-          privacy={privacy}
+          setVisibility={setVisibility}
+          visibility={visibility}
         />
         <AddGroupDialogActions handleClose={handleClose} handleCreateGroup={handleCreateGroup} />
       </Dialog>

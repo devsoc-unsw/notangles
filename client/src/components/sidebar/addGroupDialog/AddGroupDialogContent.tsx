@@ -4,7 +4,7 @@ import { Autocomplete, Checkbox, Chip, DialogContent, FormControl, InputLabel, M
 import { styled } from '@mui/system';
 import EditImagePopOver from './EditImagePopOver';
 import { friends } from './dummyData';
-import { FriendType, Privacy } from './AddGroupDialog';
+import { FriendType, Visibility } from './AddGroupDialog';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -49,8 +49,8 @@ interface AddGroupDialogContentProps {
   setGroupImageURL: (url: string) => void;
   setGroupName: (groupName: string) => void;
   setSelectedFriends: (friends: FriendType[]) => void;
-  privacy: Privacy;
-  setPrivacy: (privacy: Privacy) => void;
+  visibility: Visibility;
+  setVisibility: (privacy: Visibility) => void;
 }
 
 const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
@@ -58,8 +58,8 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   setGroupImageURL,
   setGroupName,
   setSelectedFriends,
-  privacy,
-  setPrivacy
+  visibility,
+  setVisibility
 }) => {
   return (
     <StyledDialogContent>
@@ -110,12 +110,12 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         <InputLabel id="select-privacy">Group Privacy</InputLabel>
         <Select
           labelId="select-privacy"
-          value={privacy}
+          value={visibility}
           label="Group Privacy"
-          onChange={(e) => setPrivacy(e.target.value as Privacy)}
+          onChange={(e) => setVisibility(e.target.value as Visibility)}
         >
-          <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
-          <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
+          <MenuItem value={Visibility.PRIVATE}>Private</MenuItem>
+          <MenuItem value={Visibility.PUBLIC}>Public</MenuItem>
         </Select>
       </FormControl>
     </StyledDialogContent>
