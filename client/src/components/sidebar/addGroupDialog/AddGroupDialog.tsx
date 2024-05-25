@@ -25,6 +25,7 @@ const AddGroupDialog = () => {
   const [visibility, setVisibility] = useState<Visibility>(Visibility.PRIVATE);
 
   const handleCreateGroup = async () => {
+    console.log('RAY' + API_URL.timetable);
     try {
       const res = await fetch(`${API_URL.timetable}`, {
         method: 'POST',
