@@ -12,12 +12,17 @@ export interface FriendType {
   zID: string;
 }
 
+export enum Privacy {
+  PRIVATE = 'private',
+  PUBLIC = 'public',
+}
+
 const AddGroupDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendType[]>([]);
   const [groupImageURL, setGroupImageURL] = useState('');
-  const [isPrivate, setIsPrivate] = useState(true);
+  const [privacy, setPrivacy] = useState<Privacy>(Privacy.PRIVATE);
 
   const handleCreateGroup = async () => {
     try {
@@ -41,8 +46,6 @@ const AddGroupDialog = () => {
       });
 
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
-
-      // return anything
     } catch (error) {
       throw new NetworkError("Couldn't get response");
     }
@@ -70,8 +73,8 @@ const AddGroupDialog = () => {
           setGroupImageURL={setGroupImageURL}
           setGroupName={setGroupName}
           setSelectedFriends={setSelectedFriends}
-          setIsPrivate={setIsPrivate}
-          isPrivate={isPrivate}
+          setPrivacy={setPrivacy}
+          privacy={privacy}
         />
         <AddGroupDialogActions handleClose={handleClose} handleCreateGroup={handleCreateGroup} />
       </Dialog>

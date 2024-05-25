@@ -1,10 +1,10 @@
 import React from 'react';
 import { CheckCircle as CheckCircleIcon, RadioButtonUnchecked as RadioButtonUncheckedIcon } from '@mui/icons-material';
-import { Autocomplete, Checkbox, Chip, DialogContent, Switch, TextField, Tooltip } from '@mui/material';
+import { Autocomplete, Checkbox, Chip, DialogContent, FormControl, InputLabel, MenuItem, Select, Switch, TextField, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import EditImagePopOver from './EditImagePopOver';
 import { friends } from './dummyData';
-import { FriendType } from './AddGroupDialog';
+import { FriendType, Privacy } from './AddGroupDialog';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -40,26 +40,26 @@ const StyledUploadImageContainer = styled('div')`
 const StyledPrivacyContainer = styled('div')`
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 94%;
   justify-content: space-between;
 `;
 
-interface AddGroupDialoContentProps {
+interface AddGroupDialogContentProps {
   groupImageURL: string;
   setGroupImageURL: (url: string) => void;
   setGroupName: (groupName: string) => void;
   setSelectedFriends: (friends: FriendType[]) => void;
-  isPrivate: boolean;
-  setIsPrivate: (isPrivate: boolean) => void;
+  privacy: Privacy;
+  setPrivacy: (privacy: Privacy) => void;
 }
 
-const AddGroupDialogContent: React.FC<AddGroupDialoContentProps> = ({
+const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   groupImageURL,
   setGroupImageURL,
   setGroupName,
   setSelectedFriends,
-  isPrivate,
-  setIsPrivate,
+  privacy,
+  setPrivacy
 }) => {
   return (
     <StyledDialogContent>
@@ -106,10 +106,18 @@ const AddGroupDialogContent: React.FC<AddGroupDialoContentProps> = ({
         renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
       />
 
-      <StyledPrivacyContainer>
-        <div>Private Group</div>
-        <Switch checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
-      </StyledPrivacyContainer>
+      <FormControl fullWidth>
+        <InputLabel id="select-privacy">Group Privacy</InputLabel>
+        <Select
+          labelId="select-privacy"
+          value={privacy}
+          label="Group Privacy"
+          onChange={(e) => setPrivacy(e.target.value as Privacy)}
+        >
+          <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
+          <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
+        </Select>
+      </FormControl>
     </StyledDialogContent>
   );
 };
