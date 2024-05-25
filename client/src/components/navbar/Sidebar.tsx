@@ -1,5 +1,5 @@
 import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, IconButton, Typography } from '@mui/material';
+import { AppBar, IconButton, Typography, AppBarProps } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
@@ -20,21 +20,19 @@ const LogoImg = styled('img')`
   margin-left: -5.5px;
 `;
 
-const StyledNavBar = styled(AppBar)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  width: 290px;
-  height: 100vh;
-  left: 0;
-  color: ${({ theme }) => theme.palette.text.primary};
-`;
+interface StyledNavBarProps extends AppBarProps {
+  collapsed: boolean;
+}
 
-const StyledNavBarCollapsed = styled(AppBar)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  width: 80px;
-  height: 100vh;
-  left: 0;
-  color: ${({ theme }) => theme.palette.text.primary};
-`;
+const StyledNavBar = styled(AppBar)<StyledNavBarProps>(({ theme, collapsed }) => ({
+  backgroundColor: theme.palette.background.paper,
+  width: collapsed ? '80px' : '290px',
+  height: '100vh',
+  left: 0,
+  color: theme.palette.text.primary,
+  overflowX: 'hidden',
+  transition: 'width 0.2s ease',
+}));
 
 const NavbarTitle = styled(Typography)`
   font-weight: 700;
@@ -85,13 +83,10 @@ const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
-  const termSelectRef = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
-
-  const NavBarComponent = collapsed ? StyledNavBarCollapsed : StyledNavBar;
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -108,8 +103,7 @@ const Sidebar: React.FC = () => {
   }, [ref]);
 
   return (
-    // <NavBarComponent ref={ref}>
-    <NavBarComponent>
+    <StyledNavBar ref={ref} collapsed={collapsed}>
       <HeaderContainer>
         <a href="/">
           <LogoImg
@@ -180,7 +174,7 @@ const Sidebar: React.FC = () => {
           </NavBarFooter>
         )}
       </SideBarContainer>
-    </NavBarComponent>
+    </StyledNavBar>
   );
 };
 
