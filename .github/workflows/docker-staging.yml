@@ -1,8 +1,8 @@
-name: Docker
+name: Docker (Staging)
 on:
   push:
     branches:
-      - dev
+      - staging
 
 jobs:
   build-client:
@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: client
-          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
+          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/staging' }}
           platforms: linux/amd64
           file: client/Dockerfile
           cache-from: type=gha
@@ -80,7 +80,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.component }}
-          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
+          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/staging' }}
           platforms: linux/amd64
           file: ${{ matrix.component }}/Dockerfile
           cache-from: type=gha
@@ -93,11 +93,11 @@ jobs:
     name: Deploy (CD)
     runs-on: ubuntu-latest
     needs: [build-client, build]
-    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/staging' }}
     concurrency: production
     environment:
       name: production
-      url: https://notangles.csesoc.app
+      url: https://notanglesstaging.csesoc.app
 
     steps:
       - name: Checkout repository
@@ -114,12 +114,12 @@ jobs:
         run: |
           git config user.name "CSESoc CD"
           git config user.email "technical@csesoc.org.au"
-          git checkout -b update/notangles/${{ github.sha }}
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles/deploy-frontend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles/deploy-backend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles/deploy-auto-timetabler.yml
+          git checkout -b update/notangles-staging/${{ github.sha }}
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles-staging/deploy-frontend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles-staging/deploy-backend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles-staging/deploy-auto-timetabler.yml
           git add . 
-          git commit -m "feat(notangles): update images" 
-          git push -u origin update/notangles/${{ github.sha }}
-          gh pr create -B migration --title "feat(notangles): update images" --body "Updates the images for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
+          git commit -m "feat(notangles_staging): update images" 
+          git push -u origin update/notangles-staging/${{ github.sha }}
+          gh pr create -B migration --title "feat(notangles_staging): update images" --body "Updates the images for the notangles_staging deployment to commit csesoc/notangles-staging@${{ github.sha }}." > URL
           gh pr merge $(cat URL) --squash -d
