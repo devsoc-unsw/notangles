@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateGroupDto } from './create-group.dto';
-
-export class UpdateGroupDto extends PartialType(CreateGroupDto) {}
+export class UpdateGroupDto {
+    readonly name?: string;
+    readonly visibility?: string;
+    readonly timetableIDs?: string[];
+    readonly memberIDs?: string[];
+    readonly groupAdmins?: string[];
+    readonly groupImageURL?: string;
+  }

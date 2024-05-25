@@ -23,7 +23,6 @@ RUN pnpm install --production
 COPY --from=builder /server .
 RUN npx prisma generate
 
-
 EXPOSE 3001
 
 CMD ["pnpm", "run", "start:migrate:prod"]

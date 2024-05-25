@@ -71,6 +71,9 @@ dependencies:
   ts-protoc-gen:
     specifier: ^0.15.0
     version: 0.15.0
+  uuid:
+    specifier: ^9.0.1
+    version: 9.0.1
 
 devDependencies:
   '@nestjs/cli':

@@ -42,7 +42,8 @@
     "protobufjs": "4.1.3",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "ts-protoc-gen": "^0.15.0"
+    "ts-protoc-gen": "^0.15.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

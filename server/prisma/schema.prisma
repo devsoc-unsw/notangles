@@ -17,13 +17,16 @@ model User {
   profileURL     String?
   timetable      Timetable[]
   settings       Settings?
-  friends        User[]      @relation("user_friends")
-  friendRequests User[]      @relation("user_friends")
-  groups         Group[]     @relation("group_members")
-  adminGroups    Group[]     @relation("admins")
+  friends        User[]      @relation(name: "user_friends")
+  friendOf       User[]      @relation(name: "user_friends")
+  outgoing       User[]      @relation(name: "friend_requests")
+  incoming       User[]      @relation(name: "friend_requests")
+  adminGroups    Group[]     @relation(name: "admins")
+  memberGroups   Group[]     @relation(name: "group_members")
   @@map("users")
   @@index([userId])
 }
+
 
 model Group {
   id          String          @id @default(uuid())
@@ -35,6 +38,7 @@ model Group {
   members     User[]          @relation("group_members")
   groupAdmins User[]          @relation("admins")
   @@map("groups")
+
 }
 
 model Event {
@@ -48,7 +52,7 @@ model Event {
   day         String
   start       DateTime
   end         DateTime
-  timetable   Timetable? @relation(fields: [timetableId], references: [id])
+  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade) // TODO: was there a reason this wasn't cascaded on delete?
   timetableId String?
   groupIds    String[] // Added to link an event to a group
   @@map("events")

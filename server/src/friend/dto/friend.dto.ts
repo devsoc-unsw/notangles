@@ -10,8 +10,8 @@ export class friendDto {
   sendeeId: string;
 }
 
-export class friendRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  requestId: string;
-}
+// export class friendRequestDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   requestId: string;
+// }
