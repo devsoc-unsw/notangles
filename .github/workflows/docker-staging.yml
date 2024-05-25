@@ -114,12 +114,12 @@ jobs:
         run: |
           git config user.name "CSESoc CD"
           git config user.email "technical@csesoc.org.au"
-          git checkout -b update/notanglesstaging/${{ github.sha }}
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notanglesstaging/deploy-frontend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notanglesstaging/deploy-backend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notanglesstaging/deploy-auto-timetabler.yml
+          git checkout -b update/notangles-staging/${{ github.sha }}
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles-staging/deploy-frontend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles-staging/deploy-backend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles-staging/deploy-auto-timetabler.yml
           git add . 
-          git commit -m "feat(notanglesstaging): update images" 
-          git push -u origin update/notanglesstaging/${{ github.sha }}
-          gh pr create -B migration --title "feat(notanglesstaging): update images" --body "Updates the images for the notanglesstaging deployment to commit csesoc/notanglesstaging@${{ github.sha }}." > URL
+          git commit -m "feat(notangles_staging): update images" 
+          git push -u origin update/notangles-staging/${{ github.sha }}
+          gh pr create -B migration --title "feat(notangles_staging): update images" --body "Updates the images for the notangles_staging deployment to commit csesoc/notangles-staging@${{ github.sha }}." > URL
           gh pr merge $(cat URL) --squash -d
