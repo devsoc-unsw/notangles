@@ -41,19 +41,21 @@ const IndividualComponentTypography = styled(Typography)`
   fontsize: 16px;
 `;
 
-const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description, content, collapsed }) => {
+const CustomModal: React.FC<CustomModalProps> = ({ title, toolTipTitle, showIcon, description, content, collapsed, isClickable }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
-    setIsOpen(!isOpen);
+    if (isClickable) {
+      setIsOpen(!isOpen);
+    }
   };
 
   return (
     <>
-      <Tooltip title={collapsed ? title : ""} placement='right'>
+      <Tooltip title={collapsed ? toolTipTitle : ''} placement="right">
         <ShowModalButton color="inherit" onClick={toggleIsOpen}>
           {showIcon}
-          <IndividualComponentTypography>{collapsed ? "" : title}</IndividualComponentTypography>
+          <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>
       </Tooltip>
       <Dialog
@@ -66,7 +68,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ title, showIcon, description,
       >
         <StyledDialogTitle>
           <StyledTypography variant="h5">{description}</StyledTypography>
-          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
+          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen} >
             <Close />
           </CloseButton>
         </StyledDialogTitle>

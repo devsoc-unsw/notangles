@@ -14,10 +14,12 @@ export interface CourseContextProviderProps {
 
 export interface CustomModalProps {
   title: string;
+  toolTipTitle: string;
   showIcon: ReactNode;
   description: string;
   content: ReactNode;
   collapsed: boolean;
+  isClickable: boolean;
 }
 
 export interface CourseSelectProps {

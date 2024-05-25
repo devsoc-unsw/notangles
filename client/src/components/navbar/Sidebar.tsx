@@ -1,4 +1,4 @@
-import { Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { Description, Info, Security, Settings as SettingsIcon, Group } from '@mui/icons-material';
 import { AppBar, IconButton, Typography, AppBarProps } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
@@ -30,8 +30,8 @@ const StyledNavBar = styled(AppBar)<StyledNavBarProps>(({ theme, collapsed }) =>
   height: '100vh',
   left: 0,
   color: theme.palette.text.primary,
-  overflowX: 'hidden',
   transition: 'width 0.2s ease',
+  zIndex: 1201,
 }));
 
 const NavbarTitle = styled(Typography)`
@@ -72,6 +72,7 @@ const NavBarFooter = styled('div')`
   margin-top: 16px;
   gap: 12px;
   font-size: 0.8rem;
+  padding: 10px 19px 20px 19px;
 `;
 
 const CollapseButton = styled(IconButton)`
@@ -126,35 +127,52 @@ const Sidebar: React.FC = () => {
         )}
       </HeaderContainer>
       <SideBarContainer>
+        <TermSelect collapsed={collapsed} />
         <NavComponentsContainer>
-          <TermSelect collapsed={collapsed} />
+          <CustomModal
+            title="Social Timetable"
+            toolTipTitle="Coming Soon"
+            showIcon={<Group />}
+            description={''}
+            content={null}
+            collapsed={collapsed}
+            isClickable={false}
+          />
           <CustomModal
             title="About"
+            toolTipTitle="About"
             showIcon={<Info />}
             description={'Notangles: no more timetable tangles'}
             content={<About />}
             collapsed={collapsed}
+            isClickable={true}
           />
           <CustomModal
             title="Privacy"
+            toolTipTitle="Privacy"
             showIcon={<Security />}
             description={'Application Privacy Statement'}
             content={<Privacy />}
             collapsed={collapsed}
+            isClickable={true}
           />
           <CustomModal
             title="Changelog"
+            toolTipTitle="Changelog"
             showIcon={<Description />}
             description={'Changelog'}
             content={<Changelog />}
             collapsed={collapsed}
+            isClickable={true}
           />
           <CustomModal
             title="Settings"
+            toolTipTitle="Settings"
             showIcon={<SettingsIcon />}
             description={'Settings'}
             content={<Settings />}
             collapsed={collapsed}
+            isClickable={true}
           />
         </NavComponentsContainer>
         {collapsed && (
@@ -167,13 +185,13 @@ const Sidebar: React.FC = () => {
             ></BarsArrowUpIcon>
           </CollapseButton>
         )}
-        {!collapsed && (
-          <NavBarFooter>
-            <FooterInfo />
-            <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
-          </NavBarFooter>
-        )}
       </SideBarContainer>
+      {!collapsed && (
+        <NavBarFooter>
+          <FooterInfo />
+          <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
+        </NavBarFooter>
+      )}
     </StyledNavBar>
   );
 };

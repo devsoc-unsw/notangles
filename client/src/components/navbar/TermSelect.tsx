@@ -8,36 +8,33 @@ import { CourseContext } from '../../context/CourseContext';
 
 const StyledInputLabel = styled(InputLabel)(() => ({
   '&.Mui-focused': {
-    color: '#3323e4',
+    color: '#4074FC',
   },
 }));
 
 const StyledSelect = styled(Select)(() => ({
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#3323e4',
-  },
+  width: '100%',
+  boxSizing:'border-box',
   '.MuiSelect-selectMenu': {
-    overflow: 'hidden',
   },
   '.MuiSelect-icon': {
-    color: '#3323e4',
+    color: 'black',
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#3323e4',
+    borderColor: '#4074FC',
+    padding: 0,
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#3323e4',
+    borderColor: '#4074FC',
   },
 }));
 
 const Weak = styled('span')`
   font-weight: 300;
   opacity: 0.8;
-  margin-left: 15px;
-  font-size: 90%;
-  vertical-align: middle;
   position: relative;
   bottom: 1px;
+  padding: 12px 12px 12px 14px;
   z-index: 1201;
 `;
 export interface TermSelectProps {
@@ -60,7 +57,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
 
   let newTermName = `Term ${termsData.newTerm.term[1]}`;
   if (newTermName.includes('Summer')) {
-    newTermName ='Summer Term';
+    newTermName = 'Summer Term';
   }
 
   const termData = new Set([
@@ -90,18 +87,20 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
     setAssignedColors(displayTimetables[termNum][defaultStartTimetable].assignedColors);
   };
 
+  const handleMouseDown = (event: any) => {
+    // prevents collapsing sidebar when selecting value
+    event.stopPropagation();
+  };
+
   return (
-    <FormControl sx={{ width: '100%' }}>
+    <FormControl onMouseDown={handleMouseDown}>
       {collapsed ? (
         <>
           <Weak>{term}</Weak>
         </>
       ) : (
         <>
-          <StyledInputLabel
-            id="select-term-label"
-            sx={{ color: '#3323e4d' }}
-          >
+          <StyledInputLabel id="select-term-label" sx={{ color: '#3323e4d' }}>
             Select term
           </StyledInputLabel>
           <StyledSelect
