@@ -26,22 +26,19 @@ const AddGroupDialog = () => {
 
   const handleCreateGroup = async () => {
     try {
-      const res = await fetch(`${API_URL.timetable}`, {
+      const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          groupData: {
-            name: groupName,
-            visibility: 'PRIVATE',
-            timetableIDs: ['0', '1', '2'],
-            memberIDs: selectedFriends.map((friend) => friend.zID),
-            groupAdmins: ['0'],
-            groupImageURL: groupImageURL,
-          },
-          groupID: 0,
+          name: groupName,
+          visibility: 'PRIVATE',
+          timetableIDs: ['0', '1', '2'],
+          memberIDs: selectedFriends.map((friend) => friend.zID),
+          groupAdmins: ['0'],
+          groupImageURL: groupImageURL,
         }),
       });
 
