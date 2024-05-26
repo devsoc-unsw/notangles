@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  userId         String      @id // same as zid
+  userID         String      @id // same as zid
   createdAt      DateTime    @default(now())
   lastLogin      DateTime?   @default(now())
   firstname      String?
@@ -24,7 +24,7 @@ model User {
   adminGroups    Group[]     @relation(name: "admins")
   memberGroups   Group[]     @relation(name: "group_members")
   @@map("users")
-  @@index([userId])
+  @@index([userID])
 }
 
 
@@ -68,20 +68,20 @@ model Class {
 }
 
 model Timetable {
-  id              String   @id @unique
+  id              String   @id @unique @default(uuid())
   name            String
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]
   user            User[]
-  userId          String
+  userID          String
   groups          Group[]  @relation("group_timetables")
   @@map("timetables")
 }
 
 model Settings {
-  userId                   String  @unique
-  user                     User    @relation(fields: [userId], references: [userId])
+  userID                   String  @unique
+  user                     User    @relation(fields: [userID], references: [userID])
   is12HourMode             Boolean
   isDarkMode               Boolean
   isSquareEdges            Boolean

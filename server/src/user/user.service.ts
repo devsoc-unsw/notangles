@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Timetable, User } from '@prisma/client';
 
-const prisma = new PrismaService();
 @Injectable()
 export class UserService {
+  constructor(private readonly prisma: PrismaService) {}
   async getUserInfo(_userId: string): Promise<UserDTO> {
     try {
       const { userId, timetable, ...userData } =
-        await prisma.user.findUniqueOrThrow({
+        await this.prisma.user.findUniqueOrThrow({
           where: { userId: _userId },
           include: {
             timetable: {
@@ -61,7 +62,7 @@ export class UserService {
       };
 
       return Promise.resolve(
-        prisma.user.upsert({
+        this.prisma.user.upsert({
           where: {
             userId: _userId,
           },
@@ -74,7 +75,7 @@ export class UserService {
 
   async getUserSettings(_userId: string): Promise<SettingsDto> {
     try {
-      const { userId, ...settings } = await prisma.settings.findUniqueOrThrow({
+      const { userId, ...settings } = await this.prisma.settings.findUniqueOrThrow({
         where: { userId: _userId },
       });
 
@@ -90,7 +91,7 @@ export class UserService {
   ): Promise<SettingsDto> {
     try {
       return Promise.resolve(
-        prisma.settings.upsert({
+        this.prisma.settings.upsert({
           where: {
             userId: _userId,
           },
@@ -105,7 +106,7 @@ export class UserService {
 
   async getUserTimetables(_userId: string): Promise<TimetableDto[]> {
     try {
-      const res = await prisma.timetable.findMany({
+      const res = await this.prisma.timetable.findMany({
         where: { userId: _userId },
         include: {
           selectedClasses: true,
@@ -142,7 +143,7 @@ export class UserService {
       const _timetableId = uuidv4();
 
       // Create timetable - needs to resolve before adding classes and events
-      const create_timetable = prisma.timetable.create({
+      const create_timetable = this.prisma.timetable.create({
         data: {
           id: _timetableId,
           name: _timetableName,
@@ -162,7 +163,7 @@ export class UserService {
         };
       });
 
-      const create_classes = prisma.class.createMany({
+      const create_classes = this.prisma.class.createMany({
         data: classes,
         skipDuplicates: true, // Not sure when there would be duplicates, but whatevs
       });
@@ -172,12 +173,12 @@ export class UserService {
         return { ...ev, timetableId: _timetableId };
       });
 
-      const create_events = prisma.event.createMany({
+      const create_events = this.prisma.event.createMany({
         data: events,
         skipDuplicates: true,
       });
 
-      await prisma.$transaction([
+      await this.prisma.$transaction([
         create_timetable,
         create_classes,
         create_events,
@@ -198,7 +199,7 @@ export class UserService {
       const eventIds = _timetable.events.map((event) => event.id);
       const classIds = _timetable.events.map((c) => c.id);
 
-      const update_timetable = prisma.timetable.update({
+      const update_timetable = this.prisma.timetable.update({
         where: {
           userId: _userId,
         },
@@ -208,7 +209,7 @@ export class UserService {
         },
       });
 
-      const delete_events = prisma.event.deleteMany({
+      const delete_events = this.prisma.event.deleteMany({
         where: {
           timetableId: _timetableId,
           NOT: {
@@ -217,7 +218,7 @@ export class UserService {
         },
       });
 
-      const delete_classes = prisma.class.deleteMany({
+      const delete_classes = this.prisma.class.deleteMany({
         where: {
           timetableId: _timetableId,
           NOT: {
@@ -227,7 +228,7 @@ export class UserService {
       });
 
       const update_events = _timetable.events.map((e) =>
-        prisma.class.upsert({
+        this.prisma.class.upsert({
           where: { id: e.id },
           update: e,
           create: e,
@@ -235,7 +236,7 @@ export class UserService {
       );
 
       const update_classes = _timetable.selectedClasses.map((c) =>
-        prisma.class.upsert({
+        this.prisma.class.upsert({
           where: { id: c.id },
           update: {
             // Can these even change?
@@ -252,7 +253,7 @@ export class UserService {
       );
 
       // TODO: YET TO BE TESTED
-      await prisma.$transaction([
+      await this.prisma.$transaction([
         update_timetable,
         delete_events,
         update_events,
@@ -266,9 +267,39 @@ export class UserService {
     }
   }
 
+  async getTimetablesByIDs(timetableIDs: string[]): Promise<Timetable[]> {
+    try {
+      const timetables = await this.prisma.timetable.findMany({
+        where: {
+          id: {
+            in: timetableIDs,
+          },
+        },
+      });
+      return timetables;
+    } catch (error) {
+      console.error('Error retrieving timetables:', error);
+    }
+  }
+
+  async getUsersByIDs(userIDs: string[]): Promise<User[]> {
+    try {
+      const users = await this.prisma.user.findMany({
+        where: {
+          userID: {
+            in: userIDs,
+          },
+        },
+      });
+      return users;
+    } catch (error) {
+      console.error('Error retrieving users:', error);
+    }
+  }
+
   async deleteUserTimetable(_timetableId: string): Promise<string> {
     try {
-      await prisma.timetable.delete({
+      await this.prisma.timetable.delete({
         where: {
           id: _timetableId,
         },

@@ -43,22 +43,19 @@ export class GroupController {
         data: group,
       };
     } catch (error) {
-      if (error.message === 'Group already exists') {
-        throw new ConflictException({
-          status: 'Group with that ID already exists!',
-          data: createGroupDto,
-        });
-      }
       throw new BadRequestException({
         timestamp: new Date().toISOString(),
         path: `/api/group`,
-        data: 'Message detailing what went wrong.',
+        data: `There was an error creating the group, the error:  ${error}`,
       });
     }
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ) {
     try {
       const group = await this.groupService.update(id, updateGroupDto);
       return {
@@ -88,7 +85,7 @@ export class GroupController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Body('userID') userID: string) {
+  async remove(@Param('id') id: string) {
     try {
       await this.groupService.remove(id);
       return {
