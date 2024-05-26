@@ -14,8 +14,10 @@ async function main() {
   ];
 
   for (const user of users) {
-    await prisma.user.create({
-      data: {
+    await prisma.user.upsert({
+      where: { userID: user.zID },
+      update: {},
+      create: {
         userID: user.zID,
         firstname: user.name,
         email: `${user.name.toLowerCase()}@example.com`,
@@ -32,8 +34,10 @@ async function main() {
     where: { userID: '523495' },
   });
 
-  const timetable1 = await prisma.timetable.create({
-    data: {
+  const timetable1 = await prisma.timetable.upsert({
+    where: { id: 'Timetable 1' },
+    update: {},
+    create: {
       name: 'Timetable 1',
       selectedCourses: ['COMP4128', 'COMP6991'],
     },
