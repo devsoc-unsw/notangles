@@ -46,7 +46,7 @@ export class GroupController {
       throw new BadRequestException({
         timestamp: new Date().toISOString(),
         path: `/api/group`,
-        data: `There was an error creating the group, the error:  ${error}`,
+        data: `There was an error creating the group, the error: ${error.message}`,
       });
     }
   }

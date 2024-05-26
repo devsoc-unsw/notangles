@@ -21,18 +21,18 @@ export class GroupService {
     private readonly user: UserService,
   ) {}
 
-  async create(createGroupDto: CreateGroupDto) {
+  async create(createGroupDto: CreateGroupDto): Promise<any> {
     const {
       name,
       timetableIDs,
       memberIDs,
       groupAdminIDs,
+      visibility = 'PRIVATE',
       description = '',
       imageURL = '',
     } = createGroupDto;
 
-    const data: any = { name, description, imageURL };
-
+    const data: any = { name, description, imageURL, visibility };
     try {
       const [timetables, members, admins] = await Promise.all([
         this.user.getTimetablesByIDs(timetableIDs),
@@ -58,8 +58,7 @@ export class GroupService {
         };
       }
 
-      const group = await this.prisma.group.create({ data });
-      return group;
+      return Promise.resolve(await this.prisma.group.create({ data }));
     } catch (error) {
       if (error.code === PrismaErrorCode.UNIQUE_CONSTRAINT_FAILED) {
         throw new ConflictException('Group already exists');
