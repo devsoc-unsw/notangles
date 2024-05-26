@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
-import { Timetable, User } from '@prisma/client';
+// import { Timetable, User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -76,8 +76,8 @@ export class UserService {
   async getUserSettings(_userId: string): Promise<SettingsDto> {
     try {
       const { userId, ...settings } = await this.prisma.settings.findUniqueOrThrow({
-        where: { userId: _userId },
-      });
+          where: { userId: _userId },
+        });
 
       return Promise.resolve(settings);
     } catch (e) {
@@ -267,7 +267,7 @@ export class UserService {
     }
   }
 
-  async getTimetablesByIDs(timetableIDs: string[]): Promise<Timetable[]> {
+  async getTimetablesByIDs(timetableIDs: string[]): Promise<any> {
     try {
       const timetables = await this.prisma.timetable.findMany({
         where: {
@@ -282,7 +282,7 @@ export class UserService {
     }
   }
 
-  async getUsersByIDs(userIDs: string[]): Promise<User[]> {
+  async getUsersByIDs(userIDs: string[]): Promise<any> {
     try {
       const users = await this.prisma.user.findMany({
         where: {
