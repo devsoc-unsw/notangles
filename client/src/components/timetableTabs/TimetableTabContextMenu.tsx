@@ -38,13 +38,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
+    term,
     setAlertMsg,
     setAlertFunction,
     alertFunction,
     setErrorVisibility,
   } = useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } =
+    useContext(CourseContext);
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
@@ -64,7 +66,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     selectedClasses: SelectedClasses,
     createdEvents: CreatedEvents,
     assignedColors: Record<string, string>,
-    timetableIndex: number
+    timetableIndex: number,
   ) => {
     setSelectedCourses(selectedCourses);
     setSelectedClasses(selectedClasses);
@@ -78,10 +80,10 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
    */
   // Handler for deleting a timetable
   const handleDeleteTimetable = (targetIndex: number) => {
-    if (displayTimetables.length > 1) {
+    if (displayTimetables[term].length > 1) {
       prevTimetables = {
         selected: selectedTimetable,
-        timetables: displayTimetables.map((timetable: TimetableData) => {
+        timetables: displayTimetables[term].map((timetable: TimetableData) => {
           return {
             name: timetable.name,
             id: timetable.id,
@@ -93,18 +95,35 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }),
       };
 
-      const newIndex = targetIndex === displayTimetables.length - 1 ? targetIndex - 1: targetIndex;
-      const newTimetables = displayTimetables.filter((timetable: TimetableData, index: number) => index !== targetIndex);
+      const newIndex = targetIndex === displayTimetables[term].length - 1 ? targetIndex - 1 : targetIndex;
+
+      const newDisplayTimetables = {
+        ...displayTimetables,
+        [term]: displayTimetables[term].filter((timetable: TimetableData, index: number) => index !== targetIndex),
+      };
+
       // Updating the timetables state to the new timetable index
-      setDisplayTimetables(newTimetables);
-      const { selectedCourses, selectedClasses, createdEvents } = newTimetables[newIndex];
-      setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, newIndex);
+      setDisplayTimetables(newDisplayTimetables);
+
+      // Destructure and rename (for clarity, do not shadow context variables)
+      const {
+        selectedCourses: newCourses,
+        selectedClasses: newClasses,
+        createdEvents: newEvents,
+        assignedColors: newColors,
+      } = newDisplayTimetables[term][newIndex];
+      setTimetableState(newCourses, newClasses, newEvents, newColors, newIndex);
 
       setOpenRestoreAlert(true);
 
       // If user chooses to undo the deletion then we will restore the previous state
       setAlertFunction(() => () => {
-        setDisplayTimetables(prevTimetables.timetables);
+        const restoredTimetables = {
+          ...displayTimetables,
+          [term]: prevTimetables.timetables,
+        };
+
+        setDisplayTimetables(restoredTimetables);
         const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
         setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, prevTimetables.selected);
         return;
@@ -123,7 +142,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const handleRenameOpen = () => {
-    const timetableName = displayTimetables[selectedTimetable].name;
+    const timetableName = displayTimetables[term][selectedTimetable].name;
     setRenamedString(timetableName);
     setRenamedHelper(`${timetableName.length}/30`);
     timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
@@ -140,11 +159,15 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
     if (renamedErr) return;
 
-    const newTimetables = [...displayTimetables];
-    newTimetables[selectedTimetable].name = renamedString;
+    const newTimetables = {
+      ...displayTimetables,
+      [term]: displayTimetables[term].map((timetable, index) => {
+        return index === selectedTimetable ? { ...timetable, name: renamedString } : timetable;
+      }),
+    };
 
-    storage.set('timetables', [...newTimetables]);
-    setDisplayTimetables([...newTimetables]);
+    storage.set('timetables', newTimetables);
+    setDisplayTimetables(newTimetables);
 
     setRenameOpen(false);
   };
@@ -159,11 +182,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
-    if (displayTimetables.length >= TIMETABLE_LIMIT) {
+    if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
-      const currentTimetable = displayTimetables[selectedTimetable];
+      const currentTimetable = displayTimetables[term][selectedTimetable];
 
       const newTimetable = {
         name: currentTimetable.name + ' - Copy',
@@ -171,17 +194,22 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
         selectedCourses: currentTimetable.selectedCourses,
         createdEvents: duplicateEvents(currentTimetable.createdEvents),
-        assignedColors: currentTimetable.assignedColors
+        assignedColors: currentTimetable.assignedColors,
       };
 
       const newTimetables = [
-        ...displayTimetables.slice(0, selectedTimetable + 1),
+        ...displayTimetables[term].slice(0, selectedTimetable + 1),
         newTimetable,
-        ...displayTimetables.slice(selectedTimetable + 1),
+        ...displayTimetables[term].slice(selectedTimetable + 1),
       ];
 
-      storage.set('timetables', newTimetables);
-      setDisplayTimetables(newTimetables);
+      const updatedTimetables = {
+        ...displayTimetables,
+        [term]: newTimetables,
+      };
+
+      storage.set('timetables', updatedTimetables);
+      setDisplayTimetables(updatedTimetables);
       const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
       setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, selectedTimetable + 1);
       handleMenuClose();
