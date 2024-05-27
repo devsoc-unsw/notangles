@@ -138,6 +138,7 @@ const Career = styled('div')`
 
 const FacultyButtonsContainer = styled('div')`
   display: flex;
+  flex-wrap: wrap;
   margin: ${({ theme }) => theme.spacing(2, 0)};
   width: 100%;
 `;
@@ -149,8 +150,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
 
-  // test faculties
-  const faculties = ["Art", "Law", "Medicine", "Engineering"];
+  const faculties = ["Art, Design & Architecture", "Law & Justice", "Medicine & Health", "Engineering", "Business School", "Science"];
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -186,7 +186,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     setSelectedFaculty(faculty);
     // const filteredOptions = coursesList.filter((option) => option.faculty === faculty);
     // setOptions(filteredOptions);
-    console.log("HEYY");
   };
 
   const getCourseCareer = (career: string) => {
@@ -205,7 +204,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   let defaultOptions = coursesList;
 
   if (selectedFaculty) {
-    defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
+    // defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
   }
 
   if (selectedValue.length) {
@@ -273,6 +272,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     return <div ref={ref} {...props} {...outerProps} />;
   });
 
+  const theme = useTheme<ThemeType>();
   const ListboxComponent = React.useCallback(
     React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
       const { children, ...other } = props;
@@ -280,7 +280,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       const itemCount = Array.isArray(children) ? children.length : 0;
       const getItemSize = () => 45;
       const maxResultsVisible = 6;
-      const paddingTop = 7;
+      const paddingTop = 0;
       const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
 
       const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
@@ -297,13 +297,18 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             {faculties.map((faculty, index) => (
               <Button
                 key={index}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                }}
                 onClick={() => handleFacultyClick(faculty)}
                 style={{
                   margin: '5px',
-                  padding: '10px 20px',
-                  backgroundColor: selectedFaculty === faculty ? 'lightblue' : 'white',
-                  border: '1px solid #ccc',
+                  padding: '5px 10px',
                   cursor: 'pointer',
+                  backgroundColor: selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.background.paper,
+                  color: theme.palette.secondary.main,
+                  textTransform: 'none',
+                  fontSize: '13px',
                 }}
               >
                 {faculty}
@@ -329,10 +334,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    [selectedFaculty],
+    [selectedFaculty, theme],
   );
 
-  const theme = useTheme<ThemeType>();
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));
   const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
 
