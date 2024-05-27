@@ -132,47 +132,31 @@ export class UserService {
       // Generate random timetable id
       const _timetableId = uuidv4();
 
-      // Create timetable - needs to resolve before adding classes and events
-      const create_timetable = prisma.timetable.create({
-        data: {
-          id: _timetableId,
-          name: _timetableName,
-          selectedCourses: _selectedCourses,
-          userId: _userId,
-        },
-      });
-
-      // Create classes
       const classes = _selectedClasses.map((c) => {
         const classId = uuidv4(); // Where is this being generated? For now generating on backend
         return {
-          timetableId: _timetableId,
+          // timetableId: _timetableId,
           id: classId,
           classType: c.classType,
           courseName: c.courseName,
         };
       });
 
-      const create_classes = prisma.class.createMany({
-        data: classes,
-        skipDuplicates: true, // Not sure when there would be duplicates, but whatevs
+      await prisma.timetable.create({
+        data: {
+          id: _timetableId,
+          name: _timetableName,
+          selectedCourses: _selectedCourses,
+          selectedClasses: {
+            create: classes,
+          },
+          createdEvents: {
+            create: _createdEvents,
+          },
+          userId: _userId,
+        },
       });
 
-      // Create events
-      const events = _createdEvents.map((ev) => {
-        return { ...ev, timetableId: _timetableId };
-      });
-
-      const create_events = prisma.event.createMany({
-        data: events,
-        skipDuplicates: true,
-      });
-
-      await prisma.$transaction([
-        create_timetable,
-        create_classes,
-        create_events,
-      ]);
       return Promise.resolve(_timetableId);
     } catch (e) {
       throw new Error(e);
@@ -191,14 +175,11 @@ export class UserService {
 
       const update_timetable = prisma.timetable.update({
         where: {
-          userId: _userId,
           id: _timetableId,
         },
         data: {
           name: _timetable.name,
           selectedCourses: _timetable.selectedCourses,
-          selectedClasses: _timetable.selectedClasses,
-          createdEvents: _timetable.events,
         },
       });
 
@@ -211,6 +192,14 @@ export class UserService {
         },
       });
 
+      const update_events = _timetable.events.map((e) =>
+        prisma.event.upsert({
+          where: { id: e.id },
+          update: e,
+          create: { ...e, timetableId: _timetableId },
+        }),
+      );
+
       const delete_classes = prisma.class.deleteMany({
         where: {
           timetableId: _timetableId,
@@ -220,38 +209,23 @@ export class UserService {
         },
       });
 
-      // const update_events = _timetable.events.map((e) =>
-      //   prisma.class.upsert({
-      //     where: { id: e.id },
-      //     update: e,
-      //     create: e,
-      //   }),
-      // );
+      const update_classes = _timetable.selectedClasses.map((c) =>
+        prisma.class.upsert({
+          where: { id: c.id },
+          update: c,
+          create: {
+            ...c,
+            timetableId: _timetableId,
+          },
+        }),
+      );
 
-      // const update_classes = _timetable.selectedClasses.map((c) =>
-      //   prisma.class.upsert({
-      //     where: { id: c.id },
-      //     update: {
-      //       // Can these even change?
-      //       classType: c.classType,
-      //       courseName: c.courseName,
-      //     },
-      //     create: {
-      //       timetableId: c.timetableId,
-      //       id: c.id,
-      //       classType: c.classType,
-      //       courseName: c.courseName,
-      //     },
-      //   }),
-      // );
-
-      // TODO: YET TO BE TESTED
       await prisma.$transaction([
         update_timetable,
         delete_events,
-        // ...update_events,
         delete_classes,
-        // ...update_classes,
+        ...update_events,
+        ...update_classes,
       ]);
 
       return Promise.resolve(_timetableId);
