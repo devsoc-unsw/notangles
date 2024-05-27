@@ -9,27 +9,33 @@ import {
 import { SettingsDto } from './settings.dto';
 import { TimetableDto } from './timetable.dto';
 
-export class UserDTO {
-  //@IsString()
-  //status: string;
+export class InitUserDTO {
+  @IsString()
+  userId: string;
 
   @IsString()
-  firstname: string;
+  @IsOptional()
+  firstname?: string;
 
   @IsString()
-  lastname: string;
+  @IsOptional()
+  lastname?: string;
 
   @IsEmail()
   email: string;
 
   @IsString()
-  profileURL: string;
+  @IsOptional()
+  profileURL?: string;
+}
+export class UserDTO extends InitUserDTO {
+  @IsISO8601()
+  @IsOptional()
+  createdAt?: string;
 
   @IsISO8601()
-  createdAt: string;
-
-  @IsISO8601()
-  lastLogin: string;
+  @IsOptional()
+  lastLogin?: string;
 
   @IsBoolean()
   loggedIn: boolean;

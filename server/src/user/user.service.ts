@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
+import {
+  SettingsDto,
+  UserDTO,
+  EventDto,
+  TimetableDto,
+  ClassDto,
+  InitUserDTO,
+} from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -7,66 +14,50 @@ const prisma = new PrismaService();
 @Injectable()
 export class UserService {
   async getUserInfo(_userId: string): Promise<UserDTO> {
-    try {
-      const { userId, timetable, ...userData } =
-        await prisma.user.findUniqueOrThrow({
-          where: { userId: _userId },
-          include: {
-            timetable: {
-              include: {
-                createdEvents: true,
-                selectedClasses: true,
-              },
+    const { userId, timetables, ...userData } =
+      await prisma.user.findUniqueOrThrow({
+        where: { userId: _userId },
+        include: {
+          timetables: {
+            include: {
+              createdEvents: true,
+              selectedClasses: true,
             },
           },
-        });
+          friends: true,
+          outgoing: true,
+          incoming: true,
+        },
+      });
 
-      const data = {
-        ...userData,
-        createdAt: userData.createdAt.toISOString(),
-        // deleteUserAt: userData.deleteUserAt.toISOString(),
-        lastLogin: userData.lastLogin.toISOString(),
-        loggedIn: true, // Change this later
-        friends: [], // Need to add friends relation to the DB
-        // Annnoying that the DTO and the schema have differently named fields so have to do this
-        timetables: timetable.map((t) => {
-          return {
-            name: t.name,
-            timetableId: t.id,
-            selectedClasses: t.selectedClasses,
-            selectedCourses: t.selectedCourses,
-            events: t.createdEvents,
-          };
-        }),
-      };
+    const data = {
+      ...userData,
+      createdAt: userData.createdAt.toISOString(),
+      lastLogin: userData.lastLogin.toISOString(),
+      // Annnoying that the DTO and the schema have differently named fields so have to do this
+      timetables: timetables.map((t) => {
+        return {
+          name: t.name,
+          timetableId: t.id,
+          selectedClasses: t.selectedClasses,
+          selectedCourses: t.selectedCourses,
+          events: t.createdEvents,
+        };
+      }),
+    };
 
-      return Promise.resolve(data);
-    } catch (e) {
-      throw new Error(e); // Not sure why I'm just catching and rethrowing - probably should process the error in some way
-    }
+    return Promise.resolve(data);
   }
 
-  async setUserProfile(
-    _userId: string,
-    _email: string,
-    _firstName?: string,
-    _lastName?: string,
-  ): Promise<any> {
+  async setUserProfile(data: InitUserDTO): Promise<any> {
     try {
-      const test = {
-        userId: _userId,
-        firstname: _firstName,
-        lastname: _lastName,
-        email: _email,
-      };
-
       return Promise.resolve(
         prisma.user.upsert({
           where: {
-            userId: _userId,
+            userId: data.userId,
           },
-          create: test,
-          update: test,
+          create: data,
+          update: data,
         }),
       );
     } catch (e) {}
@@ -201,10 +192,13 @@ export class UserService {
       const update_timetable = prisma.timetable.update({
         where: {
           userId: _userId,
+          id: _timetableId,
         },
         data: {
           name: _timetable.name,
           selectedCourses: _timetable.selectedCourses,
+          selectedClasses: _timetable.selectedClasses,
+          createdEvents: _timetable.events,
         },
       });
 
@@ -226,38 +220,38 @@ export class UserService {
         },
       });
 
-      const update_events = _timetable.events.map((e) =>
-        prisma.class.upsert({
-          where: { id: e.id },
-          update: e,
-          create: e,
-        }),
-      );
+      // const update_events = _timetable.events.map((e) =>
+      //   prisma.class.upsert({
+      //     where: { id: e.id },
+      //     update: e,
+      //     create: e,
+      //   }),
+      // );
 
-      const update_classes = _timetable.selectedClasses.map((c) =>
-        prisma.class.upsert({
-          where: { id: c.id },
-          update: {
-            // Can these even change?
-            classType: c.classType,
-            courseName: c.courseName,
-          },
-          create: {
-            timetableId: c.timetableId,
-            id: c.id,
-            classType: c.classType,
-            courseName: c.courseName,
-          },
-        }),
-      );
+      // const update_classes = _timetable.selectedClasses.map((c) =>
+      //   prisma.class.upsert({
+      //     where: { id: c.id },
+      //     update: {
+      //       // Can these even change?
+      //       classType: c.classType,
+      //       courseName: c.courseName,
+      //     },
+      //     create: {
+      //       timetableId: c.timetableId,
+      //       id: c.id,
+      //       classType: c.classType,
+      //       courseName: c.courseName,
+      //     },
+      //   }),
+      // );
 
       // TODO: YET TO BE TESTED
       await prisma.$transaction([
         update_timetable,
         delete_events,
-        update_events,
+        // ...update_events,
         delete_classes,
-        update_classes,
+        // ...update_classes,
       ]);
 
       return Promise.resolve(_timetableId);

@@ -19,7 +19,7 @@ model User {
   lastname       String?
   email          String
   profileURL     String?
-  timetable      Timetable[]
+  timetables     Timetable[]
   settings       Settings?
   friends        User[]      @relation(name: "UserFriends")
   friendOf       User[]      @relation(name: "UserFriends")
