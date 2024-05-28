@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
           <NavbarTitle variant="h6">Notangles</NavbarTitle>
-          {/* <TermSelect /> */}
+          <TermSelect collapsed={false} />
           {/* <CustomModal
             title="About"
             showIcon={<Info />}

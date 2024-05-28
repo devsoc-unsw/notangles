@@ -1,5 +1,5 @@
-import { Description, Info, Security, Settings as SettingsIcon, Group } from '@mui/icons-material';
-import { AppBar, IconButton, Typography, AppBarProps } from '@mui/material';
+import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
+import { AppBar, IconButton, Typography, AppBarProps, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
@@ -32,6 +32,8 @@ const StyledNavBar = styled(AppBar)<StyledNavBarProps>(({ theme, collapsed }) =>
   color: theme.palette.text.primary,
   transition: 'width 0.2s ease',
   zIndex: 1201,
+  // overriding MUI select component padding when focused (for the term select)
+  paddingRight: '0 !important',
 }));
 
 const NavbarTitle = styled(Typography)`
@@ -77,12 +79,12 @@ const NavBarFooter = styled('div')`
 
 const CollapseButton = styled(IconButton)`
   border-radius: 8px;
-  color: ${({ theme }) => theme.palette.text.primary};
+  color: ${({ theme }) => theme.palette.primary.main};
 `;
 
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
@@ -104,7 +106,7 @@ const Sidebar: React.FC = () => {
   }, [ref]);
 
   return (
-    <StyledNavBar ref={ref} collapsed={collapsed}>
+    <StyledNavBar ref={ref} collapsed={collapsed} onClick={() => setCollapsed(false)}>
       <HeaderContainer>
         <a href="/">
           <LogoImg
@@ -115,6 +117,7 @@ const Sidebar: React.FC = () => {
           />
         </a>
         <NavbarTitle variant="h6"> {collapsed ? '' : <>Notangles</>}</NavbarTitle>
+
         {!collapsed && (
           <CollapseButton>
             <BarsArrowUpIcon
@@ -128,14 +131,16 @@ const Sidebar: React.FC = () => {
       </HeaderContainer>
       <SideBarContainer>
         <TermSelect collapsed={collapsed} />
+        {!collapsed && <br />}
         <NavComponentsContainer>
           <CustomModal
-            title="Social Timetable"
-            toolTipTitle="Coming Soon"
-            showIcon={<Group />}
-            description={''}
+            title="Timetable"
+            toolTipTitle="Timetable"
+            showIcon={<CalendarMonth />}
+            description={'Current Timetable'}
             content={null}
             collapsed={collapsed}
+            // currently not clickable since this is our current page
             isClickable={false}
           />
           <CustomModal
@@ -165,16 +170,25 @@ const Sidebar: React.FC = () => {
             collapsed={collapsed}
             isClickable={true}
           />
-          <CustomModal
-            title="Settings"
-            toolTipTitle="Settings"
-            showIcon={<SettingsIcon />}
-            description={'Settings'}
-            content={<Settings />}
-            collapsed={collapsed}
-            isClickable={true}
-          />
         </NavComponentsContainer>
+        <CustomModal
+          title="Settings"
+          toolTipTitle="Settings"
+          showIcon={<SettingsIcon />}
+          description={'Settings'}
+          content={<Settings />}
+          collapsed={collapsed}
+          isClickable={true}
+        />
+        <CustomModal
+          title="Friends"
+          toolTipTitle="Coming Soon: Friends"
+          showIcon={<Group />}
+          description={'View Friends Timetables'}
+          content={null}
+          collapsed={collapsed}
+          isClickable={false}
+        />
         {collapsed && (
           <CollapseButton>
             <BarsArrowUpIcon
@@ -188,7 +202,8 @@ const Sidebar: React.FC = () => {
       </SideBarContainer>
       {!collapsed && (
         <NavBarFooter>
-          <FooterInfo />
+          <Divider />
+          {/* <FooterInfo /> */}
           <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
         </NavBarFooter>
       )}

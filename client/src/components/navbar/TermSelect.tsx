@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext } from 'react';
 
@@ -7,30 +7,50 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
 const StyledInputLabel = styled(InputLabel)(() => ({
-  '&.Mui-focused': {
-    color: '#4074FC',
-  },
+  color: '#4074FC',
 }));
 
-const StyledSelect = styled(Select)(() => ({
-  width: '100%',
-  boxSizing:'border-box',
-  '.MuiSelect-selectMenu': {
+// const StyledSelect = styled(Select)(() => ({
+//   width: '100%',
+//   boxSizing: 'border-box',
+//   '.MuiSelect-selectMenu': {},
+//   '.MuiSelect-icon': {
+//     color: 'black',
+//   },
+//   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+//     borderColor: '#4074FC',
+//     padding: 0,
+//   },
+//   '&:hover .MuiOutlinedInput-notchedOutline': {
+//     borderColor: '#4074FC',
+//   },
+// }));
+
+const StyledSelect = styled(Select)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  width: '95%',
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.palette.primary.main,
   },
   '.MuiSelect-icon': {
-    color: 'black',
+    color: theme.palette.primary.main,
+  },
+  '&.Mui-focused .MuiSelect-icon': {
+    color: theme.palette.primary.main,
+  },
+  '&:hover .MuiSelect-icon': {
+    color: theme.palette.primary.main,
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#4074FC',
-    padding: 0,
+    borderColor: theme.palette.primary.main,
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#4074FC',
+    borderColor: theme.palette.primary.main,
   },
 }));
 
 const Weak = styled('span')`
-  font-weight: 300;
+  font-weight: 725;
   opacity: 0.8;
   position: relative;
   bottom: 1px;
@@ -96,18 +116,17 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
     <FormControl onMouseDown={handleMouseDown}>
       {collapsed ? (
         <>
-          <Weak>{term}</Weak>
+          <Tooltip title={termName} placement="right">
+            <Weak>{term}</Weak>
+          </Tooltip>
         </>
       ) : (
         <>
-          <StyledInputLabel id="select-term-label" sx={{ color: '#3323e4d' }}>
-            Select term
-          </StyledInputLabel>
+          <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
           <StyledSelect
             size="small"
             labelId="select-term-label"
             id="select-term"
-            sx={{ color: '#3323e4d' }}
             label="Select term"
             value={isMobile ? term : termName.concat(', ', year)}
             onChange={selectTerm}
