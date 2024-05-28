@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UserService } from 'src/user/user.service';
-import { PrismaErrorCode } from 'prisma/prisma-error-codes.enum';
+import { PrismaErrorCode } from 'src/prisma/prisma-error-codes.enum';
 
 @Injectable()
 export class GroupService {
