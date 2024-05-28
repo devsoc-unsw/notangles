@@ -8,11 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UserService } from 'src/user/user.service';
-
-export enum PrismaErrorCode {
-  UNIQUE_CONSTRAINT_FAILED = 'P2002',
-  RECORD_NOT_FOUND = 'P2025',
-}
+import { PrismaErrorCode } from 'prisma/prisma-error-codes.enum';
 
 @Injectable()
 export class GroupService {
@@ -21,18 +17,18 @@ export class GroupService {
     private readonly user: UserService,
   ) {}
 
-  async create(createGroupDto: CreateGroupDto): Promise<any> {
+  async create(createGroupDto: CreateGroupDto) {
     const {
       name,
       timetableIDs,
       memberIDs,
       groupAdminIDs,
-      visibility = 'PRIVATE',
       description = '',
       imageURL = '',
     } = createGroupDto;
 
-    const data: any = { name, description, imageURL, visibility };
+    const data: any = { name, description, imageURL };
+
     try {
       const [timetables, members, admins] = await Promise.all([
         this.user.getTimetablesByIDs(timetableIDs),
@@ -58,7 +54,8 @@ export class GroupService {
         };
       }
 
-      return Promise.resolve(await this.prisma.group.create({ data }));
+      const group = await this.prisma.group.create({ data });
+      return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.UNIQUE_CONSTRAINT_FAILED) {
         throw new ConflictException('Group already exists');
