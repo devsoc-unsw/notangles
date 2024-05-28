@@ -229,7 +229,6 @@ const Sidebar: React.FC = () => {
       {!collapsed && (
         <SidebarFooter>
           <Divider />
-          {/* <FooterInfo /> */}
           <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
         </SidebarFooter>
       )}
