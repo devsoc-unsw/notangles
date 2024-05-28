@@ -1,6 +1,6 @@
 import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
 import { AppBar, IconButton, Typography, AppBarProps, Divider } from '@mui/material';
-import { styled } from '@mui/system';
+import { color, styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
 import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
 import FooterInfo from '../footer/FooterInfo';
@@ -20,11 +20,11 @@ const LogoImg = styled('img')`
   margin-left: -5.5px;
 `;
 
-interface StyledNavBarProps extends AppBarProps {
+interface StyledSidebarProps extends AppBarProps {
   collapsed: boolean;
 }
 
-const StyledNavBar = styled(AppBar)<StyledNavBarProps>(({ theme, collapsed }) => ({
+const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ theme, collapsed }) => ({
   backgroundColor: theme.palette.background.paper,
   width: collapsed ? '80px' : '290px',
   height: '100vh',
@@ -36,7 +36,7 @@ const StyledNavBar = styled(AppBar)<StyledNavBarProps>(({ theme, collapsed }) =>
   paddingRight: '0 !important',
 }));
 
-const NavbarTitle = styled(Typography)`
+const SidebarTitle = styled(Typography)`
   font-weight: 700;
   font-size: 18px;
   display: flex;
@@ -68,7 +68,7 @@ const NavComponentsContainer = styled('div')`
   height: 100%;
 `;
 
-const NavBarFooter = styled('div')`
+const SidebarFooter = styled('div')`
   display: flex;
   flex-direction: column;
   margin-top: 16px;
@@ -85,15 +85,23 @@ const CollapseButton = styled(IconButton)`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const sideBarRef = useRef<HTMLDivElement>(null);
+  const sideBarCloseRef = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
 
+  // const handleClickOpen = (event: any) => {
+  //   if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
+  //     setCollapsed(true);
+  //   }
+  // };
+  // TODO: remove the above?? or work with it to handle opening the sidebar by clicking on it -> but problem when trying to close with button
+
   useEffect(() => {
     const handleClickOutside = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
         setCollapsed(true);
       }
     };
@@ -103,10 +111,46 @@ const Sidebar: React.FC = () => {
       // Unbind the event listener on clean up
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [ref]);
+  }, [sideBarRef]);
+
+  const modalData = [
+    {
+      title: 'About',
+      toolTipTitle: 'About',
+      showIcon: <Info sx={{ color: (theme) => theme.palette.primary.main }} />,
+      description: 'Notangles: no more timetable tangles',
+      content: <About />,
+      isClickable: true,
+    },
+    {
+      title: 'Privacy',
+      toolTipTitle: 'Privacy',
+      showIcon: <Security sx={{ color: (theme) => theme.palette.primary.main }} />,
+      description: 'Application Privacy Statement',
+      content: <Privacy />,
+      isClickable: true,
+    },
+    {
+      title: 'Changelog',
+      toolTipTitle: 'Changelog',
+      showIcon: <Description sx={{ color: (theme) => theme.palette.primary.main }} />,
+      description: 'Changelog',
+      content: <Changelog />,
+      isClickable: true,
+    },
+    {
+      title: 'Settings',
+      toolTipTitle: 'Settings',
+      showIcon: <SettingsIcon sx={{ color: (theme) => theme.palette.primary.main }} />,
+      description: 'Settings',
+      content: <Settings />,
+      isClickable: true,
+    },
+  ];
 
   return (
-    <StyledNavBar ref={ref} collapsed={collapsed} onClick={() => setCollapsed(false)}>
+    // <StyledSidebar ref={sideBarRef} collapsed={collapsed} onClick={handleClickOpen}>
+    <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
       <HeaderContainer>
         <a href="/">
           <LogoImg
@@ -116,8 +160,7 @@ const Sidebar: React.FC = () => {
             onMouseOut={() => setCurrLogo(notanglesLogo)}
           />
         </a>
-        <NavbarTitle variant="h6"> {collapsed ? '' : <>Notangles</>}</NavbarTitle>
-
+        {!collapsed && <SidebarTitle variant="h6">Notangles</SidebarTitle>}
         {!collapsed && (
           <CollapseButton>
             <BarsArrowUpIcon
@@ -136,59 +179,42 @@ const Sidebar: React.FC = () => {
           <CustomModal
             title="Timetable"
             toolTipTitle="Timetable"
-            showIcon={<CalendarMonth />}
+            showIcon={<CalendarMonth sx={{ color: (theme) => theme.palette.primary.main }} />}
             description={'Current Timetable'}
             content={null}
             collapsed={collapsed}
             // currently not clickable since this is our current page
             isClickable={false}
+            // hardcoded until we move away from single page site
+            isSelected={true}
           />
           <CustomModal
-            title="About"
-            toolTipTitle="About"
-            showIcon={<Info />}
-            description={'Notangles: no more timetable tangles'}
-            content={<About />}
+            title="Friends"
+            toolTipTitle="Coming Soon: Friends"
+            showIcon={<Group sx={{ color: (theme) => theme.palette.primary.main }} />}
+            description={'View Friends Timetables'}
+            content={null}
             collapsed={collapsed}
-            isClickable={true}
+            isClickable={false}
           />
-          <CustomModal
-            title="Privacy"
-            toolTipTitle="Privacy"
-            showIcon={<Security />}
-            description={'Application Privacy Statement'}
-            content={<Privacy />}
-            collapsed={collapsed}
-            isClickable={true}
-          />
-          <CustomModal
-            title="Changelog"
-            toolTipTitle="Changelog"
-            showIcon={<Description />}
-            description={'Changelog'}
-            content={<Changelog />}
-            collapsed={collapsed}
-            isClickable={true}
-          />
+          {!collapsed && <br />}
+          <Divider />
+          {!collapsed && <br />}
+          {modalData.map((modal, index) => (
+            <>
+              <CustomModal
+                key={index}
+                title={modal.title}
+                toolTipTitle={modal.toolTipTitle}
+                showIcon={modal.showIcon}
+                description={modal.description}
+                content={modal.content}
+                collapsed={collapsed}
+                isClickable={modal.isClickable}
+              />
+            </>
+          ))}
         </NavComponentsContainer>
-        <CustomModal
-          title="Settings"
-          toolTipTitle="Settings"
-          showIcon={<SettingsIcon />}
-          description={'Settings'}
-          content={<Settings />}
-          collapsed={collapsed}
-          isClickable={true}
-        />
-        <CustomModal
-          title="Friends"
-          toolTipTitle="Coming Soon: Friends"
-          showIcon={<Group />}
-          description={'View Friends Timetables'}
-          content={null}
-          collapsed={collapsed}
-          isClickable={false}
-        />
         {collapsed && (
           <CollapseButton>
             <BarsArrowUpIcon
@@ -201,13 +227,13 @@ const Sidebar: React.FC = () => {
         )}
       </SideBarContainer>
       {!collapsed && (
-        <NavBarFooter>
+        <SidebarFooter>
           <Divider />
           {/* <FooterInfo /> */}
           <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
-        </NavBarFooter>
+        </SidebarFooter>
       )}
-    </StyledNavBar>
+    </StyledSidebar>
   );
 };
 

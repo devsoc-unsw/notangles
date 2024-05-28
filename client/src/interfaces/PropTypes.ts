@@ -20,6 +20,7 @@ export interface CustomModalProps {
   content: ReactNode;
   collapsed: boolean;
   isClickable: boolean;
+  isSelected?: boolean;
 }
 
 export interface CourseSelectProps {

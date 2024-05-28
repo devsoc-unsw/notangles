@@ -6,29 +6,13 @@ import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
-const StyledInputLabel = styled(InputLabel)(() => ({
-  color: '#4074FC',
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  color: theme.palette.primary.main,
 }));
-
-// const StyledSelect = styled(Select)(() => ({
-//   width: '100%',
-//   boxSizing: 'border-box',
-//   '.MuiSelect-selectMenu': {},
-//   '.MuiSelect-icon': {
-//     color: 'black',
-//   },
-//   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-//     borderColor: '#4074FC',
-//     padding: 0,
-//   },
-//   '&:hover .MuiOutlinedInput-notchedOutline': {
-//     borderColor: '#4074FC',
-//   },
-// }));
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.primary.main,
-  width: '95%',
+  width: '98%',
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: theme.palette.primary.main,
   },
@@ -49,13 +33,15 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   },
 }));
 
-const Weak = styled('span')`
-  font-weight: 725;
-  opacity: 0.8;
+const TermDisplay = styled('span')`
+  color: ${({ theme }) => theme.palette.primary.main};
+  font-weight: 650;
   position: relative;
-  bottom: 1px;
-  padding: 12px 12px 12px 14px;
+  padding: 12px 12px 12px 13px;
   z-index: 1201;
+  border: 2px solid ${({ theme }) => theme.palette.primary.main};
+  border-radius: 10px;
+  display: inline-block;
 `;
 export interface TermSelectProps {
   collapsed: boolean;
@@ -117,7 +103,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
       {collapsed ? (
         <>
           <Tooltip title={termName} placement="right">
-            <Weak>{term}</Weak>
+            <TermDisplay>{term}</TermDisplay>
           </Tooltip>
         </>
       ) : (

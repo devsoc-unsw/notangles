@@ -11,7 +11,6 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
-import Navbar from './components/navbar/Navbar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
@@ -42,7 +41,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import Sidebar from './components/navbar/Sidebar';
+import Sidebar from './components/sidebar/Sidebar';
 
 const StyledApp = styled(Box)`
   height: 100%;

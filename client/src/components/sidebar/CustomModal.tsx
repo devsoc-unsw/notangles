@@ -49,6 +49,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   content,
   collapsed,
   isClickable,
+  isSelected = false,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -60,8 +61,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
   return (
     <>
-      <Tooltip title={collapsed ? toolTipTitle : ''} placement="right">
-        <ShowModalButton color="inherit" onClick={toggleIsOpen}>
+      <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
+        <ShowModalButton
+          sx={{ backgroundColor: !collapsed && isSelected ? 'rgb(157, 157, 157, 0.35)' : 'transparent' }}
+          color="inherit"
+          onClick={toggleIsOpen}
+        >
           {showIcon}
           <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>
