@@ -204,7 +204,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   let defaultOptions = coursesList;
 
   if (selectedFaculty) {
-    // defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
+    defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
   }
 
   if (selectedValue.length) {
@@ -295,18 +295,22 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         <ListboxContainer ref={ref}>
           <FacultyButtonsContainer>
             {faculties.map((faculty, index) => (
-              <Button
+              <Button 
                 key={index}
                 onMouseDown={(event) => {
                   event.preventDefault();
                 }}
                 onClick={() => handleFacultyClick(faculty)}
+                variant="contained"
+                disableElevation
                 style={{
                   margin: '5px',
+                  marginLeft: '10px',
+                  marginRight: '0px',
                   padding: '5px 10px',
                   cursor: 'pointer',
-                  backgroundColor: selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.background.paper,
-                  color: theme.palette.secondary.main,
+                  backgroundColor: selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.secondary.light,
+                  color: selectedFaculty === faculty ? '#FFFFFF' : theme.palette.secondary.dark,
                   textTransform: 'none',
                   fontSize: '13px',
                 }}
