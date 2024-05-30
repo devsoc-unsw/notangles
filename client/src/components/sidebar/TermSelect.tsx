@@ -35,11 +35,11 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 
 const TermDisplay = styled('span')`
   color: ${({ theme }) => theme.palette.primary.main};
-  font-weight: 650;
+  font-weight: 500;
   position: relative;
   padding: 12px 12px 12px 13px;
   z-index: 1201;
-  border: 2px solid ${({ theme }) => theme.palette.primary.main};
+  border: 1.2px solid ${({ theme }) => theme.palette.primary.main};
   border-radius: 10px;
   display: inline-block;
 `;

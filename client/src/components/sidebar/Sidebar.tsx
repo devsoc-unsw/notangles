@@ -1,9 +1,8 @@
 import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
 import { AppBar, IconButton, Typography, AppBarProps, Divider } from '@mui/material';
-import { color, styled } from '@mui/system';
+import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
-import { BarsArrowUpIcon } from '@heroicons/react/24/outline';
-import FooterInfo from '../footer/FooterInfo';
+import { BarsArrowUpIcon } from '@heroicons/react/24/solid';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import About from './About';
@@ -52,7 +51,6 @@ const HeaderContainer = styled('div')`
   justify-content: space-between;
   align-items: center;
   padding: 10px 19px 10px 19px;
-  border-bottom: 1px solid #dadee2;
 `;
 
 const SideBarContainer = styled('div')`
@@ -60,12 +58,14 @@ const SideBarContainer = styled('div')`
   flex-direction: column;
   padding: 20px 16px 20px 16px;
   height: 100%;
+  gap: 16px;
 `;
 
 const NavComponentsContainer = styled('div')`
   display: flex;
   flex-direction: column;
   height: 100%;
+  gap: 8px;
 `;
 
 const SidebarFooter = styled('div')`
@@ -79,25 +79,17 @@ const SidebarFooter = styled('div')`
 
 const CollapseButton = styled(IconButton)`
   border-radius: 8px;
-  color: ${({ theme }) => theme.palette.primary.main};
+  color: black;
 `;
 
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
-  const sideBarCloseRef = useRef<HTMLDivElement>(null);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
-
-  // const handleClickOpen = (event: any) => {
-  //   if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
-  //     setCollapsed(true);
-  //   }
-  // };
-  // TODO: remove the above?? or work with it to handle opening the sidebar by clicking on it -> but problem when trying to close with button
 
   useEffect(() => {
     const handleClickOutside = (event: any) => {
@@ -117,7 +109,7 @@ const Sidebar: React.FC = () => {
     {
       title: 'About',
       toolTipTitle: 'About',
-      showIcon: <Info sx={{ color: (theme) => theme.palette.primary.main }} />,
+      showIcon: <Info />,
       description: 'Notangles: no more timetable tangles',
       content: <About />,
       isClickable: true,
@@ -125,7 +117,7 @@ const Sidebar: React.FC = () => {
     {
       title: 'Privacy',
       toolTipTitle: 'Privacy',
-      showIcon: <Security sx={{ color: (theme) => theme.palette.primary.main }} />,
+      showIcon: <Security />,
       description: 'Application Privacy Statement',
       content: <Privacy />,
       isClickable: true,
@@ -133,7 +125,7 @@ const Sidebar: React.FC = () => {
     {
       title: 'Changelog',
       toolTipTitle: 'Changelog',
-      showIcon: <Description sx={{ color: (theme) => theme.palette.primary.main }} />,
+      showIcon: <Description />,
       description: 'Changelog',
       content: <Changelog />,
       isClickable: true,
@@ -141,7 +133,7 @@ const Sidebar: React.FC = () => {
     {
       title: 'Settings',
       toolTipTitle: 'Settings',
-      showIcon: <SettingsIcon sx={{ color: (theme) => theme.palette.primary.main }} />,
+      showIcon: <SettingsIcon />,
       description: 'Settings',
       content: <Settings />,
       isClickable: true,
@@ -149,7 +141,6 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    // <StyledSidebar ref={sideBarRef} collapsed={collapsed} onClick={handleClickOpen}>
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
       <HeaderContainer>
         <a href="/">
@@ -172,14 +163,14 @@ const Sidebar: React.FC = () => {
           </CollapseButton>
         )}
       </HeaderContainer>
+      <Divider/>
       <SideBarContainer>
         <TermSelect collapsed={collapsed} />
-        {!collapsed && <br />}
         <NavComponentsContainer>
           <CustomModal
             title="Timetable"
             toolTipTitle="Timetable"
-            showIcon={<CalendarMonth sx={{ color: (theme) => theme.palette.primary.main }} />}
+            showIcon={<CalendarMonth />}
             description={'Current Timetable'}
             content={null}
             collapsed={collapsed}
@@ -191,15 +182,13 @@ const Sidebar: React.FC = () => {
           <CustomModal
             title="Friends"
             toolTipTitle="Coming Soon: Friends"
-            showIcon={<Group sx={{ color: (theme) => theme.palette.primary.main }} />}
+            showIcon={<Group />}
             description={'View Friends Timetables'}
             content={null}
             collapsed={collapsed}
             isClickable={false}
           />
-          {!collapsed && <br />}
           <Divider />
-          {!collapsed && <br />}
           {modalData.map((modal, index) => (
             <>
               <CustomModal

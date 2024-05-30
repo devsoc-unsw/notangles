@@ -63,7 +63,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
     <>
       <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
         <ShowModalButton
-          sx={{ backgroundColor: !collapsed && isSelected ? 'rgb(157, 157, 157, 0.35)' : 'transparent' }}
+          sx={{ backgroundColor: isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent' }}
           color="inherit"
           onClick={toggleIsOpen}
         >
