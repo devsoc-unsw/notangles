@@ -16,7 +16,8 @@ const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
   margin-top: -2px;
-  margin-left: -5.5px;
+  margin-left: -5px;
+  display: flex;
 `;
 
 interface StyledSidebarProps extends AppBarProps {
@@ -79,7 +80,7 @@ const SidebarFooter = styled('div')`
 
 const CollapseButton = styled(IconButton)`
   border-radius: 8px;
-  color: black;
+  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const Sidebar: React.FC = () => {
@@ -163,7 +164,7 @@ const Sidebar: React.FC = () => {
           </CollapseButton>
         )}
       </HeaderContainer>
-      <Divider/>
+      <Divider />
       <SideBarContainer>
         <TermSelect collapsed={collapsed} />
         <NavComponentsContainer>
@@ -210,6 +211,7 @@ const Sidebar: React.FC = () => {
               width={28}
               height={28}
               style={{ transform: 'rotate(90deg)' }}
+              color='inherit'
               onClick={() => handleCollapse(false)}
             ></BarsArrowUpIcon>
           </CollapseButton>

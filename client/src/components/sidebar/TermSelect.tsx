@@ -12,7 +12,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.primary.main,
-  width: '98%',
+  width: '100%',
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: theme.palette.primary.main,
   },
@@ -35,7 +35,7 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 
 const TermDisplay = styled('span')`
   color: ${({ theme }) => theme.palette.primary.main};
-  font-weight: 500;
+  font-weight: 600;
   position: relative;
   padding: 12px 12px 12px 13px;
   z-index: 1201;
