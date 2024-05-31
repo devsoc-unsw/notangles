@@ -42,6 +42,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import GroupsSidebar from './components/sidebar/groupsSideBar/GroupsSidebar';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -49,8 +50,7 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-top: 64px; // for nav bar
-  padding-left: ${contentPadding}px;
+  padding-left: ${contentPadding + 60}px;
   padding-right: ${contentPadding}px;
   transition:
     background 0.2s,
@@ -592,7 +592,7 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <Navbar />
+            <GroupsSidebar />
             <ContentWrapper>
               <Content>
                 <Controls

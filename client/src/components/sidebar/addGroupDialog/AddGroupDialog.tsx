@@ -26,7 +26,6 @@ const AddGroupDialog = () => {
 
   const handleCreateGroup = async () => {
     try {
-
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
         headers: {
@@ -43,7 +42,7 @@ const AddGroupDialog = () => {
         }),
       });
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
-      const groupCreationStatus = await res.json(); 
+      const groupCreationStatus = await res.json();
       console.log(groupCreationStatus); // Can see the status of group creation here!
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
@@ -59,7 +58,7 @@ const AddGroupDialog = () => {
 
   return (
     <>
-      <Tooltip title="Add a Group">
+      <Tooltip title="Add a Group" placement="right">
         <IconButton color="inherit" onClick={() => setIsOpen(true)}>
           <AddIcon />
         </IconButton>
