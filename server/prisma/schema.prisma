@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID         String      @id // same as zid
+  createdAt      DateTime    @default(now())
+  lastLogin      DateTime?   @default(now())
+  firstname      String?
+  lastname       String?
+  email          String 
+  profileURL     String?
+  timetable      Timetable[]
+  settings       Settings?
+  friends        User[]      @relation(name: "user_friends")
+  friendOf       User[]      @relation(name: "user_friends")
+  outgoing       User[]      @relation(name: "friend_requests")
+  incoming       User[]      @relation(name: "friend_requests")
+  adminGroups    Group[]     @relation(name: "admins")
+  memberGroups   Group[]     @relation(name: "group_members")
+  @@map("users")
+  @@index([userID])
+}
+
+
+model Group {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  imageURL    String?
+  visibility  GroupVisibility @default(PRIVATE)
+  timetables  Timetable[]     @relation("group_timetables")
+  members     User[]          @relation("group_members")
+  groupAdmins User[]          @relation("admins")
+  @@map("groups")
+
+}
+
+model Event {
+  id          String  @id @default(uuid())
+  name        String
+  location    String?
+  description String?
+  colour      String  @default("#1F7E8C") // Notangles Blue
+
+  // Event Time
+  day         String
+  start       DateTime
+  end         DateTime
+  timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade) // TODO: was there a reason this wasn't cascaded on delete?
+  timetableId String?
+  groupIds    String[] // Added to link an event to a group
+  @@map("events")
+}
+
+model Class {
+  id          String     @unique
+  classType   ClassType
+  courseName  String?
+  Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  timetableId String?
+  @@map("classes")
+}
+
+model Timetable {
+  id              String   @id @unique @default(uuid())
+  name            String
+  selectedCourses String[]
+  selectedClasses Class[]
+  createdEvents   Event[]
+  user            User[]
+  userID          String
+  groups          Group[]  @relation("group_timetables")
+  @@map("timetables")
+}
+
+model Settings {
+  userID                   String  @unique
+  user                     User    @relation(fields: [userID], references: [userID])
+  is12HourMode             Boolean
+  isDarkMode               Boolean
+  isSquareEdges            Boolean
+  isHideFullClasses        Boolean
+  isDefaultUnscheduled     Boolean
+  isHideClassInfo          Boolean
+  isSortAlphabetic         Boolean
+  isShowOnlyOpenClasses    Boolean
+  isHideExamClasses        Boolean
+  isConvertToLocalTimezone Boolean
+  @@map("settings")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text // MediumText may be needed for MySql
+  expiresAt DateTime
+  @@map("sessions")
+}
+
+enum GroupVisibility {
+  PUBLIC
+  PRIVATE
+  @@map("group_visibility")
+}
+
+enum ClassType { 
+  LECTURE
+  TUTORIAL
+  LAORATORY
+  OTHER
+}

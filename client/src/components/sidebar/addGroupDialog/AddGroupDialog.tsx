@@ -26,6 +26,7 @@ const AddGroupDialog = () => {
 
   const handleCreateGroup = async () => {
     try {
+
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
         headers: {
@@ -35,16 +36,17 @@ const AddGroupDialog = () => {
         body: JSON.stringify({
           name: groupName,
           visibility: 'PRIVATE',
-          timetableIDs: ['0', '1', '2'],
+          timetableIDs: [],
           memberIDs: selectedFriends.map((friend) => friend.zID),
-          groupAdmins: ['0'],
-          groupImageURL: groupImageURL,
+          groupAdminIDs: [],
+          imageURL: groupImageURL,
         }),
       });
-
-      if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      if (res.status !== 201) throw new NetworkError("Couldn't get response");
+      const groupCreationStatus = await res.json(); 
+      console.log(groupCreationStatus); // Can see the status of group creation here!
     } catch (error) {
-      throw new NetworkError("Couldn't get response");
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
   };
 
