@@ -17,7 +17,11 @@ export enum Privacy {
   PUBLIC = 'public',
 }
 
-const AddGroupDialog = () => {
+interface AddGroupDialogProps {
+  getGroups: () => void;
+}
+
+const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendType[]>([]);
@@ -41,7 +45,9 @@ const AddGroupDialog = () => {
           imageURL: groupImageURL,
         }),
       });
+      if (res.status === 201) getGroups();
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
+
       const groupCreationStatus = await res.json();
       console.log(groupCreationStatus); // Can see the status of group creation here!
     } catch (error) {

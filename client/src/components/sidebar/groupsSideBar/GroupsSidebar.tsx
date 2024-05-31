@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { DummyGroupData } from './dummyData';
 import AddGroupDialog from '../addGroupDialog/AddGroupDialog';
+import { API_URL } from '../../../api/config';
+import NetworkError from '../../../interfaces/NetworkError';
 
 const GROUP_CIRCLE_SIZE = 65;
 
@@ -39,6 +41,29 @@ const StyledContainer = styled('div')`
 
 const GroupsSidebar = () => {
   const [items, setItems] = useState(DummyGroupData);
+
+  const getGroups = async () => {
+    console.log('fetching groups...');
+    return;
+
+    try {
+      const res = await fetch(`${API_URL.server}/user/group/:zid`, { //TODO fetch zid
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (res.status !== 201) throw new NetworkError("Couldn't get response");
+
+      const getGroupStatus = await res.json();
+      console.log(getGroupStatus);
+
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  }
 
   // Reorders the given list by moving the value at startIndex to endIndex.
   const reorder = (list: any, startIndex: number, endIndex: number) => {
@@ -81,7 +106,7 @@ const GroupsSidebar = () => {
               </Draggable>
             ))}
             {provided.placeholder}
-            <AddGroupDialog />
+            <AddGroupDialog getGroups={getGroups} />
           </StyledContainer>
         )}
       </Droppable>
