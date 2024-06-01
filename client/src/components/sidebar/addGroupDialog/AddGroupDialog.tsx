@@ -70,7 +70,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
     setIsOpen(false);
     setGroupName('');
     setSelectedFriends([]);
-    setGroupImageURL('');
+    setGroupImageURL(NotanglesLogo);
   };
 
   return (
