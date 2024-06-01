@@ -37,13 +37,6 @@ const StyledUploadImageContainer = styled('div')`
   align-items: flex-end;
 `;
 
-const StyledPrivacyContainer = styled('div')`
-  display: flex;
-  align-items: center;
-  width: 94%;
-  justify-content: space-between;
-`;
-
 interface AddGroupDialogContentProps {
   groupImageURL: string;
   setGroupImageURL: (url: string) => void;

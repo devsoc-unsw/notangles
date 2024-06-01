@@ -6,6 +6,7 @@ import AddGroupDialogTitle from './AddGroupDialogTitle';
 import AddGroupDialogContent from './AddGroupDialogContent';
 import NetworkError from '../../../interfaces/NetworkError';
 import { API_URL } from '../../../api/config';
+import NotanglesLogo from '../../../assets/notangles_1.png';
 
 export interface FriendType {
   name: string;
@@ -25,10 +26,16 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<FriendType[]>([]);
-  const [groupImageURL, setGroupImageURL] = useState('');
+  const [groupImageURL, setGroupImageURL] = useState(NotanglesLogo);
   const [privacy, setPrivacy] = useState<Privacy>(Privacy.PRIVATE);
 
+  const isCorrectInputs = () => {
+    return groupName && selectedFriends.length;
+  };
+
   const handleCreateGroup = async () => {
+    if (!isCorrectInputs) return;
+
     try {
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
@@ -45,11 +52,15 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
           imageURL: groupImageURL,
         }),
       });
-      if (res.status === 201) getGroups();
-      if (res.status !== 201) throw new NetworkError("Couldn't get response");
-
       const groupCreationStatus = await res.json();
       console.log(groupCreationStatus); // Can see the status of group creation here!
+
+      if (res.status === 201) {
+        getGroups();
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
