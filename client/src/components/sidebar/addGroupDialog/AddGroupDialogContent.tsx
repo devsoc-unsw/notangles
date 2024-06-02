@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle as CheckCircleIcon, RadioButtonUnchecked as RadioButtonUncheckedIcon } from '@mui/icons-material';
-import { Autocomplete, Checkbox, Chip, DialogContent, FormControl, InputLabel, MenuItem, Select, Switch, TextField, Tooltip } from '@mui/material';
+import {
+  Autocomplete,
+  Checkbox,
+  Chip,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+  Tooltip,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import EditImagePopOver from './EditImagePopOver';
 import { friends } from './dummyData';
@@ -40,7 +52,9 @@ const StyledUploadImageContainer = styled('div')`
 interface AddGroupDialogContentProps {
   groupImageURL: string;
   setGroupImageURL: (url: string) => void;
+  groupName: string;
   setGroupName: (groupName: string) => void;
+  selectedFriends: FriendType[];
   setSelectedFriends: (friends: FriendType[]) => void;
   privacy: Privacy;
   setPrivacy: (privacy: Privacy) => void;
@@ -49,11 +63,17 @@ interface AddGroupDialogContentProps {
 const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   groupImageURL,
   setGroupImageURL,
+  groupName,
   setGroupName,
+  selectedFriends,
   setSelectedFriends,
   privacy,
-  setPrivacy
+  setPrivacy,
 }) => {
+  // To show red error only after user has interacted with the inputs.
+  const [isGroupNameInteracted, setGroupNameInteracted] = useState(false);
+  const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
+
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
@@ -69,6 +89,9 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         required
         fullWidth
         onChange={(e) => setGroupName(e.target.value)}
+        onBlur={() =>  setGroupNameInteracted(true)}
+        error={groupName === '' && isGroupNameInteracted}
+        helperText="Must be at least one character"
       />
 
       <Autocomplete
@@ -77,6 +100,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         disableCloseOnSelect
         fullWidth
         onChange={(_, value) => setSelectedFriends(value)}
+        onBlur={(e) =>  setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
@@ -96,7 +120,15 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
             </Tooltip>
           ));
         }}
-        renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
+        renderInput={(params) => (
+          <TextField
+            error={selectedFriends.length === 0 && isGroupMemberInteracted}
+            helperText="Must select at least one member"
+            {...params}
+            label="Group Members"
+            placeholder="Search for names..."
+          />
+        )}
       />
 
       <FormControl fullWidth>

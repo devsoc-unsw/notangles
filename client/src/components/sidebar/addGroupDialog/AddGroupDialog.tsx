@@ -86,12 +86,19 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
         <AddGroupDialogContent
           groupImageURL={groupImageURL}
           setGroupImageURL={setGroupImageURL}
+          groupName={groupName}
           setGroupName={setGroupName}
+          selectedFriends={selectedFriends}
           setSelectedFriends={setSelectedFriends}
           setPrivacy={setPrivacy}
           privacy={privacy}
         />
-        <AddGroupDialogActions handleClose={handleClose} handleCreateGroup={handleCreateGroup} />
+        <AddGroupDialogActions
+          groupName={groupName}
+          selectedFriends={selectedFriends}
+          handleClose={handleClose}
+          handleCreateGroup={handleCreateGroup}
+        />
       </Dialog>
     </>
   );
