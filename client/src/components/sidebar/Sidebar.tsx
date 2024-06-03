@@ -1,8 +1,7 @@
 import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
-import { AppBar, IconButton, Typography, AppBarProps, Divider } from '@mui/material';
+import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
-import { BarsArrowUpIcon } from '@heroicons/react/24/solid';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import About from './About';
@@ -11,6 +10,7 @@ import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
+import CollapseButton from './CollapseButton';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -76,11 +76,6 @@ const SidebarFooter = styled('div')`
   gap: 12px;
   font-size: 0.8rem;
   padding: 10px 19px 20px 19px;
-`;
-
-const CollapseButton = styled(IconButton)`
-  border-radius: 8px;
-  color: ${({ theme }) => theme.palette.text.primary};
 `;
 
 const Sidebar: React.FC = () => {
@@ -154,14 +149,7 @@ const Sidebar: React.FC = () => {
         </a>
         {!collapsed && <SidebarTitle variant="h6">Notangles</SidebarTitle>}
         {!collapsed && (
-          <CollapseButton>
-            <BarsArrowUpIcon
-              width={28}
-              height={28}
-              style={{ transform: 'rotate(270deg)' }}
-              onClick={() => handleCollapse(true)}
-            ></BarsArrowUpIcon>
-          </CollapseButton>
+          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
         )}
       </HeaderContainer>
       <Divider />
@@ -206,15 +194,7 @@ const Sidebar: React.FC = () => {
           ))}
         </NavComponentsContainer>
         {collapsed && (
-          <CollapseButton>
-            <BarsArrowUpIcon
-              width={28}
-              height={28}
-              style={{ transform: 'rotate(90deg)' }}
-              color='inherit'
-              onClick={() => handleCollapse(false)}
-            ></BarsArrowUpIcon>
-          </CollapseButton>
+          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
         )}
       </SideBarContainer>
       {!collapsed && (
