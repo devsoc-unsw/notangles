@@ -11,7 +11,7 @@ import { TimetableDto } from './timetable.dto';
 
 export class InitUserDTO {
   @IsString()
-  userId: string;
+  userID: string;
 
   @IsString()
   @IsOptional()

@@ -14,10 +14,10 @@ import { Timetable, User } from '@prisma/client';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  async getUserInfo(_userId: string): Promise<UserDTO> {
-    const { userId, timetables, ...userData } =
+  async getUserInfo(_userID: string): Promise<UserDTO> {
+    const { userID, timetables, ...userData } =
       await this.prisma.user.findUniqueOrThrow({
-        where: { userId: _userId },
+        where: { userID: _userID },
         include: {
           timetables: {
             include: {
@@ -55,7 +55,7 @@ export class UserService {
       return Promise.resolve(
         this.prisma.user.upsert({
           where: {
-            userId: data.userId,
+            userID: data.userID,
           },
           create: data,
           update: data,
@@ -64,11 +64,11 @@ export class UserService {
     } catch (e) {}
   }
 
-  async getUserSettings(_userId: string): Promise<SettingsDto> {
+  async getUserSettings(_userID: string): Promise<SettingsDto> {
     try {
-      const { userId, ...settings } =
+      const { userID, ...settings } =
         await this.prisma.settings.findUniqueOrThrow({
-          where: { userId: _userId },
+          where: { userID: _userID },
         });
 
       return Promise.resolve(settings);
@@ -78,16 +78,16 @@ export class UserService {
   }
 
   async setUserSettings(
-    _userId: string,
+    _userID: string,
     setting: SettingsDto,
   ): Promise<SettingsDto> {
     try {
       return Promise.resolve(
         this.prisma.settings.upsert({
           where: {
-            userId: _userId,
+            userID: _userID,
           },
-          create: { userId: _userId, ...setting },
+          create: { userID: _userID, ...setting },
           update: setting,
         }),
       );
@@ -96,10 +96,10 @@ export class UserService {
     }
   }
 
-  async getUserTimetables(_userId: string): Promise<TimetableDto[]> {
+  async getUserTimetables(_userID: string): Promise<TimetableDto[]> {
     try {
       const res = await this.prisma.timetable.findMany({
-        where: { userId: _userId },
+        where: { userID: _userID },
         include: {
           selectedClasses: true,
           createdEvents: true,
@@ -124,7 +124,7 @@ export class UserService {
   }
 
   async createUserTimetable(
-    _userId: string,
+    _userID: string,
     _selectedCourses: string[],
     _selectedClasses: ClassDto[],
     _createdEvents: EventDto[],
@@ -155,7 +155,7 @@ export class UserService {
           createdEvents: {
             create: _createdEvents,
           },
-          userId: _userId,
+          userID: _userID,
         },
       });
 
@@ -166,7 +166,7 @@ export class UserService {
   }
 
   async editUserTimetable(
-    _userId: string,
+    _userID: string,
     _timetable: TimetableDto,
   ): Promise<string> {
     try {
