@@ -195,10 +195,17 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    */
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
 
+  /**
+   * @param faculty The faculty of the course
+   */
   const handleFacultyClick = (faculty: string) => {
     setSelectedFaculty(selectedFaculty == faculty ? "" : faculty);
   };
 
+  /**
+   * @param career The career of the course
+   * @returns The shortened career of the course
+   */
   const getCourseCareer = (career: string) => {
     if (career === 'Undergraduate') {
       return 'UGRD';
