@@ -23,6 +23,10 @@ import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
 
+interface FacultyMap {
+  [key: string]: string;
+}
+
 interface SearchOptions {
   threshold: number;
   keys: {
@@ -149,8 +153,17 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
-
   const faculties = ["Art, Design & Architecture", "Law & Justice", "Medicine & Health", "Engineering", "Business School", "Science"];
+  
+  const facultyNameMap: FacultyMap = {
+    "Art, Design & Architecture": "Faculty of Arts, Design & Arch",
+    "Law & Justice": "Faculty of Law and Justice",
+    "Engineering": "Faculty of Engineering",
+    "Medicine & Health": "Faculty of Medicine and Health",
+    "Business School": "UNSW Business School",
+    "Science": "Faculty of Science"
+  }
+
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
 
@@ -183,9 +196,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
 
   const handleFacultyClick = (faculty: string) => {
-    setSelectedFaculty(faculty);
-    // const filteredOptions = coursesList.filter((option) => option.faculty === faculty);
-    // setOptions(filteredOptions);
+    setSelectedFaculty(selectedFaculty == faculty ? "" : faculty);
   };
 
   const getCourseCareer = (career: string) => {
@@ -204,10 +215,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   let defaultOptions = coursesList;
 
   if (selectedFaculty) {
-    defaultOptions = defaultOptions.filter((course) => course.faculty === selectedFaculty);
+    defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
   }
 
-  if (selectedValue.length) {
+  if (selectedValue.length && !selectedFaculty) {
     const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
 
     // If there are courses selected, filter the default options to include courses in the same area of study
