@@ -259,8 +259,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       return defaultOptions;
     }
 
-    const newOptions = fuzzy.search(query).map((result) => result.item);
-    setOptions(newOptions);
+    let searchOptionsList = defaultOptions;
+
+    if (selectedFaculty) {
+      searchOptionsList = searchOptionsList.filter(course => course.faculty === facultyNameMap[selectedFaculty]);
+    }
+
+    // create a new fuse instance with the searchOptionsList after filtering by faculty
+    // so that it allows for searching within the faculty's options
+    let fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
+
+    const fuzzyResults = fuzzy.search(query).map(result => result.item);
+
+    setOptions(fuzzyResults);
   };
 
   // Add a delay between the search query changing and updating the search results
