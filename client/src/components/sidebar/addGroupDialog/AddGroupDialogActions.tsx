@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, DialogActions } from '@mui/material';
 import { styled } from '@mui/system';
-import { FriendType } from './AddGroupDialog';
+import { Group } from './AddGroupDialog';
 
 const StyledDialogActions = styled(DialogActions)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -11,15 +11,13 @@ const StyledDialogActions = styled(DialogActions)`
 interface AddGroupDialogActionsProps {
   handleClose: () => void;
   handleCreateGroup: () => void;
-  groupName: string;
-  selectedFriends: FriendType[];
+  group: Group;
 }
 
 const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
   handleClose,
   handleCreateGroup,
-  groupName,
-  selectedFriends,
+  group
 }) => {
   return (
     <StyledDialogActions>
@@ -27,7 +25,7 @@ const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
         Cancel
       </Button>
       <Button
-        disabled={groupName === '' || selectedFriends.length === 0}
+        disabled={group.name === '' || group.members.length === 0}
         variant="contained"
         onClick={handleCreateGroup}
       >

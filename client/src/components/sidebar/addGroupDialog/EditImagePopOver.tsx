@@ -2,6 +2,7 @@ import { Edit as EditIcon } from '@mui/icons-material';
 import { IconButton, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
+import { Group } from './AddGroupDialog';
 
 const EditIconCircle = styled('div')`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -25,11 +26,11 @@ const StyledPopoverContent = styled('div')`
 `;
 
 interface EditImagePopOverProps {
-  groupImageURL: string;
-  setGroupImageURL: (url: string) => void;
+  group: Group;
+  setGroup: (group: Group) => void;
 }
 
-const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ groupImageURL, setGroupImageURL }) => {
+const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ group, setGroup }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   return (
@@ -56,9 +57,9 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ groupImageURL, setG
             <TextField
               placeholder="Enter image address..."
               variant="outlined"
-              value={groupImageURL}
+              value={group.imageURL}
               fullWidth
-              onChange={(e) => setGroupImageURL(e.target.value)}
+              onChange={(e) => setGroup({ ...group, imageURL: e.target.value })}
             />
           </StyledPopoverContent>
         </Popover>

@@ -8,7 +8,7 @@ import NetworkError from '../../../interfaces/NetworkError';
 import { API_URL } from '../../../api/config';
 import NotanglesLogo from '../../../assets/notangles_1.png';
 
-export interface FriendType {
+export interface MemberType {
   name: string;
   zID: string;
 }
@@ -22,20 +22,24 @@ interface AddGroupDialogProps {
   getGroups: () => void;
 }
 
+export interface Group {
+  name: string;
+  members: MemberType[];
+  imageURL: string;
+  privacy: Privacy;
+}
+
 const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [groupName, setGroupName] = useState('');
-  const [selectedFriends, setSelectedFriends] = useState<FriendType[]>([]);
-  const [groupImageURL, setGroupImageURL] = useState(NotanglesLogo);
-  const [privacy, setPrivacy] = useState<Privacy>(Privacy.PRIVATE);
 
-  const isCorrectInputs = () => {
-    return groupName && selectedFriends.length;
-  };
+  const [group, setGroup] = useState<Group>({
+    name: '',
+    members: [],
+    imageURL: NotanglesLogo,
+    privacy: Privacy.PRIVATE,
+  });
 
   const handleCreateGroup = async () => {
-    if (!isCorrectInputs) return;
-
     try {
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
@@ -44,12 +48,12 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: groupName,
-          visibility: 'PRIVATE',
+          name: group.name,
+          visibility: group.privacy,
           timetableIDs: [],
-          memberIDs: selectedFriends.map((friend) => friend.zID),
+          memberIDs: group.members.map((member) => member.zID),
           groupAdminIDs: [],
-          imageURL: groupImageURL,
+          imageURL: group.imageURL,
         }),
       });
       const groupCreationStatus = await res.json();
@@ -68,9 +72,12 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
 
   const handleClose = () => {
     setIsOpen(false);
-    setGroupName('');
-    setSelectedFriends([]);
-    setGroupImageURL(NotanglesLogo);
+    updateFormState({
+      name: '',
+      members: [],
+      imageURL: NotanglesLogo,
+      privacy: Privacy.PRIVATE,
+    });
   };
 
   return (
@@ -83,22 +90,8 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
 
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <AddGroupDialogTitle handleClose={handleClose} />
-        <AddGroupDialogContent
-          groupImageURL={groupImageURL}
-          setGroupImageURL={setGroupImageURL}
-          groupName={groupName}
-          setGroupName={setGroupName}
-          selectedFriends={selectedFriends}
-          setSelectedFriends={setSelectedFriends}
-          setPrivacy={setPrivacy}
-          privacy={privacy}
-        />
-        <AddGroupDialogActions
-          groupName={groupName}
-          selectedFriends={selectedFriends}
-          handleClose={handleClose}
-          handleCreateGroup={handleCreateGroup}
-        />
+        <AddGroupDialogContent group={group} setGroup={setGroup} />
+        <AddGroupDialogActions group={group} handleClose={handleClose} handleCreateGroup={handleCreateGroup} />
       </Dialog>
     </>
   );

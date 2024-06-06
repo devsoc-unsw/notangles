@@ -1,7 +1,6 @@
-import { FriendType } from "./AddGroupDialog";
+import { MemberType } from "./AddGroupDialog";
 
-
-export const friends: FriendType[] = [
+export const friends: MemberType[] = [
   { name: 'Shaam', zID: '532445' },
   { name: 'Ray', zID: '523495' },
   { name: 'hhlu', zID: '584290' },

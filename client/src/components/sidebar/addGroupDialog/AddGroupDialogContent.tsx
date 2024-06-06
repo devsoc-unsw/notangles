@@ -9,14 +9,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Switch,
   TextField,
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import EditImagePopOver from './EditImagePopOver';
 import { friends } from './dummyData';
-import { FriendType, Privacy } from './AddGroupDialog';
+import { Group, Privacy } from './AddGroupDialog';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -50,26 +49,11 @@ const StyledUploadImageContainer = styled('div')`
 `;
 
 interface AddGroupDialogContentProps {
-  groupImageURL: string;
-  setGroupImageURL: (url: string) => void;
-  groupName: string;
-  setGroupName: (groupName: string) => void;
-  selectedFriends: FriendType[];
-  setSelectedFriends: (friends: FriendType[]) => void;
-  privacy: Privacy;
-  setPrivacy: (privacy: Privacy) => void;
+  group: Group;
+  setGroup: (group: Group) => void;
 }
 
-const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
-  groupImageURL,
-  setGroupImageURL,
-  groupName,
-  setGroupName,
-  selectedFriends,
-  setSelectedFriends,
-  privacy,
-  setPrivacy,
-}) => {
+const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, setGroup }) => {
   // To show red error only after user has interacted with the inputs.
   const [isGroupNameInteracted, setGroupNameInteracted] = useState(false);
   const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
@@ -78,9 +62,9 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
     <StyledDialogContent>
       <StyledUploadImageContainer>
         <label>
-          <CircleOutline>{<CircleImage src={groupImageURL} />}</CircleOutline>
+          <CircleOutline>{<CircleImage src={group.imageURL} />}</CircleOutline>
         </label>
-        <EditImagePopOver groupImageURL={groupImageURL} setGroupImageURL={setGroupImageURL} />
+        <EditImagePopOver group={group} setGroup={setGroup} />
       </StyledUploadImageContainer>
 
       <TextField
@@ -88,9 +72,9 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         variant="outlined"
         required
         fullWidth
-        onChange={(e) => setGroupName(e.target.value)}
-        onBlur={() =>  setGroupNameInteracted(true)}
-        error={groupName === '' && isGroupNameInteracted}
+        onChange={(e) => setGroup({...group, name: e.target.name})}
+        onBlur={() => setGroupNameInteracted(true)}
+        error={group.name === '' && isGroupNameInteracted}
         helperText="Must be at least one character"
       />
 
@@ -99,8 +83,8 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         options={friends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setSelectedFriends(value)}
-        onBlur={(e) =>  setGroupMemberInteracted(true)}
+        onChange={(_, value) => setGroup({...group, members: value})}
+        onBlur={(e) => setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
@@ -122,7 +106,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         }}
         renderInput={(params) => (
           <TextField
-            error={selectedFriends.length === 0 && isGroupMemberInteracted}
+            error={group.members.length === 0 && isGroupMemberInteracted}
             helperText="Must select at least one member"
             {...params}
             label="Group Members"
@@ -135,9 +119,9 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
         <InputLabel id="select-privacy">Group Privacy</InputLabel>
         <Select
           labelId="select-privacy"
-          value={privacy}
+          value={group.privacy}
           label="Group Privacy"
-          onChange={(e) => setPrivacy(e.target.value as Privacy)}
+          onChange={(e) => setGroup({...group, privacy: e.target.value as Privacy})}
         >
           <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
           <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>

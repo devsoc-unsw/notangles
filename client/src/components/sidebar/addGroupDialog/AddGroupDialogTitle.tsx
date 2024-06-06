@@ -2,7 +2,6 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { DialogTitle, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 
-
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
   padding: 30px;
