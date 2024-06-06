@@ -153,15 +153,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
-  const faculties = ["Art, Design & Architecture", "Law & Justice", "Medicine & Health", "Engineering", "Business School", "Science"];
+  const faculties = ['Art, Design & Architecture', 'Law & Justice', 'Medicine & Health', 'Engineering', 'Business School', 'Science'];
   
   const facultyNameMap: FacultyMap = {
-    "Art, Design & Architecture": "Faculty of Arts, Design & Arch",
-    "Law & Justice": "Faculty of Law and Justice",
-    "Engineering": "Faculty of Engineering",
-    "Medicine & Health": "Faculty of Medicine and Health",
-    "Business School": "UNSW Business School",
-    "Science": "Faculty of Science"
+    'Art, Design & Architecture': 'Faculty of Arts, Design & Arch',
+    'Law & Justice': 'Faculty of Law and Justice',
+    'Engineering': 'Faculty of Engineering',
+    'Medicine & Health': 'Faculty of Medicine and Health',
+    'Business School': 'UNSW Business School',
+    'Science': 'Faculty of Science'
   }
 
   const searchTimer = useRef<number | undefined>();
