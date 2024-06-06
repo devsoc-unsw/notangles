@@ -30,9 +30,10 @@ const About: React.FC = () => {
   return (
     <>
       <Typography gutterBottom variant="body2">
-        Notangles is an app for UNSW students to build their perfect timetable, even before class registration opens. We
-        have many features on the way, including support for your own custom events, and syncing your timetable with
-        friends.
+        Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy-to-use drag-and-drop tool that
+        allows you to plan your course classes and add them to your calendar, even before term class registration opens!
+        We have many features including support for custom events, auto-timetabling, creation of multiple timetables,
+        and sharing events with friends.
       </Typography>
       <Typography gutterBottom variant="body2">
         Inspired by&nbsp;
@@ -79,15 +80,11 @@ const About: React.FC = () => {
       <Typography gutterBottom variant="body2">
         <strong>Team Directors:</strong>
       </Typography>
-      <FeatList>
-        {currDirectors}
-      </FeatList>
+      <FeatList>{currDirectors}</FeatList>
       <Typography gutterBottom variant="body2">
         <strong>Members:</strong>
       </Typography>
-      <FeatList>
-        {currSubcommittee}
-      </FeatList>
+      <FeatList>{currSubcommittee}</FeatList>
       <StyledTypography variant="h6">Disclaimer</StyledTypography>
       <Typography gutterBottom variant="body2">
         While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or

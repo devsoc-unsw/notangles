@@ -9,7 +9,7 @@ import DiscordIcon from '../../assets/DiscordIcon';
 
 const FooterLinks: React.FC = () => {
   return (
-    <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+    <Stack direction="row" spacing={6} justifyContent="space-between" alignItems="center">
       <p>&copy; UNSW Software Development Society 2024</p>
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
         <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
