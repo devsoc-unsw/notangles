@@ -72,7 +72,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
 
   const handleClose = () => {
     setIsOpen(false);
-    updateFormState({
+    setGroup({
       name: '',
       members: [],
       imageURL: NotanglesLogo,
