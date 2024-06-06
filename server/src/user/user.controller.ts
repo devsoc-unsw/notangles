@@ -19,7 +19,7 @@ export class UserController {
     return this.userService.getUserInfo(userId).then((data) => {
       return {
         status: 'Successsfully returned user profile',
-        data,
+        data: { ...data, userID: userId },
       };
     });
   }
@@ -29,7 +29,7 @@ export class UserController {
     return this.userService.setUserProfile(data).then((res) => {
       return {
         status: 'Successfully created user!',
-        res,
+        data: res,
       };
     });
   }
