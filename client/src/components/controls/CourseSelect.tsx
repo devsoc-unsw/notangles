@@ -199,8 +199,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    * @param faculty The faculty of the course
    */
   const handleFacultyClick = (faculty: string) => {
-    setSelectedFaculty(selectedFaculty === faculty ? "" : faculty);
-    setInputValue("");
+    setSelectedFaculty(selectedFaculty === faculty ? '' : faculty);
+    setInputValue('');
   };
 
   /**
@@ -390,6 +390,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         onChange={onChange}
         inputValue={inputValue}
         onBlur={() => setSelectedFaculty('')}
+        onMouseEnter={() => {
+          setSelectedFaculty('');
+        }}
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
