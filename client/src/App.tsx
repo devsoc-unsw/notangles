@@ -11,11 +11,10 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
-import Navbar from './components/navbar/Navbar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, lightTheme, leftContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -43,6 +42,7 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 import GroupsSidebar from './components/sidebar/groupsSideBar/GroupsSidebar';
+import Sidebar from './components/sidebar/Sidebar';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -50,7 +50,8 @@ const StyledApp = styled(Box)`
 
 const ContentWrapper = styled(Box)`
   text-align: center;
-  padding-left: ${contentPadding + 60}px;
+  padding-top: ${contentPadding}px;
+  padding-left: ${leftContentPadding}px;
   padding-right: ${contentPadding}px;
   transition:
     background 0.2s,
@@ -593,6 +594,7 @@ const App: React.FC = () => {
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
             <GroupsSidebar />
+            <Sidebar />
             <ContentWrapper>
               <Content>
                 <Controls
