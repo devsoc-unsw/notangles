@@ -140,7 +140,7 @@ export class FriendService {
 
       return Promise.resolve({
         status,
-        sendeeId,
+        data: { id: sendeeId },
       });
     } catch (e) {
       throw new Error(e);

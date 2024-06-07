@@ -6,7 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { ClassType } from '@prisma/client';
 
 // !! WARNING: these tests will ruin your local db container
-// Before running these integration tests, spin up the DB first (docker compose up).
+// Before running these integration tests, spin up the DB first
 describe('Integration testing for user/friend db endpoints', () => {
   let app: INestApplication;
   let module: TestingModule;
@@ -397,6 +397,151 @@ describe('Integration testing for user/friend db endpoints', () => {
       ...editedTimetable,
       timetableId,
       userID: user.userID,
+    });
+  });
+
+  describe('Friends tests', () => {
+    const user1 = {
+      userID: 'z55555555',
+      firstname: 'A',
+      lastname: '',
+      email: 'first@gmail.com',
+      profileURL: '',
+    };
+    const user2 = {
+      userID: 'z66666666',
+      firstname: 'B',
+      lastname: '',
+      email: 'second@gmail.com',
+      profileURL: '',
+    };
+    const user3 = {
+      userID: 'z77777777',
+      firstname: 'C',
+      lastname: '',
+      email: 'third@gmail.com',
+      profileURL: '',
+    };
+
+    beforeEach(async () => {
+      for (const user of [user1, user2, user3]) {
+        const res = await request(app.getHttpServer())
+          .put('/user/profile')
+          .send({ data: user });
+
+        if (res.status !== 200) {
+          throw new Error('Failed to populate users');
+        }
+      }
+    });
+
+    test('User1 and user2 - rejected friend request', async () => {
+      // User1 sends request to user2
+      let res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user1.userID, sendeeId: user2.userID });
+      expect(res.status).toEqual(201);
+      expect(res.body.status).toEqual('Successfully sent friend request');
+      expect(res.body.data).toEqual({ id: user2.userID });
+
+      // Check user profiles are valid
+      res = await request(app.getHttpServer()).get(
+        `/user/profile/${user1.userID}`,
+      );
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toMatchObject({
+        friends: [],
+        incoming: [],
+      });
+      expect(res.body.data.outgoing).toHaveLength(1);
+      expect(res.body.data.outgoing[0]).toMatchObject(user2);
+
+      res = await request(app.getHttpServer()).get(
+        `/user/profile/${user2.userID}`,
+      );
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toMatchObject({
+        friends: [],
+        outgoing: [],
+      });
+      expect(res.body.data.incoming).toHaveLength(1);
+      expect(res.body.data.incoming[0]).toMatchObject(user1);
+
+      // User 2 rejects friend request/user 1 revokes friend request
+      res = await request(app.getHttpServer()).delete(`/friend/request`).send({
+        senderId: user1.userID,
+        sendeeId: user2.userID,
+      });
+      expect(res.status).toEqual(200);
+      expect(res.body.status).toEqual('Successfully rejected friend request!');
+      expect(res.body.data).toEqual({ senderId: user1.userID });
+
+      res = await request(app.getHttpServer()).get(
+        `/user/profile/${user1.userID}`,
+      );
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toMatchObject({
+        friends: [],
+        incoming: [],
+        outgoing: [],
+      });
+    });
+
+    test('User 1 sends req to 2, accepts req from 1, then removes both (both sides of transaction). Tests getFriends to confirm', async () => {
+      // User 1 sends friend request to 2
+      let res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user1.userID, sendeeId: user2.userID });
+      expect(res.status).toEqual(201);
+
+      // User 3 sends friend request to user 1
+      res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user3.userID, sendeeId: user1.userID });
+      expect(res.status).toEqual(201);
+
+      // Confirm that user1 is not friends with anyone currently
+      res = await request(app.getHttpServer()).get(`/friend/${user1.userID}`);
+      expect(res.status).toEqual(200);
+      expect(res.body.status).toEqual("Found user's friends");
+      expect(res.body.data).toHaveLength(0);
+
+      // User 1 accepts friend request from 3
+      res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user1.userID, sendeeId: user3.userID });
+      expect(res.status).toEqual(201);
+
+      // User 2 confirms friend request from 1
+      res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user2.userID, sendeeId: user1.userID });
+      expect(res.status).toEqual(201);
+
+      // Confirm user 1 is friends with both now
+      res = await request(app.getHttpServer()).get(`/friend/${user1.userID}`);
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.data.map((u) => u.userID)).toEqual(
+        expect.arrayContaining([user2.userID, user3.userID]),
+      );
+
+      // User 1 unfriends user 3
+      res = await request(app.getHttpServer())
+        .delete('/friend')
+        .send({ senderId: user1.userID, sendeeId: user3.userID });
+      expect(res.status).toEqual(200);
+
+      // User 2 unfriends user 1
+      res = await request(app.getHttpServer())
+        .delete('/friend')
+        .send({ senderId: user2.userID, sendeeId: user1.userID });
+      expect(res.status).toEqual(200);
+
+      // Check that user has no friends again :(
+      res = await request(app.getHttpServer()).get(`/friend/${user1.userID}`);
+      expect(res.status).toEqual(200);
+      expect(res.body.data).toHaveLength(0);
     });
   });
 });
