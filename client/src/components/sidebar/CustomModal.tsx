@@ -22,13 +22,14 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 10px;
 `;
 
-const ShowModalButton = styled(IconButton)`
+const ShowModalButton = styled(IconButton)<{ isSelected: boolean }>`
   display: flex;
   flex-direction: row;
   gap: 16px;
   border-radius: 8px;
   justify-content: flex-start;
   padding: 12px 12px 12px 12px;
+  background-color: ${({ isSelected }) => (isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
 `;
 
 const StyledDialogContent = styled(DialogContent)`
@@ -62,11 +63,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   return (
     <>
       <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
-        <ShowModalButton
-          sx={{ backgroundColor: isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent' }}
-          color="inherit"
-          onClick={toggleIsOpen}
-        >
+        <ShowModalButton color="inherit" onClick={toggleIsOpen} isSelected={isSelected}>
           {showIcon}
           <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>

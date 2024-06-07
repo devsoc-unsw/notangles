@@ -49,7 +49,7 @@ const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
       assignedColors,
       setAssignedColors,
     }),
-    [selectedCourses, selectedClasses, createdEvents, assignedColors]
+    [selectedCourses, selectedClasses, createdEvents, assignedColors],
   );
 
   return <CourseContext.Provider value={initialContext}>{children}</CourseContext.Provider>;

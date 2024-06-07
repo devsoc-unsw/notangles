@@ -16,3 +16,5 @@ export const API_CONFIG: Record<Env, Config> = {
   },
 };
 export const config: Config = API_CONFIG[process.env.NODE_ENV || Env.DEV];
+
+export const REDIRECT_LINK = 'http://localhost:5173';

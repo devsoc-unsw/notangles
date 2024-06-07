@@ -12,14 +12,14 @@ const getAutoTimetable = async (data: any): Promise<[number[], boolean]> => {
       body: JSON.stringify(data),
     });
 
-    if (res.status !== 200) {
+    if (res.status !== 201) {
       throw new NetworkError("Couldn't get response");
     }
 
     const content = await res.json();
     return [content.given, content.optimal];
   } catch (error) {
-    throw new NetworkError("Couldn't get response");
+    throw new NetworkError(`Couldn't get response`);
   }
 };
 

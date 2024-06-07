@@ -23,7 +23,7 @@ export const createEventObj = (
   day: number,
   startTime: number,
   endTime: number,
-  subtype: EventSubtype
+  subtype: EventSubtype,
 ): EventPeriod => {
   const newEvent: EventPeriod = {
     type: 'event',
