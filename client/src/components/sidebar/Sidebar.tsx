@@ -1,5 +1,12 @@
-import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
-import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
+import {
+  Description,
+  Info,
+  Security,
+  Settings as SettingsIcon,
+  Group,
+  CalendarMonth,
+} from '@mui/icons-material';
+import { AppBar, Typography, AppBarProps, Divider, Button } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState, useRef, useEffect } from 'react';
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -11,6 +18,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import CollapseButton from './CollapseButton';
+import UserAccount from './UserAccount';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -34,6 +42,7 @@ const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ theme, collapsed }) 
   zIndex: 1201,
   // overriding MUI select component padding when focused (for the term select)
   paddingRight: '0 !important',
+  padding: '10px, 19px, 10px, 19px',
 }));
 
 const SidebarTitle = styled(Typography)`
@@ -72,16 +81,22 @@ const NavComponentsContainer = styled('div')`
 const SidebarFooter = styled('div')`
   display: flex;
   flex-direction: column;
-  margin-top: 16px;
-  gap: 12px;
+  padding: 10px 16px 20px 16px;
+`;
+const SidebarFooterText = styled('div')`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   font-size: 0.8rem;
-  padding: 10px 19px 20px 19px;
+  margin-top: 16px;
 `;
 
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
+  // TODO: dummy logic to be
+  const [login, setLogin] = useState(false);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -193,16 +208,19 @@ const Sidebar: React.FC = () => {
             </>
           ))}
         </NavComponentsContainer>
-        {collapsed && (
+      </SideBarContainer>
+      <SidebarFooter>
+        {/* TODO: dummy logic - to be replaced */}
+        <UserAccount login={login} onClick={() => setLogin(!login)} collapsed={collapsed} />
+        {!collapsed ? (
+          <SidebarFooterText>
+            <Divider />
+            <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
+          </SidebarFooterText>
+        ) : (
           <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
         )}
-      </SideBarContainer>
-      {!collapsed && (
-        <SidebarFooter>
-          <Divider />
-          <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
-        </SidebarFooter>
-      )}
+      </SidebarFooter>
     </StyledSidebar>
   );
 };

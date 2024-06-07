@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { BarsArrowDownIcon } from '@heroicons/react/24/solid';
+import { ViewSidebarRounded } from '@mui/icons-material';
 
 interface CollapseButtonProps {
   collapsed: boolean;
@@ -9,22 +9,22 @@ interface CollapseButtonProps {
   toolTipTitle: string;
 }
 
-const StyledCollapseButton = styled(IconButton)`
+const StyledIconButton = styled(IconButton)`
+  display: flex;
+  gap: 16px;
   border-radius: 8px;
+  justify-content: flex-start;
+  padding: 12px;
   color: ${({ theme }) => theme.palette.text.primary};
-`;
-
-const StyledBarsArrowDownIcon = styled(BarsArrowDownIcon)<{ collapsed: boolean }>`
-  transform: ${({ collapsed }) => (collapsed ? 'rotate(270deg)' : 'rotate(90deg)')};
 `;
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {
   return (
     <>
-      <Tooltip title={collapsed ? toolTipTitle : ''} placement="right">
-        <StyledCollapseButton onClick={onClick}>
-          <StyledBarsArrowDownIcon width={28} height={28} collapsed={collapsed} color="inherit" />
-        </StyledCollapseButton>
+      <Tooltip title={toolTipTitle} placement="right">
+        <StyledIconButton onClick={onClick}>
+          <ViewSidebarRounded color="inherit" />
+        </StyledIconButton>
       </Tooltip>
     </>
   );
