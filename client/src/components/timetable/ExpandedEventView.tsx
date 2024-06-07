@@ -38,6 +38,7 @@ import {
   StyledTopIcons,
 } from '../../styles/ControlStyles';
 import { ExecuteButton, StyledListItemText } from '../../styles/CustomEventStyles';
+import { ColorDivider } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
@@ -45,7 +46,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import { ColorDivider } from '../../styles/ExpandedViewStyles';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};

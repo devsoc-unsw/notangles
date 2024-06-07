@@ -11,7 +11,7 @@ import { GroupModule } from './group/group.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    // AuthModule,
+    AuthModule,
     AutoModule,
     UserModule,
     FriendModule,

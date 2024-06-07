@@ -11,10 +11,11 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
+import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, lightTheme, leftContentPadding } from './constants/theme';
+import { contentPadding, darkTheme, leftContentPadding, lightTheme } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -41,7 +42,6 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import Sidebar from './components/sidebar/Sidebar';
 
 const StyledApp = styled(Box)`
   height: 100%;

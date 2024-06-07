@@ -25,8 +25,8 @@ const FeatList = styled('ul')`
 `;
 
 const About: React.FC = () => {
-  const currDirectors = team.directors.sort().map(director => <li>{director}</li>);
-  const currSubcommittee = team.subcommittee.sort().map(subcommittee => <li>{subcommittee}</li>); 
+  const currDirectors = team.directors.sort().map((director) => <li>{director}</li>);
+  const currSubcommittee = team.subcommittee.sort().map((subcommittee) => <li>{subcommittee}</li>);
   return (
     <>
       <Typography gutterBottom variant="body2">

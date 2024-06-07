@@ -1,7 +1,6 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Save } from '@mui/icons-material';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
 import {
   Dialog,
-  Divider,
   Grid,
   IconButton,
   ListItemIcon,
@@ -32,13 +31,13 @@ import {
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
+import { ColorDivider, ColorListItem } from '../../styles/ExpandedViewStyles';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
-import LocationDropdown from './LocationDropdown';
 import ColorPicker from '../controls/ColorPicker';
-import { ColorDivider, ColorListItem } from '../../styles/ExpandedViewStyles';
+import LocationDropdown from './LocationDropdown';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
