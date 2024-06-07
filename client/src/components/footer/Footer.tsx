@@ -9,7 +9,7 @@ const FooterContainer = styled(Box)`
   text-align: left;
   font-size: 12px;
   max-width: 95%;
-  margin: 0 auto 25px;
+  margin: 0 0 25px 60px;
 
   & div Box {
     line-height: 1.5;

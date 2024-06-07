@@ -1,33 +1,53 @@
-import { FormControl, InputLabel, MenuItem, Select, useMediaQuery, useTheme } from '@mui/material';
-import { borderColor, styled } from '@mui/system';
+import { FormControl, InputLabel, MenuItem, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
 import React, { useContext } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
-const StyledInputLabel = styled(InputLabel)(() => ({
-  '&.Mui-focused': {
-    color: 'white',
-  },
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  color: theme.palette.primary.main,
 }));
 
-const StyledSelect = styled(Select)(() => ({
+const StyledSelect = styled(Select)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  width: '100%',
   '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: theme.palette.primary.main,
   },
   '.MuiSelect-icon': {
-    color: 'white',
+    color: theme.palette.primary.main,
+  },
+  '&.Mui-focused .MuiSelect-icon': {
+    color: theme.palette.primary.main,
+  },
+  '&:hover .MuiSelect-icon': {
+    color: theme.palette.primary.main,
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: theme.palette.primary.main,
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
+    borderColor: theme.palette.primary.main,
   },
 }));
 
-const TermSelect: React.FC = () => {
+const TermDisplay = styled('span')`
+  color: ${({ theme }) => theme.palette.primary.main};
+  font-weight: 600;
+  position: relative;
+  padding: 12px 12px 12px 13px;
+  z-index: 1201;
+  border: 1.2px solid ${({ theme }) => theme.palette.primary.main};
+  border-radius: 10px;
+  display: inline-block;
+`;
+export interface TermSelectProps {
+  collapsed: boolean;
+}
+
+const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -73,28 +93,40 @@ const TermSelect: React.FC = () => {
     setAssignedColors(displayTimetables[termNum][defaultStartTimetable].assignedColors);
   };
 
+  const handleMouseDown = (event: any) => {
+    // prevents collapsing sidebar when selecting value
+    event.stopPropagation();
+  };
+
   return (
-    <FormControl sx={{ paddingRight: '15px' }}>
-      <StyledInputLabel id="select-term-label" sx={{ color: 'white' }}>
-        Select term
-      </StyledInputLabel>
-      <StyledSelect
-        size="small"
-        labelId="select-term-label"
-        id="select-term"
-        sx={{ color: 'white' }}
-        label="Select term"
-        value={isMobile ? term : termName.concat(', ', year)}
-        onChange={selectTerm}
-      >
-        {Array.from(termData).map((term, index) => {
-          return (
-            <MenuItem key={index} value={term}>
-              {term}
-            </MenuItem>
-          );
-        })}
-      </StyledSelect>
+    <FormControl onMouseDown={handleMouseDown}>
+      {collapsed ? (
+        <>
+          <Tooltip title={termName} placement="right">
+            <TermDisplay>{term}</TermDisplay>
+          </Tooltip>
+        </>
+      ) : (
+        <>
+          <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
+          <StyledSelect
+            size="small"
+            labelId="select-term-label"
+            id="select-term"
+            label="Select term"
+            value={isMobile ? term : termName.concat(', ', year)}
+            onChange={selectTerm}
+          >
+            {Array.from(termData).map((term, index) => {
+              return (
+                <MenuItem key={index} value={term}>
+                  {term}
+                </MenuItem>
+              );
+            })}
+          </StyledSelect>
+        </>
+      )}
     </FormControl>
   );
 };

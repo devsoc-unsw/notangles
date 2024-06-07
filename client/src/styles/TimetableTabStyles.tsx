@@ -125,7 +125,6 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
     if (index === selectedTimetableIndex) {
       style.color = `#3a76f8`;
       style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
-      style.boxShadow = `inset 0 0 7px ${theme.palette.primary.main} `;
       style.borderWidth = '1px';
       style.borderColor = `${theme.palette.primary.main} `;
       style.zIndex = '1';

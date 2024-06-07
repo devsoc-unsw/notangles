@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material';
 
 export const borderRadius = 10;
 export const borderWidth = 3;
+export const leftContentPadding = 88;
 export const contentPadding = 15;
 export const inventoryDropzoneOpacity = 0.1;
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
