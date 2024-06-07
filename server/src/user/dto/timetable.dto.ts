@@ -1,5 +1,6 @@
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ClassType } from '@prisma/client';
 
 export class TimetableDto {
   @IsString()
@@ -9,14 +10,15 @@ export class TimetableDto {
   @IsString({ each: true })
   selectedCourses: string[];
   selectedClasses: ClassDto[];
-  events: EventDto[];
+  createdEvents: EventDto[];
   name?: string;
 }
 
 export class ClassDto {
-  id?: string; // TODO: double check (currently optional, if generated on the backend during creation of timetable)
-  classType: string;
-  courseName?: string;
+  id: string;
+  courseCode: string; // Code + section will uniquely identify the class
+  section: string;
+  classType: ClassType;
   timetableId?: string;
 }
 

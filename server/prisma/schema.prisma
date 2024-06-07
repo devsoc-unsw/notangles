@@ -61,7 +61,8 @@ model Event {
 model Class {
   id          String     @unique
   classType   ClassType
-  courseName  String?
+  section     String
+  courseCode  String
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
   @@map("classes")
@@ -112,6 +113,6 @@ enum GroupVisibility {
 enum ClassType { 
   LECTURE
   TUTORIAL
-  LAORATORY
+  LABORATORY
   OTHER
 }

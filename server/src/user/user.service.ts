@@ -109,11 +109,10 @@ export class UserService {
       // Destructure timetables object to make it easier to work with
       const timetables = res.map((t) => {
         // Again, we should look into renaming events to createEvents to make this easier
-        const { id, createdEvents, ...otherTimetableProps } = t;
+        const { id, ...otherTimetableProps } = t;
         return {
           ...otherTimetableProps,
           timetableId: id,
-          events: createdEvents,
         };
       });
 
@@ -135,12 +134,13 @@ export class UserService {
       const _timetableId = uuidv4();
 
       const classes = _selectedClasses.map((c) => {
-        const classId = uuidv4(); // Where is this being generated? For now generating on backend
+        // const classId = uuidv4(); // on second thought, its already been generated on the frontend, and I think there are advantages to this
         return {
           // timetableId: _timetableId,
-          id: classId,
+          id: c.id,
+          section: c.section,
+          courseCode: c.courseCode,
           classType: c.classType,
-          courseName: c.courseName,
         };
       });
 
@@ -172,8 +172,8 @@ export class UserService {
     try {
       // Modify timetable
       const _timetableId = _timetable.timetableId;
-      const eventIds = _timetable.events.map((event) => event.id);
-      const classIds = _timetable.events.map((c) => c.id);
+      const eventIds = _timetable.createdEvents.map((event) => event.id);
+      const classIds = _timetable.createdEvents.map((c) => c.id);
 
       const update_timetable = this.prisma.timetable.update({
         where: {
@@ -194,7 +194,7 @@ export class UserService {
         },
       });
 
-      const update_events = _timetable.events.map((e) =>
+      const update_events = _timetable.createdEvents.map((e) =>
         this.prisma.event.upsert({
           where: { id: e.id },
           update: e,

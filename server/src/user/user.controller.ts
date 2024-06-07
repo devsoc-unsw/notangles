@@ -61,7 +61,7 @@ export class UserController {
   @Get('timetable/:userId')
   getUserTimetables(@Param('userId') userId: string) {
     return this.userService.getUserTimetables(userId).then((data) => {
-      return { status: `Successfully found user's timetable`, data };
+      return { status: `Successfully found user's timetables`, data };
     });
   }
 
@@ -70,9 +70,9 @@ export class UserController {
   createUserTimetable(
     @Body('userId') userId: string,
     @Body('selectedCourses') selectedCourses: string[],
-    @Body('selectedClasses') selectedClasses: ClassDto[], // change type later
+    @Body('selectedClasses') selectedClasses: ClassDto[],
     @Body('createdEvents') createdEvents: EventDto[],
-    @Body('timetableName') timetableName?: string,
+    @Body('name') timetableName?: string,
   ) {
     return this.userService
       .createUserTimetable(
