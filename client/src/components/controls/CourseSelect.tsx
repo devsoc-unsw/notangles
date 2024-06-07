@@ -260,7 +260,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       return defaultOptions;
     }
 
-    let searchOptionsList = defaultOptions;
+    let searchOptionsList = coursesList;
 
     if (selectedFaculty) {
       searchOptionsList = searchOptionsList.filter(course => course.faculty === facultyNameMap[selectedFaculty]);
@@ -291,6 +291,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
     setOptions(defaultOptions);
     setInputValue('');
+    setSelectedFaculty('');
   };
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
@@ -390,9 +391,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         onChange={onChange}
         inputValue={inputValue}
         onBlur={() => setSelectedFaculty('')}
-        onMouseEnter={() => {
-          setSelectedFaculty('');
-        }}
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
