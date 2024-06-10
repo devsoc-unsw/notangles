@@ -58,7 +58,6 @@ export const StyledTitleContainer = styled(Box)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // align-items: center;
   height: 100%;
   width: 100%;
   padding-bottom: 10px;
