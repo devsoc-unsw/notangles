@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
-import { StyledDialogButtons, StyledDialogContent, StyledTitleContainer } from '../../styles/ControlStyles';
+import { StyledDialogButtons, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ControlStyles';
 import {
   ActionsPointer,
   areIdenticalTimetables,
@@ -285,13 +285,15 @@ const History: React.FC = () => {
       {/* Clear timetable(s) Dialog  */}
       <Dialog maxWidth="xs" onClose={() => setClearOpen(false)} open={clearOpen}>
         <StyledTitleContainer>
-          <StyledDialogContent>Clear all timetables?</StyledDialogContent>
+          <StyledDialogTitle>Confirm Clear</StyledDialogTitle>
+          <StyledDialogContent>Are you sure you want to clear all timetables?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button
             onClick={() => {
               setClearOpen(false);
             }}
+            variant="outlined"
           >
             CANCEL
           </Button>
@@ -302,6 +304,7 @@ const History: React.FC = () => {
               clearAll();
               setClearOpen(false);
             }}
+            variant="contained"
           >
             CLEAR
           </Button>
