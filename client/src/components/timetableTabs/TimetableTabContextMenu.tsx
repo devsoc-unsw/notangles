@@ -22,6 +22,7 @@ import {
   StyledDialogButtons,
   StyledDialogContent,
   StyledDialogTitle,
+  StyledDialogTitleFont,
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
@@ -405,10 +406,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       {/* Delete timetable Dialog  */}
       <Dialog maxWidth="xs" open={deleteOpen} onClose={handleMenuClose}>
         <StyledTitleContainer>
-          <StyledDialogTitle>Confirm Deletion</StyledDialogTitle>
-          <StyledDialogContent>
-            Are you sure you want to delete this current timetable?
-          </StyledDialogContent>
+          <StyledDialogTitle>
+            <StyledDialogTitleFont>Confirm Deletion</StyledDialogTitleFont>
+            <Close onClick={handleMenuClose} sx={{ fontSize: '20px' }} />
+          </StyledDialogTitle>
+          <StyledDialogContent>Are you sure you want to delete this current timetable?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
           <Button onClick={handleMenuClose} variant="outlined">

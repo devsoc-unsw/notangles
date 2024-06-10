@@ -47,7 +47,11 @@ export const StyledDialogButtons = styled(Box)`
 `;
 
 export const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 24px 8px 24px;
+  display: flex;
+  flex-direction: row;
+  padding: 8px 20px 8px 24px;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const StyledDialogContent = styled(DialogContent)`
@@ -65,13 +69,8 @@ export const StyledTitleContainer = styled(Box)`
 `;
 
 export const StyledDialogTitleFont = styled(Typography)`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding-bottom: 10px;
+  font-size: 18px;
+  font-weight: 500;
 `;
 
 export const StyledListItem = styled(ListItem)`

@@ -1,11 +1,11 @@
-import { Delete, Redo, Undo } from '@mui/icons-material';
+import { Close, Delete, Redo, Undo } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
-import { StyledDialogButtons, StyledDialogContent, StyledDialogTitle, StyledTitleContainer } from '../../styles/ControlStyles';
+import { StyledDialogButtons, StyledDialogContent, StyledDialogTitle, StyledDialogTitleFont, StyledTitleContainer } from '../../styles/ControlStyles';
 import {
   ActionsPointer,
   areIdenticalTimetables,
@@ -285,7 +285,15 @@ const History: React.FC = () => {
       {/* Clear timetable(s) Dialog  */}
       <Dialog maxWidth="xs" onClose={() => setClearOpen(false)} open={clearOpen}>
         <StyledTitleContainer>
-          <StyledDialogTitle>Confirm Clear</StyledDialogTitle>
+          <StyledDialogTitle>
+            <StyledDialogTitleFont>Confirm Clear</StyledDialogTitleFont>
+            <Close
+              onClick={() => {
+                setClearOpen(false);
+              }}
+              sx={{ fontSize: '20px' }}
+            />
+          </StyledDialogTitle>
           <StyledDialogContent>Are you sure you want to clear all timetables?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
