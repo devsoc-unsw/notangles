@@ -43,7 +43,7 @@ export const StyledDialogButtons = styled(Box)`
   align-items: flex-end;
   gap: 12px;
   padding-bottom: 20px;
-  padding-right: 32px;
+  padding-right: 24px;
 `;
 
 export const StyledDialogTitle = styled(DialogTitle)`
