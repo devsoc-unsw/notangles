@@ -405,7 +405,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       {/* Delete timetable Dialog  */}
       <Dialog maxWidth="xs" open={deleteOpen} onClose={handleMenuClose}>
         <StyledTitleContainer>
-          <StyledDialogTitle>Confirm Deltetion</StyledDialogTitle>
+          <StyledDialogTitle>Confirm Deletion</StyledDialogTitle>
           <StyledDialogContent>
             Are you sure you want to delete this current timetable?
           </StyledDialogContent>
