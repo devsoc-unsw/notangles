@@ -1,4 +1,5 @@
 import { Box, DialogContent, DialogTitle, ListItem, Typography } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { styled } from '@mui/system';
 
 export const StyledButtonText = styled(Box)`
@@ -9,6 +10,13 @@ export const StyledButtonText = styled(Box)`
 
 export const StyledControlsButton = styled('div')`
   display: flex;
+`;
+
+export const StyledCloseIcon = styled(Close)`
+  font-size: 20px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const ColorIndicatorBox = styled(Box, {

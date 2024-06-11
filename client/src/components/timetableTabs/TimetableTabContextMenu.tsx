@@ -19,6 +19,7 @@ import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import {
+  StyledCloseIcon,
   StyledDialogButtons,
   StyledDialogContent,
   StyledDialogTitle,
@@ -408,7 +409,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         <StyledTitleContainer>
           <StyledDialogTitle>
             <StyledDialogTitleFont>Confirm Deletion</StyledDialogTitleFont>
-            <Close onClick={handleMenuClose} sx={{ fontSize: '20px' }} />
+            <StyledCloseIcon onClick={handleMenuClose} />
           </StyledDialogTitle>
           <StyledDialogContent>Are you sure you want to delete this current timetable?</StyledDialogContent>
         </StyledTitleContainer>
