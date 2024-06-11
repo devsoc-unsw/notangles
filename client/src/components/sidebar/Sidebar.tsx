@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
-=======
 import {
   Description,
   Info,
@@ -11,7 +7,6 @@ import {
   CalendarMonth,
 } from '@mui/icons-material';
 import { AppBar, Typography, AppBarProps, Divider, Button } from '@mui/material';
->>>>>>> ntgl-sidebar-style-fix
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -24,11 +19,7 @@ import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
-<<<<<<< HEAD
-=======
-import CollapseButton from './CollapseButton';
 import UserAccount from './UserAccount';
->>>>>>> ntgl-sidebar-style-fix
 
 const LogoImg = styled('img')`
   height: 46px;
