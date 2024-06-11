@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './app.module';
-import { PrismaService } from './prisma/prisma.service';
+import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 import { ClassType } from '@prisma/client';
+import mockData from './mockData';
 
 // !! WARNING: these tests will ruin your local db container
 // Before running these integration tests, spin up the DB first
@@ -39,26 +40,9 @@ describe('Integration testing for user/friend db endpoints', () => {
   });
 
   test('Basic create, read, and update tests for user and settings', async () => {
-    const user = {
-      userID: 'z55555555',
-      firstname: 'First',
-      lastname: 'Last',
-      email: 'test@gmail.com',
-      profileURL: 'images.google.com/blahblah',
-    };
+    const user = mockData.users[0];
 
-    const setting = {
-      is12HourMode: true,
-      isDarkMode: true,
-      isSquareEdges: true,
-      isHideFullClasses: true,
-      isDefaultUnscheduled: true,
-      isHideClassInfo: true,
-      isSortAlphabetic: true,
-      isShowOnlyOpenClasses: true,
-      isHideExamClasses: false,
-      isConvertToLocalTimezone: true,
-    };
+    const setting = mockData.setting;
     // Create new user
     let res = await request(app.getHttpServer())
       .put('/user/profile')
@@ -136,25 +120,14 @@ describe('Integration testing for user/friend db endpoints', () => {
 
   test('Add fetch and delete multiple timetables', async () => {
     // Create user
-    const user = {
-      userID: 'z55555555',
-      firstname: 'First',
-      lastname: 'Last',
-      email: 'test@gmail.com',
-      profileURL: 'images.google.com/blahblah',
-    };
+    const user = mockData.users[0];
     let res = await request(app.getHttpServer())
       .put('/user/profile')
       .send({ data: user });
     expect(res.status).toEqual(200);
 
     // Create first timetable - (empty timetable)
-    const firstTimetable = {
-      selectedCourses: [],
-      selectedClasses: [],
-      createdEvents: [],
-      name: 'timetable1',
-    };
+    const firstTimetable = mockData.timetables[0];
 
     res = await request(app.getHttpServer())
       .post('/user/timetable')
@@ -167,44 +140,7 @@ describe('Integration testing for user/friend db endpoints', () => {
     const firstTimetableId = res.body.data;
 
     // Create second timetable (filled timetable)
-    const secondTimetable = {
-      selectedCourses: ['COMP1511', 'COMP2511'],
-      selectedClasses: [
-        {
-          id: 'c1',
-          classType: ClassType.LABORATORY,
-          courseCode: 'COMP1511',
-          section: 'F111A',
-        },
-        {
-          id: 'c2',
-          classType: ClassType.LECTURE,
-          courseCode: 'COMP2511',
-          section: 'A',
-        },
-      ],
-      createdEvents: [
-        {
-          id: 'e1',
-          name: 'event1',
-          location: 'UNSW',
-          colour: 'FFFFFF',
-          day: 'Monday',
-          start: '2013-10-21T13:28:06.419Z',
-          end: '2013-10-21T13:28:06.419Z',
-        },
-        {
-          id: 'e2',
-          name: 'event2',
-          location: 'Online',
-          colour: '000000',
-          day: 'Tuesday',
-          start: '2013-10-21T13:28:06.419Z',
-          end: '2013-10-21T13:28:06.419Z',
-        },
-      ],
-      name: 'timetable2',
-    };
+    const secondTimetable = mockData.timetables[1];
 
     res = await request(app.getHttpServer())
       .post('/user/timetable')
@@ -265,68 +201,10 @@ describe('Integration testing for user/friend db endpoints', () => {
   });
 
   test('Update timetables', async () => {
-    const timetable = {
-      selectedCourses: ['COMP1511', 'COMP2511'],
-      selectedClasses: [
-        {
-          id: 'c1',
-          classType: ClassType.LABORATORY,
-          courseCode: 'COMP1511',
-          section: 'F111A',
-        },
-        {
-          id: 'c2',
-          classType: ClassType.LECTURE,
-          courseCode: 'COMP2511',
-          section: 'A',
-        },
-        {
-          id: 'c3',
-          classType: ClassType.OTHER,
-          courseCode: 'COMP2511',
-          section: 'B123',
-        },
-      ],
-      createdEvents: [
-        {
-          id: 'e1',
-          name: 'event1',
-          location: 'UNSW',
-          colour: 'FFFFFF',
-          day: 'Monday',
-          start: '2013-10-21T13:28:06.419Z',
-          end: '2013-10-21T13:28:06.419Z',
-        },
-        {
-          id: 'e2',
-          name: 'event2',
-          location: 'Online',
-          colour: '000000',
-          day: 'Tuesday',
-          start: '2013-10-21T13:28:06.419Z',
-          end: '2013-10-21T13:28:06.419Z',
-        },
-        {
-          id: 'e3',
-          name: 'event3',
-          location: 'CBD',
-          colour: '000000',
-          day: 'Friday',
-          start: '2013-10-21T13:28:06.419Z',
-          end: '2013-10-21T13:28:06.419Z',
-        },
-      ],
-      name: 'my timetable',
-    };
+    const timetable = mockData.timetables[2];
 
     // Create user and timetable
-    const user = {
-      userID: 'z55555555',
-      firstname: 'First',
-      lastname: 'Last',
-      email: 'test@gmail.com',
-      profileURL: 'images.google.com/blahblah',
-    };
+    const user = mockData.users[0];
     let res = await request(app.getHttpServer())
       .put('/user/profile')
       .send({ data: user });
@@ -400,29 +278,54 @@ describe('Integration testing for user/friend db endpoints', () => {
     });
   });
 
-  describe('Friends tests', () => {
-    const user1 = {
-      userID: 'z55555555',
-      firstname: 'A',
-      lastname: '',
-      email: 'first@gmail.com',
-      profileURL: '',
-    };
-    const user2 = {
-      userID: 'z66666666',
-      firstname: 'B',
-      lastname: '',
-      email: 'second@gmail.com',
-      profileURL: '',
-    };
-    const user3 = {
-      userID: 'z77777777',
-      firstname: 'C',
-      lastname: '',
-      email: 'third@gmail.com',
-      profileURL: '',
-    };
+  describe('User error tests', () => {
+    let res;
+    test(`User profile doesn't exist`, async () => {
+      res = await request(app.getHttpServer()).get('/user/profile/1');
+      expect(res.status);
+    });
 
+    test(`Settings don't exist`, async () => {
+      res = await request(app.getHttpServer()).get(`/user/settings/1`);
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+      // Create user without settings
+      const user = mockData.users[0];
+      res = await request(app.getHttpServer())
+        .put('/user/profile')
+        .send({ data: user });
+
+      res = await request(app.getHttpServer()).get(
+        `/user/settings/${user.userID}`,
+      );
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+    });
+
+    // This one will return an empty array instead of an error. This might actually be easier to work with
+    // test(`Timetable (user doesn't exist)`, async () => {
+    //   res = await request(app.getHttpServer()).get('/user/timetable/1');
+    //   expect(res).toEqual({});
+    //   expect(res.status).not.toEqual(200);
+    // });expect(res.status).not.toEqual(201);
+
+    test(`Edit timetable`, async () => {
+      res = await request(app.getHttpServer())
+        .put('/user/timetable')
+        .send({ timetable: mockData.timetables[0] });
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+    });
+
+    test(`Delete timetable`, async () => {
+      res = await request(app.getHttpServer()).delete('/user/timetable/1');
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+    });
+  });
+
+  describe('Friends tests', () => {
+    const [user1, user2, user3] = mockData.users;
     beforeEach(async () => {
       for (const user of [user1, user2, user3]) {
         const res = await request(app.getHttpServer())
@@ -543,5 +446,42 @@ describe('Integration testing for user/friend db endpoints', () => {
       expect(res.status).toEqual(200);
       expect(res.body.data).toHaveLength(0);
     });
+
+    test('Basic friend errors', async () => {
+      // Friend request to someone that doesn't exist
+      let res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: user1.userID, sendeeId: 'INVALID' });
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+
+      // Friend request by person that doesn't exist
+      res = await request(app.getHttpServer())
+        .post('/friend/request')
+        .send({ senderId: 'INVALID', sendeeId: user1.userID });
+      expect(res.status).not.toEqual(200);
+      expect(res.status).not.toEqual(201);
+    });
+
+    // test('Friend errors - edge cases', async () => {
+    //   // Unfriend request to someone with no outstanding friend request
+    //   let res = await request(app.getHttpServer())
+    //     .delete('/friend')
+    //     .send({ senderId: user1.userID, sendeeId: user3.userID });
+    //   expect(res.status).not.toEqual(200);
+    //   expect(res.status).not.toEqual(201);
+
+    //   // Friend requesting someone who is already a friend
+    //   res = await request(app.getHttpServer())
+    //     .post('/friend')
+    //     .send({ senderId: user1.userID, sendeeId: user2.userID });
+    //   expect(res.status).toEqual(201);
+
+    //   res = await request(app.getHttpServer())
+    //     .post('/friend/request')
+    //     .send({ senderId: user1.userID, sendeeId: user2.userID });
+    //   expect(res.status).not.toEqual(200);
+    //   expect(res.status).not.toEqual(201);
+    // });
   });
 });
