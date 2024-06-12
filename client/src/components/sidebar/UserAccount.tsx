@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { LoginRounded, AccountCircle, LogoutRounded } from '@mui/icons-material';
-import { styled } from '@mui/system';
+import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
+import { styled } from '@mui/system';
+import React, { useEffect, useState } from 'react';
+
 import { API_URL } from '../../api/config';
 
 interface UserAccountProps {
@@ -46,6 +47,7 @@ interface User {
 };
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
+  const [windowLocation, setWindowLocation] = useState("");
   const [user, setUser] = useState<User>({zid: ""});
   useEffect(() => {
     async function runAsync() {
@@ -72,6 +74,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     // eslint-disable-next-line
   }, []);
   const loginCall = () => {
+    setWindowLocation(window.location.href);
     window.location.replace(`${API_URL.server}/auth/login`);
 
   };
@@ -84,7 +87,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     // REPLACE ME
-    window.location.replace('https://notanglesstaging.devsoc.app/');
+    // window.location.replace('https://notanglesstaging.devsoc.app/');
+    window.location.replace(windowLocation);
     setUser({zid: ""});
   };
   // https://stackoverflow.com/a/32108184/1098564

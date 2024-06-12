@@ -1,7 +1,7 @@
 import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 
-import { REDIRECT_LINK } from '../config';
+import { config } from '../config';
 import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 
@@ -25,7 +25,7 @@ export class AuthController {
   @UseGuards(LoginGuard)
   @Get('/callback/csesoc')
   loginCallback(@Res() res: Response) {
-    res.redirect(REDIRECT_LINK);
+    res.redirect(config.redirect_link);
   }
 
   @Get('/logout')
