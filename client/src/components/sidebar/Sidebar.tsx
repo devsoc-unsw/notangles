@@ -97,8 +97,7 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
   // TODO: dummy logic to be
-  const [login, setLogin] = useState(false);
-
+  
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
@@ -212,7 +211,7 @@ const Sidebar: React.FC = () => {
       </SideBarContainer>
       <SidebarFooter>
         {/* TODO: dummy logic - to be replaced */}
-        <UserAccount login={login} onClick={() => setLogin(!login)} collapsed={collapsed} />
+        <UserAccount collapsed={collapsed} />
         {!collapsed ? (
           <SidebarFooterText>
             <Divider />

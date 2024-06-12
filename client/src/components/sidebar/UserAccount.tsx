@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoginRounded, AccountCircle, LogoutRounded } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import { Button, IconButton, Tooltip } from '@mui/material';
 
 interface UserAccountProps {
-  login: boolean;
-  onClick: () => void;
   collapsed: boolean;
 }
 
@@ -42,16 +40,66 @@ const StyledAccountIcon = styled(AccountCircle)`
   height: 28px;
 `;
 
-const UserAccount: React.FC<UserAccountProps> = ({ login, onClick, collapsed }) => {
+interface User { 
+  zid: string;
+};
+const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
+  const [login, setLogin] = useState(false);
+  const [user, setUser] = useState<User>({zid: ""});
+  useEffect(() => {
+    async function runAsync() {
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/user', {
+          credentials: 'include',
+        });
+        const userResponse = await response.json();
+        // const userResponse = await response.text();
+        if (userResponse !== '') {
+          setLogin(true);
+          setUser({zid: userResponse});
+        } else {
+          setUser({zid: ""});
+          setLogin(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // Execute the created function directly
+    runAsync();
+    // https://stackoverflow.com/a/55854902/1098564
+    // eslint-disable-next-line
+  }, []);
+  const loginCall = () => {
+    window.location.replace('http://localhost:3001/api/auth/login');
+
+  };
+  const logoutCall = async () => {
+    // window.location.replace('http://localhost:3001/api/auth/logout');
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/logout', {
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    window.location.replace('http://localhost:5173');
+    setUser({zid: ""});
+  };
+  // https://stackoverflow.com/a/32108184/1098564
+  // const isEmpty = (obj: Object) => {
+  //   return Object.keys(obj).length === 0 && obj.constructor === Object;
+  // };
+  
   if (!login) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
-        <StyledIconButton onClick={onClick}>
+        <StyledIconButton onClick={loginCall}>
           <LoginRounded />
         </StyledIconButton>
       </Tooltip>
     ) : (
-      <StyledButton onClick={onClick}>Log in</StyledButton>
+      <StyledButton onClick={loginCall}>Log in</StyledButton>
     );
   }
 
@@ -59,7 +107,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ login, onClick, collapsed }) 
     <UserAuth>
       {collapsed ? (
         <Tooltip title="Log out" placement="right">
-          <StyledIconButton onClick={onClick}>
+          <StyledIconButton onClick={logoutCall}>
             <LogoutRounded />
           </StyledIconButton>
         </Tooltip>
@@ -68,11 +116,11 @@ const UserAccount: React.FC<UserAccountProps> = ({ login, onClick, collapsed }) 
           <UserInfo>
             <StyledAccountIcon />
             {/* TODO: handle user's name */}
-            <p>User's Name</p>
+            <p>{user.zid}</p>
           </UserInfo>
           <Tooltip title="Log out" placement="right">
             {/* TODO: error handling for when logging out */}
-            <StyledIconButton color="inherit" onClick={onClick}>
+            <StyledIconButton color="inherit" onClick={logoutCall}>
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>
