@@ -25,6 +25,7 @@ export class AuthController {
   @UseGuards(LoginGuard)
   @Get('/callback/csesoc')
   loginCallback(@Res() res: Response) {
+    console.log(config.redirect_link);
     res.redirect(config.redirect_link);
   }
 
