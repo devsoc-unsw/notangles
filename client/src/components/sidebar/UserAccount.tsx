@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LoginRounded, AccountCircle, LogoutRounded } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import { Button, IconButton, Tooltip } from '@mui/material';
+import { API_URL } from '../../api/config';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -49,14 +50,14 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   useEffect(() => {
     async function runAsync() {
       try {
-        const response = await fetch('http://localhost:3001/api/auth/user', {
+        const response = await fetch(`${API_URL.server}/auth/user`, {
           credentials: 'include',
         });
-        const userResponse = await response.json();
+        const userResponse = await response.text();
         // const userResponse = await response.text();
         if (userResponse !== '') {
           setLogin(true);
-          setUser({zid: userResponse});
+          setUser({zid: JSON.parse(userResponse)});
         } else {
           setUser({zid: ""});
           setLogin(false);
@@ -71,18 +72,18 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     // eslint-disable-next-line
   }, []);
   const loginCall = () => {
-    window.location.replace('http://localhost:3001/api/auth/login');
+    window.location.replace(`${API_URL.server}/auth/login`);
 
   };
   const logoutCall = async () => {
-    // window.location.replace('http://localhost:3001/api/auth/logout');
     try {
-      const response = await fetch('http://localhost:3001/api/auth/logout', {
+      const _response = await fetch(`${API_URL.server}/auth/logout`, {
         credentials: 'include',
       });
     } catch (error) {
       console.log(error);
     }
+    // window.location.replace('http://localhost:5173');
     window.location.replace('http://localhost:5173');
     setUser({zid: ""});
   };

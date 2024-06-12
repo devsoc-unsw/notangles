@@ -8,6 +8,7 @@ export enum Env {
 interface Config {
   timetable: string;
   auto: string;
+  server: string;
 }
 
 const LOCAL = 'http://localhost:3001';
