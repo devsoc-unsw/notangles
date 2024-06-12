@@ -143,10 +143,30 @@ const Career = styled('div')`
 const FacultyButtonsContainer = styled('div')`
   display: flex;
   flex-wrap: wrap;
-  margin: ${({ theme }) => theme.spacing(2, 0)};
+  margin: ${({ theme }) => theme.spacing(1.5, 0)};
   width: 100%;
 `;
 
+const FacultyTags = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'selectedFaculty' && prop !== 'faculty'
+})<{
+  selectedFaculty: string;
+  faculty: string;
+}>`
+  margin: 5px;
+  margin-left: 13px;
+  margin-right: 0px;
+  padding: 5px 12px;
+  cursor: pointer;
+  background-color: ${({ theme, selectedFaculty, faculty }) => 
+    selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.secondary.light
+  };
+  color: ${({ theme, selectedFaculty, faculty }) =>
+    selectedFaculty === faculty ? '#FFFFFF' : theme.palette.secondary.dark
+  };
+  text-transform: none;
+  font-size: 13px;
+`;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
   const [options, setOptionsState] = useState<CoursesList>([]);
@@ -326,28 +346,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         <ListboxContainer ref={ref}>
           <FacultyButtonsContainer>
             {faculties.map((faculty, index) => (
-              <Button 
+              <FacultyTags 
                 key={index}
+                selectedFaculty={selectedFaculty} 
+                faculty={faculty}
                 onMouseDown={(event) => {
                   event.preventDefault();
                 }}
                 onClick={() => handleFacultyClick(faculty)}
                 variant="contained"
                 disableElevation
-                style={{
-                  margin: '5px',
-                  marginLeft: '10px',
-                  marginRight: '0px',
-                  padding: '5px 10px',
-                  cursor: 'pointer',
-                  backgroundColor: selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.secondary.light,
-                  color: selectedFaculty === faculty ? '#FFFFFF' : theme.palette.secondary.dark,
-                  textTransform: 'none',
-                  fontSize: '13px',
-                }}
-              >
+              >  
                 {faculty}
-              </Button>
+              </FacultyTags>
             ))}
           </FacultyButtonsContainer>
           <OuterElementContext.Provider value={other}>
