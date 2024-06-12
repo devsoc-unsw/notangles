@@ -83,8 +83,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // window.location.replace('http://localhost:5173');
-    window.location.replace('http://localhost:5173');
+    // REPLACE ME
+    window.location.replace('https://notanglesstaging.devsoc.app/');
     setUser({zid: ""});
   };
   // https://stackoverflow.com/a/32108184/1098564
