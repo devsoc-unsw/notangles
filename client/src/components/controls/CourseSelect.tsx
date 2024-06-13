@@ -344,15 +344,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
       return (
         <ListboxContainer ref={ref}>
-          <FacultyButtonsContainer>
+          <FacultyButtonsContainer
+            onMouseDown={(event) => {
+              event.preventDefault();
+            }}
+          >
             {faculties.map((faculty, index) => (
               <FacultyTags 
                 key={index}
                 selectedFaculty={selectedFaculty} 
                 faculty={faculty}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                }}
                 onClick={() => handleFacultyClick(faculty)}
                 variant="contained"
                 disableElevation
