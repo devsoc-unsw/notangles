@@ -11,9 +11,9 @@ interface Config {
 
 export const API_CONFIG: Record<Env, Config> = {
   [Env.DEV]: {
-    auto: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`,
-    client: `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
-    redirect_link: `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
+    auto: 'localhost:50051',
+    client: 'http://localhost:5173',
+    redirect_link: 'http://localhost:5173',
   },
   [Env.PROD]: {
     auto: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`,
@@ -22,3 +22,5 @@ export const API_CONFIG: Record<Env, Config> = {
   },
 };
 export const config: Config = API_CONFIG[process.env.NODE_ENV || Env.DEV];
+
+export const REDIRECT_LINK = 'http://localhost:5173';

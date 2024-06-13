@@ -1,7 +1,7 @@
 import { Injectable, Request, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { Issuer } from 'openid-client';
-import { config } from '../config';
+import { REDIRECT_LINK } from '../config';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     );
 
     if (!id_token || !TrustIssuer) {
-      return res.redirect(config.redirect_link);
+      return res.redirect(REDIRECT_LINK);
     }
 
     req.logout((err) => {
