@@ -28,7 +28,7 @@ const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ theme, collapsed }) 
   backgroundColor: theme.palette.background.paper,
   width: collapsed ? '80px' : '290px',
   height: '100vh',
-  left: 0,
+  left: 62,
   color: theme.palette.text.primary,
   transition: 'width 0.2s ease',
   zIndex: 1201,

@@ -58,6 +58,8 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
   const [isGroupNameInteracted, setGroupNameInteracted] = useState(false);
   const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
 
+
+
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
@@ -72,7 +74,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         variant="outlined"
         required
         fullWidth
-        onChange={(e) => setGroup({...group, name: e.target.name})}
+        onChange={(e) => setGroup({...group, name: e.target.value})}
         onBlur={() => setGroupNameInteracted(true)}
         error={group.name === '' && isGroupNameInteracted}
         helperText="Must be at least one character"

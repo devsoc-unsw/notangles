@@ -7,7 +7,7 @@ import AddGroupDialog from '../addGroupDialog/AddGroupDialog';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 
-const GROUP_CIRCLE_SIZE = 65;
+const GROUP_CIRCLE_SIZE = 45;
 
 const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   borderRadius: 999,
