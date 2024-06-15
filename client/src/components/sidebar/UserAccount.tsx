@@ -79,7 +79,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       const response = await fetch(`${API_URL.server}/auth/login`, {
         credentials: 'include',
       });
-      console.log(response);
+      const url_to_link = await response.text();
+      console.log(url_to_link);
+      window.location.replace(url_to_link);
     } catch (error) {
       console.log(error);
     }
