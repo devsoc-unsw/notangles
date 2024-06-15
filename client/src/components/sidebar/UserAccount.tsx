@@ -73,9 +73,17 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     // https://stackoverflow.com/a/55854902/1098564
     // eslint-disable-next-line
   }, []);
-  const loginCall = () => {
+  const loginCall = async () => {
     setWindowLocation(window.location.href);
-    window.location.replace(`${API_URL.server}/auth/login`);
+    try {
+      const response = await fetch(`${API_URL.server}/auth/login`, {
+        // credentials: 'include',
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    // window.location.replace(`${API_URL.server}/auth/login`);
 
   };
   const logoutCall = async () => {
