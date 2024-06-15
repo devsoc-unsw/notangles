@@ -76,12 +76,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
-      // const response = await fetch(`${API_URL.server}/auth/login`, {
-      //   credentials: 'include',
-      // });
-      // console.log(response)
-      // const url_to_link = await response.text();
-      // console.log(url_to_link);
       window.location.replace(`${API_URL.server}/auth/login`);
     } catch (error) {
       console.log(error);
@@ -97,8 +91,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // REPLACE ME
-    // window.location.replace('https://notanglesstaging.devsoc.app/');
     window.location.replace(windowLocation);
     setUser({zid: ""});
   };
