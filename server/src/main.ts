@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'https://notanglesstaging.devsoc.app',
+      'https://notanglesstaging.devsoc.app/',
       'https://notangles.devsoc.app/',
     ],
     credentials: true, // Allow credentials (e.g., cookies) to be sent with the request
