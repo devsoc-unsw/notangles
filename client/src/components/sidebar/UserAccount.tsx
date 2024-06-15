@@ -77,7 +77,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     setWindowLocation(window.location.href);
     try {
       const response = await fetch(`${API_URL.server}/auth/login`, {
-        // credentials: 'include',
+        credentials: 'include',
       });
       console.log(response);
     } catch (error) {
