@@ -77,7 +77,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
-      const response = await fetch(`${API_URL.server}/auth/login`, {
+      const response = await fetch(`https://notanglesstaging.devsoc.app/api/auth/login`, {
         credentials: 'include',
       });
       console.log(response);
