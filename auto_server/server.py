@@ -33,6 +33,7 @@ class AutoTimetablerServicer(autotimetabler_pb2_grpc.AutoTimetablerServicer):
 
 
 def main():
+    print("Autotimetabling server is booting!")
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     autotimetabler_pb2_grpc.add_AutoTimetablerServicer_to_server(
         AutoTimetablerServicer(), server
