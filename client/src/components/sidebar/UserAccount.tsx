@@ -54,7 +54,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       try {
         const response = await fetch(`${API_URL.server}/auth/user`, {
           credentials: 'include',
-          mode: 'no-cors'
         });
         const userResponse = await response.text();
         // const userResponse = await response.text();
@@ -77,13 +76,13 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
-      const response = await fetch(`https://notanglesstaging.devsoc.app/api/auth/login`, {
-        credentials: 'include',
-      });
-      console.log(response);
-      const url_to_link = await response.text();
-      console.log(url_to_link);
-      window.location.replace(url_to_link);
+      // const response = await fetch(`${API_URL.server}/auth/login`, {
+      //   credentials: 'include',
+      // });
+      // console.log(response)
+      // const url_to_link = await response.text();
+      // console.log(url_to_link);
+      window.location.replace(`${API_URL.server}/auth/login`);
     } catch (error) {
       console.log(error);
     }
