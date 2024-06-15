@@ -54,6 +54,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       try {
         const response = await fetch(`${API_URL.server}/auth/user`, {
           credentials: 'include',
+          mode: 'no-cors'
         });
         const userResponse = await response.text();
         // const userResponse = await response.text();
