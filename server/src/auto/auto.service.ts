@@ -4,22 +4,27 @@ import * as grpc from '@grpc/grpc-js';
 import { TimetableConstraints } from '../proto/autotimetabler_pb';
 import { AutoTimetablerClient } from '../proto/autotimetabler_grpc_pb';
 import { autoDTO } from './dto/auto.dto';
-import { config } from 'src/config';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AutoService {
+  constructor(private configService: ConfigService) {}
   async getAutoTimetable(@Body() autoService: autoDTO): Promise<string> {
-    return await getAuto(autoService);
+    const AUTO_SERVER_HOST = `${this.configService.get<string>('AUTO_SERVER_HOST_NAME')}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
+    return await getAuto(autoService, AUTO_SERVER_HOST);
   }
 }
 
 interface getAutoParameter {
-  (data: autoDTO): Promise<string>;
+  (data: autoDTO, grpc_client_conn: string): Promise<string>;
 }
 
-export const getAuto: getAutoParameter = async (data: autoDTO) => {
+export const getAuto: getAutoParameter = async (
+  data: autoDTO,
+  grpc_client_conn: string,
+) => {
   const client = new AutoTimetablerClient(
-    config.auto,
+    grpc_client_conn,
     grpc.credentials.createInsecure(),
   );
   const constraints = new TimetableConstraints();

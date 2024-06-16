@@ -9,22 +9,25 @@ import { FriendModule } from './friend/friend.module';
 import { ConfigModule } from '@nestjs/config';
 import { GroupModule } from './group/group.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { config } from './config';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    // ClientsModule.register([
-    //   {
-    //     name: 'autotimetabler',
-    //     transport: Transport.GRPC,
-    //     options: {
-    //       package: 'autotimetabler',
-    //       protoPath: join(__dirname, './proto/autotimetabler.proto'),
-    //       url: config.auto,
-    //     },
-    //   },
-    // ]),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '../.env',
+    }),
+    ClientsModule.register([
+      {
+        name: 'autotimetabler',
+        transport: Transport.GRPC,
+        options: {
+          package: 'autotimetabler',
+          protoPath: join(__dirname, './proto/autotimetabler.proto'),
+          url: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`
+        },
+      },
+    ]),
     AuthModule,
     AutoModule,
     UserModule,

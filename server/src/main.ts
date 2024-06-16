@@ -4,7 +4,6 @@ import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
-import { config } from './config';
 const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
 import * as dotenv from 'dotenv';
 import * as path from 'path';
@@ -15,7 +14,7 @@ async function bootstrap() {
   dotenv.config({
     path: path.resolve(__dirname, '../.env'),
   });
- 
+
   app.enableCors({
     origin: [
       'http://localhost:5173',
@@ -46,7 +45,6 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-
   await app.listen(3001);
 }
 
