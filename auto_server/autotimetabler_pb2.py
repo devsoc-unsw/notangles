@@ -14,19 +14,19 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61utotimetabler.proto\x12\x0e\x61utotimetabler\"\xf2\x01\n\x14TimetableConstraints\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x0c\n\x04\x64\x61ys\x18\x03 \x01(\t\x12\x0b\n\x03gap\x18\x04 \x01(\x05\x12\x0f\n\x07maxdays\x18\x05 \x01(\x05\x12\x43\n\nperiodInfo\x18\x06 \x03(\x0b\x32/.autotimetabler.TimetableConstraints.PeriodInfo\x1aM\n\nPeriodInfo\x12\x17\n\x0fperiodsPerClass\x18\x01 \x01(\x05\x12\x13\n\x0bperiodTimes\x18\x02 \x03(\x02\x12\x11\n\tdurations\x18\x03 \x03(\x02\"7\n\x15\x41utoTimetableResponse\x12\r\n\x05times\x18\x01 \x03(\x02\x12\x0f\n\x07optimal\x18\x02 \x01(\x08\x32r\n\x0e\x41utoTimetabler\x12`\n\x11\x46indBestTimetable\x12$.autotimetabler.TimetableConstraints\x1a%.autotimetabler.AutoTimetableResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61utotimetabler.proto\"\xe3\x01\n\x14TimetableConstraints\x12\r\n\x05start\x18\x01 \x01(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x05\x12\x0c\n\x04\x64\x61ys\x18\x03 \x01(\t\x12\x0b\n\x03gap\x18\x04 \x01(\x05\x12\x0f\n\x07maxdays\x18\x05 \x01(\x05\x12\x34\n\nperiodInfo\x18\x06 \x03(\x0b\x32 .TimetableConstraints.PeriodInfo\x1aM\n\nPeriodInfo\x12\x17\n\x0fperiodsPerClass\x18\x01 \x01(\x05\x12\x13\n\x0bperiodTimes\x18\x02 \x03(\x02\x12\x11\n\tdurations\x18\x03 \x03(\x02\"7\n\x15\x41utoTimetableResponse\x12\r\n\x05times\x18\x01 \x03(\x02\x12\x0f\n\x07optimal\x18\x02 \x01(\x08\x32T\n\x0e\x41utoTimetabler\x12\x42\n\x11\x46indBestTimetable\x12\x15.TimetableConstraints\x1a\x16.AutoTimetableResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'autotimetabler_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_TIMETABLECONSTRAINTS']._serialized_start=41
-  _globals['_TIMETABLECONSTRAINTS']._serialized_end=283
-  _globals['_TIMETABLECONSTRAINTS_PERIODINFO']._serialized_start=206
-  _globals['_TIMETABLECONSTRAINTS_PERIODINFO']._serialized_end=283
-  _globals['_AUTOTIMETABLERESPONSE']._serialized_start=285
-  _globals['_AUTOTIMETABLERESPONSE']._serialized_end=340
-  _globals['_AUTOTIMETABLER']._serialized_start=342
-  _globals['_AUTOTIMETABLER']._serialized_end=456
+  _globals['_TIMETABLECONSTRAINTS']._serialized_start=25
+  _globals['_TIMETABLECONSTRAINTS']._serialized_end=252
+  _globals['_TIMETABLECONSTRAINTS_PERIODINFO']._serialized_start=175
+  _globals['_TIMETABLECONSTRAINTS_PERIODINFO']._serialized_end=252
+  _globals['_AUTOTIMETABLERESPONSE']._serialized_start=254
+  _globals['_AUTOTIMETABLERESPONSE']._serialized_end=309
+  _globals['_AUTOTIMETABLER']._serialized_start=311
+  _globals['_AUTOTIMETABLER']._serialized_end=395
 # @@protoc_insertion_point(module_scope)
