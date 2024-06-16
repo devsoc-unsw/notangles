@@ -11,7 +11,6 @@ export class AutoService {
   constructor(private configService: ConfigService) {}
   async getAutoTimetable(@Body() autoService: autoDTO): Promise<string> {
     const AUTO_SERVER_HOST = `${this.configService.get<string>('AUTO_SERVER_HOST_NAME')}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
-    console.log(AUTO_SERVER_HOST);
     return await getAuto(autoService, AUTO_SERVER_HOST);
   }
 }

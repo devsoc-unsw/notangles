@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -43,6 +44,14 @@ async function bootstrap() {
       },
     }),
   );
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.GRPC, // Use Transport.GRPC for gRPC
+    options: {
+      url: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`,
+      protoPath: path.join(__dirname, '../proto/autotimetabler.proto'),
+      package: 'autotimetabler',
+    },
+  });
   app.use(passport.initialize());
   app.use(passport.session());
   await app.listen(3001);

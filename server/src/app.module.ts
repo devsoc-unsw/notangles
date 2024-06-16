@@ -17,17 +17,6 @@ import { join } from 'path';
       isGlobal: true,
       envFilePath: '../.env',
     }),
-    ClientsModule.register([
-      {
-        name: 'autotimetabler',
-        transport: Transport.GRPC,
-        options: {
-          package: 'autotimetabler',
-          protoPath: join(__dirname, './proto/autotimetabler.proto'),
-          url: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`
-        },
-      },
-    ]),
     AuthModule,
     AutoModule,
     UserModule,
