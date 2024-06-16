@@ -28,6 +28,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
+  const [date, setDate] = useState<Date | null>(new Date());
   const [startTime, setStartTime] = useState<Date>(initialStartTime);
   const [endTime, setEndTime] = useState<Date>(initialEndTime);
   const [eventDays, setEventDays] = useState<Array<string>>([initialDay]);
@@ -82,6 +83,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     const newEvent = parseAndCreateEventObj(
       eventName,
       location,
+      date!,
       description,
       color,
       day,
@@ -170,6 +172,8 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
           setEventName={setEventName}
           location={location}
           setLocation={setLocation}
+          date={date}
+          setDate={setDate}
           description={description}
           setDescription={setDescription}
           startTime={startTime}

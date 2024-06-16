@@ -28,6 +28,7 @@ const CustomEvent: React.FC = () => {
   const [eventName, setEventName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
+  const [date, setDate] = useState<Date | null>(new Date());
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<Array<string>>([]);
@@ -146,10 +147,21 @@ const CustomEvent: React.FC = () => {
       }
 
       // Create an event for each day that is selected in the dropdown option
-      for (const day of eventDays) {
-        const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime, 'General');
-        newEvents[newEvent.event.id] = newEvent;
-      }
+      const newEvent = createEvent(
+        eventName,
+        location,
+        date!,
+        description,
+        color,
+        eventDays[0],
+        startTime,
+        endTime,
+        'General',
+      );
+      // for (const day of eventDays) {
+      //   const newEvent = createEvent(eventName, location, description, color, day, startTime, endTime, 'General');
+      //   newEvents[newEvent.event.id] = newEvent;
+      // }
     } else if (eventType === 'Tutoring') {
       // Get the class details according to the chosen class code.
       const classDetails = classesList.find((classData) => classData.section === classCode);
@@ -158,6 +170,7 @@ const CustomEvent: React.FC = () => {
         const newEvent = createEvent(
           classDetails!.courseCode + ' ' + period.subActivity,
           period.locations[0],
+          new Date(), // TODO: remove, fix
           classCode,
           color,
           daysShort[period.time.day - 1],
@@ -195,6 +208,7 @@ const CustomEvent: React.FC = () => {
   const createEvent = (
     eventName: string,
     location: string,
+    date: Date,
     description: string,
     color: string,
     day: string,
@@ -202,12 +216,27 @@ const CustomEvent: React.FC = () => {
     endTime: Date,
     subtype: EventSubtype,
   ) => {
-    const newEvent = parseAndCreateEventObj(eventName, location, description, color, day, startTime, endTime, subtype);
+    console.log('date passed into createevent', date);
+    const newEvent = parseAndCreateEventObj(
+      eventName,
+      location,
+      date,
+      description,
+      color,
+      day,
+      startTime,
+      endTime,
+      subtype,
+    );
+
+    console.log('created event', newEvent);
 
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
     });
+
+    console.log('rite after, created events', createdEvents);
 
     setEarliestStartTime(
       Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
@@ -259,6 +288,8 @@ const CustomEvent: React.FC = () => {
                 location={location}
                 setLocation={setLocation}
                 description={description}
+                date={date}
+                setDate={setDate}
                 setDescription={setDescription}
                 startTime={startTime}
                 setStartTime={setStartTime}
