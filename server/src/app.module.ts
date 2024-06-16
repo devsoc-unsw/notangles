@@ -13,18 +13,18 @@ import { join } from 'path';
 import { config } from './config';
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'autotimetabler',
-        transport: Transport.GRPC,
-        options: {
-          package: 'autotimetabler',
-          protoPath: join(__dirname, './proto/autotimetabler.proto'),
-          url: config.auto,
-        },
-      },
-    ]),
     ConfigModule.forRoot(),
+    // ClientsModule.register([
+    //   {
+    //     name: 'autotimetabler',
+    //     transport: Transport.GRPC,
+    //     options: {
+    //       package: 'autotimetabler',
+    //       protoPath: join(__dirname, './proto/autotimetabler.proto'),
+    //       url: config.auto,
+    //     },
+    //   },
+    // ]),
     AuthModule,
     AutoModule,
     UserModule,
