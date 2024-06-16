@@ -171,6 +171,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     setAlertMsg,
     setErrorVisibility,
     isConvertToLocalTimezone,
+    currentDate,
   } = useContext(AppContext);
 
   const hoursRange = [
@@ -195,11 +196,16 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     </HourCell>
   ));
 
-  const dayCells = days.map((day, i) => (
-    <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
-      {day}
-    </DayCell>
-  ));
+  const dayCells = days.map((day, i) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + i);
+
+    return (
+      <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
+        {`${day.substring(0, 3)} ${newDate.getDate()}`}
+      </DayCell>
+    );
+  });
 
   dayCells.push(
     <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>

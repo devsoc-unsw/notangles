@@ -93,6 +93,9 @@ export interface IAppContext {
 
   courseData: CourseDataMap;
   setCourseData: (newCourseData: CourseDataMap) => void;
+
+  currentDate: Date; // Date of the Monday currently being displayed
+  setCurrentDate: (newCurrentDate: Date) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -179,6 +182,9 @@ export const AppContext = createContext<IAppContext>({
 
   courseData: { map: [] },
   setCourseData: () => {},
+
+  currentDate: new Date(),
+  setCurrentDate: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -227,6 +233,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     [termData.term.length > 0 ? termData.term : '0']: [],
   });
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  // Set the current date to the Monday of the current week
+  currentDate.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -285,6 +294,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setDisplayTimetables,
     courseData,
     setCourseData,
+    currentDate,
+    setCurrentDate,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

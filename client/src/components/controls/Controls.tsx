@@ -7,6 +7,7 @@ import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
+import WeekSelector from './WeekSelector';
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -58,6 +59,7 @@ const Controls: React.FC<ControlsProps> = ({
         <AutotimetablerWrapper>
           <Autotimetabler handleSelectClass={handleSelectClass} />
         </AutotimetablerWrapper>
+        <WeekSelector />
         <HistoryWrapper>
           <History />
         </HistoryWrapper>
