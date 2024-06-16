@@ -6,10 +6,16 @@ import * as passport from 'passport';
 import { AppModule } from './app.module';
 import { config } from './config';
 const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  dotenv.config({
+    path: path.resolve(__dirname, '../.env'),
+  });
+ 
   app.enableCors({
     origin: [
       'http://localhost:5173',
