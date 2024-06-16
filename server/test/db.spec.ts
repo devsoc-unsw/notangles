@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { ClassType } from '@prisma/client';
 import mockData from './mockData';
 
 // !! WARNING: these tests will ruin your local db container
@@ -230,9 +229,7 @@ describe('Integration testing for user/friend db endpoints', () => {
         { ...timetable.selectedClasses[2], section: 'A321' },
         {
           id: 'c4',
-          classType: ClassType.LECTURE,
-          courseCode: 'COMP2521',
-          section: 'C',
+          classNo: '11127',
         },
       ],
       createdEvents: [

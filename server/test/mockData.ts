@@ -48,15 +48,11 @@ const mockData = {
       selectedClasses: [
         {
           id: 'c1',
-          classType: ClassType.LABORATORY,
-          courseCode: 'COMP1511',
-          section: 'F111A',
+          classNo: '11069',
         },
         {
           id: 'c2',
-          classType: ClassType.LECTURE,
-          courseCode: 'COMP2511',
-          section: 'A',
+          classNo: '8332',
         },
       ],
       createdEvents: [
@@ -86,21 +82,15 @@ const mockData = {
       selectedClasses: [
         {
           id: 'c1',
-          classType: ClassType.LABORATORY,
-          courseCode: 'COMP1511',
-          section: 'F111A',
+          classNo: '11069',
         },
         {
           id: 'c2',
-          classType: ClassType.LECTURE,
-          courseCode: 'COMP2511',
-          section: 'A',
+          classNo: '8332',
         },
         {
           id: 'c3',
-          classType: ClassType.OTHER,
-          courseCode: 'COMP2511',
-          section: 'B123',
+          classNo: '8364',
         },
       ],
       createdEvents: [

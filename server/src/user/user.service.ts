@@ -138,9 +138,9 @@ export class UserService {
         return {
           // timetableId: _timetableId,
           id: c.id,
-          section: c.section,
-          courseCode: c.courseCode,
-          classType: c.classType,
+          // section: c.section,
+          // courseCode: c.courseCode,
+          // classType: c.classType,
         };
       });
 

@@ -60,9 +60,8 @@ model Event {
 
 model Class {
   id          String     @unique
-  classType   ClassType
-  section     String
-  courseCode  String
+  // classType   ClassType
+  classNo     String  // From scraper (not unique in db, but between classes)
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
   @@map("classes")
@@ -110,9 +109,9 @@ enum GroupVisibility {
   @@map("group_visibility")
 }
 
-enum ClassType { 
-  LECTURE
-  TUTORIAL
-  LABORATORY
-  OTHER
-}
+// enum ClassType { 
+//   LECTURE
+//   TUTORIAL
+//   LABORATORY
+//   OTHER
+// }
