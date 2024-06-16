@@ -13,9 +13,24 @@ export class TimetableDto {
   name?: string;
 }
 
+export class ReconstructedTimetableDto {
+  @IsString()
+  timetableId: string; // Randomly generated on the backend
+
+  @IsArray()
+  @IsString({ each: true })
+  selectedCourses: string[];
+  selectedClasses: ReconstructedClassDto[];
+  createdEvents: EventDto[];
+  name?: string;
+}
+
 export class ClassDto {
   id: string;
   classNo: string; // From scraper
+  year: string;
+  term: 'T1' | 'T2' | 'T3' | 'U1';
+  courseCode: string;
   timetableId?: string;
 }
 

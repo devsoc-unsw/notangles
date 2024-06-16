@@ -48,11 +48,17 @@ const mockData = {
       selectedClasses: [
         {
           id: 'c1',
-          classNo: '11069',
+          classNo: '8713',
+          year: '2024',
+          term: 'T1',
+          courseCode: 'COMP1511',
         },
         {
           id: 'c2',
-          classNo: '8332',
+          classNo: '8714',
+          year: '2024',
+          term: 'T1',
+          courseCode: 'COMP1511',
         },
       ],
       createdEvents: [
@@ -82,15 +88,24 @@ const mockData = {
       selectedClasses: [
         {
           id: 'c1',
-          classNo: '11069',
+          classNo: '8713',
+          year: '2024',
+          term: 'T1',
+          courseCode: 'COMP1511',
         },
         {
           id: 'c2',
-          classNo: '8332',
+          classNo: '8714',
+          year: '2024',
+          term: 'T1',
+          courseCode: 'COMP1511',
         },
         {
           id: 'c3',
-          classNo: '8364',
+          classNo: '8890',
+          year: '2024',
+          term: 'T2',
+          courseCode: 'COMP2511',
         },
       ],
       createdEvents: [

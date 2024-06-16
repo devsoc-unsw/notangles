@@ -6,14 +6,43 @@ import {
   TimetableDto,
   ClassDto,
   InitUserDTO,
+  ReconstructedTimetableDto,
 } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Timetable, User } from '@prisma/client';
 
+const API_URL = 'https://timetable.csesoc.app/api/terms';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private async convertClasses(classes: ClassDto[]) {
+    try {
+      // For each class in class DTO, we need to fetch information
+      const cache = {};
+
+      for (const clz of classes) {
+        const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
+        if (!(k in cache)) {
+          const data = await fetch(`${API_URL}/${k}`);
+          const json = await data.json();
+
+          cache[k] = json.classes;
+        }
+      }
+
+      return classes.map((clz) => {
+        const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
+        const data = cache[k].find((c) => c.classID === clz.classNo);
+        // TODO: MORE CONVERSION HERE
+        return data;
+      });
+    } catch (e) {
+      throw new Error('uhh');
+    }
+  }
+
   async getUserInfo(_userID: string): Promise<UserDTO> {
     const { userID, timetables, ...userData } =
       await this.prisma.user.findUniqueOrThrow({
@@ -96,7 +125,8 @@ export class UserService {
     }
   }
 
-  async getUserTimetables(_userID: string): Promise<TimetableDto[]> {
+  async getUserTimetables(_userID: string): Promise<any[]> {
+    // ): Promise<ReconstructedTimetableDto[]> {
     try {
       const res = await this.prisma.timetable.findMany({
         where: { userID: _userID },
@@ -136,11 +166,8 @@ export class UserService {
       const classes = _selectedClasses.map((c) => {
         // const classId = uuidv4(); // on second thought, its already been generated on the frontend, and I think there are advantages to this
         return {
+          ...c,
           // timetableId: _timetableId,
-          id: c.id,
-          // section: c.section,
-          // courseCode: c.courseCode,
-          // classType: c.classType,
         };
       });
 
@@ -236,7 +263,8 @@ export class UserService {
     }
   }
 
-  async getTimetablesByIDs(timetableIDs: string[]): Promise<Timetable[]> {
+  async getTimetablesByIDs(timetableIDs: string[]): Promise<any[]> {
+    // ): Promise<ReconstructedTimetableDto[]> {
     try {
       const timetables = await this.prisma.timetable.findMany({
         where: {

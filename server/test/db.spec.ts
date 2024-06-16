@@ -226,10 +226,13 @@ describe('Integration testing for user/friend db endpoints', () => {
       selectedCourses: ['COMP2511', 'COMP2521'],
       selectedClasses: [
         timetable.selectedClasses[1],
-        { ...timetable.selectedClasses[2], section: 'A321' },
+        { ...timetable.selectedClasses[2], term: 'T1', classNo: '8839' },
         {
           id: 'c4',
-          classNo: '11127',
+          classNo: '8930',
+          year: '2024',
+          term: 'T2',
+          courseCode: 'COMP2521',
         },
       ],
       createdEvents: [
