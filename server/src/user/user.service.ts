@@ -27,19 +27,27 @@ export class UserService {
         if (!(k in cache)) {
           const data = await fetch(`${API_URL}/${k}`);
           const json = await data.json();
-
+          console.log('FUCK 2');
           cache[k] = json.classes;
         }
       }
 
       return classes.map((clz) => {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        const data = cache[k].find((c) => c.classID === clz.classNo);
+        console.log(clz.classNo);
+
+        // console.log(cache[k].map(c => c.classId));
+        // for (const item of cache[k]) {
+        //   console.log(typeof item.classId);
+        //   console.log(item.classId);
+        // }
+        const data = cache[k].find((c) => String(c.classID) === clz.classNo);
+        console.log(data);
         // TODO: MORE CONVERSION HERE
         return data;
       });
     } catch (e) {
-      throw new Error('uhh');
+      throw new Error('FUCK 1');
     }
   }
 
@@ -60,20 +68,26 @@ export class UserService {
         },
       });
 
+    console.log('timetables is ' + timetables);
+    const reconstructedTables = await Promise.all(
+      timetables.map(async (t) => {
+        const classes = await this.convertClasses(t.selectedClasses);
+        return {
+          name: t.name,
+          timetableId: t.id,
+          selectedClasses: classes,
+          selectedCourses: t.selectedCourses,
+          selectedEvents: t.createdEvents,
+        };
+      }),
+    );
+
     const data = {
       ...userData,
       createdAt: userData.createdAt.toISOString(),
       lastLogin: userData.lastLogin.toISOString(),
       // Annnoying that the DTO and the schema have differently named fields so have to do this
-      timetables: timetables.map((t) => {
-        return {
-          name: t.name,
-          timetableId: t.id,
-          selectedClasses: t.selectedClasses,
-          selectedCourses: t.selectedCourses,
-          events: t.createdEvents,
-        };
-      }),
+      timetables: reconstructedTables,
     };
 
     return Promise.resolve(data);
@@ -136,15 +150,27 @@ export class UserService {
         },
       });
 
-      // Destructure timetables object to make it easier to work with
-      const timetables = res.map((t) => {
-        // Again, we should look into renaming events to createEvents to make this easier
-        const { id, ...otherTimetableProps } = t;
-        return {
-          ...otherTimetableProps,
-          timetableId: id,
-        };
-      });
+      // // Destructure timetables object to make it easier to work with
+      // const timetables = res.map((t) => {
+      //   // Again, we should look into renaming events to createEvents to make this easier
+      //   const { id, ...otherTimetableProps } = t;
+      //   return {
+      //     ...otherTimetableProps,
+      //     timetableId: id,
+      //   };
+      // });
+
+      const timetables = await Promise.all(
+        res.map(async (t) => {
+          const { id, selectedClasses, ...otherTimetableProps } = t;
+          const classes = await this.convertClasses(selectedClasses);
+          return {
+            ...otherTimetableProps,
+            timetableId: id,
+            selectedClasses: classes,
+          };
+        }),
+      );
 
       return Promise.resolve(timetables);
     } catch (e) {
@@ -181,6 +207,11 @@ export class UserService {
           },
           createdEvents: {
             create: _createdEvents,
+          },
+          users: {
+            connect: {
+              id: _userID,
+            },
           },
           userID: _userID,
         },
@@ -259,7 +290,7 @@ export class UserService {
 
       return Promise.resolve(_timetableId);
     } catch (e) {
-      throw new Error(e);
+      throw new Error('huh!');
     }
   }
 
