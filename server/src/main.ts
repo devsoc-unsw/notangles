@@ -4,6 +4,7 @@ import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
+import { config } from './config';
 const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
 
 async function bootstrap() {

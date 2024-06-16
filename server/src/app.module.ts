@@ -8,8 +8,22 @@ import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
 import { ConfigModule } from '@nestjs/config';
 import { GroupModule } from './group/group.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
+import { config } from './config';
 @Module({
   imports: [
+    ClientsModule.register([
+      {
+        name: 'autotimetabler',
+        transport: Transport.GRPC,
+        options: {
+          package: 'autotimetabler',
+          protoPath: join(__dirname, './proto/autotimetabler.proto'),
+          url: config.auto,
+        },
+      },
+    ]),
     ConfigModule.forRoot(),
     AuthModule,
     AutoModule,

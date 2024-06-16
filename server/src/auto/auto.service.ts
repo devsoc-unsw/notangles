@@ -29,7 +29,6 @@ export const getAuto: getAutoParameter = async (data: autoDTO) => {
   constraints.setDays(data.days);
   constraints.setGap(data.gap);
   constraints.setMaxdays(data.maxdays);
-
   data.periodInfoList.forEach((thisPeriod) => {
     const thisPeriodInfo = new TimetableConstraints.PeriodInfo();
 
@@ -39,7 +38,6 @@ export const getAuto: getAutoParameter = async (data: autoDTO) => {
 
     constraints.addPeriodinfo(thisPeriodInfo);
   });
-
   return new Promise<string>((resolve, reject) => {
     client.findBestTimetable(constraints, (err, response) => {
       if (err) {
