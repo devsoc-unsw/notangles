@@ -170,13 +170,13 @@ describe('Integration testing for user/friend db endpoints', () => {
       userID: user.userID,
     });
 
-    // Fetch user data
+    // Fetch user data (check if timetables are there)
     res = await request(app.getHttpServer()).get(
       `/user/profile/${user.userID}`,
     );
     expect(res.status).toEqual(200);
     expect(res.body.data).toMatchObject(user);
-    // expect(res.body.data).toEqual({});
+    // TODO expect(res.body.data.timetables).toEqual({});
 
     // Delete both timetables - one at a time, and check that they're gone
     res = await request(app.getHttpServer()).delete(

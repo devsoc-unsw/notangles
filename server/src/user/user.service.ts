@@ -12,7 +12,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Timetable, User } from '@prisma/client';
 
-const API_URL = 'https://timetable.csesoc.app/api/terms';
+const API_URL = 'https://timetable.csesoc.app/api/terms'; // TODO - set dev and prod API urls
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -27,7 +27,6 @@ export class UserService {
         if (!(k in cache)) {
           const data = await fetch(`${API_URL}/${k}`);
           const json = await data.json();
-          console.log('FUCK 2');
           cache[k] = json.classes;
         }
       }
@@ -42,7 +41,7 @@ export class UserService {
         //   console.log(item.classId);
         // }
         const data = cache[k].find((c) => String(c.classID) === clz.classNo);
-        console.log(data);
+
         // TODO: MORE CONVERSION HERE
         return data;
       });
@@ -68,7 +67,6 @@ export class UserService {
         },
       });
 
-    console.log('timetables is ' + timetables);
     const reconstructedTables = await Promise.all(
       timetables.map(async (t) => {
         const classes = await this.convertClasses(t.selectedClasses);
@@ -142,13 +140,19 @@ export class UserService {
   async getUserTimetables(_userID: string): Promise<any[]> {
     // ): Promise<ReconstructedTimetableDto[]> {
     try {
-      const res = await this.prisma.timetable.findMany({
+      const res = await this.prisma.user.findUniqueOrThrow({
         where: { userID: _userID },
-        include: {
-          selectedClasses: true,
-          createdEvents: true,
+        select: {
+          timetables: {
+            include: {
+              createdEvents: true,
+              selectedClasses: true,
+            },
+          },
         },
       });
+
+      console.log(res);
 
       // // Destructure timetables object to make it easier to work with
       // const timetables = res.map((t) => {
@@ -161,7 +165,7 @@ export class UserService {
       // });
 
       const timetables = await Promise.all(
-        res.map(async (t) => {
+        res.timetables.map(async (t) => {
           const { id, selectedClasses, ...otherTimetableProps } = t;
           const classes = await this.convertClasses(selectedClasses);
           return {
@@ -208,12 +212,11 @@ export class UserService {
           createdEvents: {
             create: _createdEvents,
           },
-          users: {
+          user: {
             connect: {
-              id: _userID,
+              userID: _userID,
             },
           },
-          userID: _userID,
         },
       });
 
