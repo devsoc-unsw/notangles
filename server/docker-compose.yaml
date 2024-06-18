@@ -13,6 +13,7 @@ services:
       - '3001:3001'
 
   database.notangles_db:
+    hostname: notangles_database
     container_name: notangles_database
     restart: always
     image: postgres:alpine
