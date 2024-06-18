@@ -8,4 +8,5 @@ export default registerAs('app', () => ({
   redirectLink: `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
 }));
 
-export const REDIRECT_LINK = process.env.CLIENT_HOST_NAME;
+// export const REDIRECT_LINK = 'http://localhost:5173';
+export const REDIRECT_LINK = 'https://notanglesstaging.devsoc.app/';
