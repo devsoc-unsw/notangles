@@ -148,6 +148,7 @@ export interface CreateEventPopoverProps {
   initialStartTime: Date;
   initialEndTime: Date;
   initialDay: string;
+  initialDate: Date;
   tempEventId: string;
 }
 
@@ -175,9 +176,12 @@ export interface CustomEventGeneralProps {
   setEndTime: (endTime: Date) => void;
   eventDays: string[];
   setEventDays: (days: string[]) => void;
+  initialDate: Date;
   initialStartTime: Date;
   initialEndTime: Date;
   initialDay: string;
+  isInitialDate: boolean;
+  setIsInitialDate: (isInitialDate: boolean) => void;
   isInitialStartTime: boolean;
   setIsInitialStartTime: (isInitialStartTime: boolean) => void;
   isInitialEndTime: boolean;

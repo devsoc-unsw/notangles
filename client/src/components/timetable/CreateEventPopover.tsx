@@ -23,6 +23,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   initialStartTime,
   initialEndTime,
   initialDay,
+  initialDate,
   tempEventId,
 }) => {
   const [eventName, setEventName] = useState<string>('');
@@ -30,9 +31,11 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(initialStartTime);
   const [endTime, setEndTime] = useState<Date>(initialEndTime);
+  const [date, setDate] = useState<Date>(initialDate);
   const [eventDays, setEventDays] = useState<Array<string>>([initialDay]);
 
   // For the pre-selected fields
+  const [isInitialDate, setIsInitialDate] = useState<boolean>(true);
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(true);
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(true);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(true);
@@ -69,6 +72,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     let startTimeToCreateAs = startTime;
     let endTimeToCreateAs = endTime;
+    let dateToCreateAs = date;
     if (isInitialStartTime) {
       // User did not change start time
       startTimeToCreateAs = initialStartTime;
@@ -79,16 +83,23 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
       endTimeToCreateAs = initialEndTime;
     }
 
+    if (isInitialDate) {
+      // User did not change date
+      dateToCreateAs = initialDate;
+    }
+
     const newEvent = parseAndCreateEventObj(
       eventName,
       location,
       description,
+      date,
       color,
       day,
       startTimeToCreateAs,
       endTimeToCreateAs,
       'General',
     );
+    console.log('created event', newEvent);
     setCreatedEvents({
       ...createdEvents,
       [newEvent.event.id]: newEvent,
@@ -97,7 +108,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   };
 
   const assignDefaultEventFields = (): void => {
-    setEventName('');
+    setEventName('df');
     setLocation('');
     setDescription('');
     setEventDays([]);
@@ -105,6 +116,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
     setStartTime(initialStartTime);
     setEndTime(initialEndTime);
     setEventDays([initialDay]);
+    setDate(initialDate);
 
     setIsInitialDay(true);
     setIsInitialStartTime(true);
@@ -121,17 +133,25 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
 
     const newEvents: Record<string, EventPeriod> = {};
 
-    if (isInitialDay) {
-      // User did not change day
-      const newEvent = createEvent(initialDay);
-      newEvents[newEvent.event.id] = newEvent;
-    } else {
-      // Create an event for each day that is selected in the dropdown option
-      for (const day of eventDays) {
-        const newEvent = createEvent(day);
-        newEvents[newEvent.event.id] = newEvent;
-      }
-    }
+    // Get the first two letters of the day in the chosen date
+    const day = date.toLocaleDateString('en-US', { weekday: 'short' }).substring(0, 2);
+
+    // Create an event for the date selected in the date picker
+    const newEvent = createEvent(day);
+    newEvents[newEvent.event.id] = newEvent;
+
+    // TODO: handle the days selector
+    // if (isInitialDay) {
+    //   // User did not change day
+    //   const newEvent = createEvent(initialDay);
+    //   newEvents[newEvent.event.id] = newEvent;
+    // } else {
+    //   // Create an event for each day that is selected in the dropdown option
+    //   for (const day of eventDays) {
+    //     const newEvent = createEvent(day);
+    //     newEvents[newEvent.event.id] = newEvent;
+    //   }
+    // }
 
     // Delete the temporary created event with its id
     for (const event in createdEvents) {
@@ -172,6 +192,11 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
           setLocation={setLocation}
           description={description}
           setDescription={setDescription}
+          date={date}
+          setDate={setDate}
+          initialDate={date}
+          isInitialDate={isInitialDate}
+          setIsInitialDate={setIsInitialDate}
           startTime={startTime}
           setStartTime={setStartTime}
           endTime={endTime}

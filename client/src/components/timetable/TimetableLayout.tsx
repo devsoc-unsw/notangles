@@ -230,6 +230,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
       '(No title)',
       '(No location)',
       '',
+      currentDate, // Set the date within the currently viewed week so the temporary event is visible
       '#1F7E8C',
       daysShort[x],
       createDateWithTime(earliestStartTime + y),
@@ -313,6 +314,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
         initialStartTime={eventStartTime.current}
         initialEndTime={eventEndTime.current}
         initialDay={eventDay.current}
+        initialDate={new Date(currentDate.getTime() + daysShort.indexOf(eventDay.current) * 24 * 60 * 60 * 1000)}
         tempEventId={tempEventId}
       />
 

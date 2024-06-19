@@ -39,6 +39,7 @@ const CustomEvent: React.FC = () => {
   const [color, setColor] = useState<string>('#1F7E8C');
 
   // NO pre-selected fields when event popover is opened from controls bar
+  const [isInitialDate, setIsInitialDate] = useState<boolean>(false);
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(false);
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
@@ -165,17 +166,17 @@ const CustomEvent: React.FC = () => {
       const classDetails = classesList.find((classData) => classData.section === classCode);
       // Create an event for each period of the selected class.
       classDetails!.periods.forEach((period) => {
-        const newEvent = createEvent(
-          classDetails!.courseCode + ' ' + period.subActivity,
-          period.locations[0],
-          classCode,
-          color,
-          daysShort[period.time.day - 1],
-          createDateWithTime(period.time.start),
-          createDateWithTime(period.time.end),
-          'Tutoring',
-        );
-        newEvents[newEvent.event.id] = newEvent;
+        // const newEvent = createEvent(
+        //   classDetails!.courseCode + ' ' + period.subActivity,
+        //   period.locations[0],
+        //   classCode,
+        //   color,
+        //   daysShort[period.time.day - 1],
+        //   createDateWithTime(period.time.start),
+        //   createDateWithTime(period.time.end),
+        //   'Tutoring',
+        // );
+        // newEvents[newEvent.event.id] = newEvent;
       });
     }
 
@@ -293,6 +294,9 @@ const CustomEvent: React.FC = () => {
                 initialStartTime={createDateWithTime(9)}
                 initialEndTime={createDateWithTime(10)}
                 initialDay={''}
+                initialDate={new Date()}
+                isInitialDate={isInitialDate}
+                setIsInitialDate={setIsInitialDate}
                 isInitialStartTime={isInitialStartTime}
                 setIsInitialStartTime={setIsInitialStartTime}
                 isInitialEndTime={isInitialEndTime}

@@ -24,9 +24,12 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   setEndTime,
   eventDays,
   setEventDays,
+  initialDate,
   initialStartTime,
   initialEndTime,
   initialDay,
+  isInitialDate,
+  setIsInitialDate,
   isInitialStartTime,
   setIsInitialStartTime,
   isInitialEndTime,
@@ -90,11 +93,12 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <DatePicker
           label="Date"
           views={['day', 'month', 'year']}
-          value={date}
-          onChange={(newValue) => setDate(newValue!)}
-          // renderInput={(params) => <TextField {...params} fullWidth />}
+          value={isInitialDate ? initialDate : date}
+          onChange={(e) => {
+            if (e) setDate(e);
+            setIsInitialDate(false);
+          }}
         />
-        {/* </LocalizationProvider> */}
       </StyledListItem>
 
       <StyledListItem>
