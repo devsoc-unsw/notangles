@@ -1,6 +1,6 @@
 import { Event, LocationOn, Notes } from '@mui/icons-material';
 import { ListItemIcon, TextField } from '@mui/material';
-import { TimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 
 import { daysShort } from '../../constants/timetable';
 import { CustomEventGeneralProps } from '../../interfaces/PropTypes';
@@ -16,6 +16,8 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   setDescription,
   location,
   setLocation,
+  date,
+  setDate,
   startTime,
   setStartTime,
   endTime,
@@ -80,6 +82,21 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
           defaultValue={location}
         />
       </StyledListItem>
+
+      <StyledListItem>
+        <ListItemIcon>
+          <LocationOn />
+        </ListItemIcon>
+        <DatePicker
+          label="Date"
+          views={['day', 'month', 'year']}
+          value={date}
+          onChange={(newValue) => setDate(newValue!)}
+          // renderInput={(params) => <TextField {...params} fullWidth />}
+        />
+        {/* </LocalizationProvider> */}
+      </StyledListItem>
+
       <StyledListItem>
         <StyledListItemText primary="Start time" />
         <TimePicker

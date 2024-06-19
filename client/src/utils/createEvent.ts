@@ -19,11 +19,12 @@ export const createEventObj = (
   name: string,
   location: string,
   description: string,
+  date: Date,
   color: string,
   day: number,
   startTime: number,
   endTime: number,
-  subtype: EventSubtype
+  subtype: EventSubtype,
 ): EventPeriod => {
   const newEvent: EventPeriod = {
     type: 'event',
@@ -40,6 +41,7 @@ export const createEventObj = (
       start: startTime,
       end: endTime,
     },
+    date: date,
   };
 
   return newEvent;
@@ -61,6 +63,7 @@ export const parseAndCreateEventObj = (
   name: string,
   location: string,
   description: string,
+  date: Date,
   color: string,
   day: string,
   startTime: Date,
@@ -72,5 +75,5 @@ export const parseAndCreateEventObj = (
   const eventStart = startTime.getHours() + startTime.getMinutes() / 60;
   const eventEnd = isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60;
 
-  return createEventObj(name, location, description, color, eventDay, eventStart, eventEnd, subtype);
+  return createEventObj(name, location, description, date, color, eventDay, eventStart, eventEnd, subtype);
 };

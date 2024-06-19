@@ -81,6 +81,7 @@ export interface EventPeriod {
   subtype: EventSubtype;
   event: EventData;
   time: EventTime;
+  date: Date;
 }
 
 export interface EventTime {

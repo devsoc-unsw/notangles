@@ -234,8 +234,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   });
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  // Set the current date to the Monday of the current week
+  // Set the current date to the Monday of the current week, 12am
   currentDate.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
+  currentDate.setHours(0, 0, 0, 0);
 
   const initialContext: IAppContext = {
     is12HourMode,

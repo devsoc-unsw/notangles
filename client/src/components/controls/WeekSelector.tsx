@@ -8,47 +8,13 @@ const WeekSelector = () => {
   const { currentDate, setCurrentDate } = useContext(AppContext);
 
   const handleBackClick = () => {
-    setCreatedEvents({});
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() - 7);
     setCurrentDate(newDate);
   };
 
   const handleForwardClick = () => {
-    setCreatedEvents({
-      'bdbb4317-3d38-4362-885a-d10e8801b577': {
-        type: 'event',
-        subtype: 'General',
-        event: {
-          id: 'bdbb4317-3d38-4362-885a-d10e8801b577',
-          name: 'test',
-          location: '',
-          description: '123',
-          color: '#1F7E8C',
-        },
-        time: {
-          day: 1,
-          start: 11,
-          end: 12,
-        },
-      },
-      'ec904fae-f6b0-4583-a4e6-c5ec2bd955b8': {
-        type: 'event',
-        subtype: 'General',
-        event: {
-          id: 'ec904fae-f6b0-4583-a4e6-c5ec2bd955b8',
-          name: 'test2',
-          location: '',
-          description: '',
-          color: '#a833a3',
-        },
-        time: {
-          day: 2,
-          start: 13,
-          end: 15,
-        },
-      },
-    });
+    console.log('created events', createdEvents);
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + 7);
     setCurrentDate(newDate);

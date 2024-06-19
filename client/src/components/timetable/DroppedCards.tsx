@@ -19,7 +19,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg, currentDate } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -143,22 +143,29 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     if (!classCards.includes(classCard)) cardKeys.delete(classCard);
   });
 
-  // Generate events
+  // Generate events, filtering by the current week
+  const endDate = new Date(currentDate);
+  endDate.setDate(endDate.getDate() + 7);
+  console.log('currentdate', currentDate);
+
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
     try {
-      const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
-      droppedEvents.push(
-        <DroppedEvent
-          key={key}
-          eventId={key}
-          eventPeriod={eventPeriod}
-          cardWidth={cardWidth as number}
-          clashIndex={clashIndex as number}
-          cellWidth={cellWidth}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
-        />,
-      );
+      const eventDate = new Date(eventPeriod.date);
+      if (eventDate >= currentDate && eventDate < endDate) {
+        const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
+        droppedEvents.push(
+          <DroppedEvent
+            key={key}
+            eventId={key}
+            eventPeriod={eventPeriod}
+            cardWidth={cardWidth as number}
+            clashIndex={clashIndex as number}
+            cellWidth={cellWidth}
+            setCopiedEvent={setCopiedEvent}
+            copiedEvent={copiedEvent}
+          />,
+        );
+      }
     } catch (err) {
       setAlertMsg(unknownErrorMessage);
       setErrorVisibility(true);
