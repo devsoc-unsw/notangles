@@ -18,13 +18,12 @@ import { EventPeriod, EventSubtype } from '../interfaces/Periods';
 export const createEventObj = (
   name: string,
   location: string,
-  date: Date,
   description: string,
   color: string,
   day: number,
   startTime: number,
   endTime: number,
-  subtype: EventSubtype,
+  subtype: EventSubtype
 ): EventPeriod => {
   const newEvent: EventPeriod = {
     type: 'event',
@@ -41,7 +40,6 @@ export const createEventObj = (
       start: startTime,
       end: endTime,
     },
-    date: date,
   };
 
   return newEvent;
@@ -62,7 +60,6 @@ export const createEventObj = (
 export const parseAndCreateEventObj = (
   name: string,
   location: string,
-  date: Date,
   description: string,
   color: string,
   day: string,
@@ -70,11 +67,10 @@ export const parseAndCreateEventObj = (
   endTime: Date,
   subtype: EventSubtype,
 ): EventPeriod => {
-  console.log('date passed into parseAndCreateEventObj', date);
   const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
   const eventDay = daysShort.indexOf(day) + 1;
   const eventStart = startTime.getHours() + startTime.getMinutes() / 60;
   const eventEnd = isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60;
 
-  return createEventObj(name, location, date, description, color, eventDay, eventStart, eventEnd, subtype);
+  return createEventObj(name, location, description, color, eventDay, eventStart, eventEnd, subtype);
 };

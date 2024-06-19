@@ -167,8 +167,6 @@ export interface CustomEventGeneralProps {
   setDescription: (description: string) => void;
   location: string;
   setLocation: (location: string) => void;
-  date: Date | null;
-  setDate: (date: Date) => void;
   startTime: Date;
   setStartTime: (startTime: Date) => void;
   endTime: Date;

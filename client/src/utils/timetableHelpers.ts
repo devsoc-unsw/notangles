@@ -42,7 +42,6 @@ const duplicateEvents = (oldEvents: CreatedEvents) => {
     const newEvent = createEventObj(
       period.event.name,
       period.event.location,
-      period.date,
       period.event.description,
       period.event.color,
       period.time.day,

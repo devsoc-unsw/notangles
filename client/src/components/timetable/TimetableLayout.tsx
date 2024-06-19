@@ -229,7 +229,6 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     const newEvent = parseAndCreateEventObj(
       '(No title)',
       '(No location)',
-      new Date(), // TODO: temp, fix
       '',
       '#1F7E8C',
       daysShort[x],
