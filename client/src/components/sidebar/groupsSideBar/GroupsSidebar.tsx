@@ -110,7 +110,7 @@ const GroupsSidebar = () => {
         {(provided, snapshot) => (
           <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
             {items.map((item, idx) => (
-            <div onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
+            <div onContextMenu={handleContextMenu}>
               <Menu
                 open={contextMenu !== null}
                 onClose={handleClose}
