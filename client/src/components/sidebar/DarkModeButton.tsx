@@ -1,40 +1,21 @@
-import { Close } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import { 
+  NightsStay as DarkModeIcon,
+  LightMode as LightModeIcon,
+} from '@mui/icons-material';
+import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React from 'react';
+import React, { useContext } from 'react';
 
-import { CustomModalProps } from '../../interfaces/PropTypes';
+import { DarkModeButtonProps } from '../../interfaces/PropTypes';
+import { AppContext } from '../../context/AppContext';
 
-const StyledDialogTitle = styled(DialogTitle)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  margin: 0;
-  padding: 20px;
-`;
-
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-`;
-
-const StyledTypography = styled(Typography)`
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-
-const ShowModalButton = styled(IconButton)<{ isSelected: boolean }>`
+const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
   flex-direction: row;
   gap: 16px;
   border-radius: 8px;
   justify-content: flex-start;
   padding: 12px 12px 12px 12px;
-  background-color: ${({ isSelected }) => (isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
-`;
-
-const StyledDialogContent = styled(DialogContent)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 20px;
 `;
 
 const IndividualComponentTypography = styled(Typography)`
@@ -42,49 +23,26 @@ const IndividualComponentTypography = styled(Typography)`
   fontsize: 16px;
 `;
 
-const DarkModeButton: React.FC<CustomModalProps> = ({
-  title,
-  toolTipTitle,
-  showIcon,
-  description,
-  content,
+const DarkModeButton: React.FC<DarkModeButtonProps> = ({
   collapsed,
-  isClickable,
-  isSelected = false,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const {
+    isDarkMode,
+    setIsDarkMode,
+  } = useContext(AppContext);
 
-  const toggleIsOpen = () => {
-    if (isClickable) {
-      setIsOpen(!isOpen);
-    }
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
   return (
     <>
-      <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
-        <ShowModalButton color="inherit" onClick={toggleIsOpen} isSelected={isSelected}>
-          {showIcon}
-          <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
-        </ShowModalButton>
+      <Tooltip title={collapsed ? (isDarkMode ? "Dark Mode" : "Light Mode") : ''} placement="right">
+        <ToggleDarkModeButton color="inherit" onClick={toggleDarkMode}>
+          {isDarkMode ? (<DarkModeIcon />) : (<LightModeIcon />)}
+          <IndividualComponentTypography>{collapsed ? '' : (isDarkMode ? "Dark Mode" : "Light Mode")}</IndividualComponentTypography>
+        </ToggleDarkModeButton>
       </Tooltip>
-      <Dialog
-        disableScrollLock
-        onClose={toggleIsOpen}
-        aria-labelledby="customized-dialog-title"
-        open={isOpen}
-        fullWidth
-        maxWidth="sm"
-      >
-        <StyledDialogTitle>
-          <StyledTypography variant="h5">{description}</StyledTypography>
-          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
-            <Close />
-          </CloseButton>
-        </StyledDialogTitle>
-        <Divider />
-        <StyledDialogContent>{content}</StyledDialogContent>
-      </Dialog>
     </>
   );
 };
