@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { CheckCircle as CheckCircleIcon, RadioButtonUnchecked as RadioButtonUncheckedIcon } from '@mui/icons-material';
 import {
   Autocomplete,
@@ -13,9 +12,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import EditImagePopOver from './EditImagePopOver';
-import { friends } from './dummyData';
+import React, { useState } from 'react';
+
 import { Group, Privacy } from './AddGroupDialog';
+import { friends } from './dummyData';
+import EditImagePopOver from './EditImagePopOver';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};

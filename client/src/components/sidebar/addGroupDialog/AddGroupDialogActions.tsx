@@ -1,6 +1,7 @@
-import React from 'react';
 import { Button, DialogActions } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
+
 import { Group } from './AddGroupDialog';
 
 const StyledDialogActions = styled(DialogActions)`

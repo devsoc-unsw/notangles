@@ -1,16 +1,17 @@
-import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
-import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
+import { CalendarMonth,Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, AppBarProps, Divider,Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect,useRef, useState } from 'react';
+
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import About from './About';
 import Changelog from './Changelog';
+import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
-import CollapseButton from './CollapseButton';
 
 const LogoImg = styled('img')`
   height: 46px;

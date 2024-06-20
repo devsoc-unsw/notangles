@@ -1,7 +1,7 @@
-import React from 'react';
+import { BarsArrowDownIcon } from '@heroicons/react/24/solid';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { BarsArrowDownIcon } from '@heroicons/react/24/solid';
+import React from 'react';
 
 interface CollapseButtonProps {
   collapsed: boolean;

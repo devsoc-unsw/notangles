@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Dialog, IconButton, Tooltip } from '@mui/material';
-import AddGroupDialogActions from './AddGroupDialogActions';
-import AddGroupDialogTitle from './AddGroupDialogTitle';
-import AddGroupDialogContent from './AddGroupDialogContent';
-import NetworkError from '../../../interfaces/NetworkError';
+import React, { useState } from 'react';
+
 import { API_URL } from '../../../api/config';
 import NotanglesLogo from '../../../assets/notangles_1.png';
+import NetworkError from '../../../interfaces/NetworkError';
+import AddGroupDialogActions from './AddGroupDialogActions';
+import AddGroupDialogContent from './AddGroupDialogContent';
+import AddGroupDialogTitle from './AddGroupDialogTitle';
 
 export interface MemberType {
   name: string;
