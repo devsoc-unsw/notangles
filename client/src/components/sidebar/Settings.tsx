@@ -35,7 +35,7 @@ const Settings: React.FC = () => {
   } = useContext(AppContext);
 
   const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
-    { state: isDarkMode, setter: setIsDarkMode, desc: 'Dark mode' },
+    // { state: isDarkMode, setter: setIsDarkMode, desc: 'Dark mode' },
     { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
     { state: is12HourMode, setter: setIs12HourMode, desc: '12-hour time' },
     { state: isShowOnlyOpenClasses, setter: setisShowOnlyOpenClasses, desc: 'Show only open classes' },
