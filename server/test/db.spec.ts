@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import mockData from './mockData';
+import { ReconstructedTimetableDto } from 'src/user/dto';
 
 // !! WARNING: these tests will ruin your local db container
 // Before running these integration tests, spin up the DB first
@@ -158,17 +159,14 @@ describe('Integration testing for user/friend db endpoints', () => {
 
     expect(res.status).toEqual(200);
     expect(res.body.status).toEqual(`Successfully found user's timetables`);
-    expect(res.body.data.length).toEqual(2);
-    expect(res.body.data[0]).toMatchObject({
-      ...firstTimetable,
-      timetableId: firstTimetableId,
-      userID: user.userID,
-    });
+    expect(res.body.data).toHaveLength(2);
     expect(res.body.data[1]).toMatchObject({
-      ...secondTimetable,
+      selectedCourses: secondTimetable.selectedCourses,
       timetableId: secondTimetableId,
-      userID: user.userID,
+      name: secondTimetable.name,
     });
+    expect(res.body.data[1].selectedClasses).toHaveLength(2);
+    expect(res.body.data[1].createdEvents).toHaveLength(2);
 
     // Fetch user data (check if timetables are there)
     res = await request(app.getHttpServer()).get(
@@ -176,7 +174,18 @@ describe('Integration testing for user/friend db endpoints', () => {
     );
     expect(res.status).toEqual(200);
     expect(res.body.data).toMatchObject(user);
-    // TODO expect(res.body.data.timetables).toEqual({});
+    expect(res.body.data.timetables).toHaveLength(2);
+    expect(res.body.data.timetables[1]).toMatchObject({
+      selectedCourses: secondTimetable.selectedCourses,
+      timetableId: secondTimetableId,
+      name: secondTimetable.name,
+    });
+    expect(
+      res.body.data.timetables[1].selectedClasses.map((c) => c.classID),
+    ).toEqual(secondTimetable.selectedClasses.map((c) => Number(c.classNo)));
+    expect(res.body.data.timetables[1].createdEvents.map((c) => c.id)).toEqual(
+      secondTimetable.createdEvents.map((c) => c.id),
+    );
 
     // Delete both timetables - one at a time, and check that they're gone
     res = await request(app.getHttpServer()).delete(
@@ -190,11 +199,6 @@ describe('Integration testing for user/friend db endpoints', () => {
       `/user/timetable/${user.userID}`,
     );
     expect(res.body.data.length).toEqual(1);
-    expect(res.body.data[0]).toMatchObject({
-      ...secondTimetable,
-      timetableId: secondTimetableId,
-      userID: user.userID,
-    });
 
     res = await request(app.getHttpServer()).delete(
       `/user/timetable/${secondTimetableId}`,
@@ -279,11 +283,12 @@ describe('Integration testing for user/friend db endpoints', () => {
       `/user/timetable/${user.userID}`,
     );
     expect(res.body.data.length).toEqual(1);
-    expect(res.body.data[0]).toMatchObject({
-      ...editedTimetable,
-      timetableId,
-      userID: user.userID,
-    });
+    expect(res.body.data[0].selectedClasses.map((c) => c.classID)).toEqual(
+      editedTimetable.selectedClasses.map((c) => Number(c.classNo)),
+    );
+    expect(res.body.data[0].createdEvents.map((c) => c.id)).toEqual(
+      editedTimetable.createdEvents.map((c) => c.id),
+    );
   });
 
   describe('User error tests', () => {

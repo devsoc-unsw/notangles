@@ -6,18 +6,21 @@ import {
   TimetableDto,
   ClassDto,
   InitUserDTO,
+  ScrapedClassDto,
   ReconstructedTimetableDto,
 } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
-import { Timetable, User } from '@prisma/client';
+import { User } from '@prisma/client';
 
 const API_URL = 'https://timetable.csesoc.app/api/terms'; // TODO - set dev and prod API urls
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async convertClasses(classes: ClassDto[]) {
+  private async convertClasses(
+    classes: ClassDto[],
+  ): Promise<ScrapedClassDto[]> {
     try {
       // For each class in class DTO, we need to fetch information
       const cache = {};
@@ -33,20 +36,12 @@ export class UserService {
 
       return classes.map((clz) => {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        console.log(clz.classNo);
 
-        // console.log(cache[k].map(c => c.classId));
-        // for (const item of cache[k]) {
-        //   console.log(typeof item.classId);
-        //   console.log(item.classId);
-        // }
         const data = cache[k].find((c) => String(c.classID) === clz.classNo);
-
-        // TODO: MORE CONVERSION HERE
         return data;
       });
     } catch (e) {
-      throw new Error('FUCK 1');
+      throw new Error(e);
     }
   }
 
@@ -75,7 +70,7 @@ export class UserService {
           timetableId: t.id,
           selectedClasses: classes,
           selectedCourses: t.selectedCourses,
-          selectedEvents: t.createdEvents,
+          createdEvents: t.createdEvents,
         };
       }),
     );
@@ -137,8 +132,9 @@ export class UserService {
     }
   }
 
-  async getUserTimetables(_userID: string): Promise<any[]> {
-    // ): Promise<ReconstructedTimetableDto[]> {
+  async getUserTimetables(
+    _userID: string,
+  ): Promise<ReconstructedTimetableDto[]> {
     try {
       const res = await this.prisma.user.findUniqueOrThrow({
         where: { userID: _userID },
@@ -151,18 +147,6 @@ export class UserService {
           },
         },
       });
-
-      console.log(res);
-
-      // // Destructure timetables object to make it easier to work with
-      // const timetables = res.map((t) => {
-      //   // Again, we should look into renaming events to createEvents to make this easier
-      //   const { id, ...otherTimetableProps } = t;
-      //   return {
-      //     ...otherTimetableProps,
-      //     timetableId: id,
-      //   };
-      // });
 
       const timetables = await Promise.all(
         res.timetables.map(async (t) => {
@@ -197,7 +181,6 @@ export class UserService {
         // const classId = uuidv4(); // on second thought, its already been generated on the frontend, and I think there are advantages to this
         return {
           ...c,
-          // timetableId: _timetableId,
         };
       });
 
@@ -297,8 +280,9 @@ export class UserService {
     }
   }
 
-  async getTimetablesByIDs(timetableIDs: string[]): Promise<any[]> {
-    // ): Promise<ReconstructedTimetableDto[]> {
+  async getTimetablesByIDs(
+    timetableIDs: string[],
+  ): Promise<ReconstructedTimetableDto[]> {
     try {
       const timetables = await this.prisma.timetable.findMany({
         where: {

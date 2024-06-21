@@ -20,7 +20,7 @@ export class ReconstructedTimetableDto {
   @IsArray()
   @IsString({ each: true })
   selectedCourses: string[];
-  selectedClasses: ReconstructedClassDto[];
+  selectedClasses: ScrapedClassDto[];
   createdEvents: EventDto[];
   name?: string;
 }
@@ -35,27 +35,25 @@ export class ClassDto {
 }
 
 // Get class from scraper
-export class ReconstructedClassDto {
-  id: string;
-  courseCode: string;
-  courseName: string;
+export class ScrapedClassDto {
+  classID: number;
+  section: string;
+  term: string;
   activity: string;
   status: string;
-  enrolments: number;
-  capacity: number;
-  periods: any[]; // Could change later to ClassPeriod
-  section: string;
+  courseEnrolment: {
+    enrolments: number;
+    capacity: number;
+  };
+  termDates: {
+    start: string;
+    end: string;
+  };
+  needsConsent: boolean;
+  mode: string;
+  times: any[]; // Change later but im lazy
+  notes: [];
 }
-
-// export interface ClassPeriod {
-//   type: 'class';
-//   classId: string;
-//   courseCode: CourseCode;
-//   activity: Activity;
-//   subActivity: string;
-//   time: ClassTime;
-//   locations: string[];
-// }
 
 export class EventDto {
   id: string; // Frontend generated event id
