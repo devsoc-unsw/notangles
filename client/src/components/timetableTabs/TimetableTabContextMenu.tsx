@@ -31,6 +31,7 @@ import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../..
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
+import StyledDialog from '../StyledDialog';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -405,30 +406,17 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       </Dialog>
 
       {/* Delete timetable Dialog  */}
-      <Dialog maxWidth="xs" open={deleteOpen} onClose={handleMenuClose}>
-        <StyledTitleContainer>
-          <StyledDialogTitle>
-            <StyledDialogTitleFont>Confirm Deletion</StyledDialogTitleFont>
-            <StyledCloseIcon onClick={handleMenuClose} />
-          </StyledDialogTitle>
-          <StyledDialogContent>Are you sure you want to delete this current timetable?</StyledDialogContent>
-        </StyledTitleContainer>
-        <StyledDialogButtons>
-          <Button onClick={handleMenuClose} variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            id="confirm-delete-button"
-            onClick={() => {
-              handleDeleteTimetable(selectedTimetable);
-              handleMenuClose();
-            }}
-            variant="contained"
-          >
-            Delete
-          </Button>
-        </StyledDialogButtons>
-      </Dialog>
+      <StyledDialog
+        open={deleteOpen}
+        onClose={handleMenuClose}
+        onConfirm={() => {
+          handleDeleteTimetable(selectedTimetable);
+          handleMenuClose();
+        }}
+        title="Confirm Deletion"
+        content="Are you sure you want to delete this current timetable?"
+        confirmButtonText="Delete"
+      />
       {/* Restore deleted timetable Alert */}
       <StyledSnackbar
         open={openRestoreAlert}

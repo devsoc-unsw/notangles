@@ -12,6 +12,7 @@ import {
 } from '../../styles/ControlStyles';
 
 import { API_URL } from '../../api/config';
+import StyledDialog from '../StyledDialog';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -50,13 +51,13 @@ const StyledAccountIcon = styled(AccountCircle)`
   height: 28px;
 `;
 
-interface User { 
+interface User {
   zid: string;
-};
+}
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
-  const [windowLocation, setWindowLocation] = useState("");
-  const [user, setUser] = useState<User>({zid: ""});
+  const [windowLocation, setWindowLocation] = useState('');
+  const [user, setUser] = useState<User>({ zid: '' });
   const [logoutDialog, setLogoutDialog] = useState(false);
 
   useEffect(() => {
@@ -69,9 +70,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         // const userResponse = await response.text();
         if (userResponse !== '') {
           setLogin(true);
-          setUser({zid: JSON.parse(userResponse)});
+          setUser({ zid: JSON.parse(userResponse) });
         } else {
-          setUser({zid: ""});
+          setUser({ zid: '' });
           setLogin(false);
         }
       } catch (error) {
@@ -91,7 +92,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     // window.location.replace(`${API_URL.server}/auth/login`);
-
   };
   const logoutCall = async () => {
     try {
@@ -102,13 +102,13 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     window.location.replace(windowLocation);
-    setUser({zid: ""});
+    setUser({ zid: '' });
   };
   // https://stackoverflow.com/a/32108184/1098564
   // const isEmpty = (obj: Object) => {
   //   return Object.keys(obj).length === 0 && obj.constructor === Object;
   // };
-  
+
   if (!login) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
@@ -123,39 +123,17 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
 
   return (
     <>
-      <Dialog maxWidth="xs" onClose={() => setLogoutDialog(false)} open={logoutDialog}>
-        <StyledTitleContainer>
-          <StyledDialogTitle>
-            <StyledDialogTitleFont>Confirm Log out</StyledDialogTitleFont>
-            <StyledCloseIcon
-              onClick={() => {
-                setLogoutDialog(false);
-              }}
-            />
-          </StyledDialogTitle>
-          <StyledDialogContent>Are you sure you want to log out?</StyledDialogContent>
-        </StyledTitleContainer>
-        <StyledDialogButtons>
-          <Button
-            onClick={() => {
-              setLogoutDialog(false);
-            }}
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            id="confirm-logout-button"
-            onClick={() => {
-              logoutCall();
-              setLogoutDialog(false);
-            }}
-            variant="contained"
-          >
-            Log out
-          </Button>
-        </StyledDialogButtons>
-      </Dialog>
+      <StyledDialog
+        open={logoutDialog}
+        onClose={() => setLogoutDialog(false)}
+        onConfirm={() => {
+          logoutCall();
+          setLogoutDialog(false);
+        }}
+        title='Confirm Log out'
+        content='Are you sure you want to log out?'
+        confirmButtonText='Log out'
+      />
       <UserAuth>
         {collapsed ? (
           <Tooltip title="Log out" placement="right">
