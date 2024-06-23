@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import {
-  StyledCloseIcon,
-  StyledDialogButtons,
-  StyledDialogContent,
-  StyledDialogTitle,
-  StyledDialogTitleFont,
-  StyledTitleContainer,
-} from '../../styles/ControlStyles';
-
 import { API_URL } from '../../api/config';
 import StyledDialog from '../StyledDialog';
 

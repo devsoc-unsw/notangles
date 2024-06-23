@@ -19,11 +19,8 @@ import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import {
-  StyledCloseIcon,
-  StyledDialogButtons,
   StyledDialogContent,
   StyledDialogTitle,
-  StyledDialogTitleFont,
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
