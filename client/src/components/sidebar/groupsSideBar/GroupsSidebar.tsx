@@ -41,7 +41,7 @@ const StyledContainer = styled('div')`
 `;
 
 const GroupsSidebar = () => {
-  const [zid, setZid] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
   const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const GroupsSidebar = () => {
           credentials: 'include',
         });
         const userResponse = await response.text();
-        if (userResponse !== '') setZid(JSON.parse(userResponse));
+        if (userResponse !== '') setUserId(JSON.parse(userResponse));
       } catch (error) {
         console.log(error);
       }
@@ -63,7 +63,7 @@ const GroupsSidebar = () => {
     console.log('fetching groups...');
 
     try {
-      const res = await fetch(`${API_URL.server}/user/group/${zid}`, {
+      const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -116,6 +116,32 @@ const GroupsSidebar = () => {
 
   const handleClose = () => setContextMenu(null);
 
+  const handleDeleteGroup = async (groupId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/group`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          groupId,
+        }),
+      });
+      const groupDeleteStatus = await res.json();
+      console.log(groupDeleteStatus);
+      if (res.status === 201) {
+        getGroups();
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={'droppable'}>
@@ -132,7 +158,7 @@ const GroupsSidebar = () => {
                   }
                 >
                   <MenuItem onClick={handleClose}>Edit</MenuItem>
-                  <MenuItem onClick={handleClose}>Delete</MenuItem>
+                  <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
                 </Menu>
                 <Draggable key={group.id} draggableId={group.id} index={idx}>
                   {(provided, snapshot) => (
