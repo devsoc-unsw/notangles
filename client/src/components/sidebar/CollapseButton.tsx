@@ -1,7 +1,6 @@
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EjectIcon from '@mui/icons-material/Eject';
 
 interface CollapseButtonProps {
   collapsed: boolean;
@@ -14,8 +13,8 @@ const StyledCollapseButton = styled(IconButton)`
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const StyledExpandMoreIcon = styled(EjectIcon)<{ collapsed: boolean }>`
-  transform: ${({ collapsed }) => (collapsed ? 'rotate(90deg)' : 'rotate(270deg)')};
+const StyledExpandMoreIcon = styled(ExpandMoreIcon)<{ collapsed: boolean }>`
+  transform: ${({ collapsed }) => (collapsed ? 'rotate(270deg)' : 'rotate(90deg)')};
 `;
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {
