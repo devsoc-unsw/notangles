@@ -26,7 +26,7 @@ const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
         Cancel
       </Button>
       <Button
-        disabled={group.name === '' || group.members.length === 0}
+        disabled={group.name === '' || group.memberIds.length === 0}
         variant="contained"
         onClick={handleCreateGroup}
       >

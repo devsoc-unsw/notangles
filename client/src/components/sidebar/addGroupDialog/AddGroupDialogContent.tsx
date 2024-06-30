@@ -65,7 +65,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
     <StyledDialogContent>
       <StyledUploadImageContainer>
         <label>
-          <CircleOutline>{<CircleImage src={group.imageURL} />}</CircleOutline>
+          <CircleOutline>{<CircleImage src={group.groupImageURL} />}</CircleOutline>
         </label>
         <EditImagePopOver group={group} setGroup={setGroup} />
       </StyledUploadImageContainer>
@@ -86,7 +86,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         options={friends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setGroup({...group, members: value})}
+        onChange={(_, value) => setGroup({...group, memberIds: value.map((val) => val.zID)})}
         onBlur={(e) => setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
@@ -109,7 +109,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         }}
         renderInput={(params) => (
           <TextField
-            error={group.members.length === 0 && isGroupMemberInteracted}
+            error={group.memberIds.length === 0 && isGroupMemberInteracted}
             helperText="Must select at least one member"
             {...params}
             label="Group Members"
@@ -122,9 +122,9 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         <InputLabel id="select-privacy">Group Privacy</InputLabel>
         <Select
           labelId="select-privacy"
-          value={group.privacy}
+          value={group.visibility}
           label="Group Privacy"
-          onChange={(e) => setGroup({...group, privacy: e.target.value as Privacy})}
+          onChange={(e) => setGroup({...group, visibility: e.target.value as Privacy})}
         >
           <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
           <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
