@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
@@ -45,9 +45,10 @@ const TermDisplay = styled('span')`
 `;
 export interface TermSelectProps {
   collapsed: boolean;
+  onClick: () => void;
 }
 
-const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
+const TermSelect: React.FC<TermSelectProps> = ({ collapsed, onClick }) => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -55,6 +56,8 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
 
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [open, setOpen] = useState(false);
 
   let prevTermName = `Term ${termsData.prevTerm.term[1]}`;
   if (prevTermName.includes('Summer')) {
@@ -98,11 +101,26 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
     event.stopPropagation();
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   return (
     <FormControl onMouseDown={handleMouseDown}>
       {collapsed ? (
         <>
-          <Tooltip title={termName} placement="right">
+          <Tooltip
+            title={termName}
+            placement="right"
+            onClick={() => {
+              onClick();
+              handleOpen();
+            }}
+          >
             <TermDisplay>{term}</TermDisplay>
           </Tooltip>
         </>
@@ -114,8 +132,18 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
             labelId="select-term-label"
             id="select-term"
             label="Select term"
+            open={open}
+            onClose={handleClose}
+            onOpen={handleOpen}
             value={isMobile ? term : termName.concat(', ', year)}
             onChange={selectTerm}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: '258px',
+                },
+              },
+            }}
           >
             {Array.from(termData).map((term, index) => {
               return (

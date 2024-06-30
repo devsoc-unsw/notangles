@@ -1,12 +1,5 @@
-import {
-  Description,
-  Info,
-  Security,
-  Settings as SettingsIcon,
-  Group,
-  CalendarMonth,
-} from '@mui/icons-material';
-import { AppBar, Typography, AppBarProps, Divider, Button } from '@mui/material';
+import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
+import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -85,6 +78,7 @@ const SidebarFooter = styled('div')`
   flex-direction: column;
   padding: 10px 16px 20px 16px;
 `;
+
 const SidebarFooterText = styled('div')`
   display: flex;
   flex-direction: column;
@@ -98,7 +92,7 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
   // TODO: dummy logic to be
-  
+
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
@@ -170,7 +164,7 @@ const Sidebar: React.FC = () => {
       </HeaderContainer>
       <Divider />
       <SideBarContainer>
-        <TermSelect collapsed={collapsed} />
+        <TermSelect collapsed={collapsed} onClick={() => handleCollapse(false)} />
         <NavComponentsContainer>
           <CustomModal
             title="Timetable"
@@ -186,7 +180,7 @@ const Sidebar: React.FC = () => {
           />
           <CustomModal
             title="Friends"
-            toolTipTitle="Coming Soon: Friends"
+            toolTipTitle="Coming Soon: Timetable Sharing"
             showIcon={<Group />}
             description={'View Friends Timetables'}
             content={null}
