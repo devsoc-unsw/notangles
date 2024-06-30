@@ -48,7 +48,8 @@ const GroupsSidebar = () => {
     return;
 
     try {
-      const res = await fetch(`${API_URL.server}/user/group/:zid`, { //TODO fetch zid
+      const res = await fetch(`${API_URL.server}/user/group/:zid`, {
+        //TODO fetch zid
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -60,11 +61,10 @@ const GroupsSidebar = () => {
 
       const getGroupStatus = await res.json();
       console.log(getGroupStatus);
-
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
-  }
+  };
 
   // Reorders the given list by moving the value at startIndex to endIndex.
   const reorder = (list: any, startIndex: number, endIndex: number) => {
@@ -110,40 +110,37 @@ const GroupsSidebar = () => {
         {(provided, snapshot) => (
           <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
             {items.map((item, idx) => (
-            <div onContextMenu={handleContextMenu}>
-              <Menu
-                open={contextMenu !== null}
-                onClose={handleClose}
-                anchorReference="anchorPosition"
-                anchorPosition={
-                  contextMenu !== null
-                    ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                    : undefined
-                }
-              >
-                <MenuItem onClick={handleClose}>Edit</MenuItem>
-                <MenuItem onClick={handleClose}>Delete</MenuItem>
-              </Menu>
-              <Draggable key={item.id} draggableId={item.id} index={idx}>
-                
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                  >
-                    <Tooltip title={item.groupName} placement="right">
-                      <img
-                        src={item.groupImageURL}
-                        width={GROUP_CIRCLE_SIZE}
-                        height={GROUP_CIRCLE_SIZE}
-                        style={{ borderRadius: 999 }}
-                      />
-                    </Tooltip>
-                  </div>
-                )}
-              </Draggable>
+              <div onContextMenu={handleContextMenu}>
+                <Menu
+                  open={contextMenu !== null}
+                  onClose={handleClose}
+                  anchorReference="anchorPosition"
+                  anchorPosition={
+                    contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+                  }
+                >
+                  <MenuItem onClick={handleClose}>Edit</MenuItem>
+                  <MenuItem onClick={handleClose}>Delete</MenuItem>
+                </Menu>
+                <Draggable key={item.id} draggableId={item.id} index={idx}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                    >
+                      <Tooltip title={item.groupName} placement="right">
+                        <img
+                          src={item.groupImageURL}
+                          width={GROUP_CIRCLE_SIZE}
+                          height={GROUP_CIRCLE_SIZE}
+                          style={{ borderRadius: 999 }}
+                        />
+                      </Tooltip>
+                    </div>
+                  )}
+                </Draggable>
               </div>
             ))}
             {provided.placeholder}
