@@ -8,10 +8,16 @@ import { UserModule } from './user/user.module';
 import { FriendModule } from './friend/friend.module';
 import { ConfigModule } from '@nestjs/config';
 import { GroupModule } from './group/group.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    // AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '../.env',
+    }),
+    AuthModule,
     AutoModule,
     UserModule,
     FriendModule,

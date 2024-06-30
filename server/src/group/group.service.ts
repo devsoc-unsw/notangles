@@ -8,7 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UserService } from 'src/user/user.service';
-import { PrismaErrorCode } from 'src/prisma/prisma-error-codes.enum';
+
+export enum PrismaErrorCode {
+  UNIQUE_CONSTRAINT_FAILED = 'P2002',
+  RECORD_NOT_FOUND = 'P2025',
+}
 
 @Injectable()
 export class GroupService {

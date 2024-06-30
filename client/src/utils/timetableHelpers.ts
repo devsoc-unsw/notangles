@@ -47,7 +47,7 @@ const duplicateEvents = (oldEvents: CreatedEvents) => {
       period.time.day,
       period.time.start,
       period.time.end,
-      period.subtype
+      period.subtype,
     );
     newEvents[newEvent.event.id] = newEvent;
   });

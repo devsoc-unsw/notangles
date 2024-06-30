@@ -19,9 +19,11 @@ import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, SelectedClasses, TimetableData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
 import {
+  StyledCloseIcon,
   StyledDialogButtons,
   StyledDialogContent,
   StyledDialogTitle,
+  StyledDialogTitleFont,
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../styles/ControlStyles';
@@ -405,16 +407,23 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       {/* Delete timetable Dialog  */}
       <Dialog maxWidth="xs" open={deleteOpen} onClose={handleMenuClose}>
         <StyledTitleContainer>
-          <StyledDialogContent>Delete current timetable?</StyledDialogContent>
+          <StyledDialogTitle>
+            <StyledDialogTitleFont>Confirm Deletion</StyledDialogTitleFont>
+            <StyledCloseIcon onClick={handleMenuClose} />
+          </StyledDialogTitle>
+          <StyledDialogContent>Are you sure you want to delete this current timetable?</StyledDialogContent>
         </StyledTitleContainer>
         <StyledDialogButtons>
-          <Button onClick={handleMenuClose}>Cancel</Button>
+          <Button onClick={handleMenuClose} variant="outlined">
+            Cancel
+          </Button>
           <Button
             id="confirm-delete-button"
             onClick={() => {
               handleDeleteTimetable(selectedTimetable);
               handleMenuClose();
             }}
+            variant="contained"
           >
             Delete
           </Button>

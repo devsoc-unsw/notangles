@@ -65,7 +65,7 @@ export const handlePasteEvent = (
 export const handleDeleteEvent = (
   createdEvents: CreatedEvents,
   setCreatedEvents: (createdEvents: CreatedEvents) => void,
-  eventPeriod: EventPeriod
+  eventPeriod: EventPeriod,
 ) => {
   const updatedEventData = { ...createdEvents };
   delete updatedEventData[eventPeriod.event.id];

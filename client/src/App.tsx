@@ -16,7 +16,7 @@ import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding,lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, leftContentPadding, lightTheme } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,

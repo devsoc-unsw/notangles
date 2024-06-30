@@ -15,7 +15,7 @@ export class AutoController {
   constructor(private readonly autoService: AutoService) {}
 
   @Post()
-  create(@Body() userRequestConstraints: autoDTO) {
-    return this.autoService.getAutoTimetable(userRequestConstraints);
+  async create(@Body() userRequestConstraints: autoDTO) {
+    return await this.autoService.getAutoTimetable(userRequestConstraints);
   }
 }
