@@ -1,7 +1,7 @@
-import { BarsArrowDownIcon } from '@heroicons/react/24/solid';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { ViewSidebarRounded } from '@mui/icons-material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EjectIcon from '@mui/icons-material/Eject';
 
 interface CollapseButtonProps {
   collapsed: boolean;
@@ -9,22 +9,22 @@ interface CollapseButtonProps {
   toolTipTitle: string;
 }
 
-const StyledIconButton = styled(IconButton)`
-  display: flex;
-  gap: 16px;
+const StyledCollapseButton = styled(IconButton)`
   border-radius: 8px;
-  justify-content: flex-start;
-  padding: 12px;
   color: ${({ theme }) => theme.palette.text.primary};
+`;
+
+const StyledExpandMoreIcon = styled(EjectIcon)<{ collapsed: boolean }>`
+  transform: ${({ collapsed }) => (collapsed ? 'rotate(90deg)' : 'rotate(270deg)')};
 `;
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {
   return (
     <>
       <Tooltip title={toolTipTitle} placement="right">
-        <StyledIconButton onClick={onClick}>
-          <ViewSidebarRounded color="inherit" />
-        </StyledIconButton>
+        <StyledCollapseButton onClick={onClick}>
+          <StyledExpandMoreIcon collapsed={collapsed} />
+        </StyledCollapseButton>
       </Tooltip>
     </>
   );
