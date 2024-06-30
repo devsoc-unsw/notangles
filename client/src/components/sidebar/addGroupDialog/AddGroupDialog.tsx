@@ -24,20 +24,26 @@ interface AddGroupDialogProps {
 }
 
 export interface Group {
+  id: string;
   name: string;
-  members: MemberType[];
-  imageURL: string;
-  privacy: Privacy;
+  visibility: Privacy;
+  timetableIDs: string[];
+  memberIds: string[];
+  groupAdmins: string[];
+  groupImageURL: string;
 }
 
 const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [group, setGroup] = useState<Group>({
+    id: '',
     name: '',
-    members: [],
-    imageURL: NotanglesLogo,
-    privacy: Privacy.PRIVATE,
+    visibility: Privacy.PRIVATE,
+    timetableIDs: [],
+    memberIds: [],
+    groupAdmins: [],
+    groupImageURL: NotanglesLogo,
   });
 
   const handleCreateGroup = async () => {
@@ -50,11 +56,11 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
         },
         body: JSON.stringify({
           name: group.name,
-          visibility: group.privacy,
-          timetableIDs: [],
-          memberIDs: group.members.map((member) => member.zID),
-          groupAdminIDs: [],
-          imageURL: group.imageURL,
+          visibility: group.visibility,
+          timetableIDs: group.timetableIDs,
+          memberIDs: group.memberIds,
+          groupAdminIDs: group.groupAdmins,
+          imageURL: group.groupImageURL,
         }),
       });
       const groupCreationStatus = await res.json();
@@ -74,10 +80,13 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
   const handleClose = () => {
     setIsOpen(false);
     setGroup({
+      id: '',
       name: '',
-      members: [],
-      imageURL: NotanglesLogo,
-      privacy: Privacy.PRIVATE,
+      visibility: Privacy.PRIVATE,
+      timetableIDs: [],
+      memberIds: [],
+      groupAdmins: [],
+      groupImageURL: NotanglesLogo,
     });
   };
 

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import { Menu, MenuItem, Tooltip } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
-import AddGroupDialog from '../addGroupDialog/AddGroupDialog';
+import AddGroupDialog, { Group } from '../addGroupDialog/AddGroupDialog';
 import { DummyGroupData } from './dummyData';
 
 const GROUP_CIRCLE_SIZE = 45;
@@ -41,15 +41,29 @@ const StyledContainer = styled('div')`
 `;
 
 const GroupsSidebar = () => {
-  const [items, setItems] = useState(DummyGroupData);
+  const [zid, setZid] = useState<string>('');
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    const getZid = async () => {
+      try {
+        const response = await fetch(`${API_URL.server}/auth/user`, {
+          credentials: 'include',
+        });
+        const userResponse = await response.text();
+        if (userResponse !== '') setZid(JSON.parse(userResponse));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getZid();
+  }, []);
 
   const getGroups = async () => {
     console.log('fetching groups...');
-    return;
 
     try {
-      const res = await fetch(`${API_URL.server}/user/group/:zid`, {
-        //TODO fetch zid
+      const res = await fetch(`${API_URL.server}/user/group/${zid}`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -59,8 +73,8 @@ const GroupsSidebar = () => {
 
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
 
-      const getGroupStatus = await res.json();
-      console.log(getGroupStatus);
+      const jsonData = await res.json();
+      setGroups(jsonData.data.groups); //TODO check right
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -76,8 +90,8 @@ const GroupsSidebar = () => {
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return; // if dropped outside the list
-    const reorderedItems: any = reorder(items, result.source.index, result.destination.index);
-    setItems(reorderedItems);
+    const reorderedItems: any = reorder(groups, result.source.index, result.destination.index);
+    setGroups(reorderedItems);
   };
 
   const [contextMenu, setContextMenu] = React.useState<{
@@ -100,16 +114,14 @@ const GroupsSidebar = () => {
     );
   };
 
-  const handleClose = () => {
-    setContextMenu(null);
-  };
+  const handleClose = () => setContextMenu(null);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={'droppable'}>
         {(provided, snapshot) => (
           <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
-            {items.map((item, idx) => (
+            {groups.map((group, idx) => (
               <div onContextMenu={handleContextMenu}>
                 <Menu
                   open={contextMenu !== null}
@@ -122,7 +134,7 @@ const GroupsSidebar = () => {
                   <MenuItem onClick={handleClose}>Edit</MenuItem>
                   <MenuItem onClick={handleClose}>Delete</MenuItem>
                 </Menu>
-                <Draggable key={item.id} draggableId={item.id} index={idx}>
+                <Draggable key={group.id} draggableId={group.id} index={idx}>
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
@@ -130,9 +142,9 @@ const GroupsSidebar = () => {
                       {...provided.dragHandleProps}
                       style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                     >
-                      <Tooltip title={item.groupName} placement="right">
+                      <Tooltip title={group.name} placement="right">
                         <img
-                          src={item.groupImageURL}
+                          src={group.groupImageURL}
                           width={GROUP_CIRCLE_SIZE}
                           height={GROUP_CIRCLE_SIZE}
                           style={{ borderRadius: 999 }}
