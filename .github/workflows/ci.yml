@@ -36,7 +36,7 @@ jobs:
         working-directory: ${{ matrix.component }}
       - name: Generate Prisma Types from Schema
         run: npx prisma generate
-        working-directory: ${{ matrix.component }}
+        working-directory: server
       - name: Build
         run: pnpm run build
         working-directory: ${{ matrix.component }}
