@@ -4,17 +4,19 @@ services:
     container_name: notangles-server
     image: notangles-server
     restart: always
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    build: .
     depends_on:
-      - database.notangles_db
+      - database
     ports:
       - '3001:3001'
+    networks:
+      - notangles_network
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?schema=public
 
-  database.notangles_db:
+  database:
+    container_name: notangles-database
     hostname: notangles_database
-    container_name: notangles_database
     restart: always
     image: postgres:alpine
     ports:
@@ -25,7 +27,12 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - notangles_network
 
 volumes:
   postgres:
     name: server
+networks:
+  notangles_network:
+    driver: bridge
