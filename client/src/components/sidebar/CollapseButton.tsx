@@ -22,7 +22,7 @@ const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, too
     <>
       <Tooltip title={toolTipTitle} placement="right">
         <StyledCollapseButton onClick={onClick}>
-          <StyledExpandMoreIcon collapsed={collapsed} color="inherit" />
+          <StyledExpandMoreIcon collapsed={collapsed} />
         </StyledCollapseButton>
       </Tooltip>
     </>
