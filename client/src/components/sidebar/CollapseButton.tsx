@@ -1,6 +1,6 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface CollapseButtonProps {
   collapsed: boolean;
@@ -22,7 +22,7 @@ const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, too
     <>
       <Tooltip title={toolTipTitle} placement="right">
         <StyledCollapseButton onClick={onClick}>
-          <StyledExpandMoreIcon collapsed={collapsed} />
+          <StyledExpandMoreIcon collapsed={collapsed} color="inherit" />
         </StyledCollapseButton>
       </Tooltip>
     </>
