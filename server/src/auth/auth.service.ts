@@ -14,7 +14,6 @@ export class AuthService {
     );
 
     if (!id_token || !TrustIssuer) {
-      console.log(this.configService.get<string>('app.redirectLink'));
       return res.redirect(this.configService.get<string>('app.redirectLink'));
     }
 
