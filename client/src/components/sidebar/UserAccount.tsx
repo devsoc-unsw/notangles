@@ -2,16 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import {
-  StyledCloseIcon,
-  StyledDialogButtons,
-  StyledDialogContent,
-  StyledDialogTitle,
-  StyledDialogTitleFont,
-  StyledTitleContainer,
-} from '../../styles/ControlStyles';
-
 import { API_URL } from '../../api/config';
+import StyledDialog from '../StyledDialog';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -98,7 +90,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     window.location.replace(windowLocation);
     setUser({ zid: '' });
   };
-
   if (!login) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
@@ -113,39 +104,17 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
 
   return (
     <>
-      <Dialog maxWidth="xs" onClose={() => setLogoutDialog(false)} open={logoutDialog}>
-        <StyledTitleContainer>
-          <StyledDialogTitle>
-            <StyledDialogTitleFont>Confirm Log out</StyledDialogTitleFont>
-            <StyledCloseIcon
-              onClick={() => {
-                setLogoutDialog(false);
-              }}
-            />
-          </StyledDialogTitle>
-          <StyledDialogContent>Are you sure you want to log out?</StyledDialogContent>
-        </StyledTitleContainer>
-        <StyledDialogButtons>
-          <Button
-            onClick={() => {
-              setLogoutDialog(false);
-            }}
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            id="confirm-logout-button"
-            onClick={() => {
-              logoutCall();
-              setLogoutDialog(false);
-            }}
-            variant="contained"
-          >
-            Log out
-          </Button>
-        </StyledDialogButtons>
-      </Dialog>
+      <StyledDialog
+        open={logoutDialog}
+        onClose={() => setLogoutDialog(false)}
+        onConfirm={() => {
+          logoutCall();
+          setLogoutDialog(false);
+        }}
+        title='Confirm Log out'
+        content='Are you sure you want to log out?'
+        confirmButtonText='Log out'
+      />
       <UserAuth>
         {collapsed ? (
           <Tooltip title="Log out" placement="right">
