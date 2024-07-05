@@ -44,23 +44,8 @@ const GroupsSidebar = () => {
   const [userId, setUserId] = useState<string>('');
   const [groups, setGroups] = useState<Group[]>([]);
 
-  useEffect(() => {
-    const getZid = async () => {
-      try {
-        const response = await fetch(`${API_URL.server}/auth/user`, {
-          credentials: 'include',
-        });
-        const userResponse = await response.text();
-        if (userResponse !== '') setUserId(JSON.parse(userResponse));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getZid();
-  }, []);
-
   const getGroups = async () => {
-    console.log('fetching groups...');
+    console.log('fetching groups...', `${API_URL.server}/user/group/${userId}`);
 
     try {
       const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
@@ -79,6 +64,25 @@ const GroupsSidebar = () => {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
   };
+
+  useEffect(() => {
+    getGroups();
+  }, [userId]);
+
+  useEffect(() => {
+    const getZid = async () => {
+      try {
+        const response = await fetch(`${API_URL.server}/auth/user`, {
+          credentials: 'include',
+        });
+        const userResponse = await response.text();
+        if (userResponse !== '') setUserId(JSON.parse(userResponse));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getZid();
+  }, []);
 
   // Reorders the given list by moving the value at startIndex to endIndex.
   const reorder = (list: any, startIndex: number, endIndex: number) => {
@@ -132,7 +136,39 @@ const GroupsSidebar = () => {
       const groupDeleteStatus = await res.json();
       console.log(groupDeleteStatus);
       if (res.status === 201) {
-        getGroups();
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
+  const handleEditGroup = async (groupId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/group`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          adminUserID: userId,
+          groupId,
+          groupData: {
+            name: '',
+            visibility: '',
+            timetableIDs: '',
+            memberIDs: '',
+            groupAdmins: '',
+            groupImageURL: '',
+          },
+        }),
+      });
+      const groupDeleteStatus = await res.json();
+      console.log(groupDeleteStatus);
+      if (res.status === 201) {
         handleClose();
       } else {
         throw new NetworkError("Couldn't get response");
@@ -157,7 +193,7 @@ const GroupsSidebar = () => {
                     contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
                   }
                 >
-                  <MenuItem onClick={handleClose}>Edit</MenuItem>
+                  <MenuItem onClick={() => handleEditGroup(group.id)}>Edit</MenuItem>
                   <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
                 </Menu>
                 <Draggable key={group.id} draggableId={group.id} index={idx}>

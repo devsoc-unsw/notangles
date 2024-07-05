@@ -1,6 +1,6 @@
 import { Add as AddIcon } from '@mui/icons-material';
 import { Dialog, IconButton, Tooltip } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../../api/config';
 import NotanglesLogo from '../../../assets/notangles_1.png';
@@ -19,8 +19,18 @@ export enum Privacy {
   PUBLIC = 'public',
 }
 
+interface GroupData {
+  name: string;
+  visibility: Privacy;
+  timetableIDs: string[];
+  memberIds: string[];
+  groupAdmins: string[];
+  groupImageURL: string;
+}
+
 interface AddGroupDialogProps {
   getGroups: () => void;
+  groupData?: GroupData;
 }
 
 export interface Group {
@@ -33,7 +43,7 @@ export interface Group {
   groupImageURL: string;
 }
 
-const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
+const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, groupData }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [group, setGroup] = useState<Group>({
@@ -45,6 +55,12 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
     groupAdmins: [],
     groupImageURL: NotanglesLogo,
   });
+
+  useEffect(() => {
+    if (groupData) {
+      setGroup({ id: '', ...groupData });
+    }
+  }, []);
 
   const handleCreateGroup = async () => {
     try {
@@ -92,7 +108,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups }) => {
 
   return (
     <>
-      <Tooltip title="Add a Group" placement="right">
+      <Tooltip title={groupData ? 'Edit Group' : 'Add a Group'} placement="right">
         <IconButton color="inherit" onClick={() => setIsOpen(true)}>
           <AddIcon />
         </IconButton>
