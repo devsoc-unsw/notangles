@@ -47,7 +47,13 @@ const GroupsSidebar = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const getGroups = async () => {
-    console.log('fetching groups...', `${API_URL.server}/user/group/${userId}`);
+    const res = await fetch(`${API_URL.server}/group`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
 
     try {
       const res = await fetch(`${API_URL.server}/user/group/${userId}`, {

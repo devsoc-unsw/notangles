@@ -148,4 +148,19 @@ export class UserController {
       return e;
     }
   }
+
+  @Get('group/:userId')
+  getUserGroups(@Param('userId') userId: string) {
+    console.log('HERE')
+    try {
+      return this.userService.getGroups(userId).then((data) => {
+        return {
+          status: 'Successsfully returned user groups',
+          data,
+        };
+      });
+    } catch (e) {
+      return e;
+    }
+  }
 }

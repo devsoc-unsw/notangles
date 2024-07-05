@@ -75,9 +75,10 @@ export class UserService {
 
   async getUserSettings(_userId: string): Promise<SettingsDto> {
     try {
-      const { userId, ...settings } = await this.prisma.settings.findUniqueOrThrow({
-        where: { userId: _userId },
-      });
+      const { userId, ...settings } =
+        await this.prisma.settings.findUniqueOrThrow({
+          where: { userId: _userId },
+        });
 
       return Promise.resolve(settings);
     } catch (e) {
@@ -310,4 +311,24 @@ export class UserService {
       throw new Error(_timetableId);
     }
   }
+
+  async getGroups(_userId: string) {
+    try {
+      console.log('HIII');
+
+      // return Promise.resolve(data);
+    } catch (e) {
+      throw new Error(e); // Not sure why I'm just catching and rethrowing - probably should process the error in some way
+    }
+  }
+}
+
+class GetGroupsDto {
+  name: string;
+  description?: string;
+  imageURL?: string;
+  visibility?: string;
+  timetableIDs: string[];
+  memberIDs: string[];
+  groupAdminIDs: string[];
 }
