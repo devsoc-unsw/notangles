@@ -1,10 +1,12 @@
 import styled from '@emotion/styled';
-import { Menu, MenuItem, Tooltip } from '@mui/material';
+import { Edit } from '@mui/icons-material';
+import { Divider, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
+import { RedDeleteIcon, RedListItemText } from '../../../styles/CustomEventStyles';
 import AddGroupDialog, { Group } from '../addGroupDialog/AddGroupDialog';
 import { DummyGroupData } from './dummyData';
 
@@ -131,8 +133,19 @@ const GroupsSidebar = () => {
                     contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
                   }
                 >
-                  <MenuItem onClick={handleClose}>Edit</MenuItem>
-                  <MenuItem onClick={handleClose}>Delete</MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <Edit fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Edit</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <RedDeleteIcon fontSize="small" />
+                    </ListItemIcon>
+                    <RedListItemText>Delete</RedListItemText>
+                  </MenuItem>
                 </Menu>
                 <Draggable key={group.id} draggableId={group.id} index={idx}>
                   {(provided, snapshot) => (
