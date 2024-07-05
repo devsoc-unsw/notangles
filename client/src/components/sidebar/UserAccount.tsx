@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useState } from 'react';
-
 import { API_URL } from '../../api/config';
+import StyledDialog from '../StyledDialog';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -42,13 +42,15 @@ const StyledAccountIcon = styled(AccountCircle)`
   height: 28px;
 `;
 
-interface User { 
+interface User {
   zid: string;
-};
+}
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
-  const [windowLocation, setWindowLocation] = useState("");
-  const [user, setUser] = useState<User>({zid: ""});
+  const [windowLocation, setWindowLocation] = useState('');
+  const [user, setUser] = useState<User>({ zid: '' });
+  const [logoutDialog, setLogoutDialog] = useState(false);
+
   useEffect(() => {
     async function runAsync() {
       try {
@@ -59,9 +61,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         // const userResponse = await response.text();
         if (userResponse !== '') {
           setLogin(true);
-          setUser({zid: JSON.parse(userResponse)});
+          setUser({ zid: JSON.parse(userResponse) });
         } else {
-          setUser({zid: ""});
+          setUser({ zid: '' });
           setLogin(false);
         }
       } catch (error) {
@@ -81,7 +83,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     // window.location.replace(`${API_URL.server}/auth/login`);
-
   };
   const logoutCall = async () => {
     try {
@@ -92,13 +93,13 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     window.location.replace(windowLocation);
-    setUser({zid: ""});
+    setUser({ zid: '' });
   };
   // https://stackoverflow.com/a/32108184/1098564
   // const isEmpty = (obj: Object) => {
   //   return Object.keys(obj).length === 0 && obj.constructor === Object;
   // };
-  
+
   if (!login) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
@@ -112,29 +113,42 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   }
 
   return (
-    <UserAuth>
-      {collapsed ? (
-        <Tooltip title="Log out" placement="right">
-          <StyledIconButton onClick={logoutCall}>
-            <LogoutRounded />
-          </StyledIconButton>
-        </Tooltip>
-      ) : (
-        <>
-          <UserInfo>
-            <StyledAccountIcon />
-            {/* TODO: handle user's name */}
-            <p>{user.zid}</p>
-          </UserInfo>
+    <>
+      <StyledDialog
+        open={logoutDialog}
+        onClose={() => setLogoutDialog(false)}
+        onConfirm={() => {
+          logoutCall();
+          setLogoutDialog(false);
+        }}
+        title='Confirm Log out'
+        content='Are you sure you want to log out?'
+        confirmButtonText='Log out'
+      />
+      <UserAuth>
+        {collapsed ? (
           <Tooltip title="Log out" placement="right">
-            {/* TODO: error handling for when logging out */}
-            <StyledIconButton color="inherit" onClick={logoutCall}>
+            <StyledIconButton onClick={() => setLogoutDialog(true)}>
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>
-        </>
-      )}
-    </UserAuth>
+        ) : (
+          <>
+            <UserInfo>
+              <StyledAccountIcon />
+              {/* TODO: handle user's name */}
+              <p>{user.zid}</p>
+            </UserInfo>
+            <Tooltip title="Log out" placement="right">
+              {/* TODO: error handling for when logging out */}
+              <StyledIconButton color="inherit" onClick={logoutCall}>
+                <LogoutRounded />
+              </StyledIconButton>
+            </Tooltip>
+          </>
+        )}
+      </UserAuth>
+    </>
   );
 };
 
