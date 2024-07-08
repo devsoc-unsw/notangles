@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Paper, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -43,12 +43,13 @@ const TermDisplay = styled('span')`
   border-radius: 10px;
   display: inline-block;
 `;
+
 export interface TermSelectProps {
   collapsed: boolean;
-  onClick: () => void;
+  handleExpand: () => void;
 }
 
-const TermSelect: React.FC<TermSelectProps> = ({ collapsed, onClick }) => {
+const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -117,7 +118,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, onClick }) => {
             title={termName}
             placement="right"
             onClick={() => {
-              onClick();
+              handleExpand();
               handleOpen();
             }}
           >

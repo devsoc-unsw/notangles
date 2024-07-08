@@ -124,9 +124,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           logoutCall();
           setLogoutDialog(false);
         }}
-        title='Confirm Log out'
-        content='Are you sure you want to log out?'
-        confirmButtonText='Log out'
+        title="Confirm Log out"
+        content="Are you sure you want to log out?"
+        confirmButtonText="Log out"
       />
       <UserAuth>
         {collapsed ? (

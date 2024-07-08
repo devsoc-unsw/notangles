@@ -14,8 +14,6 @@ import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
 
-// import { uniqueId } from 'lodash-es';
-
 const LogoImg = styled('img')`
   height: 46px;
   margin-right: 12.5px;
@@ -165,7 +163,7 @@ const Sidebar: React.FC = () => {
       </HeaderContainer>
       <Divider />
       <SideBarContainer>
-        <TermSelect collapsed={collapsed} onClick={() => handleCollapse(false)} />
+        <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
         <NavComponentsContainer>
           <CustomModal
             title="Timetable"
@@ -181,7 +179,7 @@ const Sidebar: React.FC = () => {
           />
           <CustomModal
             title="Friends"
-            toolTipTitle="Coming Soon: Timetable Sharing"
+            toolTipTitle="Coming Soon: Friends Timetables"
             showIcon={<Group />}
             description={'View Friends Timetables'}
             content={null}
