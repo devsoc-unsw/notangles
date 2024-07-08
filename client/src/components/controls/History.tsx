@@ -21,6 +21,7 @@ import {
   extractHistoryInfo,
   TimetableActions,
 } from '../../utils/timetableHelpers';
+import StyledDialog from '../StyledDialog';
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
@@ -290,40 +291,20 @@ const History: React.FC = () => {
   return (
     <>
       {/* Clear timetable(s) Dialog  */}
-      <Dialog maxWidth="xs" onClose={() => setClearOpen(false)} open={clearOpen}>
-        <StyledTitleContainer>
-          <StyledDialogTitle>
-            <StyledDialogTitleFont>Confirm Clear</StyledDialogTitleFont>
-            <StyledCloseIcon
-              onClick={() => {
-                setClearOpen(false);
-              }}
-            />
-          </StyledDialogTitle>
-          <StyledDialogContent>Are you sure you want to clear all timetables?</StyledDialogContent>
-        </StyledTitleContainer>
-        <StyledDialogButtons>
-          <Button
-            onClick={() => {
-              setClearOpen(false);
-            }}
-            variant="outlined"
-          >
-            CANCEL
-          </Button>
-          <Button
-            disabled={disableReset.all}
-            id="confirm-delete-button"
-            onClick={() => {
-              clearAll();
-              setClearOpen(false);
-            }}
-            variant="contained"
-          >
-            CLEAR
-          </Button>
-        </StyledDialogButtons>
-      </Dialog>
+      <StyledDialog
+        open={clearOpen}
+        onClose={() => setClearOpen(false)}
+        onConfirm={() => {
+          clearAll();
+          setClearOpen(false);
+        }}
+        title="Confirm Clear"
+        content="Are you sure you want to clear all timetables?"
+        confirmButtonText="Clear"
+        cancelButtonText="Cancel"
+        disableConfirm={disableReset.all}
+        confirmButtonId="confirm-delete-button"
+      />
       <Tooltip title={clearTooltip}>
         <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
           <Delete />

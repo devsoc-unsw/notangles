@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useState } from 'react';
-
 import { API_URL } from '../../api/config';
+import StyledDialog from '../StyledDialog';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -50,6 +50,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
   const [windowLocation, setWindowLocation] = useState('');
   const [user, setUser] = useState<User>({ zid: '' });
+  const [logoutDialog, setLogoutDialog] = useState(false);
+
   useEffect(() => {
     async function runAsync() {
       try {
@@ -114,29 +116,42 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   }
 
   return (
-    <UserAuth>
-      {collapsed ? (
-        <Tooltip title="Log out" placement="right">
-          <StyledIconButton onClick={logoutCall}>
-            <LogoutRounded />
-          </StyledIconButton>
-        </Tooltip>
-      ) : (
-        <>
-          <UserInfo>
-            <StyledAccountIcon />
-            {/* TODO: handle user's name */}
-            <p>{user.zid}</p>
-          </UserInfo>
+    <>
+      <StyledDialog
+        open={logoutDialog}
+        onClose={() => setLogoutDialog(false)}
+        onConfirm={() => {
+          logoutCall();
+          setLogoutDialog(false);
+        }}
+        title='Confirm Log out'
+        content='Are you sure you want to log out?'
+        confirmButtonText='Log out'
+      />
+      <UserAuth>
+        {collapsed ? (
           <Tooltip title="Log out" placement="right">
-            {/* TODO: error handling for when logging out */}
-            <StyledIconButton color="inherit" onClick={logoutCall}>
+            <StyledIconButton onClick={() => setLogoutDialog(true)}>
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>
-        </>
-      )}
-    </UserAuth>
+        ) : (
+          <>
+            <UserInfo>
+              <StyledAccountIcon />
+              {/* TODO: handle user's name */}
+              <p>{user.zid}</p>
+            </UserInfo>
+            <Tooltip title="Log out" placement="right">
+              {/* TODO: error handling for when logging out */}
+              <StyledIconButton color="inherit" onClick={logoutCall}>
+                <LogoutRounded />
+              </StyledIconButton>
+            </Tooltip>
+          </>
+        )}
+      </UserAuth>
+    </>
   );
 };
 
