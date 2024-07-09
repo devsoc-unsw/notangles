@@ -5,6 +5,7 @@ import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, TermDataMap } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
+import { ViewType } from '../interfaces/Calendar';
 
 export interface IAppContext {
   is12HourMode: boolean;
@@ -96,6 +97,9 @@ export interface IAppContext {
 
   currentDate: Date; // Date of the Monday currently being displayed
   setCurrentDate: (newCurrentDate: Date) => void;
+
+  calendarView: ViewType;
+  setCalendarView: (newCalendarView: ViewType) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -185,6 +189,9 @@ export const AppContext = createContext<IAppContext>({
 
   currentDate: new Date(),
   setCurrentDate: () => {},
+
+  calendarView: ViewType.WEEK,
+  setCalendarView: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -237,6 +244,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   // Set the current date to the Monday of the current week, 12am
   currentDate.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
   currentDate.setHours(0, 0, 0, 0);
+  const [calendarView, setCalendarView] = useState<ViewType>(ViewType.WEEK);
 
   const initialContext: IAppContext = {
     is12HourMode,
@@ -297,6 +305,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setCourseData,
     currentDate,
     setCurrentDate,
+    calendarView,
+    setCalendarView,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
