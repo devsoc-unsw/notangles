@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
-import { CourseContext } from '../../context/CourseContext';
+import { useContext } from 'react';
+
 import { AppContext } from '../../context/AppContext';
-import { ArrowBack, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { CourseContext } from '../../context/CourseContext';
 
 const WeekSelector = () => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -15,7 +16,6 @@ const WeekSelector = () => {
   };
 
   const handleForwardClick = () => {
-    console.log('created events', createdEvents);
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + 7);
     setCurrentDate(newDate);
