@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import { CourseContext } from '../../context/CourseContext';
 import { AppContext } from '../../context/AppContext';
+import { ArrowBack, ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 const WeekSelector = () => {
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -22,12 +23,15 @@ const WeekSelector = () => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleBackClick}>
-        Back
+      <IconButton onClick={handleBackClick}>
+        <ChevronLeft />
+      </IconButton>
+      <Button variant="contained" color="primary" onClick={() => setCurrentDate(new Date())}>
+        Today
       </Button>
-      <Button variant="contained" color="primary" onClick={handleForwardClick}>
-        Forward
-      </Button>
+      <IconButton onClick={handleForwardClick}>
+        <ChevronRight />
+      </IconButton>
     </div>
   );
 };

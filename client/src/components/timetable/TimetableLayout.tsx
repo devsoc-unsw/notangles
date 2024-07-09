@@ -24,6 +24,7 @@ import CreateEventPopover from './CreateEventPopover';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
+const shortMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BaseCell = styled('div', {
   shouldForwardProp: (prop) => !['x', 'y', 'yTo', 'isEndX', 'isEndY'].includes(prop.toString()),
 })<{
@@ -202,7 +203,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
 
     return (
       <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
-        {`${day.substring(0, 3)} ${newDate.getDate()}`}
+        {`${shortMonth[newDate.getMonth()]}, ${day.substring(0, 3)} ${newDate.getDate()}`}
       </DayCell>
     );
   });

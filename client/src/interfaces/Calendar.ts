@@ -1,5 +1,5 @@
 export enum ViewType {
-  DAY,
-  WEEK,
-  MONTH,
+  DAY = 'Day',
+  WEEK = 'Week',
+  MONTH = 'Month',
 }
