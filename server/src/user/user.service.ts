@@ -314,21 +314,14 @@ export class UserService {
 
   async getGroups(_userId: string) {
     try {
-      console.log('HIII');
-
-      // return Promise.resolve(data);
-    } catch (e) {
-      throw new Error(e); // Not sure why I'm just catching and rethrowing - probably should process the error in some way
+      const { adminGroups, memberGroups } =
+      await this.prisma.user.findUniqueOrThrow({
+        where: { userId: _userId }
+      });
+      return [...adminGroups, ...memberGroups]
+    } catch (error) {
+      console.error('Error retrieving users:', error);
     }
   }
 }
 
-class GetGroupsDto {
-  name: string;
-  description?: string;
-  imageURL?: string;
-  visibility?: string;
-  timetableIDs: string[];
-  memberIDs: string[];
-  groupAdminIDs: string[];
-}
