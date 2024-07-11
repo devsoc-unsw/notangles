@@ -1,10 +1,11 @@
 import { Injectable, Request, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { Issuer } from 'openid-client';
-import { REDIRECT_LINK } from '../config';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
+  constructor(private configService: ConfigService) {}
   async logout(@Request() req, @Res() res: Response): Promise<void> {
     const id_token = req.user ? req.user.id_token : undefined;
 
@@ -13,7 +14,7 @@ export class AuthService {
     );
 
     if (!id_token || !TrustIssuer) {
-      return res.redirect(REDIRECT_LINK);
+      return res.redirect(this.configService.get<string>('app.redirectLink'));
     }
 
     req.logout((err) => {
