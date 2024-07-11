@@ -47,30 +47,23 @@ const GroupsSidebar = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const getGroups = async () => {
-    const res = await fetch(`${API_URL.server}/group`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
+    // try {
+    //   console.log('fetching...', `${API_URL.server}/user/group/${userId}`)
+    //   const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
+    //     method: 'GET',
+    //     headers: {
+    //       Accept: 'application/json',
+    //       'Content-Type': 'application/json',
+    //     },
+    //   });
 
-    try {
-      const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+    //   if (res.status !== 201) throw new NetworkError("Couldn't get response");
 
-      if (res.status !== 201) throw new NetworkError("Couldn't get response");
-
-      const jsonData = await res.json();
-      setGroups(jsonData.data.groups); //TODO check right
-    } catch (error) {
-      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
-    }
+    //   const jsonData = await res.json();
+    //   setGroups(jsonData.data.groups); //TODO check right
+    // } catch (error) {
+    //   throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    // }
   };
 
   useEffect(() => {
