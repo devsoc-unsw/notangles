@@ -21,7 +21,6 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --production
 
 COPY --from=builder /server .
-RUN npx prisma migrate deploy
 RUN npx prisma generate
 
 EXPOSE 3001
