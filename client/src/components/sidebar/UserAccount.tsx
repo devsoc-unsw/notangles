@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, IconButton, Tooltip } from '@mui/material';
+import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import { API_URL } from '../../api/config';
 import StyledDialog from '../StyledDialog';
@@ -58,7 +58,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           credentials: 'include',
         });
         const userResponse = await response.text();
-        // const userResponse = await response.text();
         if (userResponse !== '') {
           setLogin(true);
           setUser({ zid: JSON.parse(userResponse) });
@@ -70,10 +69,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         console.log(error);
       }
     }
-    // Execute the created function directly
     runAsync();
-    // https://stackoverflow.com/a/55854902/1098564
-    // eslint-disable-next-line
   }, []);
   const loginCall = async () => {
     setWindowLocation(window.location.href);
@@ -82,11 +78,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // window.location.replace(`${API_URL.server}/auth/login`);
   };
   const logoutCall = async () => {
     try {
-      const _response = await fetch(`${API_URL.server}/auth/logout`, {
+      await fetch(`${API_URL.server}/auth/logout`, {
         credentials: 'include',
       });
     } catch (error) {
@@ -95,11 +90,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     window.location.replace(windowLocation);
     setUser({ zid: '' });
   };
-  // https://stackoverflow.com/a/32108184/1098564
-  // const isEmpty = (obj: Object) => {
-  //   return Object.keys(obj).length === 0 && obj.constructor === Object;
-  // };
-
   if (!login) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">

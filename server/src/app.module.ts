@@ -11,9 +11,11 @@ import { GroupModule } from './group/group.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import config from './config';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [config],
       isGlobal: true,
       envFilePath: '../.env',
     }),

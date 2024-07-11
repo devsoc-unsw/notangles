@@ -9,9 +9,9 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   async getUserInfo(_userId: string): Promise<UserDTO> {
     try {
-      const { userId, timetable, ...userData } =
+      const { userID, timetable, ...userData } =
         await this.prisma.user.findUniqueOrThrow({
-          where: { userId: _userId },
+          where: { userID: _userId },
           include: {
             timetable: {
               include: {
@@ -54,8 +54,8 @@ export class UserService {
     _lastName?: string,
   ): Promise<any> {
     try {
-      const test = {
-        userId: _userId,
+      const userInfo = {
+        userID: _userId,
         firstname: _firstName,
         lastname: _lastName,
         email: _email,
@@ -64,10 +64,10 @@ export class UserService {
       return Promise.resolve(
         this.prisma.user.upsert({
           where: {
-            userId: _userId,
+            userID: _userId,
           },
-          create: test,
-          update: test,
+          create: userInfo,
+          update: userInfo,
         }),
       );
     } catch (e) {}
