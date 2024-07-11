@@ -1,11 +1,4 @@
-import {
-  Description,
-  Info,
-  Security,
-  Settings as SettingsIcon,
-  Group,
-  CalendarMonth,
-} from '@mui/icons-material';
+import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
 import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
@@ -100,7 +93,7 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
   // TODO: dummy logic to be
-  
+
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
   };
@@ -213,9 +206,7 @@ const Sidebar: React.FC = () => {
         </NavComponentsContainer>
       </SideBarContainer>
       <SidebarFooter>
-        <DarkModeButton
-          collapsed={collapsed}
-        />
+        <DarkModeButton collapsed={collapsed} />
         {/* TODO: dummy logic - to be replaced */}
         <UserAccount collapsed={collapsed} />
         {!collapsed ? (
