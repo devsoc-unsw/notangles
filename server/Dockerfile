@@ -1,3 +1,4 @@
+# Dependency versions should be pinned
 FROM node:21.0.0-alpine as builder
 RUN npm i -g pnpm
 RUN pnpm install @nestjs/cli
@@ -20,11 +21,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --production
 
 COPY --from=builder /server .
-
-COPY migrate.sh /server/
-RUN chmod +x /server/migrate.sh
-RUN /server/migrate.sh
+RUN npx prisma generate
 
 EXPOSE 3001
 
-CMD ["pnpm", "run", "start:migrate:prod"]
+CMD ["pnpm", "run", "start"]
