@@ -25,4 +25,5 @@ RUN npx prisma generate
 
 EXPOSE 3001
 
-CMD ["pnpm", "run", "start:migrate:prod"]
+# CMD ["pnpm", "run", "start:migrate:prod"]
+CMD ["pnpm", "run", "start"]
