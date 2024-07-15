@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import App from './App';
 import EventShareModal from './components/EventShareModal';
+import LandingPage from './components/landingPage/LandingPage';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import * as swRegistration from './serviceWorkerRegistration';
@@ -27,6 +28,7 @@ const Root: React.FC = () => (
           <Route element={<App />} path="/">
             <Route path="/event/:encrypted" element={<EventShareModal />} />
           </Route>
+          <Route element={<LandingPage />} path="/landingpage" />
         </Routes>
       </BrowserRouter>
     </CourseContextProvider>
