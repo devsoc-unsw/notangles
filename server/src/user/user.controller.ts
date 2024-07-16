@@ -151,9 +151,8 @@ export class UserController {
 
   @Get('group/:userId')
   getUserGroups(@Param('userId') userId: string) {
-    console.log('HERE');
     try {
-      return this.userService.getGroups(userId).then((groups) => {
+      const res = this.userService.getGroups(userId).then((groups) => {
         return {
           status: `Successsfully returned groups ${userId} is apart of`,
           data: { groups },

@@ -7,6 +7,7 @@ import { Timetable, User } from '@prisma/client';
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
+
   async getUserInfo(_userId: string): Promise<UserDTO> {
     try {
       const { userID, timetable, ...userData } =
@@ -314,14 +315,15 @@ export class UserService {
 
   async getGroups(_userId: string) {
     try {
-      const { adminGroups, memberGroups } =
-      await this.prisma.user.findUniqueOrThrow({
-        where: { userId: _userId }
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userId },
       });
-      return [...adminGroups, ...memberGroups]
+      const res = [];
+      if (user.adminGroups) res.concat(user.adminGroups);
+      if (user.memberGroups) res.concat(user.memberGroups);
+      return res;
     } catch (error) {
       console.error('Error retrieving users:', error);
     }
   }
 }
-
