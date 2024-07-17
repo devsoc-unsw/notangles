@@ -10,7 +10,6 @@ import { DarkModeButtonProps } from '../../interfaces/PropTypes';
 import { AppContext } from '../../context/AppContext';
 
 const ToggleDarkModeButton = styled(IconButton)`
-  // width: 100%;
   display: flex;
   border-radius: 8px;
   gap: 16px;
@@ -19,7 +18,6 @@ const ToggleDarkModeButton = styled(IconButton)`
 `;
 
 const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>`
-  // padding-left: ${(props) => (props.collapsed ? '0px' : '12px')};
   font-size: 16px;
 `;
 
