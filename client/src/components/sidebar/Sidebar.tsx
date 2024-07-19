@@ -206,8 +206,8 @@ const Sidebar: React.FC = () => {
         </NavComponentsContainer>
       </SideBarContainer>
       <SidebarFooter>
-        <DarkModeButton collapsed={collapsed} />
         {/* TODO: dummy logic - to be replaced */}
+        <DarkModeButton collapsed={collapsed} />
         <UserAccount collapsed={collapsed} />
         {!collapsed ? (
           <SidebarFooterText>

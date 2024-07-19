@@ -12,12 +12,12 @@ import { AppContext } from '../../context/AppContext';
 const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
   border-radius: 8px;
-  justify-content: flex-between;
+  gap: 16px;
+  justify-content: flex-start;
   padding: 12px 12px 12px 12px;
 `;
 
 const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>`
-  padding-left: ${(props) => (props.collapsed ? '0px' : '12px')};
   font-size: 16px;
 `;
 
@@ -35,7 +35,7 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({
 
   return (
     <>
-      <Tooltip title={collapsed ? (isDarkMode ? "Dark Mode" : "Light Mode") : ''} placement="right">
+      <Tooltip title={collapsed ? (isDarkMode ? "Light Mode" : "Dark Mode") : ''} placement="right">
         <ToggleDarkModeButton color="inherit" onClick={toggleDarkMode}>
           {isDarkMode ? (<LightModeIcon />) : (<DarkModeIcon />)}
           <IndividualComponentTypography collapsed={collapsed}>
