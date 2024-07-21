@@ -30,7 +30,7 @@
     "@sentry/react": "7.118.0",
     "@sentry/tracing": "7.114.0",
     "@uiw/react-color": "2.3.0",
-    "date-fns": "2.30.0",
+    "date-fns": "3.6.0",
     "dayjs": "1.11.12",
     "file-saver": "2.0.5",
     "fuse.js": "7.0.0",
