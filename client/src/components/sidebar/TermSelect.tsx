@@ -1,4 +1,13 @@
-import { FormControl, InputLabel, MenuItem, Paper, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectProps,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -32,6 +41,21 @@ const StyledSelect = styled(Select)(({ theme }) => ({
     borderColor: theme.palette.primary.main,
   },
 }));
+
+const CustomStyledSelect = (props: SelectProps) => {
+  return (
+    <StyledSelect
+      {...props}
+      MenuProps={{
+        PaperProps: {
+          style: {
+            width: '258px',
+          },
+        },
+      }}
+    />
+  );
+};
 
 const TermDisplay = styled('span')`
   color: ${({ theme }) => theme.palette.primary.main};
@@ -128,7 +152,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
       ) : (
         <>
           <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
-          <StyledSelect
+          <CustomStyledSelect
             size="small"
             labelId="select-term-label"
             id="select-term"
@@ -138,13 +162,6 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
             onOpen={handleOpen}
             value={isMobile ? term : termName.concat(', ', year)}
             onChange={selectTerm}
-            MenuProps={{
-              PaperProps: {
-                style: {
-                  width: '258px',
-                },
-              },
-            }}
           >
             {Array.from(termData).map((term, index) => {
               return (
@@ -153,7 +170,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
                 </MenuItem>
               );
             })}
-          </StyledSelect>
+          </CustomStyledSelect>
         </>
       )}
     </FormControl>
