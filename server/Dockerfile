@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:21.0.0-alpine as builder
+FROM node:21.7.3-alpine as builder
 RUN npm i -g pnpm
 RUN pnpm install @nestjs/cli
 WORKDIR /server
@@ -12,7 +12,7 @@ RUN pnpm i --no-frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-FROM node:21.0.0-alpine
+FROM node:21.7.3-alpine
 WORKDIR /server
 RUN npm i -g pnpm
 
