@@ -5,7 +5,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddGroupDialog, { Group } from '../addGroupDialog/AddGroupDialog';
-import { style } from '@mui/system';
+import NotanglesLogo from '../../../assets/notangles_1.png';
 
 const GROUP_CIRCLE_SIZE = 45;
 
@@ -211,10 +211,10 @@ const GroupsSidebar = () => {
                       >
                         <Tooltip title={group.name} placement="right">
                           <img
-                            src={group.groupImageURL}
+                            src={group.groupImageURL || NotanglesLogo}
                             width={GROUP_CIRCLE_SIZE}
                             height={GROUP_CIRCLE_SIZE}
-                            style={{ borderRadius: 999 }}
+                            style={{ borderRadius: 999, backgroundColor: 'white' }}
                           />
                         </Tooltip>
                       </div>

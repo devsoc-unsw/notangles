@@ -3,7 +3,6 @@ import { Dialog, IconButton, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../../api/config';
-import NotanglesLogo from '../../../assets/notangles_1.png';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddGroupDialogActions from './AddGroupDialogActions';
 import AddGroupDialogContent from './AddGroupDialogContent';
@@ -53,7 +52,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
     timetableIDs: [],
     memberIds: [],
     groupAdminIDs: [userId],
-    groupImageURL: NotanglesLogo,
+    groupImageURL: '',
   });
 
   useEffect(() => {
@@ -101,7 +100,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
       timetableIDs: [],
       memberIds: [],
       groupAdminIDs: [userId],
-      groupImageURL: NotanglesLogo,
+      groupImageURL: '',
     });
   };
 

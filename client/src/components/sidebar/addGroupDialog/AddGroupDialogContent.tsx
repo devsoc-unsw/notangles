@@ -17,6 +17,7 @@ import React, { useState } from 'react';
 import { Group, Privacy } from './AddGroupDialog';
 import { friends } from './dummyData';
 import EditImagePopOver from './EditImagePopOver';
+import NotanglesLogo from '../../../assets/notangles_1.png';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -59,12 +60,11 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
   const [isGroupNameInteracted, setGroupNameInteracted] = useState(false);
   const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
 
-
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
         <label>
-          <CircleOutline>{<CircleImage src={group.groupImageURL} />}</CircleOutline>
+          <CircleOutline>{<CircleImage src={group.groupImageURL || NotanglesLogo} />}</CircleOutline>
         </label>
         <EditImagePopOver group={group} setGroup={setGroup} />
       </StyledUploadImageContainer>
@@ -74,7 +74,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         variant="outlined"
         required
         fullWidth
-        onChange={(e) => setGroup({...group, name: e.target.value})}
+        onChange={(e) => setGroup({ ...group, name: e.target.value })}
         onBlur={() => setGroupNameInteracted(true)}
         error={group.name === '' && isGroupNameInteracted}
         helperText="Must be at least one character"
@@ -85,7 +85,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         options={friends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setGroup({...group, memberIds: value.map((val) => val.zID)})}
+        onChange={(_, value) => setGroup({ ...group, memberIds: value.map((val) => val.zID) })}
         onBlur={(e) => setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
@@ -123,7 +123,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
           labelId="select-privacy"
           value={group.visibility}
           label="Group Privacy"
-          onChange={(e) => setGroup({...group, visibility: e.target.value as Privacy})}
+          onChange={(e) => setGroup({ ...group, visibility: e.target.value as Privacy })}
         >
           <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
           <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
