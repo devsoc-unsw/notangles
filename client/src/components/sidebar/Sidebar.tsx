@@ -1,5 +1,6 @@
-import { Description, Info, Security, Settings as SettingsIcon, Group, CalendarMonth } from '@mui/icons-material';
-import { AppBar, Typography, AppBarProps, Divider } from '@mui/material';
+import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
+
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -13,6 +14,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
+
 import { uniqueId } from 'lodash-es';
 import DarkModeButton from './DarkModeButton';
 
@@ -80,6 +82,7 @@ const SidebarFooter = styled('div')`
   padding: 10px 16px 20px 16px;
   gap: 8px;
 `;
+
 const SidebarFooterText = styled('div')`
   display: flex;
   flex-direction: column;
@@ -165,7 +168,7 @@ const Sidebar: React.FC = () => {
       </HeaderContainer>
       <Divider />
       <SideBarContainer>
-        <TermSelect collapsed={collapsed} />
+        <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
         <NavComponentsContainer>
           <CustomModal
             title="Timetable"
@@ -181,7 +184,7 @@ const Sidebar: React.FC = () => {
           />
           <CustomModal
             title="Friends"
-            toolTipTitle="Coming Soon: Friends"
+            toolTipTitle="Coming Soon: Friends Timetables"
             showIcon={<Group />}
             description={'View Friends Timetables'}
             content={null}
