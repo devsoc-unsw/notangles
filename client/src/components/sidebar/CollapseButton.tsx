@@ -1,4 +1,4 @@
-import { ViewSidebarRounded } from '@mui/icons-material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -8,22 +8,22 @@ interface CollapseButtonProps {
   toolTipTitle: string;
 }
 
-const StyledIconButton = styled(IconButton)`
-  display: flex;
-  gap: 16px;
+const StyledCollapseButton = styled(IconButton)`
   border-radius: 8px;
-  justify-content: flex-start;
-  padding: 12px;
   color: ${({ theme }) => theme.palette.text.primary};
+`;
+
+const StyledExpandMoreIcon = styled(ExpandMoreIcon)<{ collapsed: boolean }>`
+  transform: ${({ collapsed }) => (collapsed ? 'rotate(270deg)' : 'rotate(90deg)')};
 `;
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {
   return (
     <>
       <Tooltip title={toolTipTitle} placement="right">
-        <StyledIconButton onClick={onClick}>
-          <ViewSidebarRounded color="inherit" />
-        </StyledIconButton>
+        <StyledCollapseButton onClick={onClick}>
+          <StyledExpandMoreIcon collapsed={collapsed} />
+        </StyledCollapseButton>
       </Tooltip>
     </>
   );
