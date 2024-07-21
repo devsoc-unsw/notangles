@@ -216,7 +216,7 @@ const GroupsSidebar = () => {
               </div>
             ))}
             {provided.placeholder}
-            <AddGroupDialog getGroups={getGroups} />
+            <AddGroupDialog getGroups={getGroups} userId={userId} />
           </StyledContainer>
         )}
       </Droppable>

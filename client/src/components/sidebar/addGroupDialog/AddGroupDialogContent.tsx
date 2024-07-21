@@ -60,7 +60,6 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
   const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
 
 
-
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>

@@ -30,15 +30,17 @@ export class GroupService {
       description = '',
       imageURL = '',
     } = createGroupDto;
+    console.log('yay', createGroupDto);
 
     const data: any = { name, description, imageURL };
-
     try {
       const [timetables, members, admins] = await Promise.all([
         this.user.getTimetablesByIDs(timetableIDs),
         this.user.getUsersByIDs(memberIDs),
         this.user.getUsersByIDs(groupAdminIDs),
       ]);
+
+      console.log('ADMIN', admins);
 
       if (timetables.length > 0) {
         data.timetables = {
@@ -59,6 +61,34 @@ export class GroupService {
       }
 
       const group = await this.prisma.group.create({ data });
+      // Append to group creators' adminGroups
+      // for (const admin of admins) {
+      //   await this.prisma.user.update({
+      //     where: {
+      //       userID: admin.userID,
+      //     },
+      //     data: {
+      //       adminGroups: admin.adminGroups
+      //         ? [...admin.adminGroups, group.id]
+      //         : [group.id],
+      //     },
+      //   });
+      // }
+
+      // // Append to group members' membersGroup
+      // for (const member of members) {
+      //   await this.prisma.user.update({
+      //     where: {
+      //       userID: member.userID,
+      //     },
+      //     data: {
+      //       adminGroups: member.memberGroups
+      //         ? [...member.memberGroups, group.id]
+      //         : [group.id],
+      //     },
+      //   });
+      // }
+
       return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.UNIQUE_CONSTRAINT_FAILED) {

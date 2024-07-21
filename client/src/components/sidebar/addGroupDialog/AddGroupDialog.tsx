@@ -24,13 +24,13 @@ interface GroupData {
   visibility: Privacy;
   timetableIDs: string[];
   memberIds: string[];
-  groupAdmins: string[];
+  groupAdminIDs: string[];
   groupImageURL: string;
 }
 
 interface AddGroupDialogProps {
   getGroups: () => void;
-  groupData?: GroupData;
+  userId: string;
 }
 
 export interface Group {
@@ -39,11 +39,11 @@ export interface Group {
   visibility: Privacy;
   timetableIDs: string[];
   memberIds: string[];
-  groupAdmins: string[];
+  groupAdminIDs: string[];
   groupImageURL: string;
 }
 
-const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, groupData }) => {
+const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [group, setGroup] = useState<Group>({
@@ -52,18 +52,17 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, groupData })
     visibility: Privacy.PRIVATE,
     timetableIDs: [],
     memberIds: [],
-    groupAdmins: [],
+    groupAdminIDs: [userId],
     groupImageURL: NotanglesLogo,
   });
 
   useEffect(() => {
-    if (groupData) {
-      setGroup({ id: '', ...groupData });
-    }
-  }, []);
+    console.log('group changed', group);
+  }, [group]);
 
   const handleCreateGroup = async () => {
     try {
+      console.log('GROUP DATA passing from FE to BE', userId, group);
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
         headers: {
@@ -75,12 +74,12 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, groupData })
           visibility: group.visibility,
           timetableIDs: group.timetableIDs,
           memberIDs: group.memberIds,
-          groupAdminIDs: group.groupAdmins,
+          groupAdminIDs: group.groupAdminIDs,
           imageURL: group.groupImageURL,
         }),
       });
       const groupCreationStatus = await res.json();
-      console.log(groupCreationStatus); // Can see the status of group creation here!
+      console.log('group creation status', groupCreationStatus); // Can see the status of group creation here!
 
       if (res.status === 201) {
         getGroups();
@@ -101,14 +100,14 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, groupData })
       visibility: Privacy.PRIVATE,
       timetableIDs: [],
       memberIds: [],
-      groupAdmins: [],
+      groupAdminIDs: [userId],
       groupImageURL: NotanglesLogo,
     });
   };
 
   return (
     <>
-      <Tooltip title={groupData ? 'Edit Group' : 'Add a Group'} placement="right">
+      <Tooltip title="Add a Group" placement="right">
         <IconButton color="inherit" onClick={() => setIsOpen(true)}>
           <AddIcon />
         </IconButton>
