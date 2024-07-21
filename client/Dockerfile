@@ -29,6 +29,6 @@ ENV NODE_ENV=production
 
 RUN pnpm run build
 
-FROM caddy:2.7.6-alpine
+FROM caddy:2.8.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv 
