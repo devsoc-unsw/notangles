@@ -54,12 +54,19 @@ export class UserService {
     _firstName?: string,
     _lastName?: string,
   ): Promise<any> {
+    console.log('SETTTING USER PROFILE');
     try {
       const userInfo = {
         userID: _userId,
         firstname: _firstName,
         lastname: _lastName,
         email: _email,
+        memberGroups: {
+          connect: [],
+        },
+        adminGroups: {
+          connect: [],
+        },
       };
 
       return Promise.resolve(
