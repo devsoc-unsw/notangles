@@ -1,18 +1,10 @@
-import { Close, Delete, Redo, Undo } from '@mui/icons-material';
-import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { Delete, Redo, Undo } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
-import {
-  StyledCloseIcon,
-  StyledDialogButtons,
-  StyledDialogContent,
-  StyledDialogTitle,
-  StyledDialogTitleFont,
-  StyledTitleContainer,
-} from '../../styles/ControlStyles';
 import {
   ActionsPointer,
   areIdenticalTimetables,

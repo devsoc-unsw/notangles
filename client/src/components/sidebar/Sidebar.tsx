@@ -1,6 +1,5 @@
 import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
-
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -10,13 +9,11 @@ import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
+import DarkModeButton from './DarkModeButton';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
-
-import { uniqueId } from 'lodash-es';
-import DarkModeButton from './DarkModeButton';
 
 const LogoImg = styled('img')`
   height: 46px;

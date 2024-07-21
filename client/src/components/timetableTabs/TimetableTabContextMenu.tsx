@@ -50,7 +50,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
-  const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Delete)' : 'Delete Tab (Ctrl+Backspace)';
+  const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Shift+x)' : 'Delete Tab (Ctrl+Shift+x)';
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');
@@ -244,11 +244,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey for deleting timetables
   useEffect(() => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
-      // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
-      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        if (event.key === 'Backspace' && !renameOpen) {
-          setDeleteOpen(true);
-        }
+      // Ctrl+Shift+x on Windows or Cmd+Shift+x on Mac deletes the selected timetable
+      const isDeleteShortcut =
+        ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && event.shiftKey && event.key === 'x';
+      if (isDeleteShortcut && !renameOpen) {
+        setDeleteOpen(true);
       }
     };
 
@@ -413,6 +413,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         title="Confirm Deletion"
         content="Are you sure you want to delete this current timetable?"
         confirmButtonText="Delete"
+        confirmButtonId="confirm-delete-button"
       />
       {/* Restore deleted timetable Alert */}
       <StyledSnackbar

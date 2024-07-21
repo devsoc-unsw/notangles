@@ -297,7 +297,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     // create a new fuse instance with the searchOptionsList after filtering by faculty
     // so that it allows for searching within the faculty's options
-    let fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
+    const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
 
     const fuzzyResults = fuzzy.search(query).map((result) => result.item);
 
