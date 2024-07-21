@@ -1,7 +1,6 @@
-import { BarsArrowDownIcon } from '@heroicons/react/24/solid';
+import { ViewSidebarRounded } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { ViewSidebarRounded } from '@mui/icons-material';
 
 interface CollapseButtonProps {
   collapsed: boolean;

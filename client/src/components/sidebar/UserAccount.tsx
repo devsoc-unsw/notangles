@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useEffect, useState } from 'react';
+
 import { API_URL } from '../../api/config';
 import StyledDialog from '../StyledDialog';
 
@@ -111,9 +112,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           logoutCall();
           setLogoutDialog(false);
         }}
-        title='Confirm Log out'
-        content='Are you sure you want to log out?'
-        confirmButtonText='Log out'
+        title="Confirm Log out"
+        content="Are you sure you want to log out?"
+        confirmButtonText="Log out"
       />
       <UserAuth>
         {collapsed ? (
