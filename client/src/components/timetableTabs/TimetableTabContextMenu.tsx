@@ -244,11 +244,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Hotkey for deleting timetables
   useEffect(() => {
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
-      // Ctrl+Backspace on Windows or Cmd+Delete on Mac deletes the selected timetable
-      if ((!isMacOS && event.ctrlKey) || (isMacOS && event.metaKey)) {
-        if (event.key === 'Backspace' && !renameOpen) {
-          setDeleteOpen(true);
-        }
+      // Ctrl+Shift+x on Windows or Cmd+Shift+x on Mac deletes the selected timetable
+      const isDeleteShortcut =
+        (isMacOS && event.metaKey && event.key === 'x') || (!isMacOS && event.ctrlKey && event.key === 'x');
+      if (isDeleteShortcut && !renameOpen) {
+        setDeleteOpen(true);
       }
     };
 
