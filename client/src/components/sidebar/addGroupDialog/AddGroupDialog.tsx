@@ -57,8 +57,8 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
   });
 
   useEffect(() => {
-    console.log('group changed', group);
-  }, [group]);
+    setGroup({ ...group, groupAdminIDs: [userId] });
+  }, [userId]);
 
   const handleCreateGroup = async () => {
     try {

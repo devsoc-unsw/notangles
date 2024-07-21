@@ -53,11 +53,11 @@ export class GroupService {
         };
       }
 
-      // if (admins.length > 0) {
-      //   data.groupAdmins = {
-      //     connect: admins.map((admin) => ({ userID: admin.userID })),
-      //   };
-      // }
+      if (admins.length > 0) {
+        data.groupAdmins = {
+          connect: admins.map((admin) => ({ userID: admin.userID })),
+        };
+      }
 
       console.log('DATA', data);
       const group = await this.prisma.group.create({ data });
