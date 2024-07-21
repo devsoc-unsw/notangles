@@ -1,5 +1,6 @@
 import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
+
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -13,6 +14,9 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
+
+import { uniqueId } from 'lodash-es';
+import DarkModeButton from './DarkModeButton';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -76,6 +80,7 @@ const SidebarFooter = styled('div')`
   display: flex;
   flex-direction: column;
   padding: 10px 16px 20px 16px;
+  gap: 8px;
 `;
 
 const SidebarFooterText = styled('div')`
@@ -205,6 +210,7 @@ const Sidebar: React.FC = () => {
       </SideBarContainer>
       <SidebarFooter>
         {/* TODO: dummy logic - to be replaced */}
+        <DarkModeButton collapsed={collapsed} />
         <UserAccount collapsed={collapsed} />
         {!collapsed ? (
           <SidebarFooterText>
