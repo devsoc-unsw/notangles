@@ -43,7 +43,9 @@ const GroupsSidebar = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const getGroups = async () => {
+    if (!userId) return;
     try {
+      console.log('USER ID', userId);
       const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
         method: 'GET',
         headers: {
@@ -51,9 +53,9 @@ const GroupsSidebar = () => {
           'Content-Type': 'application/json',
         },
       });
-      if (res.status !== 201) throw new NetworkError("Couldn't get response");
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const jsonData = await res.json();
-      setGroups(jsonData.data.groups); //TODO check right
+      setGroups(jsonData.data.groups);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }

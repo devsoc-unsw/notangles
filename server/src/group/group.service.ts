@@ -31,7 +31,6 @@ export class GroupService {
       description = '',
       imageURL = '',
     } = createGroupDto;
-    console.log('RECEIVING FROM BE', createGroupDto);
 
     const data: any = { name, visibility, description, imageURL };
     try {
@@ -58,10 +57,7 @@ export class GroupService {
           connect: admins.map((admin) => ({ userID: admin.userID })),
         };
       }
-      console.log('admins', admins)
-      console.log('DATA', data);
       const group = await this.prisma.group.create({ data });
-      console.log('group status', group);
 
       return group;
     } catch (error) {

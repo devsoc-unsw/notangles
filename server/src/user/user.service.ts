@@ -324,11 +324,12 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: { userID: _userId },
+        include: {
+          memberGroups: true,
+          adminGroups: true,
+        },
       });
-      const res = [];
-      if (user.adminGroups) res.concat(user.adminGroups);
-      if (user.memberGroups) res.concat(user.memberGroups);
-      return res;
+      return user.adminGroups.concat(user.memberGroups);
     } catch (error) {
       console.error('Error retrieving users:', error);
     }
