@@ -246,7 +246,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     const handleDeletePopupShortcut = (event: KeyboardEvent) => {
       // Ctrl+Shift+x on Windows or Cmd+Shift+x on Mac deletes the selected timetable
       const isDeleteShortcut =
-        (isMacOS && event.metaKey && event.key === 'x') || (!isMacOS && event.ctrlKey && event.key === 'x');
+        ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && event.shiftKey && event.key === 'x';
       if (isDeleteShortcut && !renameOpen) {
         setDeleteOpen(true);
       }
