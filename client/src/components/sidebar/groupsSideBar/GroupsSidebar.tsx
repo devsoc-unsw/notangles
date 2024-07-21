@@ -175,50 +175,52 @@ const GroupsSidebar = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId={'droppable'}>
-        {(provided, snapshot) => (
-          <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
-            {groups.map((group, idx) => (
-              <div onContextMenu={handleContextMenu}>
-                <Menu
-                  open={contextMenu !== null}
-                  onClose={handleClose}
-                  anchorReference="anchorPosition"
-                  anchorPosition={
-                    contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
-                  }
-                >
-                  <MenuItem onClick={() => handleEditGroup(group.id)}>Edit</MenuItem>
-                  <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
-                </Menu>
-                <Draggable key={group.id} draggableId={group.id} index={idx}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                    >
-                      <Tooltip title={group.name} placement="right">
-                        <img
-                          src={group.groupImageURL}
-                          width={GROUP_CIRCLE_SIZE}
-                          height={GROUP_CIRCLE_SIZE}
-                          style={{ borderRadius: 999 }}
-                        />
-                      </Tooltip>
-                    </div>
-                  )}
-                </Draggable>
-              </div>
-            ))}
-            {provided.placeholder}
-            <AddGroupDialog getGroups={getGroups} userId={userId} />
-          </StyledContainer>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <>
+      <AddGroupDialog getGroups={getGroups} userId={userId} />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId={'droppable'}>
+          {(provided, snapshot) => (
+            <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
+              {groups.map((group, idx) => (
+                <div onContextMenu={handleContextMenu}>
+                  <Menu
+                    open={contextMenu !== null}
+                    onClose={handleClose}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                      contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+                    }
+                  >
+                    <MenuItem onClick={() => handleEditGroup(group.id)}>Edit</MenuItem>
+                    <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
+                  </Menu>
+                  <Draggable key={group.id} draggableId={group.id} index={idx}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                      >
+                        <Tooltip title={group.name} placement="right">
+                          <img
+                            src={group.groupImageURL}
+                            width={GROUP_CIRCLE_SIZE}
+                            height={GROUP_CIRCLE_SIZE}
+                            style={{ borderRadius: 999 }}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </Draggable>
+                </div>
+              ))}
+              {provided.placeholder}
+            </StyledContainer>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </>
   );
 };
 

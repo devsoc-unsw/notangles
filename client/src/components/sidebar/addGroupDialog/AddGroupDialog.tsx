@@ -73,7 +73,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
           name: group.name,
           visibility: group.visibility,
           timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIds.concat([userId]),
+          memberIDs: group.memberIds,
           groupAdminIDs: group.groupAdminIDs,
           imageURL: group.groupImageURL,
         }),
