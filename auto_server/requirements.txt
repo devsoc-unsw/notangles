@@ -11,4 +11,4 @@ pytz==2024.1
 sentry-sdk==2.5.0
 six==1.16.0
 tzdata==2024.1
-urllib3==2.2.1
+urllib3==2.2.2
