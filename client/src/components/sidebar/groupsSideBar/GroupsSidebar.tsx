@@ -5,6 +5,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddGroupDialog, { Group } from '../addGroupDialog/AddGroupDialog';
+import { style } from '@mui/system';
 
 const GROUP_CIRCLE_SIZE = 45;
 
@@ -35,6 +36,12 @@ const StyledContainer = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+`;
+
+const StyledGroupsList = styled('div')`
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 `;
 
@@ -175,12 +182,12 @@ const GroupsSidebar = () => {
   };
 
   return (
-    <>
+    <StyledContainer>
       <AddGroupDialog getGroups={getGroups} userId={userId} />
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={'droppable'}>
           {(provided, snapshot) => (
-            <StyledContainer {...provided.droppableProps} ref={provided.innerRef}>
+            <StyledGroupsList {...provided.droppableProps} ref={provided.innerRef}>
               {groups.map((group, idx) => (
                 <div onContextMenu={handleContextMenu}>
                   <Menu
@@ -216,11 +223,11 @@ const GroupsSidebar = () => {
                 </div>
               ))}
               {provided.placeholder}
-            </StyledContainer>
+            </StyledGroupsList>
           )}
         </Droppable>
       </DragDropContext>
-    </>
+    </StyledContainer>
   );
 };
 
