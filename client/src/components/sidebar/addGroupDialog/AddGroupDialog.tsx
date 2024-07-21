@@ -15,8 +15,8 @@ export interface MemberType {
 }
 
 export enum Privacy {
-  PRIVATE = 'private',
-  PUBLIC = 'public',
+  PRIVATE = 'PRIVATE',
+  PUBLIC = 'PUBLIC',
 }
 
 interface GroupData {
@@ -73,13 +73,13 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
           name: group.name,
           visibility: group.visibility,
           timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIds,
+          memberIDs: group.memberIds.concat([userId]),
           groupAdminIDs: group.groupAdminIDs,
           imageURL: group.groupImageURL,
         }),
       });
       const groupCreationStatus = await res.json();
-      console.log('group creation status', groupCreationStatus); // Can see the status of group creation here!
+      console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
 
       if (res.status === 201) {
         getGroups();

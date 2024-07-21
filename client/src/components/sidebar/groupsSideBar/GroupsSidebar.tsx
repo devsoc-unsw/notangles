@@ -1,14 +1,10 @@
 import styled from '@emotion/styled';
-import { Edit } from '@mui/icons-material';
-import { Divider, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Menu, MenuItem, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
-import { RedDeleteIcon, RedListItemText } from '../../../styles/CustomEventStyles';
 import AddGroupDialog, { Group } from '../addGroupDialog/AddGroupDialog';
-import { DummyGroupData } from './dummyData';
 
 const GROUP_CIRCLE_SIZE = 45;
 

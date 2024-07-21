@@ -24,23 +24,22 @@ export class GroupService {
   async create(createGroupDto: CreateGroupDto) {
     const {
       name,
+      visibility,
       timetableIDs,
       memberIDs,
       groupAdminIDs,
       description = '',
       imageURL = '',
     } = createGroupDto;
-    console.log('yay', createGroupDto);
+    console.log('RECEIVING FROM BE', createGroupDto);
 
-    const data: any = { name, description, imageURL };
+    const data: any = { name, visibility, description, imageURL };
     try {
       const [timetables, members, admins] = await Promise.all([
         this.user.getTimetablesByIDs(timetableIDs),
         this.user.getUsersByIDs(memberIDs),
         this.user.getUsersByIDs(groupAdminIDs),
       ]);
-
-      console.log('ADMIN', admins);
 
       if (timetables.length > 0) {
         data.timetables = {
@@ -50,44 +49,19 @@ export class GroupService {
 
       if (members.length > 0) {
         data.members = {
-          connect: members.map((member) => ({ id: member.userID })),
+          connect: members.map((member) => ({ userID: member.userID })),
         };
       }
 
-      if (admins.length > 0) {
-        data.admins = {
-          connect: admins.map((admin) => ({ id: admin.userID })),
-        };
-      }
+      // if (admins.length > 0) {
+      //   data.groupAdmins = {
+      //     connect: admins.map((admin) => ({ userID: admin.userID })),
+      //   };
+      // }
 
+      console.log('DATA', data);
       const group = await this.prisma.group.create({ data });
-      // Append to group creators' adminGroups
-      // for (const admin of admins) {
-      //   await this.prisma.user.update({
-      //     where: {
-      //       userID: admin.userID,
-      //     },
-      //     data: {
-      //       adminGroups: admin.adminGroups
-      //         ? [...admin.adminGroups, group.id]
-      //         : [group.id],
-      //     },
-      //   });
-      // }
-
-      // // Append to group members' membersGroup
-      // for (const member of members) {
-      //   await this.prisma.user.update({
-      //     where: {
-      //       userID: member.userID,
-      //     },
-      //     data: {
-      //       adminGroups: member.memberGroups
-      //         ? [...member.memberGroups, group.id]
-      //         : [group.id],
-      //     },
-      //   });
-      // }
+      console.log('group status', group)
 
       return group;
     } catch (error) {
