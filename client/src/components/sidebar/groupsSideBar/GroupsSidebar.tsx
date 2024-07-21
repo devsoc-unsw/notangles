@@ -125,21 +125,18 @@ const GroupsSidebar = () => {
 
   const handleDeleteGroup = async (groupId: string) => {
     try {
-      const res = await fetch(`${API_URL.server}/group`, {
+      const res = await fetch(`${API_URL.server}/group/${groupId}`, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId,
-          groupId,
-        }),
       });
       const groupDeleteStatus = await res.json();
-      console.log(groupDeleteStatus);
-      if (res.status === 201) {
+      console.log('res', res);
+      if (res.status === 200) {
         handleClose();
+        getGroups();
       } else {
         throw new NetworkError("Couldn't get response");
       }
