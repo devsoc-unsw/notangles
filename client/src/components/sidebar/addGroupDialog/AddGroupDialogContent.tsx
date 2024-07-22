@@ -64,14 +64,14 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
     <StyledDialogContent>
       <StyledUploadImageContainer>
         <label>
-          <CircleOutline>{<CircleImage src={group.groupImageURL || NotanglesLogo} />}</CircleOutline>
+          <CircleOutline>{<CircleImage src={group.imageURL || NotanglesLogo} />}</CircleOutline>
         </label>
         <EditImagePopOver group={group} setGroup={setGroup} />
       </StyledUploadImageContainer>
 
       <TextField
         label="Group Name"
-        variant="outlined"
+        defaultValue={group.name}
         required
         fullWidth
         onChange={(e) => setGroup({ ...group, name: e.target.value })}
@@ -85,7 +85,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         options={friends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setGroup({ ...group, memberIds: value.map((val) => val.zID) })}
+        onChange={(_, value) => setGroup({ ...group, members: value.map((val) => val.zID) })}
         onBlur={(e) => setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
@@ -108,7 +108,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         }}
         renderInput={(params) => (
           <TextField
-            error={group.memberIds.length === 0 && isGroupMemberInteracted}
+            error={group.members.length === 0 && isGroupMemberInteracted}
             helperText="Must select at least one member"
             {...params}
             label="Group Members"
@@ -121,6 +121,7 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         <InputLabel id="select-privacy">Group Privacy</InputLabel>
         <Select
           labelId="select-privacy"
+          defaultValue={group.visibility}
           value={group.visibility}
           label="Group Privacy"
           onChange={(e) => setGroup({ ...group, visibility: e.target.value as Privacy })}

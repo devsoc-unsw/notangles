@@ -58,9 +58,9 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ group, setGroup }) 
             <TextField
               placeholder="Enter image address..."
               variant="outlined"
-              value={group.groupImageURL}
+              value={group.imageURL}
               fullWidth
-              onChange={(e) => setGroup({ ...group, groupImageURL: e.target.value })}
+              onChange={(e) => setGroup({ ...group, imageURL: e.target.value })}
             />
           </StyledPopoverContent>
         </Popover>

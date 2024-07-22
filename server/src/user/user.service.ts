@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
-import { Timetable, User } from '@prisma/client';
+import { Group, Timetable, User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -329,7 +329,25 @@ export class UserService {
           adminGroups: true,
         },
       });
-      return user.adminGroups.concat(user.memberGroups);
+
+      const groupIds = user.adminGroups
+        .concat(user.memberGroups)
+        .map((group) => group.id);
+
+      const res = [];
+      for (const groupId of groupIds) {
+        const group = await this.prisma.group.findUniqueOrThrow({
+          where: { id: groupId },
+          include: {
+            members: true,
+            groupAdmins: true,
+            timetables: true,
+          },
+        });
+        res.push(group);
+      }
+
+      return res;
     } catch (error) {
       console.error('Error retrieving users:', error);
     }

@@ -100,9 +100,4 @@ export class GroupController {
       });
     }
   }
-
-  @Get()
-  async dummy(@Param('id') id: string) {
-    console.log('dummy');
-  }
 }

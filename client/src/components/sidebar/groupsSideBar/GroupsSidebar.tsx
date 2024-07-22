@@ -63,6 +63,7 @@ const GroupsSidebar = () => {
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const jsonData = await res.json();
       setGroups(jsonData.data.groups);
+      console.log('groups data', jsonData.data.groups);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -195,7 +196,7 @@ const GroupsSidebar = () => {
                       contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
                     }
                   >
-                    <MenuItem onClick={() => handleEditGroup(group.id)}>Edit</MenuItem>
+                    <AddGroupDialog groupData={group} getGroups={getGroups} userId={userId} />
                     <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
                   </Menu>
                   <Draggable key={group.id} draggableId={group.id} index={idx}>
@@ -208,7 +209,7 @@ const GroupsSidebar = () => {
                       >
                         <Tooltip title={group.name} placement="right">
                           <img
-                            src={group.groupImageURL || NotanglesLogo}
+                            src={group.imageURL || NotanglesLogo}
                             width={GROUP_CIRCLE_SIZE}
                             height={GROUP_CIRCLE_SIZE}
                             style={{ borderRadius: 999, backgroundColor: 'white' }}

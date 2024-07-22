@@ -1,5 +1,5 @@
 import { Add as AddIcon } from '@mui/icons-material';
-import { Dialog, IconButton, Tooltip } from '@mui/material';
+import { Dialog, IconButton, MenuItem, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../../api/config';
@@ -18,50 +18,44 @@ export enum Privacy {
   PUBLIC = 'PUBLIC',
 }
 
-interface GroupData {
+export interface Group {
+  id: string;
   name: string;
+  description: string;
   visibility: Privacy;
-  timetableIDs: string[];
-  memberIds: string[];
-  groupAdminIDs: string[];
-  groupImageURL: string;
+  timetables: string[];
+  members: string[];
+  groupAdmins: string[];
+  imageURL: string;
 }
 
 interface AddGroupDialogProps {
+  groupData?: Group;
   getGroups: () => void;
   userId: string;
 }
 
-export interface Group {
-  id: string;
-  name: string;
-  visibility: Privacy;
-  timetableIDs: string[];
-  memberIds: string[];
-  groupAdminIDs: string[];
-  groupImageURL: string;
-}
-
-const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [group, setGroup] = useState<Group>({
+const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, userId }) => {
+  const emptyGroupData: Group = {
     id: '',
     name: '',
+    description: '',
     visibility: Privacy.PRIVATE,
-    timetableIDs: [],
-    memberIds: [],
-    groupAdminIDs: [userId],
-    groupImageURL: '',
-  });
+    timetables: [],
+    members: [],
+    groupAdmins: [userId],
+    imageURL: '',
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [group, setGroup] = useState<Group>(groupData || emptyGroupData);
 
   useEffect(() => {
-    setGroup({ ...group, groupAdminIDs: [userId] });
+    setGroup({ ...group, groupAdmins: [userId] });
   }, [userId]);
 
   const handleCreateGroup = async () => {
     try {
-      console.log('GROUP DATA passing from FE to BE', userId, group);
       const res = await fetch(`${API_URL.server}/group`, {
         method: 'POST',
         headers: {
@@ -71,10 +65,10 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
         body: JSON.stringify({
           name: group.name,
           visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIds,
-          groupAdminIDs: group.groupAdminIDs,
-          imageURL: group.groupImageURL,
+          timetableIDs: group.timetables,
+          memberIDs: group.members,
+          groupAdminIDs: group.groupAdmins,
+          imageURL: group.imageURL,
         }),
       });
       const groupCreationStatus = await res.json();
@@ -96,21 +90,26 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ getGroups, userId }) =>
     setGroup({
       id: '',
       name: '',
+      description: '',
       visibility: Privacy.PRIVATE,
-      timetableIDs: [],
-      memberIds: [],
-      groupAdminIDs: [userId],
-      groupImageURL: '',
+      timetables: [],
+      members: [],
+      groupAdmins: [userId],
+      imageURL: '',
     });
   };
 
   return (
     <>
-      <Tooltip title="Add a Group" placement="right">
-        <IconButton color="inherit" onClick={() => setIsOpen(true)}>
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
+      {groupData ? (
+        <MenuItem onClick={() => setIsOpen(true)}>Edit</MenuItem>
+      ) : (
+        <Tooltip title="Add a Group" placement="right">
+          <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
+      )}
 
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <AddGroupDialogTitle handleClose={handleClose} />
