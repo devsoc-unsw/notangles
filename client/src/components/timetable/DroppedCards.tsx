@@ -19,7 +19,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg, currentDate } = useContext(AppContext);
+  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg, currentDate, calendarView } =
+    useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -144,14 +145,17 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   });
 
   // Generate events, filtering by the current week
-  const endDate = new Date(currentDate);
-  endDate.setDate(endDate.getDate() + 7);
-  console.log('currentdate', currentDate);
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
+  console.log(startDate);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate());
 
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
     try {
       const eventDate = new Date(eventPeriod.date);
-      if (eventDate >= currentDate && eventDate < endDate) {
+
+      if (eventDate >= startDate && eventDate < endDate) {
         const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
         droppedEvents.push(
           <DroppedEvent
