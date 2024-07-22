@@ -10,15 +10,17 @@ const StyledDialogActions = styled(DialogActions)`
 `;
 
 interface AddGroupDialogActionsProps {
+  isEditing: boolean;
   handleClose: () => void;
   handleCreateGroup: () => void;
   group: Group;
 }
 
 const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
+  isEditing,
   handleClose,
   handleCreateGroup,
-  group
+  group,
 }) => {
   return (
     <StyledDialogActions>
@@ -30,7 +32,7 @@ const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
         variant="contained"
         onClick={handleCreateGroup}
       >
-        Create
+        {isEditing ? 'Save Changes' : 'Create'}
       </Button>
     </StyledDialogActions>
   );

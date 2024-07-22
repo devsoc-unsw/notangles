@@ -11,14 +11,15 @@ const StyledDialogTitle = styled(DialogTitle)`
 `;
 
 interface AddGroupDialogTitleProps {
+  isEditing: boolean;
   handleClose: () => void;
 }
 
-const AddGroupDialogTitle: React.FC<AddGroupDialogTitleProps> = ({ handleClose }) => {
+const AddGroupDialogTitle: React.FC<AddGroupDialogTitleProps> = ({ isEditing, handleClose }) => {
   return (
     <>
       <StyledDialogTitle>
-        <Typography variant="h6">Create a Group</Typography>
+        <Typography variant="h6">{isEditing ? 'Edit Group Details' : 'Create a Group'}</Typography>
         <div>
           <IconButton onClick={handleClose}>
             <CloseIcon />

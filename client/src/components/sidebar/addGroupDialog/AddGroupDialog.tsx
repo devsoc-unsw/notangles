@@ -112,9 +112,14 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
       )}
 
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
-        <AddGroupDialogTitle handleClose={handleClose} />
+        <AddGroupDialogTitle isEditing={groupData !== undefined} handleClose={handleClose} />
         <AddGroupDialogContent group={group} setGroup={setGroup} />
-        <AddGroupDialogActions group={group} handleClose={handleClose} handleCreateGroup={handleCreateGroup} />
+        <AddGroupDialogActions
+          isEditing={groupData !== undefined}
+          group={group}
+          handleClose={handleClose}
+          handleCreateGroup={handleCreateGroup}
+        />
       </Dialog>
     </>
   );
