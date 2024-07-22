@@ -21,6 +21,7 @@ import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
+import { ViewType } from '../../interfaces/Calendar';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -173,6 +174,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     setErrorVisibility,
     isConvertToLocalTimezone,
     currentDate,
+    calendarView,
   } = useContext(AppContext);
 
   const hoursRange = [
@@ -199,6 +201,11 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
 
   const dayCells = days.map((day, i) => {
     const newDate = new Date(currentDate);
+
+    if (calendarView !== ViewType.DAY) {
+      newDate.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
+    }
+
     newDate.setDate(newDate.getDate() + i);
 
     return (

@@ -3,12 +3,11 @@ import { Button, FormControl, IconButton, InputLabel, MenuItem, Select, SelectCh
 import { useContext } from 'react';
 
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
 import { ViewType } from '../../interfaces/Calendar';
 
 const WeekSelector = () => {
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { currentDate, setCurrentDate, calendarView, setCalendarView } = useContext(AppContext);
+  const fullWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const { currentDate, setCurrentDate, calendarView, setCalendarView, setDays } = useContext(AppContext);
 
   const modifyDate = (isIncrement: boolean) => {
     const step: number = calendarView === ViewType.WEEK ? 7 : 1;
@@ -22,6 +21,11 @@ const WeekSelector = () => {
         newDate.setDate(isIncrement ? newDate.getDate() + step : newDate.getDate() - step);
       }
 
+      // Update days view if we are in days view
+      if (calendarView === ViewType.DAY) {
+        setDays([fullWeek[(newDate.getDay() + 6) % 7]]);
+      }
+
       setCurrentDate(newDate);
     };
   };
@@ -30,6 +34,19 @@ const WeekSelector = () => {
     return (event: SelectChangeEvent) => {
       const newView = event.target.value as ViewType;
       setCalendarView(newView);
+
+      let newDays: string[];
+      switch (newView) {
+        case ViewType.DAY:
+          newDays = [fullWeek[(currentDate.getDay() + 6) % 7]];
+          break;
+        case ViewType.WEEK:
+        case ViewType.MONTH: // TODO MONTH, not sure implementation
+        default:
+          newDays = fullWeek.slice(0, 5);
+      }
+
+      setDays(newDays);
     };
   };
 
