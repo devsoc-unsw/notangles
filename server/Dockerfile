@@ -1,14 +1,16 @@
 # Dependency versions should be pinned
 FROM node:21.7.3-alpine as builder
 RUN npm i -g pnpm
+RUN pnpm install @nestjs/cli
 WORKDIR /server
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm i --frozen-lockfile
+COPY prisma ./prisma/
+
+RUN pnpm i --no-frozen-lockfile
 
 COPY . .
 RUN pnpm run build
-
 
 FROM node:21.7.3-alpine
 RUN npm i -g pnpm
@@ -18,9 +20,9 @@ ENV NODE_ENV production
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --production
 
-COPY --from=builder /server/dist .
-COPY ./src/proto/*.js ./src/proto/
+COPY --from=builder /server .
+RUN npx prisma generate
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start:production"]
+CMD ["pnpm", "run", "start:migrate:prod"]

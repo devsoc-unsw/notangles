@@ -66,10 +66,11 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.dev
+.env.prod
 
 # next.js build output
 .next
 
 # Mac stuff
 .DS_Store
-

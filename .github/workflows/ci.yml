@@ -32,7 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+        working-directory: ${{ matrix.component }}
+      - name: Generate Prisma Types from Schema
+        run: npx prisma generate
         working-directory: ${{ matrix.component }}
       - name: Build
         run: pnpm run build
