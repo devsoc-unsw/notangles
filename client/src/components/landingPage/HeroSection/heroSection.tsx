@@ -3,39 +3,37 @@ import devsoc from '../../../assets/devsoc.svg';
 import janeStreet from '../../../assets/sponsors/jane_street_black.svg';
 import tiktok from '../../../assets/sponsors/tiktok_logo_black.svg';
 import { MoreHoriz, NavigateNext } from '@mui/icons-material';
+import { FlipWords } from '../flip-words';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+  const words = ['plan', 'create', 'design', 'organise', 'optimise'];
+
+  const navigate = useNavigate();
+  const routeChange = () => {
+    const path = `/`;
+    navigate(path);
+  }
+
   return (
-    <div className="min-w-full min-h-[1000px] bg-blue-100">
+    <div className="min-w-full min-h-[1000px] bg-blue-200">
       <header>
-        <div className='w-64 h-28 bg-blue-100 flex justify-center items-center'>
+        <div className='w-64 h-28 flex justify-center items-center'>
           <img src={notangles} className='w-16 cursor-pointer'/>
-          <p className='font-semibold text-xl pr-4 cursor-pointer'>Notangles</p>
+          <p className='font-semibold text-xl pr-4 cursor-pointer select-none'>Notangles</p>
         </div>
       </header>
       <div className='flex items-center justify-center'>
-        <div className='flex items-center justify-around bg-blue-100 w-10/12 max-w-[1600px] min-h-96'>
-          <div className='flex-col justify-center items-center text-5xl font-semibold w-[480px]'>
-            <p>The timetable solution for all UNSW students.</p>
-            <button className='flex justify-center items-center rounded-xl w-32 h-10 mt-10 text-xl bg-blue-500 text-white shadow-lg shadow-gray-400'>
-              <p className='pr-1 ml-2'>Start</p>
-              <NavigateNext fontSize='medium' />
+        <div className='flex items-center justify-around w-10/12 max-w-[1200px] min-h-96'>
+          <div className='flex-col justify-center items-center text-6xl font-semibold w-[550px]'>
+            <p>Intuitively<FlipWords words={words} duration={4000} /> <br />the perfect UNSW timetable.  </p>
+            <button className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5 ml-4" onClick={routeChange}>
+              <p className='pr-1 ml-2 text-3xl font-medium'>Start</p>
+              <NavigateNext fontSize='large' />
             </button>
           </div>
           <div>
-            <img src={notangles} className='w-[350px]'/>
-          </div>
-        </div>
-      </div>
-      <div className='flex items-center justify-center mt-44'>
-        <div className='flex flex-col text-center items-center font-bold text-3xl'>
-          <p>Brought to you by.</p>
-          <img src={devsoc} className='h-28 pt-2 pb-2' />
-          <MoreHoriz fontSize='large' color='inherit' />
-          <p className='mt-8'>Our Sponsors</p>
-          <div className='flex pt-6'>
-            <img src={janeStreet} className='h-20' />
-            <img src={tiktok} className='pl-12 h-20' />
+            <img src={notangles} className='w-[350px] shadlow-lg shadow-gray-400 animate-updown'/>
           </div>
         </div>
       </div>
