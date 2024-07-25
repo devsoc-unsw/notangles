@@ -1,5 +1,6 @@
 import devsoc from '../../assets/devsoc.svg';
 import janeStreet from '../../assets/sponsors/jane_street_black.svg';
+import macquarie from '../../assets/sponsors/macquarie_logo_black.svg';
 import tiktok from '../../assets/sponsors/tiktok_logo_black.svg';
 import { MoreHoriz} from '@mui/icons-material';
 
@@ -14,6 +15,7 @@ const SponsorsSection = () => {
         <div className='flex pt-6'>
           <img src={janeStreet} className='h-20' />
           <img src={tiktok} className='pl-12 h-20' />
+          <img src={macquarie} className='pl-12 h-20' />
         </div>
       </div>
     </div>
