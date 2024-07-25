@@ -1,8 +1,5 @@
 import notangles from '../../../assets/notangles_1.png';
-import devsoc from '../../../assets/devsoc.svg';
-import janeStreet from '../../../assets/sponsors/jane_street_black.svg';
-import tiktok from '../../../assets/sponsors/tiktok_logo_black.svg';
-import { MoreHoriz, NavigateNext } from '@mui/icons-material';
+import { NavigateNext } from '@mui/icons-material';
 import { FlipWords } from '../flip-words';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,15 +22,15 @@ const HeroSection = () => {
       </header>
       <div className='flex items-center justify-center'>
         <div className='flex items-center justify-around w-10/12 max-w-[1200px] min-h-96'>
-          <div className='flex-col justify-center items-center text-6xl font-semibold w-[550px]'>
-            <p>Intuitively<FlipWords words={words} duration={4000} /> <br />the perfect UNSW timetable.  </p>
-            <button className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5 ml-4" onClick={routeChange}>
+          <div className='flex-col justify-center items-center text-stone-800 text-6xl font-semibold w-[550px]'>
+            <p>Intuitively<FlipWords words={words} duration={4000} className='text-blue-500' /> <br />the perfect UNSW timetable.  </p>
+            <button className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.85)] px-8 py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5 ml-4" onClick={routeChange}>
               <p className='pr-1 ml-2 text-3xl font-medium'>Start</p>
               <NavigateNext fontSize='large' />
             </button>
           </div>
           <div>
-            <img src={notangles} className='w-[350px] shadlow-lg shadow-gray-400 animate-updown'/>
+            <img src={notangles} className='w-[350px] animate-updown'/>
           </div>
         </div>
       </div>
