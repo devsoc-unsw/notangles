@@ -50,7 +50,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
 
-  const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Shift+x)' : 'Delete Tab (Ctrl+Shift+x)';
+  const deleteTimetabletip = 'Delete Tab';
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');
