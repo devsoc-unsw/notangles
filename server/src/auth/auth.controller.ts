@@ -37,7 +37,18 @@ export class AuthController {
   @UseGuards(LoginGuard)
   @Get('/callback/csesoc')
   loginCallback(@Res() res: Response) {
-    res.redirect(this.configService.get<string>('app.redirectLink'));
+    console.log(
+      this.configService.get<string>(
+        'app.redirectLink',
+        'https://notangles.devsoc.app/api/auth/callback/csesoc',
+      ),
+    );
+    res.redirect(
+      this.configService.get<string>(
+        'app.redirectLink',
+        'https://notangles.devsoc.app/api/auth/callback/csesoc',
+      ),
+    );
   }
 
   @Get('/logout')

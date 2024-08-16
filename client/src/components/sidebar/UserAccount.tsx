@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
+import React, { useEffect, useState } from 'react';
+
 import { API_URL } from '../../api/config';
 import StyledDialog from '../StyledDialog';
 
@@ -45,6 +46,7 @@ const StyledAccountIcon = styled(AccountCircle)`
 interface User {
   zid: string;
 }
+
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
   const [windowLocation, setWindowLocation] = useState('');
@@ -71,14 +73,18 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     }
     runAsync();
   }, []);
+
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
-      window.location.replace(`${API_URL.server}/auth/login`);
+      window.location.href = `${API_URL.server}/auth/login`;
     } catch (error) {
       console.log(error);
     }
+    // Replaces current history item rather than adding item to history
+    // window.location.replace(`${API_URL.server}/auth/login`);
   };
+
   const logoutCall = async () => {
     try {
       await fetch(`${API_URL.server}/auth/logout`, {
@@ -111,9 +117,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           logoutCall();
           setLogoutDialog(false);
         }}
-        title='Confirm Log out'
-        content='Are you sure you want to log out?'
-        confirmButtonText='Log out'
+        title="Confirm Log out"
+        content="Are you sure you want to log out?"
+        confirmButtonText="Log out"
       />
       <UserAuth>
         {collapsed ? (
