@@ -7,6 +7,7 @@ export interface CourseOverview {
   online: boolean;
   inPerson: boolean;
   career: string;
+  faculty: string;
 }
 
 export interface CoursesListWithDate {
@@ -20,4 +21,5 @@ export interface FetchedCourse {
   online: boolean;
   inPerson: boolean;
   career: string;
+  faculty: string;
 }

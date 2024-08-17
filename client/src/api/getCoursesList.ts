@@ -10,6 +10,7 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
     online: course.online,
     inPerson: course.inPerson,
     career: course.career,
+    faculty: course.faculty,
   }));
 
 /**

@@ -1,4 +1,5 @@
-import { Box, DialogContent, DialogTitle, ListItem } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import { Box, DialogContent, DialogTitle, ListItem, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 
 export const StyledButtonText = styled(Box)`
@@ -9,6 +10,13 @@ export const StyledButtonText = styled(Box)`
 
 export const StyledControlsButton = styled('div')`
   display: flex;
+`;
+
+export const StyledCloseIcon = styled(Close)`
+  font-size: 20px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 export const ColorIndicatorBox = styled(Box, {
@@ -41,12 +49,17 @@ export const StyledDialogButtons = styled(Box)`
   flex-direction: row;
   justify-content: flex-end;
   align-items: flex-end;
-  padding-bottom: 5px;
-  padding-right: 5px;
+  gap: 12px;
+  padding-bottom: 20px;
+  padding-right: 24px;
 `;
 
 export const StyledDialogTitle = styled(DialogTitle)`
-  padding: 8px 24px 8px 24px;
+  display: flex;
+  flex-direction: row;
+  padding: 8px 20px 8px 24px;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const StyledDialogContent = styled(DialogContent)`
@@ -55,12 +68,17 @@ export const StyledDialogContent = styled(DialogContent)`
 
 export const StyledTitleContainer = styled(Box)`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   height: 100%;
   width: 100%;
   padding-bottom: 10px;
+  padding-top: 10px;
+`;
+
+export const StyledDialogTitleFont = styled(Typography)`
+  font-size: 18px;
+  font-weight: 500;
 `;
 
 export const StyledListItem = styled(ListItem)`

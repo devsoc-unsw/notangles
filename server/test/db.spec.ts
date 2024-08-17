@@ -162,7 +162,7 @@ describe('Integration testing for user/friend db endpoints', () => {
     expect(res.body.data).toHaveLength(2);
     expect(res.body.data[1]).toMatchObject({
       selectedCourses: secondTimetable.selectedCourses,
-      timetableId: secondTimetableId,
+      id: secondTimetableId,
       name: secondTimetable.name,
     });
     expect(res.body.data[1].selectedClasses).toHaveLength(2);
@@ -177,7 +177,7 @@ describe('Integration testing for user/friend db endpoints', () => {
     expect(res.body.data.timetables).toHaveLength(2);
     expect(res.body.data.timetables[1]).toMatchObject({
       selectedCourses: secondTimetable.selectedCourses,
-      timetableId: secondTimetableId,
+      id: secondTimetableId,
       name: secondTimetable.name,
     });
     expect(
@@ -271,7 +271,7 @@ describe('Integration testing for user/friend db endpoints', () => {
       .put('/user/timetable')
       .send({
         userId: user.userID,
-        timetable: { timetableId, ...editedTimetable },
+        timetable: { id:timetableId, ...editedTimetable },
       });
 
     expect(res.status).toEqual(200);

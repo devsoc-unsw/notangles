@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 export class TimetableDto {
   @IsString()
-  timetableId: string; // Randomly generated on the backend
+  id: string; // Randomly generated on the backend
 
   @IsArray()
   @IsString({ each: true })
@@ -15,7 +15,7 @@ export class TimetableDto {
 
 export class ReconstructedTimetableDto {
   @IsString()
-  timetableId: string; // Randomly generated on the backend
+  id: string; // Randomly generated on the backend
 
   @IsArray()
   @IsString({ each: true })

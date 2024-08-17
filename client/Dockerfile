@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:21.3.0-alpine as builder
+FROM node:21.7.3-alpine as builder
 RUN npm i -g pnpm
 
 # Set the current working directory inside the container
@@ -29,6 +29,6 @@ ENV NODE_ENV=production
 
 RUN pnpm run build
 
-FROM caddy:2.7.5-alpine
+FROM caddy:2.8.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv 

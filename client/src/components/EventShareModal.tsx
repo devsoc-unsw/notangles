@@ -1,8 +1,10 @@
-import { useState, useContext, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Add, Close, LocationOn } from '@mui/icons-material';
+import { Add, Close } from '@mui/icons-material';
 import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
+import isBase64 from 'is-base64';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
 import { StyledDialogTitle, StyledTitleContainer, StyledTopIcons } from '../styles/ControlStyles';
@@ -10,7 +12,6 @@ import { ExecuteButton, StyledListItemText, StyledLocationIcon } from '../styles
 import { StyledCardName } from '../styles/DroppedCardStyles';
 import { createEventObj } from '../utils/createEvent';
 import { resizeWeekArray } from '../utils/eventTimes';
-import isBase64 from 'is-base64';
 
 const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   padding: 24px 16px;
@@ -26,12 +27,8 @@ const PreviewCard = styled(Card)<CardProps & { bgColour: string }>`
   color: white;
 `;
 
-const StyledLocationOn = styled(LocationOn)`
-  font-size: 12px;
-`;
-
 const EventShareModal = () => {
-  let { encrypted } = useParams();
+  const { encrypted } = useParams();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);

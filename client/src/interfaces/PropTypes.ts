@@ -12,11 +12,19 @@ export interface CourseContextProviderProps {
   children: ReactNode;
 }
 
+export interface DarkModeButtonProps {
+  collapsed: boolean;
+}
+
 export interface CustomModalProps {
   title: string;
+  toolTipTitle: string;
   showIcon: ReactNode;
   description: string;
   content: ReactNode;
+  collapsed: boolean;
+  isClickable: boolean;
+  isSelected?: boolean;
 }
 
 export interface CourseSelectProps {

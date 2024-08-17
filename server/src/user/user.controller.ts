@@ -1,14 +1,14 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
-  Put,
   Param,
   Post,
-  Body,
-  Delete,
+  Put,
 } from '@nestjs/common';
-import { UserService } from './user.service';
 import { ClassDto, EventDto, InitUserDTO, TimetableDto } from './dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -103,7 +103,7 @@ export class UserController {
     });
   }
 
-  // Note - why do we need userId as a param? https://devsoc.atlassian.net/wiki/spaces/N/pages/1575168/Notangles+API
+
   @Delete('timetable/:timetableId')
   deleteUserTimetable(@Param('timetableId') timetableId: string) {
     return this.userService.deleteUserTimetable(timetableId).then((id) => {

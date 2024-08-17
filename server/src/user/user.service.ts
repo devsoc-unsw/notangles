@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
 
 const API_URL = 'https://timetable.csesoc.app/api/terms'; // TODO - set dev and prod API urls
-@Injectable()
+@Injectable({})
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -67,7 +67,7 @@ export class UserService {
         const classes = await this.convertClasses(t.selectedClasses);
         return {
           name: t.name,
-          timetableId: t.id,
+          id: t.id,
           selectedClasses: classes,
           selectedCourses: t.selectedCourses,
           createdEvents: t.createdEvents,
@@ -150,11 +150,10 @@ export class UserService {
 
       const timetables = await Promise.all(
         res.timetables.map(async (t) => {
-          const { id, selectedClasses, ...otherTimetableProps } = t;
+          const { selectedClasses, ...otherTimetableProps } = t;
           const classes = await this.convertClasses(selectedClasses);
           return {
             ...otherTimetableProps,
-            timetableId: id,
             selectedClasses: classes,
           };
         }),
@@ -177,20 +176,13 @@ export class UserService {
       // Generate random timetable id
       const _timetableId = uuidv4();
 
-      const classes = _selectedClasses.map((c) => {
-        // const classId = uuidv4(); // on second thought, its already been generated on the frontend, and I think there are advantages to this
-        return {
-          ...c,
-        };
-      });
-
       await this.prisma.timetable.create({
         data: {
           id: _timetableId,
           name: _timetableName,
           selectedCourses: _selectedCourses,
           selectedClasses: {
-            create: classes,
+            create: _selectedClasses,
           },
           createdEvents: {
             create: _createdEvents,
@@ -213,71 +205,66 @@ export class UserService {
     _userID: string,
     _timetable: TimetableDto,
   ): Promise<string> {
-    try {
-      // Modify timetable
-      const _timetableId = _timetable.timetableId;
-      const eventIds = _timetable.createdEvents.map((event) => event.id);
-      const classIds = _timetable.createdEvents.map((c) => c.id);
+    const _timetableId = _timetable.id;
+    const eventIds = _timetable.createdEvents.map((event) => event.id);
+    const classIds = _timetable.createdEvents.map((c) => c.id);
 
-      const update_timetable = this.prisma.timetable.update({
-        where: {
-          id: _timetableId,
-        },
-        data: {
-          name: _timetable.name,
-          selectedCourses: _timetable.selectedCourses,
-        },
-      });
+    const update_timetable = this.prisma.timetable.update({
+      where: {
+        id: _timetableId,
+      },
+      data: {
+        name: _timetable.name,
+        selectedCourses: _timetable.selectedCourses,
+      },
+    });
 
-      const delete_events = this.prisma.event.deleteMany({
-        where: {
+    const delete_events = this.prisma.event.deleteMany({
+      where: {
+        timetableId: _timetableId,
+        NOT: {
+          id: { in: eventIds },
+        },
+      },
+    });
+
+    const update_events = _timetable.createdEvents.map((e) =>
+      this.prisma.event.upsert({
+        where: { id: e.id },
+        update: e,
+        create: { ...e, timetableId: _timetableId },
+      }),
+    );
+
+    const delete_classes = this.prisma.class.deleteMany({
+      where: {
+        timetableId: _timetableId,
+        NOT: {
+          id: { in: classIds },
+        },
+      },
+    });
+
+    const update_classes = _timetable.selectedClasses.map((c) =>
+      this.prisma.class.upsert({
+        where: { id: c.id },
+        update: c,
+        create: {
+          ...c,
           timetableId: _timetableId,
-          NOT: {
-            id: { in: eventIds },
-          },
         },
-      });
+      }),
+    );
 
-      const update_events = _timetable.createdEvents.map((e) =>
-        this.prisma.event.upsert({
-          where: { id: e.id },
-          update: e,
-          create: { ...e, timetableId: _timetableId },
-        }),
-      );
+    await this.prisma.$transaction([
+      update_timetable,
+      delete_events,
+      delete_classes,
+      ...update_events,
+      ...update_classes,
+    ]);
 
-      const delete_classes = this.prisma.class.deleteMany({
-        where: {
-          timetableId: _timetableId,
-          NOT: {
-            id: { in: classIds },
-          },
-        },
-      });
-
-      const update_classes = _timetable.selectedClasses.map((c) =>
-        this.prisma.class.upsert({
-          where: { id: c.id },
-          update: c,
-          create: {
-            ...c,
-            timetableId: _timetableId,
-          },
-        }),
-      );
-
-      await this.prisma.$transaction([
-        update_timetable,
-        delete_events,
-        delete_classes,
-        ...update_events,
-        ...update_classes,
-      ]);
-
-      return Promise.resolve(_timetableId);
-    } catch (e) {
-      throw new Error('huh!');
-    }
+    return Promise.resolve(_timetableId);
   }
 
   async getTimetablesByIDs(

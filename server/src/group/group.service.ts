@@ -42,9 +42,7 @@ export class GroupService {
 
       if (timetables.length > 0) {
         data.timetables = {
-          connect: timetables.map((timetable) => ({
-            id: timetable.timetableId,
-          })),
+          connect: timetables.map((timetable) => ({ id: timetable.id })),
         };
       }
 

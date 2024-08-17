@@ -75,7 +75,8 @@ model Timetable {
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]
-  user            User[]  
+  user            User[]
+  // userID          String
   groups          Group[]  @relation("group_timetables")
   @@map("timetables")
 }

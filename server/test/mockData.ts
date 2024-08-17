@@ -1,4 +1,3 @@
-import { ClassType } from '@prisma/client';
 
 const mockData = {
   users: [
