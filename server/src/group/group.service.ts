@@ -41,6 +41,8 @@ export class GroupService {
       members: { connect: [] },
     };
 
+    console.log('prepareGroupData', memberIDs, groupAdminIDs)
+
     const [timetables, members, admins] = await Promise.all([
       this.user.getTimetablesByIDs(timetableIDs),
       this.user.getUsersByIDs(memberIDs),
@@ -94,9 +96,10 @@ export class GroupService {
   }
 
   async update(id: string, updateGroupDto: GroupDto) {
+    console.log('group service', updateGroupDto)
     try {
-      console.log('update BE, ', updateGroupDto)
       const data = await this.prepareGroupData(updateGroupDto);
+      console.log('update, prepared data', data)
       const group = await this.prisma.group.update({
         where: { id },
         data,

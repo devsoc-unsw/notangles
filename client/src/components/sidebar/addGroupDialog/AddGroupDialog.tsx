@@ -93,13 +93,12 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+         body: JSON.stringify({
           name: group.name,
           visibility: group.visibility,
-          timetables: group.timetables,
-          description: group.description,
-          members: group.members,
-          groupAdmins: group.groupAdmins,
+          timetableIDs: group.timetables,
+          memberIDs: group.members,
+          groupAdminIDs: group.groupAdmins,
           imageURL: group.imageURL,
         }),
       });
