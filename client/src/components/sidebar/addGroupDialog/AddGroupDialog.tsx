@@ -64,6 +64,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
         },
         body: JSON.stringify({
           name: group.name,
+          description: group.description,
           visibility: group.visibility,
           timetableIDs: group.timetables,
           memberIDs: group.members,
@@ -95,6 +96,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
         },
          body: JSON.stringify({
           name: group.name,
+          description: group.description,
           visibility: group.visibility,
           timetableIDs: group.timetables,
           memberIDs: group.members,

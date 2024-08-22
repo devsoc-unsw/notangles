@@ -79,6 +79,13 @@ const AddGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, se
         error={group.name === '' && isGroupNameInteracted}
         helperText="Must be at least one character"
       />
+       <TextField
+        label="Description"
+        defaultValue={group.description}
+        required
+        fullWidth
+        onChange={(e) => setGroup({ ...group, description: e.target.value })}
+      />
 
       <Autocomplete
         multiple
