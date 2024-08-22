@@ -103,9 +103,11 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
           imageURL: group.imageURL,
         }),
       });
-      const status = await res.json();
-      if (res.status === 201) {
+      const groupCreationStatus = await res.json();
+      console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
+      if (res.status === 200) {
         handleClose();
+        getGroups();
       } else {
         throw new NetworkError("Couldn't get response");
       }

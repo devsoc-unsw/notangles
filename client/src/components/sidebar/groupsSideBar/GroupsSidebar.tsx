@@ -132,7 +132,7 @@ const GroupsSidebar = () => {
         },
       });
       const groupDeleteStatus = await res.json();
-      console.log('res', res);
+      console.log('group delete status', groupDeleteStatus);
       if (res.status === 200) {
         handleClose();
         getGroups();

@@ -55,15 +55,13 @@ export class GroupController {
     @Param('id') id: string,
     @Body() updateGroupDto: GroupDto,
   ) {
-    console.log('group.controller.ts body data received: ', updateGroupDto);
     try {
       const group = await this.groupService.update(id, updateGroupDto);
       return {
         status: 'Success message for updating of group.',
-        data: group.groupData,
+        data: group,
       };
     } catch (error) {
-      console.log(error);
       if (error.message === 'Group not found') {
         throw new NotFoundException({
           timestamp: new Date().toISOString(),
