@@ -13,6 +13,7 @@ interface AddGroupDialogActionsProps {
   isEditing: boolean;
   handleClose: () => void;
   handleCreateGroup: () => void;
+  handleEditGroup: (groupId: string) => void;
   group: Group;
 }
 
@@ -20,20 +21,24 @@ const AddGroupDialogActions: React.FC<AddGroupDialogActionsProps> = ({
   isEditing,
   handleClose,
   handleCreateGroup,
+  handleEditGroup,
   group,
 }) => {
+  const isButtonDisabled = group.name === '' || group.members.length === 0;
   return (
     <StyledDialogActions>
       <Button variant="text" onClick={handleClose}>
         Cancel
       </Button>
-      <Button
-        disabled={group.name === '' || group.members.length === 0}
-        variant="contained"
-        onClick={handleCreateGroup}
-      >
-        {isEditing ? 'Save Changes' : 'Create'}
-      </Button>
+      {isEditing ? (
+        <Button disabled={isButtonDisabled} variant="contained" onClick={() => handleEditGroup(group.id)}>
+          Save Changes
+        </Button>
+      ) : (
+        <Button disabled={isButtonDisabled} variant="contained" onClick={handleCreateGroup}>
+          Create
+        </Button>
+      )}
     </StyledDialogActions>
   );
 };

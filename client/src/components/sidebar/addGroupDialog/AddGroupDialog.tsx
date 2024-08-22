@@ -85,6 +85,35 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
     }
   };
 
+  const handleEditGroup = async (groupId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/group/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: group.name,
+          visibility: group.visibility,
+          timetables: group.timetables,
+          description: group.description,
+          members: group.members,
+          groupAdmins: group.groupAdmins,
+          imageURL: group.imageURL,
+        }),
+      });
+      const status = await res.json();
+      if (res.status === 201) {
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
   const handleClose = () => {
     setIsOpen(false);
     setGroup({
@@ -119,6 +148,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
           group={group}
           handleClose={handleClose}
           handleCreateGroup={handleCreateGroup}
+          handleEditGroup={handleEditGroup}
         />
       </Dialog>
     </>

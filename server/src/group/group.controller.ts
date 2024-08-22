@@ -11,8 +11,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { UpdateGroupDto } from './dto/update-group.dto';
+import { GroupDto } from './dto/group.dto';
 
 @Controller('group')
 export class GroupController {
@@ -35,7 +34,7 @@ export class GroupController {
   }
 
   @Post()
-  async create(@Body() createGroupDto: CreateGroupDto) {
+  async create(@Body() createGroupDto: GroupDto) {
     try {
       const group = await this.groupService.create(createGroupDto);
       return {
@@ -54,15 +53,17 @@ export class GroupController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateGroupDto: UpdateGroupDto,
+    @Body() updateGroupDto: GroupDto,
   ) {
+    console.log('group.controller.ts body data received: ', updateGroupDto);
     try {
       const group = await this.groupService.update(id, updateGroupDto);
       return {
         status: 'Success message for updating of group.',
-        data: group,
+        data: group.groupData,
       };
     } catch (error) {
+      console.log(error);
       if (error.message === 'Group not found') {
         throw new NotFoundException({
           timestamp: new Date().toISOString(),

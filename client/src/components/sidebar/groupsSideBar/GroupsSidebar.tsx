@@ -52,7 +52,6 @@ const GroupsSidebar = () => {
   const getGroups = async () => {
     if (!userId) return;
     try {
-      console.log('USER ID', userId);
       const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
         method: 'GET',
         headers: {
@@ -63,7 +62,6 @@ const GroupsSidebar = () => {
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const jsonData = await res.json();
       setGroups(jsonData.data.groups);
-      console.log('groups data', jsonData.data.groups);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -138,39 +136,6 @@ const GroupsSidebar = () => {
       if (res.status === 200) {
         handleClose();
         getGroups();
-      } else {
-        throw new NetworkError("Couldn't get response");
-      }
-    } catch (error) {
-      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
-    }
-  };
-
-  const handleEditGroup = async (groupId: string) => {
-    try {
-      const res = await fetch(`${API_URL.server}/group`, {
-        method: 'PUT',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          adminUserID: userId,
-          groupId,
-          groupData: {
-            name: '',
-            visibility: '',
-            timetableIDs: '',
-            memberIDs: '',
-            groupAdmins: '',
-            groupImageURL: '',
-          },
-        }),
-      });
-      const groupDeleteStatus = await res.json();
-      console.log(groupDeleteStatus);
-      if (res.status === 201) {
-        handleClose();
       } else {
         throw new NetworkError("Couldn't get response");
       }
