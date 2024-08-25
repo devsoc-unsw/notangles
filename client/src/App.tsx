@@ -42,6 +42,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import FriendsActivity from './components/friends/ActivityBar';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -592,7 +593,8 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <Sidebar />
+            {/* <Sidebar /> */}
+            <FriendsActivity />
             <ContentWrapper>
               <Content>
                 <Controls
