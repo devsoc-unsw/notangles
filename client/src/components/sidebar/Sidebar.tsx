@@ -1,5 +1,5 @@
 import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
+import { AppBar, AppBarProps, Divider, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -14,6 +14,8 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
+import GroupsSidebar from './groupsSideBar/GroupsSidebar';
+import FriendsButton from './FriendsButton';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -27,14 +29,24 @@ interface StyledSidebarProps extends AppBarProps {
   collapsed: boolean;
 }
 
-const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ theme, collapsed }) => ({
-  backgroundColor: theme.palette.background.paper,
-  width: collapsed ? '80px' : '290px',
-  height: '100vh',
+const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ collapsed }) => ({
+  width: 'fit-content',
   left: 0,
-  color: theme.palette.text.primary,
   transition: 'width 0.2s ease',
   zIndex: 1201,
+  display: 'flex',
+  flexDirection: 'row',
+}));
+
+const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => ({
+  backgroundColor: theme.palette.background.paper,
+  height: '100vh',
+  color: theme.palette.text.primary,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  width: collapsed ? '80px' : '290px',
+
   // overriding MUI select component padding when focused (for the term select)
   paddingRight: '0 !important',
   padding: '10px, 19px, 10px, 19px',
@@ -62,7 +74,6 @@ const SideBarContainer = styled('div')`
   display: flex;
   flex-direction: column;
   padding: 20px 16px 20px 16px;
-  height: 100%;
   gap: 16px;
 `;
 
@@ -91,6 +102,7 @@ const SidebarFooterText = styled('div')`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
+  const [showGroupsSidebar, setShowGroupsSidebar] = useState(false);
   const sideBarRef = useRef<HTMLDivElement>(null);
   // TODO: dummy logic to be
 
@@ -149,75 +161,82 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      <HeaderContainer>
-        <a href="/">
-          <LogoImg
-            src={currLogo}
-            alt="Notangles logo"
-            onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-            onMouseOut={() => setCurrLogo(notanglesLogo)}
-          />
-        </a>
-        {!collapsed && <SidebarTitle variant="h6">Notangles</SidebarTitle>}
-        {!collapsed && (
-          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
-        )}
-      </HeaderContainer>
-      <Divider />
-      <SideBarContainer>
-        <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
-        <NavComponentsContainer>
-          <CustomModal
-            title="Timetable"
-            toolTipTitle="Timetable"
-            showIcon={<CalendarMonth />}
-            description={'Current Timetable'}
-            content={null}
-            collapsed={collapsed}
-            // currently not clickable since this is our current page
-            isClickable={false}
-            // hardcoded until we move away from single page site
-            isSelected={true}
-          />
-          <CustomModal
-            title="Friends"
-            toolTipTitle="Coming Soon: Friends Timetables"
-            showIcon={<Group />}
-            description={'View Friends Timetables'}
-            content={null}
-            collapsed={collapsed}
-            isClickable={false}
-          />
-          <Divider />
-          {modalData.map((modal, index) => (
-            <>
-              <CustomModal
-                key={index}
-                title={modal.title}
-                toolTipTitle={modal.toolTipTitle}
-                showIcon={modal.showIcon}
-                description={modal.description}
-                content={modal.content}
-                collapsed={collapsed}
-                isClickable={modal.isClickable}
+      {showGroupsSidebar && <GroupsSidebar />}
+      <MainSidebar collapsed={collapsed}>
+        <div>
+          <HeaderContainer>
+            <a href="/">
+              <LogoImg
+                src={currLogo}
+                alt="Notangles logo"
+                onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+                onMouseOut={() => setCurrLogo(notanglesLogo)}
               />
-            </>
-          ))}
-        </NavComponentsContainer>
-      </SideBarContainer>
-      <SidebarFooter>
-        {/* TODO: dummy logic - to be replaced */}
-        <DarkModeButton collapsed={collapsed} />
-        <UserAccount collapsed={collapsed} />
-        {!collapsed ? (
-          <SidebarFooterText>
-            <Divider />
-            <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
-          </SidebarFooterText>
-        ) : (
-          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
-        )}
-      </SidebarFooter>
+            </a>
+            {!collapsed && (
+              <>
+                <SidebarTitle variant="h6">Notangles</SidebarTitle>
+                <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
+              </>
+            )}
+          </HeaderContainer>
+
+          <Divider />
+
+          <SideBarContainer>
+            <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
+
+            <NavComponentsContainer>
+              <CustomModal
+                title="Timetable"
+                toolTipTitle="Timetable"
+                showIcon={<CalendarMonth />}
+                description={'Current Timetable'}
+                content={null}
+                collapsed={collapsed}
+                // currently not clickable since this is our current page
+                isClickable={false}
+                // hardcoded until we move away from single page site
+                isSelected={true}
+              />
+              <FriendsButton
+                collapsed={collapsed}
+                showGroupsSidebar={showGroupsSidebar}
+                setShowGroupsSidebar={setShowGroupsSidebar}
+              />
+              <Divider />
+              {modalData.map((modal, index) => (
+                <>
+                  <CustomModal
+                    key={index}
+                    title={modal.title}
+                    toolTipTitle={modal.toolTipTitle}
+                    showIcon={modal.showIcon}
+                    description={modal.description}
+                    content={modal.content}
+                    collapsed={collapsed}
+                    isClickable={modal.isClickable}
+                  />
+                </>
+              ))}
+            </NavComponentsContainer>
+          </SideBarContainer>
+        </div>
+
+        <SidebarFooter>
+          {/* TODO: dummy logic - to be replaced */}
+          <DarkModeButton collapsed={collapsed} />
+          <UserAccount collapsed={collapsed} />
+          {!collapsed ? (
+            <SidebarFooterText>
+              <Divider />
+              <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
+            </SidebarFooterText>
+          ) : (
+            <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
+          )}
+        </SidebarFooter>
+      </MainSidebar>
     </StyledSidebar>
   );
 };

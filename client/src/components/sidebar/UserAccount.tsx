@@ -43,6 +43,14 @@ const StyledAccountIcon = styled(AccountCircle)`
   height: 28px;
 `;
 
+const ExpandedContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+`;
+
 interface User {
   zid: string;
 }
@@ -129,7 +137,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
             </StyledIconButton>
           </Tooltip>
         ) : (
-          <>
+          <ExpandedContainer>
             <UserInfo>
               <StyledAccountIcon />
               {/* TODO: handle user's name */}
@@ -141,7 +149,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
                 <LogoutRounded />
               </StyledIconButton>
             </Tooltip>
-          </>
+          </ExpandedContainer>
         )}
       </UserAuth>
     </>
