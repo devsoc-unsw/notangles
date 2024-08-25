@@ -3,14 +3,17 @@ import React, { useEffect, useState } from 'react';
 import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
+import GroupCircle from './GroupCircle';
 
 const StyledContainer = styled('div')`
   height: 100vh;
   width: 50px;
   background: ${({ theme }) => theme.palette.primary.main};
-  display: flex; 
-  justify-content: center;
+  display: flex;
+  align-items: center;
   padding: 12px 0px;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 const GroupsSidebar: React.FC = () => {
@@ -57,6 +60,9 @@ const GroupsSidebar: React.FC = () => {
   return (
     <StyledContainer>
       <AddOrEditGroupDialog getGroups={getGroups} userId={userId} />
+      {groups.map((group) => {
+        return <GroupCircle group={group} />;
+      })}
     </StyledContainer>
   );
 };
