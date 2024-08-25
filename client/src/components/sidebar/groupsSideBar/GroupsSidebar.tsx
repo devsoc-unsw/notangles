@@ -146,7 +146,7 @@ const GroupsSidebar = () => {
 
   return (
     <StyledContainer>
-      <AddGroupDialog getGroups={getGroups} userId={userId} />
+      <AddGroupDialog getGroups={getGroups} userId={userId} closeContextMenu={handleClose} />
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={'droppable'}>
           {(provided, snapshot) => (
@@ -161,7 +161,12 @@ const GroupsSidebar = () => {
                       contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
                     }
                   >
-                    <AddGroupDialog groupData={group} getGroups={getGroups} userId={userId} />
+                    <AddGroupDialog
+                      groupData={group}
+                      getGroups={getGroups}
+                      userId={userId}
+                      closeContextMenu={handleClose}
+                    />
                     <MenuItem onClick={() => handleDeleteGroup(group.id)}>Delete</MenuItem>
                   </Menu>
                   <Draggable key={group.id} draggableId={group.id} index={idx}>

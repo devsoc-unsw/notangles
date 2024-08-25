@@ -33,9 +33,10 @@ interface AddGroupDialogProps {
   groupData?: Group;
   getGroups: () => void;
   userId: string;
+  closeContextMenu: () => void;
 }
 
-const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, userId }) => {
+const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, userId, closeContextMenu }) => {
   const emptyGroupData: Group = {
     id: '',
     name: '',
@@ -129,6 +130,7 @@ const AddGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, u
       groupAdmins: [userId],
       imageURL: '',
     });
+    closeContextMenu();
   };
 
   return (
