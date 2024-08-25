@@ -1,0 +1,203 @@
+import { Add as AddIcon } from '@mui/icons-material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  styled,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Close as CloseIcon } from '@mui/icons-material';
+
+import { API_URL } from '../../../api/config';
+import NetworkError from '../../../interfaces/NetworkError';
+import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
+
+export interface MemberType {
+  name: string;
+  zID: string;
+}
+
+export enum Privacy {
+  PRIVATE = 'PRIVATE',
+  PUBLIC = 'PUBLIC',
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  visibility: Privacy;
+  timetables: string[];
+  members: string[];
+  groupAdmins: string[];
+  imageURL: string;
+}
+
+interface AddGroupDialogProps {
+  groupData?: Group;
+  getGroups: () => void;
+  userId: string;
+  // closeContextMenu: () => void;
+}
+
+const StyledDialogTitle = styled(DialogTitle)`
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  padding: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const StyledDialogActions = styled(DialogActions)`
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  padding: 0px 30px 30px 0px;
+`;
+
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, userId }) => {
+  const emptyGroupData: Group = {
+    id: '',
+    name: '',
+    description: '',
+    visibility: Privacy.PRIVATE,
+    timetables: [],
+    members: [],
+    groupAdmins: [userId],
+    imageURL: '',
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [group, setGroup] = useState<Group>(groupData || emptyGroupData);
+
+  useEffect(() => {
+    setGroup({ ...group, groupAdmins: [userId] });
+  }, [userId]);
+
+  const handleCreateGroup = async () => {
+    try {
+      const res = await fetch(`${API_URL.server}/group`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: group.name,
+          description: group.description,
+          visibility: group.visibility,
+          timetableIDs: group.timetables,
+          memberIDs: group.members,
+          groupAdminIDs: group.groupAdmins,
+          imageURL: group.imageURL,
+        }),
+      });
+      const groupCreationStatus = await res.json();
+      console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
+
+      if (res.status === 201) {
+        getGroups();
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
+  const handleEditGroup = async (groupId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/group/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: group.name,
+          description: group.description,
+          visibility: group.visibility,
+          timetableIDs: group.timetables,
+          memberIDs: group.members,
+          groupAdminIDs: group.groupAdmins,
+          imageURL: group.imageURL,
+        }),
+      });
+      const groupCreationStatus = await res.json();
+      console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
+      if (res.status === 200) {
+        handleClose();
+        getGroups();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setGroup({
+      id: '',
+      name: '',
+      description: '',
+      visibility: Privacy.PRIVATE,
+      timetables: [],
+      members: [],
+      groupAdmins: [userId],
+      imageURL: '',
+    });
+    // closeContextMenu();
+  };
+
+  return (
+    <>
+      <div>
+        {groupData ? (
+          <MenuItem onClick={() => setIsOpen(true)}>Edit</MenuItem>
+        ) : (
+          <Tooltip title="Add a Group" placement="right">
+            <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </div>
+
+      <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
+        <>
+          <StyledDialogTitle>
+            <Typography variant="h6">{groupData ? 'Edit Group Details' : 'Create a Group'}</Typography>
+            <div>
+              <IconButton onClick={handleClose}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </StyledDialogTitle>
+        </>
+        <AddOrEditGroupDialogContent group={group} setGroup={setGroup} />
+        <StyledDialogActions>
+          <Button variant="text" onClick={handleClose}>
+            Cancel
+          </Button>
+          {groupData ? (
+            <Button variant="contained" onClick={() => handleEditGroup(group.id)}>
+              Save Changes
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={handleCreateGroup}>
+              Create
+            </Button>
+          )}
+        </StyledDialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default AddOrEditGroupDialog;
