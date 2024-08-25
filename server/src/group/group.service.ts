@@ -20,44 +20,58 @@ export class GroupService {
     private readonly user: UserService,
   ) {}
 
-  async create(createGroupDto: GroupDto) {
+  async prepareGroupData(data: GroupDto) {
     const {
       name,
+      visibility,
       timetableIDs,
       memberIDs,
       groupAdminIDs,
       description = '',
       imageURL = '',
-    } = createGroupDto;
+    } = data;
 
-    const data: any = { name, description, imageURL };
+    const resData: any = {
+      name,
+      visibility,
+      description,
+      imageURL,
+      timetables: { connect: [] },
+      members: { connect: [] },
+    };
 
+    const [timetables, members, admins] = await Promise.all([
+      this.user.getTimetablesByIDs(timetableIDs),
+      this.user.getUsersByIDs(memberIDs),
+      this.user.getUsersByIDs(groupAdminIDs),
+    ]);
+
+    if (timetables.length > 0) {
+      resData.timetables = {
+        connect: timetables.map((timetable) => ({ id: timetable.id })),
+      };
+    }
+
+    if (members.length > 0) {
+      resData.members = {
+        connect: members.map((member) => ({ userID: member.userID })),
+      };
+    }
+
+    if (admins.length > 0) {
+      resData.groupAdmins = {
+        connect: admins.map((admin) => ({ userID: admin.userID })),
+      };
+    }
+
+    return resData;
+  }
+
+  async create(createGroupDto: GroupDto) {
     try {
-      const [timetables, members, admins] = await Promise.all([
-        this.user.getTimetablesByIDs(timetableIDs),
-        this.user.getUsersByIDs(memberIDs),
-        this.user.getUsersByIDs(groupAdminIDs),
-      ]);
-
-      if (timetables.length > 0) {
-        data.timetables = {
-          connect: timetables.map((timetable) => ({ id: timetable.id })),
-        };
-      }
-
-      if (members.length > 0) {
-        data.members = {
-          connect: members.map((member) => ({ id: member.userID })),
-        };
-      }
-
-      if (admins.length > 0) {
-        data.admins = {
-          connect: admins.map((admin) => ({ id: admin.userID })),
-        };
-      }
-
+      const data = await this.prepareGroupData(createGroupDto);
       const group = await this.prisma.group.create({ data });
+
       return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.UNIQUE_CONSTRAINT_FAILED) {
@@ -78,11 +92,12 @@ export class GroupService {
     return group;
   }
 
-  async update(id: string, updateGroupDto: UpdateGroupDto) {
+  async update(id: string, updateGroupDto: GroupDto) {
     try {
+      const data = await this.prepareGroupData(updateGroupDto);
       const group = await this.prisma.group.update({
         where: { id },
-        data: updateGroupDto,
+        data,
       });
       return group;
     } catch (error) {

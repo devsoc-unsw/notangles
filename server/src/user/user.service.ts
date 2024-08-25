@@ -59,6 +59,12 @@ export class UserService {
         firstname: _firstName,
         lastname: _lastName,
         email: _email,
+        memberGroups: {
+          connect: [],
+        },
+        adminGroups: {
+          connect: [],
+        },
       };
 
       return Promise.resolve(
@@ -309,6 +315,39 @@ export class UserService {
       return Promise.resolve(_timetableId);
     } catch (e) {
       throw new Error(_timetableId);
+    }
+  }
+
+  async getGroups(_userId: string) {
+    try {
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userId },
+        include: {
+          memberGroups: true,
+          adminGroups: true,
+        },
+      });
+
+      const groupIds = user.adminGroups
+        .concat(user.memberGroups)
+        .map((group) => group.id);
+
+      const res = [];
+      for (const groupId of groupIds) {
+        const group = await this.prisma.group.findUniqueOrThrow({
+          where: { id: groupId },
+          include: {
+            members: true,
+            groupAdmins: true,
+            timetables: true,
+          },
+        });
+        res.push(group);
+      }
+
+      return res;
+    } catch (error) {
+      console.error('Error retrieving users:', error);
     }
   }
 }
