@@ -5,8 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { UpdateGroupDto } from './dto/update-group.dto';
+import { GroupDto } from './dto/group.dto';
 import { UserService } from 'src/user/user.service';
 
 export enum PrismaErrorCode {
@@ -21,7 +20,7 @@ export class GroupService {
     private readonly user: UserService,
   ) {}
 
-  async create(createGroupDto: CreateGroupDto) {
+  async create(createGroupDto: GroupDto) {
     const {
       name,
       timetableIDs,

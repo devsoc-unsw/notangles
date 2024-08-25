@@ -12,11 +12,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useState } from 'react';
+import React from 'react';
 
 import EditImagePopOver from './EditImagePopover';
 import NotanglesLogo from '../../../assets/notangles_1.png';
-import AddOrEditGroupDialog, { Group, Privacy } from './AddOrEditGroupDialog';
+import { Group, Privacy, MemberType } from './AddOrEditGroupDialog';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -54,11 +54,18 @@ interface AddGroupDialogContentProps {
   setGroup: (group: Group) => void;
 }
 
-const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, setGroup }) => {
-  // To show red error only after user has interacted with the inputs.
-  const [isGroupNameInteracted, setGroupNameInteracted] = useState(false);
-  const [isGroupMemberInteracted, setGroupMemberInteracted] = useState(false);
+export const dummyFriends: MemberType[] = [
+  { name: 'Shaam', zID: 'z532445' },
+  { name: 'Ray', zID: 'z523495' },
+  { name: 'hhlu', zID: 'z584290' },
+  { name: 'Sohum', zID: 'z523840' },
+  { name: 'Chanel', zID: 'z542567' },
+  { name: 'Nikki', zID: 'z524596' },
+  { name: 'Micky', zID: 'z523948' },
+  { name: 'Jasmine', zID: 'z5394841' },
+];
 
+const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, setGroup }) => {
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
@@ -74,11 +81,8 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
         required
         fullWidth
         onChange={(e) => setGroup({ ...group, name: e.target.value })}
-        onBlur={() => setGroupNameInteracted(true)}
-        error={group.name === '' && isGroupNameInteracted}
-        helperText="Must be at least one character"
       />
-       <TextField
+      <TextField
         label="Description"
         defaultValue={group.description}
         required
@@ -88,11 +92,10 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
 
       <Autocomplete
         multiple
-        options={[]} //TODO FRIENDS SELECTION
+        options={dummyFriends}
         disableCloseOnSelect
         fullWidth
         onChange={(_, value) => setGroup({ ...group, members: value.map((val) => val.zID) })}
-        onBlur={(e) => setGroupMemberInteracted(true)}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
@@ -112,15 +115,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
             </Tooltip>
           ));
         }}
-        renderInput={(params) => (
-          <TextField
-            error={group.members.length === 0 && isGroupMemberInteracted}
-            helperText="Must select at least one member"
-            {...params}
-            label="Group Members"
-            placeholder="Search for names..."
-          />
-        )}
+        renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
       />
 
       <FormControl fullWidth>
