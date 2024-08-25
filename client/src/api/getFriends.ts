@@ -4,6 +4,7 @@ import { CourseCode, CourseData, EventPeriod } from '../interfaces/Periods';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
 import getCourseInfo from './getCourseInfo';
+import { getAvailableTermDetails } from '../constants/timetable';
 
 const getCurrentActivity = async (userId: string): Promise<CurrentActivity | null> => {
     // get the user's timetable data
@@ -17,9 +18,7 @@ const getCurrentActivity = async (userId: string): Promise<CurrentActivity | nul
 
         const selectedCourses = json.selectedCourses;
 
-        // TODO: find helpers for these - for now hardcoded
-        const year = '2024';
-        const term = 'T2';
+        const { term, year } = await getAvailableTermDetails();
         const isConvertToLocalTimezone = true;
 
         const courseInfos = await Promise.all(
