@@ -57,10 +57,6 @@ const GroupsSidebar: React.FC = () => {
     getZid();
   }, []);
 
-  useEffect(() => {
-    console.log('groups', groups)
-  }, [groups]);
-
   return (
     <StyledContainer>
       <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
