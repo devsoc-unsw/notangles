@@ -1,10 +1,12 @@
 import React from 'react';
 import NotanglesLogo from '../../../assets/notangles_1.png';
-import { Tooltip } from '@mui/material';
+import { ListItemIcon, ListItemText, Tooltip } from '@mui/material';
 import { Group } from './AddOrEditGroupDialog';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
+import { Edit } from '@mui/icons-material';
 
 const GroupCircle: React.FC<{ group: Group }> = ({ group }) => {
   const [contextMenu, setContextMenu] = React.useState<{
@@ -38,17 +40,25 @@ const GroupCircle: React.FC<{ group: Group }> = ({ group }) => {
           style={{ borderRadius: 999, backgroundColor: 'white' }}
         />
       </Tooltip>
-      <Menu
+      <StyledMenu
         open={contextMenu !== null}
         onClose={handleClose}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
       >
-        <MenuItem onClick={handleClose}>Copy</MenuItem>
-        <MenuItem onClick={handleClose}>Print</MenuItem>
-        <MenuItem onClick={handleClose}>Highlight</MenuItem>
-        <MenuItem onClick={handleClose}>Email</MenuItem>
-      </Menu>
+        <MenuItem onClick={() => {}}>
+          <ListItemIcon>
+            <Edit fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => {}}>
+          <ListItemIcon>
+            <RedDeleteIcon fontSize="small" />
+          </ListItemIcon>
+          <RedListItemText>Delete</RedListItemText>
+        </MenuItem>
+      </StyledMenu>
     </div>
   );
 };

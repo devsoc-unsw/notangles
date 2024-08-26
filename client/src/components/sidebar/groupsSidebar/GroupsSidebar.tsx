@@ -13,7 +13,7 @@ const StyledContainer = styled('div')`
   align-items: center;
   padding: 12px 0px;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 `;
 
 const GroupsSidebar: React.FC = () => {
