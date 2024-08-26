@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
-import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
+import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import GroupCircle from './GroupCircle';
 
 const StyledContainer = styled('div')`
@@ -60,8 +60,8 @@ const GroupsSidebar: React.FC = () => {
   return (
     <StyledContainer>
       <AddOrEditGroupDialog getGroups={getGroups} userId={userId} />
-      {groups.map((group) => {
-        return <GroupCircle group={group} />;
+      {groups.map((group, i) => {
+        return <GroupCircle key={i} group={group} getGroups={getGroups} />;
       })}
     </StyledContainer>
   );

@@ -7,8 +7,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { Edit } from '@mui/icons-material';
+import { API_URL } from '../../../api/config';
+import NetworkError from '../../../interfaces/NetworkError';
 
-const GroupCircle: React.FC<{ group: Group }> = ({ group }) => {
+const GroupCircle: React.FC<{ group: Group; getGroups }> = ({ group, getGroups }) => {
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -28,6 +30,28 @@ const GroupCircle: React.FC<{ group: Group }> = ({ group }) => {
 
   const handleClose = () => {
     setContextMenu(null);
+  };
+
+  const handleDeleteGroup = async () => {
+    try {
+      const res = await fetch(`${API_URL.server}/group/${group.id}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const groupDeleteStatus = await res.json();
+      console.log('group delete status', groupDeleteStatus);
+      if (res.status === 200) {
+        handleClose();
+        getGroups();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
   };
 
   return (
@@ -52,7 +76,7 @@ const GroupCircle: React.FC<{ group: Group }> = ({ group }) => {
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => {}}>
+        <MenuItem onClick={handleDeleteGroup}>
           <ListItemIcon>
             <RedDeleteIcon fontSize="small" />
           </ListItemIcon>
