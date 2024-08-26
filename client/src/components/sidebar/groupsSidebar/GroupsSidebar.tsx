@@ -59,9 +59,9 @@ const GroupsSidebar: React.FC = () => {
 
   return (
     <StyledContainer>
-      <AddOrEditGroupDialog getGroups={getGroups} userId={userId} />
+      <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
       {groups.map((group, i) => {
-        return <GroupCircle key={i} group={group} getGroups={getGroups} />;
+        return <GroupCircle key={i} group={group} getGroups={getGroups} userId={userId} />;
       })}
     </StyledContainer>
   );

@@ -1,16 +1,17 @@
 import React from 'react';
 import NotanglesLogo from '../../../assets/notangles_1.png';
-import { ListItemIcon, ListItemText, Tooltip } from '@mui/material';
-import { Group } from './AddOrEditGroupDialog';
-import Menu from '@mui/material/Menu';
+import { ListItemIcon, Tooltip } from '@mui/material';
+import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
-import { Edit } from '@mui/icons-material';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 
-const GroupCircle: React.FC<{ group: Group; getGroups }> = ({ group, getGroups }) => {
+const GroupCircle: React.FC<{ group: Group; getGroups: () => void; userId: string }> = ({
+  group,
+  getGroups,
+  userId,
+}) => {
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -54,6 +55,11 @@ const GroupCircle: React.FC<{ group: Group; getGroups }> = ({ group, getGroups }
     }
   };
 
+  const editGroupDialogOnClose = () => {
+    getGroups();
+    handleClose();
+  };
+
   return (
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>
       <Tooltip title={group.name} placement="right">
@@ -70,12 +76,7 @@ const GroupCircle: React.FC<{ group: Group; getGroups }> = ({ group, getGroups }
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
       >
-        <MenuItem onClick={() => {}}>
-          <ListItemIcon>
-            <Edit fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit</ListItemText>
-        </MenuItem>
+        <AddOrEditGroupDialog onClose={editGroupDialogOnClose} userId={userId} editGroupData={group} />
         <MenuItem onClick={handleDeleteGroup}>
           <ListItemIcon>
             <RedDeleteIcon fontSize="small" />

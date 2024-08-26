@@ -1,10 +1,12 @@
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit } from '@mui/icons-material';
 import {
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
   IconButton,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   styled,
   Tooltip,
@@ -39,10 +41,9 @@ export interface Group {
 }
 
 interface AddGroupDialogProps {
-  groupData?: Group;
-  getGroups: () => void;
+  editGroupData?: Group;
   userId: string;
-  // closeContextMenu: () => void;
+  onClose: () => void;
 }
 
 const StyledDialogTitle = styled(DialogTitle)`
@@ -58,7 +59,7 @@ const StyledDialogActions = styled(DialogActions)`
   padding: 0px 30px 30px 0px;
 `;
 
-const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGroups, userId }) => {
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, userId, onClose }) => {
   const emptyGroupData: Group = {
     id: '',
     name: '',
@@ -71,11 +72,15 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  const [group, setGroup] = useState<Group>(groupData || emptyGroupData);
+  const [group, setGroup] = useState<Group>(emptyGroupData);
 
   useEffect(() => {
     setGroup({ ...group, groupAdmins: [userId] });
   }, [userId]);
+
+  useEffect(() => {
+    setGroup(editGroupData ? editGroupData : emptyGroupData);
+  }, [editGroupData]);
 
   const handleCreateGroup = async () => {
     try {
@@ -99,7 +104,6 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
       console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
 
       if (res.status === 201) {
-        getGroups();
         handleClose();
       } else {
         throw new NetworkError("Couldn't get response");
@@ -131,7 +135,6 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
       console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
       if (res.status === 200) {
         handleClose();
-        getGroups();
       } else {
         throw new NetworkError("Couldn't get response");
       }
@@ -152,14 +155,19 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
       groupAdmins: [userId],
       imageURL: '',
     });
-    // closeContextMenu();
+    onClose();
   };
 
   return (
     <>
       <div>
-        {groupData ? (
-          <MenuItem onClick={() => setIsOpen(true)}>Edit</MenuItem>
+        {editGroupData ? (
+          <MenuItem onClick={() => setIsOpen(true)}>
+            <ListItemIcon>
+              <Edit fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
         ) : (
           <Tooltip title="Add a Group" placement="right">
             <IconButton color="inherit" onClick={() => setIsOpen(true)}>
@@ -172,7 +180,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
       <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
         <>
           <StyledDialogTitle>
-            <Typography variant="h6">{groupData ? 'Edit Group Details' : 'Create a Group'}</Typography>
+            <Typography variant="h6">{editGroupData ? 'Edit Group Details' : 'Create a Group'}</Typography>
             <div>
               <IconButton onClick={handleClose}>
                 <CloseIcon />
@@ -185,7 +193,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ groupData, getGro
           <Button variant="text" onClick={handleClose}>
             Cancel
           </Button>
-          {groupData ? (
+          {editGroupData ? (
             <Button variant="contained" onClick={() => handleEditGroup(group.id)}>
               Save Changes
             </Button>
