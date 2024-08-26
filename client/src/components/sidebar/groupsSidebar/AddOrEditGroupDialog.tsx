@@ -34,9 +34,9 @@ export interface Group {
   name: string;
   description: string;
   visibility: Privacy;
-  timetables: string[];
-  members: string[];
-  groupAdmins: string[];
+  timetableIDs: string[];
+  memberIDs: string[];
+  groupAdminIDs: string[];
   imageURL: string;
 }
 
@@ -65,9 +65,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
     name: '',
     description: '',
     visibility: Privacy.PRIVATE,
-    timetables: [],
-    members: [],
-    groupAdmins: [userId],
+    timetableIDs: [],
+    memberIDs: [],
+    groupAdminIDs: [userId],
     imageURL: '',
   };
 
@@ -75,7 +75,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
   const [group, setGroup] = useState<Group>(emptyGroupData);
 
   useEffect(() => {
-    setGroup({ ...group, groupAdmins: [userId] });
+    setGroup({ ...group, groupAdminIDs: [userId] });
   }, [userId]);
 
   useEffect(() => {
@@ -94,9 +94,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetables,
-          memberIDs: group.members,
-          groupAdminIDs: group.groupAdmins,
+          timetableIDs: group.timetableIDs,
+          memberIDs: group.memberIDs,
+          groupAdminIDs: group.groupAdminIDs,
           imageURL: group.imageURL,
         }),
       });
@@ -125,9 +125,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetables,
-          memberIDs: group.members,
-          groupAdminIDs: group.groupAdmins,
+          timetableIDs: group.timetableIDs,
+          memberIDs: group.memberIDs,
+          groupAdminIDs: group.groupAdminIDs,
           imageURL: group.imageURL,
         }),
       });
@@ -150,9 +150,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
       name: '',
       description: '',
       visibility: Privacy.PRIVATE,
-      timetables: [],
-      members: [],
-      groupAdmins: [userId],
+      timetableIDs: [],
+      memberIDs: [],
+      groupAdminIDs: [userId],
       imageURL: '',
     });
     onClose();

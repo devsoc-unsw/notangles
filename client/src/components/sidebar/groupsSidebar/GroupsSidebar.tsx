@@ -13,7 +13,7 @@ const StyledContainer = styled('div')`
   align-items: center;
   padding: 12px 0px;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 `;
 
 const GroupsSidebar: React.FC = () => {
@@ -56,6 +56,10 @@ const GroupsSidebar: React.FC = () => {
     };
     getZid();
   }, []);
+
+  useEffect(() => {
+    console.log('groups', groups)
+  }, [groups]);
 
   return (
     <StyledContainer>

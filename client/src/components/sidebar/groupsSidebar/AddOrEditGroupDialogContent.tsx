@@ -95,7 +95,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
         options={dummyFriends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setGroup({ ...group, members: value.map((val) => val.zID) })}
+        onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.zID) })}
         getOptionLabel={(option) => option.name}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
