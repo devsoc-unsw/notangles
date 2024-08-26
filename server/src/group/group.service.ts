@@ -94,9 +94,7 @@ export class GroupService {
 
   async update(id: string, updateGroupDto: GroupDto) {
     try {
-      console.log('rayyy1', updateGroupDto)
       const data = await this.prepareGroupData(updateGroupDto);
-      console.log('rayyy', data)
       const group = await this.prisma.group.update({
         where: { id },
         data,

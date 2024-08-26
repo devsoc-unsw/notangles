@@ -3,10 +3,12 @@ import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Timetable, User } from '@prisma/client';
+import { GroupDto } from 'src/group/dto/group.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
+
   async getUserInfo(_userId: string): Promise<UserDTO> {
     try {
       const { userID, timetable, ...userData } =
@@ -332,7 +334,7 @@ export class UserService {
         .concat(user.memberGroups)
         .map((group) => group.id);
 
-      const res = [];
+      const res: GroupDto[] = [];
       for (const groupId of groupIds) {
         const group = await this.prisma.group.findUniqueOrThrow({
           where: { id: groupId },
@@ -342,6 +344,17 @@ export class UserService {
             timetables: true,
           },
         });
+
+        // convert members, groupAdmins and timetables objects into string ids
+        group.memberIDs = group.members.map((group) => group.userID);
+        group.groupAdminIDs = group.groupAdmins.map(
+          (groupAdmin) => groupAdmin.userID,
+        );
+        group.timetableIDs = group.timetables.map((timetable) => timetable.id);
+        delete group.members;
+        delete group.groupAdmins;
+        delete group.timetables;
+
         res.push(group);
       }
 
