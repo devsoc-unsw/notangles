@@ -31,13 +31,14 @@ export class GroupService {
       imageURL = '',
     } = data;
 
-    const resData: any = {
+    const resData = {
       name,
       visibility,
       description,
       imageURL,
       timetables: { connect: [] },
       members: { connect: [] },
+      groupAdmins: { connect: [] },
     };
 
     const [timetables, members, admins] = await Promise.all([
