@@ -21,8 +21,11 @@ export class UserService {
                 selectedClasses: true,
               },
             },
+            friends: true,
           },
         });
+
+        console.log('userData', userData)
 
       const data = {
         ...userData,
@@ -30,7 +33,6 @@ export class UserService {
         // deleteUserAt: userData.deleteUserAt.toISOString(),
         lastLogin: userData.lastLogin.toISOString(),
         loggedIn: true, // Change this later
-        friends: [], // Need to add friends relation to the DB
         // Annnoying that the DTO and the schema have differently named fields so have to do this
         timetables: timetable.map((t) => {
           return {

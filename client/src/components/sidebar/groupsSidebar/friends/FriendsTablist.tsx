@@ -3,6 +3,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import YourFriendsTab from './YourFriendsTab';
+import { User } from '../AddOrEditGroupDialog';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -33,7 +34,7 @@ const a11yProps = (index: number) => {
   };
 };
 
-const FriendsTablist = () => {
+const FriendsTablist: React.FC<{ user: User | undefined }> = ({ user }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -50,7 +51,7 @@ const FriendsTablist = () => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <YourFriendsTab />
+        <YourFriendsTab user={user} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         Friend Requests

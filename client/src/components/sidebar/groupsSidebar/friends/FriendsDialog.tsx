@@ -3,6 +3,7 @@ import { Group } from '@mui/icons-material';
 import { Dialog, DialogTitle, IconButton, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import FriendsTablist from './FriendsTablist';
+import { User } from '../AddOrEditGroupDialog';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -12,12 +13,10 @@ const StyledDialogTitle = styled(DialogTitle)`
   justify-content: space-between;
 `;
 
-const FriendsDialog = () => {
+const FriendsDialog: React.FC<{ user: User | undefined }> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const handleClose = () => setIsOpen(false);
 
   return (
     <>
@@ -37,7 +36,7 @@ const FriendsDialog = () => {
               </IconButton>
             </div>
           </StyledDialogTitle>
-          <FriendsTablist />
+          <FriendsTablist user={user} />
         </>
       </Dialog>
     </>
