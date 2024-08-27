@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Group } from '@mui/icons-material';
-import { Dialog, DialogTitle, IconButton, styled, Tooltip, Typography } from '@mui/material';
+import { Dialog, DialogTitle, IconButton, styled, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import { Box } from '@mui/system';
+import FriendsTablist from './FriendsTablist';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 30px;
+  padding: 30px 30px 0px 30px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -36,6 +38,7 @@ const FriendsDialog = () => {
               </IconButton>
             </div>
           </StyledDialogTitle>
+          <FriendsTablist />
         </>
       </Dialog>
     </>
