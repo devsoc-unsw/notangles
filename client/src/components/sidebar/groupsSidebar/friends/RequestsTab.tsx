@@ -2,7 +2,7 @@ import React from 'react';
 import { User } from '../GroupsSidebar';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
 
 const StyledFriendsListContainer = styled('div')`
@@ -36,12 +36,16 @@ const RequestsTab: React.FC<{ user: User | undefined }> = ({ user }) => {
             profileURL={friend.profileURL}
           />
           <StyledActionButtons>
-            <IconButton>
-              <Check />
-            </IconButton>
-            <IconButton>
-              <Close />
-            </IconButton>
+            <Tooltip title="Accept Request">
+              <IconButton>
+                <Check />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Decline Request">
+              <IconButton>
+                <Close />
+              </IconButton>
+            </Tooltip>
           </StyledActionButtons>
         </StyledFriendContainer>
       ))}
