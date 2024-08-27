@@ -1,4 +1,4 @@
-import { Group } from '@mui/icons-material';
+import { Group, SwitchAccount, TableView } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
@@ -25,15 +25,15 @@ const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>
 const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed, showGroupsSidebar, setShowGroupsSidebar }) => {
   return (
     <>
-      <Tooltip title="Friend's Timetable" placement="right">
+      <Tooltip title="Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
           onClick={() => setShowGroupsSidebar(!showGroupsSidebar)}
           isSelected={showGroupsSidebar}
         >
-          <Group />
+          <SwitchAccount />
           <IndividualComponentTypography collapsed={collapsed}>
-            {collapsed ? '' : 'Friends'}
+            {collapsed ? '' : 'Shared Timetables'}
           </IndividualComponentTypography>
         </StyledFriendsButton>
       </Tooltip>

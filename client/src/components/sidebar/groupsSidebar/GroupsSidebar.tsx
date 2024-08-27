@@ -4,6 +4,8 @@ import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import GroupCircle from './GroupCircle';
+import { Group as GroupIcon } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 
 const StyledContainer = styled('div')`
   height: 100vh;
@@ -59,6 +61,11 @@ const GroupsSidebar: React.FC = () => {
 
   return (
     <StyledContainer>
+      <Tooltip title="Your Friends" placement="right">
+        <IconButton color="inherit">
+          <GroupIcon />
+        </IconButton>
+      </Tooltip>
       <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} userId={userId} />;
