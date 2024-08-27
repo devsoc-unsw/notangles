@@ -6,6 +6,7 @@ import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import GroupCircle from './GroupCircle';
 import { Group as GroupIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
+import FriendsDialog from './friends/FriendsDialog';
 
 const StyledContainer = styled('div')`
   height: 100vh;
@@ -61,11 +62,7 @@ const GroupsSidebar: React.FC = () => {
 
   return (
     <StyledContainer>
-      <Tooltip title="Your Friends" placement="right">
-        <IconButton color="inherit">
-          <GroupIcon />
-        </IconButton>
-      </Tooltip>
+      <FriendsDialog />
       <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} userId={userId} />;
