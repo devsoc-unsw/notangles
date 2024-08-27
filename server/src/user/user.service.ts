@@ -22,6 +22,7 @@ export class UserService {
               },
             },
             friends: true,
+            incoming: true,
           },
         });
 

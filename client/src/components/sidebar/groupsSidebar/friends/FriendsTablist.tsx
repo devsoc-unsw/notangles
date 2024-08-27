@@ -3,7 +3,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import YourFriendsTab from './YourFriendsTab';
-import { User } from '../AddOrEditGroupDialog';
+import { User } from '../GroupsSidebar';
+import AddAFriendTab from './AddAFriendTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -57,7 +58,7 @@ const FriendsTablist: React.FC<{ user: User | undefined }> = ({ user }) => {
         Friend Requests
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        Add a Friend
+        <AddAFriendTab user={user} />
       </CustomTabPanel>
     </Box>
   );
