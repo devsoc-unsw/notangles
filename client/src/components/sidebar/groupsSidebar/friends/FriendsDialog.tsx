@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Group } from '@mui/icons-material';
-import { Dialog, DialogTitle, IconButton, styled, Tooltip, Typography } from '@mui/material';
+import { Dialog, DialogTitle, IconButton, Paper, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import FriendsTablist from './FriendsTablist';
-import { User } from '../AddOrEditGroupDialog';
+import { User } from '../GroupsSidebar';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -11,6 +11,13 @@ const StyledDialogTitle = styled(DialogTitle)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const StyledPaper = styled(Paper)`
+  height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
 const FriendsDialog: React.FC<{ user: User | undefined }> = ({ user }) => {
@@ -26,7 +33,14 @@ const FriendsDialog: React.FC<{ user: User | undefined }> = ({ user }) => {
         </IconButton>
       </Tooltip>
 
-      <Dialog disableScrollLock onClose={handleClose} open={isOpen} fullWidth maxWidth="sm">
+      <Dialog
+        PaperProps={{ component: StyledPaper }}
+        disableScrollLock
+        onClose={handleClose}
+        open={isOpen}
+        fullWidth
+        maxWidth="sm"
+      >
         <>
           <StyledDialogTitle>
             <Typography variant="h6">Friends</Typography>

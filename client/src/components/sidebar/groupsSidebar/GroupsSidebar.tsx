@@ -8,7 +8,7 @@ import FriendsDialog from './friends/FriendsDialog';
 import { TimetableData } from '../../../interfaces/Periods';
 
 // TODO where to put
-interface User {
+export interface User {
   firstname: string;
   lastname: string;
   email: string;
@@ -16,7 +16,7 @@ interface User {
   createdAt: string;
   lastLogin: string;
   loggedIn: boolean;
-  friends: string[];
+  friends: User[];
   timetables: TimetableData[];
 }
 

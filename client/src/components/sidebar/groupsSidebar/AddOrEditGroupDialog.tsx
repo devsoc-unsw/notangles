@@ -40,10 +40,6 @@ export interface Group {
   imageURL: string;
 }
 
-export interface User {
-  
-}
-
 interface AddGroupDialogProps {
   editGroupData?: Group;
   userId: string;
