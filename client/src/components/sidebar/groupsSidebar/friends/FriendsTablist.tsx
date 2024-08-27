@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import YourFriendsTab from './YourFriendsTab';
 import { User } from '../GroupsSidebar';
 import AddAFriendTab from './AddAFriendTab';
+import RequestsTab from './RequestsTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,7 +48,7 @@ const FriendsTablist: React.FC<{ user: User | undefined }> = ({ user }) => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Your Friends" {...a11yProps(0)} />
-          <Tab label="Friend Requests" {...a11yProps(1)} />
+          <Tab label="Requests" {...a11yProps(1)} />
           <Tab label="Add a Friend" {...a11yProps(2)} />
         </Tabs>
       </Box>
@@ -55,7 +56,7 @@ const FriendsTablist: React.FC<{ user: User | undefined }> = ({ user }) => {
         <YourFriendsTab user={user} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        Friend Requests
+        <RequestsTab user={user} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         <AddAFriendTab user={user} />

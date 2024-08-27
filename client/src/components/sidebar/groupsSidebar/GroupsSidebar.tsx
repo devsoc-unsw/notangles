@@ -17,6 +17,7 @@ export interface User {
   lastLogin: string;
   loggedIn: boolean;
   friends: User[];
+  incoming: User[];
   timetables: TimetableData[];
 }
 

@@ -23,10 +23,11 @@ export class UserService {
             },
             friends: true,
             incoming: true,
+            outgoing: true,
           },
         });
 
-        console.log('userData', userData)
+      console.log('userData', userData);
 
       const data = {
         ...userData,
