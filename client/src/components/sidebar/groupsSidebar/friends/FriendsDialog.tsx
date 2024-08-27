@@ -20,7 +20,7 @@ const StyledPaper = styled(Paper)`
   flex-direction: column;
 `;
 
-const FriendsDialog: React.FC<{ user: User | undefined }> = ({ user }) => {
+const FriendsDialog: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
@@ -50,7 +50,7 @@ const FriendsDialog: React.FC<{ user: User | undefined }> = ({ user }) => {
               </IconButton>
             </div>
           </StyledDialogTitle>
-          <FriendsTablist user={user} />
+          <FriendsTablist user={user} getUserInfo={getUserInfo} />
         </>
       </Dialog>
     </>

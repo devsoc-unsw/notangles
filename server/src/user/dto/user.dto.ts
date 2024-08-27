@@ -14,6 +14,9 @@ export class UserDTO {
   //status: string;
 
   @IsString()
+  userID: string;
+
+  @IsString()
   firstname: string;
 
   @IsString()

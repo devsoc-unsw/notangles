@@ -27,10 +27,10 @@ export class UserService {
           },
         });
 
-      console.log('userData', userData);
 
       const data = {
         ...userData,
+        userID: _userId,
         createdAt: userData.createdAt.toISOString(),
         // deleteUserAt: userData.deleteUserAt.toISOString(),
         lastLogin: userData.lastLogin.toISOString(),

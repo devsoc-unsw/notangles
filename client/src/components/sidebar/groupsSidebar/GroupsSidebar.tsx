@@ -9,6 +9,7 @@ import { TimetableData } from '../../../interfaces/Periods';
 
 // TODO where to put
 export interface User {
+  userID: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -55,6 +56,22 @@ const GroupsSidebar: React.FC = () => {
     }
   };
 
+  const getUserInfo = async () => {
+    try {
+      const response = await fetch(`${API_URL.server}/user/profile/${userId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const userResponse = await response.text();
+      if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getGroups();
   }, [userId]);
@@ -75,27 +92,12 @@ const GroupsSidebar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_URL.server}/user/profile/${userId}`, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        const userResponse = await response.text();
-        if (userResponse !== '') setUser(JSON.parse(userResponse).data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     if (userId) getUserInfo();
   }, [userId]);
 
   return (
     <StyledContainer>
-      <FriendsDialog user={user} />
+      <FriendsDialog user={user} getUserInfo={getUserInfo} />
       <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} userId={userId} />;

@@ -152,12 +152,12 @@ export class FriendService {
     try {
       await prisma.user.update({
         where: {
-          userId: sendeeId,
+          userID: sendeeId,
         },
         data: {
           incoming: {
             disconnect: {
-              userId: senderId,
+              userID: senderId,
             },
           },
         },

@@ -4,6 +4,8 @@ import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
 import { IconButton, Tooltip } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
+import { API_URL } from '../../../../api/config';
+import NetworkError from '../../../../interfaces/NetworkError';
 
 const StyledFriendsListContainer = styled('div')`
   display: flex;
@@ -21,8 +23,30 @@ const StyledActionButtons = styled('div')`
   gap: 12px;
 `;
 
-const RequestsTab: React.FC<{ user: User | undefined }> = ({ user }) => {
+const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
   if (!user) return;
+
+  const handleDeclineRequest = async (incomingUserId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/friend/request`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sendeeId: user.userID,
+          senderId: incomingUserId,
+        }),
+      });
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      const declineRequestStatus = await res.json();
+      console.log('decline request status', declineRequestStatus);
+      getUserInfo();
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
 
   return (
     <StyledFriendsListContainer>
@@ -42,7 +66,7 @@ const RequestsTab: React.FC<{ user: User | undefined }> = ({ user }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title="Decline Request">
-              <IconButton>
+              <IconButton onClick={() => handleDeclineRequest(friend.userID)}>
                 <Close />
               </IconButton>
             </Tooltip>
