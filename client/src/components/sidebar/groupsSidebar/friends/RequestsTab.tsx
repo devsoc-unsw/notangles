@@ -48,6 +48,28 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
     }
   };
 
+  const handleAcceptRequest = async (incomingUserId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/friend`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderId: user.userID,
+          sendeeId: incomingUserId,
+        }),
+      });
+    //   if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      const acceptRequestStatus = await res.json();
+      console.log('accept request status', acceptRequestStatus);
+      getUserInfo();
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
   return (
     <StyledFriendsListContainer>
       {user.incoming.map((friend: User, i) => (
@@ -61,7 +83,7 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
           />
           <StyledActionButtons>
             <Tooltip title="Accept Request">
-              <IconButton>
+              <IconButton onClick={() => handleAcceptRequest(friend.userID)}>
                 <Check />
               </IconButton>
             </Tooltip>

@@ -29,29 +29,32 @@ export class FriendService {
       await prisma.$transaction([
         prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             friends: {
               connect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
         }),
         prisma.user.update({
           where: {
-            userId: sendeeId,
+            userID: sendeeId,
           },
           data: {
             friends: {
               connect: {
-                userId: senderId,
+                userID: senderId,
               },
             },
           },
         }),
       ]);
+
+      // Need to delete friend request
+      this.deleteFriendRequest(sendeeId, senderId);
 
       return Promise.resolve(sendeeId);
     } catch (e) {
@@ -105,10 +108,10 @@ export class FriendService {
       // Check if there's corresponding incoming request first
       const isIncoming = await prisma.user.findFirst({
         where: {
-          userId: senderId,
+          userID: senderId,
           incoming: {
             some: {
-              userId: sendeeId,
+              userID: sendeeId,
             },
           },
         },
@@ -125,12 +128,12 @@ export class FriendService {
         // Else, send outgoing friend request
         await prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             outgoing: {
               connect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
