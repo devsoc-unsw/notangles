@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Group } from '@mui/icons-material';
-import { Dialog, DialogTitle, IconButton, styled, Tab, Tabs, Tooltip, Typography } from '@mui/material';
+import { Dialog, DialogTitle, IconButton, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { Box } from '@mui/system';
 import FriendsTablist from './FriendsTablist';
 
 const StyledDialogTitle = styled(DialogTitle)`

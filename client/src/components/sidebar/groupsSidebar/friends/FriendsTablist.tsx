@@ -2,6 +2,7 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import YourFriendsTab from './YourFriendsTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,7 +50,7 @@ const FriendsTablist = () => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        Your Friends
+        <YourFriendsTab />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         Friend Requests

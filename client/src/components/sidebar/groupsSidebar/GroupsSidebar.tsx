@@ -4,9 +4,21 @@ import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
 import GroupCircle from './GroupCircle';
-import { Group as GroupIcon } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
 import FriendsDialog from './friends/FriendsDialog';
+import { TimetableData } from '../../../interfaces/Periods';
+
+// TODO where to put
+interface User {
+  firstname: string;
+  lastname: string;
+  email: string;
+  profileURL: string;
+  createdAt: string;
+  lastLogin: string;
+  loggedIn: boolean;
+  friends: string[];
+  timetables: TimetableData[];
+}
 
 const StyledContainer = styled('div')`
   height: 100vh;
@@ -21,6 +33,7 @@ const StyledContainer = styled('div')`
 
 const GroupsSidebar: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
+  const [user, setUser] = useState<User>();
   const [groups, setGroups] = useState<Group[]>([]);
 
   const getGroups = async () => {
@@ -59,6 +72,25 @@ const GroupsSidebar: React.FC = () => {
     };
     getZid();
   }, []);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await fetch(`${API_URL.server}/user/profile/${userId}`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        const userResponse = await response.text();
+        if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (userId) getUserInfo();
+  }, [userId]);
 
   return (
     <StyledContainer>
