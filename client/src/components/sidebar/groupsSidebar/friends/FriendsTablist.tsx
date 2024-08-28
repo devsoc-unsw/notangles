@@ -59,7 +59,7 @@ const FriendsTablist: React.FC<{ user: User | undefined; getUserInfo: () => void
         <RequestsTab user={user} getUserInfo={getUserInfo} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <AddAFriendTab user={user} />
+        <AddAFriendTab user={user} getUserInfo={getUserInfo} />
       </CustomTabPanel>
     </Box>
   );
