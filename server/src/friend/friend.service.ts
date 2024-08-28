@@ -67,24 +67,24 @@ export class FriendService {
       await prisma.$transaction([
         prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             friends: {
               disconnect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
         }),
         prisma.user.update({
           where: {
-            userId: sendeeId,
+            userID: sendeeId,
           },
           data: {
             friends: {
               disconnect: {
-                userId: senderId,
+                userID: senderId,
               },
             },
           },
