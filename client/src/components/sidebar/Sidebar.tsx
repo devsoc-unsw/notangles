@@ -36,6 +36,10 @@ const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ collapsed }) => ({
   zIndex: 1201,
   display: 'flex',
   flexDirection: 'row',
+  
+  // overriding MUI select component padding when focused (for the term select)
+  paddingRight: '0 !important',
+  padding: '10px, 0px, 10px, 19px',
 }));
 
 const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => ({
@@ -46,10 +50,6 @@ const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => 
   flexDirection: 'column',
   justifyContent: 'space-between',
   width: collapsed ? '80px' : '290px',
-
-  // overriding MUI select component padding when focused (for the term select)
-  paddingRight: '0 !important',
-  padding: '10px, 19px, 10px, 19px',
 }));
 
 const SidebarTitle = styled(Typography)`
