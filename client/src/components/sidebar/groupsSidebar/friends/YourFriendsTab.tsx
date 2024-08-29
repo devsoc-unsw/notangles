@@ -19,7 +19,7 @@ const StyledItem = styled('div')`
 `;
 
 const YourFriendsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return;
+  if (!user) return <></>;
 
   const handleRemoveFriend = async (friendID: string) => {
     try {

@@ -40,7 +40,7 @@ const GroupsSidebar: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const getGroups = async () => {
-    if (!userId) return;
+    if (!userId) return <></>;
     try {
       const res = await fetch(`${API_URL.server}/user/group/${userId}`, {
         method: 'GET',
@@ -99,9 +99,9 @@ const GroupsSidebar: React.FC = () => {
   return (
     <StyledContainer>
       <FriendsDialog user={user} getUserInfo={getUserInfo} />
-      <AddOrEditGroupDialog userId={userId} onClose={getGroups} />
+      <AddOrEditGroupDialog user={user} onClose={getGroups} />
       {groups.map((group, i) => {
-        return <GroupCircle key={i} group={group} getGroups={getGroups} userId={userId} />;
+        return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
       })}
     </StyledContainer>
   );

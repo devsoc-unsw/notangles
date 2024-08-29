@@ -24,7 +24,7 @@ const StyledActionButtons = styled('div')`
 `;
 
 const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return;
+  if (!user) return <></>;
 
   const handleDeclineRequest = async (incomingUserId: string) => {
     try {

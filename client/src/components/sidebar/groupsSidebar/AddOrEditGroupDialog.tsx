@@ -18,11 +18,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
-
-export interface MemberType {
-  name: string;
-  zID: string;
-}
+import { User } from './GroupsSidebar';
 
 export enum Privacy {
   PRIVATE = 'PRIVATE',
@@ -42,7 +38,7 @@ export interface Group {
 
 interface AddGroupDialogProps {
   editGroupData?: Group;
-  userId: string;
+  user: User | undefined;
   onClose: () => void;
 }
 
@@ -59,7 +55,9 @@ const StyledDialogActions = styled(DialogActions)`
   padding: 0px 30px 30px 0px;
 `;
 
-const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, userId, onClose }) => {
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => {
+  if (!user) return <></>;
+
   const emptyGroupData: Group = {
     id: '',
     name: '',
@@ -67,7 +65,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
     visibility: Privacy.PRIVATE,
     timetableIDs: [],
     memberIDs: [],
-    groupAdminIDs: [userId],
+    groupAdminIDs: [user.userID],
     imageURL: '',
   };
 
@@ -75,8 +73,8 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
   const [group, setGroup] = useState<Group>(emptyGroupData);
 
   useEffect(() => {
-    setGroup({ ...group, groupAdminIDs: [userId] });
-  }, [userId]);
+    setGroup({ ...group, groupAdminIDs: [user.userID] });
+  }, [user.userID]);
 
   useEffect(() => {
     setGroup(editGroupData ? editGroupData : emptyGroupData);
@@ -152,7 +150,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
       visibility: Privacy.PRIVATE,
       timetableIDs: [],
       memberIDs: [],
-      groupAdminIDs: [userId],
+      groupAdminIDs: [user.userID],
       imageURL: '',
     });
     onClose();
@@ -188,7 +186,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
             </div>
           </StyledDialogTitle>
         </>
-        <AddOrEditGroupDialogContent group={group} setGroup={setGroup} />
+        <AddOrEditGroupDialogContent user={user} group={group} setGroup={setGroup} />
         <StyledDialogActions>
           <Button variant="text" onClick={handleClose}>
             Cancel

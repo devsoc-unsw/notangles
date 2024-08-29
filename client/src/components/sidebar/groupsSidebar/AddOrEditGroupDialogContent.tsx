@@ -13,10 +13,10 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
-
 import EditImagePopOver from './EditImagePopover';
 import NotanglesLogo from '../../../assets/notangles_1.png';
-import { Group, Privacy, MemberType } from './AddOrEditGroupDialog';
+import { Group, Privacy } from './AddOrEditGroupDialog';
+import { User } from './GroupsSidebar';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -50,22 +50,12 @@ const StyledUploadImageContainer = styled('div')`
 `;
 
 interface AddGroupDialogContentProps {
+  user: User;
   group: Group;
   setGroup: (group: Group) => void;
 }
 
-export const dummyFriends: MemberType[] = [
-  { name: 'Shaam', zID: 'z532445' },
-  { name: 'Ray', zID: 'z523495' },
-  { name: 'hhlu', zID: 'z584290' },
-  { name: 'Sohum', zID: 'z523840' },
-  { name: 'Chanel', zID: 'z542567' },
-  { name: 'Nikki', zID: 'z524596' },
-  { name: 'Micky', zID: 'z523948' },
-  { name: 'Jasmine', zID: 'z5394841' },
-];
-
-const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ group, setGroup }) => {
+const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ user, group, setGroup }) => {
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
@@ -92,11 +82,11 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
 
       <Autocomplete
         multiple
-        options={dummyFriends}
+        options={user.friends}
         disableCloseOnSelect
         fullWidth
-        onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.zID) })}
-        getOptionLabel={(option) => option.name}
+        onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
+        getOptionLabel={(option) => option.userID}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
             <Checkbox
@@ -105,13 +95,13 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ gro
               style={{ marginRight: 8 }}
               checked={selected}
             />
-            {option.name}
+            {`${option.firstname} ${option.lastname}`}
           </li>
         )}
         renderTags={(tagValue, getTagProps) => {
           return tagValue.map((option, index) => (
-            <Tooltip title={'z' + option.zID}>
-              <Chip {...getTagProps({ index })} label={option.name} />
+            <Tooltip title={'z' + option.userID}>
+              <Chip {...getTagProps({ index })} label={option.firstname} />
             </Tooltip>
           ));
         }}

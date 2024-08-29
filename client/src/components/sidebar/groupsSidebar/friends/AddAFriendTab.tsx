@@ -37,7 +37,7 @@ const StyledItem = styled('div')`
 `;
 
 const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return null;
+  if (!user) return <></>;
 
   const [otherUsers, setOtherUsers] = useState<UserSearchType[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -68,10 +68,11 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
     setSearchQuery(event.target.value);
   };
 
-  const filteredUsers = otherUsers.filter((user) =>
-    user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = otherUsers.filter(
+    (user) =>
+      user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleSendRequest = async (otherUserID: string) => {

@@ -6,12 +6,15 @@ import MenuItem from '@mui/material/MenuItem';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
+import { User } from './GroupsSidebar';
 
-const GroupCircle: React.FC<{ group: Group; getGroups: () => void; userId: string }> = ({
+const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | undefined }> = ({
   group,
   getGroups,
-  userId,
+  user,
 }) => {
+  if (!user) return <></>;
+
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -76,7 +79,7 @@ const GroupCircle: React.FC<{ group: Group; getGroups: () => void; userId: strin
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
       >
-        <AddOrEditGroupDialog onClose={editGroupDialogOnClose} userId={userId} editGroupData={group} />
+        <AddOrEditGroupDialog onClose={editGroupDialogOnClose} user={user} editGroupData={group} />
         <MenuItem onClick={handleDeleteGroup}>
           <ListItemIcon>
             <RedDeleteIcon fontSize="small" />
