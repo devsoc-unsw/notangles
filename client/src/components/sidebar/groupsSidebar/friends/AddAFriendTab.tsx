@@ -147,6 +147,7 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
             )}
           </StyledItem>
         ))}
+        {otherUsers.length === 0 && <div>You are friends with everyone! There is no one else to add.</div>}
       </StyledUsersContainer>
     </StyledContainer>
   );

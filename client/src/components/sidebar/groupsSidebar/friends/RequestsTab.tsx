@@ -95,6 +95,7 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
           </StyledActionButtons>
         </StyledFriendContainer>
       ))}
+      {user.incoming.length === 0 && <div>You have no friend requests.</div>}
     </StyledFriendsListContainer>
   );
 };

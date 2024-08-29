@@ -61,6 +61,7 @@ const YourFriendsTab: React.FC<{ user: User | undefined; getUserInfo: () => void
           </Tooltip>
         </StyledItem>
       ))}
+      {user.friends.length === 0 && <div>You currently have no friends.</div>}
     </StyledContainer>
   );
 };
