@@ -36,9 +36,9 @@ export class GroupService {
       visibility,
       description,
       imageURL,
-      timetables: { connect: [] },
-      members: { connect: [] },
-      groupAdmins: { connect: [] },
+      timetables: [],
+      members: [],
+      groupAdmins: [],
     };
 
     const [timetables, memberUsers, admins] = await Promise.all([
@@ -48,21 +48,19 @@ export class GroupService {
     ]);
 
     if (timetables.length > 0) {
-      resData.timetables = {
-        connect: timetables.map((timetable) => ({ id: timetable.id })),
-      };
+      resData.timetables = timetables.map((timetable) => ({
+        id: timetable.id,
+      }));
     }
 
     if (memberUsers.length > 0) {
-      resData.members = {
-        connect: memberUsers.map((member) => ({ userID: member.userID })),
-      };
+      resData.members = memberUsers.map((member) => ({
+        userID: member.userID,
+      }));
     }
 
     if (admins.length > 0) {
-      resData.groupAdmins = {
-        connect: admins.map((admin) => ({ userID: admin.userID })),
-      };
+      resData.groupAdmins = admins.map((admin) => ({ userID: admin.userID }));
     }
 
     return resData;
@@ -92,25 +90,38 @@ export class GroupService {
     }
     return group;
   }
-
   async update(id: string, updateGroupDto: GroupDto) {
-    try {
-      console.log('updateGroupDto', id, updateGroupDto)
-      const data = await this.prepareGroupData(updateGroupDto);
-      // HERE RAY
+    return this.prisma.$transaction(async (prisma) => {
+      try {
+        const data = await this.prepareGroupData(updateGroupDto);
 
-      const group = await this.prisma.group.update({
-        where: { id },
-        data: { members: data.members},
-      });
-      console.log('new group', group);
-      return group;
-    } catch (error) {
-      if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {
-        throw new NotFoundException('Group not found');
+        const group = await prisma.group.update({
+          where: { id },
+          data: {
+            ...data,
+            timetables: {
+              set: data.timetables,
+            },
+            members: {
+              set: data.members,
+            },
+            groupAdmins: {
+              set: data.groupAdmins,
+            },
+            name: data.name,
+            visibility: data.visibility,
+            description: data.description,
+            imageURL: data.imageURL,
+          },
+        });
+        return group;
+      } catch (error) {
+        if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {
+          throw new NotFoundException('Group not found');
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
   async remove(id: string) {
