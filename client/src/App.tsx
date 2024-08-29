@@ -15,7 +15,7 @@ import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding, lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -51,7 +51,7 @@ const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-left: ${leftContentPadding}px;
-  padding-right: ${contentPadding}px;
+  padding-right: ${rightContentPadding}px;
   transition:
     background 0.2s,
     color 0.2s;
@@ -266,9 +266,9 @@ const App: React.FC = () => {
       Object.keys(course.activities).forEach((activity) => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
+          : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
-            null;
+            null);
       });
 
       return prev;
