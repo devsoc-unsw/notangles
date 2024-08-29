@@ -41,7 +41,7 @@ export class GroupService {
       groupAdmins: { connect: [] },
     };
 
-    const [timetables, members, admins] = await Promise.all([
+    const [timetables, memberUsers, admins] = await Promise.all([
       this.user.getTimetablesByIDs(timetableIDs),
       this.user.getUsersByIDs(memberIDs),
       this.user.getUsersByIDs(groupAdminIDs),
@@ -53,9 +53,9 @@ export class GroupService {
       };
     }
 
-    if (members.length > 0) {
+    if (memberUsers.length > 0) {
       resData.members = {
-        connect: members.map((member) => ({ userID: member.userID })),
+        connect: memberUsers.map((member) => ({ userID: member.userID })),
       };
     }
 
@@ -95,11 +95,15 @@ export class GroupService {
 
   async update(id: string, updateGroupDto: GroupDto) {
     try {
+      console.log('updateGroupDto', id, updateGroupDto)
       const data = await this.prepareGroupData(updateGroupDto);
+      // HERE RAY
+
       const group = await this.prisma.group.update({
         where: { id },
         data,
       });
+      console.log('new group', group);
       return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {

@@ -2,7 +2,7 @@ import { Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { User } from '../GroupsSidebar';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
-import { Add } from '@mui/icons-material';
+import { Add, Cancel, Close } from '@mui/icons-material';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { useEffect, useState } from 'react';
@@ -16,17 +16,16 @@ const StyledContainer = styled('div')`
 const StyledUsersContainer = styled('div')`
   display: flex;
   flex-direction: column;
+  gap: 2px;
 `;
 
-const StyledItem = styled('div')`
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 8px;
-  border-radius: 8px;
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
+const StyledItem = styled('div')<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: '12px 8px',
+  borderRadius: '8px',
+  backgroundColor: isSelected ? '#e1eaef' : '',
+}));
 
 const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
   if (!user) return <></>;
@@ -127,7 +126,10 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
       />
       <StyledUsersContainer>
         {filteredUsers.map((otherUser) => (
-          <StyledItem key={otherUser.userID}>
+          <StyledItem
+            key={otherUser.userID}
+            isSelected={user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID)}
+          >
             <UserProfile
               firstname={otherUser.firstname}
               lastname={otherUser.lastname}
@@ -135,9 +137,11 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
               profileURL={otherUser.profileURL}
             />
             {user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID) ? (
-              <Button sx={{ textTransform: 'none' }} onClick={() => handleCancelRequest(otherUser.userID)}>
-                <div style={{ fontStyle: 'italic', color: 'grey' }}>Requested</div>
-              </Button>
+              <Tooltip title="Cancel Request">
+                <IconButton onClick={() => handleCancelRequest(otherUser.userID)}>
+                  <Close />
+                </IconButton>
+              </Tooltip>
             ) : (
               <Tooltip title="Send Friend Request">
                 <IconButton onClick={() => handleSendRequest(otherUser.userID)}>
