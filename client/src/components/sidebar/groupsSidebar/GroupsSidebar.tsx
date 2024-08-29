@@ -32,6 +32,14 @@ const StyledContainer = styled('div')`
   padding: 12px 2px;
   flex-direction: column;
   gap: 4px;
+
+  overflow-y: auto;
+  max-height: calc(100vh - 24px);
+
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Edge */
+  }
 `;
 
 const GroupsSidebar: React.FC = () => {
@@ -100,6 +108,12 @@ const GroupsSidebar: React.FC = () => {
     <StyledContainer>
       <FriendsDialog user={user} getUserInfo={getUserInfo} />
       <AddOrEditGroupDialog user={user} onClose={getGroups} />
+      {groups.map((group, i) => {
+        return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
+      })}
+      {groups.map((group, i) => {
+        return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
+      })}
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
       })}
