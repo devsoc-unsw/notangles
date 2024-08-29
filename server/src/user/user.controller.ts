@@ -162,4 +162,18 @@ export class UserController {
       return e;
     }
   }
+
+  @Get('all')
+  getAllUsers() {
+    try {
+      return this.userService.getAllUsers().then((data) => {
+        return {
+          status: 'Successsfully returned user profile',
+          data,
+        };
+      });
+    } catch (e) {
+      return e;
+    }
+  }
 }

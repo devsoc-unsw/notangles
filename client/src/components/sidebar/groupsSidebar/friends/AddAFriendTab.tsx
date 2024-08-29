@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { Add } from '@mui/icons-material';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
+import { useEffect, useState } from 'react';
 
 interface UserSearchType {
   userID: string;
@@ -113,6 +114,30 @@ const get_all_users = (): UserSearchType[] => {
 const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
   if (!user) return;
 
+  const [otherUsers, setOtherUsers] = useState([]);
+
+  const getAllOtherUsers = async () => {
+    try {
+      const res = await fetch(`${API_URL.server}/user/all`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      const getUsersStatus = await res.json();
+      console.log('get all users request status', getUsersStatus);
+      setOtherUsers(getUsersStatus.data.filter((userData: User) => userData.userID !== user.userID));
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    getAllOtherUsers();
+  }, [user]);
+
   const handleSendRequest = async (otherUserID: string) => {
     try {
       const res = await fetch(`${API_URL.server}/friend/request`, {
@@ -161,7 +186,7 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
     <StyledContainer>
       <TextField label="Search for a friend..." variant="outlined" fullWidth />
       <StyledUsersContainer>
-        {get_all_users().map((otherUser: UserSearchType) => {
+        {otherUsers.map((otherUser: UserSearchType) => {
           return (
             <StyledItem>
               <UserProfile

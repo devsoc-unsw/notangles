@@ -27,7 +27,6 @@ export class UserService {
           },
         });
 
-
       const data = {
         ...userData,
         userID: _userId,
@@ -365,6 +364,18 @@ export class UserService {
       return res;
     } catch (error) {
       console.error('Error retrieving users:', error);
+    }
+  }
+
+  async getAllUsers() {
+    try {
+      const users = await this.prisma.user.findMany();
+      const res = await Promise.all(
+        users.map((user) => this.getUserInfo(user.userID)),
+      );
+      return res;
+    } catch (error) {
+      console.error('Error retrieving all users:', error);
     }
   }
 }
