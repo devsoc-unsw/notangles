@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, IconButton, TextField, Tooltip } from '@mui/material';
+import { Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { User } from '../GroupsSidebar';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
@@ -36,85 +36,11 @@ const StyledItem = styled('div')`
   }
 `;
 
-const get_all_users = (): UserSearchType[] => {
-  return [
-    {
-      userID: 'z5555555',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-    {
-      userID: 'z5555554',
-      firstname: 'Jasmine',
-      lastname: 'Tran',
-      email: 'raysbae@gmail.com',
-      profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
-    },
-  ];
-};
-
 const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return;
+  if (!user) return null;
 
-  const [otherUsers, setOtherUsers] = useState([]);
+  const [otherUsers, setOtherUsers] = useState<UserSearchType[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const getAllOtherUsers = async () => {
     try {
@@ -128,7 +54,7 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const getUsersStatus = await res.json();
       console.log('get all users request status', getUsersStatus);
-      setOtherUsers(getUsersStatus.data.filter((userData: User) => userData.userID !== user.userID));
+      setOtherUsers(getUsersStatus.data.filter((userData: UserSearchType) => userData.userID !== user.userID));
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -137,6 +63,16 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
   useEffect(() => {
     getAllOtherUsers();
   }, [user]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredUsers = otherUsers.filter((user) =>
+    user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSendRequest = async (otherUserID: string) => {
     try {
@@ -184,56 +120,37 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
 
   return (
     <StyledContainer>
-      <TextField label="Search for a friend..." variant="outlined" fullWidth />
+      <TextField
+        label="Search for a friend..."
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
       <StyledUsersContainer>
-        {otherUsers.map((otherUser: UserSearchType) => {
-          return (
-            <StyledItem>
-              <UserProfile
-                firstname={otherUser.firstname}
-                lastname={otherUser.lastname}
-                email={otherUser.email}
-                profileURL={otherUser.profileURL}
-              />
-              {user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID) ? (
-                <Button sx={{ textTransform: 'none' }} onClick={() => handleCancelRequest(otherUser.userID)}>
-                  <div style={{ fontStyle: 'italic', color: 'grey' }}>Requested</div>
-                </Button>
-              ) : (
-                <Tooltip title="Send Friend Request">
-                  <IconButton onClick={() => handleSendRequest(otherUser.userID)}>
-                    <Add />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </StyledItem>
-          );
-        })}
+        {filteredUsers.map((otherUser) => (
+          <StyledItem key={otherUser.userID}>
+            <UserProfile
+              firstname={otherUser.firstname}
+              lastname={otherUser.lastname}
+              email={otherUser.email}
+              profileURL={otherUser.profileURL}
+            />
+            {user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID) ? (
+              <Button sx={{ textTransform: 'none' }} onClick={() => handleCancelRequest(otherUser.userID)}>
+                <div style={{ fontStyle: 'italic', color: 'grey' }}>Requested</div>
+              </Button>
+            ) : (
+              <Tooltip title="Send Friend Request">
+                <IconButton onClick={() => handleSendRequest(otherUser.userID)}>
+                  <Add />
+                </IconButton>
+              </Tooltip>
+            )}
+          </StyledItem>
+        ))}
       </StyledUsersContainer>
     </StyledContainer>
-    // <Autocomplete
-    //   id="user_search"
-    //   sx={{ width: '100%' }}
-    //   options={get_all_users()}
-    //   autoHighlight
-    //   getOptionLabel={(user) => `${user.firstname} ${user.lastname}`}
-    //   renderOption={(props, user) => {
-    //     const { key, ...optionProps } = props;
-    //     return (
-    //       <Box key={key} component="li" sx={{ '& > img': { borderRadius: 1, mr: 2, flexShrink: 0 } }} {...optionProps}>
-    //         <SearchItemContainer>
-    //           <UserProfile
-    //             firstname={user.firstname}
-    //             lastname={user.lastname}
-    //             email={user.email}
-    //             profileURL={user.profileURL}
-    //           />
-    //         </SearchItemContainer>
-    //       </Box>
-    //     );
-    //   }}
-    //   renderInput={(params) => <TextField {...params} label="Search for users..." />}
-    // />
   );
 };
 
