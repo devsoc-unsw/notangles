@@ -1,5 +1,5 @@
 import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Link, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
@@ -64,10 +64,10 @@ const privacyQuestions = [
     content: (
       <p>
         The Application may permit you to link to other applications or websites. Such third party applications/websites
-        are not under Notangles’s control, and such links do not constitute an endorsement by Notangles of those other
-        applications/websites or the services offered through them. The privacy and security practices of such third
-        party application/websites linked to the Application are not covered by this Privacy Statement, and Notangles is
-        not responsible for the privacy or security practices or the content of such websites.
+        are not under Notangles&apos;s control, and such links do not constitute an endorsement by Notangles of those
+        other applications/websites or the services offered through them. The privacy and security practices of such
+        third party application/websites linked to the Application are not covered by this Privacy Statement, and
+        Notangles is not responsible for the privacy or security practices or the content of such websites.
       </p>
     ),
   },
@@ -105,8 +105,12 @@ const privacyQuestions = [
     title: 'Questions or concerns.',
     content: (
       <p>
-        If you have any questions or concerns regarding privacy on our Website, please send us a detailed message at
-        notangles@csesoc.org.au. We will make every effort to resolve your concerns.
+        If you have any questions or concerns regarding privacy on our Website, please send us a detailed message
+        at&nbsp;
+        <Link target="_blank" href="mailto:notangles@devsoc.app">
+          notangles@devsoc.app
+        </Link>
+        . We will make every effort to resolve your concerns.
       </p>
     ),
   },

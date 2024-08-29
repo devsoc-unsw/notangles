@@ -10,7 +10,7 @@ export class AppService {
     const port = this.configService.get<number>('PORT');
     const auto = `${this.configService.get<string>('AUTO_SERVER_HOST_NAME')}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
     const client = `${this.configService.get<string>('CLIENT_HOST_NAME')}:${this.configService.get<string>('CLIENT_HOST_PORT')}`;
-    const redirectLink = `${this.configService.get<string>('CLIENT_HOST_NAME')}:${this.configService.get<string>('CLIENT_HOST_PORT')}`;
+    const redirectLink = `https://${this.configService.get<string>('CLIENT_HOST_NAME')}:${this.configService.get<string>('CLIENT_HOST_PORT')}`;
 
     return {
       env,

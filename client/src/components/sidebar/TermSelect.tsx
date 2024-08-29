@@ -1,6 +1,15 @@
-import { FormControl, InputLabel, MenuItem, Select, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectProps,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
@@ -33,6 +42,21 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   },
 }));
 
+const CustomStyledSelect = (props: SelectProps) => {
+  return (
+    <StyledSelect
+      {...props}
+      MenuProps={{
+        PaperProps: {
+          style: {
+            width: '258px',
+          },
+        },
+      }}
+    />
+  );
+};
+
 const TermDisplay = styled('span')`
   color: ${({ theme }) => theme.palette.primary.main};
   font-weight: 600;
@@ -43,11 +67,13 @@ const TermDisplay = styled('span')`
   border-radius: 10px;
   display: inline-block;
 `;
+
 export interface TermSelectProps {
   collapsed: boolean;
+  handleExpand: () => void;
 }
 
-const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
+const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -55,6 +81,8 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
 
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [open, setOpen] = useState(false);
 
   let prevTermName = `Term ${termsData.prevTerm.term[1]}`;
   if (prevTermName.includes('Summer')) {
@@ -98,22 +126,40 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
     event.stopPropagation();
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   return (
     <FormControl onMouseDown={handleMouseDown}>
       {collapsed ? (
         <>
-          <Tooltip title={termName} placement="right">
+          <Tooltip
+            title={termName}
+            placement="right"
+            onClick={() => {
+              handleExpand();
+              handleOpen();
+            }}
+          >
             <TermDisplay>{term}</TermDisplay>
           </Tooltip>
         </>
       ) : (
         <>
           <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
-          <StyledSelect
+          <CustomStyledSelect
             size="small"
             labelId="select-term-label"
             id="select-term"
             label="Select term"
+            open={open}
+            onClose={handleClose}
+            onOpen={handleOpen}
             value={isMobile ? term : termName.concat(', ', year)}
             onChange={selectTerm}
           >
@@ -124,7 +170,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed }) => {
                 </MenuItem>
               );
             })}
-          </StyledSelect>
+          </CustomStyledSelect>
         </>
       )}
     </FormControl>

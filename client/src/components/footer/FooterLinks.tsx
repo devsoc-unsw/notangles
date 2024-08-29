@@ -12,7 +12,7 @@ const FooterLinks: React.FC = () => {
     <Stack direction="row" spacing={6} justifyContent="space-between" alignItems="center">
       <p>&copy; UNSW Software Development Society 2024</p>
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        <Link target="_blank" href="mailto:devsoc.unsw@gmail.com">
+        <Link target="_blank" href="mailto:notangles@devsoc.app">
           <EmailIcon />
         </Link>
         <Link target="_blank" href="https://www.facebook.com/devsocUNSW">

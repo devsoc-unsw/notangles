@@ -1,7 +1,7 @@
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
+import React from 'react';
 
 const ContentContainer = styled('div')`
   display: flex;
@@ -40,8 +40,8 @@ export const StyledDialogTitle = styled(DialogTitle)`
 `;
 
 const CustomCloseIconButton = styled(IconButton)`
-  width: 40px; 
-  height: 40px; 
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
 `;
 
