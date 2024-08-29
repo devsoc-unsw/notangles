@@ -82,6 +82,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const checkInputs = () => {
+    console.log('groupp', group);
     if (group.name.length < 1) {
       setErrorMessage(InputError.GROUP_NAME);
     } else if (group.description.length < 1) {
@@ -126,6 +127,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   };
 
   const handleEditGroup = async (groupId: string) => {
+    if (!checkInputs()) return;
     try {
       const res = await fetch(`${API_URL.server}/group/${groupId}`, {
         method: 'PUT',
