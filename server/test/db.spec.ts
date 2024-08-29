@@ -271,7 +271,7 @@ describe('Integration testing for user/friend db endpoints', () => {
       .put('/user/timetable')
       .send({
         userId: user.userID,
-        timetable: { id:timetableId, ...editedTimetable },
+        timetable: { id: timetableId, ...editedTimetable },
       });
 
     expect(res.status).toEqual(200);

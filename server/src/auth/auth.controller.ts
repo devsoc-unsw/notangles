@@ -18,7 +18,6 @@ export class AuthController {
   @Get('/login')
   login() {}
 
-
   @Get('/user')
   async user(@Request() req, @Res() res: Response) {
     if (req.user) {
@@ -29,7 +28,7 @@ export class AuthController {
         console.debug(`User ${userID} does not exist in db, adding them now!`);
         await this.userService.setUserProfile({
           userID: userID,
-          email: ''
+          email: '',
         });
       }
       return res.json(req.user.userinfo.sub);
