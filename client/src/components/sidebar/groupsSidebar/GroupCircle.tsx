@@ -7,6 +7,24 @@ import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/Cust
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
 import { User } from './GroupsSidebar';
+import styled from '@emotion/styled';
+
+const AdminBorder = styled('div')<{ isAdmin: boolean }>(({ isAdmin }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius: 999,
+  width: 44,
+  height: 44,
+  border: isAdmin ? '2px solid gold' : '',
+}));
+
+const StyledCircle = styled('img')`
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+`;
 
 const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | undefined }> = ({
   group,
@@ -66,12 +84,9 @@ const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | 
   return (
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>
       <Tooltip title={group.name} placement="right">
-        <img
-          src={group.imageURL || NotanglesLogo}
-          width={40}
-          height={40}
-          style={{ borderRadius: 999, backgroundColor: 'white' }}
-        />
+        <AdminBorder isAdmin={group.groupAdminIDs.includes(user.userID)}>
+          <StyledCircle src={group.imageURL || NotanglesLogo} />
+        </AdminBorder>
       </Tooltip>
       <StyledMenu
         open={contextMenu !== null}

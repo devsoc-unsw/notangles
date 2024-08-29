@@ -19,7 +19,7 @@ const StyledUsersContainer = styled('div')`
   gap: 2px;
 `;
 
-const StyledItem = styled('div')<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+const StyledItem = styled('div')<{ isSelected: boolean }>(({ isSelected }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   padding: '12px 8px',
