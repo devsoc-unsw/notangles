@@ -103,7 +103,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ use
         )}
         renderTags={(tagValue, getTagProps) => {
           return tagValue.map((option, index) => (
-            <Tooltip title={'z' + option.userID}>
+            <Tooltip title={option.userID}>
               <Chip {...getTagProps({ index })} label={option.firstname} />
             </Tooltip>
           ));

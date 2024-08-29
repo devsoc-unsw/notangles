@@ -101,7 +101,7 @@ export class GroupService {
 
       const group = await this.prisma.group.update({
         where: { id },
-        data,
+        data: { members: data.members},
       });
       console.log('new group', group);
       return group;
