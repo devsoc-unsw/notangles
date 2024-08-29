@@ -1,5 +1,7 @@
+import Footer from "../footer/Footer";
 import FeaturesSection from "./FeaturesSection";
 import HeroSection from "./HeroSection/heroSection";
+import ScrollingFeaturesSection from "./ScrollingFeaturesSection";
 import SponsorsSection from "./SponsorsSection";
 
 const LandingPage = () => {
@@ -8,6 +10,8 @@ const LandingPage = () => {
       <HeroSection />
       <FeaturesSection />
       <SponsorsSection />
+      <ScrollingFeaturesSection />
+      <Footer />
     </div>
   );
 };
