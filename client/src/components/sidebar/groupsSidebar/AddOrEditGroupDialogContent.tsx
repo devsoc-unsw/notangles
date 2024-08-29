@@ -56,6 +56,8 @@ interface AddGroupDialogContentProps {
 }
 
 const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ user, group, setGroup }) => {
+  console.log('user', user)
+  console.log('group', group)
   return (
     <StyledDialogContent>
       <StyledUploadImageContainer>
@@ -85,6 +87,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ use
         options={user.friends}
         disableCloseOnSelect
         fullWidth
+        value={user.friends.filter((friend: User) => group.memberIDs.includes(friend.userID))}
         onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
         getOptionLabel={(option) => option.userID}
         renderOption={(props, option, { selected }) => (

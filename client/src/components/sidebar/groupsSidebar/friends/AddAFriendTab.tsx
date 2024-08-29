@@ -7,14 +7,6 @@ import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { useEffect, useState } from 'react';
 
-interface UserSearchType {
-  userID: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  profileURL: string;
-}
-
 const StyledContainer = styled('div')`
   display: flex;
   flex-direction: column;
@@ -39,10 +31,10 @@ const StyledItem = styled('div')`
 const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
   if (!user) return <></>;
 
-  const [otherUsers, setOtherUsers] = useState<UserSearchType[]>([]);
+  const [otherUsers, setOtherUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const getAllOtherUsers = async () => {
+  const getNonFriendUsers = async () => {
     try {
       const res = await fetch(`${API_URL.server}/user/all`, {
         method: 'GET',
@@ -54,14 +46,19 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const getUsersStatus = await res.json();
       console.log('get all users request status', getUsersStatus);
-      setOtherUsers(getUsersStatus.data.filter((userData: UserSearchType) => userData.userID !== user.userID));
+      const allUsers = getUsersStatus.data;
+      const excludingLoggedUser = allUsers.filter((userData: User) => userData.userID !== user.userID);
+      const nonFriendUsers = excludingLoggedUser.filter(
+        (userData: User) => !user.friends.map((friend) => friend.userID).includes(userData.userID),
+      );
+      setOtherUsers(nonFriendUsers);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
   };
 
   useEffect(() => {
-    getAllOtherUsers();
+    getNonFriendUsers();
   }, [user]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
