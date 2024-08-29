@@ -31,36 +31,41 @@ export class GroupService {
       imageURL = '',
     } = data;
 
+    // Prepare the base data
     const resData = {
       name,
       visibility,
       description,
       imageURL,
-      timetables: [],
-      members: [],
-      groupAdmins: [],
+      timetables: { connect: [] },
+      members: { connect: [] },
+      groupAdmins: { connect: [] },
     };
 
+    // Fetch related entities
     const [timetables, memberUsers, admins] = await Promise.all([
       this.user.getTimetablesByIDs(timetableIDs),
       this.user.getUsersByIDs(memberIDs),
       this.user.getUsersByIDs(groupAdminIDs),
     ]);
 
+    // Populate the connect arrays
     if (timetables.length > 0) {
-      resData.timetables = timetables.map((timetable) => ({
+      resData.timetables.connect = timetables.map((timetable) => ({
         id: timetable.id,
       }));
     }
 
     if (memberUsers.length > 0) {
-      resData.members = memberUsers.map((member) => ({
+      resData.members.connect = memberUsers.map((member) => ({
         userID: member.userID,
       }));
     }
 
     if (admins.length > 0) {
-      resData.groupAdmins = admins.map((admin) => ({ userID: admin.userID }));
+      resData.groupAdmins.connect = admins.map((admin) => ({
+        userID: admin.userID,
+      }));
     }
 
     return resData;
@@ -70,7 +75,6 @@ export class GroupService {
     try {
       const data = await this.prepareGroupData(createGroupDto);
       const group = await this.prisma.group.create({ data });
-
       return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.UNIQUE_CONSTRAINT_FAILED) {
@@ -84,44 +88,60 @@ export class GroupService {
   }
 
   async findOne(id: string) {
-    const group = await this.prisma.group.findUnique({ where: { id } });
+    const group = await this.prisma.group.findUnique({
+      where: { id },
+      include: {
+        timetables: true,
+        members: true,
+        groupAdmins: true,
+      },
+    });
     if (!group) {
       throw new NotFoundException('Group not found');
     }
     return group;
   }
-  async update(id: string, updateGroupDto: GroupDto) {
-    return this.prisma.$transaction(async (prisma) => {
-      try {
-        const data = await this.prepareGroupData(updateGroupDto);
 
-        const group = await prisma.group.update({
-          where: { id },
-          data: {
-            ...data,
-            timetables: {
-              set: data.timetables,
-            },
-            members: {
-              set: data.members,
-            },
-            groupAdmins: {
-              set: data.groupAdmins,
-            },
-            name: data.name,
-            visibility: data.visibility,
-            description: data.description,
-            imageURL: data.imageURL,
-          },
-        });
-        return group;
-      } catch (error) {
-        if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {
-          throw new NotFoundException('Group not found');
-        }
-        throw error;
+  async update(id: string, updateGroupDto: GroupDto) {
+    try {
+      const data = await this.prepareGroupData(updateGroupDto);
+
+      // Prepare relational fields
+      const updateData = {
+        name: data.name,
+        visibility: data.visibility,
+        description: data.description,
+        imageURL: data.imageURL,
+        timetables: {
+          set: data.timetables.connect.map((item) => ({ id: item.id })),
+        },
+        members: {
+          set: data.members.connect.map((item) => ({ userID: item.userID })),
+        },
+        groupAdmins: {
+          set: data.groupAdmins.connect.map((item) => ({
+            userID: item.userID,
+          })),
+        },
+      };
+
+      const group = await this.prisma.group.update({
+        where: { id },
+        data: updateData,
+        include: {
+          timetables: true,
+          members: true,
+          groupAdmins: true,
+        },
+      });
+
+      return group;
+    } catch (error) {
+      if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {
+        throw new NotFoundException('Group not found');
       }
-    });
+      throw error;
+    }
   }
 
   async remove(id: string) {
