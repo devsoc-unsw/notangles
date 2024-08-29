@@ -1,4 +1,4 @@
-import { Autocomplete, Box, IconButton, TextField, Tooltip } from '@mui/material';
+import { Autocomplete, Box, Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { User } from '../GroupsSidebar';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
@@ -45,63 +45,63 @@ const get_all_users = (): UserSearchType[] => {
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
       profileURL: 'https://pbs.twimg.com/media/FysPI22WcAg9tfz.jpg',
     },
     {
-      userID: 'z5555555',
+      userID: 'z5555554',
       firstname: 'Jasmine',
       lastname: 'Tran',
       email: 'raysbae@gmail.com',
@@ -135,6 +135,28 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
     }
   };
 
+  const handleCancelRequest = async (otherUserID: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/friend/request`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sendeeId: otherUserID,
+          senderId: user.userID,
+        }),
+      });
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      const declineRequestStatus = await res.json();
+      console.log('decline request status', declineRequestStatus);
+      getUserInfo();
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
   return (
     <StyledContainer>
       <TextField label="Search for a friend..." variant="outlined" fullWidth />
@@ -148,11 +170,17 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
                 email={otherUser.email}
                 profileURL={otherUser.profileURL}
               />
-              <Tooltip title="Send Friend Request">
-                <IconButton onClick={() => handleSendRequest(otherUser.userID)}>
-                  <Add />
-                </IconButton>
-              </Tooltip>
+              {user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID) ? (
+                <Button sx={{ textTransform: 'none' }} onClick={() => handleCancelRequest(otherUser.userID)}>
+                  <div style={{ fontStyle: 'italic', color: 'grey' }}>Requested</div>
+                </Button>
+              ) : (
+                <Tooltip title="Send Friend Request">
+                  <IconButton onClick={() => handleSendRequest(otherUser.userID)}>
+                    <Add />
+                  </IconButton>
+                </Tooltip>
+              )}
             </StyledItem>
           );
         })}

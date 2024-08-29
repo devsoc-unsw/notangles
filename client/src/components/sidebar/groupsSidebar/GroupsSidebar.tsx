@@ -19,6 +19,7 @@ export interface User {
   loggedIn: boolean;
   friends: User[];
   incoming: User[];
+  outgoing: User[];
   timetables: TimetableData[];
 }
 
