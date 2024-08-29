@@ -29,7 +29,7 @@ const StyledContainer = styled('div')`
   background: ${({ theme }) => theme.palette.primary.main};
   display: flex;
   align-items: center;
-  padding: 12px 0px;
+  padding: 12px 2px;
   flex-direction: column;
   gap: 4px;
 `;

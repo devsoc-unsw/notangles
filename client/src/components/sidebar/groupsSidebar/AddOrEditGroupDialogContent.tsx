@@ -1,8 +1,10 @@
 import { CheckCircle as CheckCircleIcon, RadioButtonUnchecked as RadioButtonUncheckedIcon } from '@mui/icons-material';
 import {
   Autocomplete,
+  Button,
   Checkbox,
   Chip,
+  DialogActions,
   DialogContent,
   FormControl,
   InputLabel,
@@ -12,11 +14,13 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import React from 'react';
+import React, { useState } from 'react';
 import EditImagePopOver from './EditImagePopover';
 import NotanglesLogo from '../../../assets/notangles_1.png';
 import { Group, Privacy } from './AddOrEditGroupDialog';
 import { User } from './GroupsSidebar';
+import NetworkError from '../../../interfaces/NetworkError';
+import { API_URL } from '../../../api/config';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -49,82 +53,203 @@ const StyledUploadImageContainer = styled('div')`
   align-items: flex-end;
 `;
 
+const StyledDialogActions = styled(DialogActions)`
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  padding: 0px 30px 30px 0px;
+`;
+
 interface AddGroupDialogContentProps {
   user: User;
   group: Group;
   setGroup: (group: Group) => void;
+  handleClose: () => void;
+  isEditing: boolean;
 }
 
-const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({ user, group, setGroup }) => {
-  console.log('user', user)
-  console.log('group', group)
+enum InputError {
+  GROUP_NAME = 'Group name must be at least 1 character',
+  GROUP_DESCRIPTION = 'Group description must be at least 1 character',
+  GROUP_MEMBERS = 'You must select at least 1 friend',
+}
+
+const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
+  user,
+  group,
+  setGroup,
+  handleClose,
+  isEditing,
+}) => {
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const checkInputs = () => {
+    if (group.name.length < 1) {
+      setErrorMessage(InputError.GROUP_NAME);
+    } else if (group.description.length < 1) {
+      setErrorMessage(InputError.GROUP_DESCRIPTION);
+    } else if (group.memberIDs.length < 1) {
+      setErrorMessage(InputError.GROUP_MEMBERS);
+    }
+    return group.name.length >= 1 && group.description.length >= 1 && group.memberIDs.length >= 1;
+  };
+
+  const handleCreateGroup = async () => {
+    if (!checkInputs()) return;
+
+    try {
+      const res = await fetch(`${API_URL.server}/group`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: group.name,
+          description: group.description,
+          visibility: group.visibility,
+          timetableIDs: group.timetableIDs,
+          memberIDs: group.memberIDs,
+          groupAdminIDs: group.groupAdminIDs,
+          imageURL: group.imageURL,
+        }),
+      });
+      const groupCreationStatus = await res.json();
+      console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
+
+      if (res.status === 201) {
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
+  const handleEditGroup = async (groupId: string) => {
+    try {
+      const res = await fetch(`${API_URL.server}/group/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: group.name,
+          description: group.description,
+          visibility: group.visibility,
+          timetableIDs: group.timetableIDs,
+          memberIDs: group.memberIDs,
+          groupAdminIDs: group.groupAdminIDs,
+          imageURL: group.imageURL,
+        }),
+      });
+      const groupCreationStatus = await res.json();
+      console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
+      if (res.status === 200) {
+        handleClose();
+      } else {
+        throw new NetworkError("Couldn't get response");
+      }
+    } catch (error) {
+      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
+    }
+  };
+
   return (
-    <StyledDialogContent>
-      <StyledUploadImageContainer>
-        <label>
-          <CircleOutline>{<CircleImage src={group.imageURL || NotanglesLogo} />}</CircleOutline>
-        </label>
-        <EditImagePopOver group={group} setGroup={setGroup} />
-      </StyledUploadImageContainer>
+    <>
+      <StyledDialogContent>
+        <StyledUploadImageContainer>
+          <label>
+            <CircleOutline>{<CircleImage src={group.imageURL || NotanglesLogo} />}</CircleOutline>
+          </label>
+          <EditImagePopOver group={group} setGroup={setGroup} />
+        </StyledUploadImageContainer>
 
-      <TextField
-        label="Group Name"
-        defaultValue={group.name}
-        required
-        fullWidth
-        onChange={(e) => setGroup({ ...group, name: e.target.value })}
-      />
-      <TextField
-        label="Description"
-        defaultValue={group.description}
-        required
-        fullWidth
-        onChange={(e) => setGroup({ ...group, description: e.target.value })}
-      />
+        <TextField
+          label="Group Name"
+          defaultValue={group.name}
+          required
+          fullWidth
+          onChange={(e) => setGroup({ ...group, name: e.target.value })}
+          error={errorMessage === InputError.GROUP_NAME}
+          helperText={errorMessage === InputError.GROUP_NAME ? InputError.GROUP_NAME : ''}
+        />
+        <TextField
+          label="Description"
+          defaultValue={group.description}
+          required
+          fullWidth
+          onChange={(e) => setGroup({ ...group, description: e.target.value })}
+          error={errorMessage === InputError.GROUP_DESCRIPTION}
+          helperText={errorMessage === InputError.GROUP_DESCRIPTION ? InputError.GROUP_DESCRIPTION : ''}
+        />
 
-      <Autocomplete
-        multiple
-        options={user.friends}
-        disableCloseOnSelect
-        fullWidth
-        value={user.friends.filter((friend: User) => group.memberIDs.includes(friend.userID))}
-        onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
-        getOptionLabel={(option) => option.userID}
-        renderOption={(props, option, { selected }) => (
-          <li {...props}>
-            <Checkbox
-              icon={<RadioButtonUncheckedIcon fontSize="small" />}
-              checkedIcon={<CheckCircleIcon fontSize="small" />}
-              style={{ marginRight: 8 }}
-              checked={selected}
+        <Autocomplete
+          multiple
+          options={user.friends}
+          disableCloseOnSelect
+          fullWidth
+          value={user.friends.filter((friend: User) => group.memberIDs.includes(friend.userID))}
+          onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
+          getOptionLabel={(option) => option.userID}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<RadioButtonUncheckedIcon fontSize="small" />}
+                checkedIcon={<CheckCircleIcon fontSize="small" />}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              {`${option.firstname} ${option.lastname}`}
+            </li>
+          )}
+          renderTags={(tagValue, getTagProps) => {
+            return tagValue.map((option, index) => (
+              <Tooltip title={option.userID}>
+                <Chip {...getTagProps({ index })} label={option.firstname} />
+              </Tooltip>
+            ));
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Group Members"
+              placeholder="Search for names..."
+              error={errorMessage === InputError.GROUP_MEMBERS}
+              helperText={errorMessage === InputError.GROUP_MEMBERS ? InputError.GROUP_MEMBERS : ''}
             />
-            {`${option.firstname} ${option.lastname}`}
-          </li>
-        )}
-        renderTags={(tagValue, getTagProps) => {
-          return tagValue.map((option, index) => (
-            <Tooltip title={option.userID}>
-              <Chip {...getTagProps({ index })} label={option.firstname} />
-            </Tooltip>
-          ));
-        }}
-        renderInput={(params) => <TextField {...params} label="Group Members" placeholder="Search for names..." />}
-      />
+          )}
+        />
 
-      <FormControl fullWidth>
-        <InputLabel id="select-privacy">Group Privacy</InputLabel>
-        <Select
-          labelId="select-privacy"
-          defaultValue={group.visibility}
-          value={group.visibility}
-          label="Group Privacy"
-          onChange={(e) => setGroup({ ...group, visibility: e.target.value as Privacy })}
-        >
-          <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
-          <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
-        </Select>
-      </FormControl>
-    </StyledDialogContent>
+        <FormControl fullWidth>
+          <InputLabel id="select-privacy">Group Privacy</InputLabel>
+          <Select
+            labelId="select-privacy"
+            defaultValue={group.visibility}
+            value={group.visibility}
+            label="Group Privacy"
+            onChange={(e) => setGroup({ ...group, visibility: e.target.value as Privacy })}
+          >
+            <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
+            <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
+          </Select>
+        </FormControl>
+      </StyledDialogContent>
+      <StyledDialogActions>
+        <Button variant="text" onClick={handleClose}>
+          Cancel
+        </Button>
+        {isEditing ? (
+          <Button variant="contained" onClick={() => handleEditGroup(group.id)}>
+            Save Changes
+          </Button>
+        ) : (
+          <Button variant="contained" onClick={handleCreateGroup}>
+            Create
+          </Button>
+        )}
+      </StyledDialogActions>
+    </>
   );
 };
 

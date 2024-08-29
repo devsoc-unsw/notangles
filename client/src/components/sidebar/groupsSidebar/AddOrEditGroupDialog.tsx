@@ -1,8 +1,6 @@
 import { Add as AddIcon, Edit } from '@mui/icons-material';
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogTitle,
   IconButton,
   ListItemIcon,
@@ -14,9 +12,6 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Close as CloseIcon } from '@mui/icons-material';
-
-import { API_URL } from '../../../api/config';
-import NetworkError from '../../../interfaces/NetworkError';
 import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
 import { User } from './GroupsSidebar';
 
@@ -50,11 +45,6 @@ const StyledDialogTitle = styled(DialogTitle)`
   justify-content: space-between;
 `;
 
-const StyledDialogActions = styled(DialogActions)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 0px 30px 30px 0px;
-`;
-
 const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => {
   if (!user) return <></>;
 
@@ -79,67 +69,6 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
   useEffect(() => {
     setGroup(editGroupData ? editGroupData : emptyGroupData);
   }, [editGroupData]);
-
-  const handleCreateGroup = async () => {
-    try {
-      const res = await fetch(`${API_URL.server}/group`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: group.name,
-          description: group.description,
-          visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs,
-          groupAdminIDs: group.groupAdminIDs,
-          imageURL: group.imageURL,
-        }),
-      });
-      const groupCreationStatus = await res.json();
-      console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
-
-      if (res.status === 201) {
-        handleClose();
-      } else {
-        throw new NetworkError("Couldn't get response");
-      }
-    } catch (error) {
-      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
-    }
-  };
-
-  const handleEditGroup = async (groupId: string) => {
-    try {
-      const res = await fetch(`${API_URL.server}/group/${groupId}`, {
-        method: 'PUT',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: group.name,
-          description: group.description,
-          visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs,
-          groupAdminIDs: group.groupAdminIDs,
-          imageURL: group.imageURL,
-        }),
-      });
-      const groupCreationStatus = await res.json();
-      console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
-      if (res.status === 200) {
-        handleClose();
-      } else {
-        throw new NetworkError("Couldn't get response");
-      }
-    } catch (error) {
-      throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
-    }
-  };
 
   const handleClose = () => {
     setIsOpen(false);
@@ -186,21 +115,13 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
             </div>
           </StyledDialogTitle>
         </>
-        <AddOrEditGroupDialogContent user={user} group={group} setGroup={setGroup} />
-        <StyledDialogActions>
-          <Button variant="text" onClick={handleClose}>
-            Cancel
-          </Button>
-          {editGroupData ? (
-            <Button variant="contained" onClick={() => handleEditGroup(group.id)}>
-              Save Changes
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={handleCreateGroup}>
-              Create
-            </Button>
-          )}
-        </StyledDialogActions>
+        <AddOrEditGroupDialogContent
+          user={user}
+          group={group}
+          setGroup={setGroup}
+          handleClose={handleClose}
+          isEditing={editGroupData !== undefined}
+        />
       </Dialog>
     </>
   );
