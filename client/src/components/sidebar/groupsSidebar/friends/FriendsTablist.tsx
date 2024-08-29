@@ -48,7 +48,7 @@ const FriendsTablist: React.FC<{ user: User | undefined; getUserInfo: () => void
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Your Friends" {...a11yProps(0)} />
-          <Tab label="Requests" {...a11yProps(1)} />
+          <Tab label={`Requests (${user?.incoming.length})`} {...a11yProps(1)} />
           <Tab label="Add a Friend" {...a11yProps(2)} />
         </Tabs>
       </Box>
