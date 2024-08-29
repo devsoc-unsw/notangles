@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Group } from '@mui/icons-material';
-import { Dialog, DialogTitle, IconButton, Paper, styled, Tooltip, Typography } from '@mui/material';
+import { Badge, Dialog, DialogTitle, IconButton, Paper, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import FriendsTablist from './FriendsTablist';
 import { User } from '../GroupsSidebar';
@@ -21,17 +21,18 @@ const StyledPaper = styled(Paper)`
 `;
 
 const FriendsDialog: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
+  if (!user) return <></>;
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
 
   return (
     <>
-      <Tooltip title="Your Friends" placement="right">
-        <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+      <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+        <Badge color="error" variant="dot" invisible={user.incoming.length === 0}>
           <Group />
-        </IconButton>
-      </Tooltip>
+        </Badge>
+      </IconButton>
 
       <Dialog
         PaperProps={{ component: StyledPaper }}

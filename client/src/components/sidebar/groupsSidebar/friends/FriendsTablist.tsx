@@ -6,12 +6,18 @@ import YourFriendsTab from './YourFriendsTab';
 import { User } from '../GroupsSidebar';
 import AddAFriendTab from './AddAFriendTab';
 import RequestsTab from './RequestsTab';
+import { Badge } from '@mui/material';
+import styled from '@emotion/styled';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
 }
+
+const MoveTextFromUnderBadge = styled('div')`
+  margin-right: 12px;
+`;
 
 const CustomTabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -48,7 +54,14 @@ const FriendsTablist: React.FC<{ user: User | undefined; getUserInfo: () => void
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Your Friends" {...a11yProps(0)} />
-          <Tab label={`Requests (${user?.incoming.length})`} {...a11yProps(1)} />
+          <Tab
+            label={
+              <Badge badgeContent={user?.incoming.length || 0} color="primary">
+                <MoveTextFromUnderBadge>Requests</MoveTextFromUnderBadge>
+              </Badge>
+            }
+            {...a11yProps(1)}
+          />
           <Tab label="Add a Friend" {...a11yProps(2)} />
         </Tabs>
       </Box>
