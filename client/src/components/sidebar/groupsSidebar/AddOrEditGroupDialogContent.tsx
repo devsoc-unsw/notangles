@@ -193,7 +193,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           fullWidth
           value={user.friends.filter((friend: User) => group.memberIDs.includes(friend.userID))}
           onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
-          getOptionLabel={(option) => option.userID}
+          getOptionLabel={(option) => `${option.firstname} ${option.lastname} ${option.userID}`} // What the search query is based on
           renderOption={(props, option, { selected }) => (
             <li {...props}>
               <Checkbox
