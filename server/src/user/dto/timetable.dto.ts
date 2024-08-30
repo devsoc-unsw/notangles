@@ -28,13 +28,13 @@ export class ClassDto {
   id: string;
   classNo: string; // From scraper
   year: string;
-  term: 'T1' | 'T2' | 'T3' | 'U1';
+  term: string;
   courseCode: string;
   timetableId?: string;
 }
 
 export class ClassTimeDto {
-  day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
+  day: string;
   time: {
     start: string;
     end: string;

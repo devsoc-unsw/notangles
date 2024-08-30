@@ -62,7 +62,7 @@ model Event {
 model Class {
   id          String     @unique
   classNo     String // From scraper (not unique in db, but between classes)
-  term        Term
+  term        String
   year        String
   courseCode  String
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
@@ -114,11 +114,4 @@ enum GroupVisibility {
   PRIVATE
 
   @@map("group_visibility")
-}
-
-enum Term {
-  U1
-  T1
-  T2
-  T3
 }
