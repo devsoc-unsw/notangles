@@ -48,7 +48,7 @@ export class UserController {
   // @UsePipes(new ValidationPipe({ transform: true }))
   setUserSettings(
     @Body('userId') userId: string,
-    @Body('setting') setting: any, //SettingsDto, // This aint working - temp solution, should try transforming this class
+    @Body('setting') setting: any, //SettingsDto
   ) {
     return this.userService.setUserSettings(userId, setting).then((data) => {
       return {
@@ -65,7 +65,6 @@ export class UserController {
     });
   }
 
-  // Could look to change params to just TimetableDTO (this would involve making timetableId optional - is this desired?)
   @Post('timetable')
   createUserTimetable(
     @Body('userId') userId: string,
