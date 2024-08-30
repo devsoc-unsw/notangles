@@ -33,6 +33,16 @@ export class ClassDto {
   timetableId?: string;
 }
 
+export class ClassTimeDto {
+  day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri';
+  time: {
+    start: string;
+    end: string;
+  };
+  weeks: string;
+  location: string;
+}
+
 // Get class from scraper
 export class ScrapedClassDto {
   classID: number;
@@ -50,7 +60,7 @@ export class ScrapedClassDto {
   };
   needsConsent: boolean;
   mode: string;
-  times: any[]; // Change later but im lazy
+  times: ClassTimeDto[];
   notes: [];
 }
 

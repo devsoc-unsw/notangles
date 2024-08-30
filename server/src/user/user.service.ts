@@ -13,7 +13,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
 
-const API_URL = 'https://timetable.csesoc.app/api/terms'; // TODO - set dev and prod API urls
+const API_URL = 'https://timetable.csesoc.app/api/terms';
 @Injectable({})
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -36,7 +36,6 @@ export class UserService {
 
       return classes.map((clz) => {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-
         const data = cache[k].find((c) => String(c.classID) === clz.classNo);
         return data;
       });
@@ -79,7 +78,6 @@ export class UserService {
       ...userData,
       createdAt: userData.createdAt.toISOString(),
       lastLogin: userData.lastLogin.toISOString(),
-      // Annoying that the DTO and the schema have differently named fields so have to do this
       timetables: reconstructedTables,
     };
 
