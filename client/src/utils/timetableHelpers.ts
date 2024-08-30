@@ -38,7 +38,7 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
 const duplicateEvents = (oldEvents: CreatedEvents) => {
   const newEvents: CreatedEvents = {};
 
-  Object.entries(oldEvents).forEach(([code, period]) => {
+  Object.entries(oldEvents).forEach(([_, period]) => {
     const newEvent = createEventObj(
       period.event.name,
       period.event.location,

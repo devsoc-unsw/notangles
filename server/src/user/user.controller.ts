@@ -103,7 +103,6 @@ export class UserController {
     });
   }
 
-
   @Delete('timetable/:timetableId')
   deleteUserTimetable(@Param('timetableId') timetableId: string) {
     return this.userService.deleteUserTimetable(timetableId).then((id) => {

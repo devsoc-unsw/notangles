@@ -8,25 +8,25 @@ datasource db {
 }
 
 model User {
-  userID         String      @id // same as zid
-  createdAt      DateTime    @default(now())
-  lastLogin      DateTime?   @default(now())
-  firstname      String?
-  lastname       String?
-  email          String 
-  profileURL     String?
-  timetables     Timetable[]
-  settings       Settings?
-  friends        User[]      @relation(name: "user_friends")
-  friendOf       User[]      @relation(name: "user_friends")
-  outgoing       User[]      @relation(name: "friend_requests")
-  incoming       User[]      @relation(name: "friend_requests")
-  adminGroups    Group[]     @relation(name: "admins")
-  memberGroups   Group[]     @relation(name: "group_members")
-  @@map("users")
-  @@index([userID])
-}
+  userID       String      @id // same as zid
+  createdAt    DateTime    @default(now())
+  lastLogin    DateTime?   @default(now())
+  firstname    String?
+  lastname     String?
+  email        String
+  profileURL   String?
+  timetables   Timetable[]
+  settings     Settings?
+  friends      User[]      @relation(name: "user_friends")
+  friendOf     User[]      @relation(name: "user_friends")
+  outgoing     User[]      @relation(name: "friend_requests")
+  incoming     User[]      @relation(name: "friend_requests")
+  adminGroups  Group[]     @relation(name: "admins")
+  memberGroups Group[]     @relation(name: "group_members")
 
+  @@index([userID])
+  @@map("users")
+}
 
 model Group {
   id          String          @id @default(uuid())
@@ -37,8 +37,8 @@ model Group {
   timetables  Timetable[]     @relation("group_timetables")
   members     User[]          @relation("group_members")
   groupAdmins User[]          @relation("admins")
-  @@map("groups")
 
+  @@map("groups")
 }
 
 model Event {
@@ -55,17 +55,19 @@ model Event {
   timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade) // TODO: was there a reason this wasn't cascaded on delete?
   timetableId String?
   groupIds    String[] // Added to link an event to a group
+
   @@map("events")
 }
 
 model Class {
   id          String     @unique
-  classNo     String  // From scraper (not unique in db, but between classes)
+  classNo     String // From scraper (not unique in db, but between classes)
   term        Term
   year        String
   courseCode  String
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
+
   @@map("classes")
 }
 
@@ -77,6 +79,7 @@ model Timetable {
   createdEvents   Event[]
   user            User[]
   groups          Group[]  @relation("group_timetables")
+
   @@map("timetables")
 }
 
@@ -93,6 +96,7 @@ model Settings {
   isShowOnlyOpenClasses    Boolean
   isHideExamClasses        Boolean
   isConvertToLocalTimezone Boolean
+
   @@map("settings")
 }
 
@@ -101,12 +105,14 @@ model Session {
   sid       String   @unique
   data      String   @db.Text // MediumText may be needed for MySql
   expiresAt DateTime
+
   @@map("sessions")
 }
 
 enum GroupVisibility {
   PUBLIC
   PRIVATE
+
   @@map("group_visibility")
 }
 

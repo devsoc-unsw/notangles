@@ -79,7 +79,7 @@ export class UserService {
       ...userData,
       createdAt: userData.createdAt.toISOString(),
       lastLogin: userData.lastLogin.toISOString(),
-      // Annnoying that the DTO and the schema have differently named fields so have to do this
+      // Annoying that the DTO and the schema have differently named fields so have to do this
       timetables: reconstructedTables,
     };
 
