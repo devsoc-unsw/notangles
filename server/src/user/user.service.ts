@@ -44,6 +44,17 @@ export class UserService {
     }
   }
 
+  private async convertTimetable(timetable: TimetableDto): Promise<any> {
+    try {
+      const c = await this.convertClasses(timetable.selectedClasses);
+      return {
+        ...timetable,
+        selectedClasses: c,
+      };
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
   async getUserInfo(_userID: string): Promise<UserDTO> {
     const { userID, timetables, ...userData } =
       await this.prisma.user.findUniqueOrThrow({
@@ -63,14 +74,7 @@ export class UserService {
 
     const reconstructedTables = await Promise.all(
       timetables.map(async (t) => {
-        const classes = await this.convertClasses(t.selectedClasses);
-        return {
-          name: t.name,
-          id: t.id,
-          selectedClasses: classes,
-          selectedCourses: t.selectedCourses,
-          createdEvents: t.createdEvents,
-        };
+        return this.convertTimetable(t);
       }),
     );
 
@@ -95,7 +99,9 @@ export class UserService {
           update: data,
         }),
       );
-    } catch (e) {}
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   async getUserSettings(_userID: string): Promise<SettingsDto> {
@@ -148,12 +154,7 @@ export class UserService {
 
       const timetables = await Promise.all(
         res.timetables.map(async (t) => {
-          const { selectedClasses, ...otherTimetableProps } = t;
-          const classes = await this.convertClasses(selectedClasses);
-          return {
-            ...otherTimetableProps,
-            selectedClasses: classes,
-          };
+          return this.convertTimetable(t);
         }),
       );
 
@@ -275,8 +276,17 @@ export class UserService {
             in: timetableIDs,
           },
         },
+        include: {
+          createdEvents: true,
+          selectedClasses: true,
+        },
       });
-      return timetables;
+
+      return Promise.all(
+        timetables.map(async (t) => {
+          return this.convertTimetable(t);
+        }),
+      );
     } catch (error) {
       console.error('Error retrieving timetables:', error);
     }
