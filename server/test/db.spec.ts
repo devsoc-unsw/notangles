@@ -1,10 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import mockData from './mockData';
-import { ReconstructedTimetableDto } from 'src/user/dto';
 
 // !! WARNING: these tests will ruin your local db container
 // Before running these integration tests, spin up the DB first
@@ -271,7 +270,7 @@ describe('Integration testing for user/friend db endpoints', () => {
       .put('/user/timetable')
       .send({
         userId: user.userID,
-        timetable: { id:timetableId, ...editedTimetable },
+        timetable: { id: timetableId, ...editedTimetable },
       });
 
     expect(res.status).toEqual(200);
@@ -314,13 +313,6 @@ describe('Integration testing for user/friend db endpoints', () => {
       expect(res.status).not.toEqual(200);
       expect(res.status).not.toEqual(201);
     });
-
-    // This one will return an empty array instead of an error. This might actually be easier to work with
-    // test(`Timetable (user doesn't exist)`, async () => {
-    //   res = await request(app.getHttpServer()).get('/user/timetable/1');
-    //   expect(res).toEqual({});
-    //   expect(res.status).not.toEqual(200);
-    // });expect(res.status).not.toEqual(201);
 
     test(`Edit timetable`, async () => {
       res = await request(app.getHttpServer())
@@ -475,6 +467,11 @@ describe('Integration testing for user/friend db endpoints', () => {
       expect(res.status).not.toEqual(200);
       expect(res.status).not.toEqual(201);
     });
+
+    // These tests below commented out, because updating object to disconnect a relation that doesn't exist
+    // actually does not throw an error.
+    // To cover these errors, we would have to send another query beforehand - this can be done, but introduces
+    // more overhead. Whether we should depends on frontend implementation
 
     // test('Friend errors - edge cases', async () => {
     //   // Unfriend request to someone with no outstanding friend request

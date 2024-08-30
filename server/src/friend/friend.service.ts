@@ -21,7 +21,6 @@ export class FriendService {
 
   async friendUsers(senderId: string, sendeeId: string): Promise<string> {
     try {
-      // How defensive should we be (checking if senderId exists, checking if sendee is already a friend)?
       if (senderId === sendeeId) {
         throw new Error('Cannot friend yourself');
       }
@@ -96,7 +95,6 @@ export class FriendService {
 
   // Note: This can also serve as accepting a friend req (lmk if we should decouple these functions)
   async sendFriendRequest(senderId: string, sendeeId: string) {
-    // Again, how defensive should we be (could potentially add blocking friend reqs to already friended users)
     try {
       if (senderId === sendeeId) {
         throw new Error('Cannot friend yourself');

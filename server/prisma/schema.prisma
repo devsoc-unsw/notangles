@@ -76,7 +76,6 @@ model Timetable {
   selectedClasses Class[]
   createdEvents   Event[]
   user            User[]
-  // userID          String
   groups          Group[]  @relation("group_timetables")
   @@map("timetables")
 }
@@ -117,10 +116,3 @@ enum Term {
   T2
   T3
 }
-
-// enum ClassType { 
-//   LECTURE
-//   TUTORIAL
-//   LABORATORY
-//   OTHER
-// }
