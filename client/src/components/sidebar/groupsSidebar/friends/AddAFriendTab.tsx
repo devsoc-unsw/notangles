@@ -1,11 +1,11 @@
-import { Button, IconButton, TextField, Tooltip } from '@mui/material';
-import { User } from '../GroupsSidebar';
+import { IconButton, TextField, Tooltip } from '@mui/material';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
-import { Add, Cancel, Close } from '@mui/icons-material';
+import { Add, Close } from '@mui/icons-material';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { useEffect, useState } from 'react';
+import { User } from '../../UserAccount';
 
 const StyledContainer = styled('div')`
   display: flex;

@@ -1,5 +1,5 @@
-import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, AppBarProps, Divider, Tooltip, Typography } from '@mui/material';
+import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -14,7 +14,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
-import GroupsSidebar from './groupsSideBar/GroupsSidebar';
+import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import FriendsButton from './FriendsButton';
 
 const LogoImg = styled('img')`
@@ -36,7 +36,7 @@ const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ collapsed }) => ({
   zIndex: 1201,
   display: 'flex',
   flexDirection: 'row',
-  
+
   // overriding MUI select component padding when focused (for the term select)
   paddingRight: '0 !important',
   padding: '10px, 0px, 10px, 19px',

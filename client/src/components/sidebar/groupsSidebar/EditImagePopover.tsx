@@ -2,7 +2,7 @@ import { Edit as EditIcon } from '@mui/icons-material';
 import { IconButton, Popover, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
-import { Group } from './AddOrEditGroupDialog';
+import { Group } from '../../../interfaces/Group';
 
 const EditIconCircle = styled('div')`
   background-color: ${({ theme }) => theme.palette.background.paper};

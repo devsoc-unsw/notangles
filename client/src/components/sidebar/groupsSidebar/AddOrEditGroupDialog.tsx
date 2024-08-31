@@ -13,23 +13,8 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Close as CloseIcon } from '@mui/icons-material';
 import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
-import { User } from './GroupsSidebar';
-
-export enum Privacy {
-  PRIVATE = 'PRIVATE',
-  PUBLIC = 'PUBLIC',
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  description: string;
-  visibility: Privacy;
-  timetableIDs: string[];
-  memberIDs: string[];
-  groupAdminIDs: string[];
-  imageURL: string;
-}
+import { Group, Privacy } from '../../../interfaces/Group';
+import { User } from '../UserAccount';
 
 interface AddGroupDialogProps {
   editGroupData?: Group;

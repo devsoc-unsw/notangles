@@ -56,7 +56,6 @@ export class GroupController {
     @Body() updateGroupDto: GroupDto,
   ) {
     try {
-      console.log('update', updateGroupDto)
       const group = await this.groupService.update(id, updateGroupDto);
       return {
         status: 'Success message for updating of group.',

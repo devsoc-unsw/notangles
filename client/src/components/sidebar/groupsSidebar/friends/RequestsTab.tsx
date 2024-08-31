@@ -1,11 +1,11 @@
 import React from 'react';
-import { User } from '../GroupsSidebar';
 import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
 import { IconButton, Tooltip } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
+import { User } from '../../UserAccount';
 
 const StyledFriendsListContainer = styled('div')`
   display: flex;
@@ -72,7 +72,7 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
 
   return (
     <StyledFriendsListContainer>
-      {user.incoming.map((friend: User, i) => (
+      {user.incoming.map((friend: User, i: number) => (
         <StyledFriendContainer>
           <UserProfile
             key={i}

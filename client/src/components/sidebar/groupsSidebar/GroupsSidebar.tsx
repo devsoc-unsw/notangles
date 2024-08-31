@@ -2,26 +2,12 @@ import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
-import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
+import AddOrEditGroupDialog from './AddOrEditGroupDialog';
+import { Group } from '../../../interfaces/Group';
 import GroupCircle from './GroupCircle';
 import FriendsDialog from './friends/FriendsDialog';
-import { TimetableData } from '../../../interfaces/Periods';
+import { User } from '../UserAccount';
 
-// TODO where to put
-export interface User {
-  userID: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  profileURL: string;
-  createdAt: string;
-  lastLogin: string;
-  loggedIn: boolean;
-  friends: User[];
-  incoming: User[];
-  outgoing: User[];
-  timetables: TimetableData[];
-}
 
 const StyledContainer = styled('div')`
   height: 100vh;
@@ -108,12 +94,6 @@ const GroupsSidebar: React.FC = () => {
     <StyledContainer>
       <FriendsDialog user={user} getUserInfo={getUserInfo} />
       <AddOrEditGroupDialog user={user} onClose={getGroups} />
-      {groups.map((group, i) => {
-        return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
-      })}
-      {groups.map((group, i) => {
-        return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
-      })}
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
       })}

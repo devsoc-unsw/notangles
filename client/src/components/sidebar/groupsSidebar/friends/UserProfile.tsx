@@ -23,8 +23,8 @@ const UserProfile: React.FC<{ firstname: string; lastname: string; email: string
     <StyledContainer>
       <img
         src={profileURL || emptyProfile}
-        width={40}
-        height={40}
+        width={34}
+        height={34}
         style={{ borderRadius: 999, backgroundColor: 'white' }}
       />
       <div>

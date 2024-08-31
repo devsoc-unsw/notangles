@@ -3,7 +3,7 @@ import { Group } from '@mui/icons-material';
 import { Badge, Dialog, DialogTitle, IconButton, Paper, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import FriendsTablist from './FriendsTablist';
-import { User } from '../GroupsSidebar';
+import { User } from '../../UserAccount';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};

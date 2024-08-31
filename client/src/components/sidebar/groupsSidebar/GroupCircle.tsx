@@ -1,14 +1,15 @@
 import React from 'react';
 import NotanglesLogo from '../../../assets/notangles_1.png';
 import { ListItemIcon, Tooltip } from '@mui/material';
-import AddOrEditGroupDialog, { Group } from './AddOrEditGroupDialog';
+import AddOrEditGroupDialog from './AddOrEditGroupDialog';
+import { Group } from '../../../interfaces/Group';
 import MenuItem from '@mui/material/MenuItem';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
-import { User } from './GroupsSidebar';
 import styled from '@emotion/styled';
 import { WavingHand } from '@mui/icons-material';
+import { User } from '../UserAccount';
 
 const AdminBorder = styled('div')<{ isAdmin: boolean }>(({ isAdmin }) => ({
   display: 'flex',

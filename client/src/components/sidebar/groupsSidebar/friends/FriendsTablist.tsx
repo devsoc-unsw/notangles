@@ -3,11 +3,11 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import YourFriendsTab from './YourFriendsTab';
-import { User } from '../GroupsSidebar';
 import AddAFriendTab from './AddAFriendTab';
 import RequestsTab from './RequestsTab';
 import { Badge } from '@mui/material';
 import styled from '@emotion/styled';
+import { User } from '../../UserAccount';
 
 interface TabPanelProps {
   children?: React.ReactNode;

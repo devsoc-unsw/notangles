@@ -17,10 +17,10 @@ import { styled } from '@mui/system';
 import React, { useState } from 'react';
 import EditImagePopOver from './EditImagePopover';
 import NotanglesLogo from '../../../assets/notangles_1.png';
-import { Group, Privacy } from './AddOrEditGroupDialog';
-import { User } from './GroupsSidebar';
+import { Group, Privacy } from '../../../interfaces/Group';
 import NetworkError from '../../../interfaces/NetworkError';
 import { API_URL } from '../../../api/config';
+import { User } from '../UserAccount';
 
 const StyledDialogContent = styled(DialogContent)`
   background-color: ${({ theme }) => theme.palette.background.paper};
