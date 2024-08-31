@@ -4,7 +4,9 @@ services:
     container_name: notangles-server
     image: notangles-server
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - database
     ports:
