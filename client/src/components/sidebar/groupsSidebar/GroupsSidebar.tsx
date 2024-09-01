@@ -1,4 +1,3 @@
-import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../../api/config';
@@ -8,25 +7,6 @@ import { User } from '../UserAccount';
 import AddOrEditGroupDialog from './AddOrEditGroupDialog';
 import FriendsDialog from './friends/FriendsDialog';
 import GroupCircle from './GroupCircle';
-
-const StyledContainer = styled('div')`
-  height: 100vh;
-  width: 50px;
-  background: ${({ theme }) => theme.palette.primary.main};
-  display: flex;
-  align-items: center;
-  padding: 12px 2px;
-  flex-direction: column;
-  gap: 4px;
-
-  overflow-y: auto;
-  max-height: calc(100vh - 24px);
-
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Edge */
-  }
-`;
 
 const GroupsSidebar: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
@@ -91,13 +71,13 @@ const GroupsSidebar: React.FC = () => {
   }, [userId]);
 
   return (
-    <StyledContainer>
+    <>
       <FriendsDialog user={user} getUserInfo={getUserInfo} />
       <AddOrEditGroupDialog user={user} onClose={getGroups} />
       {groups.map((group, i) => {
         return <GroupCircle key={i} group={group} getGroups={getGroups} user={user} />;
       })}
-    </StyledContainer>
+    </>
   );
 };
 

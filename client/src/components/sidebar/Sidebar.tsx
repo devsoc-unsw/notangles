@@ -99,6 +99,25 @@ const SidebarFooterText = styled('div')`
   margin-top: 16px;
 `;
 
+const StyledGroupContainer = styled('div')`
+  height: 100vh;
+  width: 50px;
+  background: ${({ theme }) => theme.palette.primary.main};
+  display: flex;
+  align-items: center;
+  padding: 12px 2px;
+  flex-direction: column;
+  gap: 4px;
+
+  overflow-y: auto;
+  max-height: calc(100vh - 24px);
+
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Edge */
+  }
+`;
+
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
@@ -161,7 +180,11 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      {showGroupsSidebar && <GroupsSidebar />}
+      {showGroupsSidebar && (
+        <StyledGroupContainer>
+          <GroupsSidebar />
+        </StyledGroupContainer>
+      )}
       <MainSidebar collapsed={collapsed}>
         <div>
           <HeaderContainer>
