@@ -10,7 +10,9 @@ import { ConfigService } from '@nestjs/config';
 export class AutoService {
   constructor(private configService: ConfigService) {}
   async getAutoTimetable(@Body() autoService: autoDTO): Promise<string> {
-    const AUTO_SERVER_HOST = `${this.configService.get<string>('AUTO_SERVER_HOST_NAME')}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
+    const AUTO_SERVER_HOST = `${this.configService.get<string>(
+      'AUTO_SERVER_HOST_NAME',
+    )}:${this.configService.get<string>('AUTO_SERVER_HOST_PORT')}`;
     return await getAuto(autoService, AUTO_SERVER_HOST);
   }
 }

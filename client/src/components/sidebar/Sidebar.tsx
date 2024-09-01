@@ -10,12 +10,12 @@ import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
+import FriendsButton from './FriendsButton';
+import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
-import GroupsSidebar from './groupsSidebar/GroupsSidebar';
-import FriendsButton from './FriendsButton';
 
 const LogoImg = styled('img')`
   height: 46px;

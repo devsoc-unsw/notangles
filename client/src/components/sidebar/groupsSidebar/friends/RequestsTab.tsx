@@ -1,11 +1,12 @@
-import React from 'react';
-import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
-import { IconButton, Tooltip } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import React from 'react';
+
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { User } from '../../UserAccount';
+import UserProfile from './UserProfile';
 
 const StyledFriendsListContainer = styled('div')`
   display: flex;

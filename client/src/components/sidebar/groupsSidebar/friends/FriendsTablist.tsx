@@ -1,13 +1,14 @@
-import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import styled from '@emotion/styled';
+import { Badge } from '@mui/material';
 import Box from '@mui/material/Box';
-import YourFriendsTab from './YourFriendsTab';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import * as React from 'react';
+
+import { User } from '../../UserAccount';
 import AddAFriendTab from './AddAFriendTab';
 import RequestsTab from './RequestsTab';
-import { Badge } from '@mui/material';
-import styled from '@emotion/styled';
-import { User } from '../../UserAccount';
+import YourFriendsTab from './YourFriendsTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;

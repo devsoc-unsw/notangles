@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
 import { Group } from '@mui/icons-material';
-import { Badge, Dialog, DialogTitle, IconButton, Paper, styled, Tooltip, Typography } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import FriendsTablist from './FriendsTablist';
+import { Badge, Dialog, DialogTitle, IconButton, Paper, styled, Typography } from '@mui/material';
+import React, { useState } from 'react';
+
 import { User } from '../../UserAccount';
+import FriendsTablist from './FriendsTablist';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};

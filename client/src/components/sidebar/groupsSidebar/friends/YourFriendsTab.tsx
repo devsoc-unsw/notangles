@@ -1,11 +1,12 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { IconButton, Tooltip } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { IconButton, Tooltip } from '@mui/material';
+import React from 'react';
+
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
-import UserProfile from './UserProfile';
 import { User } from '../../UserAccount';
+import UserProfile from './UserProfile';
 
 const StyledContainer = styled('div')`
   display: flex;

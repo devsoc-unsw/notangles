@@ -1,11 +1,11 @@
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../api/config';
-import StyledDialog from '../StyledDialog';
 import { TimetableData } from '../../interfaces/Periods';
+import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
 
 interface UserAccountProps {

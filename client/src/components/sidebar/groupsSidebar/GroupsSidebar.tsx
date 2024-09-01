@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 import React, { useEffect, useState } from 'react';
-import { API_URL } from '../../../api/config';
-import NetworkError from '../../../interfaces/NetworkError';
-import AddOrEditGroupDialog from './AddOrEditGroupDialog';
-import { Group } from '../../../interfaces/Group';
-import GroupCircle from './GroupCircle';
-import FriendsDialog from './friends/FriendsDialog';
-import { User } from '../UserAccount';
 
+import { API_URL } from '../../../api/config';
+import { Group } from '../../../interfaces/Group';
+import NetworkError from '../../../interfaces/NetworkError';
+import { User } from '../UserAccount';
+import AddOrEditGroupDialog from './AddOrEditGroupDialog';
+import FriendsDialog from './friends/FriendsDialog';
+import GroupCircle from './GroupCircle';
 
 const StyledContainer = styled('div')`
   height: 100vh;
