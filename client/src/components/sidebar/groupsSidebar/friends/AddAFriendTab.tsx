@@ -68,7 +68,8 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
     (user) =>
       user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()),
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.userID.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleSendRequest = async (otherUserID: string) => {
