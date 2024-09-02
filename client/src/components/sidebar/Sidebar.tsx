@@ -50,6 +50,7 @@ const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => 
   flexDirection: 'column',
   justifyContent: 'space-between',
   width: collapsed ? '80px' : '290px',
+  overflowY: 'auto',
 }));
 
 const SidebarTitle = styled(Typography)`
