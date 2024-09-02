@@ -1,4 +1,5 @@
 import { Add as AddIcon, Edit } from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -11,10 +12,10 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Close as CloseIcon } from '@mui/icons-material';
-import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
+
 import { Group, Privacy } from '../../../interfaces/Group';
 import { User } from '../UserAccount';
+import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
 
 interface AddGroupDialogProps {
   editGroupData?: Group;

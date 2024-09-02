@@ -1,11 +1,12 @@
-import { IconButton, TextField, Tooltip } from '@mui/material';
-import UserProfile from './UserProfile';
 import styled from '@emotion/styled';
 import { Add, Close } from '@mui/icons-material';
+import { IconButton, TextField, Tooltip } from '@mui/material';
+import { useEffect, useState } from 'react';
+
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
-import { useEffect, useState } from 'react';
 import { User } from '../../UserAccount';
+import UserProfile from './UserProfile';
 
 const StyledContainer = styled('div')`
   display: flex;

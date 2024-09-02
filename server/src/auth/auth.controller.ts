@@ -26,7 +26,10 @@ export class AuthController {
         await this.userService.getUserInfo(userID);
       } catch (e) {
         console.debug(`User ${userID} does not exist in db, adding them now!`);
-        await this.userService.setUserProfile(userID, '', '', '');
+        await this.userService.setUserProfile({
+          userID: userID,
+          email: '',
+        });
       }
       return res.json(req.user.userinfo.sub);
     }

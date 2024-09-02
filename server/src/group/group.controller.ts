@@ -51,10 +51,7 @@ export class GroupController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateGroupDto: GroupDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateGroupDto: GroupDto) {
     try {
       const group = await this.groupService.update(id, updateGroupDto);
       return {

@@ -1,4 +1,4 @@
-import { Group, SwitchAccount, TableView } from '@mui/icons-material';
+import { SwitchAccount } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';

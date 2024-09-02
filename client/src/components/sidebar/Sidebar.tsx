@@ -10,12 +10,12 @@ import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
+import FriendsButton from './FriendsButton';
+import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
-import GroupsSidebar from './groupsSidebar/GroupsSidebar';
-import FriendsButton from './FriendsButton';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -99,6 +99,25 @@ const SidebarFooterText = styled('div')`
   margin-top: 16px;
 `;
 
+const StyledGroupContainer = styled('div')`
+  height: 100vh;
+  width: 50px;
+  background: ${({ theme }) => theme.palette.primary.main};
+  display: flex;
+  align-items: center;
+  padding: 12px 2px;
+  flex-direction: column;
+  gap: 4px;
+
+  overflow-y: auto;
+  max-height: calc(100vh - 24px);
+
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Edge */
+  }
+`;
+
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
@@ -161,7 +180,11 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      {showGroupsSidebar && <GroupsSidebar />}
+      {showGroupsSidebar && (
+        <StyledGroupContainer>
+          <GroupsSidebar />
+        </StyledGroupContainer>
+      )}
       <MainSidebar collapsed={collapsed}>
         <div>
           <HeaderContainer>

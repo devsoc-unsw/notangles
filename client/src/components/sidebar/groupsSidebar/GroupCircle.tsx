@@ -1,15 +1,16 @@
-import React from 'react';
-import NotanglesLogo from '../../../assets/notangles_1.png';
-import { ListItemIcon, Tooltip } from '@mui/material';
-import AddOrEditGroupDialog from './AddOrEditGroupDialog';
-import { Group } from '../../../interfaces/Group';
-import MenuItem from '@mui/material/MenuItem';
-import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
-import { API_URL } from '../../../api/config';
-import NetworkError from '../../../interfaces/NetworkError';
 import styled from '@emotion/styled';
 import { WavingHand } from '@mui/icons-material';
+import { ListItemIcon, Tooltip } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import React from 'react';
+
+import { API_URL } from '../../../api/config';
+import NotanglesLogo from '../../../assets/notangles_1.png';
+import { Group } from '../../../interfaces/Group';
+import NetworkError from '../../../interfaces/NetworkError';
+import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { User } from '../UserAccount';
+import AddOrEditGroupDialog from './AddOrEditGroupDialog';
 
 const AdminBorder = styled('div')<{ isAdmin: boolean }>(({ isAdmin }) => ({
   display: 'flex',

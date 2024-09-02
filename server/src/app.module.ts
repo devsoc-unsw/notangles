@@ -1,17 +1,14 @@
-import { AutoModule } from './auto/auto.module';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { FriendModule } from './friend/friend.module';
-import { ConfigModule } from '@nestjs/config';
-import { GroupModule } from './group/group.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
-import { join } from 'path';
+import { AutoModule } from './auto/auto.module';
 import config from './config';
+import { FriendModule } from './friend/friend.module';
+import { GroupModule } from './group/group.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
