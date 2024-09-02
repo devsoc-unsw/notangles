@@ -25,10 +25,10 @@ const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>
 const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed, showGroupsSidebar, setShowGroupsSidebar }) => {
   return (
     <>
-      <Tooltip title="Shared Timetables" placement="right">
+      <Tooltip title="Coming Soon: Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
-          onClick={() => setShowGroupsSidebar(!showGroupsSidebar)}
+          // onClick={() => setShowGroupsSidebar(!showGroupsSidebar)} NOTE: uncomment to display groups side bar
           isSelected={showGroupsSidebar}
         >
           <SwitchAccount />
