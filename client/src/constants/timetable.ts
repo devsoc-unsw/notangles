@@ -14,6 +14,10 @@ const nextTermIdx = (currIdx: number) => {
   return currIdx + 1 >= SUPPORTED_TERMS.length ? 0 : ++currIdx;
 };
 
+const getTermId = (currTerm: Term): number => {
+  return SUPPORTED_TERMS.findIndex((ct) => ct === currTerm);
+};
+
 const GET_CLASSES = gql`
   query MyQuery {
     classes(distinct_on: term, where: { term: { _in: ["T1", "T2", "T3", "U1"] } }) {
@@ -67,10 +71,10 @@ const get_current_term = async (todaysDate: Date = new Date()): Promise<Term> =>
     const termInfo = TERM_INFO_MAP.get(currTermStr);
     if (!termInfo) continue;
     if (isWithinInterval(todaysDate, { start: termInfo.startDate, end: termInfo.endDate })) {
-      const seventhMondayDate = await getDateOfNthWeekMondayInTerm(currTermStr, 7);
-      if (isWithinInterval(todaysDate, { start: seventhMondayDate, end: termInfo.endDate })) {
-        return SUPPORTED_TERMS[nextTermIdx(currTermIndex)]; // Return Next term assuming it is Week 7 and classes have been updated.
-      }
+      // const seventhMondayDate = await getDateOfNthWeekMondayInTerm(currTermStr, 7);
+      // if (isWithinInterval(todaysDate, { start: seventhMondayDate, end: termInfo.endDate })) {
+      //   return SUPPORTED_TERMS[nextTermIdx(currTermIndex)]; // Return Next term assuming it is Week 7 and classes have been updated.
+      // }
       return currTermStr;
     } else if (
       isWithinInterval(todaysDate, {
@@ -111,9 +115,9 @@ export const getAvailableTermDetails = async () => {
     termName: '',
     firstDayOfTerm: '',
   };
-  const curr_Term = await get_current_term();
-  console.log(curr_Term);
+  const currTerm = await get_current_term();
   // await getAvailableTermDetails1();
+  await constructTermDetailsMap();
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
@@ -210,10 +214,9 @@ interface ClassCensusDate {
   term: string;
   offering_period: string;
 }
-export const getAvailableTermDetails1 = async () => {
+export const constructTermDetailsMap = async () => {
   const { data } = await client.query<ClassCensusDateInfo>({ query: GET_CLASSES });
   let classes = data.classes;
-  console.log();
   const termOfferingMap = new Map<string, Date[]>();
   if (classes) {
     classes.forEach((cls: { term: string; offering_period: string }) => {
@@ -223,10 +226,8 @@ export const getAvailableTermDetails1 = async () => {
       if (cls.term in ['T1', 'T2', 'T3', 'U1']) {
         termOfferingMap.set(cls.term, [parsedStartDate, parsedEndDate]);
       }
-      console.log(termOfferingMap);
     });
   }
-  console.log(termOfferingMap);
 };
 
 export const colors: string[] = [
