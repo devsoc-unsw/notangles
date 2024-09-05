@@ -1,7 +1,7 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -16,6 +16,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
+import { UserContext } from '../../context/UserContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -122,8 +123,9 @@ const StyledGroupContainer = styled('div')`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
-  const [showGroupsSidebar, setShowGroupsSidebar] = useState(false);
   const sideBarRef = useRef<HTMLDivElement>(null);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
+
   // TODO: dummy logic to be
 
   const handleCollapse = (val: boolean) => {
@@ -181,7 +183,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      {showGroupsSidebar && (
+      {!groupsSidebarCollapsed && (
         <StyledGroupContainer>
           <GroupsSidebar />
         </StyledGroupContainer>
@@ -223,11 +225,7 @@ const Sidebar: React.FC = () => {
                 // hardcoded until we move away from single page site
                 isSelected={true}
               />
-              <FriendsButton
-                collapsed={collapsed}
-                showGroupsSidebar={showGroupsSidebar}
-                setShowGroupsSidebar={setShowGroupsSidebar}
-              />
+              <FriendsButton collapsed={collapsed} />
               <Divider />
               {modalData.map((modal, index) => (
                 <>

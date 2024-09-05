@@ -42,6 +42,8 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import TimetableShared from './components/timetableShared.tsx/TimetableShared';
+import { UserContext } from './context/UserContext';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -131,6 +133,8 @@ const App: React.FC = () => {
     assignedColors,
     setAssignedColors,
   } = useContext(CourseContext);
+
+  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -602,8 +606,14 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Outlet />
-                <TimetableTabs />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                {groupsSidebarCollapsed ? (
+                  <>
+                    <TimetableTabs />
+                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  </>
+                ) : (
+                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
                 >

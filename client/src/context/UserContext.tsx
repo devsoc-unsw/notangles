@@ -29,6 +29,8 @@ export interface IUserContext {
   fetchUserInfo: (userID: string) => void;
   selectedGroupIndex: number; // selected group is the index of groups;
   setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
+  groupsSidebarCollapsed: boolean;
+  setGroupsSidebarCollapsed: (isCollapsed: boolean) => void;
 }
 
 export const UserContext = createContext<IUserContext>({
@@ -39,12 +41,15 @@ export const UserContext = createContext<IUserContext>({
   fetchUserInfo: () => {},
   selectedGroupIndex: -1,
   setSelectedGroupIndex: () => {},
+  groupsSidebarCollapsed: true,
+  setGroupsSidebarCollapsed: () => {},
 });
 
 const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<User>(undefinedUser);
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
+  const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -73,7 +78,9 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const jsonData = await res.json();
-      setGroups(jsonData.data.groups);
+      const groups = jsonData.data.groups;
+      setGroups(groups);
+      setSelectedGroupIndex(groups.length === 0 ? -1 : 0);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -83,10 +90,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     getUserInfo(userID);
     getGroups(userID);
   };
-
-  useEffect(() => {
-    if (groups.length > 0 && selectedGroupIndex === -1) setSelectedGroupIndex(0);
-  }, [groups]);
 
   useEffect(() => {
     const getZid = async () => {
@@ -117,8 +120,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       fetchUserInfo,
       selectedGroupIndex,
       setSelectedGroupIndex,
+      groupsSidebarCollapsed,
+      setGroupsSidebarCollapsed,
     }),
-    [user, groups, selectedGroupIndex],
+    [user, groups, selectedGroupIndex, groupsSidebarCollapsed],
   );
 
   return <UserContext.Provider value={initialContext}>{children}</UserContext.Provider>;
