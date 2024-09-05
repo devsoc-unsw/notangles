@@ -26,6 +26,7 @@ export interface IUserContext {
   setUser: (newUser: User) => void;
   groups: Group[];
   setGroups: (newGroups: Group[]) => void;
+  fetchUserInfo: (userID: string) => void;
 }
 
 export const UserContext = createContext<IUserContext>({
@@ -33,6 +34,7 @@ export const UserContext = createContext<IUserContext>({
   setUser: () => {},
   groups: [],
   setGroups: () => {},
+  fetchUserInfo: () => {},
 });
 
 const UserContextProvider = ({ children }: UserContextProviderProps) => {
@@ -72,6 +74,11 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     }
   };
 
+  const fetchUserInfo = (userID: string) => {
+    getUserInfo(userID);
+    getGroups(userID);
+  };
+
   useEffect(() => {
     const getZid = async () => {
       try {
@@ -81,8 +88,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         const userResponse = await response.text();
         if (userResponse !== '') {
           const userID = JSON.parse(userResponse);
-          getUserInfo(userID);
-          getGroups(userID);
+          fetchUserInfo(userID);
         } else {
           throw new NetworkError("Couldn't get response");
         }
@@ -99,6 +105,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       setUser,
       groups,
       setGroups,
+      fetchUserInfo,
     }),
     [user, groups],
   );

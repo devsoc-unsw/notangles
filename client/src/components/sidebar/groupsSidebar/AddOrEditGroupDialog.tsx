@@ -19,8 +19,8 @@ import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
 
 interface AddGroupDialogProps {
   editGroupData?: Group;
-  user: User | undefined;
-  onClose: () => void;
+  user: User;
+  onClose: (userID: string) => void;
 }
 
 const StyledDialogTitle = styled(DialogTitle)`
@@ -31,9 +31,7 @@ const StyledDialogTitle = styled(DialogTitle)`
   justify-content: space-between;
 `;
 
-const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => {
-  if (!user) return <></>;
-
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => { 
   const emptyGroupData: Group = {
     id: '',
     name: '',
@@ -68,7 +66,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
       groupAdminIDs: [user.userID],
       imageURL: '',
     });
-    onClose();
+    onClose(user.userID);
   };
 
   return (

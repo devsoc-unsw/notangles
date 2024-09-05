@@ -19,8 +19,7 @@ const StyledItem = styled('div')`
   justify-content: space-between;
 `;
 
-const YourFriendsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return <></>;
+const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
 
   const handleRemoveFriend = async (friendID: string) => {
     try {
@@ -38,7 +37,7 @@ const YourFriendsTab: React.FC<{ user: User | undefined; getUserInfo: () => void
       //   if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
       console.log('unfriend status', acceptRequestStatus);
-      getUserInfo();
+      fetchUserInfo(user.userID);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }

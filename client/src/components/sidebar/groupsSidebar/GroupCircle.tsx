@@ -29,14 +29,14 @@ const StyledCircle = styled('img')`
   background-color: white;
 `;
 
-const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; handleClose: () => void }> = ({
-  user,
-  group,
-  getGroups,
-  handleClose,
-}) => {
+const AdminMenu: React.FC<{
+  user: User;
+  group: Group;
+  fetchUserInfo: (userID: string) => void;
+  handleClose: () => void;
+}> = ({ user, group, fetchUserInfo, handleClose }) => {
   const editGroupDialogOnClose = () => {
-    getGroups();
+    fetchUserInfo(user.userID);
     handleClose();
   };
 
@@ -53,7 +53,7 @@ const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; han
       console.log('group delete status', groupDeleteStatus);
       if (res.status === 200) {
         handleClose();
-        getGroups();
+        fetchUserInfo(user.userID);
       } else {
         throw new NetworkError("Couldn't get response");
       }
@@ -75,10 +75,10 @@ const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; han
   );
 };
 
-const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void }> = ({
+const MemberMenu: React.FC<{ userID: string; group: Group; fetchUserInfo: (userID: string) => void }> = ({
   userID,
   group,
-  getGroups,
+  fetchUserInfo,
 }) => {
   const handleLeaveGroup = async () => {
     try {
@@ -101,7 +101,7 @@ const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void
       const leaveGroupStatus = await res.json();
       console.log('leave group status', leaveGroupStatus.data);
       if (res.status === 200) {
-        getGroups();
+        fetchUserInfo(userID);
       } else {
         throw new NetworkError("Couldn't get response");
       }
@@ -120,12 +120,11 @@ const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void
   );
 };
 
-const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | undefined }> = ({
+const GroupCircle: React.FC<{ group: Group; fetchUserInfo: (userID: string) => void; user: User }> = ({
   group,
-  getGroups,
+  fetchUserInfo,
   user,
 }) => {
-  if (!user) return <></>;
   const isAdmin = group.groupAdminIDs.includes(user.userID);
 
   const [contextMenu, setContextMenu] = React.useState<{
@@ -161,9 +160,9 @@ const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | 
         anchorPosition={contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
       >
         {isAdmin ? (
-          <AdminMenu user={user} group={group} getGroups={getGroups} handleClose={handleClose} />
+          <AdminMenu user={user} group={group} fetchUserInfo={fetchUserInfo} handleClose={handleClose} />
         ) : (
-          <MemberMenu userID={user.userID} group={group} getGroups={getGroups} />
+          <MemberMenu userID={user.userID} group={group} fetchUserInfo={fetchUserInfo} />
         )}
       </StyledMenu>
     </div>
