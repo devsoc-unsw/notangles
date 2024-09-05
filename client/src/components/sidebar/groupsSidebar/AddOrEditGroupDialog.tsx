@@ -37,9 +37,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
     name: '',
     description: '',
     visibility: Privacy.PRIVATE,
-    timetableIDs: [],
-    memberIDs: [],
-    groupAdminIDs: [user.userID],
+    timetables: [],
+    members: [],
+    groupAdmins: [user],
     imageURL: '',
   };
 
@@ -47,7 +47,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
   const [group, setGroup] = useState<Group>(emptyGroupData);
 
   useEffect(() => {
-    setGroup({ ...group, groupAdminIDs: [user.userID] });
+    setGroup({ ...group, groupAdmins: [user] });
   }, [user.userID]);
 
   useEffect(() => {
@@ -61,9 +61,9 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
       name: '',
       description: '',
       visibility: Privacy.PRIVATE,
-      timetableIDs: [],
-      memberIDs: [],
-      groupAdminIDs: [user.userID],
+      timetables: [],
+      members: [],
+      groupAdmins: [user],
       imageURL: '',
     });
     onClose(user.userID);

@@ -105,9 +105,13 @@ const MemberMenu: React.FC<{ userID: string; group: Group; fetchUserInfo: (userI
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs.filter((id) => id !== userID),
-          groupAdminIDs: group.groupAdminIDs,
+          timetableIDs: group.timetables.map((timetable) => timetable.id),
+          memberIDs: group.members.map((member) => {
+            if (member.userID !== userID) {
+              member.userID;
+            }
+          }),
+          groupAdminIDs: group.groupAdmins.map((groupAdmins) => groupAdmins.userID),
           imageURL: group.imageURL,
         }),
       });
@@ -140,7 +144,7 @@ const GroupCircle: React.FC<{
   isSelected: boolean;
   onClick: () => void;
 }> = ({ group, fetchUserInfo, user, isSelected, onClick }) => {
-  const isAdmin = group.groupAdminIDs.includes(user.userID);
+  const isAdmin = group.groupAdmins.map((groupAdmin) => groupAdmin.userID).includes(user.userID);
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;

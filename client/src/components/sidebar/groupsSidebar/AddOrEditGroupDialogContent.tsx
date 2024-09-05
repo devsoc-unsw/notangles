@@ -83,15 +83,14 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const checkInputs = () => {
-    console.log('groupp', group);
     if (group.name.length < 1) {
       setErrorMessage(InputError.GROUP_NAME);
     } else if (group.description.length < 1) {
       setErrorMessage(InputError.GROUP_DESCRIPTION);
-    } else if (group.memberIDs.length < 1) {
+    } else if (group.members.length < 1) {
       setErrorMessage(InputError.GROUP_MEMBERS);
     }
-    return group.name.length >= 1 && group.description.length >= 1 && group.memberIDs.length >= 1;
+    return group.name.length >= 1 && group.description.length >= 1 && group.members.length >= 1;
   };
 
   const handleCreateGroup = async () => {
@@ -108,9 +107,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs,
-          groupAdminIDs: group.groupAdminIDs,
+          timetableIDs: group.timetables.map((timetable) => timetable.id),
+          memberIDs: group.members.map((member) => member.userID),
+          groupAdminIDs: group.groupAdmins.map((groupAdmin) => groupAdmin.userID),
           imageURL: group.imageURL,
         }),
       });
@@ -140,9 +139,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs,
-          groupAdminIDs: group.groupAdminIDs,
+          timetableIDs: group.timetables.map((timetable) => timetable.id),
+          memberIDs: group.members.map((member) => member.userID),
+          groupAdminIDs: group.groupAdmins.map((groupAdmin) => groupAdmin.userID),
           imageURL: group.imageURL,
         }),
       });
@@ -192,8 +191,8 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           options={user.friends}
           disableCloseOnSelect
           fullWidth
-          value={user.friends.filter((friend: User) => group.memberIDs.includes(friend.userID))}
-          onChange={(_, value) => setGroup({ ...group, memberIDs: value.map((val) => val.userID) })}
+          value={group.members}
+          onChange={(_, value) => setGroup({ ...group, members: value})}
           getOptionLabel={(option) => `${option.firstname} ${option.lastname} ${option.userID}`} // What the search query is based on
           renderOption={(props, option, { selected }) => (
             <li {...props}>
