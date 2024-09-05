@@ -28,7 +28,7 @@ const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed, showGroupsSide
       <Tooltip title="Coming Soon: Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
-          // onClick={() => setShowGroupsSidebar(!showGroupsSidebar)} NOTE: uncomment to display groups side bar
+          onClick={() => setShowGroupsSidebar(!showGroupsSidebar)}
           isSelected={showGroupsSidebar}
         >
           <SwitchAccount />
