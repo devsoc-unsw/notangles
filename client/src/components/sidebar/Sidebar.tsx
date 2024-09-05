@@ -102,7 +102,7 @@ const SidebarFooterText = styled('div')`
 
 const StyledGroupContainer = styled('div')`
   height: 100vh;
-  width: 50px;
+  width: 60px;
   background: ${({ theme }) => theme.palette.primary.main};
   display: flex;
   align-items: center;

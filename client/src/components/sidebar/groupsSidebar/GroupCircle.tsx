@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { WavingHand } from '@mui/icons-material';
-import { ListItemIcon, Tooltip } from '@mui/material';
+import { ListItemIcon, Tooltip, Zoom } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 
@@ -22,11 +22,24 @@ const AdminBorder = styled('div')<{ isAdmin: boolean }>(({ isAdmin }) => ({
   border: isAdmin ? '2px solid gold' : '',
 }));
 
-const StyledCircle = styled('img')`
+const GroupContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+`;
+
+const GroupImage = styled('img')`
   border-radius: 999px;
   width: 40px;
   height: 40px;
   background-color: white;
+`;
+
+const SelectedCircle = styled('div')`
+  border-radius: 999px;
+  width: 3px;
+  height: 36px;
+  background: white;
 `;
 
 const AdminMenu: React.FC<{
@@ -120,11 +133,13 @@ const MemberMenu: React.FC<{ userID: string; group: Group; fetchUserInfo: (userI
   );
 };
 
-const GroupCircle: React.FC<{ group: Group; fetchUserInfo: (userID: string) => void; user: User }> = ({
-  group,
-  fetchUserInfo,
-  user,
-}) => {
+const GroupCircle: React.FC<{
+  group: Group;
+  fetchUserInfo: (userID: string) => void;
+  user: User;
+  isSelected: boolean;
+  onClick: () => void;
+}> = ({ group, fetchUserInfo, user, isSelected, onClick }) => {
   const isAdmin = group.groupAdminIDs.includes(user.userID);
 
   const [contextMenu, setContextMenu] = React.useState<{
@@ -149,9 +164,16 @@ const GroupCircle: React.FC<{ group: Group; fetchUserInfo: (userID: string) => v
   return (
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>
       <Tooltip title={group.name} placement="right">
-        <AdminBorder isAdmin={isAdmin}>
-          <StyledCircle src={group.imageURL || NotanglesLogo} />
-        </AdminBorder>
+        <GroupContainer>
+          {isSelected && (
+            <Zoom in={true}>
+              <SelectedCircle />
+            </Zoom>
+          )}
+          <AdminBorder isAdmin={isAdmin} onClick={onClick}>
+            <GroupImage src={group.imageURL || NotanglesLogo} />
+          </AdminBorder>
+        </GroupContainer>
       </Tooltip>
       <StyledMenu
         open={contextMenu !== null}

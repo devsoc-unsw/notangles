@@ -2,7 +2,7 @@ import { createContext, useEffect, useMemo, useState } from 'react';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 import { User } from '../components/sidebar/UserAccount';
 import { API_URL } from '../api/config';
-import { Group } from '../interfaces/Group';
+import { Group, Privacy } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 
 //TODO, is this best practise?
@@ -27,6 +27,8 @@ export interface IUserContext {
   groups: Group[];
   setGroups: (newGroups: Group[]) => void;
   fetchUserInfo: (userID: string) => void;
+  selectedGroupIndex: number; // selected group is the index of groups;
+  setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
 }
 
 export const UserContext = createContext<IUserContext>({
@@ -35,11 +37,14 @@ export const UserContext = createContext<IUserContext>({
   groups: [],
   setGroups: () => {},
   fetchUserInfo: () => {},
+  selectedGroupIndex: -1,
+  setSelectedGroupIndex: () => {},
 });
 
 const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<User>(undefinedUser);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -80,6 +85,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   };
 
   useEffect(() => {
+    if (groups.length > 0 && selectedGroupIndex === -1) setSelectedGroupIndex(0);
+  }, [groups]);
+
+  useEffect(() => {
     const getZid = async () => {
       try {
         const response = await fetch(`${API_URL.server}/auth/user`, {
@@ -106,8 +115,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       groups,
       setGroups,
       fetchUserInfo,
+      selectedGroupIndex,
+      setSelectedGroupIndex,
     }),
-    [user, groups],
+    [user, groups, selectedGroupIndex],
   );
 
   return <UserContext.Provider value={initialContext}>{children}</UserContext.Provider>;
