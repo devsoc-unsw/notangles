@@ -3,8 +3,8 @@ import { TimetableProps } from '../../interfaces/PropTypes';
 import Timetable from '../timetable/Timetable';
 import { UserContext } from '../../context/UserContext';
 import styled from '@emotion/styled';
-import { Tooltip, Typography } from '@mui/material';
-import UserProfile, { emptyProfile } from '../sidebar/groupsSidebar/friends/UserProfile';
+import { Tooltip } from '@mui/material';
+import { emptyProfile } from '../sidebar/groupsSidebar/friends/UserProfile';
 
 const Container = styled('div')`
   display: flex;
@@ -44,6 +44,7 @@ const GroupDescription = styled('div')`
 `;
 const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { groups, selectedGroupIndex } = useContext(UserContext);
+  if (groups.length === 0) return <></>;
   const group = groups[selectedGroupIndex];
 
   return (
