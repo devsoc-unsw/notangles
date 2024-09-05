@@ -1,3 +1,5 @@
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
 export enum Env {
   DEV = 'development',
   TEST = 'test',
@@ -10,9 +12,14 @@ interface Config {
   auto: string;
   server: string;
 }
-
+const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 const LOCAL = 'http://localhost:3001';
 const LIVE = 'https://timetable.devsoc.app';
+
+export const client = new ApolloClient({
+  uri: HASURAGRES_GRAPHQL_API,
+  cache: new InMemoryCache(),
+});
 
 const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.DEV]: { timetable: `${LOCAL}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },

@@ -1,7 +1,89 @@
-import { API_URL } from '../api/config';
+import { addWeeks, isWithinInterval, parse, startOfWeek } from 'date-fns';
+import { API_URL, client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
 import { TermDataMap } from '../interfaces/Periods';
 import timeoutPromise from '../utils/timeoutPromise';
+import { gql } from '@apollo/client';
+
+type Term = String;
+const SUPPORTED_TERMS = ['U1', 'T1', 'T2', 'T3'];
+const prevTermIdx = (currIdx: number) => {
+  return Math.max(0, --currIdx);
+};
+const nextTermIdx = (currIdx: number) => {
+  return currIdx + 1 >= SUPPORTED_TERMS.length ? 0 : ++currIdx;
+};
+
+const GET_CLASSES = gql`
+  query MyQuery {
+    classes(distinct_on: term, where: { term: { _in: ["T1", "T2", "T3", "U1"] } }) {
+      term
+      offering_period
+    }
+  }
+`;
+
+interface TermInfoFetch {
+  term: string;
+  offering_period: string;
+}
+
+interface TermDateDetails {
+  startDate: Date;
+  endDate: Date;
+}
+let TERM_INFO_MAP = new Map<String, TermDateDetails>();
+const parseTermOfferingPeriods = (termInfo: TermInfoFetch): TermDateDetails => {
+  const [unParsedStartDate, unParsedEndDate] = termInfo.offering_period.split(' - ');
+  const startDate = parse(unParsedStartDate, 'dd/MM/yyyy', new Date());
+  const endDate = parse(unParsedEndDate, 'dd/MM/yyyy', new Date());
+  return { startDate, endDate };
+};
+
+const get_term_teaching_dates = async () => {
+  const availableTermData = await client.query<{ classes: TermInfoFetch[] }>({ query: GET_CLASSES });
+  console.log(availableTermData);
+  availableTermData.data.classes.map((cls: TermInfoFetch) => {
+    TERM_INFO_MAP.set(cls.term, parseTermOfferingPeriods(cls));
+  });
+};
+const getDateOfNthWeekMondayInTerm = async (term: Term, week: number = 0): Promise<Date> => {
+  if (TERM_INFO_MAP.size === 0) {
+    await get_term_teaching_dates();
+  }
+  const currTermStr = TERM_INFO_MAP.get(term)!;
+  const nthMonday = startOfWeek(addWeeks(currTermStr.startDate, week), { weekStartsOn: 1 }); // 1 -> Monday
+  return nthMonday;
+};
+
+const get_current_term = async (todaysDate: Date = new Date()): Promise<Term> => {
+  if (TERM_INFO_MAP.size === 0) {
+    await get_term_teaching_dates();
+  }
+  // Cycle through this and check if we are within a term
+  // If we are not within a term but in between display the next term.
+  for (let currTermIndex = 0; currTermIndex < SUPPORTED_TERMS.length; currTermIndex++) {
+    const currTermStr: String = SUPPORTED_TERMS[currTermIndex];
+    const termInfo = TERM_INFO_MAP.get(currTermStr);
+    if (!termInfo) continue;
+    if (isWithinInterval(todaysDate, { start: termInfo.startDate, end: termInfo.endDate })) {
+      const seventhMondayDate = await getDateOfNthWeekMondayInTerm(currTermStr, 7);
+      if (isWithinInterval(todaysDate, { start: seventhMondayDate, end: termInfo.endDate })) {
+        return SUPPORTED_TERMS[nextTermIdx(currTermIndex)]; // Return Next term assuming it is Week 7 and classes have been updated.
+      }
+      return currTermStr;
+    } else if (
+      isWithinInterval(todaysDate, {
+        start: termInfo.endDate,
+        end: TERM_INFO_MAP.get(SUPPORTED_TERMS[nextTermIdx(currTermIndex)])?.startDate!,
+      })
+    ) {
+      return SUPPORTED_TERMS[nextTermIdx(currTermIndex)];
+    }
+  }
+
+  return 'Invalid Term';
+};
 
 const REGULAR_TERM_STR_LEN = 2;
 
@@ -29,7 +111,9 @@ export const getAvailableTermDetails = async () => {
     termName: '',
     firstDayOfTerm: '',
   };
-
+  const curr_Term = await get_current_term();
+  console.log(curr_Term);
+  // await getAvailableTermDetails1();
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
@@ -113,8 +197,36 @@ export const getAvailableTermDetails = async () => {
       termsData: termsData,
     };
   } catch (e) {
+    console.log(e);
     throw new NetworkError('Could not connect to timetable scraper!');
   }
+};
+
+interface ClassCensusDateInfo {
+  classes: ClassCensusDate[];
+}
+interface ClassCensusDate {
+  census_date: string;
+  term: string;
+  offering_period: string;
+}
+export const getAvailableTermDetails1 = async () => {
+  const { data } = await client.query<ClassCensusDateInfo>({ query: GET_CLASSES });
+  let classes = data.classes;
+  console.log();
+  const termOfferingMap = new Map<string, Date[]>();
+  if (classes) {
+    classes.forEach((cls: { term: string; offering_period: string }) => {
+      const [startDate, endDate] = cls.offering_period.split(' - ');
+      const parsedStartDate = parse(startDate, 'dd/MM/yyyy', new Date());
+      const parsedEndDate = parse(startDate, 'dd/MM/yyyy', new Date());
+      if (cls.term in ['T1', 'T2', 'T3', 'U1']) {
+        termOfferingMap.set(cls.term, [parsedStartDate, parsedEndDate]);
+      }
+      console.log(termOfferingMap);
+    });
+  }
+  console.log(termOfferingMap);
 };
 
 export const colors: string[] = [

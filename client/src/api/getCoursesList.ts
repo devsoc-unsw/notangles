@@ -2,7 +2,6 @@ import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/C
 import NetworkError from '../interfaces/NetworkError';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
-
 const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
     code: course.courseCode,
