@@ -29,6 +29,19 @@ const Members = styled('div')`
   gap: 2px;
 `;
 
+const MemberText = styled('div')`
+  display: flex;
+  gap: 2px;
+  flex-direction: column;
+  align-items: start;
+`;
+const GroupName = styled('div')`
+  font-size: 18px;
+  font-weight: 600;
+`;
+const GroupDescription = styled('div')`
+  font-size: 14px;
+`;
 const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
   const { groups, selectedGroupIndex } = useContext(UserContext);
   const group = groups[selectedGroupIndex];
@@ -36,10 +49,10 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
   return (
     <Container>
       <Legend>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'start'}}>
-          <div style={{fontSize: 16}}>{group.name}</div>
-          <div style={{fontSize: 12}}>{group.description}</div>
-        </div>
+        <MemberText>
+          <GroupName>{group.name}</GroupName>
+          <GroupDescription>{group.description}</GroupDescription>
+        </MemberText>
         <Members>
           {group.members.map((member, i) => (
             <Tooltip title={`${member.firstname} ${member.lastname}`} key={i} placement="bottom">
