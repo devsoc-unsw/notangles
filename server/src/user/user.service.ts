@@ -80,6 +80,7 @@ export class UserService {
     );
 
     const data = {
+      userID,
       ...userData,
       createdAt: userData.createdAt.toISOString(),
       lastLogin: userData.lastLogin.toISOString(),
