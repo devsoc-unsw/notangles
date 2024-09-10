@@ -1,15 +1,17 @@
+import { gql } from '@apollo/client';
 import { addWeeks, isWithinInterval, parse, startOfWeek } from 'date-fns';
-import { API_URL, client } from '../api/config';
+
+import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
 import { TermDataMap } from '../interfaces/Periods';
-import timeoutPromise from '../utils/timeoutPromise';
-import { gql } from '@apollo/client';
 
-type Term = String;
+type Term = string;
 const SUPPORTED_TERMS = ['U1', 'T1', 'T2', 'T3'];
+
 const prevTermIdx = (currIdx: number) => {
   return Math.max(0, --currIdx);
 };
+
 const nextTermIdx = (currIdx: number) => {
   return currIdx + 1 >= SUPPORTED_TERMS.length ? 0 : ++currIdx;
 };
@@ -36,39 +38,52 @@ interface TermDateDetails {
   startDate: Date;
   endDate: Date;
 }
-let TERM_INFO_MAP = new Map<String, TermDateDetails>();
+
+// TODO: remove
+const TERM_INFO_MAP = new Map<string, TermDateDetails>();
+
 const parseTermOfferingPeriods = (termInfo: TermInfoFetch): TermDateDetails => {
   const [unParsedStartDate, unParsedEndDate] = termInfo.offering_period.split(' - ');
+  console.log(unParsedStartDate, unParsedEndDate);
   const startDate = parse(unParsedStartDate, 'dd/MM/yyyy', new Date());
   const endDate = parse(unParsedEndDate, 'dd/MM/yyyy', new Date());
   return { startDate, endDate };
 };
 
-const get_term_teaching_dates = async () => {
+const constructTermDetailsMap = async (): Promise<Map<string, TermDateDetails>> => {
+  const termInfoMap = new Map<string, TermDateDetails>();
   const availableTermData = await client.query<{ classes: TermInfoFetch[] }>({ query: GET_CLASSES });
-  console.log(availableTermData);
+
   availableTermData.data.classes.map((cls: TermInfoFetch) => {
-    TERM_INFO_MAP.set(cls.term, parseTermOfferingPeriods(cls));
+    termInfoMap.set(cls.term, parseTermOfferingPeriods(cls));
   });
+
+  return termInfoMap;
 };
+
 const getDateOfNthWeekMondayInTerm = async (term: Term, week: number = 0): Promise<Date> => {
   if (TERM_INFO_MAP.size === 0) {
-    await get_term_teaching_dates();
+    await constructTermDetailsMap();
   }
   const currTermStr = TERM_INFO_MAP.get(term)!;
   const nthMonday = startOfWeek(addWeeks(currTermStr.startDate, week), { weekStartsOn: 1 }); // 1 -> Monday
   return nthMonday;
 };
 
-const get_current_term = async (todaysDate: Date = new Date()): Promise<Term> => {
-  if (TERM_INFO_MAP.size === 0) {
-    await get_term_teaching_dates();
-  }
+/**
+ * @param termInfoMap
+ * @param todaysDate The current date to retrieve the latest term from
+ * @returns the term data for the latest term
+ */
+const get_current_term = async (
+  termInfoMap: Map<string, TermDateDetails>,
+  todaysDate: Date = new Date(),
+): Promise<Term> => {
   // Cycle through this and check if we are within a term
   // If we are not within a term but in between display the next term.
   for (let currTermIndex = 0; currTermIndex < SUPPORTED_TERMS.length; currTermIndex++) {
-    const currTermStr: String = SUPPORTED_TERMS[currTermIndex];
-    const termInfo = TERM_INFO_MAP.get(currTermStr);
+    const currTermStr: string = SUPPORTED_TERMS[currTermIndex];
+    const termInfo = termInfoMap.get(currTermStr);
     if (!termInfo) continue;
     if (isWithinInterval(todaysDate, { start: termInfo.startDate, end: termInfo.endDate })) {
       // const seventhMondayDate = await getDateOfNthWeekMondayInTerm(currTermStr, 7);
@@ -79,7 +94,7 @@ const get_current_term = async (todaysDate: Date = new Date()): Promise<Term> =>
     } else if (
       isWithinInterval(todaysDate, {
         start: termInfo.endDate,
-        end: TERM_INFO_MAP.get(SUPPORTED_TERMS[nextTermIdx(currTermIndex)])?.startDate!,
+        end: termInfoMap.get(SUPPORTED_TERMS[nextTermIdx(currTermIndex)])?.startDate!,
       })
     ) {
       return SUPPORTED_TERMS[nextTermIdx(currTermIndex)];
@@ -89,9 +104,37 @@ const get_current_term = async (todaysDate: Date = new Date()): Promise<Term> =>
   return 'Invalid Term';
 };
 
+// TODO: remove
+// interface ClassCensusDateInfo {
+//   classes: ClassCensusDate[];
+// }
+// interface ClassCensusDate {
+//   census_date: string;
+//   term: string;
+//   offering_period: string;
+// }
+// export const constructTermDetailsMap = async () => {
+//   const { data } = await client.query<ClassCensusDateInfo>({ query: GET_CLASSES });
+
+//   const classes = data.classes;
+//   const termOfferingMap = new Map<string, Date[]>();
+//   if (classes) {
+//     classes.forEach((cls: { term: string; offering_period: string }) => {
+//       const [unParsedStartDate, unParsedEndDate] = cls.offering_period.split(' - ');
+//   const startDate = parse(unParsedStartDate, 'dd/MM/yyyy', new Date());
+//   const endDate = parse(unParsedEndDate, 'dd/MM/yyyy', new Date());
+//       if (cls.term in ['T1', 'T2', 'T3', 'U1']) {
+//         termOfferingMap.set(cls.term, [startDate, endDate]);
+//       }
+//     });
+//   }
+//   console.log(termOfferingMap);
+// };
+
 const REGULAR_TERM_STR_LEN = 2;
 
 const parseYear = (termDate: string) => {
+  console.log(termDate);
   const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
   const matched = termDate.match(regexp);
@@ -115,9 +158,7 @@ export const getAvailableTermDetails = async () => {
     termName: '',
     firstDayOfTerm: '',
   };
-  const currTerm = await get_current_term();
-  // await getAvailableTermDetails1();
-  await constructTermDetailsMap();
+
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
@@ -131,48 +172,37 @@ export const getAvailableTermDetails = async () => {
     let term = termData.termName || `T${termNumber}`;
     let termName = `Term ${termNumber}`;
 
-    if (termId.length === REGULAR_TERM_STR_LEN) {
-      // This is not a summer term.
-      termNum = parseInt(termId.substring(1));
-      term = `T${termNum}`;
-      termName = `Term ${termNum}`;
-    } else {
-      // This is a summer term.
+    if (termId === 'U1') {
       termName = `Summer Term`;
       term = termId;
       termNum = 0;
+    } else {
+      termNum = parseInt(termId.substring(1));
+      term = `T${termNum}`;
+      termName = `Term ${termNum}`;
     }
 
     return { term: term, termName: termName, termNum: termNum };
   };
 
   try {
-    // get the latest/new term start date available from the scraper
-    const termDateFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availablestartdate`));
-    const termDateRes = await termDateFetch.text();
+    const termMapInfo = await constructTermDetailsMap();
+    const currTermId = await get_current_term(termMapInfo);
+    // TODO: maybe create a function to get the previous term - we need to figure out the logic for when exactly
+    // we 'release' the latest term data and then transition?!?!
+    const prevTermId = SUPPORTED_TERMS[Math.max(SUPPORTED_TERMS.findIndex((term) => term == currTermId) - 1, 0)];
 
-    const termIdFetch = await timeoutPromise(1000, fetch(`${API_URL.timetable}/availableterm`));
-    const termIdRes = await termIdFetch.text();
+    firstDayOfTerm = termMapInfo.get(currTermId)?.startDate.toLocaleDateString().split('/').reverse().join('-')!;
 
-    // get the current/previous term date
-    const prevTermDate = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentstartdate`));
-    const prevTermRes = await prevTermDate.text();
+    const newTerm = parseTermData(currTermId);
+    const prevTerm = parseTermData(prevTermId);
 
-    const prevTermId = await timeoutPromise(1000, fetch(`${API_URL.timetable}/currentterm`));
-    const prevTermIdRes = await prevTermId.text();
-
-    const extractedCurrYear = parseYear(termDateRes);
+    const extractedCurrYear = parseYear(termMapInfo.get(currTermId)?.startDate.toLocaleDateString()!);
     if (extractedCurrYear.length > 0) {
       year = extractedCurrYear;
     }
 
-    const prevYear = parseYear(prevTermRes);
-
-    const termDateSplit = termDateRes.split('/');
-    firstDayOfTerm = termDateSplit.reverse().join('-');
-
-    const newTerm = parseTermData(termIdRes);
-    const prevTerm = parseTermData(prevTermIdRes);
+    const prevYear = parseYear(termMapInfo.get(prevTermId)?.startDate.toLocaleDateString()!);
 
     const termsData: TermDataMap = {
       prevTerm: { year: prevYear, term: prevTerm.term },
@@ -203,30 +233,6 @@ export const getAvailableTermDetails = async () => {
   } catch (e) {
     console.log(e);
     throw new NetworkError('Could not connect to timetable scraper!');
-  }
-};
-
-interface ClassCensusDateInfo {
-  classes: ClassCensusDate[];
-}
-interface ClassCensusDate {
-  census_date: string;
-  term: string;
-  offering_period: string;
-}
-export const constructTermDetailsMap = async () => {
-  const { data } = await client.query<ClassCensusDateInfo>({ query: GET_CLASSES });
-  let classes = data.classes;
-  const termOfferingMap = new Map<string, Date[]>();
-  if (classes) {
-    classes.forEach((cls: { term: string; offering_period: string }) => {
-      const [startDate, endDate] = cls.offering_period.split(' - ');
-      const parsedStartDate = parse(startDate, 'dd/MM/yyyy', new Date());
-      const parsedEndDate = parse(startDate, 'dd/MM/yyyy', new Date());
-      if (cls.term in ['T1', 'T2', 'T3', 'U1']) {
-        termOfferingMap.set(cls.term, [parsedStartDate, parsedEndDate]);
-      }
-    });
   }
 };
 
