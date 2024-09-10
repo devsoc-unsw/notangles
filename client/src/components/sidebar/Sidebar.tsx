@@ -124,7 +124,6 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [showGroupsSidebar, setShowGroupsSidebar] = useState(false);
   const sideBarRef = useRef<HTMLDivElement>(null);
-  // TODO: dummy logic to be
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -248,7 +247,6 @@ const Sidebar: React.FC = () => {
         </div>
 
         <SidebarFooter>
-          {/* TODO: dummy logic - to be replaced */}
           <DarkModeButton collapsed={collapsed} />
           <UserAccount collapsed={collapsed} />
           {!collapsed ? (

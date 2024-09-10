@@ -83,7 +83,6 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const checkInputs = () => {
-    console.log('groupp', group);
     if (group.name.length < 1) {
       setErrorMessage(InputError.GROUP_NAME);
     } else if (group.description.length < 1) {
