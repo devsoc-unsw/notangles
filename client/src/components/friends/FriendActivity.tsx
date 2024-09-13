@@ -60,22 +60,85 @@ const UserProfile = styled('div')`
   background-color: white;
 `;
 
-const FriendsActivity: React.FC = ({}) => {
+interface FriendProps {
+  friend: {
+    name: string;
+    currentActivity: {
+      type: string;
+      start: string;
+      end: string;
+      location?: string;
+      course?: string;
+    } | null;
+  };
+}
+
+// !! default / sample data 
+
+const FriendsActivity: React.FC<FriendProps> = ({ friend }) => {
+  const { name, currentActivity } = friend;
+
+  const getActivityDescription = () => {
+    if (!currentActivity) {
+      return 'No current activity';
+    }
+
+    if (currentActivity.type === 'class') {
+      return `Attending class: ${currentActivity.course}`;
+    } else if (currentActivity.type === 'event') {
+      return 'At an event';
+    } else {
+      return 'No current activity';
+    }
+  };
+
+  const getLocationAndTime = () => {
+    if (!currentActivity) return null;
+
+    const location = currentActivity.location || 'Unknown location';
+    const time = `${new Date(currentActivity.start).toLocaleTimeString()} - ${new Date(currentActivity.end).toLocaleTimeString()}`;
+
+    return { location, time };
+  };
+
+  const locationAndTime = getLocationAndTime();
+
   return (
     <FriendsActivityTab>
       <UserDetailsContainer>
         <UserProfile />
         <TextContainer>
-          <UserNameText>Rayian Ahmed</UserNameText>
-          <UserNameActivity>Currently teaching</UserNameActivity>
+          <UserNameText>{name}</UserNameText>
+          <UserNameActivity>{getActivityDescription()}</UserNameActivity>
         </TextContainer>
       </UserDetailsContainer>
-      <ClassLocationContainer>
-        <Location>COMP1531 at TablaK17G7</Location>
-        <ClassTime>14:00 - 16:00</ClassTime>
-      </ClassLocationContainer>
+      {locationAndTime && (
+        <ClassLocationContainer>
+          <Location>{locationAndTime.location}</Location>
+          <ClassTime>{locationAndTime.time}</ClassTime>
+        </ClassLocationContainer>
+      )}
     </FriendsActivityTab>
   );
 };
 
 export default FriendsActivity;
+
+
+// const FriendsActivity: React.FC = ({}) => {
+//   return (
+//     <FriendsActivityTab>
+//       <UserDetailsContainer>
+//         <UserProfile />
+//         <TextContainer>
+//           <UserNameText>Rayian Ahmed</UserNameText>
+//           <UserNameActivity>Currently teaching</UserNameActivity>
+//         </TextContainer>
+//       </UserDetailsContainer>
+//       <ClassLocationContainer>
+//         <Location>COMP1531 at TablaK17G7</Location>
+//         <ClassTime>14:00 - 16:00</ClassTime>
+//       </ClassLocationContainer>
+//     </FriendsActivityTab>
+//   );
+// };

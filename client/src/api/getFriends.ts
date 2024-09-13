@@ -6,7 +6,7 @@ import { API_URL } from './config';
 import getCourseInfo from './getCourseInfo';
 import { getAvailableTermDetails } from '../constants/timetable';
 
-const getCurrentActivity = async (userId: string): Promise<CurrentActivity | null> => {
+export const getCurrentActivity = async (userId: string): Promise<CurrentActivity | null> => {
     // get the user's timetable data
     const baseURL = `${API_URL.server}/user/timetable/${userId}`;
     try {
@@ -35,7 +35,7 @@ const getCurrentActivity = async (userId: string): Promise<CurrentActivity | nul
 };
 
 
-const findCurrentActivity = (courseInfos: CourseData[], events: EventPeriod[], now: Date): CurrentActivity | null => {
+export const findCurrentActivity = (courseInfos: CourseData[], events: EventPeriod[], now: Date): CurrentActivity | null => {
     for (const courseInfo of courseInfos) {
         for (const courseClass of Object.values(courseInfo.activities)) {
             for (const classData of courseClass) {
@@ -64,7 +64,7 @@ const findCurrentActivity = (courseInfos: CourseData[], events: EventPeriod[], n
 }
 
 
-const getAllFriends = async (userId: string): Promise<FriendsList> => {
+export const getAllFriends = async (userId: string): Promise<FriendsList> => {
     const baseURL = `${API_URL.server}/friend/findAllFriends/${userId}`;
     try {
         const data = await timeoutPromise(1000, fetch(baseURL));
@@ -84,5 +84,3 @@ const getAllFriends = async (userId: string): Promise<FriendsList> => {
         throw new NetworkError('Could not connect to server');
     }
 };
-
-export default getCurrentActivity;
