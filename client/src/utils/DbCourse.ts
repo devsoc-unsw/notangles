@@ -146,7 +146,11 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
  * const json: DBCourse = await data.json()
  * const courseInfo = dbCourseToCourseData(json)
  */
-export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezone: boolean): CourseData => {
+export const dbCourseToCourseData = (
+  dbCourse: DbCourse,
+  isConvertToLocalTimezone: boolean,
+  year: string,
+): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
@@ -159,6 +163,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
+      classNo: dbClass.classID,
       courseCode: dbCourse.courseCode,
       courseName: dbCourse.name,
       activity: dbClass.activity,
@@ -167,6 +172,8 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       capacity: dbClass.courseEnrolment.capacity,
       periods: [],
       section: dbClass.section,
+      term: dbClass.term,
+      year,
     };
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));

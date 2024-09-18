@@ -88,7 +88,6 @@ const getCourseInfo = async (
   const COURSE_API_TIMEOUT = 2000;
   try {
     const data = await timeoutPromise(COURSE_API_TIMEOUT, fetch(`${baseURL}/courses/${courseCode}/`));
-
     // Remove any leftover courses from localStorage if they are not offered in the current term
     // which is why a 400 error is returned
     if (data.status === 400) {
@@ -162,7 +161,7 @@ const getCourseInfo = async (
 
     if (!json) throw new NetworkError('Internal server error');
 
-    return dbCourseToCourseData(json, isConvertToLocalTimezone);
+    return dbCourseToCourseData(json, isConvertToLocalTimezone, year);
   } catch (error) {
     console.log(error);
     throw new NetworkError('Could not connect to server');

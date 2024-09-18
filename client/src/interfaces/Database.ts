@@ -9,9 +9,11 @@ export interface DbCourse {
 export interface DbClass {
   activity: Activity;
   times: DbTimes[];
+  classID: number;
   status: Status;
   courseEnrolment: DbCourseEnrolment;
   section: Section;
+  term: string;
 }
 
 export interface DbCourseEnrolment {
