@@ -27,6 +27,7 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
+import { syncAddTimetable } from '../../utils/syncTimetables';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
 
@@ -196,6 +197,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         createdEvents: duplicateEvents(currentTimetable.createdEvents),
         assignedColors: currentTimetable.assignedColors,
       };
+
+      syncAddTimetable('zTODO', newTimetable);
 
       const newTimetables = [
         ...displayTimetables[term].slice(0, selectedTimetable + 1),

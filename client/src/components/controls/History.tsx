@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
+import { syncAddTimetable, syncDeleteTimetables } from '../../utils/syncTimetables';
 import {
   ActionsPointer,
   areIdenticalTimetables,
@@ -199,9 +200,13 @@ const History: React.FC = () => {
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
+    const newTimetables = createDefaultTimetable();
+    syncDeleteTimetables(displayTimetables[term]);
+    syncAddTimetable('zTODO', newTimetables[0]);
+
     const newDisplayTimetables: DisplayTimetablesMap = {
       ...displayTimetables,
-      [term]: createDefaultTimetable(),
+      [term]: newTimetables,
     };
     setTimetableState([], {}, {}, newDisplayTimetables, 0);
   };

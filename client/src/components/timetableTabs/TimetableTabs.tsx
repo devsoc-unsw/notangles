@@ -26,6 +26,7 @@ import {
   tabThemeLight,
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
+import { syncAddTimetable } from '../../utils/syncTimetables';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 
 const TimetableTabs: React.FC = () => {
@@ -101,9 +102,9 @@ const TimetableTabs: React.FC = () => {
       storage.set('timetables', addingNewTimetables);
 
       setDisplayTimetables(addingNewTimetables);
-
       // Clearing the selected courses, classes and created events for the new timetable
       setTimetableState([], {}, {}, {}, nextIndex);
+      syncAddTimetable('zTODO', newTimetable);
     }
   };
 

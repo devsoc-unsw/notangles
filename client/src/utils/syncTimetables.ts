@@ -35,7 +35,6 @@ const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => 
       return;
     }
     const { selectedCourses, selectedClasses, createdEvents, name } = newTimetable;
-    console.log(createdEvents);
     await fetch(`${API_URL.server}/user/timetable`, {
       method: 'POST',
       headers: {
