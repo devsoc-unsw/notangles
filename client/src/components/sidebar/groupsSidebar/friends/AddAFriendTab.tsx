@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { User } from '../../UserAccount';
-import UserProfile from './UserProfile';
+import UserProfile from '../../../user/UserProfile';
 
 const StyledContainer = styled('div')`
   display: flex;

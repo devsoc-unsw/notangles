@@ -6,7 +6,7 @@ import React from 'react';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { User } from '../../UserAccount';
-import UserProfile from './UserProfile';
+import UserProfile from '../../../user/UserProfile';
 
 const StyledFriendsListContainer = styled('div')`
   display: flex;

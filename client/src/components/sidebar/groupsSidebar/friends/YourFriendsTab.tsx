@@ -6,7 +6,7 @@ import React from 'react';
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
 import { User } from '../../UserAccount';
-import UserProfile from './UserProfile';
+import UserProfile from '../../../user/UserProfile';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -20,7 +20,6 @@ const StyledItem = styled('div')`
 `;
 
 const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
-
   const handleRemoveFriend = async (friendID: string) => {
     try {
       const res = await fetch(`${API_URL.server}/friend`, {

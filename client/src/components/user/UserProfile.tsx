@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import React from 'react';
-
-export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+import UserIcon from './UserIcon';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -42,12 +41,7 @@ const UserProfile: React.FC<{ firstname: string; lastname: string; email: string
   };
   return (
     <StyledContainer>
-      <img
-        src={profileURL || emptyProfile}
-        width={34}
-        height={34}
-        style={{ borderRadius: 999, backgroundColor: 'white' }}
-      />
+      <UserIcon url={profileURL} />
       <div>
         <StyledFullname>{getFullName()}</StyledFullname>
         <StyledEmail>{getEmail()}</StyledEmail>

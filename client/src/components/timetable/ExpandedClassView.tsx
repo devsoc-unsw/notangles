@@ -38,6 +38,7 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
+import { UserContext } from '../../context/UserContext';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -80,6 +81,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
+
+  //For social timetabling seeing list of friends who share this class with you.
+  const { groups, selectedGroupIndex, groupsSidebarCollapsed } = useContext(UserContext);
 
   // To reload initial color picker after useColorMapper instantiates context
   useEffect(() => {
@@ -253,6 +257,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             />
           </ColorListItem>
         </>
+        {!groupsSidebarCollapsed && groups[selectedGroupIndex].members.map((member) => <div>{member.firstname}</div>)}
       </StyledDialogContent>
     </Dialog>
   );

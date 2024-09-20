@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { API_URL } from '../../api/config';
 import { TimetableData } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
-import UserProfile from './groupsSidebar/friends/UserProfile';
+import UserProfile from '../user/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;
