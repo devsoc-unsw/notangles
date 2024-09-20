@@ -40,6 +40,7 @@ import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
 import { UserContext } from '../../context/UserContext';
 import UserIcon from '../user/UserIcon';
+import { User } from '../sidebar/UserAccount';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -52,6 +53,25 @@ const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode
 const UserIconContainer = styled('div')`
   margin-right: 6px;
 `;
+
+/**
+ *
+ * Returns a row display of UserIcons of friends in your current group who share this class timetable with you.
+ */
+const SharedActivitiesFriendsList = () => {
+  const { groups, selectedGroupIndex } = useContext(UserContext);
+
+
+  return (
+    <>
+      {groups[selectedGroupIndex].members.map((member) => (
+        <UserIconContainer>
+          <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
+        </UserIconContainer>
+      ))}
+    </>
+  );
+};
 
 /**
  * @param time When the class runs
@@ -87,8 +107,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
+
   //For social timetabling seeing list of friends who share this class with you.
-  const { groups, selectedGroupIndex, groupsSidebarCollapsed } = useContext(UserContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   // To reload initial color picker after useColorMapper instantiates context
   useEffect(() => {
@@ -267,11 +288,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             <StyledListItemIcon isDarkMode={isDarkMode}>
               <FriendsIcon />
             </StyledListItemIcon>
-            {groups[selectedGroupIndex].members.map((member) => (
-              <UserIconContainer>
-                <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
-              </UserIconContainer>
-            ))}
+            <SharedActivitiesFriendsList />
           </StyledListItem>
         )}
       </StyledDialogContent>

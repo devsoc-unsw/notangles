@@ -3,45 +3,32 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode } from '../../interfaces/Periods';
+import { Activity, CourseCode, SelectedClasses } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
 
-const DroppedCards: React.FC<DroppedCardsProps> = ({
-  assignedColors,
-  handleSelectClass,
-  setCopiedEvent,
-  copiedEvent,
-}) => {
-  const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
-  const [cellWidth, setCellWidth] = useState(0);
+/**
+ * @param courseCode The course code of the activity
+ * @param activity The activity
+ * @returns The inventory period corresponding to that activity
+ */
+const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) => {
+  const { selectedCourses } = useContext(CourseContext);
+  return selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
+};
 
-  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
-  const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
-
-  const droppedClasses: JSX.Element[] = [];
-  const droppedEvents: JSX.Element[] = [];
-
-  const prevClassCards = useRef<ClassCard[]>([]);
+/**
+ *
+ * @param selectedClasses
+ * @returns all scheduled and unscheduled periods
+ */
+const getClassCards = (selectedClasses: SelectedClasses, inventoryCards: React.RefObject<ClassCard[]>) => {
+  const { isHideExamClasses } = useContext(AppContext);
   const classCards: ClassCard[] = [];
 
-  const keyCounter = useRef(0);
-  const inventoryCards = useRef<ClassCard[]>([]);
-
-  const droppedCardsRef = useRef<HTMLDivElement>(null);
-
-  /**
-   * @param courseCode The course code of the activity
-   * @param activity The activity
-   * @returns The inventory period corresponding to that activity
-   */
-  const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
-    selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
-
-  // Get all scheduled and unscheduled periods
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
       if (isHideExamClasses && activity === 'Exam') return;
@@ -56,14 +43,42 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
         const inventoryPeriod = getInventoryPeriod(courseCode, activity);
         if (inventoryPeriod) {
           classCards.push(inventoryPeriod);
-
-          if (!inventoryCards.current.includes(inventoryPeriod)) {
-            inventoryCards.current.push(inventoryPeriod);
+          if (inventoryCards.current) {
+            if (!inventoryCards.current.includes(inventoryPeriod)) {
+              inventoryCards.current.push(inventoryPeriod);
+            }
           }
         }
       }
     });
   });
+  return classCards;
+};
+
+const DroppedCards: React.FC<DroppedCardsProps> = ({
+  assignedColors,
+  handleSelectClass,
+  setCopiedEvent,
+  copiedEvent,
+}) => {
+  const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
+  const [cellWidth, setCellWidth] = useState(0);
+
+  const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { selectedClasses, createdEvents } = useContext(CourseContext);
+
+  const droppedClasses: JSX.Element[] = [];
+  const droppedEvents: JSX.Element[] = [];
+  
+  
+  const keyCounter = useRef(0);
+  const inventoryCards = useRef<ClassCard[]>([]);
+  
+  const prevClassCards = useRef<ClassCard[]>([]);
+  const classCards: ClassCard[] = getClassCards(selectedClasses, inventoryCards);
+
+  const droppedCardsRef = useRef<HTMLDivElement>(null);
+
 
   // Clear any inventory cards which no longer exist
   inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card));
