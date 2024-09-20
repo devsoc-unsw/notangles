@@ -1,4 +1,4 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Diversity3 as FriendsIcon } from '@mui/icons-material';
 import {
   Dialog,
   Grid,
@@ -39,6 +39,7 @@ import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getC
 import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
 import { UserContext } from '../../context/UserContext';
+import UserIcon from '../user/UserIcon';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -46,6 +47,10 @@ const StyledDropdownContainer = styled(Grid)`
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
+`;
+
+const UserIconContainer = styled('div')`
+  margin-right: 6px;
 `;
 
 /**
@@ -257,7 +262,18 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             />
           </ColorListItem>
         </>
-        {!groupsSidebarCollapsed && groups[selectedGroupIndex].members.map((member) => <div>{member.firstname}</div>)}
+        {!groupsSidebarCollapsed && (
+          <StyledListItem>
+            <StyledListItemIcon isDarkMode={isDarkMode}>
+              <FriendsIcon />
+            </StyledListItemIcon>
+            {groups[selectedGroupIndex].members.map((member) => (
+              <UserIconContainer>
+                <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
+              </UserIconContainer>
+            ))}
+          </StyledListItem>
+        )}
       </StyledDialogContent>
     </Dialog>
   );

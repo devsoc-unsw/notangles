@@ -3,8 +3,6 @@ import { TimetableProps } from '../../interfaces/PropTypes';
 import Timetable from '../timetable/Timetable';
 import { UserContext } from '../../context/UserContext';
 import styled from '@emotion/styled';
-import { Tooltip } from '@mui/material';
-import { emptyProfile } from '../user/UserIcon';
 import UserIcon from '../user/UserIcon';
 
 const Container = styled('div')`

@@ -11,7 +11,6 @@ interface UserIconProps {
 }
 
 const UserIcon: React.FC<UserIconProps> = ({ url, size, tooltipTitle }) => {
-  console.log('rayy', url);
   return (
     <Tooltip title={tooltipTitle} placement="bottom">
       <img
