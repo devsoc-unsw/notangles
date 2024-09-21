@@ -3,7 +3,7 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode, SelectedClasses } from '../../interfaces/Periods';
+import { Activity, ClassData, ClassPeriod, CourseCode, EventPeriod, SelectedClasses } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
@@ -55,6 +55,54 @@ const getClassCards = (selectedClasses: SelectedClasses, inventoryCards: React.R
   return classCards;
 };
 
+/**
+ * @returns Generates classes
+ */
+const getDroppedClasses = (
+  classCards: ClassCard[],
+  cardKeys: Map<ClassCard, number>,
+  clashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
+  assignedColors: Record<string, string>,
+  cellWidth: number,
+  copiedEvent: EventPeriod | null,
+  setCopiedEvent: (copiedEvent: EventPeriod | null) => void,
+  handleSelectClass: (classData: ClassData) => void,
+  inventoryCards: React.RefObject<ClassCard[]>,
+) => {
+  const droppedClasses: JSX.Element[] = [];
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const keyCounter = useRef(0);
+
+  classCards.forEach((classCard) => {
+    try {
+      let key = cardKeys.get(classCard);
+      key = key !== undefined ? key : ++keyCounter.current;
+      const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
+
+      droppedClasses.push(
+        <DroppedClass
+          key={key}
+          classCard={classCard}
+          color={assignedColors[classCard.courseCode]}
+          y={classCard.type === 'inventory' ? inventoryCards.current?.indexOf(classCard) : undefined}
+          handleSelectClass={handleSelectClass}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          clashColour={clashColour as string}
+          cellWidth={cellWidth}
+          setCopiedEvent={setCopiedEvent}
+          copiedEvent={copiedEvent}
+        />,
+      );
+      cardKeys.set(classCard, key);
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
+  });
+  return droppedClasses;
+};
+
 const DroppedCards: React.FC<DroppedCardsProps> = ({
   assignedColors,
   handleSelectClass,
@@ -67,18 +115,14 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedClasses, createdEvents } = useContext(CourseContext);
 
-  const droppedClasses: JSX.Element[] = [];
   const droppedEvents: JSX.Element[] = [];
-  
-  
-  const keyCounter = useRef(0);
+
   const inventoryCards = useRef<ClassCard[]>([]);
-  
+
   const prevClassCards = useRef<ClassCard[]>([]);
   const classCards: ClassCard[] = getClassCards(selectedClasses, inventoryCards);
 
   const droppedCardsRef = useRef<HTMLDivElement>(null);
-
 
   // Clear any inventory cards which no longer exist
   inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card));
@@ -122,33 +166,17 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const clashes = findClashes(selectedClasses, createdEvents);
 
   // Generate classes
-  classCards.forEach((classCard) => {
-    try {
-      let key = cardKeys.get(classCard);
-      key = key !== undefined ? key : ++keyCounter.current;
-      const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
-
-      droppedClasses.push(
-        <DroppedClass
-          key={key}
-          classCard={classCard}
-          color={assignedColors[classCard.courseCode]}
-          y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
-          handleSelectClass={handleSelectClass}
-          cardWidth={cardWidth as number}
-          clashIndex={clashIndex as number}
-          clashColour={clashColour as string}
-          cellWidth={cellWidth}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
-        />,
-      );
-      cardKeys.set(classCard, key);
-    } catch (err) {
-      setAlertMsg(unknownErrorMessage);
-      setErrorVisibility(true);
-    }
-  });
+  const droppedClasses: JSX.Element[] = getDroppedClasses(
+    classCards,
+    cardKeys,
+    clashes,
+    assignedColors,
+    cellWidth,
+    copiedEvent,
+    setCopiedEvent,
+    handleSelectClass,
+    inventoryCards,
+  );
 
   // Sort classes by key to prevent disruptions to transitions
   droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
