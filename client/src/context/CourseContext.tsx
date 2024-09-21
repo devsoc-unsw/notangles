@@ -1,6 +1,6 @@
 import { createContext, useMemo, useState } from 'react';
 
-import { CourseData, CreatedEvents, SelectedClasses } from '../interfaces/Periods';
+import { CourseData, CreatedEvents, EventPeriod, SelectedClasses } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
 export interface ICourseContext {
@@ -17,6 +17,9 @@ export interface ICourseContext {
   assignedColors: Record<string, string>;
   setAssignedColors(newAssignedColours: Record<string, string>): void;
   setAssignedColors(callback: (newAssignedColours: Record<string, string>) => Record<string, string>): void;
+
+  copiedEvent: EventPeriod | null;
+  setCopiedEvent: (newCopiedEvent: EventPeriod | null) => void;
 }
 
 export const CourseContext = createContext<ICourseContext>({
@@ -31,6 +34,9 @@ export const CourseContext = createContext<ICourseContext>({
 
   assignedColors: {},
   setAssignedColors: () => {},
+
+  copiedEvent: null,
+  setCopiedEvent: () => {},
 });
 
 const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
@@ -38,6 +44,8 @@ const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
   const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
   const [createdEvents, setCreatedEvents] = useState<CreatedEvents>({});
   const [assignedColors, setAssignedColors] = useState<Record<string, string>>({});
+  const [copiedEvent, setCopiedEvent] = useState<EventPeriod | null>(null);
+
   const initialContext = useMemo(
     () => ({
       selectedCourses,
@@ -48,8 +56,10 @@ const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
       setCreatedEvents,
       assignedColors,
       setAssignedColors,
+      copiedEvent,
+      setCopiedEvent,
     }),
-    [selectedCourses, selectedClasses, createdEvents, assignedColors],
+    [selectedCourses, selectedClasses, createdEvents, assignedColors, copiedEvent],
   );
 
   return <CourseContext.Provider value={initialContext}>{children}</CourseContext.Provider>;

@@ -30,15 +30,7 @@ const StyledLocationIcon = styled(LocationOn)`
   padding-bottom: 0.1em;
 `;
 
-const DroppedEvent: React.FC<DroppedEventProps> = ({
-  eventId,
-  eventPeriod,
-  cardWidth,
-  clashIndex,
-  cellWidth,
-  setCopiedEvent,
-  copiedEvent,
-}) => {
+const DroppedEvent: React.FC<DroppedEventProps> = ({ eventId, eventPeriod, cardWidth, clashIndex, cellWidth }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
@@ -47,7 +39,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
 
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { createdEvents, setCreatedEvents, copiedEvent, setCopiedEvent } = useContext(CourseContext);
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<any>(null);
@@ -188,8 +180,6 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             setContextMenu={setContextMenu}
             setPopupOpen={setPopupOpen}
             setIsEditing={setIsEditing}
-            setCopiedEvent={setCopiedEvent}
-            copiedEvent={copiedEvent}
           />
         ) : (
           <>

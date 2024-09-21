@@ -32,12 +32,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   clashIndex,
   clashColour,
   cellWidth,
-  setCopiedEvent,
-  copiedEvent,
 }) => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
+  const { copiedEvent, setCopiedEvent } = useContext(CourseContext);
 
   const {
     earliestStartTime,

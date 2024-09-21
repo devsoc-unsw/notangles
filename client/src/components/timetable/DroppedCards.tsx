@@ -64,8 +64,6 @@ const getDroppedClasses = (
   clashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
   assignedColors: Record<string, string>,
   cellWidth: number,
-  copiedEvent: EventPeriod | null,
-  setCopiedEvent: (copiedEvent: EventPeriod | null) => void,
   handleSelectClass: (classData: ClassData) => void,
   inventoryCards: React.RefObject<ClassCard[]>,
 ) => {
@@ -90,8 +88,6 @@ const getDroppedClasses = (
           clashIndex={clashIndex as number}
           clashColour={clashColour as string}
           cellWidth={cellWidth}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
         />,
       );
       cardKeys.set(classCard, key);
@@ -103,12 +99,7 @@ const getDroppedClasses = (
   return droppedClasses;
 };
 
-const DroppedCards: React.FC<DroppedCardsProps> = ({
-  assignedColors,
-  handleSelectClass,
-  setCopiedEvent,
-  copiedEvent,
-}) => {
+const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
@@ -172,8 +163,6 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     clashes,
     assignedColors,
     cellWidth,
-    copiedEvent,
-    setCopiedEvent,
     handleSelectClass,
     inventoryCards,
   );
@@ -198,8 +187,6 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
           cardWidth={cardWidth as number}
           clashIndex={clashIndex as number}
           cellWidth={cellWidth}
-          setCopiedEvent={setCopiedEvent}
-          copiedEvent={copiedEvent}
         />,
       );
     } catch (err) {

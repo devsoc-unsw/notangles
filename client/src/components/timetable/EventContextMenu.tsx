@@ -15,10 +15,8 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   setContextMenu,
   setPopupOpen,
   setIsEditing,
-  setCopiedEvent,
-  copiedEvent,
 }) => {
-  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { createdEvents, setCreatedEvents, copiedEvent, setCopiedEvent } = useContext(CourseContext);
 
   const { name, location, description, color, day, start, end }: EventMetadata = {
     ...eventPeriod.event,

@@ -14,7 +14,6 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { TimetableLayoutProps } from '../../interfaces/PropTypes';
 import { StyledMenu } from '../../styles/CustomEventStyles';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
@@ -157,11 +156,12 @@ const generateHours = (
   }
 };
 
-export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, setCopiedEvent }) => {
+export const TimetableLayout = () => {
   const [tempEventId, setTempEventId] = useState<string>('');
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
+  const { copiedEvent, setCopiedEvent } = useContext(CourseContext);
 
   const {
     is12HourMode,
