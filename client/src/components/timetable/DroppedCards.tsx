@@ -3,7 +3,15 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData, ClassPeriod, CourseCode, EventPeriod, SelectedClasses } from '../../interfaces/Periods';
+import {
+  Activity,
+  ClassData,
+  ClassPeriod,
+  CourseCode,
+  CreatedEvents,
+  EventPeriod,
+  SelectedClasses,
+} from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
@@ -68,8 +76,8 @@ const getDroppedClasses = (
   inventoryCards: React.RefObject<ClassCard[]>,
 ) => {
   const droppedClasses: JSX.Element[] = [];
-  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const keyCounter = useRef(0);
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
 
   classCards.forEach((classCard) => {
     try {
@@ -96,17 +104,49 @@ const getDroppedClasses = (
       setErrorVisibility(true);
     }
   });
-  return droppedClasses;
+
+  // Sort classes by key to prevent disruptions to transitions
+  return droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
+};
+
+/**
+ * @returns Generates events
+ */
+const getDroppedEvents = (
+  createdEvents: CreatedEvents,
+  clashes: Record<number, (ClassPeriod | EventPeriod)[][]>,
+  cellWidth: number,
+) => {
+  const droppedEvents: JSX.Element[] = [];
+  const { setErrorVisibility, setAlertMsg } = useContext(AppContext);
+
+  Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
+    try {
+      const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
+      droppedEvents.push(
+        <DroppedEvent
+          key={key}
+          eventId={key}
+          eventPeriod={eventPeriod}
+          cardWidth={cardWidth as number}
+          clashIndex={clashIndex as number}
+          cellWidth={cellWidth}
+        />,
+      );
+    } catch (err) {
+      setAlertMsg(unknownErrorMessage);
+      setErrorVisibility(true);
+    }
+  });
+  return droppedEvents;
 };
 
 const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelectClass }) => {
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { days } = useContext(AppContext);
   const { selectedClasses, createdEvents } = useContext(CourseContext);
-
-  const droppedEvents: JSX.Element[] = [];
 
   const inventoryCards = useRef<ClassCard[]>([]);
 
@@ -167,33 +207,13 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({ assignedColors, handleSelec
     inventoryCards,
   );
 
-  // Sort classes by key to prevent disruptions to transitions
-  droppedClasses.sort((a, b) => (a.key && b.key ? Number(a.key) - Number(b.key) : 0));
-
   // Clear any cards which no longer exist
   cardKeys.forEach((_, classCard) => {
     if (!classCards.includes(classCard)) cardKeys.delete(classCard);
   });
 
   // Generate events
-  Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
-    try {
-      const [cardWidth, clashIndex, _] = getClashInfo(clashes, eventPeriod);
-      droppedEvents.push(
-        <DroppedEvent
-          key={key}
-          eventId={key}
-          eventPeriod={eventPeriod}
-          cardWidth={cardWidth as number}
-          clashIndex={clashIndex as number}
-          cellWidth={cellWidth}
-        />,
-      );
-    } catch (err) {
-      setAlertMsg(unknownErrorMessage);
-      setErrorVisibility(true);
-    }
-  });
+  const droppedEvents: JSX.Element[] = getDroppedEvents(createdEvents, clashes, cellWidth);
 
   return (
     // TODO Fix CSSTransition please
