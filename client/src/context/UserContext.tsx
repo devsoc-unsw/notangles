@@ -1,11 +1,13 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 import { User } from '../components/sidebar/UserAccount';
 import { API_URL } from '../api/config';
 import { Group, Privacy } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
+import { CourseContext } from './CourseContext';
+import { AppContext } from './AppContext';
 
-//TODO, is this best practise?
+
 const undefinedUser = {
   userID: '',
   firstname: '',
@@ -50,6 +52,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
   const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
+
+  const { selectedCourses, setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } =
+    useContext(CourseContext);
+  const { selectedTimetable } = useContext(AppContext);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -110,6 +116,25 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     };
     getZid();
   }, []);
+
+  // update timetable shown when switching between Shared and Person timetables.
+  useEffect(() => {
+    if (groupsSidebarCollapsed) {
+      ///////// TODO uncomment below when BE done, so that user.timetable works.
+      // const { selectedCourses, selectedClasses, createdEvents, assignedColors } = user.timetables[selectedTimetable];
+      // setSelectedCourses(selectedCourses);
+      // setSelectedClasses(selectedClasses);
+      // setCreatedEvents(createdEvents);
+      // setAssignedColors(assignedColors);
+    } else {
+      //TODO show combined timetables in a group
+      const loggedUserAssignedColors: Record<string, string> = {};
+      selectedCourses.map((course) => {
+        loggedUserAssignedColors[course.code] = '#FF0000';
+      });
+      setAssignedColors(loggedUserAssignedColors);
+    }
+  }, [groupsSidebarCollapsed]);
 
   const initialContext = useMemo(
     () => ({

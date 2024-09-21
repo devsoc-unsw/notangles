@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import Timetable from '../timetable/Timetable';
 import { UserContext } from '../../context/UserContext';
 import styled from '@emotion/styled';
 import UserIcon from '../user/UserIcon';
+import { CourseContext } from '../../context/CourseContext';
 
 const Container = styled('div')`
   display: flex;
