@@ -14,6 +14,7 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
+import { useLocation } from 'react-router-dom';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -92,7 +93,7 @@ const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
-  // TODO: dummy logic to be
+  const location = useLocation();
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -172,21 +173,18 @@ const Sidebar: React.FC = () => {
             toolTipTitle="Timetable"
             showIcon={<CalendarMonth />}
             description={'Current Timetable'}
-            content={null}
             collapsed={collapsed}
-            // currently not clickable since this is our current page
-            isClickable={false}
-            // hardcoded until we move away from single page site
-            isSelected={true}
+            isSelected={location.pathname === '/'}
+            onNavigate="/"
           />
           <CustomModal
             title="Friends"
             toolTipTitle="Coming Soon: Friends Timetables"
             showIcon={<Group />}
             description={'View Friends Timetables'}
-            content={null}
             collapsed={collapsed}
-            isClickable={false}
+            isSelected={location.pathname === '/friends'}
+            onNavigate="/friends"
           />
           <Divider />
           {modalData.map((modal, index) => (
@@ -199,14 +197,12 @@ const Sidebar: React.FC = () => {
                 description={modal.description}
                 content={modal.content}
                 collapsed={collapsed}
-                isClickable={modal.isClickable}
               />
             </>
           ))}
         </NavComponentsContainer>
       </SideBarContainer>
       <SidebarFooter>
-        {/* TODO: dummy logic - to be replaced */}
         <DarkModeButton collapsed={collapsed} />
         <UserAccount collapsed={collapsed} />
         {!collapsed ? (

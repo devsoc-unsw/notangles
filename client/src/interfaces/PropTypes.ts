@@ -21,10 +21,10 @@ export interface CustomModalProps {
   toolTipTitle: string;
   showIcon: ReactNode;
   description: string;
-  content: ReactNode;
+  content?: ReactNode;
   collapsed: boolean;
-  isClickable: boolean;
   isSelected?: boolean;
+  onNavigate?: string;
 }
 
 export interface CourseSelectProps {
