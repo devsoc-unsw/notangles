@@ -1,12 +1,12 @@
 import { SwitchAccount } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React from 'react';
+import React, { useContext } from 'react';
+
+import { UserContext } from '../../context/UserContext';
 
 interface FriendsButtonProps {
   collapsed: boolean;
-  showGroupsSidebar: boolean;
-  setShowGroupsSidebar: (showGroupsSidebar: boolean) => void;
 }
 
 const StyledFriendsButton = styled(IconButton)<{ isSelected: boolean }>`
@@ -22,14 +22,16 @@ const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>
   font-size: 16px;
 `;
 
-const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed, showGroupsSidebar, setShowGroupsSidebar }) => {
+const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed }) => {
+  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+
   return (
     <>
       <Tooltip title="Coming Soon: Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
-          // onClick={() => setShowGroupsSidebar(!showGroupsSidebar)} NOTE: uncomment to display groups side bar
-          isSelected={showGroupsSidebar}
+          // onClick={() => setGroupsSidebarCollapsed(!groupsSidebarCollapsed)}       UNCOMMENT to see shared timetables
+          isSelected={!groupsSidebarCollapsed}
         >
           <SwitchAccount />
           <IndividualComponentTypography collapsed={collapsed}>

@@ -43,7 +43,7 @@ const a11yProps = (index: number) => {
   };
 };
 
-const FriendsTablist: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
+const FriendsTablist: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -67,13 +67,13 @@ const FriendsTablist: React.FC<{ user: User | undefined; getUserInfo: () => void
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <YourFriendsTab user={user} getUserInfo={getUserInfo} />
+        <YourFriendsTab user={user} fetchUserInfo={fetchUserInfo} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <RequestsTab user={user} getUserInfo={getUserInfo} />
+        <RequestsTab user={user} fetchUserInfo={fetchUserInfo} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <AddAFriendTab user={user} getUserInfo={getUserInfo} />
+        <AddAFriendTab user={user} fetchUserInfo={fetchUserInfo} />
       </CustomTabPanel>
     </Box>
   );

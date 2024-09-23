@@ -1,10 +1,11 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
+import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
@@ -102,7 +103,7 @@ const SidebarFooterText = styled('div')`
 
 const StyledGroupContainer = styled('div')`
   height: 100vh;
-  width: 50px;
+  width: 60px;
   background: ${({ theme }) => theme.palette.primary.main};
   display: flex;
   align-items: center;
@@ -122,8 +123,8 @@ const StyledGroupContainer = styled('div')`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
-  const [showGroupsSidebar, setShowGroupsSidebar] = useState(false);
   const sideBarRef = useRef<HTMLDivElement>(null);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -180,7 +181,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      {showGroupsSidebar && (
+      {!groupsSidebarCollapsed && (
         <StyledGroupContainer>
           <GroupsSidebar />
         </StyledGroupContainer>
@@ -222,11 +223,7 @@ const Sidebar: React.FC = () => {
                 // hardcoded until we move away from single page site
                 isSelected={true}
               />
-              <FriendsButton
-                collapsed={collapsed}
-                showGroupsSidebar={showGroupsSidebar}
-                setShowGroupsSidebar={setShowGroupsSidebar}
-              />
+              <FriendsButton collapsed={collapsed} />
               <Divider />
               {modalData.map((modal, index) => (
                 <>

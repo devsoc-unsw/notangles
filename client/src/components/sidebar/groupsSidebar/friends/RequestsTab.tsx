@@ -24,9 +24,7 @@ const StyledActionButtons = styled('div')`
   gap: 12px;
 `;
 
-const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return <></>;
-
+const RequestsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
   const handleDeclineRequest = async (incomingUserId: string) => {
     try {
       const res = await fetch(`${API_URL.server}/friend/request`, {
@@ -43,7 +41,7 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const declineRequestStatus = await res.json();
       console.log('decline request status', declineRequestStatus);
-      getUserInfo();
+      fetchUserInfo(user.userID);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -65,7 +63,7 @@ const RequestsTab: React.FC<{ user: User | undefined; getUserInfo: () => void }>
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
       console.log('accept request status', acceptRequestStatus);
-      getUserInfo();
+      fetchUserInfo(user.userID);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }

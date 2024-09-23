@@ -348,16 +348,6 @@ export class UserService {
           },
         });
 
-        // convert members, groupAdmins and timetables objects into string ids
-        group.memberIDs = group.members.map((group) => group.userID);
-        group.groupAdminIDs = group.groupAdmins.map(
-          (groupAdmin) => groupAdmin.userID,
-        );
-        group.timetableIDs = group.timetables.map((timetable) => timetable.id);
-        delete group.members;
-        delete group.groupAdmins;
-        delete group.timetables;
-
         res.push(group);
       }
 

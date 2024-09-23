@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { WavingHand } from '@mui/icons-material';
-import { ListItemIcon, Tooltip } from '@mui/material';
+import { ListItemIcon, Tooltip, Zoom } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 
@@ -22,21 +22,34 @@ const AdminBorder = styled('div')<{ isAdmin: boolean }>(({ isAdmin }) => ({
   border: isAdmin ? '2px solid gold' : '',
 }));
 
-const StyledCircle = styled('img')`
+const GroupContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+`;
+
+const GroupImage = styled('img')`
   border-radius: 999px;
   width: 40px;
   height: 40px;
   background-color: white;
 `;
 
-const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; handleClose: () => void }> = ({
-  user,
-  group,
-  getGroups,
-  handleClose,
-}) => {
+const SelectedCircle = styled('div')`
+  border-radius: 999px;
+  width: 3px;
+  height: 36px;
+  background: white;
+`;
+
+const AdminMenu: React.FC<{
+  user: User;
+  group: Group;
+  fetchUserInfo: (userID: string) => void;
+  handleClose: () => void;
+}> = ({ user, group, fetchUserInfo, handleClose }) => {
   const editGroupDialogOnClose = () => {
-    getGroups();
+    fetchUserInfo(user.userID);
     handleClose();
   };
 
@@ -53,7 +66,7 @@ const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; han
       console.log('group delete status', groupDeleteStatus);
       if (res.status === 200) {
         handleClose();
-        getGroups();
+        fetchUserInfo(user.userID);
       } else {
         throw new NetworkError("Couldn't get response");
       }
@@ -75,10 +88,10 @@ const AdminMenu: React.FC<{ user: User; group: Group; getGroups: () => void; han
   );
 };
 
-const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void }> = ({
+const MemberMenu: React.FC<{ userID: string; group: Group; fetchUserInfo: (userID: string) => void }> = ({
   userID,
   group,
-  getGroups,
+  fetchUserInfo,
 }) => {
   const handleLeaveGroup = async () => {
     try {
@@ -92,16 +105,20 @@ const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void
           name: group.name,
           description: group.description,
           visibility: group.visibility,
-          timetableIDs: group.timetableIDs,
-          memberIDs: group.memberIDs.filter((id) => id !== userID),
-          groupAdminIDs: group.groupAdminIDs,
+          timetableIDs: group.timetables.map((timetable) => timetable.id),
+          memberIDs: group.members.map((member) => {
+            if (member.userID !== userID) {
+              member.userID;
+            }
+          }),
+          groupAdminIDs: group.groupAdmins.map((groupAdmins) => groupAdmins.userID),
           imageURL: group.imageURL,
         }),
       });
       const leaveGroupStatus = await res.json();
       console.log('leave group status', leaveGroupStatus.data);
       if (res.status === 200) {
-        getGroups();
+        fetchUserInfo(userID);
       } else {
         throw new NetworkError("Couldn't get response");
       }
@@ -120,13 +137,14 @@ const MemberMenu: React.FC<{ userID: string; group: Group; getGroups: () => void
   );
 };
 
-const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | undefined }> = ({
-  group,
-  getGroups,
-  user,
-}) => {
-  if (!user) return <></>;
-  const isAdmin = group.groupAdminIDs.includes(user.userID);
+const GroupCircle: React.FC<{
+  group: Group;
+  fetchUserInfo: (userID: string) => void;
+  user: User;
+  isSelected: boolean;
+  onClick: () => void;
+}> = ({ group, fetchUserInfo, user, isSelected, onClick }) => {
+  const isAdmin = group.groupAdmins.map((groupAdmin) => groupAdmin.userID).includes(user.userID);
 
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
@@ -150,9 +168,16 @@ const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | 
   return (
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>
       <Tooltip title={group.name} placement="right">
-        <AdminBorder isAdmin={isAdmin}>
-          <StyledCircle src={group.imageURL || NotanglesLogo} />
-        </AdminBorder>
+        <GroupContainer>
+          {isSelected && (
+            <Zoom in={true}>
+              <SelectedCircle />
+            </Zoom>
+          )}
+          <AdminBorder isAdmin={isAdmin} onClick={onClick}>
+            <GroupImage src={group.imageURL || NotanglesLogo} />
+          </AdminBorder>
+        </GroupContainer>
       </Tooltip>
       <StyledMenu
         open={contextMenu !== null}
@@ -161,9 +186,9 @@ const GroupCircle: React.FC<{ group: Group; getGroups: () => void; user: User | 
         anchorPosition={contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
       >
         {isAdmin ? (
-          <AdminMenu user={user} group={group} getGroups={getGroups} handleClose={handleClose} />
+          <AdminMenu user={user} group={group} fetchUserInfo={fetchUserInfo} handleClose={handleClose} />
         ) : (
-          <MemberMenu userID={user.userID} group={group} getGroups={getGroups} />
+          <MemberMenu userID={user.userID} group={group} fetchUserInfo={fetchUserInfo} />
         )}
       </StyledMenu>
     </div>

@@ -28,9 +28,7 @@ const StyledItem = styled('div')<{ isSelected: boolean }>(({ isSelected }) => ({
   backgroundColor: isSelected ? '#e1eaef' : '',
 }));
 
-const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void }> = ({ user, getUserInfo }) => {
-  if (!user) return <></>;
-
+const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
   const [otherUsers, setOtherUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -89,7 +87,7 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
       console.log('send request status', acceptRequestStatus);
-      getUserInfo();
+      fetchUserInfo(user.userID);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }
@@ -111,7 +109,7 @@ const AddAFriendTab: React.FC<{ user: User | undefined; getUserInfo: () => void 
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const declineRequestStatus = await res.json();
       console.log('decline request status', declineRequestStatus);
-      getUserInfo();
+      fetchUserInfo(user.userID);
     } catch (error) {
       throw new NetworkError(`Couldn't get response cause encountered error: ${error}`);
     }

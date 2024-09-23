@@ -1,3 +1,6 @@
+import { User } from "../components/sidebar/UserAccount";
+import { TimetableData } from "./Periods";
+
 export enum Privacy {
   PRIVATE = 'PRIVATE',
   PUBLIC = 'PUBLIC',
@@ -8,8 +11,8 @@ export interface Group {
   name: string;
   description: string;
   visibility: Privacy;
-  timetableIDs: string[];
-  memberIDs: string[];
-  groupAdminIDs: string[];
+  timetables: TimetableData[];
+  members: User[];
+  groupAdmins: User[];
   imageURL: string;
 }

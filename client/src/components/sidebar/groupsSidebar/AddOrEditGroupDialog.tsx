@@ -19,8 +19,8 @@ import AddOrEditGroupDialogContent from './AddOrEditGroupDialogContent';
 
 interface AddGroupDialogProps {
   editGroupData?: Group;
-  user: User | undefined;
-  onClose: () => void;
+  user: User;
+  onClose: (userID: string) => void;
 }
 
 const StyledDialogTitle = styled(DialogTitle)`
@@ -31,17 +31,15 @@ const StyledDialogTitle = styled(DialogTitle)`
   justify-content: space-between;
 `;
 
-const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => {
-  if (!user) return <></>;
-
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => { 
   const emptyGroupData: Group = {
     id: '',
     name: '',
     description: '',
     visibility: Privacy.PRIVATE,
-    timetableIDs: [],
-    memberIDs: [],
-    groupAdminIDs: [user.userID],
+    timetables: [],
+    members: [],
+    groupAdmins: [user],
     imageURL: '',
   };
 
@@ -49,7 +47,7 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
   const [group, setGroup] = useState<Group>(emptyGroupData);
 
   useEffect(() => {
-    setGroup({ ...group, groupAdminIDs: [user.userID] });
+    setGroup({ ...group, groupAdmins: [user] });
   }, [user.userID]);
 
   useEffect(() => {
@@ -63,12 +61,12 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
       name: '',
       description: '',
       visibility: Privacy.PRIVATE,
-      timetableIDs: [],
-      memberIDs: [],
-      groupAdminIDs: [user.userID],
+      timetables: [],
+      members: [],
+      groupAdmins: [user],
       imageURL: '',
     });
-    onClose();
+    onClose(user.userID);
   };
 
   return (
