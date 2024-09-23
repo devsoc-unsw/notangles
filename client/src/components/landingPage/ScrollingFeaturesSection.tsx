@@ -42,10 +42,13 @@ const ScrollingFeaturesSection = () => {
   ];
 
   return (
-    <div className="mt-40 h-[1000px] flex-col text-blue-50">
-      {features.map((feature, index) => (
-        <FeatureItem key={index} {...feature} />
-      ))}
+    <div className="flex flex-col justify-center">
+      <p className="text-5xl mb-8 text-center font-semibold">How it Works</p>
+      <div className="h-[1950px] flex-col text-blue-50">
+        {features.map((feature, index) => (
+          <FeatureItem key={index} {...feature} />
+        ))}
+      </div>
     </div>
   );
 };
