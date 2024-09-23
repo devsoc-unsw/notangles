@@ -1,4 +1,4 @@
-import keyFeatures from '../../../assets/blobFeaturesBackground.svg';
+import blobImage from '../../../assets/blobImage.svg';
 import calendarIcon from '../../../assets/calendarIcon.png';
 import dragIcon from '../../../assets/dragIcon.png';
 import peopleIcon from '../../../assets/peopleIcon.png';

@@ -1,4 +1,4 @@
-import Footer from "../footer/Footer";
+import Footer from "./Footer";
 import HeroSection from "./HeroSection/heroSection";
 import FeaturesSection from "./KeyFeaturesSection/FeaturesSection";
 import ScrollingFeaturesSection from "./ScrollingFeaturesSection";
