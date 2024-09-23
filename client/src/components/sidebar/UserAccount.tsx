@@ -4,7 +4,9 @@ import { styled } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 
 import { API_URL } from '../../api/config';
+import { TimetableData } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
+import UserProfile from './groupsSidebar/friends/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -20,6 +22,11 @@ const UserInfo = styled('div')`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const UserText = styled('div')`
+  display: flex;
+  flex-direction: column;
 `;
 
 const StyledIconButton = styled(IconButton)`
@@ -43,15 +50,50 @@ const StyledAccountIcon = styled(AccountCircle)`
   height: 28px;
 `;
 
-interface User {
-  zid: string;
+const ExpandedContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+`;
+
+export interface User {
+  userID: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  profileURL: string;
+  createdAt: string;
+  lastLogin: string;
+  loggedIn: boolean;
+  friends: User[];
+  incoming: User[];
+  outgoing: User[];
+  timetables: TimetableData[];
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [login, setLogin] = useState(false);
   const [windowLocation, setWindowLocation] = useState('');
-  const [user, setUser] = useState<User>({ zid: '' });
+  const [user, setUser] = useState<User>();
   const [logoutDialog, setLogoutDialog] = useState(false);
+
+  const getUserInfo = async (userID: string) => {
+    try {
+      const response = await fetch(`${API_URL.server}/user/profile/${userID}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const userResponse = await response.text();
+      if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     async function runAsync() {
@@ -62,9 +104,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         const userResponse = await response.text();
         if (userResponse !== '') {
           setLogin(true);
-          setUser({ zid: JSON.parse(userResponse) });
+          getUserInfo(JSON.parse(userResponse));
         } else {
-          setUser({ zid: '' });
+          setUser(undefined);
           setLogin(false);
         }
       } catch (error) {
@@ -94,7 +136,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     window.location.replace(windowLocation);
-    setUser({ zid: '' });
+    setUser(undefined);
   };
   if (!login) {
     return collapsed ? (
@@ -107,6 +149,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       <StyledButton onClick={loginCall}>Log in</StyledButton>
     );
   }
+
+  if (!user) return <></>;
 
   return (
     <>
@@ -129,19 +173,20 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
             </StyledIconButton>
           </Tooltip>
         ) : (
-          <>
-            <UserInfo>
-              <StyledAccountIcon />
-              {/* TODO: handle user's name */}
-              <p>{user.zid}</p>
-            </UserInfo>
+          <ExpandedContainer>
+            <UserProfile
+              firstname={user.firstname}
+              lastname={user.lastname}
+              email={user.email}
+              profileURL={user.profileURL}
+            />
             <Tooltip title="Log out" placement="right">
               {/* TODO: error handling for when logging out */}
               <StyledIconButton color="inherit" onClick={logoutCall}>
                 <LogoutRounded />
               </StyledIconButton>
             </Tooltip>
-          </>
+          </ExpandedContainer>
         )}
       </UserAuth>
     </>

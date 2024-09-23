@@ -12,6 +12,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
+import { GroupDto } from 'src/group/dto/group.dto';
 
 const API_URL = 'https://timetable.csesoc.app/api/terms';
 @Injectable({})
@@ -79,6 +80,7 @@ export class UserService {
     );
 
     const data = {
+      userID,
       ...userData,
       createdAt: userData.createdAt.toISOString(),
       lastLogin: userData.lastLogin.toISOString(),
@@ -318,6 +320,62 @@ export class UserService {
       return Promise.resolve(_timetableId);
     } catch (e) {
       throw new Error(_timetableId);
+    }
+  }
+
+  async getGroups(_userId: string) {
+    try {
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userId },
+        include: {
+          memberGroups: true,
+          adminGroups: true,
+        },
+      });
+
+      const groupIds = user.adminGroups
+        .concat(user.memberGroups)
+        .map((group) => group.id);
+
+      const res: GroupDto[] = [];
+      for (const groupId of groupIds) {
+        const group = await this.prisma.group.findUniqueOrThrow({
+          where: { id: groupId },
+          include: {
+            members: true,
+            groupAdmins: true,
+            timetables: true,
+          },
+        });
+
+        // convert members, groupAdmins and timetables objects into string ids
+        group.memberIDs = group.members.map((group) => group.userID);
+        group.groupAdminIDs = group.groupAdmins.map(
+          (groupAdmin) => groupAdmin.userID,
+        );
+        group.timetableIDs = group.timetables.map((timetable) => timetable.id);
+        delete group.members;
+        delete group.groupAdmins;
+        delete group.timetables;
+
+        res.push(group);
+      }
+
+      return res;
+    } catch (error) {
+      console.error('Error retrieving users:', error);
+    }
+  }
+
+  async getAllUsers() {
+    try {
+      const users = await this.prisma.user.findMany();
+      const res = await Promise.all(
+        users.map((user) => this.getUserInfo(user.userID)),
+      );
+      return res;
+    } catch (error) {
+      console.error('Error retrieving all users:', error);
     }
   }
 }
