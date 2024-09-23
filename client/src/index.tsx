@@ -11,8 +11,8 @@ import App from './App';
 import EventShareModal from './components/EventShareModal';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import * as swRegistration from './serviceWorkerRegistration';
 import UserContextProvider from './context/UserContext';
+import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,

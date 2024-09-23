@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
-import { TimetableProps } from '../../interfaces/PropTypes';
-import Timetable from '../timetable/Timetable';
-import { UserContext } from '../../context/UserContext';
 import styled from '@emotion/styled';
 import { Tooltip } from '@mui/material';
+import React, { useContext } from 'react';
+
+import { UserContext } from '../../context/UserContext';
+import { TimetableProps } from '../../interfaces/PropTypes';
 import { emptyProfile } from '../sidebar/groupsSidebar/friends/UserProfile';
+import Timetable from '../timetable/Timetable';
 
 const Container = styled('div')`
   display: flex;

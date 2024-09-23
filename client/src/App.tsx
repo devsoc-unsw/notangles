@@ -14,6 +14,7 @@ import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
+import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
 import {
@@ -26,6 +27,7 @@ import {
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
+import { UserContext } from './context/UserContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -42,8 +44,6 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import TimetableShared from './components/timetableShared.tsx/TimetableShared';
-import { UserContext } from './context/UserContext';
 
 const StyledApp = styled(Box)`
   height: 100%;

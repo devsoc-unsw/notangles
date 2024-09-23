@@ -1,9 +1,10 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
-import { UserContextProviderProps } from '../interfaces/PropTypes';
-import { User } from '../components/sidebar/UserAccount';
+
 import { API_URL } from '../api/config';
-import { Group, Privacy } from '../interfaces/Group';
+import { User } from '../components/sidebar/UserAccount';
+import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
+import { UserContextProviderProps } from '../interfaces/PropTypes';
 
 //TODO, is this best practise?
 const undefinedUser = {
