@@ -5,11 +5,11 @@ import peopleIcon from '../../../assets/peopleIcon.png';
 
 const FeaturesSection = () => {
   return (
-    <div className="flex justify-center items-center min-w-full min-h-[550px] bg-blue-100 mt-[200px]">
+    <div className="flex justify-center items-center min-w-full min-h-[300px] bg-blue-100 mt-[100px] mb-[30px]">
       <div className="flex-col justify-center items-between text-5xl w-[800px] font-semibold text-neutral-50">
-        <p className="text-center text-[#0070f3]">Introducing our Features</p>
-        <div className="flex items-center justify-around min-h-40 mt-16 mb-[200px] gap-[30px]" >
-        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg">
+        <p className="text-center text-black mb-[100px]">Introducing our Features</p>
+        <div className="flex items-center justify-around min-h-40 mt-16 mb-[80px] gap-[30px]" >
+        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg z-10">
           <div className="flex justify-center rounded-[10px] bg-[#B0C0DE] align-center h-[65px] w-[65px]">
           <img src={dragIcon} className="object-contain" width={50} height={50} />
           </div>
@@ -20,7 +20,7 @@ const FeaturesSection = () => {
             Drag and drop functionality to make planning an intuitive and easy process
           </p>
         </div>
-        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg">
+        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg z-10">
           <div className="flex justify-center rounded-[10px] bg-[#70c49c] align-center h-[65px] w-[65px]">
           <img src={peopleIcon} className="object-contain" width={45} height={50} />
           </div>
@@ -31,7 +31,7 @@ const FeaturesSection = () => {
             Easily coordinate your schedules with friends to plan and attend classes together
           </p>
         </div>
-        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg">
+        <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg z-10">
           <div className="flex justify-center rounded-[10px] bg-[#a96f92] align-center h-[65px] w-[65px]">
           <img src={calendarIcon} className="object-contain" width={50} height={50} />
           </div>
@@ -41,8 +41,8 @@ const FeaturesSection = () => {
           <p className="text-left text-gray-500 text-sm font-light my-3">
             Plan in advance to secure your preferred classes and avoid conflicts
           </p>
-          
         </div>
+        <img src={blobImage} className="absolute w-[1000px] mt-[50px]" />
         </div>
       </div>
     </div>
