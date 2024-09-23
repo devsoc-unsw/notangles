@@ -34,7 +34,7 @@ const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => 
           sendeeId: friendID,
         }),
       });
-      //   if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
       console.log('unfriend status', acceptRequestStatus);
       fetchUserInfo(user.userID);

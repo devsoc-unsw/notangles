@@ -2,6 +2,7 @@ import { SwitchAccount } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext } from 'react';
+
 import { UserContext } from '../../context/UserContext';
 
 interface FriendsButtonProps {

@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
+
+import { UserContext } from '../../../context/UserContext';
 import AddOrEditGroupDialog from './AddOrEditGroupDialog';
 import FriendsDialog from './friends/FriendsDialog';
 import GroupCircle from './GroupCircle';
-import { UserContext } from '../../../context/UserContext';
 
 const GroupsSidebar: React.FC = () => {
   const { user, groups, fetchUserInfo, selectedGroupIndex, setSelectedGroupIndex } = useContext(UserContext);

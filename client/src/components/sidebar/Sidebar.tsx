@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
+import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
@@ -16,7 +17,6 @@ import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
-import { UserContext } from '../../context/UserContext';
 
 const LogoImg = styled('img')`
   height: 46px;
@@ -125,8 +125,6 @@ const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
   const { groupsSidebarCollapsed } = useContext(UserContext);
-
-  // TODO: dummy logic to be
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -246,7 +244,6 @@ const Sidebar: React.FC = () => {
         </div>
 
         <SidebarFooter>
-          {/* TODO: dummy logic - to be replaced */}
           <DarkModeButton collapsed={collapsed} />
           <UserAccount collapsed={collapsed} />
           {!collapsed ? (
