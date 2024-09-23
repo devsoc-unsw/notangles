@@ -30,7 +30,7 @@ const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed }) => {
       <Tooltip title="Coming Soon: Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
-          onClick={() => setGroupsSidebarCollapsed(!groupsSidebarCollapsed)}
+          // onClick={() => setGroupsSidebarCollapsed(!groupsSidebarCollapsed)}       UNCOMMENT to see shared timetables
           isSelected={!groupsSidebarCollapsed}
         >
           <SwitchAccount />
