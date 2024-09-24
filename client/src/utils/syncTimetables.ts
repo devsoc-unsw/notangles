@@ -1,5 +1,13 @@
 import { API_URL } from '../api/config';
-import { ClassData, CreatedEvents, SelectedClasses, TimetableData } from '../interfaces/Periods';
+import { ClassData, CreatedEvents, DisplayTimetablesMap, SelectedClasses, TimetableData } from '../interfaces/Periods';
+
+interface DiffID {
+  delete: Set<string>;
+  update: Set<string>;
+  add: Set<string>;
+}
+
+let timeoutID: NodeJS.Timeout;
 
 const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   const a = Object.values(selectedClasses);
@@ -70,14 +78,6 @@ const syncDeleteTimetable = async (timetableId: string) => {
   }
 };
 
-const syncDeleteTimetables = async (timetables: TimetableData[]) => {
-  try {
-    await Promise.all(timetables.map((t) => t.id).map((id) => syncDeleteTimetable(id)));
-  } catch (e) {
-    console.log('todo');
-  }
-};
-
 const syncEditTimetable = async (userId: string, editedTimetable: TimetableData) => {
   try {
     if (!userId) {
@@ -96,4 +96,67 @@ const syncEditTimetable = async (userId: string, editedTimetable: TimetableData)
   }
 };
 
-export { syncAddTimetable, syncDeleteTimetable, syncDeleteTimetables, syncEditTimetable };
+/**
+ * Between two term timetables - find new timetables, deleted timetables, and updated timetable ids
+ */
+const getTimetableDiffs = (oldTimetables: TimetableData[], newTimetables: TimetableData[]) => {
+  const diffIds: DiffID = {
+    delete: new Set(),
+    update: new Set(),
+    add: new Set(),
+  };
+
+  const oldIds = new Set(oldTimetables.map((t) => t.id));
+  const newIds = new Set(newTimetables.map((t) => t.id));
+
+  diffIds.add = oldIds.difference(newIds);
+  diffIds.add = newIds.difference(oldIds);
+
+  oldIds.intersection(newIds).forEach((id) => {
+    const oldTarget = oldTimetables.find((t) => t.id === id);
+    const newTarget = newTimetables.find((t) => t.id === id);
+
+    if (JSON.stringify(oldTarget) !== JSON.stringify(newTarget)) {
+      diffIds.update.add(id);
+    }
+  });
+
+  return diffIds;
+};
+
+const updateTimetableDiffs = (zid: string, newTimetables: TimetableData[], diffIds: DiffID) => {
+  diffIds.delete.forEach((id) => {
+    syncDeleteTimetable(id);
+  });
+
+  newTimetables.forEach((t) => {
+    if (diffIds.add.has(t.id)) {
+      syncAddTimetable(zid, t);
+    } else if (diffIds.update.has(t.id)) {
+      syncEditTimetable(zid, t);
+    }
+  });
+};
+
+const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimetablesMap) => {
+  clearTimeout(timeoutID);
+
+  timeoutID = setTimeout(() => {
+    if (JSON.stringify(oldMap) === JSON.stringify(oldMap)) {
+      return;
+    }
+
+    for (const key of Object.keys(oldMap)) {
+      const oldTimetables = oldMap[key];
+      const newTimetables = newMap[key];
+
+      const diffs = getTimetableDiffs([], newTimetables);
+
+      updateTimetableDiffs(zid, newTimetables, diffs);
+    }
+
+    console.log('HELLO');
+  }, 5000);
+};
+
+export { runSync };

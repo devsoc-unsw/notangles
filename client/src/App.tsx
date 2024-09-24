@@ -42,6 +42,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { runSync } from './utils/syncTimetables';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -434,29 +435,39 @@ const App: React.FC = () => {
     storage.set('courseData', newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+
+    runSync('123', displayTimetables, displayTimetables);
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+
+    runSync('123', displayTimetables, displayTimetables);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+
+    runSync('123', displayTimetables, displayTimetables);
   }, [createdEvents]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+
+    runSync('123', displayTimetables, displayTimetables);
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
+
+    runSync('123', displayTimetables, displayTimetables);
   }, [displayTimetables]);
 
   /**
