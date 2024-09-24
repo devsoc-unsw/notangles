@@ -4,7 +4,7 @@ import tiktok from '../../assets/sponsors/tiktok_logo_black.svg';
 
 const SponsorsSection = () => {
   return (
-    <div className='flex items-center justify-center mt-00'>
+    <div className='flex items-center justify-center'>
       <div className='flex flex-col text-center items-center font-bold text-3xl'>
         <p className='mt-2'>Our Sponsors</p>
         <div className='flex pt-6'>
