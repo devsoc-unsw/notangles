@@ -15,7 +15,7 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
     const d = Object.values(c);
     return d.map((c) => {
       const { id, classNo, year, term, courseCode } = c as ClassData;
-      return { id, classNo, year, term, courseCode };
+      return { id, classNo: String(classNo), year, term, courseCode };
     });
   });
 
@@ -32,6 +32,7 @@ const convertEventToDTO = (createdEvents: CreatedEvents) => {
 const convertTimetableToDTO = (timetable: TimetableData) => {
   return {
     ...timetable,
+    selectedCourses: timetable.selectedCourses.map((t) => t.code),
     selectedClasses: convertClassToDTO(timetable.selectedClasses),
     createdEvents: convertEventToDTO(timetable.createdEvents),
   };
@@ -52,7 +53,7 @@ const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => 
       },
       body: JSON.stringify({
         userId,
-        selectedCourses,
+        selectedCourses: selectedCourses.map((t) => t.code),
         selectedClasses: convertClassToDTO(selectedClasses),
         createdEvents: convertEventToDTO(createdEvents), // TODO
         name,
@@ -151,12 +152,10 @@ const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimet
       const oldTimetables = oldMap[key];
       const newTimetables = newMap[key];
 
-      const diffs = getTimetableDiffs([], newTimetables);
+      const diffs = getTimetableDiffs(oldTimetables, newTimetables);
 
       updateTimetableDiffs(zid, newTimetables, diffs);
     }
-
-    console.log('HELLO');
   }, 5000);
 };
 
