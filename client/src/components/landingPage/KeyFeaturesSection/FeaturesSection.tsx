@@ -5,7 +5,7 @@ import peopleIcon from '../../../assets/peopleIcon.png';
 
 const FeaturesSection = () => {
   return (
-    <div className="flex justify-center items-center min-w-full min-h-[300px] bg-blue-100 mt-[100px] mb-[75px]">
+    <div className="flex justify-center items-center min-w-full min-h-[300px] mt-[100px] mb-[75px]">
       <div className="flex-col justify-center items-between text-5xl w-[800px] font-semibold text-neutral-50">
         <p className="text-center text-black mb-[100px]">Introducing our Features</p>
         <div className="flex items-center justify-around min-h-40 mt-16 mb-[80px] gap-[30px]" >
