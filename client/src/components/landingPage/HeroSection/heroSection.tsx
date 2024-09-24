@@ -13,7 +13,7 @@ const HeroSection = () => {
   // }
 
   return (
-    <div className="min-w-full min-h-[650px] bg-blue-100">
+    <div className="min-w-full min-h-[650px]">
       <header>
         <div className='w-44 h-24 flex justify-center items-center'>
           <img src={notangles} className='w-12 cursor-pointer'/>
