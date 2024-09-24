@@ -25,6 +25,7 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
 // TODO: Events don't really make sense right now. Timetable takes datetime, but frontend can only select
 // day + time of day, not specific date. Modify this later
 const convertEventToDTO = (createdEvents: CreatedEvents) => {
+  console.log(createdEvents);
   return [];
 };
 
@@ -142,11 +143,11 @@ const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimet
   clearTimeout(timeoutID);
 
   timeoutID = setTimeout(() => {
-    if (JSON.stringify(oldMap) === JSON.stringify(oldMap)) {
+    if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
       return;
     }
 
-    for (const key of Object.keys(oldMap)) {
+    for (const key of Object.keys(newMap)) {
       const oldTimetables = oldMap[key];
       const newTimetables = newMap[key];
 
