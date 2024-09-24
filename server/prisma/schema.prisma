@@ -49,9 +49,14 @@ model Event {
   colour      String  @default("#1F7E8C") // Notangles Blue
 
   // Event Time
-  day         String
-  start       DateTime
-  end         DateTime
+  // TODO: revert this change after custom event dates are added
+  day         Int
+  start       Int
+  end         Int
+  // day         String
+  // start       DateTime
+  // end         DateTime
+  
   timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade) // TODO: was there a reason this wasn't cascaded on delete?
   timetableId String?
   groupIds    String[] // Added to link an event to a group
