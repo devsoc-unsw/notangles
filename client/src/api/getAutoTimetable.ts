@@ -1,7 +1,8 @@
 import NetworkError from '../interfaces/NetworkError';
 import { API_URL } from './config';
 
-const getAutoTimetable = async (data: any): Promise<[number[], boolean]> => {
+export type AutoTimetableResponse = [number[], boolean];
+const getAutoTimetable = async (data: any): Promise<AutoTimetableResponse> => {
   try {
     const res = await fetch(`${API_URL.auto}`, {
       method: 'POST',

@@ -17,7 +17,7 @@ import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import getAutoTimetable from '../../api/getAutoTimetable';
+import getAutoTimetable, { AutoTimetableResponse } from '../../api/getAutoTimetable';
 import { unknownErrorMessage, weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -29,6 +29,7 @@ import { DropdownButton } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { createDateWithTime } from '../../utils/eventTimes';
 import DropdownOption from '../timetable/DropdownOption';
+import useQuery from '../../hooks/useQuery';
 
 const InfoContainer = styled('div')`
   padding: 10px 0 0 10px;
@@ -192,7 +193,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
     ];
 
     try {
-      const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
+      // const [resultsWithEvents, isOptimal] = await getAutoTimetable(timetableData);
+      const { data } = useQuery<AutoTimetableResponse>('autotimetablekey', () => getAutoTimetable(timetableData));
+      const [resultsWithEvents, isOptimal] = data!;
+      console.log(data);
       const results = resultsWithEvents.slice(0, targetActivities.current.length);
 
       setAutoVisibility(true);
