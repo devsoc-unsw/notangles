@@ -1,11 +1,10 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { EventPeriod } from '../../interfaces/Periods';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';

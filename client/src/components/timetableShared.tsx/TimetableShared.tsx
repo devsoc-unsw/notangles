@@ -5,54 +5,16 @@ import { CourseContext } from '../../context/CourseContext';
 import { UserContext } from '../../context/UserContext';
 import { TimetableProps } from '../../interfaces/PropTypes';
 import Timetable from '../timetable/Timetable';
-import UserIcon from '../user/UserIcon';
 
 const Container = styled('div')`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const Legend = styled('div')`
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  padding: 12px 32px;
-  border-radius: 12px;
-  border: 1px dotted grey;
-  width: fit-content;
-  margin: 12px;
-  align-self: center;
-`;
-
-const Members = styled('div')`
-  display: flex;
-  gap: 2px;
-`;
-
-const MemberText = styled('div')`
-  display: flex;
-  gap: 2px;
-  flex-direction: column;
-  align-items: start;
-`;
-
-const GroupName = styled('div')`
-  font-size: 18px;
-  font-weight: 600;
-`;
-
-const GroupDescription = styled('div')`
-  font-size: 14px;
+  margin-top: 12px;
 `;
 
 const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
-  const { groups, selectedGroupIndex, groupsSidebarCollapsed } = useContext(UserContext);
+  const { groups, groupsSidebarCollapsed } = useContext(UserContext);
   if (groups.length === 0) return <></>;
-  const group = groups[selectedGroupIndex];
 
-  const { selectedCourses, setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } =
-    useContext(CourseContext);
+  const { selectedCourses, setAssignedColors } = useContext(CourseContext);
 
   const showPersonalTimetable = () => {
     ///////// TODO uncomment below when BE done, so that user.timetable works.
@@ -83,7 +45,9 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
   const showSharedTimetable = () => {
     getNewAssignedColours();
     // can't drag friend's events
-    // can't change colours of classes
+    // for ExpandedClassView, show friends only sharing the class.
+    // showing only first personal timetable
+    // group banner
   };
 
   // update timetable shown when switching between Shared and Personal timetables.
@@ -91,17 +55,6 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
 
   return (
     <Container>
-      <Legend>
-        <MemberText>
-          <GroupName>{group.name}</GroupName>
-          <GroupDescription>{group.description}</GroupDescription>
-        </MemberText>
-        <Members>
-          {group.members.map((member, i) => (
-            <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
-          ))}
-        </Members>
-      </Legend>
       <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
     </Container>
   );

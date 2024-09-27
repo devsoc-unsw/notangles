@@ -44,9 +44,11 @@ import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { UserContext } from './context/UserContext';
+import GroupInfo from './components/timetableShared.tsx/GroupInfo';
 
 const StyledApp = styled(Box)`
   height: 100%;
+  overflow-x: hidden;
 `;
 
 const ContentWrapper = styled(Box)`
@@ -596,6 +598,7 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
+            {!groupsSidebarCollapsed && <GroupInfo />}
             <Sidebar />
             <ContentWrapper>
               <Content>
