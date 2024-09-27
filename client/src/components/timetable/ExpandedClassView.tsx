@@ -61,7 +61,6 @@ const UserIconContainer = styled('div')`
 const SharedActivitiesFriendsList = () => {
   const { groups, selectedGroupIndex } = useContext(UserContext);
 
-
   return (
     <>
       {groups[selectedGroupIndex].members.map((member) => (
@@ -106,7 +105,6 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-
 
   //For social timetabling seeing list of friends who share this class with you.
   const { groupsSidebarCollapsed } = useContext(UserContext);
@@ -267,8 +265,8 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             Capacity {currClass.enrolments} / {currClass.capacity}
           </Typography>
         </StyledListItem>
-        <>
-          <ColorDivider />
+        <ColorDivider />
+        {groupsSidebarCollapsed ? (
           <ColorListItem>
             <ColorPicker
               color={color}
@@ -282,8 +280,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
               }}
             />
           </ColorListItem>
-        </>
-        {!groupsSidebarCollapsed && (
+        ) : (
           <StyledListItem>
             <StyledListItemIcon isDarkMode={isDarkMode}>
               <FriendsIcon />
