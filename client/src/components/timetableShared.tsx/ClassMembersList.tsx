@@ -14,13 +14,18 @@ const UserIconContainer = styled('div')`
   margin-right: 6px;
 `;
 
+export const hasSelectedTheClass = (user: User, courseCode: string, activity: string, classId: string | null) => {
+  // user.timetables[0].selectedClasses[courseCode]?.[activity]?.['id'] === classId;
+  return true;
+};
+
 const ClassMembersList: React.FC<MembersListOfAnActivityProps> = ({ classPeriod }) => {
   const { groups, selectedGroupIndex } = useContext(UserContext);
   const selectedGroup = groups[selectedGroupIndex];
   const { courseCode, classId, activity } = classPeriod;
 
-  const filterMembersOfAClass = (members: User[]) => members;
-  // members.filter((member) => member.timetables[0].selectedClasses[courseCode]?.[activity]?.['id'] === classId);
+  const filterMembersOfAClass = (members: User[]) =>
+    members.filter((member) => hasSelectedTheClass(member, courseCode, activity, classId));
 
   return (
     <>

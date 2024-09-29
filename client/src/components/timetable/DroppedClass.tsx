@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import { ClassData, ClassPeriod, CourseData } from '../../interfaces/Periods';
 import { DroppedClassProps } from '../../interfaces/PropTypes';
 import { StyledMenu } from '../../styles/CustomEventStyles';
@@ -20,6 +21,7 @@ import {
 import { handleContextMenu, handlePasteEvent } from '../../utils/cardsContextMenu';
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
+import { hasSelectedTheClass } from '../timetableShared.tsx/ClassMembersList';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
 
@@ -49,6 +51,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setErrorVisibility,
   } = useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { user } = useContext(UserContext);
 
   let currCourse: CourseData | null = null;
 
@@ -73,6 +76,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let rippleStopped = false;
   let ignoreMouse = false;
   const onDown = (eventDown: any) => {
+    if (!hasSelectedTheClass(user, classCard.courseCode, classCard.activity, classCard.classId)) return;
     if (
       eventDown.target.className?.baseVal?.includes('MuiSvgIcon-root') ||
       eventDown.target.parentElement?.className?.baseVal?.includes('MuiSvgIcon-root')
