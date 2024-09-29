@@ -1,5 +1,6 @@
 import { API_URL } from '../api/config';
 import getCourseInfo from '../api/getCourseInfo';
+import useColorMapper from '../hooks/useColorMapper';
 import {
   ClassData,
   CourseData,
@@ -124,7 +125,7 @@ const parseTimetableDTO = async (timetableDTO: any) => {
     selectedCourses: courseInfo,
     selectedClasses: selectedClasses,
     createdEvents: createdEvents,
-    assignedColors: {},
+    assignedColors: useColorMapper(timetableDTO.selectedCourses, {}),
   };
 
   return parsedTimetable;
