@@ -53,6 +53,7 @@ model Event {
   day         Int
   start       Int
   end         Int
+  subtype     String
   // day         String
   // start       DateTime
   // end         DateTime
