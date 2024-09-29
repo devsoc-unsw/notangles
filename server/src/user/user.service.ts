@@ -38,7 +38,7 @@ export class UserService {
       return classes.map((clz) => {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
         const data = cache[k].find((c) => String(c.classID) === clz.classNo);
-        return data;
+        return { ...data, courseCode: clz.courseCode };
       });
     } catch (e) {
       throw new Error(e);

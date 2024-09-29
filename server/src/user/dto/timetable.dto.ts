@@ -61,6 +61,7 @@ export class ScrapedClassDto {
   needsConsent: boolean;
   mode: string;
   times: ClassTimeDto[];
+  courseCode: string;
   notes: [];
 }
 
