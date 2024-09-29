@@ -18,8 +18,14 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
   const group = groups[selectedGroupIndex];
   const userTimetable = user.timetables[0];
 
-  const { setAssignedColors, setSelectedCourses, setSelectedClasses, setCreatedEvents, createdEvents } =
-    useContext(CourseContext);
+  const {
+    selectedClasses,
+    setAssignedColors,
+    setSelectedCourses,
+    setSelectedClasses,
+    setCreatedEvents,
+    createdEvents,
+  } = useContext(CourseContext);
 
   const showPersonalTimetable = () => {
     ///////// TODO uncomment below when BE done, so that user.timetable works.
@@ -33,13 +39,13 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
   // Helper function that combines users' courses, classes and created events, with no duplicates.
   const combineUsersActivities = (users: User[]) => {
     let newSelectedCourses: CourseData[] = [];
-    const newSelectedClasses: SelectedClasses = {};
-    const newCreatedEvents: CreatedEvents = {};
+    let newSelectedClasses: SelectedClasses = {};
+    let newCreatedEvents: CreatedEvents = {};
 
     for (const user of users) {
       newSelectedCourses = [...new Set([...newSelectedCourses, ...user.timetables[0].selectedCourses])];
-      Object.assign(newSelectedClasses, user.timetables[0].selectedClasses);
-      Object.assign(newCreatedEvents, user.timetables[0].createdEvents);
+      newSelectedClasses = { ...newSelectedClasses, ...user.timetables[0].selectedClasses };
+      newCreatedEvents = { ...newCreatedEvents, ...user.timetables[0].createdEvents };
     }
 
     return { newSelectedCourses, newSelectedClasses, newCreatedEvents };
@@ -47,10 +53,12 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
 
   // Sets selectedCourses, selectedClasses and createdEvents as the combined activities of the group's members and admins.
   const setSharedActivities = () => {
-    const mergedMembers = combineUsersActivities(group.members);
-    const mergedAdmins = combineUsersActivities(group.groupAdmins);
-    setSelectedCourses([...new Set([...mergedMembers.newSelectedCourses, ...mergedAdmins.newSelectedCourses])]);
-    setSelectedClasses(Object.assign(mergedMembers.newSelectedClasses, mergedAdmins.newSelectedClasses));
+    const { newSelectedCourses, newSelectedClasses, newCreatedEvents } = combineUsersActivities([
+      ...group.members,
+      ...group.groupAdmins,
+    ]);
+    setSelectedCourses(newSelectedCourses);
+    setSelectedClasses(newSelectedClasses);
     setCreatedEvents({}); // NOTE: temporarily not combining created events
   };
 
@@ -62,14 +70,12 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
     //     newAssignedColours[course.code] = '#D3D3D3';
     //   });
     // });
-
     // // Admin's activities has grey colour of: '#D3D3D3'
     // group.groupAdmins.map((admin) => {
     //   admin.timetables[0].selectedCourses.map((course) => {
     //     newAssignedColours[course.code] = '#D3D3D3';
     //   });
     // });
-
     // // Logged in user has unique colour of: #137786 Turquoise
     // userTimetable.selectedCourses.map((course) => {
     //   newAssignedColours[course.code] = '#137786';
