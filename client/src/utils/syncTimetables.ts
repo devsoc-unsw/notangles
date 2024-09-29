@@ -65,11 +65,12 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
 const parseTimetableDTO = async (timetableDTO: any) => {
+  // console.log(timetableDTO);
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
       // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
-      getCourseInfo('2024', 'T3', code, true);
+      return getCourseInfo('2024', 'T3', code, true);
     }),
   );
 
@@ -79,13 +80,17 @@ const parseTimetableDTO = async (timetableDTO: any) => {
     classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr));
   });
 
-  const selectedClasses: SelectedClasses = timetableDTO.selectedClasses.map((classDTO: any) => {
-    const classID: string = classDTO.classNo;
-    const courseCode: string = classDTO.courseCode;
+  const selectedClasses: SelectedClasses = {};
+  timetableDTO.selectedClasses.forEach((scrapedClassDTO: any) => {
+    const classID: string = scrapedClassDTO.classID;
+    const courseCode: string = scrapedClassDTO.courseCode;
 
-    return {
-      [courseCode]: classDataMap[courseCode].find((clz) => String(clz.classNo) === classID),
-    };
+    if (!selectedClasses[courseCode]) {
+      selectedClasses[courseCode] = {};
+    }
+
+    selectedClasses[courseCode][scrapedClassDTO.activity] =
+      classDataMap[courseCode].find((clz) => String(clz.classNo) === String(classID)) || null;
   });
 
   // Finally, reverse created events
@@ -102,7 +107,7 @@ const parseTimetableDTO = async (timetableDTO: any) => {
         id: eventDTO.id,
         name: eventDTO.name,
         location: eventDTO.location,
-        description: eventDTO.description,
+        description: eventDTO.description || '',
         color: eventDTO.colour,
       },
     };
@@ -116,7 +121,7 @@ const parseTimetableDTO = async (timetableDTO: any) => {
   const parsedTimetable: TimetableData = {
     id: timetableDTO.id,
     name: timetableDTO.name,
-    selectedCourses: courseInfo, // Todo: parse to full selected timetables
+    selectedCourses: courseInfo,
     selectedClasses: selectedClasses,
     createdEvents: createdEvents,
     assignedColors: {},

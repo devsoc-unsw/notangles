@@ -1,10 +1,12 @@
 import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { API_URL } from '../../api/config';
+import { AppContext } from '../../context/AppContext';
 import { TimetableData } from '../../interfaces/Periods';
+import { parseTimetableDTO } from '../../utils/syncTimetables';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
 
@@ -78,6 +80,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [windowLocation, setWindowLocation] = useState('');
   const [user, setUser] = useState<User>();
   const [logoutDialog, setLogoutDialog] = useState(false);
+  const { setDisplayTimetables, displayTimetables } = useContext(AppContext);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -90,6 +93,25 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       });
       const userResponse = await response.text();
       if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getTimetables = async (userID: string) => {
+    try {
+      const response = await fetch(`${API_URL.server}/user/timetable/${userID}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      const res = await response.json();
+      const timetables = await Promise.all(res.data.map((timetable) => parseTimetableDTO(timetable)));
+
+      // TODO: set terms up properly
+      setDisplayTimetables({ T3: timetables });
     } catch (error) {
       console.log(error);
     }
@@ -114,6 +136,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       }
     }
     runAsync();
+    // TODO: currently using this for testing. move logic back into runasync when done
+    getTimetables('zTEMP');
   }, []);
 
   const loginCall = async () => {
