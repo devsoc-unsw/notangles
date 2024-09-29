@@ -3,10 +3,10 @@ import React, { useContext, useEffect } from 'react';
 
 import { CourseContext } from '../../context/CourseContext';
 import { UserContext } from '../../context/UserContext';
-import { TimetableProps } from '../../interfaces/PropTypes';
-import Timetable from '../timetable/Timetable';
 import { CourseData, CreatedEvents, SelectedClasses } from '../../interfaces/Periods';
+import { TimetableProps } from '../../interfaces/PropTypes';
 import { User } from '../sidebar/UserAccount';
+import Timetable from '../timetable/Timetable';
 
 const Container = styled('div')`
   margin-top: 12px;
@@ -18,7 +18,8 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
   const group = groups[selectedGroupIndex];
   const userTimetable = user.timetables[0];
 
-  const { setAssignedColors, setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
+  const { setAssignedColors, setSelectedCourses, setSelectedClasses, setCreatedEvents, createdEvents } =
+    useContext(CourseContext);
 
   const showPersonalTimetable = () => {
     ///////// TODO uncomment below when BE done, so that user.timetable works.
@@ -50,26 +51,34 @@ const TimetableShared: React.FC<TimetableProps> = ({ assignedColors, handleSelec
     const mergedAdmins = combineUsersActivities(group.groupAdmins);
     setSelectedCourses([...new Set([...mergedMembers.newSelectedCourses, ...mergedAdmins.newSelectedCourses])]);
     setSelectedClasses(Object.assign(mergedMembers.newSelectedClasses, mergedAdmins.newSelectedClasses));
-    setCreatedEvents(Object.assign(mergedMembers.newCreatedEvents, mergedAdmins.newCreatedEvents));
+    setCreatedEvents({}); // NOTE: temporarily not combining created events
   };
 
   const setSharedAssignedColours = () => {
-    const newAssignedColours: Record<string, string> = {};
-    // Friend's activities has grey colour of: '#D3D3D3'
-    group.members.map((member) => {
-      member.timetables[0].selectedCourses.map((course) => {
-        newAssignedColours[course.code] = '#D3D3D3';
-      });
-    });
-    // Logged in user has unique colour of: #137786 Turquoise
-    userTimetable.selectedCourses.map((course) => {
-      newAssignedColours[course.code] = '#137786';
-    }),
-      setAssignedColors(newAssignedColours);
+    // const newAssignedColours: Record<string, string> = {};
+    // // Friend's activities has grey colour of: '#D3D3D3'
+    // group.members.map((member) => {
+    //   member.timetables[0].selectedCourses.map((course) => {
+    //     newAssignedColours[course.code] = '#D3D3D3';
+    //   });
+    // });
+
+    // // Admin's activities has grey colour of: '#D3D3D3'
+    // group.groupAdmins.map((admin) => {
+    //   admin.timetables[0].selectedCourses.map((course) => {
+    //     newAssignedColours[course.code] = '#D3D3D3';
+    //   });
+    // });
+
+    // // Logged in user has unique colour of: #137786 Turquoise
+    // userTimetable.selectedCourses.map((course) => {
+    //   newAssignedColours[course.code] = '#137786';
+    // }),
+    //   setAssignedColors(newAssignedColours);
   };
 
   const showSharedTimetable = () => {
-    setSharedActivities();
+    // setSharedActivities();
     setSharedAssignedColours();
   };
 

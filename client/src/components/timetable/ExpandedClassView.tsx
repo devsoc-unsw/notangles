@@ -1,4 +1,4 @@
-import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt, Diversity3 as FriendsIcon } from '@mui/icons-material';
+import { AccessTime, Close, DesktopMac, Diversity3 as FriendsIcon, LocationOn, PeopleAlt } from '@mui/icons-material';
 import {
   Dialog,
   Grid,
@@ -14,6 +14,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import {
   ClassData,
   ClassPeriod,
@@ -37,10 +38,8 @@ import { to24Hour } from '../../utils/convertTo24Hour';
 import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import ColorPicker from '../controls/ColorPicker';
+import ClassMembersList from '../timetableShared.tsx/ClassMembersList';
 import LocationDropdown from './LocationDropdown';
-import { UserContext } from '../../context/UserContext';
-import UserIcon from '../user/UserIcon';
-import { User } from '../sidebar/UserAccount';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -49,28 +48,6 @@ const StyledDropdownContainer = styled(Grid)`
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
-
-const UserIconContainer = styled('div')`
-  margin-right: 6px;
-`;
-
-/**
- *
- * Returns a row display of UserIcons of friends in your current group who share this class timetable with you.
- */
-const SharedActivitiesFriendsList = () => {
-  const { groups, selectedGroupIndex } = useContext(UserContext);
-
-  return (
-    <>
-      {groups[selectedGroupIndex].members.map((member) => (
-        <UserIconContainer>
-          <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
-        </UserIconContainer>
-      ))}
-    </>
-  );
-};
 
 /**
  * @param time When the class runs
@@ -102,12 +79,11 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
-  const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
+  const { selectedCourses, assignedColors, setAssignedColors, selectedClasses } = useContext(CourseContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
+
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-
-  //For social timetabling seeing list of friends who share this class with you.
-  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   // To reload initial color picker after useColorMapper instantiates context
   useEffect(() => {
@@ -285,7 +261,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
             <StyledListItemIcon isDarkMode={isDarkMode}>
               <FriendsIcon />
             </StyledListItemIcon>
-            <SharedActivitiesFriendsList />
+            <ClassMembersList classPeriod={classPeriod} />
           </StyledListItem>
         )}
       </StyledDialogContent>
