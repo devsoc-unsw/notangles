@@ -1,5 +1,14 @@
 import { API_URL } from '../api/config';
-import { ClassData, CreatedEvents, DisplayTimetablesMap, SelectedClasses, TimetableData } from '../interfaces/Periods';
+import getCourseInfo from '../api/getCourseInfo';
+import {
+  ClassData,
+  CourseData,
+  CreatedEvents,
+  DisplayTimetablesMap,
+  EventPeriod,
+  SelectedClasses,
+  TimetableData,
+} from '../interfaces/Periods';
 
 interface DiffID {
   delete: Set<string>;
@@ -22,11 +31,27 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   return b.reduce((prev, curr) => prev.concat(curr));
 };
 
-// TODO: Events don't really make sense right now. Timetable takes datetime, but frontend can only select
-// day + time of day, not specific date. Modify this later
-const convertEventToDTO = (createdEvents: CreatedEvents) => {
-  console.log(createdEvents);
-  return [];
+const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) => {
+  return Object.values(createdEvents).map((period) => {
+    const { subtype, event, time } = period;
+
+    const eventDTO = {
+      id: event.id,
+      name: event.name,
+      location: event.location,
+      description: event.description,
+      colour: event.color,
+      day: Number(time.day),
+      start: Number(time.start),
+      end: Number(time.end),
+      subtype: subtype,
+    };
+
+    return {
+      ...eventDTO,
+      ...(timetableId && { timetableId }),
+    };
+  });
 };
 
 const convertTimetableToDTO = (timetable: TimetableData) => {
@@ -34,8 +59,70 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
     ...timetable,
     selectedCourses: timetable.selectedCourses.map((t) => t.code),
     selectedClasses: convertClassToDTO(timetable.selectedClasses),
-    createdEvents: convertEventToDTO(timetable.createdEvents),
+    createdEvents: convertEventToDTO(timetable.createdEvents, timetable.id),
   };
+};
+
+// DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
+const parseTimetableDTO = async (timetableDTO: any) => {
+  // First, recover course information from course info API
+  const courseInfo: CourseData[] = await Promise.all(
+    timetableDTO.selectedCourses.map((code: string) => {
+      // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
+      getCourseInfo('2024', 'T3', code, true);
+    }),
+  );
+
+  // Next, reverse the selected classes info from class data
+  const classDataMap: Record<string, ClassData[]> = {}; // k (course code): v (ClassData[])
+  courseInfo.forEach((course) => {
+    classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr));
+  });
+
+  const selectedClasses: SelectedClasses = timetableDTO.selectedClasses.map((classDTO: any) => {
+    const classID: string = classDTO.classNo;
+    const courseCode: string = classDTO.courseCode;
+
+    return {
+      [courseCode]: classDataMap[courseCode].find((clz) => String(clz.classNo) === classID),
+    };
+  });
+
+  // Finally, reverse created events
+  const eventsList: EventPeriod[] = timetableDTO.createdEvents.map((eventDTO: any) => {
+    return {
+      type: 'event',
+      subtype: eventDTO.subtype,
+      time: {
+        day: eventDTO.day,
+        start: eventDTO.start,
+        end: eventDTO.end,
+      },
+      event: {
+        id: eventDTO.id,
+        name: eventDTO.name,
+        location: eventDTO.location,
+        description: eventDTO.description,
+        color: eventDTO.colour,
+      },
+    };
+  });
+  const createdEvents = eventsList.reduce((prev: CreatedEvents, curr) => {
+    const id = curr.event.id;
+    prev[id] = curr;
+    return prev;
+  }, {});
+
+  const parsedTimetable: TimetableData = {
+    id: timetableDTO.id,
+    name: timetableDTO.name,
+    selectedCourses: courseInfo, // Todo: parse to full selected timetables
+    selectedClasses: selectedClasses,
+    createdEvents: createdEvents,
+    assignedColors: {},
+  };
+
+  return parsedTimetable;
 };
 
 const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
@@ -55,7 +142,7 @@ const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => 
         userId,
         selectedCourses: selectedCourses.map((t) => t.code),
         selectedClasses: convertClassToDTO(selectedClasses),
-        createdEvents: convertEventToDTO(createdEvents), // TODO
+        createdEvents: convertEventToDTO(createdEvents),
         name,
       }),
     });
@@ -159,4 +246,4 @@ const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimet
   }, 5000);
 };
 
-export { runSync };
+export { parseTimetableDTO, runSync };
