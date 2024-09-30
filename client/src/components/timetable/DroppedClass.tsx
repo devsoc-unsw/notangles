@@ -51,7 +51,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setErrorVisibility,
   } = useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { user } = useContext(UserContext);
+  const { user, groupsSidebarCollapsed } = useContext(UserContext);
 
   let currCourse: CourseData | null = null;
 
@@ -245,7 +245,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       )}
       {/* For right click menu on a class card */}
       <StyledMenu
-        open={contextMenu != null}
+        open={contextMenu != null && groupsSidebarCollapsed}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}

@@ -3,6 +3,7 @@ import { Divider, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import React, { useContext } from 'react';
 
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import { EventMetadata } from '../../interfaces/Periods';
 import { EventContextMenuProps } from '../../interfaces/PropTypes';
 import { RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
@@ -17,6 +18,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
   setIsEditing,
 }) => {
   const { createdEvents, setCreatedEvents, copiedEvent, setCopiedEvent } = useContext(CourseContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const { name, location, description, color, day, start, end }: EventMetadata = {
     ...eventPeriod.event,
@@ -45,7 +47,7 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
 
   return (
     <StyledMenu
-      open={contextMenu !== null}
+      open={contextMenu !== null && groupsSidebarCollapsed}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
       onClose={() => setContextMenu(null)}

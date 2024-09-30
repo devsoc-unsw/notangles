@@ -14,13 +14,13 @@ import {
 } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import { StyledMenu } from '../../styles/CustomEventStyles';
 import { handleContextMenu } from '../../utils/cardsContextMenu';
 import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
-import { UserContext } from '../../context/UserContext';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -315,7 +315,7 @@ export const TimetableLayout = () => {
 
       {/* For right click menu on a cell */}
       <StyledMenu
-        open={contextMenu != null}
+        open={contextMenu != null && groupsSidebarCollapsed}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
         onClose={() => setContextMenu(null)}
