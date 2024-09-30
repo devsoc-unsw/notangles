@@ -135,7 +135,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { user, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -440,7 +440,7 @@ const App: React.FC = () => {
     }
 
     // TODO: timetables vs timetable map - change from hardcoded
-    runSync(user.userID, { T3: user.timetables }, displayTimetables);
+    runSync(user, setUser, { T3: user.timetables }, displayTimetables);
   };
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable

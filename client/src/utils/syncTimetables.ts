@@ -1,5 +1,6 @@
 import { API_URL } from '../api/config';
 import getCourseInfo from '../api/getCourseInfo';
+import { User } from '../components/sidebar/UserAccount';
 import useColorMapper from '../hooks/useColorMapper';
 import {
   ClassData,
@@ -233,7 +234,12 @@ const updateTimetableDiffs = (zid: string, newTimetables: TimetableData[], diffI
   });
 };
 
-const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimetablesMap) => {
+const runSync = (
+  user: User,
+  setUser: (user: User) => void,
+  oldMap: DisplayTimetablesMap,
+  newMap: DisplayTimetablesMap,
+) => {
   clearTimeout(timeoutID);
 
   timeoutID = setTimeout(() => {
@@ -247,9 +253,12 @@ const runSync = (zid: string, oldMap: DisplayTimetablesMap, newMap: DisplayTimet
 
       const diffs = getTimetableDiffs(oldTimetables, newTimetables);
 
-      updateTimetableDiffs(zid, newTimetables, diffs);
+      updateTimetableDiffs(user.userID, newTimetables, diffs);
     }
-  }, 5000);
+
+    // Save to user timetable
+    setUser({ ...user, timetables: newMap });
+  }, 10000);
 };
 
 export { parseTimetableDTO, runSync };

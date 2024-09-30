@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { API_URL } from '../../api/config';
 import { AppContext } from '../../context/AppContext';
-import { TimetableData } from '../../interfaces/Periods';
+import { DisplayTimetablesMap, TimetableData } from '../../interfaces/Periods';
 import { parseTimetableDTO } from '../../utils/syncTimetables';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
@@ -72,7 +72,7 @@ export interface User {
   friends: User[];
   incoming: User[];
   outgoing: User[];
-  timetables: TimetableData[];
+  timetables: DisplayTimetablesMap;
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
