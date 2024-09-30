@@ -17,6 +17,7 @@ import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../u
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
+import { UserContext } from '../../context/UserContext';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -99,6 +100,7 @@ const CustomEvent: React.FC = () => {
     latestEndTime,
     setLatestEndTime,
   } = useContext(AppContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setCreateEventAnchorEl(event.currentTarget);
@@ -224,7 +226,13 @@ const CustomEvent: React.FC = () => {
 
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
+      <DropdownButton
+        disabled={!groupsSidebarCollapsed}
+        disableElevation
+        aria-describedby={popoverId}
+        variant="contained"
+        onClick={handleOpen}
+      >
         <Box ml="1px" flexGrow={1} marginTop="3px">
           CREATE EVENT
         </Box>

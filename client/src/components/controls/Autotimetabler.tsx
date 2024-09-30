@@ -21,6 +21,7 @@ import getAutoTimetable from '../../api/getAutoTimetable';
 import { unknownErrorMessage, weekdaysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import NetworkError from '../../interfaces/NetworkError';
 import { ClassData, PeriodInfo } from '../../interfaces/Periods';
 import { AutotimetableProps } from '../../interfaces/PropTypes';
@@ -69,6 +70,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   const { setAutoVisibility, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { selectedCourses, createdEvents } = useContext(CourseContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const targetActivities = useRef<ClassData[][]>([]);
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
@@ -224,7 +226,13 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
 
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleClick}>
+      <DropdownButton
+        disabled={!groupsSidebarCollapsed}
+        disableElevation
+        aria-describedby={popoverId}
+        variant="contained"
+        onClick={handleClick}
+      >
         <StyledButtonText>AUTO-TIMETABLE</StyledButtonText>
         {open ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
