@@ -20,6 +20,7 @@ import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
+import { UserContext } from '../../context/UserContext';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -162,6 +163,7 @@ export const TimetableLayout = () => {
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
   const { copiedEvent, setCopiedEvent } = useContext(CourseContext);
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const {
     is12HourMode,
@@ -261,6 +263,7 @@ export const TimetableLayout = () => {
         isEndY={y === hours.length - 1}
         id={x === 0 && y === 0 ? 'origin' : undefined}
         onDoubleClick={(event) => {
+          if (!groupsSidebarCollapsed) return; // NOTE: temporarily disable creating events for Shared Timetables
           handleOpen(event);
           createTempEvent(x, y);
           eventStartTime.current = createDateWithTime(earliestStartTime + y);
