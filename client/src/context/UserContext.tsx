@@ -6,8 +6,8 @@ import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 
-//TODO, is this best practise?
-const undefinedUser = {
+
+export const undefinedUser = {
   userID: '',
   firstname: '',
   lastname: '',
