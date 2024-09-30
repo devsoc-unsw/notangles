@@ -1,6 +1,6 @@
 import { Add, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { TabContext, TabList } from '@mui/lab';
-import { Box, Popover, Tab } from '@mui/material';
+import { Box, Popover, Tab, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 
 import getCourseInfo from '../../api/getCourseInfo';
@@ -9,7 +9,7 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CoursesList } from '../../interfaces/Courses';
 import { ClassData, EventPeriod, EventSubtype } from '../../interfaces/Periods';
-import { StyledControlsButton } from '../../styles/ControlStyles';
+import { StyledButtonText, StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
@@ -233,9 +233,7 @@ const CustomEvent: React.FC = () => {
         variant="contained"
         onClick={handleOpen}
       >
-        <Box ml="1px" flexGrow={1} marginTop="3px">
-          CREATE EVENT
-        </Box>
+        <StyledButtonText>CREATE EVENT</StyledButtonText>
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
       <Popover
