@@ -241,14 +241,13 @@ const runSync = (
   newMap: DisplayTimetablesMap,
 ) => {
   clearTimeout(timeoutID);
-
   timeoutID = setTimeout(() => {
     if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
       return;
     }
 
     for (const key of Object.keys(newMap)) {
-      const oldTimetables = oldMap[key];
+      const oldTimetables = oldMap[key] || [];
       const newTimetables = newMap[key];
 
       const diffs = getTimetableDiffs(oldTimetables, newTimetables);
@@ -258,7 +257,7 @@ const runSync = (
 
     // Save to user timetable
     setUser({ ...user, timetables: newMap });
-  }, 10000);
+  }, 5000);
 };
 
 export { parseTimetableDTO, runSync };

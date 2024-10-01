@@ -1,11 +1,12 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { API_URL } from '../api/config';
 import { User } from '../components/sidebar/UserAccount';
 import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
-
+import { AppContext } from './AppContext';
+import { parseTimetableDTO } from '../utils/syncTimetables';
 
 export const undefinedUser = {
   userID: '',
@@ -51,6 +52,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
   const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
+  const { setDisplayTimetables } = useContext(AppContext);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -61,12 +63,43 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           'Content-Type': 'application/json',
         },
       });
-      const userResponse = await response.text();
-      if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+      const res = await response.json();
+      const timetables = await Promise.all(res.data.map((timetable) => parseTimetableDTO(timetable)));
+
+      // TODO: update when adding term data to schema
+      const tempMap = { T3: timetables };
+      const userResponse = { ...res.data, timetables: tempMap };
+
+      setUser(userResponse);
+      setDisplayTimetables(tempMap);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const getTimetables = async (userID: string) => {
+  //   try {
+  //     const response = await fetch(`${API_URL.server}/user/timetable/${userID}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //     const res = await response.json();
+  //     const timetables = await Promise.all(res.data.map((timetable) => parseTimetableDTO(timetable)));
+
+  //     // TODO: set terms up properly
+
+  //     const tempMap = { T3: timetables };
+  //     setDisplayTimetables(tempMap);
+  //     setUser((u) => {
+  //       return { ...u, timetables: tempMap };
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const getGroups = async (userID: string) => {
     try {
