@@ -181,6 +181,7 @@ export class UserService {
         data: {
           id: _timetableId,
           name: _timetableName,
+          userID: _userID,
           selectedCourses: _selectedCourses,
           selectedClasses: {
             create: _selectedClasses,
