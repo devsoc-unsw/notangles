@@ -1,11 +1,12 @@
-import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
+import { LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
 import { AppContext } from '../../context/AppContext';
-import { DisplayTimetablesMap, TimetableData } from '../../interfaces/Periods';
+import { undefinedUser, UserContext } from '../../context/UserContext';
+import { DisplayTimetablesMap } from '../../interfaces/Periods';
 import { parseTimetableDTO } from '../../utils/syncTimetables';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
@@ -18,17 +19,6 @@ const UserAuth = styled('div')`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-
-const UserInfo = styled('div')`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const UserText = styled('div')`
-  display: flex;
-  flex-direction: column;
 `;
 
 const StyledIconButton = styled(IconButton)`
@@ -45,11 +35,6 @@ const StyledButton = styled(Button)`
   min-height: 40px;
   background-color: ${({ theme }) => theme.palette.background.paper};
   border: 1px solid ${({ theme }) => theme.palette.primary.main};
-`;
-
-const StyledAccountIcon = styled(AccountCircle)`
-  width: 28px;
-  height: 28px;
 `;
 
 const ExpandedContainer = styled('div')`
@@ -76,27 +61,11 @@ export interface User {
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
-  const [login, setLogin] = useState(false);
   const [windowLocation, setWindowLocation] = useState('');
-  const [user, setUser] = useState<User>();
   const [logoutDialog, setLogoutDialog] = useState(false);
-  const { setDisplayTimetables, displayTimetables } = useContext(AppContext);
 
-  const getUserInfo = async (userID: string) => {
-    try {
-      const response = await fetch(`${API_URL.server}/user/profile/${userID}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const userResponse = await response.text();
-      if (userResponse !== '') setUser(JSON.parse(userResponse).data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { displayTimetables, setDisplayTimetables } = useContext(AppContext);
+  const { user, setUser } = useContext(UserContext);
 
   const getTimetables = async (userID: string) => {
     try {
@@ -117,28 +86,8 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     }
   };
 
-  useEffect(() => {
-    async function runAsync() {
-      try {
-        const response = await fetch(`${API_URL.server}/auth/user`, {
-          credentials: 'include',
-        });
-        const userResponse = await response.text();
-        if (userResponse !== '') {
-          setLogin(true);
-          getUserInfo(JSON.parse(userResponse));
-        } else {
-          setUser(undefined);
-          setLogin(false);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    runAsync();
-    // TODO: currently using this for testing. move logic back into runasync when done
-    getTimetables('zTEMP');
-  }, []);
+  // TODO: currently using this for testing. move logic back into runasync when done
+  getTimetables('zTEMP');
 
   const loginCall = async () => {
     setWindowLocation(window.location.href);
@@ -160,9 +109,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     window.location.replace(windowLocation);
-    setUser(undefined);
+    setUser(undefinedUser);
   };
-  if (!login) {
+
+  if (!user.userID) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
         <StyledIconButton onClick={loginCall}>
@@ -173,8 +123,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       <StyledButton onClick={loginCall}>Log in</StyledButton>
     );
   }
-
-  if (!user) return <></>;
 
   return (
     <>
