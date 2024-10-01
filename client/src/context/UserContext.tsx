@@ -7,7 +7,7 @@ import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 
 
-const undefinedUser = {
+export const undefinedUser = {
   userID: '',
   firstname: '',
   lastname: '',
@@ -111,7 +111,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     };
     getZid();
   }, []);
-
 
   const initialContext = useMemo(
     () => ({

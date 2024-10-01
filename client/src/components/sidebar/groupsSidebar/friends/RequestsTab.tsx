@@ -5,8 +5,8 @@ import React from 'react';
 
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
-import { User } from '../../UserAccount';
 import UserProfile from '../../../user/UserProfile';
+import { User } from '../../UserAccount';
 
 const StyledFriendsListContainer = styled('div')`
   display: flex;

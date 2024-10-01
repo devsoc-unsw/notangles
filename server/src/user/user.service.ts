@@ -347,7 +347,6 @@ export class UserService {
             timetables: true,
           },
         });
-      
         res.push(group);
       }
 

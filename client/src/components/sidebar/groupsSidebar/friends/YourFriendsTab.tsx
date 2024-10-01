@@ -5,8 +5,8 @@ import React from 'react';
 
 import { API_URL } from '../../../../api/config';
 import NetworkError from '../../../../interfaces/NetworkError';
-import { User } from '../../UserAccount';
 import UserProfile from '../../../user/UserProfile';
+import { User } from '../../UserAccount';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -33,7 +33,7 @@ const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => 
           sendeeId: friendID,
         }),
       });
-      //   if (res.status !== 200) throw new NetworkError("Couldn't get response");
+      if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
       console.log('unfriend status', acceptRequestStatus);
       fetchUserInfo(user.userID);
