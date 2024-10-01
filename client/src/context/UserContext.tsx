@@ -20,7 +20,7 @@ export const undefinedUser = {
   friends: [],
   incoming: [],
   outgoing: [],
-  timetables: [],
+  timetables: {},
 };
 
 export interface IUserContext {
@@ -64,7 +64,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const res = await response.json();
-      const timetables = await Promise.all(res.data.map((timetable) => parseTimetableDTO(timetable)));
+      const timetables = await Promise.all(res.data.timetables.map((timetable) => parseTimetableDTO(timetable)));
 
       // TODO: update when adding term data to schema
       const tempMap = { T3: timetables };
