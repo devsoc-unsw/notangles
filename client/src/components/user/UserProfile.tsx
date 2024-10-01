@@ -33,8 +33,8 @@ const UserProfile: React.FC<{ firstname: string; lastname: string; email: string
   };
 
   const getEmail = () => {
-    if (email.length >= 15) {
-      email = email.slice(0, 15);
+    if (email.length >= 13) {
+      email = email.slice(0, 13);
       return email + '...';
     }
     return email;

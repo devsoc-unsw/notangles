@@ -12,12 +12,12 @@ const Container = styled('div')`
   background: white;
   width: 90%;
   margin-left: 140px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid #e0e0e0;
 `;
 
 const Members = styled('div')`
   display: flex;
-  gap: 2px;
+  gap: 8px;
 `;
 
 const MemberText = styled('div')`
@@ -48,8 +48,8 @@ const GroupInfo = () => {
         <GroupDescription>{group.description}</GroupDescription>
       </MemberText>
       <Members>
-        {group.members.map((member, i) => (
-          <UserIcon url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
+        {[...group.groupAdmins, ...group.members].map((member, i) => (
+          <UserIcon key={i} url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
         ))}
       </Members>
     </Container>
