@@ -171,6 +171,7 @@ export class UserService {
     _selectedCourses: string[],
     _selectedClasses: ClassDto[],
     _createdEvents: EventDto[],
+    _mapKey: string,
     _timetableName?: string,
   ): Promise<any> {
     try {
@@ -182,6 +183,7 @@ export class UserService {
           id: _timetableId,
           name: _timetableName,
           selectedCourses: _selectedCourses,
+          mapKey: _mapKey,
           selectedClasses: {
             create: _selectedClasses,
           },
@@ -217,6 +219,7 @@ export class UserService {
       data: {
         name: _timetable.name,
         selectedCourses: _timetable.selectedCourses,
+        mapKey: _timetable.mapKey,
       },
     });
 

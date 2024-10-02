@@ -85,6 +85,7 @@ model Timetable {
   createdEvents   Event[]
   user            User[]
   groups          Group[]  @relation("group_timetables")
+  mapKey          String // Key for timetable map
 
   @@map("timetables")
 }

@@ -10,6 +10,7 @@ export class TimetableDto {
   selectedClasses: ClassDto[];
   createdEvents: EventDto[];
   name?: string;
+  mapKey: string;
 }
 
 export class ReconstructedTimetableDto {
@@ -22,6 +23,7 @@ export class ReconstructedTimetableDto {
   selectedClasses: ScrapedClassDto[];
   createdEvents: EventDto[];
   name?: string;
+  mapKey: string;
 }
 
 export class ClassDto {
