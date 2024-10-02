@@ -20,6 +20,28 @@ interface DiffID {
 
 let timeoutID: NodeJS.Timeout;
 
+// Helper function to determine what year a term is in
+const getTimetableYear = (targetTerm: string, currentTerm: string, currentYear: string) => {
+  try {
+    const pattern = /[0-9]+$/;
+    const currNo = currentTerm.match(pattern);
+    const targetNo = targetTerm.match(pattern);
+
+    if (!currNo || !targetNo) {
+      return currentYear;
+    }
+
+    // Example: 2023 T3 is before 2024 T1
+    if (Number(targetNo[0]) > Number(currNo[0])) {
+      return String(Number(currentYear) - 1);
+    }
+
+    return currentYear;
+  } catch (e) {
+    return currentYear;
+  }
+};
+
 const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   const a = Object.values(selectedClasses);
   const b = a.map((c) => {
@@ -66,13 +88,18 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 };
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
-const parseTimetableDTO = async (timetableDTO: any) => {
+const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, currentYear: string) => {
   // console.log(timetableDTO);
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
       // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
-      return getCourseInfo('2024', 'T3', code, true);
+      return getCourseInfo(
+        getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
+        timetableDTO.mapKey,
+        code,
+        true,
+      );
     }),
   );
 
@@ -129,7 +156,7 @@ const parseTimetableDTO = async (timetableDTO: any) => {
     assignedColors: useColorMapper(timetableDTO.selectedCourses, {}),
   };
 
-  return parsedTimetable;
+  return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
 };
 
 const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
@@ -177,9 +204,11 @@ const syncDeleteTimetable = async (timetableId: string) => {
 const syncEditTimetable = async (userId: string, editedTimetable: TimetableData) => {
   try {
     if (!userId) {
-      console.log('User is not logged in');
-      return;
+      // console.log('User is not logged in');
+      // return;
     }
+
+    console.log('fuck');
 
     await fetch(`${API_URL.server}/user/timetable`, {
       method: 'PUT',

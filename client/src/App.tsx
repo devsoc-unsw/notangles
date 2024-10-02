@@ -434,9 +434,8 @@ const App: React.FC = () => {
 
   const syncTimetables = () => {
     if (!user.userID) {
-      console.log('TODO: change this up');
-      user.userID = 'temp';
-      // return;
+      console.log('Cannot sync: user is not logged in');
+      return;
     }
 
     // TODO: timetables vs timetable map - change from hardcoded
