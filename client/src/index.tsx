@@ -30,6 +30,7 @@ const Root: React.FC = () => (
             <Route element={<App />} path="/">
               <Route path="/event/:encrypted" element={<EventShareModal />} />
             </Route>
+            <Route path="/friends" element={<Friends />} />
           </Routes>
         </BrowserRouter>
       </UserContextProvider>
