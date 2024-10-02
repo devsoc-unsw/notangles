@@ -199,10 +199,20 @@ const App: React.FC = () => {
     /**
      * Retrieves the list of all courses from the scraper backend
      */
+    // TODO: remove when gql integration is successful
+    // const fetchCoursesList = async () => {
+    //   const { courses, lastUpdated } = await getCoursesList(year, term);
+    //   setCoursesList(courses);
+    //   setLastUpdated(lastUpdated);
+    // };
+
+    // TODO: with gql
     const fetchCoursesList = async () => {
-      const { courses, lastUpdated } = await getCoursesList(year, term);
+      const { courses } = await getCoursesList(term);
+      // TODO: remove log
+      console.log('Courses:', courses);
       setCoursesList(courses);
-      setLastUpdated(lastUpdated);
+      // setLastUpdated(lastUpdated);
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);

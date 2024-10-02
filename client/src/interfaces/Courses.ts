@@ -15,9 +15,20 @@ export interface CoursesListWithDate {
   courses: CoursesList;
 }
 
+// TODO: remove when gql integration is successful
+// export interface FetchedCourse {
+//   courseCode: CourseCode;
+//   name: string;
+//   online: boolean;
+//   inPerson: boolean;
+//   career: string;
+//   faculty: string;
+// }
+
+// FOR GQL
 export interface FetchedCourse {
-  courseCode: CourseCode;
-  name: string;
+  course_code: CourseCode;
+  course_name: string;
   online: boolean;
   inPerson: boolean;
   career: string;
