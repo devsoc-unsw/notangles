@@ -1,15 +1,18 @@
 import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
+import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
+import FriendsButton from './FriendsButton';
+import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import TermSelect from './TermSelect';
@@ -28,17 +31,28 @@ interface StyledSidebarProps extends AppBarProps {
   collapsed: boolean;
 }
 
-const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ theme, collapsed }) => ({
-  backgroundColor: theme.palette.background.paper,
-  width: collapsed ? '80px' : '290px',
-  height: '100vh',
+const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ collapsed }) => ({
+  width: 'fit-content',
   left: 0,
-  color: theme.palette.text.primary,
   transition: 'width 0.2s ease',
   zIndex: 1201,
+  display: 'flex',
+  flexDirection: 'row',
+
   // overriding MUI select component padding when focused (for the term select)
   paddingRight: '0 !important',
-  padding: '10px, 19px, 10px, 19px',
+  padding: '10px, 0px, 10px, 19px',
+}));
+
+const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => ({
+  backgroundColor: theme.palette.background.paper,
+  height: '100vh',
+  color: theme.palette.text.primary,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  width: collapsed ? '80px' : '290px',
+  overflowY: 'auto',
 }));
 
 const SidebarTitle = styled(Typography)`
@@ -63,7 +77,6 @@ const SideBarContainer = styled('div')`
   display: flex;
   flex-direction: column;
   padding: 20px 16px 20px 16px;
-  height: 100%;
   gap: 16px;
 `;
 
@@ -89,11 +102,31 @@ const SidebarFooterText = styled('div')`
   margin-top: 16px;
 `;
 
+const StyledGroupContainer = styled('div')`
+  height: 100vh;
+  width: 60px;
+  background: ${({ theme }) => theme.palette.primary.main};
+  display: flex;
+  align-items: center;
+  padding: 12px 2px;
+  flex-direction: column;
+  gap: 4px;
+
+  overflow-y: auto;
+  max-height: calc(100vh - 24px);
+
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Edge */
+  }
+`;
+
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -150,21 +183,32 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      <HeaderContainer>
-        <a href="/">
-          <LogoImg
-            src={currLogo}
-            alt="Notangles logo"
-            onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-            onMouseOut={() => setCurrLogo(notanglesLogo)}
-          />
-        </a>
-        {!collapsed && <SidebarTitle variant="h6">Notangles</SidebarTitle>}
-        {!collapsed && (
-          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
-        )}
-      </HeaderContainer>
-      <Divider />
+      {!groupsSidebarCollapsed && (
+        <StyledGroupContainer>
+          <GroupsSidebar />
+        </StyledGroupContainer>
+      )}
+      <MainSidebar collapsed={collapsed}>
+        <div>
+          <HeaderContainer>
+            <a href="/">
+              <LogoImg
+                src={currLogo}
+                alt="Notangles logo"
+                onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+                onMouseOut={() => setCurrLogo(notanglesLogo)}
+              />
+            </a>
+            {!collapsed && (
+              <>
+                <SidebarTitle variant="h6">Notangles</SidebarTitle>
+                <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
+              </>
+            )}
+          </HeaderContainer>
+
+          <Divider />
+
       <SideBarContainer>
         <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
         <NavComponentsContainer>
@@ -202,6 +246,7 @@ const Sidebar: React.FC = () => {
           ))}
         </NavComponentsContainer>
       </SideBarContainer>
+        </div>
       <SidebarFooter>
         <DarkModeButton collapsed={collapsed} />
         <UserAccount collapsed={collapsed} />
@@ -214,6 +259,7 @@ const Sidebar: React.FC = () => {
           <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
         )}
       </SidebarFooter>
+      </MainSidebar>
     </StyledSidebar>
   );
 };

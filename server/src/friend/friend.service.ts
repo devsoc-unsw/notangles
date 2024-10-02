@@ -52,6 +52,9 @@ export class FriendService {
         }),
       ]);
 
+      // Need to delete friend request
+      this.deleteFriendRequest(sendeeId, senderId);
+
       return Promise.resolve(sendeeId);
     } catch (e) {
       throw new Error(e);

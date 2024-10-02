@@ -12,6 +12,10 @@ export interface CourseContextProviderProps {
   children: ReactNode;
 }
 
+export interface UserContextProviderProps {
+  children: ReactNode;
+}
+
 export interface DarkModeButtonProps {
   collapsed: boolean;
 }
