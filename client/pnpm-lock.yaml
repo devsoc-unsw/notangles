@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@date-io/date-fns':
-    specifier: 2.17.0
-    version: 2.17.0(date-fns@2.30.0)
+    specifier: 3.0.0
+    version: 3.0.0(date-fns@2.30.0)
   '@emotion/react':
     specifier: 11.13.0
     version: 11.13.0(@types/react@18.3.3)(react@18.3.1)
@@ -185,11 +185,11 @@ devDependencies:
     specifier: 7.35.0
     version: 7.35.0(eslint@8.57.0)
   eslint-plugin-simple-import-sort:
-    specifier: 10.0.0
-    version: 10.0.0(eslint@8.57.0)
+    specifier: 12.1.1
+    version: 12.1.1(eslint@8.57.0)
   eslint-plugin-unused-imports:
-    specifier: 3.2.0
-    version: 3.2.0(@typescript-eslint/eslint-plugin@7.16.1)(eslint@8.57.0)
+    specifier: 4.1.4
+    version: 4.1.4(@typescript-eslint/eslint-plugin@7.16.1)(eslint@8.57.0)
   jsdom:
     specifier: 24.1.1
     version: 24.1.1
@@ -209,8 +209,8 @@ devDependencies:
     specifier: 4.2.0
     version: 4.2.0(typescript@5.5.3)(vite@4.5.3)
   vite-tsconfig-paths:
-    specifier: 4.3.2
-    version: 4.3.2(typescript@5.5.3)(vite@4.5.3)
+    specifier: 5.0.1
+    version: 5.0.1(typescript@5.5.3)(vite@4.5.3)
   vitest:
     specifier: 2.1.2
     version: 2.1.2(@types/node@20.14.11)(jsdom@24.1.1)
@@ -436,19 +436,19 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@date-io/core@2.17.0:
-    resolution: {integrity: sha512-+EQE8xZhRM/hsY0CDTVyayMDDY5ihc4MqXCrPxooKw19yAzUIC6uUqsZeaOFNL9YKTNxYKrJP5DFgE8o5xRCOw==}
+  /@date-io/core@3.0.0:
+    resolution: {integrity: sha512-S3j+IAQVBYNkQzchVVhX40eBkGDreBpScy9RXwTS5j2+k07+62pMVPisQ44Gq76Rqy5AOG/EZXCwBpY/jbemvA==}
     dev: false
 
-  /@date-io/date-fns@2.17.0(date-fns@2.30.0):
-    resolution: {integrity: sha512-L0hWZ/mTpy3Gx/xXJ5tq5CzHo0L7ry6KEO9/w/JWiFWFLZgiNVo3ex92gOl3zmzjHqY/3Ev+5sehAr8UnGLEng==}
+  /@date-io/date-fns@3.0.0(date-fns@2.30.0):
+    resolution: {integrity: sha512-hsLAbsdP8LKfi7OQ729cXMWfmHQEq0hn3ysXfAAoc92j6j6sBq0s0tplnkWu6O4iBUpVCYRPGuNjQQhTaOu2AA==}
     peerDependencies:
-      date-fns: ^2.0.0
+      date-fns: ^3.2.0
     peerDependenciesMeta:
       date-fns:
         optional: true
     dependencies:
-      '@date-io/core': 2.17.0
+      '@date-io/core': 3.0.0
       date-fns: 2.30.0
     dev: false
 
@@ -3455,32 +3455,25 @@ packages:
       string.prototype.repeat: 1.0.0
     dev: true
 
-  /eslint-plugin-simple-import-sort@10.0.0(eslint@8.57.0):
-    resolution: {integrity: sha512-AeTvO9UCMSNzIHRkg8S6c3RPy5YEwKWSQPx3DYghLedo2ZQxowPFLGDN1AZ2evfg6r6mjBSZSLxLFsWSu3acsw==}
+  /eslint-plugin-simple-import-sort@12.1.1(eslint@8.57.0):
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
     peerDependencies:
       eslint: '>=5.0.0'
     dependencies:
       eslint: 8.57.0
     dev: true
 
-  /eslint-plugin-unused-imports@3.2.0(@typescript-eslint/eslint-plugin@7.16.1)(eslint@8.57.0):
-    resolution: {integrity: sha512-6uXyn6xdINEpxE1MtDjxQsyXB37lfyO2yKGVVgtD7WEWQGORSOZjgrD6hBhvGv4/SO+TOlS+UnC6JppRqbuwGQ==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+  /eslint-plugin-unused-imports@4.1.4(@typescript-eslint/eslint-plugin@7.16.1)(eslint@8.57.0):
+    resolution: {integrity: sha512-YptD6IzQjDardkl0POxnnRBhU1OEePMV0nd6siHaRBbd+lyh6NAhFEobiznKU7kTsSsDeSD62Pe7kAM1b7dAZQ==}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': 6 - 7
-      eslint: '8'
+      '@typescript-eslint/eslint-plugin': ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
+      eslint: ^9.0.0 || ^8.0.0
     peerDependenciesMeta:
       '@typescript-eslint/eslint-plugin':
         optional: true
     dependencies:
       '@typescript-eslint/eslint-plugin': 7.16.1(@typescript-eslint/parser@7.16.1)(eslint@8.57.0)(typescript@5.5.3)
       eslint: 8.57.0
-      eslint-rule-composer: 0.3.0
-    dev: true
-
-  /eslint-rule-composer@0.3.0:
-    resolution: {integrity: sha512-bt+Sh8CtDmn2OajxvNO+BX7Wn4CIWMpTRm3MaiKPCQcnnlm0CS2mhui6QaoeQugs+3Kj2ESKEEGJUdVafwhiCg==}
-    engines: {node: '>=4.0.0'}
     dev: true
 
   /eslint-scope@7.2.2:
@@ -5515,8 +5508,8 @@ packages:
       - typescript
     dev: true
 
-  /vite-tsconfig-paths@4.3.2(typescript@5.5.3)(vite@4.5.3):
-    resolution: {integrity: sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==}
+  /vite-tsconfig-paths@5.0.1(typescript@5.5.3)(vite@4.5.3):
+    resolution: {integrity: sha512-yqwv+LstU7NwPeNqajZzLEBVpUFU6Dugtb2P84FXuvaoYA+/70l9MHE+GYfYAycVyPSDYZ7mjOFuYBRqlEpTig==}
     peerDependencies:
       vite: '*'
     peerDependenciesMeta:

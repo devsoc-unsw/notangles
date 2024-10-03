@@ -16,7 +16,7 @@
     "style": "prettier --write 'src/**/*.{ts,tsx}' && eslint --fix 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
-    "@date-io/date-fns": "2.17.0",
+    "@date-io/date-fns": "3.0.0",
     "@emotion/react": "11.13.0",
     "@emotion/styled": "11.13.0",
     "@fontsource-variable/roboto-flex": "5.0.15",
@@ -89,15 +89,15 @@
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-react": "7.35.0",
-    "eslint-plugin-simple-import-sort": "10.0.0",
-    "eslint-plugin-unused-imports": "3.2.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-unused-imports": "4.1.4",
     "jsdom": "24.1.1",
     "prettier": "3.3.3",
     "typescript": "5.5.3",
     "vite": "4.5.3",
     "vite-bundle-visualizer": "1.2.1",
     "vite-plugin-svgr": "4.2.0",
-    "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.1.2"
+    "vite-tsconfig-paths": "5.0.1",
+    "vitest": "2.1.2",
   }
 }
