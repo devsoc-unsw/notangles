@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@date-io/date-fns':
-    specifier: 2.17.0
-    version: 2.17.0(date-fns@2.30.0)
+    specifier: 3.0.0
+    version: 3.0.0(date-fns@2.30.0)
   '@emotion/react':
     specifier: 11.13.0
     version: 11.13.0(@types/react@18.3.3)(react@18.3.1)
@@ -436,19 +436,19 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@date-io/core@2.17.0:
-    resolution: {integrity: sha512-+EQE8xZhRM/hsY0CDTVyayMDDY5ihc4MqXCrPxooKw19yAzUIC6uUqsZeaOFNL9YKTNxYKrJP5DFgE8o5xRCOw==}
+  /@date-io/core@3.0.0:
+    resolution: {integrity: sha512-S3j+IAQVBYNkQzchVVhX40eBkGDreBpScy9RXwTS5j2+k07+62pMVPisQ44Gq76Rqy5AOG/EZXCwBpY/jbemvA==}
     dev: false
 
-  /@date-io/date-fns@2.17.0(date-fns@2.30.0):
-    resolution: {integrity: sha512-L0hWZ/mTpy3Gx/xXJ5tq5CzHo0L7ry6KEO9/w/JWiFWFLZgiNVo3ex92gOl3zmzjHqY/3Ev+5sehAr8UnGLEng==}
+  /@date-io/date-fns@3.0.0(date-fns@2.30.0):
+    resolution: {integrity: sha512-hsLAbsdP8LKfi7OQ729cXMWfmHQEq0hn3ysXfAAoc92j6j6sBq0s0tplnkWu6O4iBUpVCYRPGuNjQQhTaOu2AA==}
     peerDependencies:
-      date-fns: ^2.0.0
+      date-fns: ^3.2.0
     peerDependenciesMeta:
       date-fns:
         optional: true
     dependencies:
-      '@date-io/core': 2.17.0
+      '@date-io/core': 3.0.0
       date-fns: 2.30.0
     dev: false
 
