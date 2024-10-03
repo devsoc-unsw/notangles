@@ -20,7 +20,7 @@ services:
     container_name: notangles-database
     hostname: notangles_database
     restart: always
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     ports:
       - '5432:5432'
     environment:
