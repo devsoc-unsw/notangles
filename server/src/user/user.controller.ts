@@ -92,10 +92,11 @@ export class UserController {
   }
 
   @Put('timetable')
-  editUserTimetable(
+  async editUserTimetable(
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
+    console.log(userId + 'test ');
     return this.userService.editUserTimetable(userId, timetable).then((id) => {
       return {
         status: 'Successfully edited timetable',

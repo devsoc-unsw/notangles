@@ -181,7 +181,7 @@ const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => 
       }),
     });
   } catch (e) {
-    console.log('todo');
+    console.log(e);
   }
 };
 
@@ -207,17 +207,18 @@ const syncEditTimetable = async (userId: string, editedTimetable: TimetableData)
       // console.log('User is not logged in');
       // return;
     }
-
-    console.log('fuck');
-
     await fetch(`${API_URL.server}/user/timetable`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
+        userId: userId,
         timetable: convertTimetableToDTO(editedTimetable),
       }),
     });
   } catch (e) {
-    console.log('todo');
+    console.log(e);
   }
 };
 
