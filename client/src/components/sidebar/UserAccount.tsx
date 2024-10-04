@@ -85,6 +85,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     }
     window.location.replace(windowLocation);
     setUser(undefinedUser);
+    localStorage.removeItem('data');
   };
 
   if (!user.userID) {
