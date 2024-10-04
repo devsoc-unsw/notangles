@@ -71,6 +71,7 @@ export class UserController {
     @Body('selectedCourses') selectedCourses: string[],
     @Body('selectedClasses') selectedClasses: ClassDto[],
     @Body('createdEvents') createdEvents: EventDto[],
+    @Body('mapKey') mapKey: string,
     @Body('name') timetableName?: string,
   ) {
     return this.userService
@@ -79,6 +80,7 @@ export class UserController {
         selectedCourses,
         selectedClasses,
         createdEvents,
+        mapKey,
         timetableName,
       )
       .then((res) => {
@@ -90,10 +92,11 @@ export class UserController {
   }
 
   @Put('timetable')
-  editUserTimetable(
+  async editUserTimetable(
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
+    console.log(userId + 'test ');
     return this.userService.editUserTimetable(userId, timetable).then((id) => {
       return {
         status: 'Successfully edited timetable',
@@ -104,6 +107,7 @@ export class UserController {
 
   @Delete('timetable/:timetableId')
   deleteUserTimetable(@Param('timetableId') timetableId: string) {
+    console.log('deleting timetable');
     return this.userService.deleteUserTimetable(timetableId).then((id) => {
       return {
         status: 'Successfully deleted timetable',
