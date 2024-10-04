@@ -454,7 +454,12 @@ const App: React.FC = () => {
 
     setDisplayTimetables(displayTimetables);
     syncTimetables();
-  }, [selectedCourses, selectedClasses, createdEvents, assignedColors, displayTimetables]);
+  }, [selectedCourses, selectedClasses, createdEvents, assignedColors]);
+
+  useUpdateEffect(() => {
+    storage.set('timetables', displayTimetables);
+    syncTimetables();
+  }, [displayTimetables]);
 
   // TODO remove below if above useEffect is okay
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
