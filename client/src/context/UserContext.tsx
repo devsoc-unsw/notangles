@@ -88,7 +88,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       const userResponse = { ...res.data, timetables: timetableMap };
 
       setUser(userResponse);
-      console.log('user is sets')
       setDisplayTimetables(timetableMap);
     } catch (error) {
       console.log(error);
@@ -115,7 +114,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   };
 
   const fetchUserInfo = (userID: string) => {
-    getUserInfo(userID);
+    if (term !== 'T0') getUserInfo(userID);
     getGroups(userID);
   };
 
@@ -139,7 +138,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       }
     };
     getZid();
-  }, []);
+  }, [term]);
 
   const initialContext = useMemo(
     () => ({
