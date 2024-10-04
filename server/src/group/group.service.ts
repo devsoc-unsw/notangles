@@ -5,8 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { UpdateGroupDto } from './dto/update-group.dto';
+import { GroupDto } from './dto/group.dto';
 import { UserService } from 'src/user/user.service';
 
 export enum PrismaErrorCode {
@@ -21,43 +20,60 @@ export class GroupService {
     private readonly user: UserService,
   ) {}
 
-  async create(createGroupDto: CreateGroupDto) {
+  async prepareGroupData(data: GroupDto) {
     const {
       name,
+      visibility,
       timetableIDs,
       memberIDs,
       groupAdminIDs,
       description = '',
       imageURL = '',
-    } = createGroupDto;
+    } = data;
 
-    const data: any = { name, description, imageURL };
+    // Prepare the base data
+    const resData = {
+      name,
+      visibility,
+      description,
+      imageURL,
+      timetables: { connect: [] },
+      members: { connect: [] },
+      groupAdmins: { connect: [] },
+    };
 
+    // Fetch related entities
+    const [timetables, memberUsers, admins] = await Promise.all([
+      this.user.getTimetablesByIDs(timetableIDs),
+      this.user.getUsersByIDs(memberIDs),
+      this.user.getUsersByIDs(groupAdminIDs),
+    ]);
+
+    // Populate the connect arrays
+    if (timetables.length > 0) {
+      resData.timetables.connect = timetables.map((timetable) => ({
+        id: timetable.id,
+      }));
+    }
+
+    if (memberUsers.length > 0) {
+      resData.members.connect = memberUsers.map((member) => ({
+        userID: member.userID,
+      }));
+    }
+
+    if (admins.length > 0) {
+      resData.groupAdmins.connect = admins.map((admin) => ({
+        userID: admin.userID,
+      }));
+    }
+
+    return resData;
+  }
+
+  async create(createGroupDto: GroupDto) {
     try {
-      const [timetables, members, admins] = await Promise.all([
-        this.user.getTimetablesByIDs(timetableIDs),
-        this.user.getUsersByIDs(memberIDs),
-        this.user.getUsersByIDs(groupAdminIDs),
-      ]);
-
-      if (timetables.length > 0) {
-        data.timetables = {
-          connect: timetables.map((timetable) => ({ id: timetable.id })),
-        };
-      }
-
-      if (members.length > 0) {
-        data.members = {
-          connect: members.map((member) => ({ id: member.userID })),
-        };
-      }
-
-      if (admins.length > 0) {
-        data.admins = {
-          connect: admins.map((admin) => ({ id: admin.userID })),
-        };
-      }
-
+      const data = await this.prepareGroupData(createGroupDto);
       const group = await this.prisma.group.create({ data });
       return group;
     } catch (error) {
@@ -72,19 +88,53 @@ export class GroupService {
   }
 
   async findOne(id: string) {
-    const group = await this.prisma.group.findUnique({ where: { id } });
+    const group = await this.prisma.group.findUnique({
+      where: { id },
+      include: {
+        timetables: true,
+        members: true,
+        groupAdmins: true,
+      },
+    });
     if (!group) {
       throw new NotFoundException('Group not found');
     }
     return group;
   }
 
-  async update(id: string, updateGroupDto: UpdateGroupDto) {
+  async update(id: string, updateGroupDto: GroupDto) {
     try {
+      const data = await this.prepareGroupData(updateGroupDto);
+
+      // Prepare relational fields
+      const updateData = {
+        name: data.name,
+        visibility: data.visibility,
+        description: data.description,
+        imageURL: data.imageURL,
+        timetables: {
+          set: data.timetables.connect.map((item) => ({ id: item.id })),
+        },
+        members: {
+          set: data.members.connect.map((item) => ({ userID: item.userID })),
+        },
+        groupAdmins: {
+          set: data.groupAdmins.connect.map((item) => ({
+            userID: item.userID,
+          })),
+        },
+      };
+
       const group = await this.prisma.group.update({
         where: { id },
-        data: updateGroupDto,
+        data: updateData,
+        include: {
+          timetables: true,
+          members: true,
+          groupAdmins: true,
+        },
       });
+
       return group;
     } catch (error) {
       if (error.code === PrismaErrorCode.RECORD_NOT_FOUND) {

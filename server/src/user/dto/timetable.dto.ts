@@ -1,23 +1,67 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsArray, IsString } from 'class-validator';
 
 export class TimetableDto {
   @IsString()
-  timetableId: string; // Randomly generated on the backend
+  id: string; // Randomly generated on the backend
 
   @IsArray()
   @IsString({ each: true })
   selectedCourses: string[];
   selectedClasses: ClassDto[];
-  events: EventDto[];
+  createdEvents: EventDto[];
+  name?: string;
+}
+
+export class ReconstructedTimetableDto {
+  @IsString()
+  id: string; // Randomly generated on the backend
+
+  @IsArray()
+  @IsString({ each: true })
+  selectedCourses: string[];
+  selectedClasses: ScrapedClassDto[];
+  createdEvents: EventDto[];
   name?: string;
 }
 
 export class ClassDto {
-  id?: string; // TODO: double check (currently optional, if generated on the backend during creation of timetable)
-  classType: string;
-  courseName?: string;
+  id: string;
+  classNo: string; // From scraper
+  year: string;
+  term: string;
+  courseCode: string;
   timetableId?: string;
+}
+
+export class ClassTimeDto {
+  day: string;
+  time: {
+    start: string;
+    end: string;
+  };
+  weeks: string;
+  location: string;
+}
+
+// Get class from scraper
+export class ScrapedClassDto {
+  classID: number;
+  section: string;
+  term: string;
+  activity: string;
+  status: string;
+  courseEnrolment: {
+    enrolments: number;
+    capacity: number;
+  };
+  termDates: {
+    start: string;
+    end: string;
+  };
+  needsConsent: boolean;
+  mode: string;
+  times: ClassTimeDto[];
+  notes: [];
 }
 
 export class EventDto {

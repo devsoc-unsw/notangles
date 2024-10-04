@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-const prisma = new PrismaService();
 @Injectable({})
 export class FriendService {
-  async findAllFriends(userId: string) {
+  constructor(private readonly prisma: PrismaService) {}
+  async findAllFriends(userID: string) {
     try {
-      const res = await prisma.user.findUniqueOrThrow({
-        where: { userId },
+      const res = await this.prisma.user.findUniqueOrThrow({
+        where: { userID },
         select: {
           friends: true,
         },
@@ -21,37 +21,39 @@ export class FriendService {
 
   async friendUsers(senderId: string, sendeeId: string): Promise<string> {
     try {
-      // How defensive should we be (checking if senderId exists, checking if sendee is already a friend)?
       if (senderId === sendeeId) {
         throw new Error('Cannot friend yourself');
       }
 
-      await prisma.$transaction([
-        prisma.user.update({
+      await this.prisma.$transaction([
+        this.prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             friends: {
               connect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
         }),
-        prisma.user.update({
+        this.prisma.user.update({
           where: {
-            userId: sendeeId,
+            userID: sendeeId,
           },
           data: {
             friends: {
               connect: {
-                userId: senderId,
+                userID: senderId,
               },
             },
           },
         }),
       ]);
+
+      // Need to delete friend request
+      this.deleteFriendRequest(sendeeId, senderId);
 
       return Promise.resolve(sendeeId);
     } catch (e) {
@@ -61,27 +63,27 @@ export class FriendService {
 
   async unfriendUsers(senderId: string, sendeeId: string): Promise<string> {
     try {
-      await prisma.$transaction([
-        prisma.user.update({
+      await this.prisma.$transaction([
+        this.prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             friends: {
               disconnect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
         }),
-        prisma.user.update({
+        this.prisma.user.update({
           where: {
-            userId: sendeeId,
+            userID: sendeeId,
           },
           data: {
             friends: {
               disconnect: {
-                userId: senderId,
+                userID: senderId,
               },
             },
           },
@@ -96,19 +98,18 @@ export class FriendService {
 
   // Note: This can also serve as accepting a friend req (lmk if we should decouple these functions)
   async sendFriendRequest(senderId: string, sendeeId: string) {
-    // Again, how defensive should we be (could potentially add blocking friend reqs to already friended users)
     try {
       if (senderId === sendeeId) {
         throw new Error('Cannot friend yourself');
       }
 
       // Check if there's corresponding incoming request first
-      const isIncoming = await prisma.user.findFirst({
+      const isIncoming = await this.prisma.user.findFirst({
         where: {
-          userId: senderId,
+          userID: senderId,
           incoming: {
             some: {
-              userId: sendeeId,
+              userID: sendeeId,
             },
           },
         },
@@ -123,14 +124,14 @@ export class FriendService {
         status = 'Successfully accepted friend request';
       } else {
         // Else, send outgoing friend request
-        await prisma.user.update({
+        await this.prisma.user.update({
           where: {
-            userId: senderId,
+            userID: senderId,
           },
           data: {
             outgoing: {
               connect: {
-                userId: sendeeId,
+                userID: sendeeId,
               },
             },
           },
@@ -140,7 +141,7 @@ export class FriendService {
 
       return Promise.resolve({
         status,
-        sendeeId,
+        data: { id: sendeeId },
       });
     } catch (e) {
       throw new Error(e);
@@ -150,14 +151,14 @@ export class FriendService {
   // sendee = receiver = incoming (f-req is coming into the sendee, so sendee is the id of user who made this api req)
   async deleteFriendRequest(senderId: string, sendeeId: string) {
     try {
-      await prisma.user.update({
+      await this.prisma.user.update({
         where: {
-          userId: sendeeId,
+          userID: sendeeId,
         },
         data: {
           incoming: {
             disconnect: {
-              userId: senderId,
+              userID: senderId,
             },
           },
         },

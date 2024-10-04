@@ -58,7 +58,7 @@ export class FriendController {
         return {
           status: 'Successfully rejected friend request!',
           data: {
-            id,
+            senderId: id,
           },
         };
       });
