@@ -183,12 +183,12 @@ const App: React.FC = () => {
         ...{
           [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
             ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(),
+            : createDefaultTimetable(undefined),
         },
         ...{
           [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
             ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(),
+            : createDefaultTimetable(undefined),
         },
       };
 
@@ -378,7 +378,6 @@ const App: React.FC = () => {
       storage.set('timetables', updatedWithTerms);
       setDisplayTimetables(updatedWithTerms);
     }
-
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,

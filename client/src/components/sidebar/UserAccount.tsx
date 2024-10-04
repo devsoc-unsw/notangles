@@ -8,6 +8,8 @@ import { undefinedUser, UserContext } from '../../context/UserContext';
 import { TimetableData } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
+import storage from '../../utils/storage';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -105,6 +107,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         open={logoutDialog}
         onClose={() => setLogoutDialog(false)}
         onConfirm={() => {
+          storage.set('timetables', createDefaultTimetable(undefined));
           logoutCall();
           setLogoutDialog(false);
         }}

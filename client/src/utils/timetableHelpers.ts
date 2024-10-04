@@ -139,17 +139,22 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (): TimetableData[] => {
-  return [
-    {
-      name: 'My timetable',
-      id: uuidv4(),
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-      assignedColors: {},
-    },
-  ];
+const createDefaultTimetable = (userID: string | undefined): TimetableData[] => {
+  const defaultTimetable = {
+    name: 'My timetable',
+    id: uuidv4(),
+    selectedCourses: [],
+    selectedClasses: {},
+    createdEvents: {},
+    assignedColors: {},
+  };
+
+  // console.debug('Creating Default timetbale', userID);
+  // if (userID) {
+  //   syncAddTimetable(userID, defaultTimetable);
+  // }
+
+  return [defaultTimetable];
 };
 
 export {

@@ -5,7 +5,8 @@ import { User } from '../components/sidebar/UserAccount';
 import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
-
+import storage from '../utils/storage';
+import { createDefaultTimetable } from '../utils/timetableHelpers';
 
 export const undefinedUser = {
   userID: '',
@@ -62,7 +63,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const userResponse = await response.text();
-      if (userResponse !== '') setUser(JSON.parse(userResponse).data);
+
+      if (userResponse !== '') {
+        setUser(JSON.parse(userResponse).data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -109,9 +113,16 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         console.log(error);
       }
     };
+
     getZid();
   }, []);
 
+  useEffect(() => {
+    if (user.userID) {
+      storage.set('timetables', user.timetables);
+      console.log('Updating Local Storage with timetables', user.timetables);
+    }
+  }, [user]);
   const initialContext = useMemo(
     () => ({
       user,
