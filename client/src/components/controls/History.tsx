@@ -201,7 +201,7 @@ const History: React.FC = () => {
   const clearAll = () => {
     const newDisplayTimetables: DisplayTimetablesMap = {
       ...displayTimetables,
-      [term]: createDefaultTimetable(undefined),
+      [term]: createDefaultTimetable(),
     };
     setTimetableState([], {}, {}, newDisplayTimetables, 0);
   };

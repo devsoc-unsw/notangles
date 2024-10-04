@@ -183,12 +183,12 @@ const App: React.FC = () => {
         ...{
           [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
             ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(undefined),
+            : createDefaultTimetable(),
         },
         ...{
           [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
             ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(undefined),
+            : createDefaultTimetable(),
         },
       };
 

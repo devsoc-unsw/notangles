@@ -139,7 +139,7 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (userID: string | undefined): TimetableData[] => {
+const createDefaultTimetable = (): TimetableData[] => {
   const defaultTimetable = {
     name: 'My timetable',
     id: uuidv4(),

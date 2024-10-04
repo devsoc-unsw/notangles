@@ -107,7 +107,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         open={logoutDialog}
         onClose={() => setLogoutDialog(false)}
         onConfirm={() => {
-          storage.set('timetables', createDefaultTimetable(undefined));
+          storage.set('timetables', createDefaultTimetable());
           logoutCall();
           setLogoutDialog(false);
         }}
