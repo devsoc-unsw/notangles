@@ -27,6 +27,7 @@ export interface TermData {
 
 export interface ClassData {
   id: string;
+  classNo: number;
   courseCode: CourseCode;
   courseName: string;
   activity: Activity;
@@ -35,6 +36,8 @@ export interface ClassData {
   capacity: number;
   periods: ClassPeriod[];
   section: Section;
+  term: string;
+  year: string;
 }
 
 export interface TimetableData {

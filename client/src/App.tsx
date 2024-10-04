@@ -378,6 +378,7 @@ const App: React.FC = () => {
       storage.set('timetables', updatedWithTerms);
       setDisplayTimetables(updatedWithTerms);
     }
+    if (!storage.get('timetables')[term]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,

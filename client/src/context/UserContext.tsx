@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { API_URL } from '../api/config';
 import { User } from '../components/sidebar/UserAccount';
@@ -7,6 +7,16 @@ import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 import { createDefaultTimetable } from '../utils/timetableHelpers';
+import { AppContext } from './AppContext';
+import {
+  ClassData,
+  CourseData,
+  CreatedEvents,
+  DisplayTimetablesMap,
+  EventPeriod,
+  SelectedClasses,
+  TimetableData,
+} from '../interfaces/Periods';
 
 export const undefinedUser = {
   userID: '',
@@ -52,6 +62,55 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
   const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
+  const { term } = useContext(AppContext);
+
+  const convertClassToDTO = (selectedClasses: SelectedClasses) => {
+    const a = Object.values(selectedClasses);
+    const b = a.map((c) => {
+      const d = Object.values(c);
+      console.log('d', d);
+
+      return d.map((c) => {
+        console.log('c', c);
+
+        const { id, classNo, year, term, courseCode } = c as ClassData;
+        return { id, classNo: String(classNo), year, term, courseCode };
+      });
+    });
+
+    console.log('a', a);
+    console.log('b', b);
+
+    return b.reduce((prev, curr) => prev.concat(curr), []);
+  };
+
+  const createTimetableForUser = async (userId: string, timetable: TimetableData, timetableTerm: string) => {
+    try {
+      if (!userId) {
+        console.log('User is not logged in');
+        return;
+      }
+      const { selectedCourses, selectedClasses, createdEvents, name } = timetable;
+      await fetch(`${API_URL.server}/user/timetable`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          selectedCourses: selectedCourses.map((t) => t.code),
+          selectedClasses: convertClassToDTO(selectedClasses),
+          createdEvents: [],
+          // createdEvents: convertEventToDTO(createdEvents),
+          name,
+          mapKey: timetableTerm,
+        }),
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -65,7 +124,14 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       const userResponse = await response.text();
 
       if (userResponse !== '') {
-        setUser(JSON.parse(userResponse).data);
+        let userData: User = JSON.parse(userResponse).data;
+        if (userData.timetables.length === 0) {
+          userData.timetables = createDefaultTimetable();
+          storage.set('timetables', { [term]: userData.timetables });
+          console.log('User does no have a timetable, creating a default one!');
+          createTimetableForUser(userData.userID, userData.timetables[0], term);
+        }
+        setUser(userData);
       }
     } catch (error) {
       console.log(error);
@@ -91,12 +157,13 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     }
   };
 
-  const fetchUserInfo = (userID: string) => {
-    getUserInfo(userID);
-    getGroups(userID);
+  const fetchUserInfo = async (userID: string) => {
+    await getUserInfo(userID);
+    await getGroups(userID);
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
     const getZid = async () => {
       try {
         const response = await fetch(`${API_URL.server}/auth/user`, {
@@ -110,11 +177,16 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           throw new NetworkError("Couldn't get response");
         }
       } catch (error) {
-        console.log(error);
+        if (!abortController.signal.aborted) {
+          console.log(error);
+        }
       }
     };
 
     getZid();
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   useEffect(() => {
