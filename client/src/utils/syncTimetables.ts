@@ -54,7 +54,7 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
 
   console.log('b', b);
 
-  return b.reduce((prev, curr) => prev.concat(curr));
+  return b.reduce((prev, curr) => prev.concat(curr), []);
 };
 
 const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) => {
@@ -180,6 +180,7 @@ export const syncAddTimetable = async (userId: string, newTimetable: TimetableDa
         selectedClasses: convertClassToDTO(selectedClasses),
         createdEvents: convertEventToDTO(createdEvents),
         name,
+        mapKey: 'T3', //TODO hardcoded atm.
       }),
     });
   } catch (e) {
@@ -294,7 +295,7 @@ const runSync = (
 
     // Save to user timetable
     setUser({ ...user, timetables: newMap });
-  }, 2000);
+  }, 1000);
 };
 
 export { parseTimetableDTO, runSync };

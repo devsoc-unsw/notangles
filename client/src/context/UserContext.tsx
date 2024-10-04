@@ -82,12 +82,13 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
 
       // Check current term exists. If not, create default timetable for this term
       if (!Object.keys(timetableMap).includes(term)) {
-        timetableMap[term] = createDefaultTimetable();
+        timetableMap[term] = createDefaultTimetable(res.data.userID);
       }
 
       const userResponse = { ...res.data, timetables: timetableMap };
 
       setUser(userResponse);
+      console.log('user is sets')
       setDisplayTimetables(timetableMap);
     } catch (error) {
       console.log(error);

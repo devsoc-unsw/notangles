@@ -142,8 +142,7 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (): TimetableData[] => {
-  const { user } = useContext(UserContext);
+const createDefaultTimetable = (userID: string): TimetableData[] => {
   const defaultTimetable = {
     name: 'My timetable',
     id: uuidv4(),
@@ -153,8 +152,9 @@ const createDefaultTimetable = (): TimetableData[] => {
     assignedColors: {},
   };
 
-  if (user && user.userID) {
-    syncAddTimetable(user.userID, defaultTimetable);
+  console.log('create default timetbale', userID)
+  if (userID) {
+    syncAddTimetable(userID, defaultTimetable);
   }
 
   return [defaultTimetable];

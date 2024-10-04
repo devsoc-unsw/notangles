@@ -14,6 +14,7 @@ import {
   TimetableActions,
 } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
+import { UserContext } from '../../context/UserContext';
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
@@ -30,6 +31,7 @@ const History: React.FC = () => {
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
     useContext(AppContext);
+  const { user } = useContext(UserContext);
 
   const timetableActions = useRef<TimetableActions>({});
   const actionsPointer = useRef<ActionsPointer>({});
@@ -199,7 +201,7 @@ const History: React.FC = () => {
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
-    const newTimetables = createDefaultTimetable();
+    const newTimetables = createDefaultTimetable(user.userID);
 
     const newDisplayTimetables: DisplayTimetablesMap = {
       ...displayTimetables,
