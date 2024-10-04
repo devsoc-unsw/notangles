@@ -107,6 +107,7 @@ export class UserController {
 
   @Delete('timetable/:timetableId')
   deleteUserTimetable(@Param('timetableId') timetableId: string) {
+    console.log('deleting timetable');
     return this.userService.deleteUserTimetable(timetableId).then((id) => {
       return {
         status: 'Successfully deleted timetable',

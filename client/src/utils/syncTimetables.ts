@@ -190,15 +190,13 @@ export const syncAddTimetable = async (userId: string, newTimetable: TimetableDa
 
 const syncDeleteTimetable = async (timetableId: string) => {
   try {
-    await fetch(
-      `${API_URL.server}/user/timetable` +
-        new URLSearchParams({
-          timetableId,
-        }).toString(),
-      {
-        method: 'DELETE',
+    await fetch(`${API_URL.server}/user/timetable/${timetableId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    );
+    });
   } catch (e) {
     console.log('todo');
   }
@@ -238,7 +236,7 @@ const getTimetableDiffs = (oldTimetables: TimetableData[], newTimetables: Timeta
   const oldIds = new Set(oldTimetables.map((t) => t.id));
   const newIds = new Set(newTimetables.map((t) => t.id));
 
-  diffIds.add = oldIds.difference(newIds);
+  diffIds.delete = oldIds.difference(newIds);
   diffIds.add = newIds.difference(oldIds);
 
   oldIds.intersection(newIds).forEach((id) => {
@@ -273,29 +271,23 @@ const runSync = (
   oldMap: DisplayTimetablesMap,
   newMap: DisplayTimetablesMap,
 ) => {
-  clearTimeout(timeoutID);
-  timeoutID = setTimeout(() => {
-    console.log('ran sync timeout');
-    console.log('old Map', oldMap);
-    console.log('new Map', newMap);
-    if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
-      console.log('same');
-      return;
-    }
-    console.log('diff');
+  if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
+    console.log('same');
+    return;
+  }
+  console.log('diff');
 
-    for (const key of Object.keys(newMap)) {
-      const oldTimetables = oldMap[key] || [];
-      const newTimetables = newMap[key];
+  for (const key of Object.keys(newMap)) {
+    const oldTimetables = oldMap[key] || [];
+    const newTimetables = newMap[key];
 
-      const diffs = getTimetableDiffs(oldTimetables, newTimetables);
+    const diffs = getTimetableDiffs(oldTimetables, newTimetables);
 
-      updateTimetableDiffs(user.userID, newTimetables, diffs);
-    }
+    updateTimetableDiffs(user.userID, newTimetables, diffs);
+  }
 
-    // Save to user timetable
-    setUser({ ...user, timetables: newMap });
-  }, 1000);
+  // Save to user timetable
+  setUser({ ...user, timetables: newMap });
 };
 
 export { parseTimetableDTO, runSync };
