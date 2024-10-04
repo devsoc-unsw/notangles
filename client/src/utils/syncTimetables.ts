@@ -52,6 +52,8 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
     });
   });
 
+  console.log('b', b);
+
   return b.reduce((prev, curr) => prev.concat(curr));
 };
 
@@ -159,7 +161,7 @@ const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, current
   return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
 };
 
-const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
+export const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
   try {
     if (!userId) {
       console.log('User is not logged in');
@@ -272,9 +274,14 @@ const runSync = (
 ) => {
   clearTimeout(timeoutID);
   timeoutID = setTimeout(() => {
+    console.log('ran sync timeout');
+    console.log('old Map', oldMap);
+    console.log('new Map', newMap);
     if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
+      console.log('same');
       return;
     }
+    console.log('diff');
 
     for (const key of Object.keys(newMap)) {
       const oldTimetables = oldMap[key] || [];
@@ -287,7 +294,7 @@ const runSync = (
 
     // Save to user timetable
     setUser({ ...user, timetables: newMap });
-  }, 5000);
+  }, 2000);
 };
 
 export { parseTimetableDTO, runSync };

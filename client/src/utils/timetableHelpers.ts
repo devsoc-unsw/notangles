@@ -1,5 +1,7 @@
+import { useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { UserContext } from '../context/UserContext';
 import {
   Action,
   Activity,
@@ -11,6 +13,7 @@ import {
   TimetableData,
 } from '../interfaces/Periods';
 import { createEventObj } from './createEvent';
+import { syncAddTimetable } from './syncTimetables';
 
 export type TimetableActions = Record<string, Action[]>;
 export type ActionsPointer = Record<string, number>;
@@ -140,16 +143,21 @@ const areIdenticalTimetables = (
 };
 
 const createDefaultTimetable = (): TimetableData[] => {
-  return [
-    {
-      name: 'My timetable',
-      id: uuidv4(),
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-      assignedColors: {},
-    },
-  ];
+  const { user } = useContext(UserContext);
+  const defaultTimetable = {
+    name: 'My timetable',
+    id: uuidv4(),
+    selectedCourses: [],
+    selectedClasses: {},
+    createdEvents: {},
+    assignedColors: {},
+  };
+
+  if (user && user.userID) {
+    syncAddTimetable(user.userID, defaultTimetable);
+  }
+
+  return [defaultTimetable];
 };
 
 export {
