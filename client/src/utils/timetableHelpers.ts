@@ -142,7 +142,7 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (userID: string): TimetableData[] => {
+const createDefaultTimetable = (userID: string | undefined): TimetableData[] => {
   const defaultTimetable = {
     name: 'My timetable',
     id: uuidv4(),
@@ -152,7 +152,7 @@ const createDefaultTimetable = (userID: string): TimetableData[] => {
     assignedColors: {},
   };
 
-  console.log('create default timetbale', userID)
+  console.log('create default timetbale', userID);
   if (userID) {
     syncAddTimetable(userID, defaultTimetable);
   }

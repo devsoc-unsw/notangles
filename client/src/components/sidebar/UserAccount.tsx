@@ -8,6 +8,8 @@ import { undefinedUser, UserContext } from '../../context/UserContext';
 import { DisplayTimetablesMap } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
+import storage from '../../utils/storage';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -63,7 +65,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [logoutDialog, setLogoutDialog] = useState(false);
 
   const { user, setUser } = useContext(UserContext);
-
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
@@ -71,8 +72,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // Replaces current history item rather than adding item to history
-    // window.location.replace(`${API_URL.server}/auth/login`);
   };
 
   const logoutCall = async () => {
@@ -85,7 +84,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     }
     window.location.replace(windowLocation);
     setUser(undefinedUser);
-    localStorage.removeItem('data');
+    storage.set('timetables', createDefaultTimetable(undefined));
   };
 
   if (!user.userID) {
