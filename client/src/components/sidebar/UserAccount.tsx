@@ -5,11 +5,12 @@ import React, { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
 import { undefinedUser, UserContext } from '../../context/UserContext';
-import { TimetableData } from '../../interfaces/Periods';
+import { TimetableData, TimetableDTO } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
 import storage from '../../utils/storage';
 import { createDefaultTimetable } from '../../utils/timetableHelpers';
+import { AppContext } from '../../context/AppContext';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -45,7 +46,7 @@ const ExpandedContainer = styled('div')`
   padding: 10px 12px;
 `;
 
-export interface User {
+export interface BaseUser {
   userID: string;
   firstname: string;
   lastname: string;
@@ -57,11 +58,18 @@ export interface User {
   friends: User[];
   incoming: User[];
   outgoing: User[];
+}
+export interface User extends BaseUser {
   timetables: TimetableData[];
+}
+
+export interface UserDTO extends BaseUser {
+  timetables: TimetableDTO[];
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [windowLocation, setWindowLocation] = useState('');
+  const { term } = useContext(AppContext);
   const [logoutDialog, setLogoutDialog] = useState(false);
 
   const { user, setUser } = useContext(UserContext);
@@ -107,7 +115,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         open={logoutDialog}
         onClose={() => setLogoutDialog(false)}
         onConfirm={() => {
-          storage.set('timetables', createDefaultTimetable());
+          storage.set('timetables', { [term]: createDefaultTimetable() });
           logoutCall();
           setLogoutDialog(false);
         }}

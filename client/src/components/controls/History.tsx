@@ -121,7 +121,7 @@ const History: React.FC = () => {
     }
 
     const disableStatus = { current: true, all: true };
-
+    if (!displayTimetables[term]) return;
     // More than one timetable is resetAll-able
     if (displayTimetables[term].length > 1) {
       disableStatus.all = false;
@@ -130,6 +130,7 @@ const History: React.FC = () => {
     // Current timetable being non-empty is resetAll and resetOne-able
     const currentTimetable = displayTimetables[term][selectedTimetable];
     // if new timetable has been created then set reset to be true since no courses, classes or events selected
+    if (!currentTimetable || !currentTimetable.id) return;
     if (actionsPointer.current[currentTimetable.id] < 1) {
       disableStatus.current = true;
     } else {

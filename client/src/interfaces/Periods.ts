@@ -1,3 +1,6 @@
+import { User } from '../components/sidebar/UserAccount';
+import { Group } from './Group';
+
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
@@ -148,4 +151,39 @@ export interface TermDataMap {
 
 export interface DisplayTimetablesMap {
   [key: string]: TimetableData[];
+}
+
+export interface EventDTO {
+  id: string;
+  name: string;
+  location?: string | null;
+  description?: string | null;
+  colour: string;
+  day: string;
+  start: Date;
+  end: Date;
+  timetableId?: string | null;
+  timetable?: TimetableDTO | null;
+  groupIds: string[];
+}
+
+export interface ClassDTO {
+  id: string;
+  classNo: string;
+  term: string;
+  year: string;
+  courseCode: string;
+  timetableId?: string | null;
+  Timetable?: TimetableDTO | null;
+}
+
+export interface TimetableDTO {
+  id: string;
+  name: string;
+  selectedCourses: string[];
+  selectedClasses: ClassDTO[];
+  createdEvents: EventDTO[];
+  user: User[];
+  mapKey: string;
+  // groups: Group[];
 }

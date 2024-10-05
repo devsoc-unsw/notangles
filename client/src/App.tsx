@@ -177,7 +177,6 @@ const App: React.FC = () => {
       setFirstDayOfTerm(firstDayOfTerm);
       setTermsData(termsData);
       const oldData = storage.get('timetables');
-
       // avoid overwriting data from previous save
       const newTimetableTerms: DisplayTimetablesMap = {
         ...{
@@ -378,7 +377,7 @@ const App: React.FC = () => {
       storage.set('timetables', updatedWithTerms);
       setDisplayTimetables(updatedWithTerms);
     }
-    if (!storage.get('timetables')[term]) return;
+    if (!storage.get('timetables')[term] || !storage.get('timetables')[term][selectedTimetable]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
@@ -438,29 +437,36 @@ const App: React.FC = () => {
     storage.set('courseData', newCourseData);
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    // console.log(displayTimetables[term][selectedTimetable]);
+
+    // Get the ID of the timetable, check if user is logged in and make sync changes to that timetable.
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    // console.log(displayTimetables[term][selectedTimetable]);
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    // console.log(displayTimetables[term][selectedTimetable]);
   }, [createdEvents]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    // console.log(displayTimetables[term][selectedTimetable]);
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
+    // console.log(displayTimetables[term][selectedTimetable]);
   }, [displayTimetables]);
 
   /**

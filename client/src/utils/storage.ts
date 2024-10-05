@@ -20,6 +20,7 @@ const storage = {
   set: (key: string, value: any) => {
     const data: Record<string, any> = storage.load();
     data[key] = value;
+    console.log('SAVING IN LS', key, value);
     storage.save(data);
   },
 
