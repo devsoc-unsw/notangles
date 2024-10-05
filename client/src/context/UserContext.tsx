@@ -6,7 +6,7 @@ import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
-import { createDefaultTimetable } from '../utils/timetableHelpers';
+import { createDefaultTimetable, createTimetableForUser } from '../utils/timetableHelpers';
 import { AppContext } from './AppContext';
 import {
   ClassData,
@@ -33,7 +33,7 @@ export const undefinedUser = {
   friends: [],
   incoming: [],
   outgoing: [],
-  timetables: [],
+  timetables: {},
 };
 export interface IUserContext {
   user: User;
@@ -68,53 +68,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
   const { term } = useContext(AppContext);
 
-  const convertClassToDTO = (selectedClasses: SelectedClasses) => {
-    const a = Object.values(selectedClasses);
-    const b = a.map((c) => {
-      const d = Object.values(c);
-      console.log('d', d);
-
-      return d.map((c) => {
-        console.log('c', c);
-
-        const { id, classNo, year, term, courseCode } = c as ClassData;
-        return { id, classNo: String(classNo), year, term, courseCode };
-      });
-    });
-
-    console.log('a', a);
-    console.log('b', b);
-
-    return b.reduce((prev, curr) => prev.concat(curr), []);
-  };
-
-  const createTimetableForUser = async (userId: string, timetable: TimetableData, timetableTerm: string) => {
-    try {
-      if (!userId) {
-        console.log('User is not logged in');
-        return;
-      }
-      const { selectedCourses, selectedClasses, createdEvents, name } = timetable;
-      await fetch(`${API_URL.server}/user/timetable`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          selectedCourses: selectedCourses.map((t) => t.code),
-          selectedClasses: convertClassToDTO(selectedClasses),
-          createdEvents: [],
-          // createdEvents: convertEventToDTO(createdEvents),
-          name,
-          mapKey: timetableTerm,
-        }),
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
   // Helper function to determine what year a term is in
   const getTimetableYear = (targetTerm: string, currentTerm: string, currentYear: string) => {
     try {
@@ -254,7 +207,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         } = userData;
         // What is going to be stored in Frontend
         const currentUser: User = {
-          timetables: [],
+          timetables: {},
           userID: userData.userID,
           firstname,
           lastname,
@@ -268,24 +221,21 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           outgoing,
         };
         if (userData.timetables.length === 0) {
-          user.timetables = createDefaultTimetable();
+          user.timetables = { [term]: createDefaultTimetable() };
           console.log('User does not have a timetable, creating a default one!');
-          createTimetableForUser(userData.userID, user.timetables[0], term);
-          storage.set('timetables', { [term]: user.timetables });
-          setDisplayTimetables({ [term]: user.timetables });
+          createTimetableForUser(userData.userID, user.timetables[term][0], term);
+          storage.set('timetables', user.timetables);
+          setDisplayTimetables(user.timetables);
         } else {
           const parsedTts = await parseTimetablesFromDb(userData.timetables);
-          const allTimetables = Object.values(parsedTts).reduce((acc, timetablesInEachTerm) => {
-            return acc.concat(timetablesInEachTerm);
-          });
-
-          currentUser.timetables = allTimetables;
+          console.log('test');
+          currentUser.timetables = parsedTts;
           storage.set('timetables', parsedTts);
           setDisplayTimetables(parsedTts);
         }
 
         setUser(currentUser);
-        console.log(storage.get('timetables'));
+        console.log(currentUser.timetables);
       }
     } catch (error) {
       console.log(error);

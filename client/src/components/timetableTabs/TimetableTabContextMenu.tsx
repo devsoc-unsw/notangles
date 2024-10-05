@@ -27,8 +27,9 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
-import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
+import { createTimetableForUser, duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
+import UserContextProvider, { UserContext } from '../../context/UserContext';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -213,6 +214,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
       setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, selectedTimetable + 1);
       handleMenuClose();
+      const { user } = useContext(UserContext);
+      if (user.userID) {
+        // Create a new Timetable.
+        createTimetableForUser(user.userID, newTimetable, term);
+      }
     }
   };
 

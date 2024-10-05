@@ -1,3 +1,4 @@
+import { API_URL } from '../api/config';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -5,12 +6,14 @@ import {
   Activity,
   ClassData,
   CreatedEvents,
+  DisplayTimetablesMap,
   EventTime,
   InInventory,
   SelectedClasses,
   TimetableData,
 } from '../interfaces/Periods';
 import { createEventObj } from './createEvent';
+import { User } from '../components/sidebar/UserAccount';
 
 export type TimetableActions = Record<string, Action[]>;
 export type ActionsPointer = Record<string, number>;
@@ -139,6 +142,53 @@ const areIdenticalTimetables = (
   );
 };
 
+const convertClassToDTO = (selectedClasses: SelectedClasses) => {
+  const a = Object.values(selectedClasses);
+  const b = a.map((c) => {
+    const d = Object.values(c);
+    console.log('d', d);
+
+    return d.map((c) => {
+      console.log('c', c);
+
+      const { id, classNo, year, term, courseCode } = c as ClassData;
+      return { id, classNo: String(classNo), year, term, courseCode };
+    });
+  });
+
+  console.log('a', a);
+  console.log('b', b);
+
+  return b.reduce((prev, curr) => prev.concat(curr), []);
+};
+export const createTimetableForUser = async (userId: string, timetable: TimetableData, timetableTerm: string) => {
+  try {
+    if (!userId) {
+      console.log('User is not logged in');
+      return;
+    }
+    const { selectedCourses, selectedClasses, createdEvents, name } = timetable;
+    await fetch(`${API_URL.server}/user/timetable`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        selectedCourses: selectedCourses.map((t) => t.code),
+        selectedClasses: convertClassToDTO(selectedClasses),
+        createdEvents: [],
+        // createdEvents: convertEventToDTO(createdEvents),
+        name,
+        mapKey: timetableTerm,
+      }),
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const createDefaultTimetable = (): TimetableData[] => {
   const defaultTimetable = {
     name: 'My timetable',
@@ -155,6 +205,31 @@ const createDefaultTimetable = (): TimetableData[] => {
   // }
 
   return [defaultTimetable];
+};
+
+const runSync = (
+  user: User,
+  setUser: (user: User) => void,
+  oldMap: DisplayTimetablesMap,
+  newMap: DisplayTimetablesMap,
+) => {
+  if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
+    console.log('same');
+    return;
+  }
+  console.log('diff');
+
+  for (const key of Object.keys(newMap)) {
+    const oldTimetables = oldMap[key] || [];
+    const newTimetables = newMap[key];
+
+    // const diffs = getTimetableDiffs(oldTimetables, newTimetables);
+
+    // updateTimetableDiffs(user.userID, newTimetables, diffs);
+  }
+
+  // Save to user timetable
+  setUser({ ...user, timetables: newMap });
 };
 
 export {

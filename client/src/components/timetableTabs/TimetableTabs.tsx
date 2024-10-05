@@ -27,6 +27,8 @@ import {
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
+import { UserContext } from '../../context/UserContext';
+import { createTimetableForUser } from '../../utils/timetableHelpers';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -104,6 +106,12 @@ const TimetableTabs: React.FC = () => {
 
       // Clearing the selected courses, classes and created events for the new timetable
       setTimetableState([], {}, {}, {}, nextIndex);
+
+      const { user } = useContext(UserContext);
+      if (user.userID) {
+        // Create a new Timetable.
+        createTimetableForUser(user.userID, newTimetable, term);
+      }
     }
   };
 

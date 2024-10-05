@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
 import { undefinedUser, UserContext } from '../../context/UserContext';
-import { TimetableData, TimetableDTO } from '../../interfaces/Periods';
+import { DisplayTimetablesMap, TimetableData, TimetableDTO } from '../../interfaces/Periods';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
 import storage from '../../utils/storage';
@@ -60,7 +60,7 @@ export interface BaseUser {
   outgoing: User[];
 }
 export interface User extends BaseUser {
-  timetables: TimetableData[];
+  timetables: DisplayTimetablesMap;
 }
 
 export interface UserDTO extends BaseUser {

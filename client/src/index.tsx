@@ -22,8 +22,8 @@ Sentry.init({
 
 const Root: React.FC = () => (
   <AppContextProvider>
-    <CourseContextProvider>
-      <UserContextProvider>
+    <UserContextProvider>
+      <CourseContextProvider>
         <BrowserRouter>
           <Routes>
             <Route element={<App />} path="/">
@@ -31,8 +31,8 @@ const Root: React.FC = () => (
             </Route>
           </Routes>
         </BrowserRouter>
-      </UserContextProvider>
-    </CourseContextProvider>
+      </CourseContextProvider>
+    </UserContextProvider>
   </AppContextProvider>
 );
 
