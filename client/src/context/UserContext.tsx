@@ -9,6 +9,7 @@ import { UserContextProviderProps } from '../interfaces/PropTypes';
 import { parseTimetableDTO } from '../utils/syncTimetables';
 import { createDefaultTimetable } from '../utils/timetableHelpers';
 import { AppContext } from './AppContext';
+import { CourseContext } from './CourseContext';
 
 export const undefinedUser = {
   userID: '',
@@ -54,7 +55,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
   const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
-  const { setDisplayTimetables, term, year } = useContext(AppContext);
+  const { setDisplayTimetables, setSelectedTimetable, term, year } = useContext(AppContext);
+  const { setSelectedClasses, setSelectedCourses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
 
   const getUserInfo = async (userID: string) => {
     try {
@@ -85,10 +87,19 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         timetableMap[term] = createDefaultTimetable(res.data.userID);
       }
 
-      const userResponse = { ...res.data, timetables: timetableMap };
-
+      const userResponse = { ...res.data, timetables: structuredClone(timetableMap) };
       setUser(userResponse);
-      setDisplayTimetables(timetableMap);
+      setDisplayTimetables({ ...timetableMap });
+
+      // TODO: check if this conditional is necessary
+      if (timetableMap[term] && timetableMap[term][0]) {
+        const { selectedCourses, selectedClasses, createdEvents, assignedColors } = timetableMap[term][0];
+        setSelectedCourses(selectedCourses);
+        setSelectedClasses(selectedClasses);
+        setCreatedEvents(createdEvents);
+        setAssignedColors(assignedColors);
+        setSelectedTimetable(0);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -125,10 +136,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           credentials: 'include',
         });
         const userResponse = await response.text();
-        // const userResponse = 'zTEMP'; // TODO: remove
         if (userResponse !== '') {
           const userID = JSON.parse(userResponse);
-          // const userID = userResponse;
           fetchUserInfo(userID);
         } else {
           throw new NetworkError("Couldn't get response");

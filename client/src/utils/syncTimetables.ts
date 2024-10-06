@@ -158,6 +158,7 @@ const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, current
     assignedColors: useColorMapper(timetableDTO.selectedCourses, {}),
   };
 
+  console.log(parsedTimetable);
   return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
 };
 
@@ -205,8 +206,8 @@ const syncDeleteTimetable = async (timetableId: string) => {
 const syncEditTimetable = async (userId: string, editedTimetable: TimetableData) => {
   try {
     if (!userId) {
-      // console.log('User is not logged in');
-      // return;
+      console.log('User is not logged in');
+      return;
     }
     await fetch(`${API_URL.server}/user/timetable`, {
       method: 'PUT',
@@ -265,29 +266,29 @@ const updateTimetableDiffs = (zid: string, newTimetables: TimetableData[], diffI
   });
 };
 
-const runSync = (
-  user: User,
-  setUser: (user: User) => void,
-  oldMap: DisplayTimetablesMap,
-  newMap: DisplayTimetablesMap,
-) => {
+const runSync = (user: User, setUser: (user: User) => void, newMap: DisplayTimetablesMap) => {
+  console.log(user);
+  console.log(newMap);
+  const oldMap = { ...user.timetables };
+
   if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
     console.log('same');
     return;
   }
-  console.log('diff');
 
   for (const key of Object.keys(newMap)) {
     const oldTimetables = oldMap[key] || [];
     const newTimetables = newMap[key];
 
     const diffs = getTimetableDiffs(oldTimetables, newTimetables);
+    console.log('diff', diffs);
 
     updateTimetableDiffs(user.userID, newTimetables, diffs);
   }
 
   // Save to user timetable
-  setUser({ ...user, timetables: newMap });
+  console.log(user);
+  setUser({ ...user, timetables: structuredClone(newMap) });
 };
 
 export { parseTimetableDTO, runSync };
