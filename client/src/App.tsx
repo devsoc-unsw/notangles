@@ -44,6 +44,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { syncTimetables } from './utils/syncingTimetable';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -474,15 +475,13 @@ const App: React.FC = () => {
   // Update storage when dragging timetables or Creating new timetables.
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-    console.log(displayTimetables[term][selectedTimetable]);
-    if (user.userID !== '') {
-      const currentBackendUserDetails = getUserInfo(user.userID);
-    }
-
-    // sync timetable changes here
-
-    // Check if the timetable exists.
-    // If it does not create it
+    // const diffTimetable = async () => {
+    //   if (user.userID !== '') {
+    //     const currentBackendUserDetails = await getUserInfo(user.userID);
+    //     let userBackendTimetable = currentBackendUserDetails?.timetables!;
+    //   }
+    // };
+    // diffTimetable();
   }, [displayTimetables]);
 
   /**

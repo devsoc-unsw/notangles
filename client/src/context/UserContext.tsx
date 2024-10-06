@@ -44,6 +44,7 @@ export interface IUserContext {
   getUserInfo: (userID: string) => Promise<User | undefined>;
   selectedGroupIndex: number; // selected group is the index of groups;
   setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
+  parseTimetablesFromDb: (timetables: TimetableDTO[]) => Promise<DisplayTimetablesMap | undefined>;
   groupsSidebarCollapsed: boolean;
   setGroupsSidebarCollapsed: (isCollapsed: boolean) => void;
 }
@@ -56,6 +57,7 @@ export const UserContext = createContext<IUserContext>({
   fetchUserInfo: async () => undefined,
   getUserInfo: async () => undefined,
   selectedGroupIndex: -1,
+  parseTimetablesFromDb: async () => undefined,
   setSelectedGroupIndex: () => {},
   groupsSidebarCollapsed: true,
   setGroupsSidebarCollapsed: () => {},
@@ -93,7 +95,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   };
 
   const parseTimetablesFromDb = async (timetables: TimetableDTO[]) => {
-    let constructedTimetablesDataForLSRecord: Record<string, TimetableData[]> = {};
+    let constructedTimetablesDataForLSRecord: DisplayTimetablesMap = {};
     timetables.forEach(async (timetable: TimetableDTO) => {
       const key = timetable.mapKey as string;
       if (!constructedTimetablesDataForLSRecord[key]) {
@@ -287,7 +289,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           credentials: 'include',
         });
         const userResponse = await response.text();
-        if (userResponse !== '') {
+        if (userResponse !== '' && storage.get('userId') === '') {
           const userID = JSON.parse(userResponse);
           fetchUserInfo(userID);
         } else {
@@ -306,6 +308,68 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
     };
   }, []);
 
+  // export const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
+  //   try {
+  //     if (!userId) {
+  //       console.log('User is not logged in');
+  //       return;
+  //     }
+  //     const { selectedCourses, selectedClasses, createdEvents, name } = newTimetable;
+  //     await fetch(`${API_URL.server}/user/timetable`, {
+  //       method: 'POST',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         userId,
+  //         selectedCourses: selectedCourses.map((t) => t.code),
+  //         selectedClasses: convertClassToDTO(selectedClasses),
+  //         createdEvents: convertEventToDTO(createdEvents),
+  //         name,
+  //         mapKey: 'T3', //TODO hardcoded atm.
+  //       }),
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+  // const syncDeleteTimetable = async (timetableId: string) => {
+  //   try {
+  //     await fetch(`${API_URL.server}/user/timetable/${timetableId}`, {
+  //       method: 'DELETE',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //   } catch (e) {
+  //     console.log('todo');
+  //   }
+  // };
+
+  // const syncEditTimetable = async (userId: string, editedTimetable: TimetableData) => {
+  //   try {
+  //     if (!userId) {
+  //       // console.log('User is not logged in');
+  //       // return;
+  //     }
+  //     await fetch(`${API_URL.server}/user/timetable`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         userId: userId,
+  //         timetable: convertTimetableToDTO(editedTimetable),
+  //       }),
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
   // useEffect(() => {
   //   if (user.userID) {
   //     console.log("User's timetable", user.timetables);
@@ -323,6 +387,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       groupsSidebarCollapsed,
       getUserInfo,
       setGroupsSidebarCollapsed,
+      parseTimetablesFromDb,
     }),
     [user, groups, selectedGroupIndex, groupsSidebarCollapsed],
   );
