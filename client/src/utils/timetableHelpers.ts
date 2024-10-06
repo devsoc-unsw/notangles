@@ -153,9 +153,6 @@ const createDefaultTimetable = (userID: string | undefined): TimetableData[] => 
   };
 
   console.log('create default timetbale', userID);
-  if (userID) {
-    syncAddTimetable(userID, defaultTimetable);
-  }
 
   return [defaultTimetable];
 };

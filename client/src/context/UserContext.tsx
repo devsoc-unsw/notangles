@@ -82,13 +82,15 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         timetableMap[mapKey].push(timetable);
       });
 
+      const userResponse = { ...res.data, timetables: structuredClone(timetableMap) };
+      setUser(userResponse);
+
       // Check current term exists. If not, create default timetable for this term
+      // NOTE: This is AFTER setting the timetableMap for user.timetable. By doing this, we allow the runSync
+      // function to pick up that there's a difference, and sync the default timetable with the backend.
       if (!Object.keys(timetableMap).includes(term)) {
         timetableMap[term] = createDefaultTimetable(res.data.userID);
       }
-
-      const userResponse = { ...res.data, timetables: structuredClone(timetableMap) };
-      setUser(userResponse);
       setDisplayTimetables({ ...timetableMap });
 
       // TODO: check if this conditional is necessary
