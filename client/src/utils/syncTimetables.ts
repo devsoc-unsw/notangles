@@ -52,8 +52,6 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
     });
   });
 
-  console.log('b', b);
-
   return b.reduce((prev, curr) => prev.concat(curr), []);
 };
 
@@ -162,14 +160,14 @@ const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, current
   return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
 };
 
-export const syncAddTimetable = async (userId: string, newTimetable: TimetableData) => {
+export const syncAddTimetable = async (userId: string, newTimetable: TimetableData, term: string) => {
   try {
     if (!userId) {
       console.log('User is not logged in');
       return;
     }
     const { selectedCourses, selectedClasses, createdEvents, name } = newTimetable;
-    await fetch(`${API_URL.server}/user/timetable`, {
+    const res = await fetch(`${API_URL.server}/user/timetable`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -181,9 +179,12 @@ export const syncAddTimetable = async (userId: string, newTimetable: TimetableDa
         selectedClasses: convertClassToDTO(selectedClasses),
         createdEvents: convertEventToDTO(createdEvents),
         name,
-        mapKey: 'T3', //TODO hardcoded atm.
+        mapKey: term,
       }),
     });
+
+    const json = await res.json();
+    return json.data; // This is the new ID of timetable
   } catch (e) {
     console.log(e);
   }
@@ -252,43 +253,62 @@ const getTimetableDiffs = (oldTimetables: TimetableData[], newTimetables: Timeta
   return diffIds;
 };
 
-const updateTimetableDiffs = (zid: string, newTimetables: TimetableData[], diffIds: DiffID) => {
+const updateTimetableDiffs = async (
+  zid: string,
+  newTimetables: TimetableData[],
+  diffIds: DiffID,
+  term: string,
+): Promise<TimetableData[]> => {
   diffIds.delete.forEach((id) => {
     syncDeleteTimetable(id);
   });
 
-  newTimetables.forEach((t) => {
-    if (diffIds.add.has(t.id)) {
-      syncAddTimetable(zid, t);
-    } else if (diffIds.update.has(t.id)) {
-      syncEditTimetable(zid, t);
-    }
-  });
+  return Promise.all(
+    newTimetables.map(async (t) => {
+      if (diffIds.add.has(t.id)) {
+        const newId = await syncAddTimetable(zid, t, term);
+        return { ...t, id: newId };
+      } else if (diffIds.update.has(t.id)) {
+        syncEditTimetable(zid, t);
+      }
+      return { ...t };
+    }),
+  );
 };
 
-const runSync = (user: User, setUser: (user: User) => void, newMap: DisplayTimetablesMap) => {
-  console.log(user);
-  console.log(newMap);
-  const oldMap = { ...user.timetables };
+const runSync = (
+  user: User,
+  setUser: (user: User) => void,
+  newMap: DisplayTimetablesMap,
+  setMap: (m: DisplayTimetablesMap) => void,
+) => {
+  // console.log(user);
+  // console.log(newMap);
+  clearTimeout(timeoutID);
+  timeoutID = setTimeout(async () => {
+    const oldMap = { ...user.timetables };
+    const trueMap: DisplayTimetablesMap = {};
 
-  if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
-    console.log('same');
-    return;
-  }
+    if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
+      console.log('same');
+      return;
+    }
 
-  for (const key of Object.keys(newMap)) {
-    const oldTimetables = oldMap[key] || [];
-    const newTimetables = newMap[key];
+    for (const key of Object.keys(newMap)) {
+      const oldTimetables = oldMap[key] || [];
+      const newTimetables = newMap[key];
 
-    const diffs = getTimetableDiffs(oldTimetables, newTimetables);
-    console.log('diff', diffs);
+      const diffs = getTimetableDiffs(oldTimetables, newTimetables);
+      console.log('diff', diffs);
 
-    updateTimetableDiffs(user.userID, newTimetables, diffs);
-  }
+      trueMap[key] = await updateTimetableDiffs(user.userID, newTimetables, diffs, key);
+    }
 
-  // Save to user timetable
-  console.log(user);
-  setUser({ ...user, timetables: structuredClone(newMap) });
+    // Save to user timetable
+    console.log(trueMap);
+    setMap(trueMap);
+    setUser({ ...user, timetables: structuredClone(trueMap) });
+  }, 5000);
 };
 
 export { parseTimetableDTO, runSync };

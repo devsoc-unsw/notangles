@@ -438,9 +438,7 @@ const App: React.FC = () => {
       return;
     }
 
-    // TODO: timetables vs timetable map - change from hardcoded
-    console.log(user);
-    runSync(user, setUser, displayTimetables);
+    runSync(user, setUser, displayTimetables, setDisplayTimetables);
   };
 
   // Updates local storage whenever a change is made to the timetable
