@@ -134,7 +134,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { user, groupsSidebarCollapsed, setUserInfoOnStartup, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { user, groupsSidebarCollapsed, getUserInfo } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -475,6 +475,12 @@ const App: React.FC = () => {
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
     console.log(displayTimetables[term][selectedTimetable]);
+    if (user.userID !== '') {
+      const currentBackendUserDetails = getUserInfo(user.userID);
+    }
+
+    // sync timetable changes here
+
     // Check if the timetable exists.
     // If it does not create it
   }, [displayTimetables]);

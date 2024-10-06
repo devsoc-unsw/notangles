@@ -41,8 +41,8 @@ export interface IUserContext {
   groups: Group[];
   setGroups: (newGroups: Group[]) => void;
   fetchUserInfo: (userID: string) => void;
+  getUserInfo: (userID: string) => Promise<User | undefined>;
   selectedGroupIndex: number; // selected group is the index of groups;
-  setUserInfoOnStartup: (userId: string) => void;
   setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
   groupsSidebarCollapsed: boolean;
   setGroupsSidebarCollapsed: (isCollapsed: boolean) => void;
@@ -53,8 +53,8 @@ export const UserContext = createContext<IUserContext>({
   setUser: () => {},
   groups: [],
   setGroups: () => {},
-  fetchUserInfo: () => {},
-  setUserInfoOnStartup: () => {},
+  fetchUserInfo: async () => undefined,
+  getUserInfo: async () => undefined,
   selectedGroupIndex: -1,
   setSelectedGroupIndex: () => {},
   groupsSidebarCollapsed: true,
@@ -101,7 +101,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       }
 
       const parsedData = await _parseTimetableDTO(timetable, term, '2024');
-      console.log('test', parsedData);
       constructedTimetablesDataForLSRecord[key].push(parsedData.timetable);
     });
 
@@ -179,13 +178,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
 
     return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
   };
-  // This fn will make sure to run everything and set
-  // We need another fn just for setting up
-  const setUserInfoOnStartup = async (userId: string) => {
-    const userData = await getUserInfo(userId);
-    if (!userData) return undefined;
-    console.log(userData);
 
+  const convertUserDTO = async (userData: UserDTO): Promise<User> => {
     const {
       userID,
       firstname,
@@ -214,23 +208,33 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       incoming,
       outgoing,
     };
+
     if (userData.timetables.length === 0) {
       user.timetables = { [term]: createDefaultTimetable() };
       console.log('User does not have a timetable, creating a default one!');
       createTimetableForUser(userData.userID, user.timetables[term][0], term);
-      storage.set('timetables', user.timetables);
-      setDisplayTimetables(user.timetables);
+      // storage.set('timetables', user.timetables);
+      // setDisplayTimetables(user.timetables);
     } else {
       const parsedTts = await parseTimetablesFromDb(userData.timetables);
       currentUser.timetables = parsedTts;
-      storage.set('timetables', parsedTts);
-      setDisplayTimetables(parsedTts);
     }
-    setUser(currentUser);
-    console.log(currentUser);
-    // return currentUser;
+    return currentUser;
   };
-  const getUserInfo = async (userID: string): Promise<UserDTO | undefined> => {
+  // This fn will make sure to run everything and set
+  // We need another fn just for setting up
+  const syncUserContext = async (userId: string) => {
+    const userData: User | undefined = await getUserInfo(userId);
+    if (!userData) return;
+    storage.set('timetables', userData.timetables);
+    setDisplayTimetables(userData.timetables);
+    setUser(userData);
+  };
+
+  /**
+   * Get Information on Any user given userId
+   */
+  const getUserInfo = async (userID: string): Promise<User | undefined> => {
     if (userID === '') return undefined;
     try {
       const response = await fetch(`${API_URL.server}/user/profile/${userID}`, {
@@ -243,8 +247,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       const userResponse = await response.text();
       if (userResponse !== '') {
         let userData: UserDTO = JSON.parse(userResponse).data; // user from BE
-        // console.log(userData.timetables);
-        return userData;
+        return convertUserDTO(userData);
       }
       return undefined;
     } catch (error) {
@@ -272,7 +275,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   };
 
   const fetchUserInfo = async (userID: string) => {
-    await getUserInfo(userID);
+    await syncUserContext(userID);
     await getGroups(userID);
   };
 
@@ -286,7 +289,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         const userResponse = await response.text();
         if (userResponse !== '') {
           const userID = JSON.parse(userResponse);
-          setUserInfoOnStartup(userID);
+          fetchUserInfo(userID);
         } else {
           throw new NetworkError("Couldn't get response");
         }
@@ -315,10 +318,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       groups,
       setGroups,
       fetchUserInfo,
-      setUserInfoOnStartup,
       selectedGroupIndex,
       setSelectedGroupIndex,
       groupsSidebarCollapsed,
+      getUserInfo,
       setGroupsSidebarCollapsed,
     }),
     [user, groups, selectedGroupIndex, groupsSidebarCollapsed],
