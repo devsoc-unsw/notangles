@@ -134,7 +134,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { user, groupsSidebarCollapsed, setUserInfoOnStartup, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -197,6 +197,14 @@ const App: React.FC = () => {
 
     fetchReliably(fetchTermData);
   }, []);
+
+  useEffect(() => {
+    if (user.userID) {
+      storage.set('userId', user.userID);
+    } else {
+      storage.set('userId', '');
+    }
+  }, [user]);
 
   useEffect(() => {
     /**
@@ -463,10 +471,12 @@ const App: React.FC = () => {
     // console.log(displayTimetables[term][selectedTimetable]);
   }, [assignedColors]);
 
-  // Update storage when dragging timetables
+  // Update storage when dragging timetables or Creating new timetables.
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-    // console.log(displayTimetables[term][selectedTimetable]);
+    console.log(displayTimetables[term][selectedTimetable]);
+    // Check if the timetable exists.
+    // If it does not create it
   }, [displayTimetables]);
 
   /**

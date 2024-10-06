@@ -42,6 +42,7 @@ export interface IUserContext {
   setGroups: (newGroups: Group[]) => void;
   fetchUserInfo: (userID: string) => void;
   selectedGroupIndex: number; // selected group is the index of groups;
+  setUserInfoOnStartup: (userId: string) => void;
   setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
   groupsSidebarCollapsed: boolean;
   setGroupsSidebarCollapsed: (isCollapsed: boolean) => void;
@@ -53,6 +54,7 @@ export const UserContext = createContext<IUserContext>({
   groups: [],
   setGroups: () => {},
   fetchUserInfo: () => {},
+  setUserInfoOnStartup: () => {},
   selectedGroupIndex: -1,
   setSelectedGroupIndex: () => {},
   groupsSidebarCollapsed: true,
@@ -177,8 +179,59 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
 
     return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
   };
+  // This fn will make sure to run everything and set
+  // We need another fn just for setting up
+  const setUserInfoOnStartup = async (userId: string) => {
+    const userData = await getUserInfo(userId);
+    if (!userData) return undefined;
+    console.log(userData);
 
-  const getUserInfo = async (userID: string) => {
+    const {
+      userID,
+      firstname,
+      lastname,
+      email,
+      profileURL,
+      createdAt,
+      lastLogin,
+      loggedIn,
+      friends,
+      incoming,
+      outgoing,
+      timetables,
+    } = userData;
+    const currentUser: User = {
+      timetables: {},
+      userID,
+      firstname,
+      lastname,
+      email,
+      profileURL,
+      createdAt,
+      lastLogin,
+      loggedIn,
+      friends,
+      incoming,
+      outgoing,
+    };
+    if (userData.timetables.length === 0) {
+      user.timetables = { [term]: createDefaultTimetable() };
+      console.log('User does not have a timetable, creating a default one!');
+      createTimetableForUser(userData.userID, user.timetables[term][0], term);
+      storage.set('timetables', user.timetables);
+      setDisplayTimetables(user.timetables);
+    } else {
+      const parsedTts = await parseTimetablesFromDb(userData.timetables);
+      currentUser.timetables = parsedTts;
+      storage.set('timetables', parsedTts);
+      setDisplayTimetables(parsedTts);
+    }
+    setUser(currentUser);
+    console.log(currentUser);
+    // return currentUser;
+  };
+  const getUserInfo = async (userID: string): Promise<UserDTO | undefined> => {
+    if (userID === '') return undefined;
     try {
       const response = await fetch(`${API_URL.server}/user/profile/${userID}`, {
         method: 'GET',
@@ -188,55 +241,12 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const userResponse = await response.text();
-
       if (userResponse !== '') {
         let userData: UserDTO = JSON.parse(userResponse).data; // user from BE
-        const {
-          userID,
-          firstname,
-          lastname,
-          email,
-          profileURL,
-          createdAt,
-          lastLogin,
-          loggedIn,
-          friends,
-          incoming,
-          outgoing,
-          timetables,
-        } = userData;
-        // What is going to be stored in Frontend
-        const currentUser: User = {
-          timetables: {},
-          userID: userData.userID,
-          firstname,
-          lastname,
-          email,
-          profileURL,
-          createdAt,
-          lastLogin,
-          loggedIn,
-          friends,
-          incoming,
-          outgoing,
-        };
-        if (userData.timetables.length === 0) {
-          user.timetables = { [term]: createDefaultTimetable() };
-          console.log('User does not have a timetable, creating a default one!');
-          createTimetableForUser(userData.userID, user.timetables[term][0], term);
-          storage.set('timetables', user.timetables);
-          setDisplayTimetables(user.timetables);
-        } else {
-          const parsedTts = await parseTimetablesFromDb(userData.timetables);
-          console.log('test');
-          currentUser.timetables = parsedTts;
-          storage.set('timetables', parsedTts);
-          setDisplayTimetables(parsedTts);
-        }
-
-        setUser(currentUser);
-        console.log(currentUser.timetables);
+        // console.log(userData.timetables);
+        return userData;
       }
+      return undefined;
     } catch (error) {
       console.log(error);
     }
@@ -276,7 +286,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         const userResponse = await response.text();
         if (userResponse !== '') {
           const userID = JSON.parse(userResponse);
-          fetchUserInfo(userID);
+          setUserInfoOnStartup(userID);
         } else {
           throw new NetworkError("Couldn't get response");
         }
@@ -305,6 +315,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       groups,
       setGroups,
       fetchUserInfo,
+      setUserInfoOnStartup,
       selectedGroupIndex,
       setSelectedGroupIndex,
       groupsSidebarCollapsed,
