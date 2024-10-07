@@ -4,7 +4,7 @@ import { API_URL } from '../api/config';
 import { User } from '../components/sidebar/UserAccount';
 import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
-import { DisplayTimetablesMap } from '../interfaces/Periods';
+import { DisplayTimetablesMap, TimetableDTO } from '../interfaces/Periods';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 import { parseTimetableDTO } from '../utils/syncTimetables';
 import { createDefaultTimetable } from '../utils/timetableHelpers';
@@ -69,7 +69,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       });
       const res = await response.json();
       const timetables = await Promise.all(
-        res.data.timetables.map((timetable) => parseTimetableDTO(timetable, term, year)),
+        res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, term, year)),
       );
 
       // Unpack timetables based on key
