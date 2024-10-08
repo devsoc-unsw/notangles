@@ -1,10 +1,49 @@
+import { gql } from '@apollo/client';
+
+import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
+import { QueryResponse } from '../interfaces/GraphQL';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
 import storage from '../utils/storage';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
+
+const GET_COURSE_INFO = gql`
+  query GetCourseInfo($courseCode: String!) {
+    courses(where: { course_code: { _eq: $courseCode } }) {
+      course_code
+      course_name
+      classes {
+        activity
+        class_id
+        course_id
+        course {
+          course_name
+          modes
+        }
+        status
+        course_enrolment
+        section
+        term
+        consent
+        times {
+          day
+          time
+          weeks
+          location
+          instructor
+        }
+      }
+      school
+      faculty
+      campus
+      career
+      terms
+    }
+  }
+`;
 
 /**
  * Converts a string representation of what weeks a class runs to an array
@@ -65,6 +104,14 @@ const sortUnique = (arr: number[]): number[] => {
   return ret;
 };
 
+const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean) => {
+  // : Promise<CourseData>
+  try {
+    const data: QueryResponse = await client.query({ query: GET_COURSE_INFO, variables: { courseCode: courseCode } });
+    console.log('gql qry returned', data);
+  } catch {}
+};
+
 /**
  * Fetches the information of a specified course
  *
@@ -102,6 +149,7 @@ const getCourseInfo = async (
     }
 
     const json: DbCourse = await data.json();
+    console.log('REST', json);
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.
@@ -161,6 +209,7 @@ const getCourseInfo = async (
     });
 
     if (!json) throw new NetworkError('Internal server error');
+    console.log('intermediate', json);
 
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
@@ -169,4 +218,4 @@ const getCourseInfo = async (
   }
 };
 
-export default getCourseInfo;
+export { getCourseInfo, getCourseInfoNew };
