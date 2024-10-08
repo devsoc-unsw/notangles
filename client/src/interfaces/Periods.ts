@@ -66,24 +66,46 @@ export interface EventDTO {
   groupIds: string[];
 }
 
-export interface ClassDTO {
-  id: string;
-  classNo: string;
+export interface ClassTimeDTO {
+  day: string;
+  time: {
+    start: string;
+    end: string;
+  };
+  weeks: string;
+  location: string;
+}
+
+export interface ScrapedClassDTO {
+  classID: number;
+  section: string;
   term: string;
-  year: string;
+  activity: string;
+  status: string;
+  courseEnrolment: {
+    enrolments: number;
+    capacity: number;
+  };
+  termDates: {
+    start: string;
+    end: string;
+  };
+  needsConsent: boolean;
+  mode: string;
+  times: ClassTimeDTO[];
   courseCode: string;
-  timetableId?: string | null;
-  Timetable?: TimetableDTO | null;
+  notes: [];
 }
 
 export interface TimetableDTO {
   id: string;
   name: string;
   selectedCourses: string[];
-  selectedClasses: ClassDTO[];
+  selectedClasses: ScrapedClassDTO[];
   createdEvents: EventDTO[];
   user: User[];
   groups: Group[];
+  mapKey: string;
 }
 
 export interface InventoryData {

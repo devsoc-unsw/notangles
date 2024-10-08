@@ -6,10 +6,10 @@ import React, { useContext, useState } from 'react';
 import { API_URL } from '../../api/config';
 import { undefinedUser, UserContext } from '../../context/UserContext';
 import { DisplayTimetablesMap } from '../../interfaces/Periods';
-import StyledDialog from '../StyledDialog';
-import UserProfile from './groupsSidebar/friends/UserProfile';
 import storage from '../../utils/storage';
 import { createDefaultTimetable } from '../../utils/timetableHelpers';
+import StyledDialog from '../StyledDialog';
+import UserProfile from './groupsSidebar/friends/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;

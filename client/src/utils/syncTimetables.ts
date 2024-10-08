@@ -8,8 +8,10 @@ import {
   CreatedEvents,
   DisplayTimetablesMap,
   EventPeriod,
+  ScrapedClassDTO,
   SelectedClasses,
   TimetableData,
+  TimetableDTO,
 } from '../interfaces/Periods';
 
 interface DiffID {
@@ -46,8 +48,9 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   const a = Object.values(selectedClasses);
   const b = a.map((c) => {
     const d = Object.values(c);
-    return d.map((c) => {
-      const { id, classNo, year, term, courseCode } = c as ClassData;
+
+    return d.map((c2) => {
+      const { id, classNo, year, term, courseCode } = c2 as ClassData;
       return { id, classNo: String(classNo), year, term, courseCode };
     });
   });
@@ -79,6 +82,7 @@ const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) =
 };
 
 const convertTimetableToDTO = (timetable: TimetableData) => {
+  console.log(timetable.selectedClasses);
   return {
     ...timetable,
     selectedCourses: timetable.selectedCourses.map((t) => t.code),
@@ -88,8 +92,7 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 };
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
-const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, currentYear: string) => {
-  // console.log(timetableDTO);
+const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string, currentYear: string) => {
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
@@ -110,8 +113,8 @@ const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, current
   });
 
   const selectedClasses: SelectedClasses = {};
-  timetableDTO.selectedClasses.forEach((scrapedClassDTO: any) => {
-    const classID: string = scrapedClassDTO.classID;
+  timetableDTO.selectedClasses.forEach((scrapedClassDTO: ScrapedClassDTO) => {
+    const classID = scrapedClassDTO.classID;
     const courseCode: string = scrapedClassDTO.courseCode;
 
     if (!selectedClasses[courseCode]) {
@@ -119,7 +122,7 @@ const parseTimetableDTO = async (timetableDTO: any, currentTerm: string, current
     }
 
     selectedClasses[courseCode][scrapedClassDTO.activity] =
-      classDataMap[courseCode].find((clz) => String(clz.classNo) === String(classID)) || null;
+      classDataMap[courseCode].find((clz) => clz.classNo === classID) || null;
   });
 
   // Finally, reverse created events
@@ -210,6 +213,7 @@ const syncEditTimetable = async (userId: string, editedTimetable: TimetableData)
       console.log('User is not logged in');
       return;
     }
+
     await fetch(`${API_URL.server}/user/timetable`, {
       method: 'PUT',
       headers: {
@@ -282,8 +286,6 @@ const runSync = (
   newMap: DisplayTimetablesMap,
   setMap: (m: DisplayTimetablesMap) => void,
 ) => {
-  // console.log(user);
-  // console.log(newMap);
   clearTimeout(timeoutID);
   timeoutID = setTimeout(async () => {
     const oldMap = { ...user.timetables };
