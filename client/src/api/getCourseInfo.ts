@@ -117,7 +117,76 @@ const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone
     console.log('gql qry returned', data);
     const restData: Course[] = convertGraphQLCourseToRestCourse(data);
     console.log('rest data', restData);
-  } catch {}
+
+    const json = restData[0];
+
+    json.classes.forEach((dbClass) => {
+      // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
+      // because one half of the course is taught by one lecturer and the other half is taught by another.
+      // This causes two cards to be generated for the same class which is not ideal, thus the following code
+      // consolidates the separate classes into one class.
+
+      for (let i = 0; i < dbClass.times.length - 1; i += 1) {
+        for (let j = i + 1; j < dbClass.times.length; j += 1) {
+          const dbClassTimesOne = dbClass.times[i];
+          const dbClassTimesTwo = dbClass.times[j];
+
+          if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
+            let dbClassTimesList: number[] = [];
+
+            convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
+            convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
+
+            dbClassTimesList = sortUnique(dbClassTimesList);
+
+            let newWeeks: string = '';
+            let isEndOfRange = false;
+
+            // Convert the numerical representation of the weeks the classes are running back to a string
+            for (let k = 0; k < dbClassTimesList.length; k++) {
+              if (k == 0 || k == dbClassTimesList.length - 1) {
+                newWeeks += dbClassTimesList[k];
+              } else if (isEndOfRange) {
+                // Add the start of the range
+                newWeeks += dbClassTimesList[k];
+                isEndOfRange = false;
+              }
+
+              while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
+                // Keep iterating until you reach the end of the range (numbers stop being consecutive)
+                k++;
+              }
+
+              if (!isEndOfRange) {
+                // Add the end of the range (last consecutive number)
+                newWeeks += '-' + dbClassTimesList[k];
+
+                // If this isn't the last week, we will need to add more weeks
+                if (k !== dbClassTimesList.length - 1) {
+                  newWeeks += ',';
+                }
+
+                // Get ready to add the end of the range
+                isEndOfRange = true;
+              }
+            }
+
+            dbClassTimesOne.weeks = newWeeks;
+            dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
+          }
+        }
+      }
+    });
+
+    if (!json) throw new NetworkError('Internal server error');
+    console.log('intermediate', json);
+
+    console.log('gql -> courseData', dbCourseToCourseData(json, isConvertToLocalTimezone));
+    return dbCourseToCourseData(json, isConvertToLocalTimezone);
+  } catch (error) {
+    console.log(error);
+    throw new NetworkError('Could not connect to server');
+  }
 };
 
 /**
@@ -218,6 +287,8 @@ const getCourseInfo = async (
 
     if (!json) throw new NetworkError('Internal server error');
     console.log('intermediate', json);
+
+    console.log('rest -> courseData', dbCourseToCourseData(json, isConvertToLocalTimezone));
 
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {

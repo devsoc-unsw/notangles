@@ -289,12 +289,11 @@ const App: React.FC = () => {
     console.log('calling get course info');
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
-      codes.map((code) => {
-        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+      codes.map((code) =>
+        getCourseInfoNew(code, isConvertToLocalTimezone).catch((err) => {
           return err;
-        });
-        getCourseInfoNew(code, isConvertToLocalTimezone);
-      }),
+        }),
+      ),
     ).then((result) => {
       console.log(result);
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];

@@ -1,5 +1,16 @@
 import { QueryResponse } from '../interfaces/GraphQL';
+import { Status } from '../interfaces/Periods';
 import { Course } from '../interfaces/Rest';
+
+const statusMapping: Record<string, Status> = {
+  open: 'Open',
+  full: 'Full',
+  'on hold': 'On Hold',
+};
+
+const getStatus = (status: string): Status => {
+  return statusMapping[status.toLowerCase()] || 'Open';
+};
 
 export const convertGraphQLCourseToRestCourse = (queryResponse: QueryResponse): Course[] => {
   return queryResponse.data.courses.map((course) => ({
@@ -19,7 +30,7 @@ export const convertGraphQLCourseToRestCourse = (queryResponse: QueryResponse): 
       section: classItem.section,
       term: classItem.term,
       activity: classItem.activity,
-      status: classItem.status,
+      status: getStatus(classItem.status),
       courseEnrolment: {
         enrolments: parseInt(classItem.course_enrolment.split('/')[0].trim()),
         capacity: parseInt(classItem.course_enrolment.split('/')[1].trim()),

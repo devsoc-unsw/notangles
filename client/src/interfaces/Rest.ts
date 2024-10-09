@@ -1,3 +1,5 @@
+import { Status } from './Periods';
+
 // REST Interface
 export interface Course {
   courseCode: string;
@@ -16,7 +18,7 @@ interface Class {
   section: string;
   term: string;
   activity: string;
-  status: string;
+  status: Status;
   courseEnrolment: CourseEnrolment;
   termDates: TermDates;
   needsConsent: boolean;
