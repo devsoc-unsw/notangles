@@ -1,3 +1,5 @@
+// GraphQL interface
+
 interface Time {
   __typename: 'times';
   day: string;

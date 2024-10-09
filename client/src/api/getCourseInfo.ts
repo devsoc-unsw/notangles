@@ -9,13 +9,15 @@ import { dbCourseToCourseData } from '../utils/DbCourse';
 import storage from '../utils/storage';
 import timeoutPromise from '../utils/timeoutPromise';
 import { API_URL } from './config';
+import { convertGraphQLCourseToRestCourse } from '../utils/graphQLCourseToRestCourse';
+import { Course } from '../interfaces/Rest';
 
 const GET_COURSE_INFO = gql`
-  query GetCourseInfo($courseCode: String!) {
+  query GetCourseInfo($courseCode: String!, $term: String!) {
     courses(where: { course_code: { _eq: $courseCode } }) {
       course_code
       course_name
-      classes {
+      classes(where: { term: { _eq: $term } }) {
         activity
         class_id
         course_id
@@ -107,8 +109,14 @@ const sortUnique = (arr: number[]): number[] => {
 const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean) => {
   // : Promise<CourseData>
   try {
-    const data: QueryResponse = await client.query({ query: GET_COURSE_INFO, variables: { courseCode: courseCode } });
+    const term = 'T3'; // TODO: get current term
+    const data: QueryResponse = await client.query({
+      query: GET_COURSE_INFO,
+      variables: { courseCode: courseCode, term: term },
+    });
     console.log('gql qry returned', data);
+    const restData: Course[] = convertGraphQLCourseToRestCourse(data);
+    console.log('rest data', restData);
   } catch {}
 };
 
