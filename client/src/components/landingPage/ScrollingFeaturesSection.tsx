@@ -1,6 +1,6 @@
-import SelectCourse from "../../assets/SelectCourses.gif"
-import PlanAhead from "../../assets/PlanAhead.gif"
 import AutoTimetable from "../../assets/AutoTimetable.gif"
+import PlanAhead from "../../assets/PlanAhead.gif"
+import SelectCourse from "../../assets/SelectCourses.gif"
 
 interface FeatureItemProps {
   number: string;
@@ -54,7 +54,7 @@ const ScrollingFeaturesSection = () => {
 
   return (
     <div className="flex flex-col justify-center">
-      <p className="text-5xl mb-8 text-center font-semibold">How it Works</p>
+      <p className="text-5xl mb-[60px] text-center font-semibold">How it Works</p>
       <div className="h-[1950px] flex-col text-blue-50">
         {features.map((feature, index) => (
           <FeatureItem key={index} {...feature} />

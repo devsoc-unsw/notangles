@@ -1,3 +1,4 @@
+import FeedbackSection from "./FeedbackSection";
 import Footer from "./Footer";
 import HeroSection from "./HeroSection/heroSection";
 import FeaturesSection from "./KeyFeaturesSection/FeaturesSection";
@@ -11,6 +12,7 @@ const LandingPage = () => {
       <SponsorsSection />
       <FeaturesSection />
       <ScrollingFeaturesSection />
+      <FeedbackSection />
       <Footer />
     </div>
   );
