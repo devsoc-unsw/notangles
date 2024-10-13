@@ -17,32 +17,18 @@ const GET_COURSE_INFO = gql`
     courses(where: { course_code: { _eq: $courseCode } }) {
       course_code
       course_name
-      classes(where: { term: { _eq: $term } }) {
+      classes(where: { term: { _eq: $term }, activity: { _neq: "Course Enrolment" } }) {
         activity
-        class_id
-        course_id
-        course {
-          course_name
-          modes
-        }
         status
         course_enrolment
         section
-        term
-        consent
         times {
           day
           time
           weeks
           location
-          instructor
         }
       }
-      school
-      faculty
-      campus
-      career
-      terms
     }
   }
 `;
@@ -115,7 +101,7 @@ const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone
       variables: { courseCode: courseCode, term: term },
     });
     console.log('gql qry returned', data);
-    const restData: Course[] = convertGraphQLCourseToRestCourse(data);
+    const restData: DbCourse[] = convertGraphQLCourseToRestCourse(data);
     console.log('rest data', restData);
 
     const json = restData[0];
