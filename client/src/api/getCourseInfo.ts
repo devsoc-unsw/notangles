@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { QueryResponse } from '../interfaces/GraphQLCourseInfo';
+import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
@@ -102,7 +102,7 @@ const sortUnique = (arr: number[]): number[] => {
 const getCourseInfo = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
   try {
     const term = 'T3'; // TODO: get current term
-    const data: QueryResponse = await client.query({
+    const data: GraphQLCourse = await client.query({
       query: GET_COURSE_INFO,
       variables: { courseCode, term },
     });
