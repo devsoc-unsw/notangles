@@ -91,6 +91,7 @@ const sortUnique = (arr: number[]): number[] => {
 /**
  * Fetches the information of a specified course
  *
+ * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
  * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
  * @return A promise containing the information of the course that is offered in the
@@ -99,9 +100,12 @@ const sortUnique = (arr: number[]): number[] => {
  * @example
  * const selectedCourseClasses = await getCourseInfo('COMP1511', true)
  */
-const getCourseInfo = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
+const getCourseInfo = async (
+  term: string,
+  courseCode: CourseCode,
+  isConvertToLocalTimezone: boolean,
+): Promise<CourseData> => {
   try {
-    const term = 'T3'; // TODO: get current term
     const data: GraphQLCourse = await client.query({
       query: GET_COURSE_INFO,
       variables: { courseCode, term },
