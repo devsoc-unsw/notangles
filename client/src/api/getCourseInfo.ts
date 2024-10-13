@@ -6,7 +6,7 @@ import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
-import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToRestCourse';
+import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
 const GET_COURSE_INFO = gql`
   query GetCourseInfo($courseCode: String!, $term: String!) {
@@ -167,6 +167,7 @@ const getCourseInfo = async (courseCode: CourseCode, isConvertToLocalTimezone: b
     });
 
     if (!json) throw new NetworkError('Internal server error');
+
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);
