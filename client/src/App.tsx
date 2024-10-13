@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { getCourseInfo, getCourseInfoNew } from './api/getCourseInfo';
+import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -286,16 +286,14 @@ const App: React.FC = () => {
     noInit?: boolean,
     callback?: (_selectedCourses: CourseData[]) => void,
   ) => {
-    console.log('calling get course info');
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfoNew(code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(code, isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
     ).then((result) => {
-      console.log(result);
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
       const newSelectedCourses = [...selectedCourses];

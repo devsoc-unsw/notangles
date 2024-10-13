@@ -3,7 +3,7 @@ import { TabContext, TabList } from '@mui/lab';
 import { Box, Popover, Tab } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { getCourseInfo } from '../../api/getCourseInfo';
+import getCourseInfo from '../../api/getCourseInfo';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';

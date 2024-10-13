@@ -2,15 +2,11 @@ import { gql } from '@apollo/client';
 
 import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { QueryResponse } from '../interfaces/GraphQL';
+import { QueryResponse } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
-import storage from '../utils/storage';
-import timeoutPromise from '../utils/timeoutPromise';
-import { API_URL } from './config';
-import { convertGraphQLCourseToRestCourse } from '../utils/graphQLCourseToRestCourse';
-import { Course } from '../interfaces/Rest';
+import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToRestCourse';
 
 const GET_COURSE_INFO = gql`
   query GetCourseInfo($courseCode: String!, $term: String!) {
@@ -92,19 +88,25 @@ const sortUnique = (arr: number[]): number[] => {
   return ret;
 };
 
-const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean) => {
-  // : Promise<CourseData>
+/**
+ * Fetches the information of a specified course
+ *
+ * @param courseCode The code of the course to fetch
+ * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
+ * @return A promise containing the information of the course that is offered in the
+ * current year and term
+ *
+ * @example
+ * const selectedCourseClasses = await getCourseInfo('COMP1511', true)
+ */
+const getCourseInfo = async (courseCode: CourseCode, isConvertToLocalTimezone: boolean): Promise<CourseData> => {
   try {
     const term = 'T3'; // TODO: get current term
     const data: QueryResponse = await client.query({
       query: GET_COURSE_INFO,
-      variables: { courseCode: courseCode, term: term },
+      variables: { courseCode, term },
     });
-    console.log('gql qry returned', data);
-    const restData: DbCourse[] = convertGraphQLCourseToRestCourse(data);
-    console.log('rest data', restData);
-
-    const json = restData[0];
+    const json: DbCourse = graphQLCourseToDbCourse(data);
 
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
@@ -165,9 +167,6 @@ const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone
     });
 
     if (!json) throw new NetworkError('Internal server error');
-    console.log('intermediate', json);
-
-    console.log('gql -> courseData', dbCourseToCourseData(json, isConvertToLocalTimezone));
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);
@@ -175,112 +174,4 @@ const getCourseInfoNew = async (courseCode: CourseCode, isConvertToLocalTimezone
   }
 };
 
-/**
- * Fetches the information of a specified course
- *
- * @param year The year that the course is offered in
- * @param term The term that the course is offered in
- * @param courseCode The code of the course to fetch
- * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
- * @return A promise containing the information of the course that is offered in the
- * specified year and term
- *
- * @example
- * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
- */
-const getCourseInfo = async (
-  year: string,
-  term: string,
-  courseCode: CourseCode,
-  isConvertToLocalTimezone: boolean,
-): Promise<CourseData> => {
-  const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
-  const COURSE_API_TIMEOUT = 2000;
-  try {
-    const data = await timeoutPromise(COURSE_API_TIMEOUT, fetch(`${baseURL}/courses/${courseCode}/`));
-
-    // Remove any leftover courses from localStorage if they are not offered in the current term
-    // which is why a 400 error is returned
-    if (data.status === 400) {
-      const selectedCourses = storage.get('timetables')[term][0].selectedCourses;
-      if (selectedCourses.includes(courseCode)) {
-        delete selectedCourses[courseCode];
-        storage.set(`timetables[${term}][0].selectedCourses`, selectedCourses);
-      } else {
-        throw new NetworkError('Internal server error');
-      }
-    }
-
-    const json: DbCourse = await data.json();
-    console.log('REST', json);
-    json.classes.forEach((dbClass) => {
-      // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
-      // because one half of the course is taught by one lecturer and the other half is taught by another.
-      // This causes two cards to be generated for the same class which is not ideal, thus the following code
-      // consolidates the separate classes into one class.
-
-      for (let i = 0; i < dbClass.times.length - 1; i += 1) {
-        for (let j = i + 1; j < dbClass.times.length; j += 1) {
-          const dbClassTimesOne = dbClass.times[i];
-          const dbClassTimesTwo = dbClass.times[j];
-
-          if (classesAreEqual(dbClassTimesOne, dbClassTimesTwo)) {
-            let dbClassTimesList: number[] = [];
-
-            convertTimesToList(dbClassTimesOne.weeks, dbClassTimesList);
-            convertTimesToList(dbClassTimesTwo.weeks, dbClassTimesList);
-
-            dbClassTimesList = sortUnique(dbClassTimesList);
-
-            let newWeeks: string = '';
-            let isEndOfRange = false;
-
-            // Convert the numerical representation of the weeks the classes are running back to a string
-            for (let k = 0; k < dbClassTimesList.length; k++) {
-              if (k == 0 || k == dbClassTimesList.length - 1) {
-                newWeeks += dbClassTimesList[k];
-              } else if (isEndOfRange) {
-                // Add the start of the range
-                newWeeks += dbClassTimesList[k];
-                isEndOfRange = false;
-              }
-
-              while (dbClassTimesList[k + 1] == dbClassTimesList[k] + 1) {
-                // Keep iterating until you reach the end of the range (numbers stop being consecutive)
-                k++;
-              }
-
-              if (!isEndOfRange) {
-                // Add the end of the range (last consecutive number)
-                newWeeks += '-' + dbClassTimesList[k];
-
-                // If this isn't the last week, we will need to add more weeks
-                if (k !== dbClassTimesList.length - 1) {
-                  newWeeks += ',';
-                }
-
-                // Get ready to add the end of the range
-                isEndOfRange = true;
-              }
-            }
-
-            dbClassTimesOne.weeks = newWeeks;
-            dbClass.times.splice(dbClass.times.indexOf(dbClassTimesTwo), 1);
-          }
-        }
-      }
-    });
-
-    if (!json) throw new NetworkError('Internal server error');
-    console.log('intermediate', json);
-
-    console.log('rest -> courseData', dbCourseToCourseData(json, isConvertToLocalTimezone));
-
-    return dbCourseToCourseData(json, isConvertToLocalTimezone);
-  } catch (error) {
-    console.log(error);
-    throw new NetworkError('Could not connect to server');
-  }
-};
-
-export { getCourseInfo, getCourseInfoNew };
+export default getCourseInfo;

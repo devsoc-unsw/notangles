@@ -1,5 +1,5 @@
 import { DbCourse } from '../interfaces/Database';
-import { QueryResponse } from '../interfaces/GraphQL';
+import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
 import { Status } from '../interfaces/Periods';
 
 const statusMapping: Record<string, Status> = {
@@ -12,8 +12,10 @@ const getStatus = (status: string): Status => {
   return statusMapping[status.toLowerCase()] || 'Open';
 };
 
-export const convertGraphQLCourseToRestCourse = (queryResponse: QueryResponse): DbCourse[] => {
-  return queryResponse.data.courses.map((course) => ({
+export const graphQLCourseToDbCourse = (queryResponse: GraphQLCourse): DbCourse => {
+  const course = queryResponse.data.courses[0];
+
+  return {
     courseCode: course.course_code,
     name: course.course_name,
     classes: course.classes.map((classItem) => ({
@@ -34,5 +36,5 @@ export const convertGraphQLCourseToRestCourse = (queryResponse: QueryResponse): 
         location: time.location,
       })),
     })),
-  }));
+  };
 };

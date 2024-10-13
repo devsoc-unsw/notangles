@@ -1,5 +1,3 @@
-// GraphQL interface
-
 interface Time {
   __typename: 'times';
   day: string;
@@ -28,7 +26,7 @@ interface CoursesData {
   courses: Course[];
 }
 
-export interface QueryResponse {
+export interface GraphQLCourse {
   data: CoursesData;
   loading: boolean;
   networkStatus: number;
