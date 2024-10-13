@@ -8,12 +8,18 @@ const statusMapping: Record<string, Status> = {
   'on hold': 'On Hold',
 };
 
-const getStatus = (status: string): Status => {
-  return statusMapping[status.toLowerCase()] || 'Open';
-};
-
-export const graphQLCourseToDbCourse = (queryResponse: GraphQLCourse): DbCourse => {
-  const course = queryResponse.data.courses[0];
+/**
+ * An adapter that formats a GraphQLCourse object to a DBCourse object
+ *
+ * @param graphQLCourse A GraphQLCourse object
+ * @return A DBCourse object
+ *
+ * @example
+ * const data = await client.query({query: GET_COURSE_INFO, variables: { courseCode, term }});
+ * const json: DbCourse = graphQLCourseToDbCourse(data);
+ */
+export const graphQLCourseToDbCourse = (graphQLCourse: GraphQLCourse): DbCourse => {
+  const course = graphQLCourse.data.courses[0];
 
   return {
     courseCode: course.course_code,
@@ -21,7 +27,7 @@ export const graphQLCourseToDbCourse = (queryResponse: GraphQLCourse): DbCourse 
     classes: course.classes.map((classItem) => ({
       section: classItem.section,
       activity: classItem.activity,
-      status: getStatus(classItem.status),
+      status: statusMapping[classItem.status.toLowerCase()] || 'Open',
       courseEnrolment: {
         enrolments: parseInt(classItem.course_enrolment.split('/')[0].trim()),
         capacity: parseInt(classItem.course_enrolment.split('/')[1].trim()),
