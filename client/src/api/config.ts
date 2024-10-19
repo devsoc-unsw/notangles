@@ -14,7 +14,6 @@ interface Config {
 }
 const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 const LOCAL = 'http://localhost:3001';
-const LIVE = 'https://timetable.devsoc.app';
 
 export const client = new ApolloClient({
   uri: HASURAGRES_GRAPHQL_API,
@@ -24,7 +23,5 @@ export const client = new ApolloClient({
 const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.DEV]: { timetable: `${LOCAL}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
   [Env.TEST]: { timetable: `${LOCAL}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
-  [Env.MOCK]: { timetable: `${LIVE}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
-  [Env.PROD]: { timetable: `${LIVE}/api`, auto: `/api/auto`, server: `/api` },
 });
 export const API_URL: Config = API_CONFIG[import.meta.env.VITE_APP_ENVIRONMENT || Env.DEV];
