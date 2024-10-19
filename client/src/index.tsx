@@ -13,6 +13,7 @@ import App from './App';
 import EventShareModal from './components/EventShareModal';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
+import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
@@ -25,13 +26,15 @@ const Root: React.FC = () => (
   <ApolloProvider client={client}>
     <AppContextProvider>
       <CourseContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<App />} path="/">
-              <Route path="/event/:encrypted" element={<EventShareModal />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<App />} path="/">
+                <Route path="/event/:encrypted" element={<EventShareModal />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </UserContextProvider>
       </CourseContextProvider>
     </AppContextProvider>
   </ApolloProvider>

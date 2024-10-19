@@ -14,8 +14,9 @@ import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
+import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding, lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -26,6 +27,7 @@ import {
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
+import { UserContext } from './context/UserContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -51,7 +53,7 @@ const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-left: ${leftContentPadding}px;
-  padding-right: ${contentPadding}px;
+  padding-right: ${rightContentPadding}px;
   transition:
     background 0.2s,
     color 0.2s;
@@ -131,6 +133,8 @@ const App: React.FC = () => {
     assignedColors,
     setAssignedColors,
   } = useContext(CourseContext);
+
+  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -601,8 +605,14 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Outlet />
-                <TimetableTabs />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                {groupsSidebarCollapsed ? (
+                  <>
+                    <TimetableTabs />
+                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  </>
+                ) : (
+                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
                 >

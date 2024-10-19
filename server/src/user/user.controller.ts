@@ -111,4 +111,32 @@ export class UserController {
       };
     });
   }
+
+  @Get('group/:userId')
+  getUserGroups(@Param('userId') userId: string) {
+    try {
+      return this.userService.getGroups(userId).then((groups) => {
+        return {
+          status: `Successsfully returned groups ${userId} is apart of`,
+          data: { groups },
+        };
+      });
+    } catch (e) {
+      return e;
+    }
+  }
+
+  @Get('all')
+  getAllUsers() {
+    try {
+      return this.userService.getAllUsers().then((data) => {
+        return {
+          status: 'Successsfully returned user profile',
+          data,
+        };
+      });
+    } catch (e) {
+      return e;
+    }
+  }
 }
