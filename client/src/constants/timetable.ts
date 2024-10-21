@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { addWeeks, isWithinInterval, parse, startOfWeek } from 'date-fns';
+import { isWithinInterval, parse } from 'date-fns';
 
 import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
@@ -8,16 +8,8 @@ import { TermDataMap } from '../interfaces/Periods';
 type Term = string;
 const SUPPORTED_TERMS = ['U1', 'T1', 'T2', 'T3'];
 
-const prevTermIdx = (currIdx: number) => {
-  return Math.max(0, --currIdx);
-};
-
 const nextTermIdx = (currIdx: number) => {
   return currIdx + 1 >= SUPPORTED_TERMS.length ? 0 : ++currIdx;
-};
-
-const getTermId = (currTerm: Term): number => {
-  return SUPPORTED_TERMS.findIndex((ct) => ct === currTerm);
 };
 
 const GET_CLASSES = gql`
@@ -39,12 +31,8 @@ interface TermDateDetails {
   endDate: Date;
 }
 
-// TODO: remove
-const TERM_INFO_MAP = new Map<string, TermDateDetails>();
-
 const parseTermOfferingPeriods = (termInfo: TermInfoFetch): TermDateDetails => {
   const [unParsedStartDate, unParsedEndDate] = termInfo.offering_period.split(' - ');
-  console.log(unParsedStartDate, unParsedEndDate);
   const startDate = parse(unParsedStartDate, 'dd/MM/yyyy', new Date());
   const endDate = parse(unParsedEndDate, 'dd/MM/yyyy', new Date());
   return { startDate, endDate };
@@ -59,15 +47,6 @@ const constructTermDetailsMap = async (): Promise<Map<string, TermDateDetails>> 
   });
 
   return termInfoMap;
-};
-
-const getDateOfNthWeekMondayInTerm = async (term: Term, week: number = 0): Promise<Date> => {
-  if (TERM_INFO_MAP.size === 0) {
-    await constructTermDetailsMap();
-  }
-  const currTermStr = TERM_INFO_MAP.get(term)!;
-  const nthMonday = startOfWeek(addWeeks(currTermStr.startDate, week), { weekStartsOn: 1 }); // 1 -> Monday
-  return nthMonday;
 };
 
 /**
@@ -86,10 +65,6 @@ const get_current_term = async (
     const termInfo = termInfoMap.get(currTermStr);
     if (!termInfo) continue;
     if (isWithinInterval(todaysDate, { start: termInfo.startDate, end: termInfo.endDate })) {
-      // const seventhMondayDate = await getDateOfNthWeekMondayInTerm(currTermStr, 7);
-      // if (isWithinInterval(todaysDate, { start: seventhMondayDate, end: termInfo.endDate })) {
-      //   return SUPPORTED_TERMS[nextTermIdx(currTermIndex)]; // Return Next term assuming it is Week 7 and classes have been updated.
-      // }
       return currTermStr;
     } else if (
       isWithinInterval(todaysDate, {
@@ -104,37 +79,7 @@ const get_current_term = async (
   return 'Invalid Term';
 };
 
-// TODO: remove
-// interface ClassCensusDateInfo {
-//   classes: ClassCensusDate[];
-// }
-// interface ClassCensusDate {
-//   census_date: string;
-//   term: string;
-//   offering_period: string;
-// }
-// export const constructTermDetailsMap = async () => {
-//   const { data } = await client.query<ClassCensusDateInfo>({ query: GET_CLASSES });
-
-//   const classes = data.classes;
-//   const termOfferingMap = new Map<string, Date[]>();
-//   if (classes) {
-//     classes.forEach((cls: { term: string; offering_period: string }) => {
-//       const [unParsedStartDate, unParsedEndDate] = cls.offering_period.split(' - ');
-//   const startDate = parse(unParsedStartDate, 'dd/MM/yyyy', new Date());
-//   const endDate = parse(unParsedEndDate, 'dd/MM/yyyy', new Date());
-//       if (cls.term in ['T1', 'T2', 'T3', 'U1']) {
-//         termOfferingMap.set(cls.term, [startDate, endDate]);
-//       }
-//     });
-//   }
-//   console.log(termOfferingMap);
-// };
-
-const REGULAR_TERM_STR_LEN = 2;
-
 const parseYear = (termDate: string) => {
-  console.log(termDate);
   const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
 
   const matched = termDate.match(regexp);
@@ -188,8 +133,6 @@ export const getAvailableTermDetails = async () => {
   try {
     const termMapInfo = await constructTermDetailsMap();
     const currTermId = await get_current_term(termMapInfo);
-    // TODO: maybe create a function to get the previous term - we need to figure out the logic for when exactly
-    // we 'release' the latest term data and then transition?!?!
     const prevTermId = SUPPORTED_TERMS[Math.max(SUPPORTED_TERMS.findIndex((term) => term == currTermId) - 1, 0)];
 
     firstDayOfTerm = termMapInfo.get(currTermId)?.startDate.toLocaleDateString().split('/').reverse().join('-')!;

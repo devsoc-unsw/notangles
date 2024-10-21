@@ -6,7 +6,6 @@ import { Group } from '../interfaces/Group';
 import NetworkError from '../interfaces/NetworkError';
 import { UserContextProviderProps } from '../interfaces/PropTypes';
 
-
 export const undefinedUser = {
   userID: '',
   firstname: '',

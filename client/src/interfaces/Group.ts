@@ -1,5 +1,5 @@
-import { User } from "../components/sidebar/UserAccount";
-import { TimetableData } from "./Periods";
+import { User } from '../components/sidebar/UserAccount';
+import { TimetableData } from './Periods';
 
 export enum Privacy {
   PRIVATE = 'PRIVATE',

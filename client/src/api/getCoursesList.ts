@@ -30,7 +30,6 @@ const GET_COURSE_LIST = gql`
   }
 `;
 
-// TODO: update when gql integration is successful
 /**
  * Fetches a list of course objects, where each course object contains
  * the course id, the course code, and course name

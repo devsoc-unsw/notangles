@@ -98,7 +98,7 @@ const sortUnique = (arr: number[]): number[] => {
  * current year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('COMP1511', true)
+ * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', true)
  */
 const getCourseInfo = async (
   term: string,

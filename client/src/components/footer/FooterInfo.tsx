@@ -52,7 +52,6 @@ const NotanglesFooterInfoContainer = styled('div')`
 `;
 
 const FooterInfo: React.FC = () => {
-  const { lastUpdated } = useContext(AppContext);
   const [currLogo, setCurrLogo] = useState(NotanglesLogo);
 
   /**
@@ -108,7 +107,6 @@ const FooterInfo: React.FC = () => {
           While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
           reliability.
         </BodyText>
-        {lastUpdated && <BodyText>Data last updated {getRelativeTime(lastUpdated)} ago.</BodyText>}
       </Grid>
     </Grid>
   );

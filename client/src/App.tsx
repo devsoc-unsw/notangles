@@ -115,7 +115,6 @@ const App: React.FC = () => {
     setTermsData,
     setTermNumber,
     setCoursesList,
-    setLastUpdated,
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
