@@ -16,6 +16,7 @@
     "style": "prettier --write 'src/**/*.{ts,tsx}' && eslint --fix 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@apollo/client": "3.11.8",
     "@date-io/date-fns": "3.0.0",
     "@emotion/react": "11.13.0",
     "@emotion/styled": "11.13.0",

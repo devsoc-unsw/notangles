@@ -1,43 +1,54 @@
+import { gql } from '@apollo/client';
+
+import { client } from '../api/config';
 import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/Courses';
 import NetworkError from '../interfaces/NetworkError';
-import timeoutPromise from '../utils/timeoutPromise';
-import { API_URL } from './config';
 
 const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
-    code: course.courseCode,
-    name: course.name,
+    code: course.course_code,
+    name: course.course_name,
     online: course.online,
     inPerson: course.inPerson,
     career: course.career,
     faculty: course.faculty,
   }));
 
+const GET_COURSE_LIST = gql`
+  query GetCoursesByTerm($term: String!) {
+    courses(where: { terms: { _ilike: $term } }) {
+      campus
+      career
+      faculty
+      modes
+      school
+      course_code
+      course_name
+      terms
+      uoc
+    }
+  }
+`;
+
 /**
  * Fetches a list of course objects, where each course object contains
  * the course id, the course code, and course name
  *
- * Expected response format: {lastUpdated: number, courses: [...]};
+ * Expected response format: {courses: [...]};
  *
- * @param year The year that the courses are offered in
  * @param term The term that the courses are offered in
- * @return A promise containing the list of course objects offered in the specified year and term
+ * @return A promise containing the list of course objects offered in the specified term
  *
  * @example
- * const coursesList = await getCoursesList('2020', 'T1')
+ * const coursesList = await getCoursesList('T1')
  */
-const getCoursesList = async (year: string, term: string): Promise<CoursesListWithDate> => {
-  const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
+const getCoursesList = async (term: string): Promise<CoursesListWithDate> => {
   try {
-    const data = await timeoutPromise(1000, fetch(`${baseURL}/courses/`));
-    const json = await data.json();
-    if (data.status === 400) {
-      throw new NetworkError('Internal server error');
-    }
+    const termWithWildcard = `%${term}%`;
+    const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term: termWithWildcard } });
 
     return {
-      lastUpdated: json.lastUpdated,
-      courses: toCoursesList(json.courses),
+      courses: toCoursesList(data.courses),
     };
   } catch (error) {
     throw new NetworkError('Could not connect to server');

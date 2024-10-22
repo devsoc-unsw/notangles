@@ -115,7 +115,6 @@ const App: React.FC = () => {
     setTermsData,
     setTermNumber,
     setCoursesList,
-    setLastUpdated,
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
@@ -204,9 +203,8 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses, lastUpdated } = await getCoursesList(year, term);
+      const { courses } = await getCoursesList(term);
       setCoursesList(courses);
-      setLastUpdated(lastUpdated);
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
@@ -294,7 +292,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
