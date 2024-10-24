@@ -8,7 +8,7 @@ export enum Env {
 }
 
 interface Config {
-  timetable: string;
+  timetable?: string;
   auto: string;
   server: string;
 }
@@ -23,5 +23,7 @@ export const client = new ApolloClient({
 const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.DEV]: { timetable: `${LOCAL}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
   [Env.TEST]: { timetable: `${LOCAL}/api`, auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
+  [Env.MOCK]: { auto: `${LOCAL}/api/auto`, server: `${LOCAL}/api` },
+  [Env.PROD]: { auto: `/api/auto`, server: `/api` },
 });
 export const API_URL: Config = API_CONFIG[import.meta.env.VITE_APP_ENVIRONMENT || Env.DEV];
