@@ -5,12 +5,11 @@ import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
+import Timetable from '../timetable/Timetable';
 import GroupInfo from './GroupInfo';
 
 const Container = styled('div')`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin-top: 80px;
 `;
 
 const Friends = () => {
@@ -31,8 +30,12 @@ const Friends = () => {
       return prev;
     });
   };
-
-  return <Container>{location.pathname === '/friends' && <GroupInfo />}</Container>;
+  return (
+    <Container>
+      {location.pathname === '/friends' && <GroupInfo />}
+      <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+    </Container>
+  );
 };
 
 export default Friends;

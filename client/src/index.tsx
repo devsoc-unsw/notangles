@@ -11,11 +11,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { client } from './api/config';
 import App from './App';
 import EventShareModal from './components/EventShareModal';
+import Friends from './components/friends/Friends';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
-import Friends from './components/friends/Friends';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,

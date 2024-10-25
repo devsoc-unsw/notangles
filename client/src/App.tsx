@@ -11,7 +11,6 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
-import GroupInfo from './components/friends/GroupInfo';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
@@ -48,7 +47,7 @@ const StyledApp = styled(Box)`
   height: 100%;
 `;
 
-const ContentWrapper = styled(Box)<{ marginTop: number }>`
+const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-left: ${leftContentPadding}px;
@@ -62,7 +61,6 @@ const ContentWrapper = styled(Box)<{ marginTop: number }>`
   flex-direction: row-reverse;
   justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
-  margin-top: ${({ marginTop }) => `${marginTop}px`};
 `;
 
 const Content = styled(Box)`
@@ -593,27 +591,32 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            {location.pathname === '/friends' && <GroupInfo />}
             <Sidebar />
-            <ContentWrapper marginTop={location.pathname === '/friends' ? 48 : 0}>
+            <ContentWrapper>
               <Content>
-                <Controls
-                  assignedColors={assignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
                 <Outlet />
-                <TimetableTabs />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Sponsors />
-                <Footer />
-                <Alerts />
+                {location.pathname === '/friends' ? (
+                  <></>
+                ) : (
+                  <>
+                    <Controls
+                      assignedColors={assignedColors}
+                      handleSelectClass={handleSelectClass}
+                      handleSelectCourse={handleSelectCourse}
+                      handleRemoveCourse={handleRemoveCourse}
+                    />
+                    <TimetableTabs />
+                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                    <ICSButton
+                      onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                    >
+                      save to calendar
+                    </ICSButton>
+                    <Sponsors />
+                    <Footer />
+                    <Alerts />
+                  </>
+                )}
               </Content>
             </ContentWrapper>
           </StyledApp>
