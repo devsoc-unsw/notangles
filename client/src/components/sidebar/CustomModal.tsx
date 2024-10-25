@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import React from 'react';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
+import { useNavigate } from 'react-router-dom';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -49,21 +50,28 @@ const CustomModal: React.FC<CustomModalProps> = ({
   description,
   content,
   collapsed,
-  isClickable,
   isSelected = false,
+  onNavigate,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const toggleIsOpen = () => {
-    if (isClickable) {
       setIsOpen(!isOpen);
+  };
+
+  const handleClick = () => {
+    if (onNavigate) {
+      navigate(onNavigate);
+    } else {
+      toggleIsOpen();
     }
   };
 
   return (
     <>
-      <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
-        <ShowModalButton color="inherit" onClick={toggleIsOpen} isSelected={isSelected}>
+      <Tooltip title={collapsed ? toolTipTitle : ''} placement="right">
+        <ShowModalButton color="inherit" onClick={handleClick} isSelected={isSelected}>
           {showIcon}
           <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>

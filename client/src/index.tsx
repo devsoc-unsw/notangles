@@ -15,6 +15,7 @@ import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
+import Friends from './components/friends/Friends';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
@@ -23,21 +24,20 @@ Sentry.init({
 });
 
 const Root: React.FC = () => (
-  <ApolloProvider client={client}>
-    <AppContextProvider>
-      <CourseContextProvider>
-        <UserContextProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<App />} path="/">
-                <Route path="/event/:encrypted" element={<EventShareModal />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </UserContextProvider>
-      </CourseContextProvider>
-    </AppContextProvider>
-  </ApolloProvider>
+  <AppContextProvider>
+    <CourseContextProvider>
+      <UserContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<App />} path="/">
+              <Route path="/event/:encrypted" element={<EventShareModal />} />
+            </Route>
+            <Route path="/friends" element={<Friends />} />
+          </Routes>
+        </BrowserRouter>
+      </UserContextProvider>
+    </CourseContextProvider>
+  </AppContextProvider>
 );
 
 const root = createRoot(document.getElementById('root')!);
