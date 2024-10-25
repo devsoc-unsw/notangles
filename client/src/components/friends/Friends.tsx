@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { UserContext } from '../../context/UserContext';
 import { ClassData } from '../../interfaces/Periods';
 import Timetable from '../timetable/Timetable';
 import ActivityBar from './ActivityBar';
@@ -16,6 +17,7 @@ const Container = styled('div')`
 const Friends = () => {
   const { assignedColors, setSelectedClasses } = useContext(CourseContext);
   const { setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { groups } = useContext(UserContext);
 
   const handleSelectClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
@@ -34,7 +36,7 @@ const Friends = () => {
   return (
     <Container>
       <GroupInfoNavbar />
-      <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+      {groups.length > 0 && <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />}
     </Container>
   );
 };

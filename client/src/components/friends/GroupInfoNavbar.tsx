@@ -6,6 +6,7 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from '../../context/UserContext';
 import UserIcon from '../user/UserIcon';
 import ActivityBar from './ActivityBar';
+import { Group } from '../../interfaces/Group';
 
 const Container = styled('div')`
   position: fixed;
@@ -54,23 +55,34 @@ const GroupDescription = styled('div')`
 
 const GroupInfoNavbar = () => {
   const { groups, selectedGroupIndex } = useContext(UserContext);
-  if (groups.length === 0) return <></>;
-  const group = groups[selectedGroupIndex];
+
+  const group = groups.length !== 0 ? groups[selectedGroupIndex] : undefined;
 
   const [showFriendsActivities, setShowFriendsActivities] = useState(false);
 
   return (
     <>
       <Container>
-        <MemberText>
-          <GroupName>{group.name}</GroupName>
-          <GroupDescription>{group.description}</GroupDescription>
-        </MemberText>
-        <Members>
-          {[...group.groupAdmins, ...group.members].map((member, i) => (
-            <UserIcon key={i} url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
-          ))}
-        </Members>
+        {group ? (
+          <>
+            <MemberText>
+              <GroupName>{group.name}</GroupName>
+              <GroupDescription>{group.description}</GroupDescription>
+            </MemberText>
+            <Members>
+              {[...group.groupAdmins, ...group.members].map((member, i) => (
+                <UserIcon key={i} url={member.profileURL} tooltipTitle={`${member.firstname} ${member.lastname}`} />
+              ))}
+            </Members>
+          </>
+        ) : (
+          <>
+            <MemberText>
+              <GroupName>You are currently not apart of any groups.</GroupName>
+              <GroupDescription>To create a group, click '+' on the left, blue side bar.</GroupDescription>
+            </MemberText>
+          </>
+        )}
         <FriendsActivityButtonContainer>
           <Tooltip title="Friend's Activity">
             <IconButton
