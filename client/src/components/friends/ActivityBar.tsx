@@ -8,7 +8,7 @@ const ActivityBarContainer = styled('div')`
   top: 64px;
   right: 0;
   padding: 12px 32px;
-  z-index: 1000;
+  z-index: 999;
   background: white;
   height: 100vh;
   display: flex;
