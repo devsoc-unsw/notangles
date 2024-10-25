@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
@@ -48,7 +48,7 @@ const StyledApp = styled(Box)`
   height: 100%;
 `;
 
-const ContentWrapper = styled(Box)`
+const ContentWrapper = styled(Box)<{ marginTop: number }>`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-left: ${leftContentPadding}px;
@@ -62,6 +62,7 @@ const ContentWrapper = styled(Box)`
   flex-direction: row-reverse;
   justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
+  margin-top: ${({ marginTop }) => `${marginTop}px`};
 `;
 
 const Content = styled(Box)`
@@ -87,6 +88,7 @@ const ICSButton = styled(Button)`
 `;
 
 const App: React.FC = () => {
+  const location = useLocation();
   const {
     is12HourMode,
     isDarkMode,
@@ -593,7 +595,7 @@ const App: React.FC = () => {
           <StyledApp>
             {location.pathname === '/friends' && <GroupInfo />}
             <Sidebar />
-            <ContentWrapper style={{marginTop: 48}}>
+            <ContentWrapper marginTop={location.pathname === '/friends' ? 48 : 0}>
               <Content>
                 <Controls
                   assignedColors={assignedColors}

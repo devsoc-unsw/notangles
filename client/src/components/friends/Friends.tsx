@@ -5,6 +5,7 @@ import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
+import GroupInfo from './GroupInfo';
 
 const Container = styled('div')`
   display: flex;
@@ -31,7 +32,7 @@ const Friends = () => {
     });
   };
 
-  return <Container></Container>;
+  return <Container>{location.pathname === '/friends' && <GroupInfo />}</Container>;
 };
 
 export default Friends;
