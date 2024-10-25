@@ -2,6 +2,7 @@ import { ContentPaste } from '@mui/icons-material';
 import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import {
   classMargin,
@@ -32,6 +33,7 @@ const BaseCell = styled('div', {
   yTo?: number;
   isEndX?: boolean;
   isEndY?: boolean;
+  locationPathname: string;
   onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 }>`
   grid-column: ${({ x }) => x};
@@ -49,6 +51,8 @@ const BaseCell = styled('div', {
 
   border-bottom-left-radius: ${({ theme, x, isEndY }) => (x === 2 && isEndY ? theme.shape.borderRadius : 0)}px;
   border-top-right-radius: ${({ theme, isEndX, y }) => (isEndX && y === 1 ? theme.shape.borderRadius : 0)}px;
+  border-top-left-radius: ${({ theme, x, y, locationPathname }) =>
+    locationPathname !== '/' && x === 2 && y === 1 ? theme.shape.borderRadius : 0}px;
   border-bottom-right-radius: ${({ theme, isEndX, isEndY }) => (isEndX && isEndY ? theme.shape.borderRadius : 0)}px;
 `;
 
@@ -162,6 +166,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<HTMLDivElement | HTMLButtonElement | null>(null);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
+  const location = useLocation();
 
   const {
     is12HourMode,
@@ -190,19 +195,19 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     isConvertToLocalTimezone,
   );
   const hourCells = hours.map((hour, i) => (
-    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>
+    <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode} locationPathname={location.pathname}>
       {hour}
     </HourCell>
   ));
 
   const dayCells = days.map((day, i) => (
-    <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1}>
+    <DayCell key={day} x={i + 2} y={1} isEndX={i === days.length - 1} locationPathname={location.pathname}>
       {day}
     </DayCell>
   ));
 
   dayCells.push(
-    <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX>
+    <InventoryCell key="unscheduled" x={days.length + 3} y={1} isEndX locationPathname={location.pathname}>
       Unscheduled
     </InventoryCell>,
   );
@@ -259,6 +264,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
         y={y + 2}
         isEndX={x === days.length - 1}
         isEndY={y === hours.length - 1}
+        locationPathname={location.pathname}
         id={x === 0 && y === 0 ? 'origin' : undefined}
         onDoubleClick={(event) => {
           handleOpen(event);
@@ -275,11 +281,13 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     )),
   );
 
-  otherCells.push(<InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY />);
+  otherCells.push(
+    <InventoryCell key={-1} x={days.length + 3} y={2} yTo={-1} isEndX isEndY locationPathname={location.pathname} />,
+  );
 
   return (
     <>
-      <ToggleCell key={0} x={1} y={1}>
+      <ToggleCell key={0} x={1} y={1} locationPathname={location.pathname}>
         {
           // Invisible guide for the column width for
           // consistency between 24 and 12 hour time.
