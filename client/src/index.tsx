@@ -31,8 +31,8 @@ const Root: React.FC = () => (
           <Routes>
             <Route element={<App />} path="/">
               <Route path="/event/:encrypted" element={<EventShareModal />} />
+              <Route path="/friends" element={<Friends />} />
             </Route>
-            <Route path="/friends" element={<Friends />} />
           </Routes>
         </BrowserRouter>
       </UserContextProvider>

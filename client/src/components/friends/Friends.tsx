@@ -1,89 +1,37 @@
-import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { styled } from '@mui/system';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import styled from '@emotion/styled';
+import React, { useContext } from 'react';
 
-import { contentPadding, darkTheme, leftContentPadding, lightTheme } from '../../constants/theme';
+import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import Alerts from '../Alerts';
-import Controls from '../controls/Controls';
-import Footer from '../footer/Footer';
-import Sidebar from '../sidebar/Sidebar';
-import Sponsors from '../Sponsors';
-import Timetable from '../timetable/Timetable';
-import { TimetableTabs } from '../timetableTabs/TimetableTabs';
-import ActivityBar from './ActivityBar';
-import FriendsTimetable from './FriendsTimetable';
+import { ClassData } from '../../interfaces/Periods';
 
-const StyledApp = styled(Box)`
-  height: 100%;
-  width: 100%;
-`;
-
-const ContentWrapper = styled(Box)`
-  text-align: center;
-  padding-top: ${contentPadding}px;
-  padding-left: ${leftContentPadding}px;
-//   padding-right: ${contentPadding}px;
-  transition:
-    background 0.2s,
-    color 0.2s;
-  min-height: 50vh;
-  box-sizing: border-box;
+const Container = styled('div')`
   display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-  color: ${({ theme }) => theme.palette.text.primary};
+  flex-direction: column;
+  gap: 12px;
 `;
 
-const Content = styled(Box)`
-  width: 1400px;
-  max-width: 100%;
-  transition: width 0.2s;
-  display: grid;
-  grid-template-rows: min-content min-content auto;
-  grid-template-columns: auto;
-  text-align: center;
-`;
+const Friends = () => {
+  const { assignedColors, setSelectedClasses } = useContext(CourseContext);
+  const { setAlertMsg, setErrorVisibility } = useContext(AppContext);
 
-const Friends: React.FC = () => {
-  const { isDarkMode } = useContext(AppContext);
-  const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
-    createdEvents,
-    setCreatedEvents,
-    assignedColors,
-    setAssignedColors,
-  } = useContext(CourseContext);
-  const theme = isDarkMode ? darkTheme : lightTheme;
+  const handleSelectClass = (classData: ClassData) => {
+    setSelectedClasses((prev) => {
+      prev = { ...prev };
 
-  return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
-          {/* <GlobalStyles styles={globalStyle} /> */}
-          <StyledApp>
-            <Sidebar />
-            <ContentWrapper>
-              <Content>
-                <FriendsTimetable />
-                <Sponsors />
-                <Footer />
-                <Alerts />
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        {/* </LocalizationProvider> */}
-      </ThemeProvider>
-    </StyledEngineProvider>
-  );
+      try {
+        prev[classData.courseCode][classData.activity] = classData;
+      } catch (err) {
+        setAlertMsg(unknownErrorMessage);
+        setErrorVisibility(true);
+      }
+
+      return prev;
+    });
+  };
+
+  return <Container></Container>;
 };
 
 export default Friends;

@@ -11,6 +11,7 @@ import getCoursesList from './api/getCoursesList';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
+import GroupInfo from './components/friends/GroupInfo';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
@@ -590,8 +591,9 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
+            {location.pathname === '/friends' && <GroupInfo />}
             <Sidebar />
-            <ContentWrapper>
+            <ContentWrapper style={{marginTop: 48}}>
               <Content>
                 <Controls
                   assignedColors={assignedColors}
