@@ -1,17 +1,6 @@
 import React from 'react';
 import { styled } from '@mui/system';
 
-const FriendsActivityTab = styled('div')`
-  display: flex;
-  flex-direction: column;
-  max-width: 260px;
-  min-height: 80px;
-  border-radius: 8px;
-  background-color: #f2f3f5;
-  padding: 16px;
-  gap: 12px;
-`;
-
 const UserNameText = styled('p')`
   font-weight: 600;
   font-size: 1rem;
@@ -59,9 +48,9 @@ const UserProfile = styled('div')`
   background-color: white;
 `;
 
-const FriendsActivity: React.FC = ({}) => {
+const FriendsActivity = () => {
   return (
-    <FriendsActivityTab>
+    <div>
       <UserDetailsContainer>
         <UserProfile />
         <TextContainer>
@@ -73,7 +62,7 @@ const FriendsActivity: React.FC = ({}) => {
         <Location>COMP1531 at TablaK17G7</Location>
         <ClassTime>14:00 - 16:00</ClassTime>
       </ClassLocationContainer>
-    </FriendsActivityTab>
+    </div>
   );
 };
 

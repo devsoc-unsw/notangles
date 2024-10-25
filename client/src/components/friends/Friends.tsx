@@ -6,7 +6,8 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { ClassData } from '../../interfaces/Periods';
 import Timetable from '../timetable/Timetable';
-import GroupInfo from './GroupInfo';
+import ActivityBar from './ActivityBar';
+import GroupInfoNavbar from './GroupInfoNavbar';
 
 const Container = styled('div')`
   margin-top: 80px;
@@ -32,7 +33,7 @@ const Friends = () => {
   };
   return (
     <Container>
-      {location.pathname === '/friends' && <GroupInfo />}
+      <GroupInfoNavbar />
       <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
     </Container>
   );

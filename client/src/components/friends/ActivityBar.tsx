@@ -4,14 +4,13 @@ import React from 'react';
 import FriendsActivity from './FriendsActivity';
 
 const ActivityBarContainer = styled('div')`
-  display: flex;
-  flex-direction: column;
-  width: 340px;
+  position: fixed;
+  top: 64px;
+  right: 0;
+  padding: 12px 64px;
+  z-index: 1000;
+  background: white;
   height: 100vh;
-  border-left: 1px solid #eee;
-  padding: 30px;
-  gap: 20px;
-  align-items: flex-start;
 `;
 
 const StyledTitle = styled('p')`
