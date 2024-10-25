@@ -1,6 +1,21 @@
 import React from 'react';
 import { styled } from '@mui/system';
 
+const Container = styled('div')`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const FriendContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background-color: #f2f3f5;
+  padding: 16px;
+  gap: 12px;
+`;
+
 const UserNameText = styled('p')`
   font-weight: 600;
   font-size: 1rem;
@@ -48,21 +63,36 @@ const UserProfile = styled('div')`
   background-color: white;
 `;
 
-const FriendsActivity = () => {
+const FriendsActivity: React.FC = ({}) => {
   return (
-    <div>
-      <UserDetailsContainer>
-        <UserProfile />
-        <TextContainer>
-          <UserNameText>Rayian Ahmed</UserNameText>
-          <UserActivity>Currently teaching</UserActivity>
-        </TextContainer>
-      </UserDetailsContainer>
-      <ClassLocationContainer>
-        <Location>COMP1531 at TablaK17G7</Location>
-        <ClassTime>14:00 - 16:00</ClassTime>
-      </ClassLocationContainer>
-    </div>
+    <Container>
+      <FriendContainer>
+        <UserDetailsContainer>
+          <UserProfile />
+          <TextContainer>
+            <UserNameText>Rayian Ahmed</UserNameText>
+            <UserActivity>Currently teaching</UserActivity>
+          </TextContainer>
+        </UserDetailsContainer>
+        <ClassLocationContainer>
+          <Location>COMP1531 at TablaK17G7</Location>
+          <ClassTime>14:00 - 16:00</ClassTime>
+        </ClassLocationContainer>
+      </FriendContainer>
+      <FriendContainer>
+        <UserDetailsContainer>
+          <UserProfile />
+          <TextContainer>
+            <UserNameText>Rayian Ahmed</UserNameText>
+            <UserActivity>Currently teaching</UserActivity>
+          </TextContainer>
+        </UserDetailsContainer>
+        <ClassLocationContainer>
+          <Location>COMP1531 at TablaK17G7</Location>
+          <ClassTime>14:00 - 16:00</ClassTime>
+        </ClassLocationContainer>
+      </FriendContainer>
+    </Container>
   );
 };
 

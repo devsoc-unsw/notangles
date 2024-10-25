@@ -7,10 +7,13 @@ const ActivityBarContainer = styled('div')`
   position: fixed;
   top: 64px;
   right: 0;
-  padding: 12px 64px;
+  padding: 12px 32px;
   z-index: 1000;
   background: white;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 const StyledTitle = styled('p')`
