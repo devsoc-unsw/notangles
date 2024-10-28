@@ -11,10 +11,10 @@ const FeedbackButton: React.FC<ButtonProps> = ({text, link}) => (
 
 const FeedbackSection = () => {
   return (
-    <div className="flex justify-center items-center p-30 w-full h-[450px]">
-      <div className="flex-col justify-center text-center pt-20 pb-20 text-black pr-20 pl-20">
-        <p className="text-5xl font-semibold mb-20">Interested in Notangles?</p>
-        <p className="">If you're a CSE student with a keen interest in Notangles and looking 
+    <div className="flex justify-center items-center mt-60 p-30 w-full h-[450px]">
+      <div className="flex-col justify-center text-center pt-20 max-w-[1500px] pb-20 text-black pr-20 pl-20">
+        <p className="text-5xl font-semibold mb-10">Interested in Notangles?</p>
+        <p className="text-xl">If you're a CSE student with a keen interest in Notangles and looking 
           to get involved, keep an eye out for our recruitment announcements on DevSoc's socials.
           Otherwise, you can also contribute by suggesting cool new features, report any bugs, or even
           make a pull request on the Notangles repo.

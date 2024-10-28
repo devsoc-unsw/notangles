@@ -12,6 +12,10 @@ module.exports = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        'infinite-scroll': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-100%)' },
+        },
         aurora: {
           from: {
             backgroundPosition: "50% 50%, 50% 50%",
@@ -24,6 +28,7 @@ module.exports = {
       animation: {
         updown: 'updown 1.3s ease-in-out infinite',
         aurora: 'aurora 60s linear infinite',
+        'infinite-scroll': 'infinite-scroll 25s linear infinite',
       },
     },
   },

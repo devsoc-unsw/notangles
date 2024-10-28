@@ -2,7 +2,7 @@ import DevSocLogo from '../../assets/devsoc_white.svg'
 
 const Footer = () => {
   return (
-    <div className="flex justify-center items-center w-full h-[250px] bg-blue-500">
+    <div className="relative bottom-0 flex justify-center items-center w-full h-[250px] bg-blue-500">
       <div className="flex w-5/6 h-4/5 p-[10px] space-x-3">
         <div className="flex-col w-[670px] p-[5px]">
         <img src={DevSocLogo} alt="Devsoc Logo" />

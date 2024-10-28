@@ -10,7 +10,7 @@ interface FeatureItemProps {
 }
 
 const FeatureItem: React.FC<FeatureItemProps> = ({ number, title, description, gif }) => (
-  <div className="w-full h-[650px] flex">
+  <div className="w-full h-screen snap-center min-h-screen flex">
     <div className="bg-blue-500 w-1/2 flex flex-col items-center justify-center">
       <div className="font-extrabold w-3/4 text-9xl">
         <p>{number}</p>
@@ -23,7 +23,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ number, title, description, g
       </div>
     </div>
     <div className="w-1/2 flex justify-center items-center">
-      <div className="w-1/2 bg-blue-50 rounded-xl flex justify-center items-center">
+      <div className="w-1/2 bg-white rounded-xl flex justify-center items-center">
         <img src={gif} className="w-11/12" />
       </div>
     </div>
@@ -54,8 +54,7 @@ const ScrollingFeaturesSection = () => {
 
   return (
     <div className="flex flex-col justify-center">
-      <p className="text-5xl mb-[60px] text-center font-semibold">How it Works</p>
-      <div className="h-[1950px] flex-col text-blue-50">
+      <div className="flex-col text-blue-50">
         {features.map((feature, index) => (
           <FeatureItem key={index} {...feature} />
         ))}

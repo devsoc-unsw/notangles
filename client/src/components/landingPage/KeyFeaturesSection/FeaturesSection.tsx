@@ -25,7 +25,6 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({ bgCol, textCol, lineCol, ti
   </div>
 );
 
-
 const FeaturesSection = () => {
   const features = [
     {
@@ -54,14 +53,17 @@ const FeaturesSection = () => {
     }
   ];
   return (
-    <div className="flex justify-center items-center min-w-full min-h-[300px] mt-[150px] mb-[100px]">
+    <div className="relative flex justify-center items-center min-w-full min-h-[300px] mt-[150px] mb-[100px]">
+      {/* Background blob image */}
+      <img src={blobImage} className="absolute w-[1000px] top-28 z-0" />
+      
+      {/* Feature Content */}
       <div className="flex-col justify-center items-between text-5xl w-[800px] font-semibold text-neutral-50">
         <p className="text-center text-black mb-[120px]">Introducing our Features</p>
-        <div className="flex items-center justify-around min-h-40 mt-16 mb-[80px] gap-[30px]" >
-        {features.map((feature, index) => (
-          <FeatureBlock key={index} {...feature}/>
-        ))}
-        <img src={blobImage} className="absolute w-[1000px] mt-[50px]" />
+        <div className="flex items-center justify-around min-h-40 mt-16 mb-[80px] gap-[30px]">
+          {features.map((feature, index) => (
+            <FeatureBlock key={index} {...feature}/>
+          ))}
         </div>
       </div>
     </div>
