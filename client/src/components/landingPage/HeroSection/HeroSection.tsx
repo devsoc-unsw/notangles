@@ -3,6 +3,11 @@ import notangles from '../../../assets/notangles_1.png';
 import { FlipWords } from '../flip-words';
 // import { useNavigate } from 'react-router-dom';
 
+const handleStartClick = () => {
+  localStorage.setItem('visited', 'true');
+  window.location.href = '/';
+};
+
 const HeroSection = () => {
   const words = ['plan', 'create', 'organise', 'optimise', 'design'];
 
@@ -21,7 +26,7 @@ const HeroSection = () => {
           <div className='flex-col justify-center z-10 items-center text-7xl font-normal w-[800px]'>
             <p>Intuitively<FlipWords words={words} duration={4000} className='text-[#0070f3]' /> <br />the perfect UNSW timetable.</p>
             <p className='text-3xl mt-4 font-sans'>Drag and drop your university classes <br /> and events to prepare for a term.</p>
-            <button className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5 ml-4" onClick={event => window.location.href='/'}>
+            <button className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5 ml-4" onClick={handleStartClick}>
             {/*TODO: Really bad redirect practise fix later please.*/}
               <p className='pr-1 ml-2 text-3xl font-medium'>Start</p>
               <NavigateNext fontSize='large' />

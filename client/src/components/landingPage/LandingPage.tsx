@@ -1,6 +1,6 @@
 import FeedbackSection from "./FeedbackSection";
 import Footer from "./Footer";
-import HeroSection from "./HeroSection/heroSection";
+import HeroSection from "./HeroSection/HeroSection";
 import notangles from '../../assets/notangles_1.png';
 import FeaturesSection from "./KeyFeaturesSection/FeaturesSection";
 import ScrollingFeaturesSection from "./ScrollingFeaturesSection";
