@@ -29,7 +29,13 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
     const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
     Object.entries(activities).forEach(([activity, classData]) => {
-      newActivityCopy[activity] = classData !== null ? { ...classData } : null;
+      if (classData !== null) {
+        newActivityCopy[activity] = { ...classData };
+        newActivityCopy[activity].id = uuidv4();
+      } else {
+        newActivityCopy[activity] = null;
+      }
+      // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
     newClasses[courseCode] = { ...newActivityCopy };
   });
