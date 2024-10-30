@@ -26,6 +26,7 @@ import {
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
+import { UserContext } from './context/UserContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -41,6 +42,7 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
@@ -132,6 +134,8 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
+  const { user, setUser } = useContext(UserContext);
+
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
   /**
@@ -179,12 +183,12 @@ const App: React.FC = () => {
         ...{
           [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
             ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(),
+            : createDefaultTimetable(user.userID),
         },
         ...{
           [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
             ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(),
+            : createDefaultTimetable(user.userID),
         },
       };
 
@@ -289,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -426,37 +430,75 @@ const App: React.FC = () => {
     updateTimetableEvents();
   }, [year, isConvertToLocalTimezone]);
 
-  // The following three useUpdateEffects update local storage whenever a change is made to the timetable
+  const syncTimetables = () => {
+    if (!user.userID) {
+      console.log('Cannot sync: user is not logged in');
+      return;
+    }
+
+    runSync(user, setUser, displayTimetables, setDisplayTimetables);
+  };
+
+  // Updates local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
-    const newCourseData = courseData;
-    storage.set('courseData', newCourseData);
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
-  }, [selectedCourses]);
-
-  useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
-  }, [selectedClasses]);
-
-  useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
-  }, [createdEvents]);
-
-  useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
-    storage.set('timetables', displayTimetables);
-    setDisplayTimetables(displayTimetables);
-  }, [assignedColors]);
 
-  // Update storage when dragging timetables
+    storage.set('courseData', courseData);
+    storage.set('timetables', displayTimetables);
+
+    setDisplayTimetables(displayTimetables);
+    syncTimetables();
+  }, [selectedCourses, selectedClasses, createdEvents, assignedColors]);
+
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
+    syncTimetables();
   }, [displayTimetables]);
+
+  // TODO remove below if above useEffect is okay
+  // The following three useUpdateEffects update local storage whenever a change is made to the timetable
+  // useUpdateEffect(() => {
+  //   displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
+  //   const newCourseData = courseData;
+  //   storage.set('courseData', newCourseData);
+
+  //   storage.set('timetables', displayTimetables);
+  //   setDisplayTimetables(displayTimetables);
+  //   syncTimetables();
+  // }, [selectedCourses]);
+
+  // useUpdateEffect(() => {
+  //   displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
+
+  //   storage.set('timetables', displayTimetables);
+  //   setDisplayTimetables(displayTimetables);
+  //   syncTimetables();
+  // }, [selectedClasses]);
+
+  // useUpdateEffect(() => {
+  //   displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
+
+  //   storage.set('timetables', displayTimetables);
+  //   setDisplayTimetables(displayTimetables);
+  //   syncTimetables();
+  // }, [createdEvents]);
+
+  // useUpdateEffect(() => {
+  //   displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
+
+  //   storage.set('timetables', displayTimetables);
+  //   setDisplayTimetables(displayTimetables);
+  //   syncTimetables();
+  // }, [assignedColors]);
+
+  // // Update storage when dragging timetables
+  // useUpdateEffect(() => {
+  //   storage.set('timetables', displayTimetables);
+  //   syncTimetables();
+  // }, [displayTimetables]);
 
   /**
    * Get the latest day of the week a course has classes on

@@ -1,33 +1,10 @@
-import { gql } from '@apollo/client';
-
-import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
-import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
-
-const GET_COURSE_INFO = gql`
-  query GetCourseInfo($courseCode: String!, $term: String!) {
-    courses(where: { course_code: { _eq: $courseCode } }) {
-      course_code
-      course_name
-      classes(where: { term: { _eq: $term }, activity: { _neq: "Course Enrolment" } }) {
-        activity
-        status
-        course_enrolment
-        section
-        times {
-          day
-          time
-          weeks
-          location
-        }
-      }
-    }
-  }
-`;
+import storage from '../utils/storage';
+import timeoutPromise from '../utils/timeoutPromise';
+import { API_URL } from './config';
 
 /**
  * Converts a string representation of what weeks a class runs to an array
@@ -91,27 +68,39 @@ const sortUnique = (arr: number[]): number[] => {
 /**
  * Fetches the information of a specified course
  *
+ * @param year The year that the course is offered in
  * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
  * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
  * @return A promise containing the information of the course that is offered in the
- * current year and term
+ * specified year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', true)
+ * const selectedCourseClasses = await getCourseInfo('2019', 'T1', 'COMP1511')
  */
 const getCourseInfo = async (
+  year: string,
   term: string,
   courseCode: CourseCode,
   isConvertToLocalTimezone: boolean,
 ): Promise<CourseData> => {
+  const baseURL = `${API_URL.timetable}/terms/${year}-${term}`;
+  const COURSE_API_TIMEOUT = 2000;
   try {
-    const data: GraphQLCourse = await client.query({
-      query: GET_COURSE_INFO,
-      variables: { courseCode, term },
-    });
-    const json: DbCourse = graphQLCourseToDbCourse(data);
+    const data = await timeoutPromise(COURSE_API_TIMEOUT, fetch(`${baseURL}/courses/${courseCode}/`));
+    // Remove any leftover courses from localStorage if they are not offered in the current term
+    // which is why a 400 error is returned
+    if (data.status === 400) {
+      const selectedCourses = storage.get('timetables')[term][0].selectedCourses;
+      if (selectedCourses.includes(courseCode)) {
+        delete selectedCourses[courseCode];
+        storage.set(`timetables[${term}][0].selectedCourses`, selectedCourses);
+      } else {
+        throw new NetworkError('Internal server error');
+      }
+    }
 
+    const json: DbCourse = await data.json();
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.
@@ -172,7 +161,7 @@ const getCourseInfo = async (
 
     if (!json) throw new NetworkError('Internal server error');
 
-    return dbCourseToCourseData(json, isConvertToLocalTimezone);
+    return dbCourseToCourseData(json, isConvertToLocalTimezone, year);
   } catch (error) {
     console.log(error);
     throw new NetworkError('Could not connect to server');

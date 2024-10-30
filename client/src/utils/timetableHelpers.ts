@@ -1,5 +1,7 @@
+import { useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { UserContext } from '../context/UserContext';
 import {
   Action,
   Activity,
@@ -11,6 +13,7 @@ import {
   TimetableData,
 } from '../interfaces/Periods';
 import { createEventObj } from './createEvent';
+import { syncAddTimetable } from './syncTimetables';
 
 export type TimetableActions = Record<string, Action[]>;
 export type ActionsPointer = Record<string, number>;
@@ -26,7 +29,13 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
     const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
     Object.entries(activities).forEach(([activity, classData]) => {
-      newActivityCopy[activity] = classData !== null ? { ...classData } : null;
+      if (classData !== null) {
+        newActivityCopy[activity] = { ...classData };
+        newActivityCopy[activity].id = uuidv4();
+      } else {
+        newActivityCopy[activity] = null;
+      }
+      // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
     newClasses[courseCode] = { ...newActivityCopy };
   });
@@ -139,17 +148,19 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (): TimetableData[] => {
-  return [
-    {
-      name: 'My timetable',
-      id: uuidv4(),
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-      assignedColors: {},
-    },
-  ];
+const createDefaultTimetable = (userID: string | undefined): TimetableData[] => {
+  const defaultTimetable = {
+    name: 'My timetable',
+    id: uuidv4(),
+    selectedCourses: [],
+    selectedClasses: {},
+    createdEvents: {},
+    assignedColors: {},
+  };
+
+  console.log('create default timetbale', userID);
+
+  return [defaultTimetable];
 };
 
 export {
