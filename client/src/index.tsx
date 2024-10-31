@@ -23,48 +23,30 @@ Sentry.init({
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
-<<<<<<< HEAD
 const Root: React.FC = () => {
-  const hasVisited = localStorage.getItem("visited");
-  console.log(hasVisited)
+  const hasVisited = localStorage.getItem('visited');
+  console.log(hasVisited);
 
   return (
-    <AppContextProvider>
-      <CourseContextProvider>
-        <BrowserRouter>
-          <Routes>
-            {hasVisited ? (
-              <Route element={<App />} path="/">
-                <Route path="/event/:encrypted" element={<EventShareModal />} />
-              </Route>
-            ) : (
-              <Route element={<LandingPage />} path="/" />
-            )}
-          </Routes>
-        </BrowserRouter>
-      </CourseContextProvider>
-    </AppContextProvider>
-  );
-};
-=======
-const Root: React.FC = () => (
-  <ApolloProvider client={client}>
-    <AppContextProvider>
-      <CourseContextProvider>
-        <UserContextProvider>
+    <ApolloProvider client={client}>
+      <AppContextProvider>
+        <CourseContextProvider>
           <BrowserRouter>
             <Routes>
-              <Route element={<App />} path="/">
-                <Route path="/event/:encrypted" element={<EventShareModal />} />
-              </Route>
+              {hasVisited ? (
+                <Route element={<App />} path="/">
+                  <Route path="/event/:encrypted" element={<EventShareModal />} />
+                </Route>
+              ) : (
+                <Route element={<LandingPage />} path="/" />
+              )}
             </Routes>
           </BrowserRouter>
-        </UserContextProvider>
-      </CourseContextProvider>
-    </AppContextProvider>
-  </ApolloProvider>
-);
->>>>>>> dev
+        </CourseContextProvider>
+      </AppContextProvider>
+    </ApolloProvider>
+  );
+};
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<Root />);
