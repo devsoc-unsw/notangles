@@ -8,7 +8,7 @@ const Footer = () => {
         <img src={DevSocLogo} alt="Devsoc Logo" />
         <p className="text-white text-sm object-bottom">© 2024 — UNSW Software Development Society</p>
         </div>
-        <div className="p-[10px]">
+        <div className="p-[10px] hidden sm:flex">
           <p className="text-white">
           DevSoc is the UNSW Software Development Society. We do not represent the School, Faculty, or University. 
           This website seeks to be a centralised platform for students looking for employment opportunities, 
