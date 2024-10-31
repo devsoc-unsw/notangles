@@ -13,7 +13,7 @@ interface FeatureBlockProps {
 };
 
 const FeatureBlock: React.FC<FeatureBlockProps> = ({ bgCol, textCol, lineCol, title, desc, icon }) => (
-  <div className="transition duration-200 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg z-10">
+  <div className="transition duration-200 hover:scale-105 bg-white w-[250px] h-[250px] py-[25px] px-[25px] rounded-xl hover:drop-shadow-2xl shadow-lg z-10">
     <div className={`flex justify-center rounded-[10px] ${bgCol} align-center h-[65px] w-[65px]`}>
       <img src={icon} className="object-contain" width={50} height={50} />
     </div>
@@ -58,9 +58,9 @@ const FeaturesSection = () => {
       <img src={blobImage} className="absolute w-[1000px] z-0" />
       
       {/* Feature Content */}
-      <div className="flex-col justify-center items-between text-2xl md:text-4xl h-[500px] w-[800px] font-semibold text-neutral-50">
+      <div className="flex-col justify-center items-between text-2xl md:text-4xl h-[500px] w-[800px] font-semibold text-neutral-50 mt-[40px]">
         <p className="text-center text-black">Introducing our Features</p>
-        <div className="flex flex-col md:flex-row items-center justify-around min-h-40 mt-[70px] mb-[40px] gap-[30px]">
+        <div className="flex flex-col md:flex-row items-center justify-around min-h-40 mt-[50px] mb-[40px] gap-[30px]">
           {features.map((feature, index) => (
             <FeatureBlock key={index} {...feature}/>
           ))}
