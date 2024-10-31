@@ -6,7 +6,7 @@ interface ButtonProps {
 const FeedbackButton: React.FC<ButtonProps> = ({ text, link }) => (
   <a
     href={link}
-    className="bg-blue-500 hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] text-white px-4 py-2 rounded-md"
+    className="bg-blue-500 duration-300 hover:scale-105 hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] text-white px-4 py-2 rounded-md"
   >
     {text}
   </a>
