@@ -17,7 +17,7 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({ bgCol, textCol, lineCol, ti
     <div className={`flex justify-center rounded-[10px] ${bgCol} align-center h-[65px] w-[65px]`}>
       <img src={icon} className="object-contain" width={50} height={50} />
     </div>
-    <p className={`text-2xl ${textCol} font-bold my-2.5`}>{title}</p>
+    <p className={`text-xl md:2xl ${textCol} font-bold my-2.5`}>{title}</p>
     <div className={`w-4/5 h-[5px] ${lineCol} rounded-md`}></div>
     <p className="text-left text-gray-500 text-sm font-light my-3">
       {desc}
@@ -53,14 +53,14 @@ const FeaturesSection = () => {
     }
   ];
   return (
-    <div className="relative flex justify-center items-center min-w-full min-h-[300px] mt-[150px] mb-[100px]">
+    <div className="relative justify-center hidden md:flex items-center min-w-full min-h-[300px]">
       {/* Background blob image */}
-      <img src={blobImage} className="absolute w-[1000px] top-28 z-0" />
+      <img src={blobImage} className="absolute w-[1000px] z-0" />
       
       {/* Feature Content */}
-      <div className="flex-col justify-center items-between text-5xl w-[800px] font-semibold text-neutral-50">
-        <p className="text-center text-black mb-[120px]">Introducing our Features</p>
-        <div className="flex items-center justify-around min-h-40 mt-16 mb-[80px] gap-[30px]">
+      <div className="flex-col justify-center items-between text-2xl md:text-4xl h-[500px] w-[800px] font-semibold text-neutral-50">
+        <p className="text-center text-black">Introducing our Features</p>
+        <div className="flex flex-col md:flex-row items-center justify-around min-h-40 mt-[70px] mb-[40px] gap-[30px]">
           {features.map((feature, index) => (
             <FeatureBlock key={index} {...feature}/>
           ))}
