@@ -4,7 +4,9 @@ services:
     container_name: notangles-server
     image: notangles-server
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - database
     ports:
@@ -18,7 +20,7 @@ services:
     container_name: notangles-database
     hostname: notangles_database
     restart: always
-    image: postgres:alpine
+    image: postgres:16-alpine
     ports:
       - '5432:5432'
     environment:

@@ -1,17 +1,27 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import * as path from 'path';
 import { AppModule } from './app.module';
 const { PrismaClient } = require('@prisma/client'); // pnpm breaks in production if require is not used.
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  const config = new DocumentBuilder()
+    .setTitle('Notangles Backend')
+    .setDescription('Notangles Backend configuration file')
+    .setVersion('1.0')
+    // .addTag('Notangle Server')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
   dotenv.config({
     path: path.resolve(__dirname, '../.env'),
   });

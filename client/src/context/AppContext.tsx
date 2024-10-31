@@ -46,9 +46,6 @@ export interface IAppContext {
   autoVisibility: boolean;
   setAutoVisibility: (newAutoVisibility: boolean) => void;
 
-  lastUpdated: number;
-  setLastUpdated: (newLastUpdated: number) => void;
-
   isDrag: boolean;
   setIsDrag: (newIsDrag: boolean) => void;
 
@@ -135,9 +132,6 @@ export const AppContext = createContext<IAppContext>({
   autoVisibility: false,
   setAutoVisibility: () => {},
 
-  lastUpdated: 0,
-  setLastUpdated: () => {},
-
   isDrag: false,
   setIsDrag: () => {},
 
@@ -207,7 +201,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
-  const [lastUpdated, setLastUpdated] = useState<number>(0);
   const [isDrag, setIsDrag] = useState<boolean>(false);
   const [days, setDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   const [earliestStartTime, setEarliestStartTime] = useState(getDefaultStartTime(isConvertToLocalTimezone));
@@ -255,8 +248,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setInfoVisibility,
     autoVisibility,
     setAutoVisibility,
-    lastUpdated,
-    setLastUpdated,
     isDrag,
     setIsDrag,
     days,

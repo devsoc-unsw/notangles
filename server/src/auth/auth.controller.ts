@@ -26,7 +26,10 @@ export class AuthController {
         await this.userService.getUserInfo(userID);
       } catch (e) {
         console.debug(`User ${userID} does not exist in db, adding them now!`);
-        await this.userService.setUserProfile(userID, '', '', '');
+        await this.userService.setUserProfile({
+          userID: userID,
+          email: '',
+        });
       }
       return res.json(req.user.userinfo.sub);
     }
@@ -37,7 +40,18 @@ export class AuthController {
   @UseGuards(LoginGuard)
   @Get('/callback/csesoc')
   loginCallback(@Res() res: Response) {
-    res.redirect(this.configService.get<string>('app.redirectLink'));
+    console.log(
+      this.configService.get<string>(
+        'app.redirectLink',
+        'https://notangles.devsoc.app/api/auth/callback/csesoc',
+      ),
+    );
+    res.redirect(
+      this.configService.get<string>(
+        'app.redirectLink',
+        'https://notangles.devsoc.app/api/auth/callback/csesoc',
+      ),
+    );
   }
 
   @Get('/logout')

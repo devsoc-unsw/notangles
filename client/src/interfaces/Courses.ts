@@ -11,13 +11,12 @@ export interface CourseOverview {
 }
 
 export interface CoursesListWithDate {
-  lastUpdated: number;
   courses: CoursesList;
 }
 
 export interface FetchedCourse {
-  courseCode: CourseCode;
-  name: string;
+  course_code: CourseCode;
+  course_name: string;
   online: boolean;
   inPerson: boolean;
   career: string;

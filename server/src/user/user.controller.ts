@@ -1,14 +1,14 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
-  Put,
   Param,
   Post,
-  Body,
-  Delete,
+  Put,
 } from '@nestjs/common';
+import { ClassDto, EventDto, InitUserDTO, TimetableDto } from './dto';
 import { UserService } from './user.service';
-import { ClassDto, EventDto, SettingsDto, TimetableDto, UserDTO } from './dto';
 
 @Controller('user')
 export class UserController {
@@ -16,37 +16,22 @@ export class UserController {
 
   @Get('profile/:userId')
   getUserInfo(@Param('userId') userId: string) {
-    try {
-      return this.userService.getUserInfo(userId).then((data) => {
-        return {
-          status: 'Successsfully returned user profile',
-          data,
-        };
-      });
-    } catch (e) {
-      return e;
-    }
+    return this.userService.getUserInfo(userId).then((data) => {
+      return {
+        status: 'Successsfully returned user profile',
+        data: { ...data, userID: userId },
+      };
+    });
   }
 
-  // Route is WIP, but had to prototype, otherwise database integrity checks will prevent anything from being added to DB
-  // Note that userDTO is not the body arg type as it has superfluous information (eg. timetable, settings - these are added in other routes)
   @Put('profile')
-  setUserInfo(
-    @Body('userId') userId: string,
-    @Body('email') email: string,
-    @Body('firstName') firstName?: string,
-    @Body('lastName') lastName?: string,
-  ) {
-    try {
-      return this.userService.setUserProfile(
-        userId,
-        email,
-        firstName,
-        lastName,
-      );
-    } catch (e) {
-      return e;
-    }
+  setUserInfo(@Body('data') data: InitUserDTO) {
+    return this.userService.setUserProfile(data).then((res) => {
+      return {
+        status: 'Successfully created user!',
+        data: res,
+      };
+    });
   }
 
   @Get('settings/:userId')
@@ -63,56 +48,45 @@ export class UserController {
   // @UsePipes(new ValidationPipe({ transform: true }))
   setUserSettings(
     @Body('userId') userId: string,
-    @Body('setting') setting: any, //SettingsDto, // This aint working - temp solution, should try transforming this class
+    @Body('setting') setting: any, //SettingsDto
   ) {
-    try {
-      return this.userService.setUserSettings(userId, setting).then((data) => {
-        return {
-          status: 'Successfully edited user settings!',
-          data,
-        };
-      });
-    } catch (e) {
-      return e;
-    }
+    return this.userService.setUserSettings(userId, setting).then((data) => {
+      return {
+        status: 'Successfully edited user settings!',
+        data,
+      };
+    });
   }
 
   @Get('timetable/:userId')
   getUserTimetables(@Param('userId') userId: string) {
     return this.userService.getUserTimetables(userId).then((data) => {
-      return { status: `Successfully found user's timetable`, data };
+      return { status: `Successfully found user's timetables`, data };
     });
   }
 
-  // Could look to change params to just TimetableDTO (this would involve making timetableId optional - is this desired?)
   @Post('timetable')
   createUserTimetable(
-    // Isn't this one randomly generated?
-    // @Body('timetableId') timetableId: string,
     @Body('userId') userId: string,
     @Body('selectedCourses') selectedCourses: string[],
-    @Body('selectedClasses') selectedClasses: ClassDto[], // change type later
+    @Body('selectedClasses') selectedClasses: ClassDto[],
     @Body('createdEvents') createdEvents: EventDto[],
-    @Body('timetableName') timetableName?: string,
+    @Body('name') timetableName?: string,
   ) {
-    try {
-      return this.userService
-        .createUserTimetable(
-          userId,
-          selectedCourses,
-          selectedClasses,
-          createdEvents,
-          timetableName,
-        )
-        .then((res) => {
-          return {
-            status: 'Successfully found user and created their new timetable!',
-            data: res,
-          };
-        });
-    } catch (e) {
-      return e;
-    }
+    return this.userService
+      .createUserTimetable(
+        userId,
+        selectedCourses,
+        selectedClasses,
+        createdEvents,
+        timetableName,
+      )
+      .then((res) => {
+        return {
+          status: 'Successfully found user and created their new timetable!',
+          data: res,
+        };
+      });
   }
 
   @Put('timetable')
@@ -120,28 +94,45 @@ export class UserController {
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
+    return this.userService.editUserTimetable(userId, timetable).then((id) => {
+      return {
+        status: 'Successfully edited timetable',
+        data: { id },
+      };
+    });
+  }
+
+  @Delete('timetable/:timetableId')
+  deleteUserTimetable(@Param('timetableId') timetableId: string) {
+    return this.userService.deleteUserTimetable(timetableId).then((id) => {
+      return {
+        status: 'Successfully deleted timetable',
+        data: { timetableId: id },
+      };
+    });
+  }
+
+  @Get('group/:userId')
+  getUserGroups(@Param('userId') userId: string) {
     try {
-      return this.userService
-        .editUserTimetable(userId, timetable)
-        .then((id) => {
-          return {
-            status: 'Successfully edited timetable',
-            data: { id },
-          };
-        });
+      return this.userService.getGroups(userId).then((groups) => {
+        return {
+          status: `Successsfully returned groups ${userId} is apart of`,
+          data: { groups },
+        };
+      });
     } catch (e) {
       return e;
     }
   }
 
-  // Note - why do we need userId as a param? https://devsoc.atlassian.net/wiki/spaces/N/pages/1575168/Notangles+API
-  @Delete('timetable/:timetableId')
-  deleteUserTimetable(@Param('timetableId') timetableId: string) {
+  @Get('all')
+  getAllUsers() {
     try {
-      return this.userService.deleteUserTimetable(timetableId).then((id) => {
+      return this.userService.getAllUsers().then((data) => {
         return {
-          status: 'Successfully deleted timetable',
-          data: { timetableId: id },
+          status: 'Successsfully returned user profile',
+          data,
         };
       });
     } catch (e) {

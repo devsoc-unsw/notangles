@@ -148,7 +148,7 @@ const FacultyButtonsContainer = styled('div')`
 `;
 
 const FacultyTags = styled(Button, {
-  shouldForwardProp: (prop) => prop !== 'selectedFaculty' && prop !== 'faculty'
+  shouldForwardProp: (prop) => prop !== 'selectedFaculty' && prop !== 'faculty',
 })<{
   selectedFaculty: string;
   faculty: string;
@@ -158,14 +158,16 @@ const FacultyTags = styled(Button, {
   margin-right: 0px;
   padding: 5px 12px;
   cursor: pointer;
-  background-color: ${({ theme, selectedFaculty, faculty }) => 
-    selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.secondary.light
-  };
+  background-color: ${({ theme, selectedFaculty, faculty }) =>
+    selectedFaculty === faculty ? theme.palette.primary.main : theme.palette.secondary.light};
   color: ${({ theme, selectedFaculty, faculty }) =>
-    selectedFaculty === faculty ? '#FFFFFF' : theme.palette.secondary.dark
-  };
+    selectedFaculty === faculty ? '#FFFFFF' : theme.palette.secondary.dark};
   text-transform: none;
   font-size: 13px;
+  &:hover {
+    background-color: ${({ theme }) => theme.palette.primary.main};
+    color: #ffffff;
+  }
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
@@ -173,16 +175,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
-  const faculties = ['Art, Design & Architecture', 'Law & Justice', 'Medicine & Health', 'Engineering', 'Business School', 'Science'];
-  
+  const faculties = [
+    'Art, Design & Architecture',
+    'Law & Justice',
+    'Medicine & Health',
+    'Engineering',
+    'Business School',
+    'Science',
+  ];
+
   const facultyNameMap: FacultyMap = {
     'Art, Design & Architecture': 'Faculty of Arts, Design & Arch',
     'Law & Justice': 'Faculty of Law and Justice',
-    'Engineering': 'Faculty of Engineering',
+    Engineering: 'Faculty of Engineering',
     'Medicine & Health': 'Faculty of Medicine and Health',
     'Business School': 'UNSW Business School',
-    'Science': 'Faculty of Science'
-  }
+    Science: 'Faculty of Science',
+  };
 
   const searchTimer = useRef<number | undefined>();
   const listRef = useRef<VariableSizeList | null>(null);
@@ -283,14 +292,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     let searchOptionsList = coursesList;
 
     if (selectedFaculty) {
-      searchOptionsList = searchOptionsList.filter(course => course.faculty === facultyNameMap[selectedFaculty]);
+      searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
     }
 
     // create a new fuse instance with the searchOptionsList after filtering by faculty
     // so that it allows for searching within the faculty's options
-    let fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
+    const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
 
-    const fuzzyResults = fuzzy.search(query).map(result => result.item);
+    const fuzzyResults = fuzzy.search(query).map((result) => result.item);
 
     setOptions(fuzzyResults);
   };
@@ -350,14 +359,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             }}
           >
             {faculties.map((faculty, index) => (
-              <FacultyTags 
+              <FacultyTags
                 key={index}
-                selectedFaculty={selectedFaculty} 
+                selectedFaculty={selectedFaculty}
                 faculty={faculty}
                 onClick={() => handleFacultyClick(faculty)}
                 variant="contained"
                 disableElevation
-              >  
+              >
                 {faculty}
               </FacultyTags>
             ))}

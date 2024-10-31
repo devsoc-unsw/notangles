@@ -1,17 +1,20 @@
 import '@fontsource-variable/roboto-flex';
 import './index.css';
 
+import { ApolloProvider } from '@apollo/client';
 import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { client } from './api/config';
 import App from './App';
 import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
+import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
@@ -20,6 +23,7 @@ Sentry.init({
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
+<<<<<<< HEAD
 const Root: React.FC = () => {
   const hasVisited = localStorage.getItem("visited");
   console.log(hasVisited)
@@ -42,6 +46,25 @@ const Root: React.FC = () => {
     </AppContextProvider>
   );
 };
+=======
+const Root: React.FC = () => (
+  <ApolloProvider client={client}>
+    <AppContextProvider>
+      <CourseContextProvider>
+        <UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<App />} path="/">
+                <Route path="/event/:encrypted" element={<EventShareModal />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </UserContextProvider>
+      </CourseContextProvider>
+    </AppContextProvider>
+  </ApolloProvider>
+);
+>>>>>>> dev
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<Root />);
