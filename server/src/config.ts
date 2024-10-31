@@ -6,6 +6,8 @@ export default registerAs('app', () => ({
   auto: `${process.env.AUTO_SERVER_HOST_NAME}:${process.env.AUTO_SERVER_HOST_PORT}`,
   client: `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
   redirectLink:
-    (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
-    `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
+    process.env.NODE_ENV === 'dev'
+      ? `http://`
+      : `https://` +
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
 }));
