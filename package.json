@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "framer-motion": "^11.3.17",
-    "styled-components": "^6.1.13",
-    "tailwind-merge": "^2.4.0"
-  }
-}
