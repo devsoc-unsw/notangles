@@ -61,6 +61,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const userResponse = await response.text();
+      console.log(userResponse);
+
       if (userResponse !== '') setUser(JSON.parse(userResponse).data);
     } catch (error) {
       console.log(error);

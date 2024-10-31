@@ -25,23 +25,24 @@ Sentry.init({
 
 const Root: React.FC = () => {
   const hasVisited = localStorage.getItem('visited');
-  console.log(hasVisited);
 
   return (
     <ApolloProvider client={client}>
       <AppContextProvider>
         <CourseContextProvider>
-          <BrowserRouter>
-            <Routes>
-              {hasVisited ? (
-                <Route element={<App />} path="/">
-                  <Route path="/event/:encrypted" element={<EventShareModal />} />
-                </Route>
-              ) : (
-                <Route element={<LandingPage />} path="/" />
-              )}
-            </Routes>
-          </BrowserRouter>
+          <UserContextProvider>
+            <BrowserRouter>
+              <Routes>
+                {hasVisited ? (
+                  <Route element={<App />} path="/">
+                    <Route path="/event/:encrypted" element={<EventShareModal />} />
+                  </Route>
+                ) : (
+                  <Route element={<LandingPage />} path="/" />
+                )}
+              </Routes>
+            </BrowserRouter>
+          </UserContextProvider>
         </CourseContextProvider>
       </AppContextProvider>
     </ApolloProvider>
