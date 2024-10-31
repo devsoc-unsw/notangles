@@ -15,15 +15,17 @@ const LandingPage = () => {
           <p className='font-semibold text-lg pl-1 cursor-pointer select-none'>Notangles</p>
         </div>
       </header>
-      <div className="snap-center min-h-screen">
+      <div className="snap-center h-screen">
         <HeroSection />
       </div>
-      <div className="snap-center min-h-screen flex flex-col justify-center items-center">
-        <SponsorsSection />
-        <FeaturesSection />
+      <div className="snap-center h-screen flex flex-col justify-center items-center">
+        <div className="flex pt-20 flex-col items-around justify-around">
+          <SponsorsSection />
+          <FeaturesSection />
+        </div>
       </div>
       <ScrollingFeaturesSection />
-      <div className="snap-center min-h-screen flex flex-col justify-between">
+      <div className="snap-center h-screen flex flex-col justify-between">
         <FeedbackSection />
         {/* Sticky Footer */}
         <Footer />
