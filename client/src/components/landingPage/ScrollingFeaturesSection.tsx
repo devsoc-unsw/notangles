@@ -10,19 +10,19 @@ interface FeatureItemProps {
 }
 
 const FeatureItem: React.FC<FeatureItemProps> = ({ number, title, description, gif }) => (
-  <div className="w-full h-screen snap-center min-h-screen flex">
-    <div className="bg-blue-500 w-1/2 flex flex-col items-center justify-center">
-      <div className="font-extrabold w-3/4 text-9xl">
+  <div className="w-full h-screen snap-center min-h-screen flex flex-col-reverse md:flex-row">
+    <div className="bg-blue-500 h-1/2 md:h-screen md:w-1/2 flex flex-col items-center justify-center">
+      <div className="font-extrabold w-3/4 text-8xl md:text-9xl">
         <p>{number}</p>
       </div>
       <div className="w-3/4 font-bold text-4xl mt-10 mb-6">
         <p>{title}</p>
       </div>
-      <div className="w-3/4">
+      <div className="w-3/4 text-xl">
         <p>{description}</p>
       </div>
     </div>
-    <div className="w-1/2 flex justify-center items-center">
+    <div className="h-1/2 md:h-screen md:w-1/2 flex justify-center items-center">
       <div className="w-1/2 bg-white rounded-xl flex justify-center items-center">
         <img src={gif} className="w-11/12" />
       </div>
