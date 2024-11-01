@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { API_URL } from '../api/config';
 import getCourseInfo from '../api/getCourseInfo';
 import { User } from '../components/sidebar/UserAccount';
@@ -45,17 +47,35 @@ const getTimetableYear = (targetTerm: string, currentTerm: string, currentYear: 
 };
 
 const convertClassToDTO = (selectedClasses: SelectedClasses) => {
-  const a = Object.values(selectedClasses);
-  const b = a.map((c) => {
-    const d = Object.values(c);
+  const courseCodes = Object.keys(selectedClasses);
 
-    return d.map((c2) => {
-      const { id, classNo, year, term, courseCode, activity } = c2 as ClassData;
-      return { id, classNo: String(classNo), year, term, courseCode, activity };
+  const res = courseCodes.map((courseCode) => {
+    const activityNames = Object.keys(selectedClasses[courseCode]);
+    return activityNames.map((activity) => {
+      const activityData = selectedClasses[courseCode][activity];
+      if (activityData) {
+        const { id, classNo, year, term, courseCode, activity } = activityData as ClassData;
+        return { id, classNo: String(classNo), year, term, courseCode, activity };
+      } else {
+        // if activityData === null, then it is in inventory.
+        return { id: uuidv4(), classNo: '', year: '', term: '', courseCode, activity };
+      }
     });
   });
 
-  return b.reduce((prev, curr) => prev.concat(curr), []);
+  return res.reduce((prev, curr) => prev.concat(curr), []);
+
+  // const a = Object.values(selectedClasses);
+  // const b = a.map((c) => {
+  //   const d = Object.values(c);
+
+  //   return d.map((c2) => {
+  //     const { id, classNo, year, term, courseCode, activity } = c2 as ClassData;
+  //     return { id, classNo: String(classNo), year, term, courseCode, activity };
+  //   });
+  // });
+
+  // return b.reduce((prev, curr) => prev.concat(curr), []);
 };
 
 const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) => {
@@ -159,7 +179,6 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string
     assignedColors: useColorMapper(timetableDTO.selectedCourses, {}),
   };
 
-  console.log(parsedTimetable);
   return { mapKey: timetableDTO.mapKey, timetable: parsedTimetable };
 };
 

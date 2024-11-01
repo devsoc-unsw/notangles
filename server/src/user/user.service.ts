@@ -21,25 +21,32 @@ export class UserService {
 
   private async convertClasses(
     classes: ClassDto[],
-  ): Promise<ScrapedClassDto[]> {
+  ): Promise<(ClassDto | ScrapedClassDto)[]> {
     try {
       // For each class in class DTO, we need to fetch information
       const cache = {};
 
       for (const clz of classes) {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        if (!(k in cache)) {
+        if (!(k in cache) && clz.classNo !== '') {
           const data = await fetch(`${API_URL}/${k}`);
           const json = await data.json();
           cache[k] = json.classes;
         }
       }
 
-      return classes.map((clz) => {
+      const res = classes.map((clz) => {
+        if (clz.classNo === '')
+          return {
+            classID: '',
+            courseCode: clz.courseCode,
+            activity: clz.activity,
+          };
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
         const data = cache[k].find((c) => String(c.classID) === clz.classNo);
         return { ...data, courseCode: clz.courseCode };
       });
+      return res;
     } catch (e) {
       throw new Error(e);
     }

@@ -142,7 +142,9 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           const userID = JSON.parse(userResponse);
           fetchUserInfo(userID);
         } else {
-          throw new NetworkError("Couldn't get response");
+          // throw new NetworkError("Couldn't get response");
+          setUser(undefinedUser);
+          console.log('user is not logged in');
         }
       } catch (error) {
         console.log(error);
