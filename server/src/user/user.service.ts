@@ -21,7 +21,7 @@ export class UserService {
 
   private async convertClasses(
     classes: ClassDto[],
-  ): Promise<(ClassDto | ScrapedClassDto)[]> {
+  ): Promise<ScrapedClassDto[]> {
     try {
       // For each class in class DTO, we need to fetch information
       const cache = {};
