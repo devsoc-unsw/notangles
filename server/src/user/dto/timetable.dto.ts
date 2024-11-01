@@ -33,6 +33,7 @@ export class ClassDto {
   term: string;
   courseCode: string;
   timetableId?: string;
+  activity: string;
 }
 
 export class ClassTimeDto {

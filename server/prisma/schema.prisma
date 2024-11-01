@@ -73,6 +73,7 @@ model Class {
   courseCode  String
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
+  activity    String
 
   @@map("classes")
 }

@@ -50,8 +50,8 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
     const d = Object.values(c);
 
     return d.map((c2) => {
-      const { id, classNo, year, term, courseCode } = c2 as ClassData;
-      return { id, classNo: String(classNo), year, term, courseCode };
+      const { id, classNo, year, term, courseCode, activity } = c2 as ClassData;
+      return { id, classNo: String(classNo), year, term, courseCode, activity };
     });
   });
 
