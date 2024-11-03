@@ -441,66 +441,65 @@ const App: React.FC = () => {
     runSync(user, setUser, displayTimetables, setDisplayTimetables);
   };
 
-  // Updates local storage whenever a change is made to the timetable
-  useUpdateEffect(() => {
-    displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
-    displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
-    displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
-    displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
-
-    storage.set('courseData', courseData);
-    storage.set('timetables', displayTimetables);
-
-    setDisplayTimetables(displayTimetables);
-    syncTimetables();
-  }, [selectedCourses, selectedClasses, createdEvents, assignedColors]);
-
-  useUpdateEffect(() => {
-    storage.set('timetables', displayTimetables);
-    syncTimetables();
-  }, [displayTimetables]);
-
-  // TODO remove below if above useEffect is okay
-  // The following three useUpdateEffects update local storage whenever a change is made to the timetable
+  // // Updates local storage whenever a change is made to the timetable
   // useUpdateEffect(() => {
   //   displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
-  //   const newCourseData = courseData;
-  //   storage.set('courseData', newCourseData);
-
-  //   storage.set('timetables', displayTimetables);
-  //   setDisplayTimetables(displayTimetables);
-  //   syncTimetables();
-  // }, [selectedCourses]);
-
-  // useUpdateEffect(() => {
   //   displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
-
-  //   storage.set('timetables', displayTimetables);
-  //   setDisplayTimetables(displayTimetables);
-  //   syncTimetables();
-  // }, [selectedClasses]);
-
-  // useUpdateEffect(() => {
   //   displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
-
-  //   storage.set('timetables', displayTimetables);
-  //   setDisplayTimetables(displayTimetables);
-  //   syncTimetables();
-  // }, [createdEvents]);
-
-  // useUpdateEffect(() => {
   //   displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
 
+  //   storage.set('courseData', courseData);
   //   storage.set('timetables', displayTimetables);
+
   //   setDisplayTimetables(displayTimetables);
   //   syncTimetables();
-  // }, [assignedColors]);
+  // }, [selectedCourses, selectedClasses, createdEvents, assignedColors]);
 
-  // // Update storage when dragging timetables
   // useUpdateEffect(() => {
   //   storage.set('timetables', displayTimetables);
   //   syncTimetables();
   // }, [displayTimetables]);
+
+  // The following three useUpdateEffects update local storage whenever a change is made to the timetable
+  useUpdateEffect(() => {
+    displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
+    const newCourseData = courseData;
+    storage.set('courseData', newCourseData);
+
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+    syncTimetables();
+  }, [selectedCourses]);
+
+  useUpdateEffect(() => {
+    displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
+
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+    syncTimetables();
+  }, [selectedClasses]);
+
+  useUpdateEffect(() => {
+    displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
+
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+    syncTimetables();
+  }, [createdEvents]);
+
+  useUpdateEffect(() => {
+    displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
+
+    storage.set('timetables', displayTimetables);
+    setDisplayTimetables(displayTimetables);
+    syncTimetables();
+  }, [assignedColors]);
+
+  // Update storage when dragging timetables
+  useUpdateEffect(() => {
+    storage.set('timetables', displayTimetables);
+    syncTimetables();
+  }, [displayTimetables]);
 
   /**
    * Get the latest day of the week a course has classes on
