@@ -1,7 +1,5 @@
-import { useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { UserContext } from '../context/UserContext';
 import {
   Action,
   Activity,
@@ -13,7 +11,6 @@ import {
   TimetableData,
 } from '../interfaces/Periods';
 import { createEventObj } from './createEvent';
-import { syncAddTimetable } from './syncTimetables';
 
 export type TimetableActions = Record<string, Action[]>;
 export type ActionsPointer = Record<string, number>;
@@ -158,7 +155,7 @@ const createDefaultTimetable = (userID: string | undefined): TimetableData[] => 
     assignedColors: {},
   };
 
-  console.log('create default timetbale', userID);
+  console.log('create default timetable', userID);
 
   return [defaultTimetable];
 };
