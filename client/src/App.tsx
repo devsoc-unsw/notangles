@@ -116,7 +116,6 @@ const App: React.FC = () => {
     setTermsData,
     setTermNumber,
     setCoursesList,
-    setLastUpdated,
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
@@ -205,9 +204,8 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses, lastUpdated } = await getCoursesList(year, term);
+      const { courses } = await getCoursesList(term);
       setCoursesList(courses);
-      setLastUpdated(lastUpdated);
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
@@ -295,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term, code, isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -440,25 +438,6 @@ const App: React.FC = () => {
 
     runSync(user, setUser, displayTimetables, setDisplayTimetables);
   };
-
-  // // Updates local storage whenever a change is made to the timetable
-  // useUpdateEffect(() => {
-  //   displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
-  //   displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
-  //   displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
-  //   displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
-
-  //   storage.set('courseData', courseData);
-  //   storage.set('timetables', displayTimetables);
-
-  //   setDisplayTimetables(displayTimetables);
-  //   syncTimetables();
-  // }, [selectedCourses, selectedClasses, createdEvents, assignedColors]);
-
-  // useUpdateEffect(() => {
-  //   storage.set('timetables', displayTimetables);
-  //   syncTimetables();
-  // }, [displayTimetables]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {

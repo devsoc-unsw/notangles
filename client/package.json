@@ -16,6 +16,7 @@
     "style": "prettier --write 'src/**/*.{ts,tsx}' && eslint --fix 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@apollo/client": "3.11.8",
     "@date-io/date-fns": "3.0.0",
     "@emotion/react": "11.13.0",
     "@emotion/styled": "11.13.0",
@@ -94,7 +95,7 @@
     "jsdom": "25.0.1",
     "prettier": "3.3.3",
     "typescript": "5.5.3",
-    "vite": "4.5.5",
+    "vite": "5.2.14",
     "vite-bundle-visualizer": "1.2.1",
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "5.0.1",

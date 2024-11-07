@@ -42,7 +42,7 @@ const CustomEvent: React.FC = () => {
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
-  const { year, term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
+  const { term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
@@ -65,7 +65,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
     if (courseCode !== '') {
-      getCourseInfo(year, term, courseCode, isConvertToLocalTimezone)
+      getCourseInfo(term, courseCode, isConvertToLocalTimezone)
         .catch((err) => {
           return err;
         })

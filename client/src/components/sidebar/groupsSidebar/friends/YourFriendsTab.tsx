@@ -20,7 +20,6 @@ const StyledItem = styled('div')`
 `;
 
 const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
-
   const handleRemoveFriend = async (friendID: string) => {
     try {
       const res = await fetch(`${API_URL.server}/friend`, {

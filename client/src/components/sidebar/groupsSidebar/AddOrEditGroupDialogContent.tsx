@@ -192,7 +192,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           disableCloseOnSelect
           fullWidth
           value={group.members}
-          onChange={(_, value) => setGroup({ ...group, members: value})}
+          onChange={(_, value) => setGroup({ ...group, members: value })}
           getOptionLabel={(option) => `${option.firstname} ${option.lastname} ${option.userID}`} // What the search query is based on
           renderOption={(props, option, { selected }) => (
             <li {...props}>

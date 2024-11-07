@@ -31,7 +31,7 @@ const StyledDialogTitle = styled(DialogTitle)`
   justify-content: space-between;
 `;
 
-const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => { 
+const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, user, onClose }) => {
   const emptyGroupData: Group = {
     id: '',
     name: '',
