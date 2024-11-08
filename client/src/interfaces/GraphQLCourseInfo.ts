@@ -13,6 +13,8 @@ interface Class {
   course_enrolment: string;
   section: string;
   times: Time[];
+  term: string;
+  class_id: string;
 }
 
 interface Course {

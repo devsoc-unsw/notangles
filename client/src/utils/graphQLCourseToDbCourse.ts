@@ -41,6 +41,8 @@ export const graphQLCourseToDbCourse = (graphQLCourse: GraphQLCourse): DbCourse 
         weeks: time.weeks,
         location: time.location,
       })),
+      term: classItem.term,
+      classID: classItem.class_id,
     })),
   };
 };

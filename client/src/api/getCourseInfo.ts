@@ -17,6 +17,8 @@ const GET_COURSE_INFO = gql`
         activity
         status
         course_enrolment
+        class_id
+        term
         section
         times {
           day
@@ -111,7 +113,7 @@ const getCourseInfo = async (
       variables: { courseCode, term },
     });
     const json: DbCourse = graphQLCourseToDbCourse(data);
-
+    console.log(json);
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.
