@@ -28,10 +28,13 @@ export class UserService {
 
       for (const clz of classes) {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
+
         if (!(k in cache) && clz.classNo !== '') {
           const data = await fetch(`${API_URL}/${k}`);
           const json = await data.json();
-          cache[k] = json.classes;
+          cache[k] = json.classes.map((c) => {
+            return { ...c, classID: `${clz.courseCode}-${c.classID}` };
+          });
         }
       }
 
@@ -43,9 +46,10 @@ export class UserService {
             activity: clz.activity,
           };
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        const data = cache[k].find((c) => String(c.classID) === clz.classNo);
+        const data = cache[k].find((c) => c.classID === clz.classNo);
         return { ...data, courseCode: clz.courseCode };
       });
+
       return res;
     } catch (e) {
       throw new Error(e);
@@ -55,6 +59,7 @@ export class UserService {
   private async convertTimetable(timetable: TimetableDto): Promise<any> {
     try {
       const c = await this.convertClasses(timetable.selectedClasses);
+
       return {
         ...timetable,
         selectedClasses: c,

@@ -118,7 +118,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string
     timetableDTO.selectedCourses.map((code: string) => {
       // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
       return getCourseInfo(
-        getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
+        // getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
         timetableDTO.mapKey,
         code,
         true,
