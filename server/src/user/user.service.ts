@@ -115,6 +115,7 @@ export class UserService {
 
   async getUserSettings(_userID: string): Promise<SettingsDto> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userID, ...settings } =
         await this.prisma.settings.findUniqueOrThrow({
           where: { userID: _userID },

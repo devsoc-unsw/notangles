@@ -20,10 +20,8 @@ export class InitUserDTO {
   @IsString()
   @IsOptional()
   lastname?: string;
-
   @IsEmail()
   email: string;
-
   @IsString()
   @IsOptional()
   profileURL?: string;

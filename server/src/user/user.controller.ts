@@ -96,7 +96,7 @@ export class UserController {
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
-    console.log(userId + 'test ');
+    console.log(timetable);
     return this.userService.editUserTimetable(userId, timetable).then((id) => {
       return {
         status: 'Successfully edited timetable',
