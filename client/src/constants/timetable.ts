@@ -3,18 +3,29 @@ import { isWithinInterval, parse } from 'date-fns';
 
 import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
-import { TermDataMap } from '../interfaces/Periods';
+import { Term, TermDataList } from '../interfaces/Periods';
 
-type Term = string;
-const SUPPORTED_TERMS = ['U1', 'T1', 'T2', 'T3'];
+function sortTerms(terms: Term[]): Term[] {
+  const termOrder: Record<string, number> = { U1: 0, T1: 1, T2: 2, T3: 3 };
 
-const nextTermIdx = (currIdx: number) => {
-  return currIdx + 1 >= SUPPORTED_TERMS.length ? 0 : ++currIdx;
-};
+  return terms.sort((a: Term, b: Term) => {
+    if (!a || !b) return 0;
+    const yearA = parseInt(a.slice(2));
+    const yearB = parseInt(b.slice(2));
+    const termA = a.slice(0, 2);
+    const termB = b.slice(0, 2);
+
+    if (yearA !== yearB) {
+      return yearA - yearB;
+    }
+
+    return termOrder[termA] - termOrder[termB];
+  });
+}
 
 const GET_CLASSES = gql`
   query MyQuery {
-    classes(distinct_on: term, where: { term: { _in: ["T1", "T2", "T3", "U1"] } }) {
+    classes(where: { term: { _in: ["T1", "T2", "T3", "U1"] } }, distinct_on: offering_period) {
       term
       offering_period
     }
@@ -38,12 +49,13 @@ const parseTermOfferingPeriods = (termInfo: TermInfoFetch): TermDateDetails => {
   return { startDate, endDate };
 };
 
-const constructTermDetailsMap = async (): Promise<Map<string, TermDateDetails>> => {
-  const termInfoMap = new Map<string, TermDateDetails>();
+const constructTermDetailsMap = async (): Promise<Map<Term, TermDateDetails>> => {
+  const termInfoMap = new Map<Term, TermDateDetails>();
   const availableTermData = await client.query<{ classes: TermInfoFetch[] }>({ query: GET_CLASSES });
-
   availableTermData.data.classes.map((cls: TermInfoFetch) => {
-    termInfoMap.set(cls.term, parseTermOfferingPeriods(cls));
+    const termOfferingPeriods = parseTermOfferingPeriods(cls);
+    const termKey: Term = (cls.term + termOfferingPeriods.startDate.getFullYear()) as Term;
+    termInfoMap.set(termKey!, termOfferingPeriods);
   });
 
   return termInfoMap;
@@ -55,39 +67,28 @@ const constructTermDetailsMap = async (): Promise<Map<string, TermDateDetails>> 
  * @returns the term data for the latest term
  */
 const get_current_term = async (
-  termInfoMap: Map<string, TermDateDetails>,
+  termInfoMap: Map<Term, TermDateDetails>,
   todaysDate: Date = new Date(),
 ): Promise<Term> => {
-  // Cycle through this and check if we are within a term
-  // If we are not within a term but in between display the next term.
-  for (let currTermIndex = 0; currTermIndex < SUPPORTED_TERMS.length; currTermIndex++) {
-    const currTermStr: string = SUPPORTED_TERMS[currTermIndex];
-    const termInfo = termInfoMap.get(currTermStr);
-    if (!termInfo) continue;
-    if (isWithinInterval(todaysDate, { start: termInfo.startDate, end: termInfo.endDate })) {
-      return currTermStr;
-    } else if (
+  const keys_term = sortTerms(Array.from(termInfoMap.keys()));
+  for (let currTermIndex = 0; currTermIndex < keys_term.length; currTermIndex++) {
+    if (!keys_term[currTermIndex]) continue;
+    const currTermVal = termInfoMap.get(keys_term[currTermIndex])!;
+    if (isWithinInterval(todaysDate, { start: currTermVal.startDate, end: currTermVal.endDate })) {
+      return keys_term[currTermIndex];
+    }
+
+    if (
+      currTermIndex > 0 &&
       isWithinInterval(todaysDate, {
-        start: termInfo.endDate,
-        end: termInfoMap.get(SUPPORTED_TERMS[nextTermIdx(currTermIndex)])?.startDate!,
+        start: termInfoMap.get(keys_term[currTermIndex - 1])!.endDate,
+        end: currTermVal.startDate,
       })
     ) {
-      return SUPPORTED_TERMS[nextTermIdx(currTermIndex)];
+      return keys_term[currTermIndex];
     }
   }
-
-  return 'Invalid Term';
-};
-
-const parseYear = (termDate: string) => {
-  const regexp = /(\d{2})\/(\d{2})\/(\d{4})/;
-
-  const matched = termDate.match(regexp);
-  let extractedYear = '';
-  if (matched != null) {
-    extractedYear = matched[3];
-  }
-  return extractedYear;
+  return undefined;
 };
 
 /**
@@ -108,7 +109,7 @@ export const getAvailableTermDetails = async () => {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
 
-  let year = termData.year || '0000';
+  const year = termData.year || '0000';
   const termNumber = Number(termData.termNumber) || 1;
   let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
 
@@ -133,31 +134,16 @@ export const getAvailableTermDetails = async () => {
   try {
     const termMapInfo = await constructTermDetailsMap();
     const currTermId = await get_current_term(termMapInfo);
-    const prevTermId = SUPPORTED_TERMS[Math.max(SUPPORTED_TERMS.findIndex((term) => term == currTermId) - 1, 0)];
+    firstDayOfTerm =
+      termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
-    firstDayOfTerm = termMapInfo.get(currTermId)?.startDate.toLocaleDateString().split('/').reverse().join('-')!;
-
-    const newTerm = parseTermData(currTermId);
-    const prevTerm = parseTermData(prevTermId);
-
-    const extractedCurrYear = parseYear(termMapInfo.get(currTermId)?.startDate.toLocaleDateString()!);
-    if (extractedCurrYear.length > 0) {
-      year = extractedCurrYear;
-    }
-
-    const prevYear = parseYear(termMapInfo.get(prevTermId)?.startDate.toLocaleDateString()!);
-
-    const termsData: TermDataMap = {
-      prevTerm: { year: prevYear, term: prevTerm.term },
-      newTerm: { year: year, term: newTerm.term },
-    };
-
+    const termsData: TermDataList = sortTerms(Array.from(termMapInfo.keys()));
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
       JSON.stringify({
         year: year,
-        term: newTerm.term,
+        term: termsData.term,
         termNumber: newTerm.termNum,
         termName: newTerm.termName,
         firstDayOfTerm: firstDayOfTerm,
