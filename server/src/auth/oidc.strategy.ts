@@ -52,7 +52,6 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
         refresh_token,
         userinfo,
       };
-      console.log(userinfo);
       return user;
     } catch (err) {
       throw new UnauthorizedException();
