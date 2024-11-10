@@ -113,7 +113,6 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermsData,
-    setTermNumber,
     setCoursesList,
     selectedTimetable,
     displayTimetables,
@@ -168,28 +167,28 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
       setTerm(term);
       setTermName(termName);
-      setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
       setTermsData(termsData);
       const oldData = storage.get('timetables');
 
       // avoid overwriting data from previous save
-      const newTimetableTerms: DisplayTimetablesMap = {
-        ...{
-          [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
-            ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(),
-        },
-        ...{
-          [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
-            ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(),
-        },
-      };
+      console.log(termsData);
+      let newTimetableTerms: DisplayTimetablesMap = {};
+      for (const termId of termsData) {
+        newTimetableTerms = {
+          ...newTimetableTerms,
+          ...{
+            [termId as string]: oldData.hasOwnProperty(termId as string)
+              ? oldData[termId as string]
+              : createDefaultTimetable(),
+          },
+        };
+      }
+      console.log(newTimetableTerms);
 
       setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
@@ -377,6 +376,7 @@ const App: React.FC = () => {
       setDisplayTimetables(updatedWithTerms);
     }
 
+    if (!storage.get('timetables') || !storage.get('timetables')[term][selectedTimetable]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,

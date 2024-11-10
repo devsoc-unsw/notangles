@@ -109,26 +109,17 @@ export const getAvailableTermDetails = async () => {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
 
-  const year = termData.year || '0000';
-  const termNumber = Number(termData.termNumber) || 1;
-  let firstDayOfTerm = termData.firstDayOfTerm || `0000-00-00`;
+  const year = termData.year || '';
+  let firstDayOfTerm = termData.firstDayOfTerm || ``;
 
   const parseTermData = (termId: string) => {
-    let termNum;
-    let term = termData.termName || `T${termNumber}`;
-    let termName = `Term ${termNumber}`;
-
-    if (termId === 'U1') {
-      termName = `Summer Term`;
-      term = termId;
-      termNum = 0;
+    if (!termId) return '';
+    const termPrefix = termId.substring(0, 2);
+    if (termPrefix === 'U1') {
+      return `Summer Term`;
     } else {
-      termNum = parseInt(termId.substring(1));
-      term = `T${termNum}`;
-      termName = `Term ${termNum}`;
+      return `Term ${termPrefix.substring(1, 2)}`;
     }
-
-    return { term: term, termName: termName, termNum: termNum };
   };
 
   try {
@@ -137,27 +128,25 @@ export const getAvailableTermDetails = async () => {
     firstDayOfTerm =
       termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
-    const termsData: TermDataList = sortTerms(Array.from(termMapInfo.keys()));
+    const termsSortedList: TermDataList = sortTerms(Array.from(termMapInfo.keys()));
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
       JSON.stringify({
         year: year,
-        term: termsData.term,
-        termNumber: newTerm.termNum,
-        termName: newTerm.termName,
+        term: currTermId || 'T12025',
+        termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
         firstDayOfTerm: firstDayOfTerm,
-        termsData: termsData,
+        termsData: termsSortedList,
       }),
     );
 
     return {
       year: year,
-      term: newTerm.term,
-      termNumber: newTerm.termNum,
-      termName: newTerm.termName,
+      term: currTermId || 'T12025',
+      termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
       firstDayOfTerm: firstDayOfTerm,
-      termsData: termsData,
+      termsData: termsSortedList,
     };
   } catch (e) {
     console.log(e);

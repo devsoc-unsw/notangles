@@ -2,7 +2,7 @@ import { createContext, useState } from 'react';
 
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseDataMap, DisplayTimetablesMap, TermDataMap } from '../interfaces/Periods';
+import { CourseDataMap, DisplayTimetablesMap, TermDataList } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -67,8 +67,8 @@ export interface IAppContext {
   termName: string;
   setTermName: (newTermName: string) => void;
 
-  termsData: TermDataMap;
-  setTermsData: (newTermData: TermDataMap) => void;
+  termsData: TermDataList;
+  setTermsData: (newTermData: TermDataList) => void;
 
   termNumber: number;
   setTermNumber: (newTermNumber: number) => void;
@@ -150,7 +150,7 @@ export const AppContext = createContext<IAppContext>({
   termName: `Term 0`,
   setTermName: () => {},
 
-  termsData: { prevTerm: { year: '', term: '' }, newTerm: { year: '', term: '' } },
+  termsData: [],
   setTermsData: () => {},
 
   termNumber: 0,
@@ -209,15 +209,12 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [term, setTerm] = useState<string>(termData.term || `T0`);
   const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
   const [year, setYear] = useState<string>(termData.year || '0000');
-  const [termsData, setTermsData] = useState<TermDataMap>({
-    prevTerm: { year: '', term: '' },
-    newTerm: { year: year, term: term },
-  });
+  const [termsData, setTermsData] = useState<TermDataList>([]);
   const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({
-    [termData.term.length > 0 ? termData.term : '0']: [],
+    [termData.term !== '' ? termData.term : '']: [],
   });
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 

@@ -84,20 +84,17 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
 
   const [open, setOpen] = useState(false);
 
-  let prevTermName = `Term ${termsData.prevTerm.term[1]}`;
-  if (prevTermName.includes('Summer')) {
-    prevTermName = 'Summer Term';
-  }
-
-  let newTermName = `Term ${termsData.newTerm.term[1]}`;
+  // let newTermName = `Term ${termsData.newTerm.term[1]}`;
+  let newTermName = 'Term -1';
   if (newTermName.includes('Summer')) {
     newTermName = 'Summer Term';
   }
-
-  const termData = new Set([
-    ...(termsData.prevTerm.term.length > 0 ? [`${prevTermName}, ${termsData.prevTerm.year}`] : []),
-    `${newTermName}, ${termsData.newTerm.year}`,
-  ]);
+  // TODO: FIX THIS
+  // const termData = new Set([
+  //   ...(termsData.prevTerm.term.length > 0 ? [`${prevTermName}, ${termsData.prevTerm.year}`] : []),
+  //   `${newTermName}, ${termsData.newTerm.year}`,
+  // ]);
+  const termData = new Set([]);
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
