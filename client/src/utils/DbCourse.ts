@@ -167,7 +167,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       capacity: dbClass.courseEnrolment.capacity,
       periods: [],
       section: dbClass.section,
-      classNo: dbClass.classID,
+      classNo: dbClass.classID, // TODO: fix this
       term: dbClass.term,
       year: '',
     };

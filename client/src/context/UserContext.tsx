@@ -68,6 +68,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const res = await response.json();
+      console.log(res);
       const timetables = await Promise.all(
         res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, term, year)),
       );
@@ -127,6 +128,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
   };
 
   const fetchUserInfo = (userID: string) => {
+    console.log('TESTTESTS');
     if (term !== 'T0') getUserInfo(userID);
     getGroups(userID);
   };
@@ -138,6 +140,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           credentials: 'include',
         });
         const userResponse = await response.text();
+        console.log(userResponse);
         if (userResponse !== '') {
           const userID = JSON.parse(userResponse);
           fetchUserInfo(userID);
