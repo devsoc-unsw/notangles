@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { LoginGuard } from './login.guard';
 import { UserService } from 'src/user/user.service';
 import { ConfigService } from '@nestjs/config';
+import { InitUserDTO, UserDTO } from 'src/user/dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,18 +19,50 @@ export class AuthController {
   @Get('/login')
   login() {}
 
+  checkUserDataUpdatedBeforeLogin = (
+    userData: UserDTO,
+    updatedUserData: InitUserDTO,
+  ) => {
+    if (
+      userData.firstname !== updatedUserData.firstname ||
+      userData.lastname !== updatedUserData.lastname ||
+      userData.email !== updatedUserData.email
+    ) {
+      return true;
+    }
+
+    return false;
+  };
   @Get('/user')
   async user(@Request() req, @Res() res: Response) {
     if (req.user) {
       const userID = req.user.userinfo.sub;
-      try {
-        await this.userService.getUserInfo(userID);
-      } catch (e) {
-        console.debug(`User ${userID} does not exist in db, adding them now!`);
+      const updateUserData = async () => {
         await this.userService.setUserProfile({
           userID: userID,
           email: '',
+          firstname: req.user.userinfo.userData.firstName,
+          lastname: req.user.userinfo.userData.lastName,
         });
+      };
+      try {
+        const userData = await this.userService.getUserInfo(userID);
+        if (
+          this.checkUserDataUpdatedBeforeLogin(
+            userData,
+            req.user.userinfo.userData,
+          )
+        ) {
+          console.debug(
+            'The user ' +
+              userID +
+              ' has their profiles updated! Updating now :)',
+          );
+          updateUserData();
+        }
+      } catch (e) {
+        console.debug(`User ${userID} does not exist in db, adding them now!`);
+        updateUserData();
       }
       return res.json(req.user.userinfo.sub);
     }
