@@ -174,15 +174,12 @@ const App: React.FC = () => {
       setTermName(termName);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      const termList = termsData.keys();
-      const termsSortedList: TermDataList = sortTerms();
+      const termsSortedList: TermDataList = sortTerms(termsData);
       setTermsData(termsSortedList);
-      console.log(termsSortedList);
 
       const oldData = storage.get('timetables');
-
+      // TODO: Check if there is a bug here
       // avoid overwriting data from previous save
-      console.log(termsData);
       let newTimetableTerms: DisplayTimetablesMap = {};
       for (const termId of termsData) {
         newTimetableTerms = {
@@ -194,7 +191,7 @@ const App: React.FC = () => {
           },
         };
       }
-      console.log(newTimetableTerms);
+
       setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
     };
@@ -207,7 +204,7 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList(term);
+      const { courses } = await getCoursesList(term.substring(0, 2));
       setCoursesList(courses);
     };
 
@@ -296,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -323,8 +320,8 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
-
-      if (displayTimetables[term].length > 0) {
+      console.log(displayTimetables, 'TESTETESTS');
+      if (term && term in displayTimetables && displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(
             newSelectedCourses.map((course) => course.code),

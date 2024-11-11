@@ -144,7 +144,7 @@ export const AppContext = createContext<IAppContext>({
   latestEndTime: getDefaultEndTime(true),
   setLatestEndTime: () => {},
 
-  term: undefined,
+  term: '',
   setTerm: () => {},
 
   termName: ``,
@@ -178,7 +178,7 @@ export const AppContext = createContext<IAppContext>({
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   let termData = {
     year: '',
-    term: undefined,
+    term: '',
     termNumber: '',
     termName: '',
     firstDayOfTerm: '',

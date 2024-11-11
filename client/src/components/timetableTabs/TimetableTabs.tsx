@@ -100,7 +100,6 @@ const TimetableTabs: React.FC = () => {
         [term]: [...displayTimetables[term], newTimetable],
       };
       storage.set('timetables', addingNewTimetables);
-
       setDisplayTimetables(addingNewTimetables);
 
       // Clearing the selected courses, classes and created events for the new timetable
@@ -163,9 +162,6 @@ const TimetableTabs: React.FC = () => {
     setAnchorElement({ x: event.clientX, y: event.clientY });
   };
 
-  if (!term) return;
-  console.log(term, 'TERMS TERMS', displayTimetables, displayTimetables[term]);
-
   return (
     <TabsSection>
       <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
@@ -173,10 +169,7 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {Object.keys(displayTimetables).length > 0 &&
-                term &&
-                displayTimetables[term] &&
-                displayTimetables[term][Symbol.iterator] === 'function'
+                {Object.keys(displayTimetables).length > 0 && term && displayTimetables[term]
                   ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
                       <Draggable draggableId={index.toString()} index={index} key={index}>
                         {(props) => {

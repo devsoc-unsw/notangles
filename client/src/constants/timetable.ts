@@ -88,7 +88,17 @@ const get_current_term = async (
       return keys_term[currTermIndex];
     }
   }
-  return undefined;
+  return '';
+};
+
+export const convertToTermName = (termId: string) => {
+  if (!termId) return '';
+  const termPrefix = termId.substring(0, 2);
+  if (termPrefix === 'U1') {
+    return `Summer Term`;
+  } else {
+    return `Term ${termPrefix.substring(1, 2)}`;
+  }
 };
 
 /**
@@ -113,16 +123,6 @@ export const getAvailableTermDetails = async () => {
   const year = termData.year || '';
   let firstDayOfTerm = termData.firstDayOfTerm || ``;
 
-  const parseTermData = (termId: string) => {
-    if (!termId) return '';
-    const termPrefix = termId.substring(0, 2);
-    if (termPrefix === 'U1') {
-      return `Summer Term`;
-    } else {
-      return `Term ${termPrefix.substring(1, 2)}`;
-    }
-  };
-
   try {
     const termMapInfo = await constructTermDetailsMap();
     const currTermId = await get_current_term(termMapInfo);
@@ -134,18 +134,18 @@ export const getAvailableTermDetails = async () => {
     localStorage.setItem(
       'termData',
       JSON.stringify({
-        year: year,
+        year: currTermId?.substring(2),
         term: currTermId,
-        termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
+        termName: currTermId ? convertToTermName(currTermId.substring(0, 2)) : '',
         firstDayOfTerm: firstDayOfTerm,
         termsData: termsSortedList,
       }),
     );
 
     return {
-      year: year,
+      year: currTermId?.substring(2),
       term: currTermId,
-      termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
+      termName: currTermId ? convertToTermName(currTermId.substring(0, 2)) : '',
       firstDayOfTerm: firstDayOfTerm,
       termsData: termsSortedList,
     };

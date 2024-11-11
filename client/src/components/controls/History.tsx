@@ -86,7 +86,6 @@ const History: React.FC = () => {
     }
 
     const currentTimetable = displayTimetables[term][selectedTimetable];
-    console.log(currentTimetable);
     if (!currentTimetable) return;
     // Create object if it doesn't exist
     if (!timetableActions.current[currentTimetable.id]) {
