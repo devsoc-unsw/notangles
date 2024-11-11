@@ -109,6 +109,7 @@ export const getAvailableTermDetails = async () => {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
 
+  console.log(termData, 'TESTING Localstorage');
   const year = termData.year || '';
   let firstDayOfTerm = termData.firstDayOfTerm || ``;
 

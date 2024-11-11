@@ -92,7 +92,6 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
 
   console.log(termsData);
   const termDataStrList = termsData.map((val) => {
-    console.log(val);
     return `${val?.substring(0, 2)}, ${val?.substring(2)}`;
   });
 

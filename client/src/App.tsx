@@ -174,7 +174,8 @@ const App: React.FC = () => {
       setTermName(termName);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      const termsSortedList: TermDataList = sortTerms(Array.from(termsData.keys()));
+      const termList = termsData.keys();
+      const termsSortedList: TermDataList = sortTerms();
       setTermsData(termsSortedList);
       console.log(termsSortedList);
 
