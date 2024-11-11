@@ -5,7 +5,7 @@ import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
 import { Term, TermDataList } from '../interfaces/Periods';
 
-function sortTerms(terms: Term[]): Term[] {
+export function sortTerms(terms: Term[]): Term[] {
   const termOrder: Record<string, number> = { U1: 0, T1: 1, T2: 2, T3: 3 };
 
   return terms.sort((a: Term, b: Term) => {
@@ -99,7 +99,7 @@ export const getAvailableTermDetails = async () => {
   // and the api will replace them with valid ones and return them.
   let termData = {
     year: '',
-    term: '',
+    term: undefined,
     termNumber: '',
     termName: '',
     firstDayOfTerm: '',
@@ -134,7 +134,7 @@ export const getAvailableTermDetails = async () => {
       'termData',
       JSON.stringify({
         year: year,
-        term: currTermId || 'T12025',
+        term: currTermId,
         termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
         firstDayOfTerm: firstDayOfTerm,
         termsData: termsSortedList,
@@ -143,7 +143,7 @@ export const getAvailableTermDetails = async () => {
 
     return {
       year: year,
-      term: currTermId || 'T12025',
+      term: currTermId,
       termName: currTermId ? parseTermData(currTermId.substring(0, 2)) : '',
       firstDayOfTerm: firstDayOfTerm,
       termsData: termsSortedList,

@@ -83,18 +83,20 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [open, setOpen] = useState(false);
-
+  console.log(term, termName, 'TS.tsc');
   // let newTermName = `Term ${termsData.newTerm.term[1]}`;
   let newTermName = 'Term -1';
   if (newTermName.includes('Summer')) {
     newTermName = 'Summer Term';
   }
-  // TODO: FIX THIS
-  // const termData = new Set([
-  //   ...(termsData.prevTerm.term.length > 0 ? [`${prevTermName}, ${termsData.prevTerm.year}`] : []),
-  //   `${newTermName}, ${termsData.newTerm.year}`,
-  // ]);
-  const termData = new Set([]);
+
+  console.log(termsData);
+  const termDataStrList = termsData.map((val) => {
+    console.log(val);
+    return `${val?.substring(0, 2)}, ${val?.substring(2)}`;
+  });
+
+  console.log(termDataStrList);
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
@@ -108,7 +110,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
       termNum = 'Summer';
     }
 
-    setTerm(termNum);
+    setTerm(term);
     setYear(newYear);
     setTermName(newTermName);
     setSelectedTimetable(defaultStartTimetable);
@@ -160,7 +162,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
             value={isMobile ? term : termName.concat(', ', year)}
             onChange={selectTerm}
           >
-            {Array.from(termData).map((term, index) => {
+            {Array.from(termDataStrList).map((term, index) => {
               return (
                 <MenuItem key={index} value={term}>
                   {term}

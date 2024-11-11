@@ -23,6 +23,7 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
+  sortTerms,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -39,6 +40,7 @@ import {
   DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
+  TermDataList,
 } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
@@ -172,7 +174,10 @@ const App: React.FC = () => {
       setTermName(termName);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      setTermsData(termsData);
+      const termsSortedList: TermDataList = sortTerms(Array.from(termsData.keys()));
+      setTermsData(termsSortedList);
+      console.log(termsSortedList);
+
       const oldData = storage.get('timetables');
 
       // avoid overwriting data from previous save
@@ -189,7 +194,6 @@ const App: React.FC = () => {
         };
       }
       console.log(newTimetableTerms);
-
       setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
     };

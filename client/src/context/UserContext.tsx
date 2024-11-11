@@ -102,7 +102,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           const userID = JSON.parse(userResponse);
           fetchUserInfo(userID);
         } else {
-          throw new NetworkError("Couldn't get response");
+          console.error("Couldn't get response for user information!");
+          // throw new NetworkError("Couldn't get response");
         }
       } catch (error) {
         console.log(error);
