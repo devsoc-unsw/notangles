@@ -320,7 +320,6 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
-      console.log(displayTimetables, 'TESTETESTS');
       if (term && term in displayTimetables && displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(

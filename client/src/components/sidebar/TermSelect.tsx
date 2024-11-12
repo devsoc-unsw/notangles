@@ -105,7 +105,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
 
     const newYear = termInfo[1];
 
-    const termName = (termPrefix + year) as Term; // To get a string like T12024
+    const termName = (termPrefix + newYear) as Term; // To get a string like T12024
     setTerm(termName);
     setYear(newYear);
     setTermName(convertToTermName(termName!));
