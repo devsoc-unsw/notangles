@@ -293,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term!.substring(0, 2), code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
