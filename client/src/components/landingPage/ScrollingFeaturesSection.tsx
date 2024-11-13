@@ -1,6 +1,6 @@
-import AutoTimetable from "../../assets/AutoTimetable.gif"
-import PlanAhead from "../../assets/PlanAhead.gif"
-import SelectCourse from "../../assets/SelectCourses.gif"
+import AutoTimetable from '../../assets/AutoTimetable.gif';
+import PlanAhead from '../../assets/PlanAhead.gif';
+import SelectCourse from '../../assets/SelectCourses.gif';
 
 interface FeatureItemProps {
   number: string;
@@ -35,20 +35,22 @@ const ScrollingFeaturesSection = () => {
     {
       number: '01',
       title: 'Course Selector',
-      description: 'Search and select your desired course and get a general overview of each class, their times and locations, all before the registrations start!',
-      gif: SelectCourse
+      description:
+        'Search and select your desired course and get a general overview of each class, their times and locations, all before the registrations start!',
+      gif: SelectCourse,
     },
     {
       number: '02',
       title: 'Plan Ahead',
-      description: 'Add any course classes or custom events to your calendar, effectively scheduling all your uni commitments!',
-      gif: PlanAhead
+      description:
+        'Add any course classes or custom events to your calendar, effectively scheduling all your uni commitments!',
+      gif: PlanAhead,
     },
     {
       number: '03',
       title: 'Auto Timetabling',
       description: 'Struggling to make your ideal timetable? Put in your preferences and we’ll generate one for you!',
-      gif: AutoTimetable
+      gif: AutoTimetable,
     },
   ];
 
