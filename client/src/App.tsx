@@ -178,8 +178,7 @@ const App: React.FC = () => {
       setTermsData(termsSortedList);
 
       const oldData = storage.get('timetables');
-      // TODO: Check if there is a bug here
-      // avoid overwriting data from previous save
+
       let newTimetableTerms: DisplayTimetablesMap = {};
       for (const termId of termsData) {
         newTimetableTerms = {
