@@ -30,7 +30,7 @@ export interface TermData {
 
 export interface ClassData {
   id: string;
-  classNo: number;
+  classNo: string;
   courseCode: CourseCode;
   courseName: string;
   activity: Activity;
@@ -77,7 +77,7 @@ export interface ClassTimeDTO {
 }
 
 export interface ScrapedClassDTO {
-  classID: number;
+  classID: string;
   section: string;
   term: string;
   activity: string;

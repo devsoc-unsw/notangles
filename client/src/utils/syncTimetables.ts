@@ -121,6 +121,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string
         // getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
         timetableDTO.mapKey,
         code,
+        currentYear,
         true,
       );
     }),

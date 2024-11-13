@@ -68,7 +68,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         },
       });
       const res = await response.json();
-      console.log(res);
       const timetables = await Promise.all(
         res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, term, year)),
       );

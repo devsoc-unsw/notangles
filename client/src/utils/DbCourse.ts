@@ -169,7 +169,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       section: dbClass.section,
       classNo: dbClass.classID,
       term: dbClass.term,
-      year: '2024', // TODO: REPLACE
+      year: '2025', // TODO: REPLACE
     };
 
     classData.periods = dbClass.times.map((dbTime) => dbTimesToPeriod(dbTime, classData, isConvertToLocalTimezone));
