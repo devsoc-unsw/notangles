@@ -23,6 +23,7 @@ import {
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
+  sortTerms,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
@@ -39,6 +40,7 @@ import {
   DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
+  TermDataList,
 } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
@@ -114,7 +116,6 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermsData,
-    setTermNumber,
     setCoursesList,
     selectedTimetable,
     displayTimetables,
@@ -169,28 +170,27 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
       setTerm(term);
       setTermName(termName);
-      setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      setTermsData(termsData);
+      const termsSortedList: TermDataList = sortTerms(termsData);
+      setTermsData(termsSortedList);
+
       const oldData = storage.get('timetables');
 
-      // avoid overwriting data from previous save
-      const newTimetableTerms: DisplayTimetablesMap = {
-        ...{
-          [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
-            ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(user.userID),
-        },
-        ...{
-          [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
-            ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(user.userID),
-        },
-      };
+      let newTimetableTerms: DisplayTimetablesMap = {};
+      for (const termId of termsData) {
+        newTimetableTerms = {
+          ...newTimetableTerms,
+          ...{
+            [termId as string]: oldData.hasOwnProperty(termId as string)
+              ? oldData[termId as string]
+              : createDefaultTimetable(),
+          },
+        };
+      }
 
       setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
@@ -204,7 +204,7 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList(term);
+      const { courses } = await getCoursesList(term.substring(0, 2));
       setCoursesList(courses);
     };
 
@@ -293,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -320,8 +320,7 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
-
-      if (displayTimetables[term].length > 0) {
+      if (term && term in displayTimetables && displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(
             newSelectedCourses.map((course) => course.code),
@@ -378,6 +377,7 @@ const App: React.FC = () => {
       setDisplayTimetables(updatedWithTerms);
     }
 
+    if (!storage.get('timetables') || !storage.get('timetables')[term][selectedTimetable]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,

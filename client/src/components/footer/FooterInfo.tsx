@@ -1,10 +1,9 @@
 import { Grid, Stack } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import NotanglesLogoGif from '../../assets/notangles.gif';
 import NotanglesLogo from '../../assets/notangles_1.png';
-import { AppContext } from '../../context/AppContext';
 
 interface TitleTextProps {
   isLarge?: boolean;
