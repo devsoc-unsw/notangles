@@ -79,6 +79,7 @@ const TimetableTabs: React.FC = () => {
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
+    if (!term) return;
     if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
@@ -99,7 +100,6 @@ const TimetableTabs: React.FC = () => {
         [term]: [...displayTimetables[term], newTimetable],
       };
       storage.set('timetables', addingNewTimetables);
-
       setDisplayTimetables(addingNewTimetables);
 
       // Clearing the selected courses, classes and created events for the new timetable
@@ -120,7 +120,7 @@ const TimetableTabs: React.FC = () => {
   const handleSortTabs = (result: DropResult) => {
     const { destination, source } = result;
 
-    if (!destination) {
+    if (!destination || !term) {
       return;
     }
 
@@ -154,6 +154,7 @@ const TimetableTabs: React.FC = () => {
 
   // Right clicking a tab will switch to that tab and open the menu
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
+    if (!term) return;
     event.preventDefault();
     handleSwitchTimetables(displayTimetables[term], index);
 
@@ -168,7 +169,7 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {Object.keys(displayTimetables).length > 0
+                {Object.keys(displayTimetables).length > 0 && term && displayTimetables[term]
                   ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
                       <Draggable draggableId={index.toString()} index={index} key={index}>
                         {(props) => {

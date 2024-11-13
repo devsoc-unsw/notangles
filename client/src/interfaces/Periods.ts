@@ -138,11 +138,8 @@ export interface CourseDataMap {
   map: CourseData[];
 }
 
-export interface TermDataMap {
-  prevTerm: TermData;
-  newTerm: TermData;
-}
-
+export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}` | string;
+export type TermDataList = Term[];
 export interface DisplayTimetablesMap {
   [key: string]: TimetableData[];
 }

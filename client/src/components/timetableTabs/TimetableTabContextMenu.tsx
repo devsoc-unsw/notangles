@@ -101,7 +101,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         ...displayTimetables,
         [term]: displayTimetables[term].filter((timetable: TimetableData, index: number) => index !== targetIndex),
       };
-
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newDisplayTimetables);
 

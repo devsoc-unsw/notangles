@@ -226,9 +226,8 @@ const Sidebar: React.FC = () => {
               <FriendsButton collapsed={collapsed} />
               <Divider />
               {modalData.map((modal, index) => (
-                <>
+                <React.Fragment key={index}>
                   <CustomModal
-                    key={index}
                     title={modal.title}
                     toolTipTitle={modal.toolTipTitle}
                     showIcon={modal.showIcon}
@@ -237,7 +236,7 @@ const Sidebar: React.FC = () => {
                     collapsed={collapsed}
                     isClickable={modal.isClickable}
                   />
-                </>
+                </React.Fragment>
               ))}
             </NavComponentsContainer>
           </SideBarContainer>
