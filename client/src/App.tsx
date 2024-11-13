@@ -187,7 +187,7 @@ const App: React.FC = () => {
           ...{
             [termId as string]: oldData.hasOwnProperty(termId as string)
               ? oldData[termId as string]
-              : createDefaultTimetable(),
+              : createDefaultTimetable(user.userID),
           },
         };
       }
