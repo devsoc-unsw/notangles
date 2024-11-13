@@ -88,7 +88,7 @@ const get_current_term = async (
       return keys_term[currTermIndex];
     }
   }
-  return '';
+  return keys_term[1]; // eg. default to Term 1 next year.
 };
 
 export const convertToTermName = (termId: string) => {
@@ -119,8 +119,6 @@ export const getAvailableTermDetails = async () => {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
 
-  console.log(termData, 'TESTING Localstorage');
-  const year = termData.year || '';
   let firstDayOfTerm = termData.firstDayOfTerm || ``;
 
   try {
