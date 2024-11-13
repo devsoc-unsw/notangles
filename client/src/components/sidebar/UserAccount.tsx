@@ -86,7 +86,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     window.location.replace(windowLocation);
     setUser(undefinedUser);
   };
-
   if (!user.userID) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
