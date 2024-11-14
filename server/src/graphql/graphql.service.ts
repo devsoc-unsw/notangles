@@ -26,6 +26,9 @@ export const GET_COURSE_INFO = `
           weeks
           location
         }
+        consent
+        mode
+        class_notes
       }
     }
   }

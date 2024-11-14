@@ -38,9 +38,7 @@ export class UserService {
             clz.year,
           );
           const courseInfoFetch = courseInfoFetchPromise.data.courses;
-          cache[k] = courseInfoFetch[0].classes.map((c) => {
-            return { ...c };
-          });
+          cache[k] = courseInfoFetch[0].classes;
         }
       }
 
@@ -52,10 +50,25 @@ export class UserService {
             activity: clz.activity,
           };
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        const data = cache[k].find((c) => c.classID === clz.classNo);
-        return { ...data, courseCode: clz.courseCode };
+        const { class_id, course_enrolment, consent, class_notes, ...data } =
+          cache[k].find((c) => c.class_id === clz.classNo);
+
+        const [enrolments, capacity] = course_enrolment.split('/');
+        return {
+          ...data,
+          classID: class_id,
+          course_enrolment: { enrolments, capacity },
+          termDates: {
+            start: '',
+            end: '',
+          },
+          needsConsent: consent,
+          courseCode: clz.courseCode,
+          notes: [class_notes],
+        };
       });
 
+      console.log(res);
       return res;
     } catch (e) {
       throw new Error(e);
