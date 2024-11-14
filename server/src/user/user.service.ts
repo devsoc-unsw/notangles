@@ -39,7 +39,7 @@ export class UserService {
           );
           const courseInfoFetch = courseInfoFetchPromise.data.courses;
           cache[k] = courseInfoFetch[0].classes.map((c) => {
-            return { ...c, classID: `${clz.courseCode}-${c.class_id}` };
+            return { ...c };
           });
         }
       }

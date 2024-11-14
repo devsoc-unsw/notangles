@@ -130,7 +130,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string
   // Next, reverse the selected classes info from class data
   const classDataMap: Record<string, ClassData[]> = {}; // k (course code): v (ClassData[])
   courseInfo.forEach((course) => {
-    classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr));
+    classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr), []);
   });
 
   const selectedClasses: SelectedClasses = {};
