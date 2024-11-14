@@ -13,11 +13,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
 import { GroupDto } from 'src/group/dto/group.dto';
+import { GraphqlService } from 'src/graphql/graphql.service';
 
-const API_URL = 'https://timetable.csesoc.app/api/terms';
 @Injectable({})
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gql: GraphqlService,
+  ) {}
 
   private async convertClasses(
     classes: ClassDto[],
@@ -25,15 +28,18 @@ export class UserService {
     try {
       // For each class in class DTO, we need to fetch information
       const cache = {};
-
       for (const clz of classes) {
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
 
         if (!(k in cache) && clz.classNo !== '') {
-          const data = await fetch(`${API_URL}/${k}`);
-          const json = await data.json();
-          cache[k] = json.classes.map((c) => {
-            return { ...c, classID: `${clz.courseCode}-${c.classID}` };
+          const courseInfoFetchPromise = await this.gql.fetchCourseData(
+            clz.courseCode,
+            clz.term,
+            clz.year,
+          );
+          const courseInfoFetch = courseInfoFetchPromise.data.courses;
+          cache[k] = courseInfoFetch[0].classes.map((c) => {
+            return { ...c, classID: `${clz.courseCode}-${c.class_id}` };
           });
         }
       }
