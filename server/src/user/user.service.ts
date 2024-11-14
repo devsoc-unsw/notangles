@@ -57,12 +57,15 @@ export class UserService {
         return {
           ...data,
           classID: class_id,
-          course_enrolment: { enrolments, capacity },
+          courseEnrolment: {
+            enrolments: Number(enrolments),
+            capacity: Number(capacity),
+          },
           termDates: {
             start: '',
             end: '',
           },
-          needsConsent: consent,
+          needsConsent: consent == 'Consent not required',
           courseCode: clz.courseCode,
           notes: [class_notes],
         };
