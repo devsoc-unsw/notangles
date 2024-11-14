@@ -48,7 +48,7 @@ export class ClassTimeDto {
 
 // Get class from scraper
 export class ScrapedClassDto {
-  classID: number;
+  classID: string;
   section: string;
   term: string;
   activity: string;

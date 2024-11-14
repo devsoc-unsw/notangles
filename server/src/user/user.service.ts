@@ -79,8 +79,6 @@ export class UserService {
         };
       });
 
-      console.log(res);
-      console.log(res[0].times);
       return res;
     } catch (e) {
       throw new Error(e);

@@ -115,7 +115,6 @@ const getCourseInfo = async (
     });
 
     const json: DbCourse = graphQLCourseToDbCourse(data);
-
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.
@@ -175,7 +174,7 @@ const getCourseInfo = async (
     });
 
     if (!json) throw new NetworkError('Internal server error');
-
+    console.log(json);
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);

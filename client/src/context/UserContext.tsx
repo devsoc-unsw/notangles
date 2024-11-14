@@ -69,7 +69,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       });
       const res = await response.json();
       const timetables = await Promise.all(
-        res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, term, year)),
+        res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, year)),
       );
 
       // Unpack timetables based on key

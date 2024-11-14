@@ -24,28 +24,6 @@ interface DiffID {
 
 let timeoutID: NodeJS.Timeout;
 
-// Helper function to determine what year a term is in
-const getTimetableYear = (targetTerm: string, currentTerm: string, currentYear: string) => {
-  try {
-    const pattern = /[0-9]+$/;
-    const currNo = currentTerm.match(pattern);
-    const targetNo = targetTerm.match(pattern);
-
-    if (!currNo || !targetNo) {
-      return currentYear;
-    }
-
-    // Example: 2023 T3 is before 2024 T1
-    if (Number(targetNo[0]) > Number(currNo[0])) {
-      return String(Number(currentYear) - 1);
-    }
-
-    return currentYear;
-  } catch (e) {
-    return currentYear;
-  }
-};
-
 const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   const courseCodes = Object.keys(selectedClasses);
 
@@ -112,18 +90,13 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 };
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
-const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string, currentYear: string) => {
+const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentYear: string) => {
+  console.log(timetableDTO);
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
       // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
-      return getCourseInfo(
-        // getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
-        timetableDTO.mapKey,
-        code,
-        currentYear,
-        true,
-      );
+      return getCourseInfo(timetableDTO.mapKey.slice(0, 2), code, currentYear, true);
     }),
   );
 
@@ -136,6 +109,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string
   const selectedClasses: SelectedClasses = {};
   timetableDTO.selectedClasses.forEach((scrapedClassDTO: ScrapedClassDTO) => {
     const classID = scrapedClassDTO.classID;
+
     const courseCode: string = scrapedClassDTO.courseCode;
 
     if (!selectedClasses[courseCode]) {
