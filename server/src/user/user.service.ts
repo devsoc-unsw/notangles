@@ -50,10 +50,17 @@ export class UserService {
             activity: clz.activity,
           };
         const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
-        const { class_id, course_enrolment, consent, class_notes, ...data } =
-          cache[k].find((c) => c.class_id === clz.classNo);
+        const {
+          class_id,
+          course_enrolment,
+          consent,
+          times,
+          class_notes,
+          ...data
+        } = cache[k].find((c) => c.class_id === clz.classNo);
 
         const [enrolments, capacity] = course_enrolment.split('/');
+        const [start, end] = times[0].time.replace(/\s/g, '').split('-');
         return {
           ...data,
           classID: class_id,
@@ -65,6 +72,7 @@ export class UserService {
             start: '',
             end: '',
           },
+          times: { ...times[0], time: { start, end } },
           needsConsent: consent == 'Consent not required',
           courseCode: clz.courseCode,
           notes: [class_notes],
@@ -72,6 +80,7 @@ export class UserService {
       });
 
       console.log(res);
+      console.log(res[0].times);
       return res;
     } catch (e) {
       throw new Error(e);
