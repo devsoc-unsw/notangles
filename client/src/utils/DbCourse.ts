@@ -149,7 +149,6 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
 export const dbCourseToCourseData = (
   dbCourse: DbCourse,
   isConvertToLocalTimezone: boolean,
-  year: string,
 ): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
