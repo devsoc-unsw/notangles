@@ -11,6 +11,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { client } from './api/config';
 import App from './App';
 import EventShareModal from './components/EventShareModal';
+import LandingPage from './components/landingPage/LandingPage';
 import Friends from './components/friends/Friends';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
@@ -23,22 +24,30 @@ Sentry.init({
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
-const Root: React.FC = () => (
-  <AppContextProvider>
-    <CourseContextProvider>
-      <UserContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<App />} path="/">
-              <Route path="/event/:encrypted" element={<EventShareModal />} />
-              <Route path="/friends" element={<Friends />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </UserContextProvider>
-    </CourseContextProvider>
-  </AppContextProvider>
-);
+const Root: React.FC = () => {
+  const hasVisited = localStorage.getItem('visited');
+
+  return (
+    <AppContextProvider>
+      <CourseContextProvider>
+        <UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              {hasVisited ? (
+                <Route element={<App />} path="/">
+                  <Route path="/event/:encrypted" element={<EventShareModal />} />
+                  <Route path="/friends" element={<Friends />} />
+                </Route>
+              ) : (
+                <Route element={<LandingPage />} path="/" />
+              )}
+            </Routes>
+          </BrowserRouter>
+        </UserContextProvider>
+      </CourseContextProvider>
+    </AppContextProvider>
+  );
+};
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<Root />);

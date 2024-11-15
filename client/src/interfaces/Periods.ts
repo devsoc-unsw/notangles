@@ -30,7 +30,7 @@ export interface TermData {
 
 export interface ClassData {
   id: string;
-  classNo: number;
+  classNo: string;
   courseCode: CourseCode;
   courseName: string;
   activity: Activity;
@@ -77,7 +77,7 @@ export interface ClassTimeDTO {
 }
 
 export interface ScrapedClassDTO {
-  classID: number;
+  classID: string;
   section: string;
   term: string;
   activity: string;
@@ -200,11 +200,8 @@ export interface CourseDataMap {
   map: CourseData[];
 }
 
-export interface TermDataMap {
-  prevTerm: TermData;
-  newTerm: TermData;
-}
-
+export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}` | string;
+export type TermDataList = Term[];
 export interface DisplayTimetablesMap {
   [key: string]: TimetableData[];
 }

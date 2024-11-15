@@ -32,7 +32,6 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
       } else {
         newActivityCopy[activity] = null;
       }
-      // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
     newClasses[courseCode] = { ...newActivityCopy };
   });
@@ -154,8 +153,6 @@ const createDefaultTimetable = (userID: string | undefined): TimetableData[] => 
     createdEvents: {},
     assignedColors: {},
   };
-
-  console.log('create default timetable', userID);
 
   return [defaultTimetable];
 };

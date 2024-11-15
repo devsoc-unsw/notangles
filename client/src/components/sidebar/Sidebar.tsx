@@ -206,56 +206,56 @@ const Sidebar: React.FC = () => {
 
           <Divider />
 
-      <SideBarContainer>
-        <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
-        <NavComponentsContainer>
-          <CustomModal
-            title="Timetable"
-            toolTipTitle="Timetable"
-            showIcon={<CalendarMonth />}
-            description={'Current Timetable'}
-            collapsed={collapsed}
-            isSelected={location.pathname === '/'}
-            onNavigate="/"
-          />
-          <CustomModal
-            title="Friends"
-            toolTipTitle="Coming Soon: Friends Timetables"
-            showIcon={<Group />}
-            description={'View Friends Timetables'}
-            collapsed={collapsed}
-            isSelected={location.pathname === '/friends'}
-            onNavigate="/friends"
-          />
-          <Divider />
-          {modalData.map((modal, index) => (
-            <>
+          <SideBarContainer>
+            <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
+            <NavComponentsContainer>
               <CustomModal
-                key={index}
-                title={modal.title}
-                toolTipTitle={modal.toolTipTitle}
-                showIcon={modal.showIcon}
-                description={modal.description}
-                content={modal.content}
+                title="Timetable"
+                toolTipTitle="Timetable"
+                showIcon={<CalendarMonth />}
+                description={'Current Timetable'}
                 collapsed={collapsed}
+                isSelected={location.pathname === '/'}
+                onNavigate="/"
               />
-            </>
-          ))}
-        </NavComponentsContainer>
-      </SideBarContainer>
+              <CustomModal
+                title="Friends"
+                toolTipTitle="Coming Soon: Friends Timetables"
+                showIcon={<Group />}
+                description={'View Friends Timetables'}
+                collapsed={collapsed}
+                isSelected={location.pathname === '/friends'}
+                onNavigate="/friends"
+              />
+              <Divider />
+              {modalData.map((modal, index) => (
+                <>
+                  <CustomModal
+                    key={index}
+                    title={modal.title}
+                    toolTipTitle={modal.toolTipTitle}
+                    showIcon={modal.showIcon}
+                    description={modal.description}
+                    content={modal.content}
+                    collapsed={collapsed}
+                  />
+                </>
+              ))}
+            </NavComponentsContainer>
+          </SideBarContainer>
         </div>
-      <SidebarFooter>
-        <DarkModeButton collapsed={collapsed} />
-        <UserAccount collapsed={collapsed} />
-        {!collapsed ? (
-          <SidebarFooterText>
-            <Divider />
-            <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
-          </SidebarFooterText>
-        ) : (
-          <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
-        )}
-      </SidebarFooter>
+        <SidebarFooter>
+          <DarkModeButton collapsed={collapsed} />
+          <UserAccount collapsed={collapsed} />
+          {!collapsed ? (
+            <SidebarFooterText>
+              <Divider />
+              <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
+            </SidebarFooterText>
+          ) : (
+            <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
+          )}
+        </SidebarFooter>
       </MainSidebar>
     </StyledSidebar>
   );

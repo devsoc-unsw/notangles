@@ -9,7 +9,7 @@ export interface DbCourse {
 export interface DbClass {
   activity: Activity;
   times: DbTimes[];
-  classID: number;
+  classID: string;
   status: Status;
   courseEnrolment: DbCourseEnrolment;
   section: Section;

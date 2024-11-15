@@ -65,7 +65,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
     if (courseCode !== '') {
-      getCourseInfo(term, courseCode, isConvertToLocalTimezone)
+      getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), isConvertToLocalTimezone)
         .catch((err) => {
           return err;
         })

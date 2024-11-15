@@ -24,28 +24,6 @@ interface DiffID {
 
 let timeoutID: NodeJS.Timeout;
 
-// Helper function to determine what year a term is in
-const getTimetableYear = (targetTerm: string, currentTerm: string, currentYear: string) => {
-  try {
-    const pattern = /[0-9]+$/;
-    const currNo = currentTerm.match(pattern);
-    const targetNo = targetTerm.match(pattern);
-
-    if (!currNo || !targetNo) {
-      return currentYear;
-    }
-
-    // Example: 2023 T3 is before 2024 T1
-    if (Number(targetNo[0]) > Number(currNo[0])) {
-      return String(Number(currentYear) - 1);
-    }
-
-    return currentYear;
-  } catch (e) {
-    return currentYear;
-  }
-};
-
 const convertClassToDTO = (selectedClasses: SelectedClasses) => {
   const courseCodes = Object.keys(selectedClasses);
 
@@ -102,7 +80,6 @@ const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) =
 };
 
 const convertTimetableToDTO = (timetable: TimetableData) => {
-  console.log(timetable.selectedClasses);
   return {
     ...timetable,
     selectedCourses: timetable.selectedCourses.map((t) => t.code),
@@ -112,29 +89,25 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 };
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
-const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentTerm: string, currentYear: string) => {
+const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentYear: string) => {
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
       // TODO: populate with year and term dynamically (is convert to local timezone is a setting to recover)
-      return getCourseInfo(
-        getTimetableYear(timetableDTO.mapKey, currentTerm, currentYear),
-        timetableDTO.mapKey,
-        code,
-        true,
-      );
+      return getCourseInfo(timetableDTO.mapKey.slice(0, 2), code, currentYear, true);
     }),
   );
 
   // Next, reverse the selected classes info from class data
   const classDataMap: Record<string, ClassData[]> = {}; // k (course code): v (ClassData[])
   courseInfo.forEach((course) => {
-    classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr));
+    classDataMap[course.code] = Object.values(course.activities).reduce((prev, curr) => prev.concat(curr), []);
   });
 
   const selectedClasses: SelectedClasses = {};
   timetableDTO.selectedClasses.forEach((scrapedClassDTO: ScrapedClassDTO) => {
     const classID = scrapedClassDTO.classID;
+
     const courseCode: string = scrapedClassDTO.courseCode;
 
     if (!selectedClasses[courseCode]) {
@@ -222,7 +195,7 @@ const syncDeleteTimetable = async (timetableId: string) => {
       },
     });
   } catch (e) {
-    console.log('todo');
+    console.log(e);
   }
 };
 
@@ -311,7 +284,6 @@ const runSync = (
     const trueMap: DisplayTimetablesMap = {};
 
     if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
-      console.log('same');
       return;
     }
 
@@ -320,13 +292,11 @@ const runSync = (
       const newTimetables = newMap[key];
 
       const diffs = getTimetableDiffs(oldTimetables, newTimetables);
-      console.log('diff', diffs);
 
       trueMap[key] = await updateTimetableDiffs(user.userID, newTimetables, diffs, key);
     }
 
     // Save to user timetable
-    console.log(trueMap);
     setMap(trueMap);
     setUser({ ...user, timetables: structuredClone(trueMap) });
   }, 5000);

@@ -86,7 +86,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     setUser(undefinedUser);
     storage.set('timetables', createDefaultTimetable(undefined));
   };
-
   if (!user.userID) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">

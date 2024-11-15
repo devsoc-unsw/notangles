@@ -12,8 +12,10 @@ import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
+import { convertToTermName } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { Term } from '../../interfaces/Periods';
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -84,41 +86,34 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
 
   const [open, setOpen] = useState(false);
 
-  let prevTermName = `Term ${termsData.prevTerm.term[1]}`;
-  if (prevTermName.includes('Summer')) {
-    prevTermName = 'Summer Term';
-  }
-
-  let newTermName = `Term ${termsData.newTerm.term[1]}`;
-  if (newTermName.includes('Summer')) {
-    newTermName = 'Summer Term';
-  }
-
-  const termData = new Set([
-    ...(termsData.prevTerm.term.length > 0 ? [`${prevTermName}, ${termsData.prevTerm.year}`] : []),
-    `${newTermName}, ${termsData.newTerm.year}`,
-  ]);
+  const termDataStrList = termsData.map((val) => {
+    return `${convertToTermName(val!)}, ${val?.substring(2)}`;
+  });
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
+    // Convert to Term data
+    const termValue = e.target.value;
+    const termInfo = termValue.split(', ');
 
-    const newTermName = e.target.value.split(', ')[0];
-    let termNum = 'T' + newTermName.split(' ')[1];
-    const newYear = e.target.value.split(', ')[1];
-
-    if (e.target.value.includes('Summer')) {
-      // This is a summer term.
-      termNum = 'Summer';
+    let termPrefix = '';
+    if (termInfo[0].includes('Summer')) {
+      termPrefix = 'U1';
+    } else {
+      termPrefix = 'T' + termInfo[0].split(' ')[1];
     }
 
-    setTerm(termNum);
+    const newYear = termInfo[1];
+
+    const termName = (termPrefix + newYear) as Term; // To get a string like T12024
+    setTerm(termName);
     setYear(newYear);
-    setTermName(newTermName);
+    setTermName(convertToTermName(termName!));
     setSelectedTimetable(defaultStartTimetable);
-    setSelectedClasses(displayTimetables[termNum][defaultStartTimetable].selectedClasses);
-    setCreatedEvents(displayTimetables[termNum][defaultStartTimetable].createdEvents);
-    setSelectedCourses(displayTimetables[termNum][defaultStartTimetable].selectedCourses);
-    setAssignedColors(displayTimetables[termNum][defaultStartTimetable].assignedColors);
+    setSelectedClasses(displayTimetables[termName!][defaultStartTimetable].selectedClasses);
+    setCreatedEvents(displayTimetables[termName!][defaultStartTimetable].createdEvents);
+    setSelectedCourses(displayTimetables[termName!][defaultStartTimetable].selectedCourses);
+    setAssignedColors(displayTimetables[termName!][defaultStartTimetable].assignedColors);
   };
 
   const handleMouseDown = (event: any) => {
@@ -133,7 +128,6 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
   const handleOpen = () => {
     setOpen(true);
   };
-
   return (
     <FormControl onMouseDown={handleMouseDown}>
       {collapsed ? (
@@ -146,7 +140,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
               handleOpen();
             }}
           >
-            <TermDisplay>{term}</TermDisplay>
+            <TermDisplay>{term?.substring(0, 2)}</TermDisplay>
           </Tooltip>
         </>
       ) : (
@@ -160,10 +154,10 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
             open={open}
             onClose={handleClose}
             onOpen={handleOpen}
-            value={isMobile ? term : termName.concat(', ', year)}
+            value={isMobile ? term : termName.concat(', ', term?.substring(2) as string)}
             onChange={selectTerm}
           >
-            {Array.from(termData).map((term, index) => {
+            {Array.from(termDataStrList).map((term, index) => {
               return (
                 <MenuItem key={index} value={term}>
                   {term}
