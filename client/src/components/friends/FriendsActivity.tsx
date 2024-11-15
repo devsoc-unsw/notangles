@@ -6,7 +6,14 @@ import getCourseInfo from '../../api/getCourseInfo';
 import { getAvailableTermDetails } from '../../constants/timetable';
 import { UserContext } from '../../context/UserContext';
 import NetworkError from '../../interfaces/NetworkError';
-import { CourseCode, CourseData, EventPeriod } from '../../interfaces/Periods';
+import {
+  ClassPeriod,
+  CourseCode,
+  CourseData,
+  EventPeriod,
+  ScrapedClassDTO,
+  SelectedClasses,
+} from '../../interfaces/Periods';
 import timeoutPromise from '../../utils/timeoutPromise';
 
 const Container = styled('div')`
@@ -89,34 +96,86 @@ export type CurrentActivity = {
 
 const getCurrentActivity = async (userId: string): Promise<CurrentActivity | null> => {
   // get the user's timetable data
-  const baseURL = `${API_URL.server}/user/timetable/${userId}`;
   try {
-    const data = await timeoutPromise(1000, fetch(baseURL));
-    const json = await data.json();
-    if (data.status === 400) {
-      throw new NetworkError('Internal server error');
+    const res = await fetch(`${API_URL.server}/user/timetable/${userId}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    if (res.status !== 200) throw new NetworkError("Couldn't get response");
+
+    const friendTimetablesStatus = await res.json();
+    const friendTimetables = friendTimetablesStatus.data;
+
+    if (friendTimetables.length === 0) {
+      return null;
     }
 
-    console.log('json', json);
-    if (!json) return null;
+    const mainTimetable = friendTimetables[0];
+    /*
+    TODO: tldr just need to fix getCurrentActivity  and findCurrentActivity  to return a useful object like the below from the database timetable object
+    export type CurrentActivity = {
+      friendName: string;
+      activityTitle: string; // i.e. in a [activity] tutorial
+      location: string; // so this will be `[course_code] at [room location]`
+      time_slot: string; // i.e. 12:00 - 14:00
+    };
+    ^ or if its a custom event then minor changes based on the event info
+    */
 
-    const selectedCourses = json.selectedCourses;
+    // const classesList: ClassPeriod[] = mainTimetable.selectedClasses.map((classDTO: any) => {
+    //   return {
+    //     type: 'class',
+    //     classId: classDTO.classID,
+    //     courseCode: classDTO.courseCode,
+    //     activity: classDTO.activity,
+    //     subActivity: classDTO.subActivity,
+    //     time: classDTO.time,
+    //     locations: classDTO.locations,
+    //   };
+    // });
 
-    const { year, term } = await getAvailableTermDetails();
-    const isConvertToLocalTimezone = true;
+    // console.log('classeslIST', classesList);
 
-    const courseInfos = await Promise.all(
-      selectedCourses.map((courseCode: string) => {
-        getCourseInfo(term.slice(0, 2), courseCode as CourseCode, year, isConvertToLocalTimezone);
-      }),
-    );
+    // const eventsList: EventPeriod[] = mainTimetable.createdEvents.map((eventDTO: any) => {
+    //   return {
+    //     type: 'event',
+    //     subtype: eventDTO.subtype,
+    //     time: {
+    //       day: eventDTO.day,
+    //       start: eventDTO.start,
+    //       end: eventDTO.end,
+    //     },
+    //     event: {
+    //       id: eventDTO.id,
+    //       name: eventDTO.name,
+    //       location: eventDTO.location,
+    //       description: eventDTO.description || '',
+    //       color: eventDTO.colour,
+    //     },
+    //   };
+    // });
+    // console.log('eventsList', eventsList);
 
-    const now = new Date();
-    return findCurrentActivity(courseInfos, json.createdEvents, now);
+    return findCurrentActivity(mainTimetable.selectedClasses, mainTimetable.createdEvents, new Date());
   } catch (error) {
+    console.log('error', error);
     throw new NetworkError('Could not connect to server');
   }
 };
+
+/*
+TODO: tldr just need to fix getCurrentActivity  and findCurrentActivity  to return a useful object like the below from the database timetable object
+export type CurrentActivity = {
+  friendName: string;
+  activityTitle: string; // i.e. in a [activity] tutorial
+  location: string; // so this will be `[course_code] at [room location]`
+  time_slot: string; // i.e. 12:00 - 14:00
+};
+^ or if its a custom event then minor changes based on the event info
+*/
 
 const findCurrentActivity = (courseInfos: CourseData[], events: EventPeriod[], now: Date): CurrentActivity | null => {
   for (const courseInfo of courseInfos) {
