@@ -1,18 +1,16 @@
 import '@fontsource-variable/roboto-flex';
 import './index.css';
 
-import { ApolloProvider } from '@apollo/client';
 import { BrowserTracing } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { client } from './api/config';
 import App from './App';
 import EventShareModal from './components/EventShareModal';
-import LandingPage from './components/landingPage/LandingPage';
 import Friends from './components/friends/Friends';
+import LandingPage from './components/landingPage/LandingPage';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import UserContextProvider from './context/UserContext';

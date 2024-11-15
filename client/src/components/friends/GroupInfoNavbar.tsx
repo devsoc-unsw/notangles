@@ -1,12 +1,11 @@
 import styled from '@emotion/styled';
 import { ConnectWithoutContact as FriendsActivityIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { UserContext } from '../../context/UserContext';
 import UserIcon from '../user/UserIcon';
 import ActivityBar from './ActivityBar';
-import { Group } from '../../interfaces/Group';
 
 const Container = styled('div')`
   position: fixed;

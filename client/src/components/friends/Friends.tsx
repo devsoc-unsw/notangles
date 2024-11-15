@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -7,7 +7,6 @@ import { CourseContext } from '../../context/CourseContext';
 import { UserContext } from '../../context/UserContext';
 import { ClassData } from '../../interfaces/Periods';
 import Timetable from '../timetable/Timetable';
-import ActivityBar from './ActivityBar';
 import GroupInfoNavbar from './GroupInfoNavbar';
 
 const Container = styled('div')`

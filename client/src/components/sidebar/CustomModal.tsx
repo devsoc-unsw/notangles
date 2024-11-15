@@ -2,9 +2,9 @@ import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
-import { useNavigate } from 'react-router-dom';
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -57,7 +57,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   const navigate = useNavigate();
 
   const toggleIsOpen = () => {
-      setIsOpen(!isOpen);
+    setIsOpen(!isOpen);
   };
 
   const handleClick = () => {

@@ -146,10 +146,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
  * const json: DBCourse = await data.json()
  * const courseInfo = dbCourseToCourseData(json)
  */
-export const dbCourseToCourseData = (
-  dbCourse: DbCourse,
-  isConvertToLocalTimezone: boolean,
-): CourseData => {
+export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezone: boolean): CourseData => {
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,

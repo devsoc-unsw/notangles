@@ -6,7 +6,6 @@ import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { EventPeriod } from '../../interfaces/Periods';
-import { TimetableLayout } from '../timetable/TimetableLayout';
 import ActivityBar from './ActivityBar';
 
 const StyledTimetable = styled(Box, {
@@ -68,7 +67,7 @@ const FriendsTimetable: React.FC = () => {
       <StyledTimetable cols={days.length} rows={numRows}>
         <TimetableContainer>
           <Timetable></Timetable>
-        {/* <TimetableLayout copiedEvent={copiedEvent} setCopiedEvent={setCopiedEvent} /> */}
+          {/* <TimetableLayout copiedEvent={copiedEvent} setCopiedEvent={setCopiedEvent} /> */}
           <ActivityBar />
         </TimetableContainer>
       </StyledTimetable>
