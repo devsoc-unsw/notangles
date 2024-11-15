@@ -15,7 +15,6 @@ import {
   TimetableActions,
 } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
-import { UserContext } from '../../context/UserContext';
 
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised

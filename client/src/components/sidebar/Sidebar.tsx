@@ -211,16 +211,16 @@ const Sidebar: React.FC = () => {
             <NavComponentsContainer>
               <CustomModal
                 title="Timetable"
-                toolTipTitle="Timetable"
+                toolTipTitle="Your Timetable"
                 showIcon={<CalendarMonth />}
-                description={'Current Timetable'}
+                description={'Your Timetable'}
                 collapsed={collapsed}
                 isSelected={location.pathname === '/'}
                 onNavigate="/"
               />
               <CustomModal
                 title="Friends"
-                toolTipTitle="Coming Soon: Friends Timetables"
+                toolTipTitle="View Friends Timetables"
                 showIcon={<Group />}
                 description={'View Friends Timetables'}
                 collapsed={collapsed}
