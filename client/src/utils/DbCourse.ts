@@ -163,7 +163,6 @@ export const dbCourseToCourseData = (
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
-      classNo: dbClass.classID,
       courseCode: dbCourse.courseCode,
       courseName: dbCourse.name,
       activity: dbClass.activity,
