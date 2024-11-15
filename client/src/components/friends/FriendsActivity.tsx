@@ -97,17 +97,17 @@ const getCurrentActivity = async (userId: string): Promise<CurrentActivity | nul
       throw new NetworkError('Internal server error');
     }
 
-    console.log('json', json)
+    console.log('json', json);
     if (!json) return null;
 
     const selectedCourses = json.selectedCourses;
 
-    const { term } = await getAvailableTermDetails();
+    const { year, term } = await getAvailableTermDetails();
     const isConvertToLocalTimezone = true;
 
     const courseInfos = await Promise.all(
       selectedCourses.map((courseCode: string) => {
-        getCourseInfo(term, courseCode as CourseCode, isConvertToLocalTimezone);
+        getCourseInfo(term.slice(0, 2), courseCode as CourseCode, year, isConvertToLocalTimezone);
       }),
     );
 
@@ -151,11 +151,12 @@ const FriendsActivity = () => {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
+    // TODO: fix this integration here
     const dosomething = async () => {
       for (const friend of user.friends) {
         console.log('friend', friend);
         const res = await getCurrentActivity(friend.userID);
-        console.log(res);
+        console.log('friend activity res', res);
       }
     };
     dosomething();
