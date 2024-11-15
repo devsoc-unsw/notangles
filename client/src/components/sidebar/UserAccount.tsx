@@ -1,10 +1,15 @@
-import { AccountCircle, LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, Dialog, IconButton, Tooltip } from '@mui/material';
+import { LoginRounded, LogoutRounded } from '@mui/icons-material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
+import { undefinedUser, UserContext } from '../../context/UserContext';
+import { DisplayTimetablesMap } from '../../interfaces/Periods';
+import storage from '../../utils/storage';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
+import UserProfile from './groupsSidebar/friends/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -14,12 +19,6 @@ const UserAuth = styled('div')`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-
-const UserInfo = styled('div')`
-  display: flex;
-  align-items: center;
-  gap: 12px;
 `;
 
 const StyledIconButton = styled(IconButton)`
@@ -38,42 +37,34 @@ const StyledButton = styled(Button)`
   border: 1px solid ${({ theme }) => theme.palette.primary.main};
 `;
 
-const StyledAccountIcon = styled(AccountCircle)`
-  width: 28px;
-  height: 28px;
+const ExpandedContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
 `;
 
-interface User {
-  zid: string;
+export interface User {
+  userID: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  profileURL: string;
+  createdAt: string;
+  lastLogin: string;
+  loggedIn: boolean;
+  friends: User[];
+  incoming: User[];
+  outgoing: User[];
+  timetables: DisplayTimetablesMap;
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
-  const [login, setLogin] = useState(false);
   const [windowLocation, setWindowLocation] = useState('');
-  const [user, setUser] = useState<User>({ zid: '' });
   const [logoutDialog, setLogoutDialog] = useState(false);
 
-  useEffect(() => {
-    async function runAsync() {
-      try {
-        const response = await fetch(`${API_URL.server}/auth/user`, {
-          credentials: 'include',
-        });
-        const userResponse = await response.text();
-        if (userResponse !== '') {
-          setLogin(true);
-          setUser({ zid: JSON.parse(userResponse) });
-        } else {
-          setUser({ zid: '' });
-          setLogin(false);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    runAsync();
-  }, []);
-
+  const { user, setUser } = useContext(UserContext);
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
@@ -81,8 +72,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // Replaces current history item rather than adding item to history
-    // window.location.replace(`${API_URL.server}/auth/login`);
   };
 
   const logoutCall = async () => {
@@ -94,9 +83,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       console.log(error);
     }
     window.location.replace(windowLocation);
-    setUser({ zid: '' });
+    setUser(undefinedUser);
+    storage.set('timetables', createDefaultTimetable(undefined));
   };
-  if (!login) {
+  if (!user.userID) {
     return collapsed ? (
       <Tooltip title="Log in" placement="right">
         <StyledIconButton onClick={loginCall}>
@@ -129,19 +119,20 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
             </StyledIconButton>
           </Tooltip>
         ) : (
-          <>
-            <UserInfo>
-              <StyledAccountIcon />
-              {/* TODO: handle user's name */}
-              <p>{user.zid}</p>
-            </UserInfo>
+          <ExpandedContainer>
+            <UserProfile
+              firstname={user.firstname}
+              lastname={user.lastname}
+              email={user.email}
+              profileURL={user.profileURL}
+            />
             <Tooltip title="Log out" placement="right">
               {/* TODO: error handling for when logging out */}
               <StyledIconButton color="inherit" onClick={logoutCall}>
                 <LogoutRounded />
               </StyledIconButton>
             </Tooltip>
-          </>
+          </ExpandedContainer>
         )}
       </UserAuth>
     </>

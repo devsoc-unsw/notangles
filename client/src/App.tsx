@@ -14,18 +14,21 @@ import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
+import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding, lightTheme } from './constants/theme';
+import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
   getDefaultEndTime,
   getDefaultStartTime,
   invalidYearFormat,
+  sortTerms,
   unknownErrorMessage,
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
+import { UserContext } from './context/UserContext';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -37,10 +40,12 @@ import {
   DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
+  TermDataList,
 } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
@@ -51,7 +56,7 @@ const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-left: ${leftContentPadding}px;
-  padding-right: ${contentPadding}px;
+  padding-right: ${rightContentPadding}px;
   transition:
     background 0.2s,
     color 0.2s;
@@ -111,9 +116,7 @@ const App: React.FC = () => {
     setFirstDayOfTerm,
     setTermName,
     setTermsData,
-    setTermNumber,
     setCoursesList,
-    setLastUpdated,
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
@@ -131,6 +134,8 @@ const App: React.FC = () => {
     assignedColors,
     setAssignedColors,
   } = useContext(CourseContext);
+
+  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -165,28 +170,27 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, termNumber, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
       setTerm(term);
       setTermName(termName);
-      setTermNumber(termNumber);
       setYear(year);
       setFirstDayOfTerm(firstDayOfTerm);
-      setTermsData(termsData);
+      const termsSortedList: TermDataList = sortTerms(termsData);
+      setTermsData(termsSortedList);
+
       const oldData = storage.get('timetables');
 
-      // avoid overwriting data from previous save
-      const newTimetableTerms: DisplayTimetablesMap = {
-        ...{
-          [termsData.prevTerm.term]: oldData.hasOwnProperty(termsData.prevTerm.term)
-            ? oldData[termsData.prevTerm.term]
-            : createDefaultTimetable(),
-        },
-        ...{
-          [termsData.newTerm.term]: oldData.hasOwnProperty(termsData.newTerm.term)
-            ? oldData[termsData.newTerm.term]
-            : createDefaultTimetable(),
-        },
-      };
+      let newTimetableTerms: DisplayTimetablesMap = {};
+      for (const termId of termsData) {
+        newTimetableTerms = {
+          ...newTimetableTerms,
+          ...{
+            [termId as string]: oldData.hasOwnProperty(termId as string)
+              ? oldData[termId as string]
+              : createDefaultTimetable(user.userID),
+          },
+        };
+      }
 
       setDisplayTimetables(newTimetableTerms);
       storage.set('timetables', newTimetableTerms);
@@ -200,9 +204,8 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses, lastUpdated } = await getCoursesList(year, term);
+      const { courses } = await getCoursesList(term.substring(0, 2));
       setCoursesList(courses);
-      setLastUpdated(lastUpdated);
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
@@ -266,9 +269,9 @@ const App: React.FC = () => {
       Object.keys(course.activities).forEach((activity) => {
         prev[course.code][activity] = isDefaultUnscheduled
           ? null
-          : course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
+          : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
-            null;
+            null);
       });
 
       return prev;
@@ -290,7 +293,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(year, term, code, isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -317,8 +320,7 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
-
-      if (displayTimetables[term].length > 0) {
+      if (term && term in displayTimetables && displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(
             newSelectedCourses.map((course) => course.code),
@@ -375,6 +377,7 @@ const App: React.FC = () => {
       setDisplayTimetables(updatedWithTerms);
     }
 
+    if (!storage.get('timetables') || !storage.get('timetables')[term][selectedTimetable]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
@@ -427,36 +430,53 @@ const App: React.FC = () => {
     updateTimetableEvents();
   }, [year, isConvertToLocalTimezone]);
 
+  const syncTimetables = () => {
+    if (!user.userID) {
+      return;
+    }
+
+    runSync(user, setUser, displayTimetables, setDisplayTimetables);
+  };
+
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
     const newCourseData = courseData;
     storage.set('courseData', newCourseData);
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [createdEvents]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
+    syncTimetables();
   }, [displayTimetables]);
 
   /**
@@ -602,8 +622,14 @@ const App: React.FC = () => {
                   handleRemoveCourse={handleRemoveCourse}
                 />
                 <Outlet />
-                <TimetableTabs />
-                <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                {groupsSidebarCollapsed ? (
+                  <>
+                    <TimetableTabs />
+                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  </>
+                ) : (
+                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
                 >

@@ -1,83 +1,157 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsDto, UserDTO, EventDto, TimetableDto, ClassDto } from './dto';
+import {
+  SettingsDto,
+  UserDTO,
+  EventDto,
+  TimetableDto,
+  ClassDto,
+  InitUserDTO,
+  ScrapedClassDto,
+  ReconstructedTimetableDto,
+} from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
-import { Timetable, User } from '@prisma/client';
+import { User } from '@prisma/client';
+import { GroupDto } from 'src/group/dto/group.dto';
+import { GraphqlService } from 'src/graphql/graphql.service';
 
-@Injectable()
+@Injectable({})
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
-  async getUserInfo(_userId: string): Promise<UserDTO> {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gql: GraphqlService,
+  ) {}
+
+  private async convertClasses(
+    classes: ClassDto[],
+  ): Promise<ScrapedClassDto[]> {
     try {
-      const { userID, timetable, ...userData } =
-        await this.prisma.user.findUniqueOrThrow({
-          where: { userID: _userId },
-          include: {
-            timetable: {
-              include: {
-                createdEvents: true,
-                selectedClasses: true,
-              },
-            },
-          },
-        });
+      // For each class in class DTO, we need to fetch information
+      const cache = {};
+      for (const clz of classes) {
+        const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
 
-      const data = {
-        ...userData,
-        createdAt: userData.createdAt.toISOString(),
-        // deleteUserAt: userData.deleteUserAt.toISOString(),
-        lastLogin: userData.lastLogin.toISOString(),
-        loggedIn: true, // Change this later
-        friends: [], // Need to add friends relation to the DB
-        // Annnoying that the DTO and the schema have differently named fields so have to do this
-        timetables: timetable.map((t) => {
+        if (!(k in cache) && clz.classNo !== '') {
+          const courseInfoFetchPromise = await this.gql.fetchCourseData(
+            clz.courseCode,
+            clz.term,
+            clz.year,
+          );
+          const courseInfoFetch = courseInfoFetchPromise.data.courses;
+          cache[k] = courseInfoFetch[0].classes;
+        }
+      }
+
+      const res = classes.map((clz) => {
+        if (clz.classNo === '')
           return {
-            name: t.name,
-            timetableId: t.id,
-            selectedClasses: t.selectedClasses,
-            selectedCourses: t.selectedCourses,
-            events: t.createdEvents,
+            classID: '',
+            courseCode: clz.courseCode,
+            activity: clz.activity,
           };
-        }),
-      };
+        const k = `${clz.year}-${clz.term}/courses/${clz.courseCode}`;
+        const {
+          class_id,
+          course_enrolment,
+          consent,
+          times,
+          class_notes,
+          ...data
+        } = cache[k].find((c) => c.class_id === clz.classNo);
 
-      return Promise.resolve(data);
+        const [enrolments, capacity] = course_enrolment.split('/');
+        const [start, end] = times[0].time.replace(/\s/g, '').split('-');
+        return {
+          ...data,
+          classID: class_id,
+          courseEnrolment: {
+            enrolments: Number(enrolments),
+            capacity: Number(capacity),
+          },
+          termDates: {
+            start: '',
+            end: '',
+          },
+          times: { ...times[0], time: { start, end } },
+          needsConsent: consent == 'Consent not required',
+          courseCode: clz.courseCode,
+          notes: [class_notes],
+        };
+      });
+
+      return res;
     } catch (e) {
-      throw new Error(e); // Not sure why I'm just catching and rethrowing - probably should process the error in some way
+      throw new Error(e);
     }
   }
 
-  async setUserProfile(
-    _userId: string,
-    _email: string,
-    _firstName?: string,
-    _lastName?: string,
-  ): Promise<any> {
+  private async convertTimetable(timetable: TimetableDto): Promise<any> {
     try {
-      const userInfo = {
-        userID: _userId,
-        firstname: _firstName,
-        lastname: _lastName,
-        email: _email,
-      };
+      const c = await this.convertClasses(timetable.selectedClasses);
 
+      return {
+        ...timetable,
+        selectedClasses: c,
+      };
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+  async getUserInfo(_userID: string): Promise<UserDTO> {
+    const { userID, timetables, ...userData } =
+      await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userID },
+        include: {
+          timetables: {
+            include: {
+              createdEvents: true,
+              selectedClasses: true,
+            },
+          },
+          friends: true,
+          outgoing: true,
+          incoming: true,
+        },
+      });
+
+    const reconstructedTables = await Promise.all(
+      timetables.map(async (t) => {
+        return this.convertTimetable(t);
+      }),
+    );
+
+    const data = {
+      userID,
+      ...userData,
+      createdAt: userData.createdAt.toISOString(),
+      lastLogin: userData.lastLogin.toISOString(),
+      timetables: reconstructedTables,
+    };
+
+    return Promise.resolve(data);
+  }
+
+  async setUserProfile(data: InitUserDTO): Promise<any> {
+    try {
       return Promise.resolve(
         this.prisma.user.upsert({
           where: {
-            userID: _userId,
+            userID: data.userID,
           },
-          create: userInfo,
-          update: userInfo,
+          create: data,
+          update: data,
         }),
       );
-    } catch (e) {}
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async getUserSettings(_userId: string): Promise<SettingsDto> {
+  async getUserSettings(_userID: string): Promise<SettingsDto> {
     try {
-      const { userId, ...settings } =
+      const { userID, ...settings } =
         await this.prisma.settings.findUniqueOrThrow({
-          where: { userId: _userId },
+          where: { userID: _userID },
         });
 
       return Promise.resolve(settings);
@@ -87,16 +161,16 @@ export class UserService {
   }
 
   async setUserSettings(
-    _userId: string,
+    _userID: string,
     setting: SettingsDto,
   ): Promise<SettingsDto> {
     try {
       return Promise.resolve(
         this.prisma.settings.upsert({
           where: {
-            userId: _userId,
+            userID: _userID,
           },
-          create: { userId: _userId, ...setting },
+          create: { userID: _userID, ...setting },
           update: setting,
         }),
       );
@@ -105,26 +179,27 @@ export class UserService {
     }
   }
 
-  async getUserTimetables(_userId: string): Promise<TimetableDto[]> {
+  async getUserTimetables(
+    _userID: string,
+  ): Promise<ReconstructedTimetableDto[]> {
     try {
-      const res = await this.prisma.timetable.findMany({
-        where: { userId: _userId },
-        include: {
-          selectedClasses: true,
-          createdEvents: true,
+      const res = await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userID },
+        select: {
+          timetables: {
+            include: {
+              createdEvents: true,
+              selectedClasses: true,
+            },
+          },
         },
       });
 
-      // Destructure timetables object to make it easier to work with
-      const timetables = res.map((t) => {
-        // Again, we should look into renaming events to createEvents to make this easier
-        const { id, createdEvents, ...otherTimetableProps } = t;
-        return {
-          ...otherTimetableProps,
-          timetableId: id,
-          events: createdEvents,
-        };
-      });
+      const timetables = await Promise.all(
+        res.timetables.map(async (t) => {
+          return this.convertTimetable(t);
+        }),
+      );
 
       return Promise.resolve(timetables);
     } catch (e) {
@@ -133,57 +208,37 @@ export class UserService {
   }
 
   async createUserTimetable(
-    _userId: string,
+    _userID: string,
     _selectedCourses: string[],
     _selectedClasses: ClassDto[],
     _createdEvents: EventDto[],
+    _mapKey: string,
     _timetableName?: string,
   ): Promise<any> {
     try {
       // Generate random timetable id
       const _timetableId = uuidv4();
 
-      // Create timetable - needs to resolve before adding classes and events
-      const create_timetable = this.prisma.timetable.create({
+      await this.prisma.timetable.create({
         data: {
           id: _timetableId,
           name: _timetableName,
           selectedCourses: _selectedCourses,
-          userId: _userId,
+          mapKey: _mapKey,
+          selectedClasses: {
+            create: _selectedClasses,
+          },
+          createdEvents: {
+            create: _createdEvents,
+          },
+          user: {
+            connect: {
+              userID: _userID,
+            },
+          },
         },
       });
 
-      // Create classes
-      const classes = _selectedClasses.map((c) => {
-        const classId = uuidv4(); // Where is this being generated? For now generating on backend
-        return {
-          timetableId: _timetableId,
-          id: classId,
-          classType: c.classType,
-          courseName: c.courseName,
-        };
-      });
-
-      const create_classes = this.prisma.class.createMany({
-        data: classes,
-        skipDuplicates: true, // Not sure when there would be duplicates, but whatevs
-      });
-
-      // Create events
-      const events = _createdEvents.map((ev) => {
-        return { ...ev, timetableId: _timetableId };
-      });
-
-      const create_events = this.prisma.event.createMany({
-        data: events,
-        skipDuplicates: true,
-      });
-
-      await this.prisma.$transaction([
-        create_timetable,
-        create_classes,
-        create_events,
-      ]);
       return Promise.resolve(_timetableId);
     } catch (e) {
       throw new Error(e);
@@ -191,84 +246,75 @@ export class UserService {
   }
 
   async editUserTimetable(
-    _userId: string,
+    _userID: string,
     _timetable: TimetableDto,
   ): Promise<string> {
-    try {
-      // Modify timetable
-      const _timetableId = _timetable.timetableId;
-      const eventIds = _timetable.events.map((event) => event.id);
-      const classIds = _timetable.events.map((c) => c.id);
+    const _timetableId = _timetable.id;
+    const eventIds = _timetable.createdEvents.map((event) => event.id);
+    const classIds = _timetable.createdEvents.map((c) => c.id);
 
-      const update_timetable = this.prisma.timetable.update({
-        where: {
-          userId: _userId,
-        },
-        data: {
-          name: _timetable.name,
-          selectedCourses: _timetable.selectedCourses,
-        },
-      });
+    const update_timetable = this.prisma.timetable.update({
+      where: {
+        id: _timetableId,
+      },
+      data: {
+        name: _timetable.name,
+        selectedCourses: _timetable.selectedCourses,
+        mapKey: _timetable.mapKey,
+      },
+    });
 
-      const delete_events = this.prisma.event.deleteMany({
-        where: {
+    const delete_events = this.prisma.event.deleteMany({
+      where: {
+        timetableId: _timetableId,
+        NOT: {
+          id: { in: eventIds },
+        },
+      },
+    });
+
+    const update_events = _timetable.createdEvents.map((e) =>
+      this.prisma.event.upsert({
+        where: { id: e.id },
+        update: e,
+        create: { ...e, timetableId: _timetableId },
+      }),
+    );
+
+    const delete_classes = this.prisma.class.deleteMany({
+      where: {
+        timetableId: _timetableId,
+        NOT: {
+          id: { in: classIds },
+        },
+      },
+    });
+
+    const update_classes = _timetable.selectedClasses.map((c) =>
+      this.prisma.class.upsert({
+        where: { id: c.id },
+        update: c,
+        create: {
+          ...c,
           timetableId: _timetableId,
-          NOT: {
-            id: { in: eventIds },
-          },
         },
-      });
+      }),
+    );
 
-      const delete_classes = this.prisma.class.deleteMany({
-        where: {
-          timetableId: _timetableId,
-          NOT: {
-            id: { in: classIds },
-          },
-        },
-      });
+    await this.prisma.$transaction([
+      update_timetable,
+      delete_events,
+      delete_classes,
+      ...update_events,
+      ...update_classes,
+    ]);
 
-      const update_events = _timetable.events.map((e) =>
-        this.prisma.class.upsert({
-          where: { id: e.id },
-          update: e,
-          create: e,
-        }),
-      );
-
-      const update_classes = _timetable.selectedClasses.map((c) =>
-        this.prisma.class.upsert({
-          where: { id: c.id },
-          update: {
-            // Can these even change?
-            classType: c.classType,
-            courseName: c.courseName,
-          },
-          create: {
-            timetableId: c.timetableId,
-            id: c.id,
-            classType: c.classType,
-            courseName: c.courseName,
-          },
-        }),
-      );
-
-      // TODO: YET TO BE TESTED
-      await this.prisma.$transaction([
-        update_timetable,
-        delete_events,
-        update_events,
-        delete_classes,
-        update_classes,
-      ]);
-
-      return Promise.resolve(_timetableId);
-    } catch (e) {
-      throw new Error(e);
-    }
+    return Promise.resolve(_timetableId);
   }
 
-  async getTimetablesByIDs(timetableIDs: string[]): Promise<Timetable[]> {
+  async getTimetablesByIDs(
+    timetableIDs: string[],
+  ): Promise<ReconstructedTimetableDto[]> {
     try {
       const timetables = await this.prisma.timetable.findMany({
         where: {
@@ -276,8 +322,17 @@ export class UserService {
             in: timetableIDs,
           },
         },
+        include: {
+          createdEvents: true,
+          selectedClasses: true,
+        },
       });
-      return timetables;
+
+      return Promise.all(
+        timetables.map(async (t) => {
+          return this.convertTimetable(t);
+        }),
+      );
     } catch (error) {
       console.error('Error retrieving timetables:', error);
     }
@@ -309,6 +364,52 @@ export class UserService {
       return Promise.resolve(_timetableId);
     } catch (e) {
       throw new Error(_timetableId);
+    }
+  }
+
+  async getGroups(_userId: string) {
+    try {
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { userID: _userId },
+        include: {
+          memberGroups: true,
+          adminGroups: true,
+        },
+      });
+
+      const groupIds = user.adminGroups
+        .concat(user.memberGroups)
+        .map((group) => group.id);
+
+      const res: GroupDto[] = [];
+      for (const groupId of groupIds) {
+        const group = await this.prisma.group.findUniqueOrThrow({
+          where: { id: groupId },
+          include: {
+            members: true,
+            groupAdmins: true,
+            timetables: true,
+          },
+        });
+
+        res.push(group);
+      }
+
+      return res;
+    } catch (error) {
+      console.error('Error retrieving users:', error);
+    }
+  }
+
+  async getAllUsers() {
+    try {
+      const users = await this.prisma.user.findMany();
+      const res = await Promise.all(
+        users.map((user) => this.getUserInfo(user.userID)),
+      );
+      return res;
+    } catch (error) {
+      console.error('Error retrieving all users:', error);
     }
   }
 }

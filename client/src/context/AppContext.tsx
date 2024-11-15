@@ -2,7 +2,7 @@ import { createContext, useState } from 'react';
 
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseDataMap, DisplayTimetablesMap, TermDataMap } from '../interfaces/Periods';
+import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
@@ -46,9 +46,6 @@ export interface IAppContext {
   autoVisibility: boolean;
   setAutoVisibility: (newAutoVisibility: boolean) => void;
 
-  lastUpdated: number;
-  setLastUpdated: (newLastUpdated: number) => void;
-
   isDrag: boolean;
   setIsDrag: (newIsDrag: boolean) => void;
 
@@ -64,14 +61,14 @@ export interface IAppContext {
   setLatestEndTime(newLatestEndTime: number): void;
   setLatestEndTime(callback: (oldLatestEndTime: number) => number): void;
 
-  term: string;
-  setTerm: (newTerm: string) => void;
+  term: Term;
+  setTerm: (newTerm: Term) => void;
 
   termName: string;
   setTermName: (newTermName: string) => void;
 
-  termsData: TermDataMap;
-  setTermsData: (newTermData: TermDataMap) => void;
+  termsData: TermDataList;
+  setTermsData: (newTermData: TermDataList) => void;
 
   termNumber: number;
   setTermNumber: (newTermNumber: number) => void;
@@ -135,9 +132,6 @@ export const AppContext = createContext<IAppContext>({
   autoVisibility: false,
   setAutoVisibility: () => {},
 
-  lastUpdated: 0,
-  setLastUpdated: () => {},
-
   isDrag: false,
   setIsDrag: () => {},
 
@@ -150,22 +144,22 @@ export const AppContext = createContext<IAppContext>({
   latestEndTime: getDefaultEndTime(true),
   setLatestEndTime: () => {},
 
-  term: `T0`,
+  term: '',
   setTerm: () => {},
 
-  termName: `Term 0`,
+  termName: ``,
   setTermName: () => {},
 
-  termsData: { prevTerm: { year: '', term: '' }, newTerm: { year: '', term: '' } },
+  termsData: [],
   setTermsData: () => {},
 
   termNumber: 0,
   setTermNumber: () => {},
 
-  year: '0000',
+  year: '',
   setYear: () => {},
 
-  firstDayOfTerm: '0000-00-00',
+  firstDayOfTerm: '',
   setFirstDayOfTerm: () => {},
 
   coursesList: [],
@@ -207,25 +201,19 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
   const [infoVisibility, setInfoVisibility] = useState<boolean>(false);
   const [autoVisibility, setAutoVisibility] = useState<boolean>(false);
-  const [lastUpdated, setLastUpdated] = useState<number>(0);
   const [isDrag, setIsDrag] = useState<boolean>(false);
   const [days, setDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   const [earliestStartTime, setEarliestStartTime] = useState(getDefaultStartTime(isConvertToLocalTimezone));
   const [latestEndTime, setLatestEndTime] = useState(getDefaultEndTime(isConvertToLocalTimezone));
   const [termNumber, setTermNumber] = useState<number>(Number(termData.termNumber) || 0);
-  const [term, setTerm] = useState<string>(termData.term || `T0`);
-  const [termName, setTermName] = useState<string>(`Term ${termNumber}`);
-  const [year, setYear] = useState<string>(termData.year || '0000');
-  const [termsData, setTermsData] = useState<TermDataMap>({
-    prevTerm: { year: '', term: '' },
-    newTerm: { year: year, term: term },
-  });
-  const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || `0000-00-00`);
+  const [term, setTerm] = useState<Term>(termData.term);
+  const [termName, setTermName] = useState<string>('');
+  const [year, setYear] = useState<string>(termData.year || '');
+  const [termsData, setTermsData] = useState<TermDataList>([]);
+  const [firstDayOfTerm, setFirstDayOfTerm] = useState<string>(termData.firstDayOfTerm || ``);
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
-  const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({
-    [termData.term.length > 0 ? termData.term : '0']: [],
-  });
+  const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
@@ -255,8 +243,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setInfoVisibility,
     autoVisibility,
     setAutoVisibility,
-    lastUpdated,
-    setLastUpdated,
     isDrag,
     setIsDrag,
     days,

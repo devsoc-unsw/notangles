@@ -1,10 +1,9 @@
-import { Grid, Stack } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import NotanglesLogoGif from '../../assets/notangles.gif';
 import NotanglesLogo from '../../assets/notangles_1.png';
-import { AppContext } from '../../context/AppContext';
 
 interface TitleTextProps {
   isLarge?: boolean;
@@ -24,23 +23,6 @@ const BodyText = styled('p')`
   line-height: 1.5;
 `;
 
-const SubTitleText = styled('p')`
-  font-size: 14px;
-
-  @media (max-width: 450px) {
-    font-size: 13px;
-    line-height: 15px;
-  }
-`;
-
-const TitleText = styled('h2')<TitleTextProps>`
-  font-size: ${({ isLarge }) => (isLarge ? '18px' : '15px')};
-
-  @media (max-width: 450px) {
-    font-size: ${({ isLarge }) => (isLarge ? '16px' : '14px')};
-  }
-`;
-
 const NotanglesFooterInfoContainer = styled('div')`
   margin-left: 5px;
   line-height: 6px;
@@ -52,31 +34,7 @@ const NotanglesFooterInfoContainer = styled('div')`
 `;
 
 const FooterInfo: React.FC = () => {
-  const { lastUpdated } = useContext(AppContext);
   const [currLogo, setCurrLogo] = useState(NotanglesLogo);
-
-  /**
-   * @param date Timestamp in Unix time
-   * @returns Time relative to the current time, such as "5 minutes" (ago) or "10 hours" (ago)
-   */
-  const getRelativeTime = (date: number): string => {
-    const diff = Date.now() - date;
-
-    const minutes = Math.round(diff / 60000);
-
-    if (minutes < 60) {
-      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
-    }
-
-    const hours = Math.round(minutes / 60);
-
-    if (hours < 24) {
-      return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
-    }
-
-    const days = Math.round(hours / 24);
-    return `${days} ${days === 1 ? 'day' : 'days'}`;
-  };
 
   return (
     <Grid container spacing={0} style={{ textAlign: 'left', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -90,8 +48,30 @@ const FooterInfo: React.FC = () => {
               onMouseOut={() => setCurrLogo(NotanglesLogo)}
             />
             <NotanglesFooterInfoContainer>
-              <TitleText isLarge>Notangles</TitleText>
-              <SubTitleText>UNSW Timetable Planner</SubTitleText>
+              <Typography
+                component="h2"
+                sx={{
+                  fontSize: { xs: '14px', sm: '16px', md: '18px' },
+                  fontWeight: 'bold',
+                  '@media (max-width: 450px)': {
+                    fontSize: { xs: '14px', sm: '16px' },
+                  },
+                }}
+              >
+                Notangles
+              </Typography>
+              <Typography
+                component="p"
+                sx={{
+                  fontSize: '14px',
+                  '@media (max-width: 450px)': {
+                    fontSize: '13px',
+                    lineHeight: '15px',
+                  },
+                }}
+              >
+                UNSW Timetable Planner
+              </Typography>
             </NotanglesFooterInfoContainer>
           </Stack>
           <BodyText>
@@ -103,12 +83,22 @@ const FooterInfo: React.FC = () => {
         </Stack>
       </Grid>
       <Grid item xs={5}>
-        <TitleText>Disclaimer</TitleText>
+        <Typography
+          component="h2"
+          sx={{
+            fontSize: { xs: '14px', sm: '16px' },
+            fontWeight: 'bold',
+            '@media (max-width: 450px)': {
+              fontSize: { xs: '14px', sm: '16px' },
+            },
+          }}
+        >
+          Disclaimer
+        </Typography>
         <BodyText>
           While we try our best, Notangles is not an official UNSW site, and cannot guarantee data accuracy or
           reliability.
         </BodyText>
-        {lastUpdated && <BodyText>Data last updated {getRelativeTime(lastUpdated)} ago.</BodyText>}
       </Grid>
     </Grid>
   );

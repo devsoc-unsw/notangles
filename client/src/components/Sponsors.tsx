@@ -19,10 +19,6 @@ const SponsorBox = styled(Box)`
   }
 `;
 
-const TitleText = styled('h1')`
-  font-size: 18px;
-`;
-
 const StyledSponsorLogo = styled('img')`
   object-fit: contain;
   aspect-ratio: 14/3;
@@ -57,7 +53,7 @@ const Sponsors = () => {
 
   return (
     <SponsorBox>
-      <TitleText>Our Sponsors</TitleText>
+      <h1 className="text-lg font-bold">Our Sponsors</h1>
       <Stack
         justifyContent="center"
         alignItems="center"
