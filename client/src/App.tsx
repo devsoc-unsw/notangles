@@ -432,7 +432,6 @@ const App: React.FC = () => {
 
   const syncTimetables = () => {
     if (!user.userID) {
-      console.log('Cannot sync: user is not logged in');
       return;
     }
 

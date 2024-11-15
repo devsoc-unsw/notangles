@@ -174,7 +174,6 @@ const getCourseInfo = async (
     });
 
     if (!json) throw new NetworkError('Internal server error');
-    console.log(json);
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);

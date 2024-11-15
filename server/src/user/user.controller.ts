@@ -96,7 +96,6 @@ export class UserController {
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
-    console.log(userId + 'test ');
     return this.userService.editUserTimetable(userId, timetable).then((id) => {
       return {
         status: 'Successfully edited timetable',
@@ -107,7 +106,6 @@ export class UserController {
 
   @Delete('timetable/:timetableId')
   deleteUserTimetable(@Param('timetableId') timetableId: string) {
-    console.log('deleting timetable');
     return this.userService.deleteUserTimetable(timetableId).then((id) => {
       return {
         status: 'Successfully deleted timetable',

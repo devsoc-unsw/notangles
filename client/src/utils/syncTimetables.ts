@@ -80,7 +80,6 @@ const convertEventToDTO = (createdEvents: CreatedEvents, timetableId?: string) =
 };
 
 const convertTimetableToDTO = (timetable: TimetableData) => {
-  console.log(timetable.selectedClasses);
   return {
     ...timetable,
     selectedCourses: timetable.selectedCourses.map((t) => t.code),
@@ -91,7 +90,6 @@ const convertTimetableToDTO = (timetable: TimetableData) => {
 
 // DATABASE TO FRONTEND PARSING of a timetable. TODO: change type later
 const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentYear: string) => {
-  console.log(timetableDTO);
   // First, recover course information from course info API
   const courseInfo: CourseData[] = await Promise.all(
     timetableDTO.selectedCourses.map((code: string) => {
@@ -197,7 +195,7 @@ const syncDeleteTimetable = async (timetableId: string) => {
       },
     });
   } catch (e) {
-    console.log('todo');
+    console.log(e);
   }
 };
 
@@ -286,7 +284,6 @@ const runSync = (
     const trueMap: DisplayTimetablesMap = {};
 
     if (JSON.stringify(oldMap) === JSON.stringify(newMap)) {
-      console.log('same');
       return;
     }
 
@@ -295,13 +292,11 @@ const runSync = (
       const newTimetables = newMap[key];
 
       const diffs = getTimetableDiffs(oldTimetables, newTimetables);
-      console.log('diff', diffs);
 
       trueMap[key] = await updateTimetableDiffs(user.userID, newTimetables, diffs, key);
     }
 
     // Save to user timetable
-    console.log(trueMap);
     setMap(trueMap);
     setUser({ ...user, timetables: structuredClone(trueMap) });
   }, 5000);

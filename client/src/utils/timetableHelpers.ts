@@ -155,8 +155,6 @@ const createDefaultTimetable = (userID: string | undefined): TimetableData[] => 
     assignedColors: {},
   };
 
-  console.log('create default timetable', userID);
-
   return [defaultTimetable];
 };
 
