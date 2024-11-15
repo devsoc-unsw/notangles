@@ -1,17 +1,16 @@
-import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { CalendarMonth, Description, Group, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
-import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
-import FriendsButton from './FriendsButton';
 import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
@@ -124,7 +123,7 @@ const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
   const sideBarRef = useRef<HTMLDivElement>(null);
-  const { groupsSidebarCollapsed } = useContext(UserContext);
+  const location = useLocation();
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -181,7 +180,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
-      {!groupsSidebarCollapsed && (
+      {location.pathname === '/friends' && (
         <StyledGroupContainer>
           <GroupsSidebar />
         </StyledGroupContainer>
@@ -209,39 +208,42 @@ const Sidebar: React.FC = () => {
 
           <SideBarContainer>
             <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
-
             <NavComponentsContainer>
               <CustomModal
                 title="Timetable"
-                toolTipTitle="Timetable"
+                toolTipTitle="Your Timetable"
                 showIcon={<CalendarMonth />}
-                description={'Current Timetable'}
-                content={null}
+                description={'Your Timetable'}
                 collapsed={collapsed}
-                // currently not clickable since this is our current page
-                isClickable={false}
-                // hardcoded until we move away from single page site
-                isSelected={true}
+                isSelected={location.pathname === '/'}
+                onNavigate="/"
               />
-              <FriendsButton collapsed={collapsed} />
+              <CustomModal
+                title="Friends"
+                toolTipTitle="View Friends Timetables"
+                showIcon={<Group />}
+                description={'View Friends Timetables'}
+                collapsed={collapsed}
+                isSelected={location.pathname === '/friends'}
+                onNavigate="/friends"
+              />
               <Divider />
               {modalData.map((modal, index) => (
-                <React.Fragment key={index}>
+                <>
                   <CustomModal
+                    key={index}
                     title={modal.title}
                     toolTipTitle={modal.toolTipTitle}
                     showIcon={modal.showIcon}
                     description={modal.description}
                     content={modal.content}
                     collapsed={collapsed}
-                    isClickable={modal.isClickable}
                   />
-                </React.Fragment>
+                </>
               ))}
             </NavComponentsContainer>
           </SideBarContainer>
         </div>
-
         <SidebarFooter>
           <DarkModeButton collapsed={collapsed} />
           <UserAccount collapsed={collapsed} />

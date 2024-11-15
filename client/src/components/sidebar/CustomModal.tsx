@@ -2,6 +2,7 @@ import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
 
@@ -49,21 +50,28 @@ const CustomModal: React.FC<CustomModalProps> = ({
   description,
   content,
   collapsed,
-  isClickable,
   isSelected = false,
+  onNavigate,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const toggleIsOpen = () => {
-    if (isClickable) {
-      setIsOpen(!isOpen);
+    setIsOpen(!isOpen);
+  };
+
+  const handleClick = () => {
+    if (onNavigate) {
+      navigate(onNavigate);
+    } else {
+      toggleIsOpen();
     }
   };
 
   return (
     <>
-      <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
-        <ShowModalButton color="inherit" onClick={toggleIsOpen} isSelected={isSelected}>
+      <Tooltip title={collapsed ? toolTipTitle : ''} placement="right">
+        <ShowModalButton color="inherit" onClick={handleClick} isSelected={isSelected}>
           {showIcon}
           <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>

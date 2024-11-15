@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
@@ -14,7 +14,6 @@ import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
-import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
 import {
@@ -91,6 +90,7 @@ const ICSButton = styled(Button)`
 `;
 
 const App: React.FC = () => {
+  const location = useLocation();
   const {
     is12HourMode,
     isDarkMode,
@@ -135,7 +135,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -615,29 +615,29 @@ const App: React.FC = () => {
             <Sidebar />
             <ContentWrapper>
               <Content>
-                <Controls
-                  assignedColors={assignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
                 <Outlet />
-                {groupsSidebarCollapsed ? (
+                {location.pathname === '/friends' ? (
+                  <></>
+                ) : (
                   <>
+                    <Controls
+                      assignedColors={assignedColors}
+                      handleSelectClass={handleSelectClass}
+                      handleSelectCourse={handleSelectCourse}
+                      handleRemoveCourse={handleRemoveCourse}
+                    />
                     <TimetableTabs />
                     <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                    <ICSButton
+                      onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                    >
+                      save to calendar
+                    </ICSButton>
+                    <Sponsors />
+                    <Footer />
+                    <Alerts />
                   </>
-                ) : (
-                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
                 )}
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Sponsors />
-                <Footer />
-                <Alerts />
               </Content>
             </ContentWrapper>
           </StyledApp>

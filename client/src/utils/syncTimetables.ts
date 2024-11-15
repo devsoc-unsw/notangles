@@ -117,6 +117,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentYear: string
     selectedClasses[courseCode][scrapedClassDTO.activity] =
       classDataMap[courseCode].find((clz) => clz.classNo === classID) || null;
   });
+  console.log('selected classes conversion', selectedClasses);
 
   // Finally, reverse created events
   const eventsList: EventPeriod[] = timetableDTO.createdEvents.map((eventDTO: any) => {

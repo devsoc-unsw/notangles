@@ -108,7 +108,16 @@ export class UserService {
               selectedClasses: true,
             },
           },
-          friends: true,
+          friends: {
+            include: {
+              timetables: {
+                include: {
+                  createdEvents: true,
+                  selectedClasses: true,
+                },
+              },
+            },
+          },
           outgoing: true,
           incoming: true,
         },
