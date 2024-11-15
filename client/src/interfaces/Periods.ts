@@ -1,3 +1,6 @@
+import { User } from '../components/sidebar/UserAccount';
+import { Group } from './Group';
+
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
@@ -27,6 +30,7 @@ export interface TermData {
 
 export interface ClassData {
   id: string;
+  classNo: string;
   courseCode: CourseCode;
   courseName: string;
   activity: Activity;
@@ -35,6 +39,8 @@ export interface ClassData {
   capacity: number;
   periods: ClassPeriod[];
   section: Section;
+  term: string;
+  year: string;
 }
 
 export interface TimetableData {
@@ -44,6 +50,62 @@ export interface TimetableData {
   selectedClasses: SelectedClasses;
   createdEvents: CreatedEvents;
   assignedColors: Record<string, string>;
+}
+
+export interface EventDTO {
+  id: string;
+  name: string;
+  location?: string | null;
+  description?: string | null;
+  colour: string;
+  day: string;
+  start: Date;
+  end: Date;
+  timetableId?: string | null;
+  timetable?: TimetableDTO | null;
+  groupIds: string[];
+}
+
+export interface ClassTimeDTO {
+  day: string;
+  time: {
+    start: string;
+    end: string;
+  };
+  weeks: string;
+  location: string;
+}
+
+export interface ScrapedClassDTO {
+  classID: string;
+  section: string;
+  term: string;
+  activity: string;
+  status: string;
+  courseEnrolment: {
+    enrolments: number;
+    capacity: number;
+  };
+  termDates: {
+    start: string;
+    end: string;
+  };
+  needsConsent: boolean;
+  mode: string;
+  times: ClassTimeDTO[];
+  courseCode: string;
+  notes: [];
+}
+
+export interface TimetableDTO {
+  id: string;
+  name: string;
+  selectedCourses: string[];
+  selectedClasses: ScrapedClassDTO[];
+  createdEvents: EventDTO[];
+  user: User[];
+  groups: Group[];
+  mapKey: string;
 }
 
 export interface InventoryData {

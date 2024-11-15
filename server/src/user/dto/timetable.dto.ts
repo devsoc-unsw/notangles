@@ -10,6 +10,7 @@ export class TimetableDto {
   selectedClasses: ClassDto[];
   createdEvents: EventDto[];
   name?: string;
+  mapKey: string;
 }
 
 export class ReconstructedTimetableDto {
@@ -22,6 +23,7 @@ export class ReconstructedTimetableDto {
   selectedClasses: ScrapedClassDto[];
   createdEvents: EventDto[];
   name?: string;
+  mapKey: string;
 }
 
 export class ClassDto {
@@ -31,6 +33,7 @@ export class ClassDto {
   term: string;
   courseCode: string;
   timetableId?: string;
+  activity: string;
 }
 
 export class ClassTimeDto {
@@ -45,7 +48,7 @@ export class ClassTimeDto {
 
 // Get class from scraper
 export class ScrapedClassDto {
-  classID: number;
+  classID: string;
   section: string;
   term: string;
   activity: string;
@@ -61,6 +64,7 @@ export class ScrapedClassDto {
   needsConsent: boolean;
   mode: string;
   times: ClassTimeDto[];
+  courseCode: string;
   notes: [];
 }
 

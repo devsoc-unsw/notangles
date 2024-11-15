@@ -26,7 +26,13 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
     const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
     Object.entries(activities).forEach(([activity, classData]) => {
-      newActivityCopy[activity] = classData !== null ? { ...classData } : null;
+      if (classData !== null) {
+        newActivityCopy[activity] = { ...classData };
+        newActivityCopy[activity].id = uuidv4();
+      } else {
+        newActivityCopy[activity] = null;
+      }
+      // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
     newClasses[courseCode] = { ...newActivityCopy };
   });
@@ -139,17 +145,17 @@ const areIdenticalTimetables = (
   );
 };
 
-const createDefaultTimetable = (): TimetableData[] => {
-  return [
-    {
-      name: 'My timetable',
-      id: uuidv4(),
-      selectedCourses: [],
-      selectedClasses: {},
-      createdEvents: {},
-      assignedColors: {},
-    },
-  ];
+const createDefaultTimetable = (userID: string | undefined): TimetableData[] => {
+  const defaultTimetable = {
+    name: 'My timetable',
+    id: uuidv4(),
+    selectedCourses: [],
+    selectedClasses: {},
+    createdEvents: {},
+    assignedColors: {},
+  };
+
+  return [defaultTimetable];
 };
 
 export {

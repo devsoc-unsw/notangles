@@ -9,6 +9,8 @@ import { FriendModule } from './friend/friend.module';
 import { GroupModule } from './group/group.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
+import { GraphqlService } from './graphql/graphql.service';
+import { GraphqlModule } from './graphql/graphql.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,9 +23,10 @@ import { UserModule } from './user/user.module';
     UserModule,
     FriendModule,
     PrismaModule,
+    GraphqlModule,
     GroupModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GraphqlService],
 })
 export class AppModule {}

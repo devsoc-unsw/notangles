@@ -45,6 +45,7 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
+import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
@@ -134,7 +135,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -186,7 +187,7 @@ const App: React.FC = () => {
           ...{
             [termId as string]: oldData.hasOwnProperty(termId as string)
               ? oldData[termId as string]
-              : createDefaultTimetable(),
+              : createDefaultTimetable(user.userID),
           },
         };
       }
@@ -429,36 +430,53 @@ const App: React.FC = () => {
     updateTimetableEvents();
   }, [year, isConvertToLocalTimezone]);
 
+  const syncTimetables = () => {
+    if (!user.userID) {
+      return;
+    }
+
+    runSync(user, setUser, displayTimetables, setDisplayTimetables);
+  };
+
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
     const newCourseData = courseData;
     storage.set('courseData', newCourseData);
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedClasses = selectedClasses;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].createdEvents = createdEvents;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [createdEvents]);
 
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].assignedColors = assignedColors;
+
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
+    syncTimetables();
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
+    syncTimetables();
   }, [displayTimetables]);
 
   /**

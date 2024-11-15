@@ -71,6 +71,7 @@ export class UserController {
     @Body('selectedCourses') selectedCourses: string[],
     @Body('selectedClasses') selectedClasses: ClassDto[],
     @Body('createdEvents') createdEvents: EventDto[],
+    @Body('mapKey') mapKey: string,
     @Body('name') timetableName?: string,
   ) {
     return this.userService
@@ -79,6 +80,7 @@ export class UserController {
         selectedCourses,
         selectedClasses,
         createdEvents,
+        mapKey,
         timetableName,
       )
       .then((res) => {
@@ -90,7 +92,7 @@ export class UserController {
   }
 
   @Put('timetable')
-  editUserTimetable(
+  async editUserTimetable(
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {

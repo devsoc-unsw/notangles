@@ -16,7 +16,6 @@
     "style": "prettier --write 'src/**/*.{ts,tsx}' && eslint --fix 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
-    "@apollo/client": "3.11.8",
     "@date-io/date-fns": "2.17.0",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
@@ -33,6 +32,7 @@
     "@sentry/tracing": "7.84.0",
     "@uiw/react-color": "2.1.1",
     "clsx": "2.1.1",
+    "@apollo/client": "3.11.8",
     "date-fns": "2.30.0",
     "dayjs": "1.11.12",
     "file-saver": "2.0.5",
@@ -88,10 +88,10 @@
     "@types/react-transition-group": "4.4.10",
     "@types/react-window": "1.8.8",
     "@types/uuid": "9.0.8",
+    "autoprefixer": "10.4.19",
     "@typescript-eslint/eslint-plugin": "7.16.1",
     "@typescript-eslint/parser": "7.16.1",
     "@vitejs/plugin-react-swc": "3.7.0",
-    "autoprefixer": "10.4.19",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-react": "7.35.0",
@@ -107,5 +107,6 @@
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "5.0.1",
     "vitest": "2.1.2"
-  }
+  },
+  "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a"
 }

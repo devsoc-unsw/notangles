@@ -5,7 +5,9 @@ import React, { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
 import { undefinedUser, UserContext } from '../../context/UserContext';
-import { TimetableData } from '../../interfaces/Periods';
+import { DisplayTimetablesMap } from '../../interfaces/Periods';
+import storage from '../../utils/storage';
+import { createDefaultTimetable } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './groupsSidebar/friends/UserProfile';
 
@@ -55,7 +57,7 @@ export interface User {
   friends: User[];
   incoming: User[];
   outgoing: User[];
-  timetables: TimetableData[];
+  timetables: DisplayTimetablesMap;
 }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
@@ -63,7 +65,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [logoutDialog, setLogoutDialog] = useState(false);
 
   const { user, setUser } = useContext(UserContext);
-
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
@@ -71,8 +72,6 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     } catch (error) {
       console.log(error);
     }
-    // Replaces current history item rather than adding item to history
-    // window.location.replace(`${API_URL.server}/auth/login`);
   };
 
   const logoutCall = async () => {
@@ -85,6 +84,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     }
     window.location.replace(windowLocation);
     setUser(undefinedUser);
+    storage.set('timetables', createDefaultTimetable(undefined));
   };
   if (!user.userID) {
     return collapsed ? (
