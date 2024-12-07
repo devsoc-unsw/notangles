@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:21.7.3-alpine as builder
+FROM node:22.12.0-alpine as builder
 RUN npm i -g pnpm
 
 # Set the current working directory inside the container
