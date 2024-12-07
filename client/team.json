@@ -1,13 +1,4 @@
 {
-  "directors": ["Shaam Jevan", "Raiyan Ahmed"],
-  "subcommittee": [
-    "Jasmine Tran",
-    "Michael Siu",
-    "Chanel Bouchaaya",
-    "Jordan Benjamin",
-    "Nikki Qin",
-    "Lucy Chhuo",
-    "Sohum Shah",
-    "Dylan Zhang"
-  ]
+  "directors": ["Lucas Harvey", "Mark Tran"],
+  "subcommittee": []
 }
