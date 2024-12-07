@@ -33,7 +33,7 @@
     "@uiw/react-color": "2.1.1",
     "clsx": "2.1.1",
     "@apollo/client": "3.11.8",
-    "date-fns": "2.30.0",
+    "date-fns": "4.1.0",
     "dayjs": "1.11.12",
     "file-saver": "2.0.5",
     "framer-motion": "11.3.17",
