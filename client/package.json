@@ -92,7 +92,7 @@
     "@typescript-eslint/eslint-plugin": "7.16.1",
     "@typescript-eslint/parser": "7.16.1",
     "@vitejs/plugin-react-swc": "3.7.0",
-    "eslint": "8.57.0",
+    "eslint": "9.17.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
