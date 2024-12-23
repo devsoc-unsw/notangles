@@ -27,7 +27,9 @@ ENV VITE_APP_SENTRY_TRACE_RATE_CLIENT=$SENTRY_TRACE_RATE_CLIENT
 ENV VITE_APP_ENVIRONMENT=production
 ENV NODE_ENV=production
 
-RUN pnpm run build
+ARG GIT_COMMIT
+RUN if [ -n "$GIT_COMMIT" ]; then export VITE_COMMIT=$GIT_COMMIT; fi && \
+    pnpm run build
 
 FROM caddy:2.8.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
