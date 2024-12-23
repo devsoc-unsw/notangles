@@ -28,9 +28,8 @@ ENV VITE_APP_ENVIRONMENT=production
 ENV NODE_ENV=production
 
 ARG GIT_COMMIT
-RUN if [ -n "$GIT_COMMIT" ]; then export VITE_COMMIT=$GIT_COMMIT; fi
-
-RUN pnpm run build
+RUN if [ -n "$GIT_COMMIT" ]; then export VITE_COMMIT=$GIT_COMMIT; fi && \
+    pnpm run build
 
 FROM caddy:2.8.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
