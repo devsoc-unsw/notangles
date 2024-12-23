@@ -114,7 +114,7 @@ export const AppContext = createContext<IAppContext>({
   isHideExamClasses: false,
   setIsHideExamClasses: () => {},
 
-  isConvertToLocalTimezone: true,
+  isConvertToLocalTimezone: false,
   setIsConvertToLocalTimezone: () => {},
 
   alertMsg: '',
