@@ -2,20 +2,14 @@
 
 The Notangles client allows users to interactively plan out their timetables with the latest course information using a simple drag-and-drop system.
 
-## Installation
+## Installation & Running
 
 The client has been verified to work with:
 
 - npm v8.3.1
 - node v16.14.0
 
-In the root client directory `client`, run `npm install` to install all the dependencies.
-
-## Running
-
-Use `npm start` to host the Notangles client locally. The client will be hosted on http://localhost:3000.
-
-Recommended: To connect to the real timetabling server, use `npm run start:mock` instead.
+Follow the installation & running steps as outlined in [Notangles README.md](https://github.com/devsoc-unsw/notangles?tab=readme-ov-file#running-the-front-end)
 
 ## Tech stack
 

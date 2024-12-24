@@ -38,7 +38,20 @@ You can then access the client at `http://localhost:5173` in your favourite web 
 
 ### Running the back-end
 
-Navigate into `/server`, install packages with `pnpm i`, then run `pnpm start`. The server will be hosted at `http://localhost:3001`
+1. Navigate into `/server`
+2. Install packages with `pnpm i`
+3. Generate the prisma client with `npx prisma generate`
+4. Run `pnpm start`
+
+The server will be hosted at `http://localhost:3001`.
+
+### Running the Notangles DB
+
+1. Open Docker Desktop
+2. Navigate into `/server`
+3. Run `docker-compose up`
+4. Terminate from the composed backend with `ctrl + c`
+5. Now you will have container that can be restarted to have the database running
 
 ### Running the auto-timetabler
 
