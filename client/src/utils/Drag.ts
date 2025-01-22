@@ -142,7 +142,7 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
   // These last two || clauses are necessary because all periods for a given activity
   // may not be the same length (see JURD7251 22T2) thus the equalDur(a, b) condition will be false.
   return (
-    a.courseCode === b.courseCode &&
+    a.courseId === b.courseId &&
     a.activity === b.activity &&
     (!isScheduledPeriod(a) ||
       !isScheduledPeriod(b) ||
@@ -249,7 +249,7 @@ const getIsElevated = (cardData: ClassCard | EventPeriod) => {
     const isMatchingClasses =
       isScheduledPeriod(cardData) &&
       isScheduledPeriod(dragTarget) &&
-      cardData.courseCode === dragTarget.courseCode &&
+      cardData.courseId === dragTarget.courseId &&
       cardData.activity === dragTarget.activity;
 
     return dragTarget !== null && (cardData === dragTarget || isMatchingClasses);

@@ -2,6 +2,7 @@ import { User } from '../components/sidebar/UserAccount';
 import { Group } from './Group';
 
 export type CourseCode = string;
+export type CourseId = string;
 export type Activity = string;
 export type InInventory = null;
 export type Section = string;
@@ -10,11 +11,12 @@ export type EventCode = string;
 export type Status = 'Open' | 'Full' | 'On Hold';
 export type EventSubtype = 'General' | 'Tutoring';
 
-export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | InInventory>>;
+export type SelectedClasses = Record<CourseId, Record<Activity, ClassData | InInventory>>;
 export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
 export interface CourseData {
+  id: CourseId;
   code: CourseCode;
   name: string;
   earliestStartTime: number;
@@ -31,6 +33,7 @@ export interface TermData {
 export interface ClassData {
   id: string;
   classNo: string;
+  courseId: CourseId;
   courseCode: CourseCode;
   courseName: string;
   activity: Activity;
@@ -126,6 +129,7 @@ export interface EventData {
 export interface ClassPeriod {
   type: 'class';
   classId: string;
+  courseId: CourseId;
   courseCode: CourseCode;
   activity: Activity;
   subActivity: string;
@@ -136,6 +140,7 @@ export interface ClassPeriod {
 export interface InventoryPeriod {
   type: 'inventory';
   classId: null;
+  courseId: CourseId;
   courseCode: CourseCode;
   activity: Activity;
 }

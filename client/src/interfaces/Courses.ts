@@ -2,6 +2,7 @@ import { CourseCode } from './Periods';
 
 export type CoursesList = CourseOverview[];
 export interface CourseOverview {
+  id: string;
   code: string;
   name: string;
   online: boolean;
@@ -15,6 +16,7 @@ export interface CoursesListWithDate {
 }
 
 export interface FetchedCourse {
+  course_id: string;
   course_code: CourseCode;
   course_name: string;
   online: boolean;

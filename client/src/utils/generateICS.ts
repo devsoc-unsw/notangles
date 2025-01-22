@@ -85,8 +85,8 @@ const getClassEvents = (courses: CourseData[], classes: SelectedClasses): [Class
   // NOTE: this function may be useful in other applications, if so, move it to a more reasonably named file.
   const allClasses = courses.flatMap((course) =>
     Object.keys(course.activities)
-      .filter((possibleActivity) => classes[course.code] !== null && classes[course.code][possibleActivity] !== null)
-      .map((activities) => classes[course.code][activities]),
+      .filter((possibleActivity) => classes[course.id] !== null && classes[course.id][possibleActivity] !== null)
+      .map((activities) => classes[course.id][activities]),
   );
 
   return allClasses.flatMap((classTime) =>

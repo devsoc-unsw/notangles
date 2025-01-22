@@ -19,6 +19,7 @@ interface Class {
 
 interface Course {
   __typename: 'courses';
+  course_id: string;
   course_code: string;
   course_name: string;
   classes: Class[];

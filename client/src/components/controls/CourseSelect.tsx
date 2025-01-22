@@ -215,11 +215,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       setSelectedValue([]);
       return;
     }
-
     setSelectedValue(
       selectedCourses
-        .map((x) => x.code) // Get the course code of each course
-        .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
+        .map((x) => x.id) // Get the course code of each course
+        .map((id) => coursesList.find((course) => course.id === id)) // Get the corresponding CourseOverview for each CourseData object
         .filter((overview): overview is CourseOverview => overview !== undefined),
     );
   }, [selectedCourses, coursesList]);
@@ -321,7 +320,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const onChange = (_: any, value: CoursesList) => {
     if (value.length > selectedValue.length) {
-      handleSelect(value[value.length - 1].code);
+      handleSelect(value[value.length - 1].id);
       setSelectedValue([...value]);
     }
     setOptions(defaultOptions);
@@ -421,12 +420,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         renderOption={(props, option, { selected }) => (
-          <li {...props}>
+          <li key={option.id} {...props}>
             <StyledOption>
               <StyledIcon>
-                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                {selectedValue.find((course: CourseOverview) => course.id === option.id) ? (
                   <CheckRounded />
                 ) : (
                   <AddRounded />
@@ -463,7 +462,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
                 setSelectedValue(selectedValue.slice(selectedValue.length - 1));
-                handleRemove(selectedValue[selectedValue.length - 1].code);
+                handleRemove(selectedValue[selectedValue.length - 1].id);
               }
             }}
             InputLabelProps={{
@@ -495,8 +494,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
               onDelete={() => {
-                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                handleRemove(option.code);
+                setSelectedValue(selectedValue.filter((course) => course.id !== option.id));
+                handleRemove(option.id);
               }}
             />
           ))

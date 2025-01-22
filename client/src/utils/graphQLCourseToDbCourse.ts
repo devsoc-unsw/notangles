@@ -22,6 +22,7 @@ export const graphQLCourseToDbCourse = (graphQLCourse: GraphQLCourse): DbCourse 
   const course = graphQLCourse.data.courses[0];
 
   return {
+    courseId: course.course_id,
     courseCode: course.course_code,
     name: course.course_name,
     classes: course.classes.map((classItem) => ({

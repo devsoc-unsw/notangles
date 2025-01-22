@@ -22,7 +22,7 @@ export type ActionsPointer = Record<string, number>;
 const duplicateClasses = (selectedClasses: SelectedClasses) => {
   const newClasses: SelectedClasses = {};
 
-  Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+  Object.entries(selectedClasses).forEach(([courseId, activities]) => {
     const newActivityCopy: Record<Activity, ClassData | InInventory> = {};
 
     Object.entries(activities).forEach(([activity, classData]) => {
@@ -34,7 +34,7 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
       }
       // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
-    newClasses[courseCode] = { ...newActivityCopy };
+    newClasses[courseId] = { ...newActivityCopy };
   });
 
   return newClasses;
