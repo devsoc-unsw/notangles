@@ -242,7 +242,7 @@ const App: React.FC = () => {
       prev = { ...prev };
 
       try {
-        prev[classData.id][classData.activity] = classData;
+        prev[classData.courseId][classData.activity] = classData;
       } catch (err) {
         setAlertMsg(unknownErrorMessage);
         setErrorVisibility(true);
