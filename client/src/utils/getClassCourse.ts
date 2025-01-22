@@ -6,7 +6,7 @@ import { ClassData, ClassPeriod, CourseData, InventoryData, InventoryPeriod } fr
  * @returns The course data for the course associated with a particular class
  */
 export const getCourseFromClassData = (selectedCourses: CourseData[], data: ClassData | InventoryData) => {
-  const course = selectedCourses.find((course) => course.code === data.courseCode);
+  const course = selectedCourses.find((course) => course.id === data.courseId);
   if (course) {
     return course;
   } else {

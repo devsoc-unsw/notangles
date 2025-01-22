@@ -114,6 +114,7 @@ export interface TimetableDTO {
 }
 
 export interface InventoryData {
+  courseId: CourseId;
   courseCode: CourseCode;
   activity: Activity;
 }
