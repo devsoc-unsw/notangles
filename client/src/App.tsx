@@ -13,6 +13,7 @@ import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
+import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
@@ -638,6 +639,7 @@ const App: React.FC = () => {
                 <Sponsors />
                 <Footer />
                 <Alerts />
+                <SubcomPromotion />
               </Content>
             </ContentWrapper>
           </StyledApp>
