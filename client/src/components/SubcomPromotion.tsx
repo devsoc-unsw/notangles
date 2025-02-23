@@ -44,7 +44,7 @@ const SubcomPromotion = () => {
             </Typography>
             <Typography fontSize={15} textAlign={'left'}>
               Interested in working on Notangles or one of our other flagship projects? DevSoc is currently recruiting
-              members for our 2024 subcommittee!
+              members for our 2025 subcommittee!
               <br />
               <br />
               Find out more at <Link href="https://devsoc.app/get-involved">devsoc.app/get-involved</Link>
