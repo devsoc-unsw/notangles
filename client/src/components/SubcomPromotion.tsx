@@ -1,7 +1,7 @@
 import { Announcement, Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, Slide, Snackbar, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import storage from '../utils/storage';
 
@@ -18,6 +18,7 @@ const SubcomPromotion = () => {
   const [seenSubcomPromotional, setSeenSubcomPromotional] = useState<boolean>(
     storage.get(SUBCOM_PROMOTION_KEY) || false,
   );
+  const activeRecruitment = useRef(new Date().getMonth() === 1); // Subcommittee recruitment peaks in February annually
 
   const handlePromotionClose = useCallback(() => {
     setSeenSubcomPromotional((prev) => !prev);
@@ -29,6 +30,9 @@ const SubcomPromotion = () => {
       <Close fontSize="small" />
     </IconButton>
   );
+
+  // Not displaying subcom recruitment banner outside of active recruitment times
+  if (!activeRecruitment) return null;
 
   return (
     <Box>
@@ -44,7 +48,7 @@ const SubcomPromotion = () => {
             </Typography>
             <Typography fontSize={15} textAlign={'left'}>
               Interested in working on Notangles or one of our other flagship projects? DevSoc is currently recruiting
-              members for our 2025 subcommittee!
+              members for our 2024 subcommittee!
               <br />
               <br />
               Find out more at <Link href="https://devsoc.app/get-involved">devsoc.app/get-involved</Link>
