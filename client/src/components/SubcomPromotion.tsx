@@ -32,7 +32,7 @@ const SubcomPromotion = () => {
   );
 
   // Not displaying subcom recruitment banner outside of active recruitment times
-  if (!activeRecruitment) return null;
+  if (!activeRecruitment.current) return null;
 
   return (
     <Box>
