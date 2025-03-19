@@ -1,5 +1,7 @@
 # Dependency versions should be pinned
 FROM node:22.14.0-alpine as builder
+RUN apk add --no-cache openssl
+
 RUN npm i -g pnpm
 RUN pnpm install @nestjs/cli
 WORKDIR /server
