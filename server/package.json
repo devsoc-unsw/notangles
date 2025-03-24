@@ -22,7 +22,7 @@
     "style": "prettier --write '{src,apps,libs,test}/**/*.ts' && eslint --fix '{src,apps,libs,test}/**/*.ts'"
   },
   "dependencies": {
-    "@grpc/grpc-js": "1.10.7",
+    "@grpc/grpc-js": "1.10.9",
     "@nestjs/common": "10.0.0",
     "@nestjs/config": "3.2.2",
     "@nestjs/core": "10.0.0",
