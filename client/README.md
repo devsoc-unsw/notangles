@@ -9,7 +9,21 @@ The client has been verified to work with:
 - npm v8.3.1
 - node v16.14.0
 
-Follow the installation & running steps as outlined in [Notangles README.md](https://github.com/devsoc-unsw/notangles?tab=readme-ov-file#running-the-front-end)
+```bash
+# prerequisite
+$ cd client
+
+# installation
+$ pnpm i
+
+# running
+$ pnpm start # (if you already have the timetable server running locally; connects to that)
+
+$ pnpm run start:mock #(if you don’t have the timetable server running locally; connects to our real server)
+```
+
+> Note: both `pnpm start` and `pnpm run start:mock` connect to the local autotimetabler locally if it is running
+> You can then access the client at `http://localhost:5173`.
 
 ## Tech stack
 

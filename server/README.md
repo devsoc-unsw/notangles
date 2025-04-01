@@ -29,7 +29,12 @@
 ## Installation
 
 ```bash
+# prerequisite
+$ cd server
+
+# installation
 $ pnpm install
+$ npx prisma generate
 ```
 
 ## Running the app
@@ -43,6 +48,18 @@ $ pnpm run start:dev
 
 # production mode
 $ pnpm run start:prod
+```
+
+The server will be hosted at `http://localhost:3001`.
+
+## Database
+
+```bash
+# prerequisite
+$ cd server
+
+# installation
+$ docker-compose up
 ```
 
 ## Test
