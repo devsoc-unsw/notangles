@@ -34,7 +34,7 @@ $ cd server
 
 # installation
 $ pnpm install
-$ npx prisma generate
+$ pnpx prisma generate
 ```
 
 ## Running the app
