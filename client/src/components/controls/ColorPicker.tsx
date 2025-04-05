@@ -1,8 +1,11 @@
 import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import React from 'react';
 
+import { colors } from '../../constants/timetable';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+import ColorOptions from './ColorOptions';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
   color,
@@ -15,6 +18,8 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
+  // Whether the custom colour picker is shown
+  const [showCustomColorPicker, setShowCustomColorPicker] = React.useState(false);
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
@@ -52,8 +57,20 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         }}
       >
         <ListItem alignItems="flex-start">
-          <Colorful onChange={(e) => setColor(e.hex)} color={color} />
+          <ColorOptions
+            colors={colors}
+            showCustomColorPicker={showCustomColorPicker}
+            onSelectColor={(selectedColor) => setColor(selectedColor)}
+            onCustomColorSelect={() => {
+              setShowCustomColorPicker(!showCustomColorPicker);
+            }}
+          />
         </ListItem>
+        {showCustomColorPicker && (
+          <ListItem alignItems="flex-start">
+            <Colorful onChange={(e) => setColor(e.hex)} color={color} disableAlpha />
+          </ListItem>
+        )}
         <ListItem alignItems="flex-start">
           <TextField
             id="outlined-required"
