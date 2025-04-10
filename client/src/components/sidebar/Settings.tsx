@@ -3,15 +3,24 @@ import { styled } from '@mui/system';
 import React, { useContext } from 'react';
 
 import { AppContext } from '../../context/AppContext';
+import { ColorThemeOptions } from './ColorThemeOptions';
+import { ColorThemePreview } from './ColorThemePreview';
 
 const SettingsItem = styled('div')`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 1vh 20px;
 `;
 
 const SettingText = styled('div')`
   padding: 1vh 0;
+`;
+
+const ColorThemeOptionsContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const Settings: React.FC = () => {
@@ -42,23 +51,57 @@ const Settings: React.FC = () => {
     { state: isConvertToLocalTimezone, setter: setIsConvertToLocalTimezone, desc: 'Convert to local timezone' },
   ];
 
+  const [isPreferredThemeOpen, setIsPreferredThemeOpen] = React.useState(false);
+
   return (
     <>
-      {settingsToggles.map((setting) => (
-        <div key={setting.desc}>
-          <SettingsItem>
-            <SettingText>{setting['desc']}</SettingText>
-            <Switch
-              value={setting['state']}
-              checked={setting['state']}
-              color="primary"
-              onChange={() => {
-                setting['setter'](!setting['state']);
-              }}
-            />
-          </SettingsItem>
-        </div>
-      ))}
+      <SettingsItem
+        sx={{":hover": {cursor: "pointer"}}}
+        onClick={() => {
+          setIsPreferredThemeOpen(!isPreferredThemeOpen);
+        }}
+      >
+        <SettingText>Preferred Theme</SettingText>
+        {!isPreferredThemeOpen && (<ColorThemePreview />)}
+      </SettingsItem>
+
+      {isPreferredThemeOpen ? (
+        <ColorThemeOptionsContainer>
+          <ColorThemeOptions />
+        </ColorThemeOptionsContainer>
+      ) :
+        <>
+          {settingsToggles.map((setting) => (
+            <div key={setting.desc}>
+              <SettingsItem>
+                <SettingText>{setting['desc']}</SettingText>
+                <Switch
+                  value={setting['state']}
+                  checked={setting['state']}
+                  color="primary"
+                  onChange={() => {
+                    setting['setter'](!setting['state']);
+                  }}
+                />
+              </SettingsItem>
+            </div>
+          ))}
+        </>}
+
+
+      {/* <Popover
+        open={isPreferredThemeOpen}
+        anchorEl={anchorEl} // Anchor the Popover to the clicked element
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Position it below the element
+        // transformOrigin={{ vertical: 'top', horizontal: 'right' }} // Align the top-left corner
+        onClose={handleClose} // Close the Popover
+        sx={{
+          zIndex: 1500,
+          marginRight: '20px'
+        }}
+      >
+        <ColorThemeOptions />
+      </Popover> */}
     </>
   );
 };

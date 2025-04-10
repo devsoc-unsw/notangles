@@ -1,6 +1,4 @@
-type DefaultColorsKeys = keyof typeof default_colors;
-
-const default_colors = {
+const theme_1 = {
   'default-1': '#137786', // dark cyan
   'default-2': '#a843a4', // light purple
   'default-3': '#134e86', // light blue
@@ -11,28 +9,40 @@ const default_colors = {
   'default-8': '#3323ad', // deep blue
 };
 
-const default_colors1 = {
-  'default-1': '#FF5733', // vibrant orange
-  'default-2': '#33FF57', // bright green
-  'default-3': '#3357FF', // vivid blue
-  'default-4': '#FF33A8', // hot pink
-  'default-5': '#FFC300', // golden yellow
-  'default-6': '#DAF7A6', // pastel green
-  'default-7': '#900C3F', // deep maroon
-  'default-8': '#581845', // dark purple
+const theme_2 = {
+  'default-1': '#cdb4db',
+  'default-2': '#ffc8dd',
+  'default-3': '#ffafcc',
+  'default-4': '#bde0fe',
+  'default-5': '#a2d2ff',
+  'default-6': '#b9fbc0',
+  'default-7': '#ffe156',
+  'default-8': '#ff677d',
+};  
+
+const themes = {
+  'theme-1': theme_1,
+  'theme-2': theme_2,
 }
 
-export const useColorDecoder = (assignedColor: string) => {
-  return default_colors[assignedColor as DefaultColorsKeys] || assignedColor;
+export const useColorDecoder = (assignedColor: string, p_theme?: string) => {
+  // Get the current theme as from local storage
+  let theme = localStorage.getItem('colorTheme') || 'theme-1';
+  if (p_theme) {
+    theme = p_theme;
+  }
+
+  const currentTheme = themes[theme as keyof typeof themes] || themes['theme-1'];
+  return Object.prototype.hasOwnProperty.call(currentTheme, assignedColor) 
+    ? currentTheme[assignedColor as keyof typeof theme_1] 
+    : assignedColor;
 }
 
 export const useColorsDecoder = (assignedColors: Record<string, string>) => {
   const decodedColors = Object.fromEntries(
     Object.entries(assignedColors).map(([key, color]) => {
-      if (color in default_colors) {
-        return [key, default_colors[color as DefaultColorsKeys]];
-      }
-      return [key, color];
+      const decodedColor = useColorDecoder(color);
+      return [key, decodedColor];
     })
   );
 
