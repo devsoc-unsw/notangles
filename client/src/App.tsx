@@ -30,6 +30,7 @@ import {
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import { UserContext } from './context/UserContext';
+import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -617,7 +618,7 @@ const App: React.FC = () => {
             <ContentWrapper>
               <Content>
                 <Controls
-                  assignedColors={assignedColors}
+                  assignedColors={useColorsDecoder(assignedColors)}
                   handleSelectClass={handleSelectClass}
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
@@ -626,10 +627,10 @@ const App: React.FC = () => {
                 {groupsSidebarCollapsed ? (
                   <>
                     <TimetableTabs />
-                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                    <Timetable assignedColors={useColorsDecoder(assignedColors)} handleSelectClass={handleSelectClass} />
                   </>
                 ) : (
-                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  <TimetableShared assignedColors={useColorsDecoder(assignedColors)} handleSelectClass={handleSelectClass} />
                 )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}

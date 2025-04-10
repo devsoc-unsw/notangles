@@ -5,6 +5,7 @@ import {IconButton, List, ListItem } from '@mui/material';
 import React from 'react';
 
 import { darkTheme, lightTheme } from '../../constants/theme';
+import { useColorDecoder } from '../../hooks/useColorDecoder';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;
@@ -36,25 +37,39 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({
   const theme = parsedData?.["isDarkMode"] ? darkTheme : lightTheme;
 
   return (
-    <List sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-      {colors.slice(0, maxDefaultColors).map((color) => (
-        <ListItem key={color} disableGutters>
+    <List sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
+      {/* Default Theme Colors */}
+      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
+        {colors.slice(0, maxDefaultColors).map((color) => (
+          <ListItem key={color} disablePadding>
+            <StyledColorIconButton
+              border={theme.palette.secondary.main}
+              bgColor={useColorDecoder(color)}
+              onClick={() => onSelectColor(color)}
+
+          />
+          </ListItem>
+        ))}
+      </ListItem>
+      {/* Recently Used Colors */}
+      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
+        {colors.slice(maxDefaultColors, colors.length-1).map((color) => (
+          <StyledColorIconButton
+            key={color}
+            border={theme.palette.secondary.main}
+            bgColor={useColorDecoder(color)}
+            onClick={() => onSelectColor(color)}
+          />
+        ))}
+        <ListItem disablePadding>
           <StyledColorIconButton
             border={theme.palette.secondary.main}
-            bgColor={color}
-            onClick={() => onSelectColor(color)}
-
-        />
+            bgColor={showCustomColorPicker ? theme.palette.secondary.dark : theme.palette.secondary.dark}
+            onClick={onCustomColorSelect}
+          >
+          {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}
+          </StyledColorIconButton>
         </ListItem>
-      ))}
-      <ListItem disableGutters>
-        <StyledColorIconButton
-          border={theme.palette.secondary.main}
-          bgColor={showCustomColorPicker ? theme.palette.secondary.dark : theme.palette.secondary.dark}
-          onClick={onCustomColorSelect}
-        >
-        {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}
-        </StyledColorIconButton>
       </ListItem>
     </List>
   );

@@ -3,6 +3,7 @@ import { Colorful } from '@uiw/react-color';
 import React from 'react';
 
 import { colors } from '../../constants/timetable';
+import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import ColorOptions from './ColorOptions';
@@ -23,7 +24,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
-      <ColorIndicatorBox backgroundColor={color} onClick={handleOpenColorPicker} />
+      <ColorIndicatorBox backgroundColor={useColorDecoder(color)} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
         <ButtonGroup>
           <Button
