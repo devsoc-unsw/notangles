@@ -4,7 +4,6 @@ import {
   MenuItem,
   Select,
   SelectProps,
-  Tooltip,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -23,6 +22,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.primary.main,
+  height: '55px',
   width: '100%',
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: theme.palette.primary.main,
@@ -51,7 +51,7 @@ const CustomStyledSelect = (props: SelectProps) => {
       MenuProps={{
         PaperProps: {
           style: {
-            width: '258px',
+            width: '200px',
           },
         },
       }}
@@ -67,15 +67,16 @@ const TermDisplay = styled('span')`
   z-index: 1201;
   border: 1.2px solid ${({ theme }) => theme.palette.primary.main};
   border-radius: 10px;
-  display: inline-block;
+  height: 55px;
+  width: 55px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-export interface TermSelectProps {
-  collapsed: boolean;
-  handleExpand: () => void;
-}
+export interface TermSelectProps {}
 
-const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
+const TermSelect: React.FC<TermSelectProps> = () => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -84,7 +85,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [open, setOpen] = useState(false);
+  const [closed, setClosed] = useState(true);
 
   const termDataStrList = termsData.map((val) => {
     return `${convertToTermName(val!)}, ${val?.substring(2)}`;
@@ -116,45 +117,26 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
     setAssignedColors(displayTimetables[termName!][defaultStartTimetable].assignedColors);
   };
 
-  const handleMouseDown = (event: any) => {
-    // prevents collapsing sidebar when selecting value
-    event.stopPropagation();
-  };
-
+  
   const handleClose = () => {
-    setOpen(false);
+    setClosed(true);
   };
 
   const handleOpen = () => {
-    setOpen(true);
+    setClosed(false);
   };
   return (
-    <FormControl onMouseDown={handleMouseDown}>
-      {collapsed ? (
-        <>
-          <Tooltip
-            title={termName}
-            placement="right"
-            onClick={() => {
-              handleExpand();
-              handleOpen();
-            }}
-          >
-            <TermDisplay>{term?.substring(0, 2)}</TermDisplay>
-          </Tooltip>
-        </>
-      ) : (
-        <>
-          <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
-          <CustomStyledSelect
+    <FormControl>
+        <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
+        <CustomStyledSelect
             size="small"
             labelId="select-term-label"
             id="select-term"
             label="Select term"
-            open={open}
+            open={!closed}
             onClose={handleClose}
             onOpen={handleOpen}
-            value={isMobile ? term : termName.concat(', ', term?.substring(2) as string)}
+            value={termName.concat(', ', term?.substring(2) as string)}
             onChange={selectTerm}
           >
             {Array.from(termDataStrList).map((term, index) => {
@@ -164,9 +146,7 @@ const TermSelect: React.FC<TermSelectProps> = ({ collapsed, handleExpand }) => {
                 </MenuItem>
               );
             })}
-          </CustomStyledSelect>
-        </>
-      )}
+        </CustomStyledSelect>
     </FormControl>
   );
 };
