@@ -105,7 +105,7 @@ export const AppContext = createContext<IAppContext>({
   isShowOnlyOpenClasses: false,
   setisShowOnlyOpenClasses: () => {},
 
-  isDefaultUnscheduled: false,
+  isDefaultUnscheduled: true,
   setIsDefaultUnscheduled: () => {},
 
   isHideClassInfo: false,
