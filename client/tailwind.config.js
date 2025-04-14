@@ -1,7 +1,7 @@
-const { default: flattenColorPalette } = require('tailwindcss/lib/util/flattenColorPalette');
+import flattenColorPalette from 'tailwindcss/lib/util/flattenColorPalette';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
