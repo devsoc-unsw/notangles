@@ -5,10 +5,10 @@ const defaults: Record<string, any> = {
   isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   isSquareEdges: false,
   isShowOnlyOpenClasses: false,
-  isDefaultUnscheduled: false,
+  isDefaultUnscheduled: true,
   isHideClassInfo: false,
   isHideExamClasses: false,
-  isConvertToLocalTimezone: true,
+  isConvertToLocalTimezone: false,
   courseData: { map: [] },
   timetables: { T0: createDefaultTimetable('') },
 };

@@ -2,12 +2,14 @@ import { Box, Link, Stack } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useContext } from 'react';
 
+import aristaBlack from '../assets/sponsors/arista_black.png';
+import aristaWhite from '../assets/sponsors/arista_white.png';
 import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
 import janeStreetWhite from '../assets/sponsors/jane_street_white.svg';
-import macquarieBlack from '../assets/sponsors/macquarie_logo_black.svg';
-import macquarieWhite from '../assets/sponsors/macquarie_logo_white.svg';
-import tiktokBlack from '../assets/sponsors/tiktok_logo_black.svg';
-import tiktokWhite from '../assets/sponsors/tiktok_logo_white.svg';
+import safetyCultureBlack from '../assets/sponsors/safetyculture_black.png';
+import safetyCultureWhite from '../assets/sponsors/safetyculture_white.png';
+import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
+import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
 import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`
@@ -19,35 +21,51 @@ const SponsorBox = styled(Box)`
   }
 `;
 
-const StyledSponsorLogo = styled('img')`
+const StyledPlatinumSponsorLogo = styled('img')`
   object-fit: contain;
   aspect-ratio: 14/3;
   height: auto;
-  width: 12em;
+  width: 14em;
 
   @media (min-width: 600px) {
     width: 16em;
   }
 `;
 
+const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
+  width: 10em;
+
+  @media (min-width: 600px) {
+    width: 12em;
+  }
+`;
+
 const Sponsors = () => {
   const { isDarkMode } = useContext(AppContext);
 
-  const sponsorData = [
+  const platinumSponsorData = [
+    {
+      name: 'Arista',
+      logo: isDarkMode ? aristaWhite : aristaBlack,
+      link: 'https://www.arista.com/en/',
+    },
+    {
+      name: 'theTradeDesk',
+      logo: isDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
+      link: 'https://careers.thetradedesk.com',
+    },
+  ];
+
+  const goldSponsorData = [
     {
       name: 'Jane Street',
       logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
       link: 'https://www.janestreet.com/',
     },
     {
-      name: 'TikTok',
-      logo: isDarkMode ? tiktokWhite : tiktokBlack,
-      link: 'https://careers.tiktok.com/',
-    },
-    {
-      name: 'Macquarie',
-      logo: isDarkMode ? macquarieWhite : macquarieBlack,
-      link: 'https://www.macquarie.com',
+      name: 'SafetyCulture',
+      logo: isDarkMode ? safetyCultureWhite : safetyCultureBlack,
+      link: 'https://safetyculture.com/',
     },
   ];
 
@@ -59,12 +77,27 @@ const Sponsors = () => {
         alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
         marginY={3}
-        spacing={{ xs: 1.5, sm: 2 }}
+        spacing={{ xs: 1.5, sm: 2, lg: 8 }}
       >
-        {sponsorData.map((sponsor, index) => {
+        {platinumSponsorData.map((sponsor, index) => {
           return (
             <Link target="_blank" href={sponsor.link} key={index}>
-              <StyledSponsorLogo src={sponsor.logo} alt={sponsor.name} />
+              <StyledPlatinumSponsorLogo src={sponsor.logo} alt={sponsor.name} />
+            </Link>
+          );
+        })}
+      </Stack>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction={{ xs: 'column', lg: 'row' }}
+        marginY={3}
+        spacing={{ xs: 1.5, sm: 2, lg: 14 }}
+      >
+        {goldSponsorData.map((sponsor, index) => {
+          return (
+            <Link target="_blank" href={sponsor.link} key={index}>
+              <StyledGoldSponsorLogo src={sponsor.logo} alt={sponsor.name} />
             </Link>
           );
         })}

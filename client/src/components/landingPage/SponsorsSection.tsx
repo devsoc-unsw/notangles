@@ -1,6 +1,7 @@
+import arista from '../../assets/sponsors/arista_black.png';
 import janeStreet from '../../assets/sponsors/jane_street_black.svg';
-import macquarie from '../../assets/sponsors/macquarie_logo_black.svg';
-import tiktok from '../../assets/sponsors/tiktok_logo_black.svg';
+import safetyCulture from '../../assets/sponsors/safetyculture_black.png';
+import theTradeDesk from '../../assets/sponsors/thetradedesk_black.png';
 
 const SponsorsSection = () => {
   return (
@@ -9,13 +10,16 @@ const SponsorsSection = () => {
       <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
         <ul className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
           <li>
-            <img src={janeStreet} alt="Jane Street" className="h-16" />
+            <img src={arista} alt="Arista" className="h-11" />
           </li>
           <li>
-            <img src={macquarie} alt="Macquarie" className="h-16" />
+            <img src={theTradeDesk} alt="theTradeDesk" className="h-11" />
           </li>
           <li>
-            <img src={tiktok} alt="TikTok" className="h-16" />
+            <img src={safetyCulture} alt="Safety Culture" className="h-11" />
+          </li>
+          <li>
+            <img src={janeStreet} alt="Jane Street" className="h-11" />
           </li>
         </ul>
       </div>

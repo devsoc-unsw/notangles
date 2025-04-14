@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="flex w-5/6 h-4/5 p-[10px] space-x-3">
         <div className="flex-col w-[670px] p-[5px]">
           <img src={DevSocLogo} alt="Devsoc Logo" />
-          <p className="text-white text-sm object-bottom">© 2024 — UNSW Software Development Society</p>
+          <p className="text-white text-sm object-bottom">© 2025 — UNSW Software Development Society</p>
         </div>
         <div className="p-[10px] hidden sm:flex">
           <p className="text-white">

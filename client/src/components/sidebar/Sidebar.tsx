@@ -250,7 +250,10 @@ const Sidebar: React.FC = () => {
           {!collapsed ? (
             <SidebarFooterText>
               <Divider />
-              <span>© DevSoc {new Date().getFullYear()}, v1.0.0</span>
+              <span>
+                © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
+                {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
+              </span>
             </SidebarFooterText>
           ) : (
             <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
