@@ -3,16 +3,15 @@ import { styled } from '@mui/system';
 import React from 'react';
 
 import { ControlsProps } from '../../interfaces/PropTypes';
-import TermSelect from '../sidebar/TermSelect';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
+import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
   flex: 0 0 auto; 
   margin-top: 20px;
-  cursor: pointer;
   margin-right: 10px;
   min-width: 140px;
   display: flex;
@@ -62,7 +61,7 @@ const Controls: React.FC<ControlsProps> = ({
           <TermSelect />
         </TermSelectWrapper>
 
-        <SelectWrapper >
+        <SelectWrapper minWidth={"296px"} >
           <CourseSelect
             assignedColors={assignedColors}
             handleSelect={handleSelectCourse}

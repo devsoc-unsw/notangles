@@ -24,6 +24,7 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.primary.main,
   height: '55px',
   width: '100%',
+  transition: 'background-color 0.1s ease-in',
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: theme.palette.primary.main,
   },
@@ -42,6 +43,9 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   '&:hover .MuiOutlinedInput-notchedOutline': {
     borderColor: theme.palette.primary.main,
   },
+  '&:hover': {
+    backgroundColor: "rgba(157, 157, 157, 0.15)",
+  },
 }));
 
 const CustomStyledSelect = (props: SelectProps) => {
@@ -59,20 +63,6 @@ const CustomStyledSelect = (props: SelectProps) => {
   );
 };
 
-const TermDisplay = styled('span')`
-  color: ${({ theme }) => theme.palette.primary.main};
-  font-weight: 600;
-  position: relative;
-  padding: 12px 12px 12px 13px;
-  z-index: 1201;
-  border: 1.2px solid ${({ theme }) => theme.palette.primary.main};
-  border-radius: 10px;
-  height: 55px;
-  width: 55px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 export interface TermSelectProps {}
 
@@ -85,7 +75,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [closed, setClosed] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const termDataStrList = termsData.map((val) => {
     return `${convertToTermName(val!)}, ${val?.substring(2)}`;
@@ -119,21 +109,21 @@ const TermSelect: React.FC<TermSelectProps> = () => {
 
   
   const handleClose = () => {
-    setClosed(true);
+    setOpen(false);
   };
 
   const handleOpen = () => {
-    setClosed(false);
+    setOpen(true);
   };
   return (
-    <FormControl>
+    <FormControl >
         <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
         <CustomStyledSelect
             size="small"
             labelId="select-term-label"
             id="select-term"
             label="Select term"
-            open={!closed}
+            open={open}
             onClose={handleClose}
             onOpen={handleOpen}
             value={termName.concat(', ', term?.substring(2) as string)}
@@ -148,6 +138,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
             })}
         </CustomStyledSelect>
     </FormControl>
+    
   );
 };
 
