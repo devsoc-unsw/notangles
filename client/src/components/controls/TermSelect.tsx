@@ -74,7 +74,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [closed, setClosed] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const termDataStrList = termsData.map((val) => {
     return `${convertToTermName(val!)}, ${val?.substring(2)}`;
@@ -108,14 +108,13 @@ const TermSelect: React.FC<TermSelectProps> = () => {
 
   
   const handleClose = () => {
-    setClosed(true);
+    setOpen(false);
   };
 
   const handleOpen = () => {
-    setClosed(false);
+    setOpen(true);
   };
   return (
-
     <FormControl >
         <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
         <CustomStyledSelect
@@ -123,7 +122,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
             labelId="select-term-label"
             id="select-term"
             label="Select term"
-            open={!closed}
+            open={open}
             onClose={handleClose}
             onOpen={handleOpen}
             value={termName.concat(', ', term?.substring(2) as string)}
