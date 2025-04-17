@@ -1,3 +1,4 @@
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext } from 'react';
@@ -56,13 +57,25 @@ const Settings: React.FC = () => {
   return (
     <>
       <SettingsItem
-        sx={{":hover": {cursor: "pointer"}}}
+        sx={{":hover": {cursor: "pointer"}
+        }}
         onClick={() => {
           setIsPreferredThemeOpen(!isPreferredThemeOpen);
         }}
       >
-        <SettingText>Preferred Theme</SettingText>
-        {!isPreferredThemeOpen && (<ColorThemePreview />)}
+        {isPreferredThemeOpen ? (
+          <>
+            <SettingText>
+              <ArrowBackIosIcon />
+              Return
+            </SettingText>
+          </>
+        ) : ( 
+          <>
+            <SettingText>Preferred Theme</SettingText>
+            <ColorThemePreview />
+          </>
+        )}
       </SettingsItem>
 
       {isPreferredThemeOpen ? (

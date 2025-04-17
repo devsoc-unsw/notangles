@@ -9,8 +9,8 @@ interface ColorThemePreviewProps {
 
 export const ColorThemePreview = ({ p_theme }: ColorThemePreviewProps) => {
   return (
-    <List sx={{ display: "flex", flexDirection: "row", gap: 1, padding: 1 }}
-    >
+    <List sx={{ display: "flex", flexDirection: "row", gap: 1, paddingX: 0, paddingY: 1}}>
+
       {colors.map((color) => (
         <ListItem
           key={color}

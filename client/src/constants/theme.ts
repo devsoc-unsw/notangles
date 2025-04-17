@@ -134,3 +134,55 @@ export const darkTheme = createTheme({
     ].join(','),
   },
 });
+
+const theme_1 = {
+  'default-1': '#137786',
+  'default-2': '#a843a4',
+  'default-3': '#134e86',
+  'default-4': '#138652',
+  'default-5': '#861313',
+  'default-6': '#868413',
+  'default-7': '#2e89ff',
+  'default-8': '#3323ad',
+};
+
+const theme_2 = {
+  'default-1': '#cdb4db',
+  'default-2': '#ffc8dd',
+  'default-3': '#ffafcc',
+  'default-4': '#bde0fe',
+  'default-5': '#a2d2ff',
+  'default-6': '#b9fbc0',
+  'default-7': '#ffe156',
+  'default-8': '#ff677d',
+};
+
+const theme_3 = {
+  'default-1': '#3d4c78',
+  'default-2': '#58508d',
+  'default-3': '#8a508f',
+  'default-4': '#bc5090',
+  'default-5': '#de5a79',
+  'default-6': '#ff6361',
+  'default-7': '#ff8531',
+  'default-8': '#ffa600',
+};
+
+const theme_4 = {
+  'default-1': '#7e88af',
+  'default-2': '#4c5a73',
+  'default-3': '#344f6d',
+  'default-4': '#2a415f',
+  'default-5': '#9da7b8',
+  'default-6': '#a1b1cb',
+  'default-7': '#7d91a6',
+  'default-8': '#465169',
+};
+
+
+export const themes = {
+  'theme-1': theme_1,
+  'theme-2': theme_2,
+  'theme-3': theme_3,
+  'theme-4': theme_4,
+}
