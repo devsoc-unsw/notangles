@@ -12,6 +12,8 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
+//test
+import NewSidebar from './components/sidebar/NewSidebar';
 import Sponsors from './components/Sponsors';
 import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
@@ -630,7 +632,7 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <Sidebar />
+            <NewSidebar />
             <ContentWrapper>
               <Content>
                 <Controls
