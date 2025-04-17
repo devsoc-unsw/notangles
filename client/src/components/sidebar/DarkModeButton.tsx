@@ -31,7 +31,7 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
         <ToggleDarkModeButton color="inherit" onClick={toggleDarkMode}>
           {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
           <IndividualComponentTypography collapsed={collapsed}>
-            {collapsed ? '' : isDarkMode ? 'Change to Light Mode' : 'Change to Dark Mode'}
+            {collapsed ? '' : isDarkMode ? 'Light Mode' : 'Dark Mode'}
           </IndividualComponentTypography>
         </ToggleDarkModeButton>
       </Tooltip>

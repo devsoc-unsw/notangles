@@ -31,7 +31,7 @@ const StyledIconButton = styled(IconButton)`
 `;
 
 const StyledButton = styled(Button)`
-  min-width: 250px;
+  min-width: 200px;
   min-height: 40px;
   background-color: ${({ theme }) => theme.palette.background.paper};
   border: 1px solid ${({ theme }) => theme.palette.primary.main};
