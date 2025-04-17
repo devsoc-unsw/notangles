@@ -7,6 +7,9 @@ import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
 export interface IAppContext {
+  currentTheme: string;
+  setCurrentTheme: (newTheme: string) => void;
+
   is12HourMode: boolean;
   setIs12HourMode: (newIs12HourMode: boolean) => void;
 
@@ -93,6 +96,9 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
+  currentTheme: storage.get('currentTheme'),
+  setCurrentTheme: () => {},
+
   is12HourMode: false,
   setIs12HourMode: () => {},
 
@@ -186,6 +192,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
+  const [currentTheme, setCurrentTheme] = useState<string>(storage.get('currentTheme'));
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
@@ -217,6 +224,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
+    currentTheme,
+    setCurrentTheme,
     is12HourMode,
     setIs12HourMode,
     isDarkMode,

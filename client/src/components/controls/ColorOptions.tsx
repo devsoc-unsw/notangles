@@ -34,7 +34,8 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({
   // Get the current theme as from local storage
   const data = localStorage.getItem('data');
   const parsedData = data ? JSON.parse(data) : null;
-  const theme = parsedData?.["isDarkMode"] ? darkTheme : lightTheme;
+  const colorTheme = localStorage.getItem('colorTheme') || 'theme_1';
+  const theme = parsedData?.["isDarkMode"] ? darkTheme(colorTheme) : lightTheme(colorTheme);
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>

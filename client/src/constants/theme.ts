@@ -23,6 +23,9 @@ export interface ThemeType {
       dark: string;
       light: string;
     };
+    in_text: {
+      primary: string;
+    };
   };
   shape: {
     borderRadius: string;
@@ -45,6 +48,7 @@ const baseTheme = ({
   background,
   border,
   mode,
+  textColor,
 }: {
   mode: 'light' | 'dark' | undefined;
   background: {
@@ -56,6 +60,7 @@ const baseTheme = ({
     main: string;
     dark: string;
   };
+  textColor: string;
 }) => ({
   palette: {
     mode: mode,
@@ -71,69 +76,93 @@ const baseTheme = ({
       dark: border.dark,
       light: background.dark,
     },
+    in_text: {
+      primary: textColor,
+    },
   },
   shape: {
     borderRadius,
   },
 });
 
-export const lightTheme = createTheme({
-  ...baseTheme({
-    mode: 'light',
-    background: {
-      main: '#fafafa',
-      light: '#ffffff',
-      dark: '#f2f2f2',
-    },
-    border: {
-      main: '#bdbdbd',
-      dark: '#999999',
-    },
-  }),
-  typography: {
-    fontFamily: [
-      '"Roboto Flex Variable"',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-});
+export const lightTheme = (selectedColorTheme: string) => {
+  const currentTheme = themes[selectedColorTheme as keyof typeof themes];
+  if (!currentTheme) {
+    console.error(`Invalid selectedColorTheme: ${selectedColorTheme}`);
+    return createTheme({}); // Return a fallback theme
+  }
+  console.log('currentTheme', currentTheme);
 
-export const darkTheme = createTheme({
-  ...baseTheme({
-    mode: 'dark',
-    background: {
-      main: '#212121',
-      light: '#292929',
-      dark: '#181818',
+  return createTheme({
+    ...baseTheme({
+      mode: 'light',
+      background: {
+        main: '#fafafa',
+        light: '#ffffff',
+        dark: '#f2f2f2',
+      },
+      border: {
+        main: '#bdbdbd',
+        dark: '#999999',
+      },
+      textColor: currentTheme['text-color'],
+    }),
+    typography: {
+      fontFamily: [
+        '"Roboto Flex Variable"',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
     },
-    border: {
-      main: '#616161',
-      dark: '#808080',
+  });
+};
+
+
+
+export const darkTheme = (selectedColorTheme: string) => {
+  const currentTheme = themes[selectedColorTheme as keyof typeof themes];
+  if (!currentTheme) {
+    console.error(`Invalid selectedColorTheme: ${selectedColorTheme}`);
+    return createTheme({}); // Return a fallback theme
+  }
+
+  return createTheme({
+    ...baseTheme({
+      mode: 'dark',
+      background: {
+        main: '#212121',
+        light: '#292929',
+        dark: '#181818',
+      },
+      border: {
+        main: '#616161',
+        dark: '#808080',
+      },
+      textColor: currentTheme['text-color'],
+    }),
+    typography: {
+      fontFamily: [
+        '"Roboto Flex Variable"',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
     },
-  }),
-  typography: {
-    fontFamily: [
-      '"Roboto Flex Variable"',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-});
+  });
+};
 
 const theme_1 = {
   'default-1': '#137786',
@@ -144,6 +173,7 @@ const theme_1 = {
   'default-6': '#868413',
   'default-7': '#2e89ff',
   'default-8': '#3323ad',
+  'text-color': '#ffffff',
 };
 
 const theme_2 = {
@@ -155,6 +185,7 @@ const theme_2 = {
   'default-6': '#b9fbc0',
   'default-7': '#ffe156',
   'default-8': '#ff677d',
+  'text-color': '#777777',
 };
 
 const theme_3 = {
@@ -166,6 +197,7 @@ const theme_3 = {
   'default-6': '#ff6361',
   'default-7': '#ff8531',
   'default-8': '#ffa600',
+  'text-color': '#ffffff',
 };
 
 const theme_4 = {
@@ -177,6 +209,7 @@ const theme_4 = {
   'default-6': '#a1b1cb',
   'default-7': '#7d91a6',
   'default-8': '#465169',
+  'text-color': '#ffffff',
 };
 
 

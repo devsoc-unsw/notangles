@@ -49,7 +49,8 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
+  const colorTheme = localStorage.getItem('colorTheme') || 'theme_1';
+  const theme = isDarkMode ? darkTheme(colorTheme) : lightTheme(colorTheme);
 
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
 

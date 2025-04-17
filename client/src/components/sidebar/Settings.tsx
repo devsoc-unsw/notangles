@@ -26,6 +26,8 @@ const ColorThemeOptionsContainer = styled('div')`
 
 const Settings: React.FC = () => {
   const {
+    currentTheme,
+    setCurrentTheme,
     isSquareEdges,
     setIsSquareEdges,
     is12HourMode,
@@ -80,7 +82,10 @@ const Settings: React.FC = () => {
 
       {isPreferredThemeOpen ? (
         <ColorThemeOptionsContainer>
-          <ColorThemeOptions />
+          <ColorThemeOptions 
+            currentTheme={currentTheme}
+            setCurrentTheme={setCurrentTheme}
+          />
         </ColorThemeOptionsContainer>
       ) :
         <>

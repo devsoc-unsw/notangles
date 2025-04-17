@@ -94,6 +94,7 @@ const ICSButton = styled(Button)`
 
 const App: React.FC = () => {
   const {
+    currentTheme,
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -187,7 +188,7 @@ const App: React.FC = () => {
         newTimetableTerms = {
           ...newTimetableTerms,
           ...{
-            [termId as string]: oldData.hasOwnProperty(termId as string)
+            [termId as string]: Object.prototype.hasOwnProperty.call(oldData, termId as string)
               ? oldData[termId as string]
               : createDefaultTimetable(user.userID),
           },
@@ -552,6 +553,10 @@ const App: React.FC = () => {
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
 
   useEffect(() => {
+    storage.set('currentTheme', currentTheme);
+  }, [currentTheme]);
+
+  useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
 
@@ -583,7 +588,9 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
+  // const colorTheme = localStorage.getItem('colorTheme') || 'theme_1';
+  const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
+  
   const globalStyle = {
     body: {
       background: theme.palette.background.default,

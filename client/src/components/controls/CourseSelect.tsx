@@ -97,7 +97,12 @@ const StyledChip = styled(Chip, {
   backgroundColor: string;
 }>`
   transition: none !important;
+  color: ${({ theme }) => theme.palette.in_text.primary};
   background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
+
+  .MuiChip-deleteIcon {
+    color: ${({ theme }) => theme.palette.in_text.primary};
+  }
 `;
 
 const StyledOption = styled('span')`
@@ -487,7 +492,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               label={option.code}
               color="primary"
               backgroundColor={assignedColors[option.code]}
-              deleteIcon={<CloseRounded />}
+              deleteIcon={<CloseRounded/>}
               {...getTagProps({ index })}
               onDelete={() => {
                 setSelectedValue(selectedValue.filter((course) => course.code !== option.code));

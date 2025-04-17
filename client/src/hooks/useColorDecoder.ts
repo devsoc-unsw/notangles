@@ -1,15 +1,22 @@
+import { useContext } from "react";
+
 import { themes } from "../constants/theme";
+import { AppContext } from "../context/AppContext";
 
 export const useColorDecoder = (assignedColor: string, p_theme?: string) => {
-  // Get the current theme as from local storage
-  let theme = localStorage.getItem('colorTheme') || 'theme-1';
+  const {
+    currentTheme
+  } = useContext(AppContext);
+
+  let theme = currentTheme;
+
   if (p_theme) {
     theme = p_theme;
   }
 
-  const currentTheme = themes[theme as keyof typeof themes] || themes['theme-1'];
-  return Object.prototype.hasOwnProperty.call(currentTheme, assignedColor) 
-    ? currentTheme[assignedColor as keyof typeof currentTheme] 
+  const mappedTheme = themes[theme as keyof typeof themes];
+  return Object.prototype.hasOwnProperty.call(mappedTheme, assignedColor) 
+    ? mappedTheme[assignedColor as keyof typeof mappedTheme] 
     : assignedColor;
 }
 
