@@ -589,7 +589,6 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  // const colorTheme = localStorage.getItem('colorTheme') || 'theme_1';
   const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
   
   const globalStyle = {

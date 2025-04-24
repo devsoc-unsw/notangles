@@ -2,9 +2,10 @@ import styled from '@emotion/styled';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import {IconButton, List, ListItem } from '@mui/material';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { darkTheme, lightTheme } from '../../constants/theme';
+import { AppContext } from '../../context/AppContext';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 interface ColorOptionsProps {
   colors: string[];
@@ -31,11 +32,13 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({
   onSelectColor,
   onCustomColorSelect
 }) => {
-  // Get the current theme as from local storage
-  const data = localStorage.getItem('data');
-  const parsedData = data ? JSON.parse(data) : null;
-  const colorTheme = localStorage.getItem('colorTheme') || 'theme_1';
-  const theme = parsedData?.["isDarkMode"] ? darkTheme(colorTheme) : lightTheme(colorTheme);
+  // Get the current theme as from AppContext
+  const {
+    isDarkMode,
+    currentTheme
+  } = useContext(AppContext);
+
+  const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>

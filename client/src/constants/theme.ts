@@ -213,8 +213,8 @@ const theme_4 = {
 
 
 export const themes = {
-  'theme-1': theme_1,
-  'theme-2': theme_2,
-  'theme-3': theme_3,
-  'theme-4': theme_4,
+  'Basic Notangles': theme_1,
+  'Pastel Bliss': theme_2,
+  'Vibrant Sunset': theme_3,
+  'Cool Twilight': theme_4,
 }

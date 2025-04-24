@@ -1,7 +1,7 @@
 import { createDefaultTimetable } from '../utils/timetableHelpers';
 
 const defaults: Record<string, any> = {
-  currentTheme: 'theme-1',
+  currentTheme: 'Basic Notangles',
   is12HourMode: true,
   isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   isSquareEdges: false,
