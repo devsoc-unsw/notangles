@@ -1,6 +1,7 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { styled } from '@mui/system';
 
+import { themes } from '../../constants/theme';
 import { ColorThemePreview } from "./ColorThemePreview";
 
 const SettingsItem = styled('div')`
@@ -40,7 +41,30 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({
         value={currentTheme}
         onChange={handleChange}
       >
-        <SettingsItem>
+        {Object.keys(themes).map((theme) => (
+          <SettingsItem key={theme}>
+            <StyledFormControlLabel
+              value={theme}
+              control={<Radio />}
+              label={
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '2.5rem',
+                    alignItems: 'center',
+
+                  }}>
+                  <div style={{ minWidth: '7vw' }}>{theme}</div>
+                  <ColorThemePreview p_theme={theme} />
+                </div>
+              }
+            />
+          </SettingsItem>
+        ))}
+        {/* Uncomment this section to add more themes */}
+
+        {/* <SettingsItem>
           <StyledFormControlLabel
             value="theme-1"
             control={<Radio />}
@@ -111,7 +135,7 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({
               </div>
             }
           />
-        </SettingsItem>
+        </SettingsItem> */}
       </RadioGroup>
     </FormControl>
   );
