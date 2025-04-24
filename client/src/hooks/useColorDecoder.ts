@@ -27,8 +27,6 @@ export const useColorsDecoder = (assignedColors: Record<string, string>) => {
       return [key, decodedColor];
     })
   );
-
-  console.log('assignedColors', assignedColors);
-  console.log('decodedColors', decodedColors);
+  
   return decodedColors;
 };

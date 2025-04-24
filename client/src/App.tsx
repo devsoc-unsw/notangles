@@ -138,6 +138,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
+  const decodedAssignedColors = useColorsDecoder(assignedColors);
   const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
@@ -625,7 +626,7 @@ const App: React.FC = () => {
             <ContentWrapper>
               <Content>
                 <Controls
-                  assignedColors={useColorsDecoder(assignedColors)}
+                  assignedColors={decodedAssignedColors}
                   handleSelectClass={handleSelectClass}
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
@@ -634,10 +635,10 @@ const App: React.FC = () => {
                 {groupsSidebarCollapsed ? (
                   <>
                     <TimetableTabs />
-                    <Timetable assignedColors={useColorsDecoder(assignedColors)} handleSelectClass={handleSelectClass} />
+                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                   </>
                 ) : (
-                  <TimetableShared assignedColors={useColorsDecoder(assignedColors)} handleSelectClass={handleSelectClass} />
+                  <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                 )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}

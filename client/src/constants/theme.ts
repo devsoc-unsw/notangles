@@ -91,7 +91,6 @@ export const lightTheme = (selectedColorTheme: string) => {
     console.error(`Invalid selectedColorTheme: ${selectedColorTheme}`);
     return createTheme({}); // Return a fallback theme
   }
-  console.log('currentTheme', currentTheme);
 
   return createTheme({
     ...baseTheme({
