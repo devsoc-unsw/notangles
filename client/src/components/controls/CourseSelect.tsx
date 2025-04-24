@@ -87,6 +87,7 @@ const StyledTextField = styled(TextField, {
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
+  min-height: 30px;
   color: ${({ theme }) => theme.palette.secondary.dark};
 `;
 
