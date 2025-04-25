@@ -18,24 +18,43 @@ const StyledFormControlLabel = styled(FormControlLabel)`
   gap: 1rem;
 `;
 
+const StyledRadioGroup = styled(RadioGroup)`
+  display:flex;
+  flex-direction: column;
+  gap: 1;
+`;
+
+const ControlLabelContent: React.FC<{ theme: string }> = ({ theme }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '2.5rem',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ minWidth: '7rem' }}>{theme}</div>
+      <ColorThemePreview p_theme={theme} />
+    </div>
+  )
+}
+
 interface ColorThemeOptionsProps {
   currentTheme: string;
   setCurrentTheme: (theme: string) => void;
 }
 
-
 export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({
   currentTheme, setCurrentTheme 
 }) => {
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentTheme((event.target as HTMLInputElement).value);
   };
 
   return (
     <FormControl>
-      <RadioGroup
-        sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+      <StyledRadioGroup
         aria-labelledby="color-theme-radio-group"
         name="color-theme-radio-group"
         value={currentTheme}
@@ -47,22 +66,12 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({
               value={theme}
               control={<Radio />}
               label={
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '2.5rem',
-                    alignItems: 'center',
-
-                  }}>
-                  <div style={{ minWidth: '7vw' }}>{theme}</div>
-                  <ColorThemePreview p_theme={theme} />
-                </div>
+                <ControlLabelContent theme={theme} />
               }
             />
           </SettingsItem>
         ))}
-      </RadioGroup>
+      </StyledRadioGroup>
     </FormControl>
   );
-  };
+};

@@ -37,12 +37,11 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({
     isDarkMode,
     currentTheme
   } = useContext(AppContext);
-
   const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
-      {/* Default Theme Colors */}
+      {/* Default Theme Colors (1-4) */}
       <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
         {colors.slice(0, maxDefaultColors).map((color) => (
           <ListItem key={color} disablePadding>
@@ -55,7 +54,7 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({
           </ListItem>
         ))}
       </ListItem>
-      {/* Recently Used Colors */}
+      {/* Default Theme Colors (5-7) */}
       <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
         {colors.slice(maxDefaultColors, colors.length-1).map((color) => (
           <StyledColorIconButton

@@ -153,15 +153,10 @@ export const getAvailableTermDetails = async () => {
   }
 };
 
+/**
+ * @returns The default colors for the timetable tabs
+ */
 export const colors: string[] = [
-  // '#137786', // dark cyan
-  // '#a843a4', // light purple
-  // '#134e86', // light blue
-  // '#138652', // light green
-  // '#861313', // dark red
-  // '#868413', // dark yellow
-  // '#2e89ff', // dark blue
-  // '#3323ad', // deep blue
   'default-1',
   'default-2',
   'default-3',
