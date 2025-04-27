@@ -71,7 +71,7 @@ model Class {
   term        String
   year        String
   courseCode  String
-  courseId    String?
+  courseId    String
   Timetable   Timetable? @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String?
   activity    String
