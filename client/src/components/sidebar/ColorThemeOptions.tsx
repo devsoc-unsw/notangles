@@ -8,9 +8,12 @@ const SettingsItem = styled('div')`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1vh 20px;
-  border-radius: 10px;
-  border: 1px solid #606060;
+  padding: 1vh 0;
+  margin: 0 10px;
+  border-radius: 1rem;
+  &:hover {
+    background-color: ${({ theme }) => theme.palette.mode === 'dark' ? '#333' : '#f0f0f0'};
+  }
 `;
 
 const StyledFormControlLabel = styled(FormControlLabel)`

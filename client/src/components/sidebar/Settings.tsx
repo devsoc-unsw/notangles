@@ -18,6 +18,18 @@ const SettingText = styled('div')`
   padding: 1vh 0;
 `;
 
+const SettingButton = styled('div')`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vh 20px;
+  border-radius: 1rem;
+  cursor: pointer;
+  &:hover {
+    background-color: ${({ theme }) => (theme.palette.mode === 'dark' ? '#333' : '#f0f0f0')};
+  }
+`;
+
 const ColorThemeOptionsContainer = styled('div')`
   display: flex;
   flex-direction: column;
@@ -58,9 +70,7 @@ const Settings: React.FC = () => {
 
   return (
     <>
-      <SettingsItem
-        sx={{":hover": {cursor: "pointer"}
-        }}
+      <SettingButton
         onClick={() => {
           setIsPreferredThemeOpen(!isPreferredThemeOpen);
         }}
@@ -78,7 +88,7 @@ const Settings: React.FC = () => {
             <ColorThemePreview />
           </>
         )}
-      </SettingsItem>
+      </SettingButton>
 
       {isPreferredThemeOpen ? (
         <ColorThemeOptionsContainer>
