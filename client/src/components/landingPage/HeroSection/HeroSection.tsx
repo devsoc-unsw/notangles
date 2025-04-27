@@ -16,7 +16,7 @@ const HeroSection = () => {
       <div className="flex items-center justify-center h-screen px-4 sm:px-8">
         <div className="flex flex-col-reverse md:flex-row items-center justify-around w-full max-w-[1200px]">
           <div
-            className="absolute z-0 mt-[100px] inset-0 blur-xl h-300"
+            className="absolute z-0 mt-[100px] inset-0 blur-xl h-[300]"
             style={{
               background:
                 'linear-gradient(143.6deg, rgba(128, 151, 209, 0) 20.79%, rgba(69, 108, 237, 0.26) 45.92%, rgba(82, 103, 171, 0) 70.35%)',
