@@ -30,10 +30,12 @@ const useColorMapper = (courseCodes: string[], assignedColors: Record<string, st
       // Randomly assign a color that is not already taken
       // const availableColors = colors.filter((c) => !takenColors.has(c));
       // color = availableColors[Math.floor(Math.random() * availableColors.length)];
-      // newAssignedColors[course] = color || defaultColor;
+      
+      newAssignedColors[course] = color || defaultColor;
     }
 
     if (color) {
+      console.log(`Course: ${course}, Color: ${color}`);
       takenColors.add(color);
     }
   });
