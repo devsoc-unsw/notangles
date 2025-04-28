@@ -164,57 +164,69 @@ export const darkTheme = (selectedColorTheme: string) => {
 };
 
 const theme_1 = {
-  'default-1': '#137786',
-  'default-2': '#a843a4',
-  'default-3': '#134e86',
-  'default-4': '#138652',
-  'default-5': '#861313',
-  'default-6': '#868413',
-  'default-7': '#2e89ff',
-  'default-8': '#3323ad',
+  'default-1': 'oklch(0.52 0.0864 210.81)',
+  'default-2': 'oklch(0.55 0.1767 329.22)',
+  'default-3': 'oklch(0.42 0.11 251.57)',
+  'default-4': 'oklch(0.55 0.1254 156.82)',
+  'default-5': 'oklch(0.4 0.1491 27.31)',
+  'default-6': 'oklch(0.6 0.1235 108.51)',
+  'default-7': 'oklch(0.64 0.1948 256.93)',
+  'default-8': 'oklch(0.39 0.2034 276.39)',
   'text-color': '#ffffff',
 };
 
 const theme_2 = {
-  'default-1': '#cdb4db',
-  'default-2': '#ffc8dd',
-  'default-3': '#ffafcc',
-  'default-4': '#bde0fe',
-  'default-5': '#a2d2ff',
-  'default-6': '#b9fbc0',
-  'default-7': '#ffe156',
-  'default-8': '#ff677d',
-  'text-color': '#777777',
+  'default-1': 'oklch(0.8 0.1 0)',
+  'default-2': 'oklch(0.8 0.1 40)',
+  'default-3': 'oklch(0.8 0.1 80)',
+  'default-4': 'oklch(0.8 0.1 120)',
+  'default-5': 'oklch(0.8 0.1 160)',
+  'default-6': 'oklch(0.8 0.1 200)',
+  'default-7': 'oklch(0.8 0.1 240)',
+  'default-8': 'oklch(0.8 0.1 280)',
+  'text-color': '#2d2d2d',
 };
 
 const theme_3 = {
-  'default-1': '#3d4c78',
-  'default-2': '#58508d',
-  'default-3': '#8a508f',
-  'default-4': '#bc5090',
-  'default-5': '#de5a79',
-  'default-6': '#ff6361',
-  'default-7': '#ff8531',
-  'default-8': '#ffa600',
+  'default-1': 'oklch(0.42 0.0759 268.74)',
+  'default-2': 'oklch(0.47 0.097 288.06)',
+  'default-3': 'oklch(0.52 0.1165 324.18)',
+  'default-4': 'oklch(0.59 0.1565 346.36)',
+  'default-5': 'oklch(0.64 0.1664 8.56)',
+  'default-6': 'oklch(0.7 0.1909 24.11)',
+  'default-7': 'oklch(0.74 0.174 50.51)',
+  'default-8': 'oklch(0.75 0.17 71.19)',
   'text-color': '#ffffff',
 };
 
 const theme_4 = {
-  'default-1': '#7e88af',
-  'default-2': '#4c5a73',
-  'default-3': '#344f6d',
-  'default-4': '#2a415f',
-  'default-5': '#9da7b8',
-  'default-6': '#a1b1cb',
-  'default-7': '#7d91a6',
-  'default-8': '#465169',
+  'default-1': 'oklch(0.63 0.0599 273.4)',
+  'default-2': 'oklch(0.47 0.0444 261.89)',
+  'default-3': 'oklch(0.42 0.0601 251.87)',
+  'default-4': 'oklch(0.37 0.0595 255.48)',
+  'default-5': 'oklch(0.73 0.0271 261.13)',
+  'default-6': 'oklch(0.76 0.0415 260.13)',
+  'default-7': 'oklch(0.65 0.039 249.71)',
+  'default-8': 'oklch(0.44 0.0423 265.5)',
   'text-color': '#ffffff',
 };
 
+const theme_5 = {
+  'default-1': 'oklch(0.9 0.0437 57.12)',
+  'default-2': 'oklch(0.95 0.0466 89.57)',
+  'default-3': 'oklch(0.9 0.0297 180.75)',
+  'default-4': 'oklch(0.89 0.0367 241.83)',
+  'default-5': 'oklch(0.75 0.078 269.66)',
+  'default-6': 'oklch(0.87 0.0499 303.52)',
+  'default-7': 'oklch(0.77 0.0859 315.41)',
+  'default-8': 'oklch(0.87 0.0586 344.43)',
+  'text-color': '#2d2d2d',
+}
 
 export const themes = {
   'Classic': theme_1,
   'Pastel Bliss': theme_2,
   'Vibrant Sunset': theme_3,
   'Cool Twilight': theme_4,
+  'Soft Dawn': theme_5,
 }
