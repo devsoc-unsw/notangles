@@ -154,7 +154,7 @@ export const getAvailableTermDetails = async () => {
 };
 
 /**
- * @returns The default colors for the timetable tabs
+ * The default colors for the timetable tabs.
  */
 export const colors: string[] = [
   'default-1',

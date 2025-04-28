@@ -3,16 +3,12 @@ import { useContext } from "react";
 import { themes } from "../constants/theme";
 import { AppContext } from "../context/AppContext";
 
-export const useColorDecoder = (assignedColor: string, p_theme?: string) => {
+export const useColorDecoder = (assignedColor: string, previewTheme?: string) => {
   const {
     currentTheme
   } = useContext(AppContext);
 
-  let theme = currentTheme;
-
-  if (p_theme) {
-    theme = p_theme;
-  }
+  const theme = previewTheme ?? currentTheme;
 
   const mappedTheme = themes[theme as keyof typeof themes];
   return Object.prototype.hasOwnProperty.call(mappedTheme, assignedColor) 

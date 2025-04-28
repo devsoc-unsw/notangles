@@ -87,10 +87,6 @@ const baseTheme = ({
 
 export const lightTheme = (selectedColorTheme: string) => {
   const currentTheme = themes[selectedColorTheme as keyof typeof themes];
-  if (!currentTheme) {
-    console.error(`Invalid selectedColorTheme: ${selectedColorTheme}`);
-    return createTheme({}); // Return a fallback theme
-  }
 
   return createTheme({
     ...baseTheme({
@@ -104,7 +100,7 @@ export const lightTheme = (selectedColorTheme: string) => {
         main: '#bdbdbd',
         dark: '#999999',
       },
-      textColor: currentTheme['text-color'],
+      textColor: currentTheme ? currentTheme['text-color'] : '#2d2d2d',
     }),
     typography: {
       fontFamily: [
@@ -127,10 +123,6 @@ export const lightTheme = (selectedColorTheme: string) => {
 
 export const darkTheme = (selectedColorTheme: string) => {
   const currentTheme = themes[selectedColorTheme as keyof typeof themes];
-  if (!currentTheme) {
-    console.error(`Invalid selectedColorTheme: ${selectedColorTheme}`);
-    return createTheme({}); // Return a fallback theme
-  }
 
   return createTheme({
     ...baseTheme({
@@ -144,7 +136,7 @@ export const darkTheme = (selectedColorTheme: string) => {
         main: '#616161',
         dark: '#808080',
       },
-      textColor: currentTheme['text-color'],
+      textColor: currentTheme ? currentTheme['text-color'] : '#ffffff',
     }),
     typography: {
       fontFamily: [

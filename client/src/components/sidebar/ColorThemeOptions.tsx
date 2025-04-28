@@ -38,7 +38,7 @@ const ControlLabelContent: React.FC<{ theme: string }> = ({ theme }) => {
       }}
     >
       <div style={{ minWidth: '7rem' }}>{theme}</div>
-      <ColorThemePreview p_theme={theme} />
+      <ColorThemePreview previewTheme={theme} />
     </div>
   )
 }
