@@ -63,7 +63,7 @@ const CustomEvent: React.FC = () => {
 
   // Get the list of classes for the selected course code.
   useEffect(() => {
-    const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
+    const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar'];
     if (courseCode !== '') {
       getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), isConvertToLocalTimezone)
         .catch((err) => {
