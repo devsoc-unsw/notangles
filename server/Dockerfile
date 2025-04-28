@@ -20,7 +20,7 @@ RUN npm i -g pnpm
 
 ENV NODE_ENV production
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --production
+RUN pnpm install --production --frozen-lockfile
 
 COPY --from=builder /server .
 RUN npx prisma generate
