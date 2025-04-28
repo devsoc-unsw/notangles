@@ -115,21 +115,6 @@ const Settings: React.FC = () => {
             </div>
           ))}
         </>}
-
-
-      {/* <Popover
-        open={isPreferredThemeOpen}
-        anchorEl={anchorEl} // Anchor the Popover to the clicked element
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Position it below the element
-        // transformOrigin={{ vertical: 'top', horizontal: 'right' }} // Align the top-left corner
-        onClose={handleClose} // Close the Popover
-        sx={{
-          zIndex: 1500,
-          marginRight: '20px'
-        }}
-      >
-        <ColorThemeOptions />
-      </Popover> */}
     </>
   );
 };
