@@ -18,7 +18,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 7
+          package_json_file: ${{ matrix.component }}/package.json
           run_install: false
       - name: Get pnpm store directory
         shell: bash
@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
         working-directory: ${{ matrix.component }}
       - name: Generate Prisma Types from Schema
         run: npx prisma generate

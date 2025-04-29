@@ -1,10 +1,11 @@
 import react from '@vitejs/plugin-react-swc';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   build: {
     sourcemap: true,
   },
