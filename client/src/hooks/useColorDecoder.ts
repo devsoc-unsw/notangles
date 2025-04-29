@@ -16,10 +16,15 @@ export const useColorDecoder = (assignedColor: string, previewTheme?: string) =>
 
   const theme = previewTheme ?? currentTheme;
 
-  const mappedTheme = themes[theme as keyof typeof themes];
-  return Object.prototype.hasOwnProperty.call(mappedTheme, assignedColor)
-    ? mappedTheme[assignedColor as keyof typeof mappedTheme]
-    : assignedColor;
+  const themeObject = themes[theme as keyof typeof themes];
+
+  if (assignedColor.startsWith('default-')) {
+    // extract the number from the assigned colour key
+    const colorNumber = parseInt(assignedColor.split('-')[1], 10) - 1;
+    return themeObject.colors[colorNumber] || assignedColor;
+  }
+
+  return assignedColor;
 };
 
 /**

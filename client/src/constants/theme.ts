@@ -154,62 +154,72 @@ export const darkTheme = (selectedColorTheme: string) => {
 };
 
 const theme_1 = {
-  'default-1': 'oklch(0.52 0.0864 210.81)',
-  'default-2': 'oklch(0.55 0.1767 329.22)',
-  'default-3': 'oklch(0.42 0.11 251.57)',
-  'default-4': 'oklch(0.55 0.1254 156.82)',
-  'default-5': 'oklch(0.4 0.1491 27.31)',
-  'default-6': 'oklch(0.6 0.1235 108.51)',
-  'default-7': 'oklch(0.64 0.1948 256.93)',
-  'default-8': 'oklch(0.39 0.2034 276.39)',
+  colors: [
+    'oklch(0.52 0.0864 210.81)',
+    'oklch(0.55 0.1767 329.22)',
+    'oklch(0.42 0.11 251.57)',
+    'oklch(0.55 0.1254 156.82)',
+    'oklch(0.4 0.1491 27.31)',
+    'oklch(0.6 0.1235 108.51)',
+    'oklch(0.64 0.1948 256.93)',
+    'oklch(0.39 0.2034 276.39)',
+  ],
   'text-color': '#ffffff',
 };
 
 const theme_2 = {
-  'default-1': 'oklch(0.8 0.1 0)',
-  'default-2': 'oklch(0.8 0.1 40)',
-  'default-3': 'oklch(0.8 0.1 80)',
-  'default-4': 'oklch(0.8 0.1 120)',
-  'default-5': 'oklch(0.8 0.1 160)',
-  'default-6': 'oklch(0.8 0.1 200)',
-  'default-7': 'oklch(0.8 0.1 240)',
-  'default-8': 'oklch(0.8 0.1 280)',
+  colors: [
+    'oklch(0.8 0.1 0)',
+    'oklch(0.8 0.1 40)',
+    'oklch(0.8 0.1 80)',
+    'oklch(0.8 0.1 120)',
+    'oklch(0.8 0.1 160)',
+    'oklch(0.8 0.1 200)',
+    'oklch(0.8 0.1 240)',
+    'oklch(0.8 0.1 280)',
+  ],
   'text-color': '#2d2d2d',
 };
 
 const theme_3 = {
-  'default-1': 'oklch(0.42 0.0759 268.74)',
-  'default-2': 'oklch(0.47 0.097 288.06)',
-  'default-3': 'oklch(0.52 0.1165 324.18)',
-  'default-4': 'oklch(0.59 0.1565 346.36)',
-  'default-5': 'oklch(0.64 0.1664 8.56)',
-  'default-6': 'oklch(0.7 0.1909 24.11)',
-  'default-7': 'oklch(0.74 0.174 50.51)',
-  'default-8': 'oklch(0.75 0.17 71.19)',
+  colors: [
+    'oklch(0.42 0.0759 268.74)',
+    'oklch(0.47 0.097 288.06)',
+    'oklch(0.52 0.1165 324.18)',
+    'oklch(0.59 0.1565 346.36)',
+    'oklch(0.64 0.1664 8.56)',
+    'oklch(0.7 0.1909 24.11)',
+    'oklch(0.74 0.174 50.51)',
+    'oklch(0.75 0.17 71.19)',
+  ],
   'text-color': '#ffffff',
 };
 
 const theme_4 = {
-  'default-1': 'oklch(0.63 0.0599 273.4)',
-  'default-2': 'oklch(0.47 0.0444 261.89)',
-  'default-3': 'oklch(0.42 0.0601 251.87)',
-  'default-4': 'oklch(0.37 0.0595 255.48)',
-  'default-5': 'oklch(0.73 0.0271 261.13)',
-  'default-6': 'oklch(0.76 0.0415 260.13)',
-  'default-7': 'oklch(0.65 0.039 249.71)',
-  'default-8': 'oklch(0.44 0.0423 265.5)',
+  colors: [
+    'oklch(0.63 0.0599 273.4)',
+    'oklch(0.47 0.0444 261.89)',
+    'oklch(0.42 0.0601 251.87)',
+    'oklch(0.37 0.0595 255.48)',
+    'oklch(0.73 0.0271 261.13)',
+    'oklch(0.76 0.0415 260.13)',
+    'oklch(0.65 0.039 249.71)',
+    'oklch(0.44 0.0423 265.5)',
+  ],
   'text-color': '#ffffff',
 };
 
 const theme_5 = {
-  'default-1': 'oklch(0.9 0.0437 57.12)',
-  'default-2': 'oklch(0.95 0.0466 89.57)',
-  'default-3': 'oklch(0.9 0.0297 180.75)',
-  'default-4': 'oklch(0.89 0.0367 241.83)',
-  'default-5': 'oklch(0.75 0.078 269.66)',
-  'default-6': 'oklch(0.87 0.0499 303.52)',
-  'default-7': 'oklch(0.77 0.0859 315.41)',
-  'default-8': 'oklch(0.87 0.0586 344.43)',
+  colors: [
+    'oklch(0.9 0.0437 57.12)',
+    'oklch(0.95 0.0466 89.57)',
+    'oklch(0.9 0.0297 180.75)',
+    'oklch(0.89 0.0367 241.83)',
+    'oklch(0.75 0.078 269.66)',
+    'oklch(0.87 0.0499 303.52)',
+    'oklch(0.77 0.0859 315.41)',
+    'oklch(0.87 0.0586 344.43)',
+  ],
   'text-color': '#2d2d2d',
 };
 
