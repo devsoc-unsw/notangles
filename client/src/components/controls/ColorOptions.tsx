@@ -4,7 +4,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, List, ListItem } from '@mui/material';
 import { FC, useContext } from 'react';
 
-import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 interface ColorOptionsProps {
@@ -15,7 +14,9 @@ interface ColorOptionsProps {
   onCustomColorSelect: () => void;
 }
 
-const StyledColorIconButton = styled(IconButton)<{ border: string; bgColor: string }>(({ border, bgColor }) => ({
+const StyledColorIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'border' && prop !== 'bgColor',
+})<{ border: string; bgColor: string }>(({ border, bgColor }) => ({
   backgroundColor: bgColor,
   width: 40,
   height: 40,
@@ -33,8 +34,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onCustomColorSelect,
 }) => {
   // Get the current theme as from AppContext
-  const { isDarkMode, currentTheme } = useContext(AppContext);
-  const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
+  const { themeObject } = useContext(AppContext);
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -43,7 +43,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
         {colors.slice(0, maxDefaultColors).map((color) => (
           <ListItem disablePadding>
             <StyledColorIconButton
-              border={theme.palette.secondary.main}
+              border={themeObject.palette.secondary.main}
               bgColor={useColorDecoder(color)}
               onClick={() => onSelectColor(color)}
             />
@@ -55,7 +55,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
         {colors.slice(maxDefaultColors, colors.length - 1).map((color) => (
           <ListItem disablePadding>
             <StyledColorIconButton
-              border={theme.palette.secondary.main}
+              border={themeObject.palette.secondary.main}
               bgColor={useColorDecoder(color)}
               onClick={() => onSelectColor(color)}
             />
@@ -63,8 +63,8 @@ const ColorOptions: FC<ColorOptionsProps> = ({
         ))}
         <ListItem disablePadding>
           <StyledColorIconButton
-            border={theme.palette.secondary.main}
-            bgColor={theme.palette.secondary.dark}
+            border={themeObject.palette.secondary.main}
+            bgColor={themeObject.palette.secondary.dark}
             onClick={onCustomColorSelect}
           >
             {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}

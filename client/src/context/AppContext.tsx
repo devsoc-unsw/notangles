@@ -1,5 +1,7 @@
-import { createContext, useState } from 'react';
+import { Theme } from '@mui/material';
+import { createContext, useMemo, useState } from 'react';
 
+import { darkTheme, lightTheme, themes } from '../constants/theme';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
@@ -9,6 +11,8 @@ import storage from '../utils/storage';
 export interface IAppContext {
   currentTheme: string;
   setCurrentTheme: (newTheme: string) => void;
+
+  themeObject: Theme;
 
   is12HourMode: boolean;
   setIs12HourMode: (newIs12HourMode: boolean) => void;
@@ -96,7 +100,9 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
-  currentTheme: storage.get('currentTheme'),
+  themeObject: lightTheme(Object.keys(themes)[0]),
+
+  currentTheme: Object.keys(themes)[0],
   setCurrentTheme: () => {},
 
   is12HourMode: false,
@@ -223,7 +229,12 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
+  const themeObject = useMemo(() => {
+    return isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
+  }, [currentTheme, isDarkMode]);
+
   const initialContext: IAppContext = {
+    themeObject,
     currentTheme,
     setCurrentTheme,
     is12HourMode,
