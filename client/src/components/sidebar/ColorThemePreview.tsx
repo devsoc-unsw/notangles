@@ -12,7 +12,9 @@ const StyledPreviewContainer = styled(List)`
   padding: 0 0.7rem;
 `;
 
-const StyledListItem = styled(ListItem)<{
+const StyledListItem = styled(ListItem, {
+  shouldForwardProp: (prop) => prop !== 'backgroundColor' && prop !== 'preveiewTheme',
+})<{
   backgroundColor: string;
   preveiewTheme?: string;
 }>`
@@ -28,9 +30,15 @@ interface ColorThemePreviewProps {
 }
 
 export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
+  const decodedColors = Object.fromEntries(
+    Object.entries(colors).map(([key, color]) => {
+      const decodedColor = useColorDecoder(color, previewTheme);
+      return [key, decodedColor];
+    }),
+  );
   const colorPreview = useMemo(() => {
-    return colors.map((color) => (
-      <StyledListItem key={color} backgroundColor={useColorDecoder(color, previewTheme)} preveiewTheme={previewTheme} />
+    return Object.values(decodedColors).map((color) => (
+      <StyledListItem key={color} backgroundColor={color} preveiewTheme={previewTheme} />
     ));
   }, [colors, previewTheme]);
 

@@ -27,12 +27,13 @@ export const useColorDecoder = (assignedColor: string, previewTheme?: string) =>
  * Converts each assigned colour key to its corresponding color value in the current or preview theme.
  *
  * @param {Record<string, string>} assignedColors A record of assigned colour keys (e.g., { event1: 'default-1' }).
+ * @param {string} [previewTheme] An optional theme to use for decoding instead of the current theme.
  * @returns {Record<string, string>} A record of decoded colour values (e.g., { event1: 'oklch(0.8 0.1 200)' }).
  */
-export const useColorsDecoder = (assignedColors: Record<string, string>) => {
+export const useColorsDecoder = (assignedColors: Record<string, string>, previewTheme?: string) => {
   const decodedColors = Object.fromEntries(
     Object.entries(assignedColors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color);
+      const decodedColor = useColorDecoder(color, previewTheme);
       return [key, decodedColor];
     }),
   );
