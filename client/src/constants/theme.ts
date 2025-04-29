@@ -119,8 +119,6 @@ export const lightTheme = (selectedColorTheme: string) => {
   });
 };
 
-
-
 export const darkTheme = (selectedColorTheme: string) => {
   const currentTheme = themes[selectedColorTheme as keyof typeof themes];
 
@@ -213,12 +211,12 @@ const theme_5 = {
   'default-7': 'oklch(0.77 0.0859 315.41)',
   'default-8': 'oklch(0.87 0.0586 344.43)',
   'text-color': '#2d2d2d',
-}
+};
 
 export const themes = {
-  'Classic': theme_1,
+  Classic: theme_1,
   'Pastel Bliss': theme_2,
   'Vibrant Sunset': theme_3,
   'Cool Twilight': theme_4,
   'Soft Dawn': theme_5,
-}
+};
