@@ -1,11 +1,12 @@
 import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { colors } from '../../constants/timetable';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+import { oklchToHex } from '../../utils/oklchCovert';
 import ColorOptions from './ColorOptions';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
@@ -21,6 +22,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
   // Whether the custom colour picker is shown
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
+
+  const decodedColor = useColorDecoder(color);
+  const [textFieldValue, setTextFieldValue] = useState(oklchToHex(decodedColor));
+
+  useEffect(() => {
+    setTextFieldValue(oklchToHex(decodedColor));
+  }, [decodedColor]);
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
@@ -75,7 +83,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             id="outlined-required"
             label="Hex"
             variant="outlined"
-            value={color}
+            value={textFieldValue}
             onChange={(e) => setColor(e.target.value)}
           />
         </ListItem>
