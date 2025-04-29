@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
-import React from 'react';
+import { useState } from 'react';
 
 import { colors } from '../../constants/timetable';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
@@ -20,7 +20,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
   // Whether the custom colour picker is shown
-  const [showCustomColorPicker, setShowCustomColorPicker] = React.useState(false);
+  const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
@@ -62,9 +62,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             colors={colors}
             showCustomColorPicker={showCustomColorPicker}
             onSelectColor={(selectedColor) => setColor(selectedColor)}
-            onCustomColorSelect={() => {
-              setShowCustomColorPicker(!showCustomColorPicker);
-            }}
+            onCustomColorSelect={() => setShowCustomColorPicker(!showCustomColorPicker)}
           />
         </ListItem>
         {showCustomColorPicker && (
@@ -78,9 +76,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             label="Hex"
             variant="outlined"
             value={color}
-            onChange={(e) => {
-              setColor(e.target.value);
-            }}
+            onChange={(e) => setColor(e.target.value)}
           />
         </ListItem>
       </Popover>

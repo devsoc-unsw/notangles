@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import {IconButton, List, ListItem } from '@mui/material';
-import React, { useContext } from 'react';
+import { IconButton, List, ListItem } from '@mui/material';
+import { FC, useContext } from 'react';
 
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
@@ -22,55 +22,52 @@ const StyledColorIconButton = styled(IconButton)<{ border: string; bgColor: stri
   '&:hover': {
     backgroundColor: bgColor,
     border: `2px solid ${border}`,
-  }
+  },
 }));
 
-const ColorOptions: React.FC<ColorOptionsProps> = ({
+const ColorOptions: FC<ColorOptionsProps> = ({
   colors,
   maxDefaultColors = 4, // Default to 4 color options
   showCustomColorPicker,
   onSelectColor,
-  onCustomColorSelect
+  onCustomColorSelect,
 }) => {
   // Get the current theme as from AppContext
-  const {
-    isDarkMode,
-    currentTheme
-  } = useContext(AppContext);
+  const { isDarkMode, currentTheme } = useContext(AppContext);
   const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
 
   return (
-    <List sx={{ display: 'flex', flexDirection: 'column', gap: 1}}>
+    <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       {/* Default Theme Colors (1-4) */}
-      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
+      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
         {colors.slice(0, maxDefaultColors).map((color) => (
-          <ListItem key={color} disablePadding>
+          <ListItem disablePadding>
             <StyledColorIconButton
               border={theme.palette.secondary.main}
               bgColor={useColorDecoder(color)}
               onClick={() => onSelectColor(color)}
-
-          />
+            />
           </ListItem>
         ))}
       </ListItem>
       {/* Default Theme Colors (5-7) */}
-      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2}} disablePadding>
-        {colors.slice(maxDefaultColors, colors.length-1).map((color) => (
-          <StyledColorIconButton
-            key={color}
-            border={theme.palette.secondary.main}
-            bgColor={useColorDecoder(color)}
-            onClick={() => onSelectColor(color)}
-          />
+      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
+        {colors.slice(maxDefaultColors, colors.length - 1).map((color) => (
+          <ListItem disablePadding>
+            <StyledColorIconButton
+              border={theme.palette.secondary.main}
+              bgColor={useColorDecoder(color)}
+              onClick={() => onSelectColor(color)}
+            />
+          </ListItem>
         ))}
         <ListItem disablePadding>
           <StyledColorIconButton
             border={theme.palette.secondary.main}
-            bgColor={showCustomColorPicker ? theme.palette.secondary.dark : theme.palette.secondary.dark}
+            bgColor={theme.palette.secondary.dark}
             onClick={onCustomColorSelect}
           >
-          {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}
+            {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}
           </StyledColorIconButton>
         </ListItem>
       </ListItem>

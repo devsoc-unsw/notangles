@@ -492,7 +492,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               label={option.code}
               color="primary"
               backgroundColor={assignedColors[option.code]}
-              deleteIcon={<CloseRounded/>}
+              deleteIcon={<CloseRounded />}
               {...getTagProps({ index })}
               onDelete={() => {
                 setSelectedValue(selectedValue.filter((course) => course.code !== option.code));

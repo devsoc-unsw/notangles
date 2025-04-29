@@ -17,7 +17,14 @@ import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding, themes } from './constants/theme';
+import {
+  contentPadding,
+  darkTheme,
+  leftContentPadding,
+  lightTheme,
+  rightContentPadding,
+  themes,
+} from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -591,11 +598,14 @@ const App: React.FC = () => {
   }, [isConvertToLocalTimezone]);
 
   // Validate the currentTheme
-  if (!Object.keys(themes).includes(currentTheme)) {
-    setCurrentTheme(Object.keys(themes)[0]);
-  }
+  useEffect(() => {
+    if (!Object.keys(themes).includes(currentTheme)) {
+      setCurrentTheme(Object.keys(themes)[0]);
+    }
+  }, [currentTheme]);
+
   const theme = isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
-  
+
   const globalStyle = {
     body: {
       background: theme.palette.background.default,
