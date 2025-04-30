@@ -9,7 +9,7 @@ WORKDIR /server
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-RUN pnpm i --no-frozen-lockfile
+RUN pnpm i --frozen-lockfile
 RUN npx prisma generate
 
 COPY . .
