@@ -8,8 +8,8 @@ on:
       - 'dev'
 
 jobs:
-  build-client:
-    name: 'Build (Client)'
+  test-build-client:
+    name: 'Test Build (client)'
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +38,8 @@ jobs:
             SENTRY_TRACE_RATE_CLIENT=${{ secrets.SENTRY_TRACE_RATE_CLIENT }}
             GIT_COMMIT=${{ github.sha }}
 
-  build:
-    name: 'Build (${{ matrix.component }})'
+  test-build:
+    name: 'Test Build (${{ matrix.component }})'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -60,8 +60,7 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.component }}
           push: false
