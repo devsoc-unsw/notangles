@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:22.14.0-alpine as builder
+FROM node:22.15.0-alpine AS builder
 RUN apk add --no-cache openssl
 
 RUN npm i -g pnpm
@@ -15,11 +15,11 @@ RUN npx prisma generate
 COPY . .
 RUN pnpm run build
 
-FROM node:22.14.0-alpine
+FROM node:22.15.0-alpine
 WORKDIR /server
 RUN npm i -g pnpm
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --production --frozen-lockfile
 
