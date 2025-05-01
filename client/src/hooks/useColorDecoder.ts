@@ -8,7 +8,7 @@ import { AppContext } from '../context/AppContext';
  * If the assigned colour is not found in the theme, it returns the original assigned colour.
  *
  * @param {string} assignedColor The assigned colour key (e.g., 'default-1').
- * @param {string} [previewTheme]  An optioal theme to use for decoding instead of the current theme.
+ * @param {string} [previewTheme] An optional theme to use for decoding instead of the current theme.
  * @returns {string} The decoded colour value (e.g., an OKLCH colour string or the original assigned colour).
  */
 export const useColorDecoder = (assignedColor: string, previewTheme?: string) => {
