@@ -13,6 +13,47 @@ const MIGRATE_COLOR_MAP: Record<string, string> = {
   '#3323ad': 'default-8',
 };
 
+const migrateTimetables = (timetables: Record<string, any>) => {
+  return Object.fromEntries(
+    Object.entries(timetables).map(([termKey, termValue]) => [termKey, termValue.map(migrateTimetable)]),
+  );
+};
+
+const migrateTimetable = (timetable: any) => {
+  return {
+    ...timetable,
+    createdEvents: migrateCreatedEvents(timetable.createdEvents),
+    assignedColors: migrateAssignedColors(timetable.assignedColors),
+  };
+};
+
+const migrateCreatedEvents = (createdEvents: Record<string, any>) => {
+  return Object.fromEntries(
+    Object.entries(createdEvents).map(([eventKey, eventValue]) => [
+      eventKey,
+      {
+        ...eventValue,
+        event: {
+          ...eventValue.event,
+          color:
+            eventValue.event.color in MIGRATE_COLOR_MAP
+              ? MIGRATE_COLOR_MAP[eventValue.event.color]
+              : eventValue.event.color,
+        },
+      },
+    ]),
+  );
+};
+
+const migrateAssignedColors = (assignedColors: Record<string, string>) => {
+  return Object.fromEntries(
+    Object.entries(assignedColors).map(([key, color]) => [
+      key,
+      color in MIGRATE_COLOR_MAP ? MIGRATE_COLOR_MAP[color] : color,
+    ]),
+  );
+};
+
 const storage = {
   get: (key: string): any => {
     const data: Record<string, any> = storage.load();
@@ -55,31 +96,16 @@ const storage = {
 
   migrate: (data: Record<string, any>) => {
     // only do this if version does not exist
-    if (data.version || !data.timetables) {
-      return data;
+    if (data.version !== 1 || data.version == null) {
+      let migrated = {
+        ...data,
+        version: 1,
+        timetables: migrateTimetables(data.timetables),
+      };
+      storage.save(migrated);
+      return migrated;
     }
-
-    let migrated = {
-      ...data,
-      version: '1.0.0',
-      timetables: Object.fromEntries(
-        Object.entries(data.timetables as Record<string, Record<string, any>>).map(([termKey, termValue]) => [
-          termKey,
-          termValue.map((timetable: any) => ({
-            ...timetable,
-            assignedColors: Object.fromEntries(
-              Object.entries(timetable.assignedColors as Record<string, string>).map(([key, color]) => [
-                key,
-                color in MIGRATE_COLOR_MAP ? MIGRATE_COLOR_MAP[color] : color,
-              ]),
-            ),
-          })),
-        ]),
-      ),
-    };
-
-    storage.save(migrated);
-    return migrated;
+    return data;
   },
 };
 
