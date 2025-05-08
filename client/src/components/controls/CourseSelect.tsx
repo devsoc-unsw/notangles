@@ -97,7 +97,12 @@ const StyledChip = styled(Chip, {
   backgroundColor: string;
 }>`
   transition: none !important;
+  color: ${({ theme }) => theme.palette.in_text.primary};
   background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
+
+  .MuiChip-deleteIcon {
+    color: ${({ theme }) => theme.palette.in_text.primary};
+  }
 `;
 
 const StyledOption = styled('span')`

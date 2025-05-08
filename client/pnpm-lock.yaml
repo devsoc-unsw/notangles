@@ -53,6 +53,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      colorizr:
+        specifier: 3.0.7
+        version: 3.0.7
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -1789,6 +1792,9 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  colorizr@3.0.7:
+    resolution: {integrity: sha512-CIXYuY/LtF2J0UiWcj7y9RjQBPNwdkawgJIyHrtqzsj2hohsC7c/BBC+9o1NjjxgX59zIoTsE8IO02r3MOIN7Q==}
 
   colors-named-hex@1.0.2:
     resolution: {integrity: sha512-k6kq1e1pUCQvSVwIaGFq2l0LrkAPQZWyeuZn1Z8nOiYSEZiKoFj4qx690h2Kd34DFl9Me0gKS6MUwAMBJj8nuA==}
@@ -5086,6 +5092,8 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  colorizr@3.0.7: {}
 
   colors-named-hex@1.0.2: {}
 

@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
+import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { DroppedEventProps } from '../../interfaces/PropTypes';
 import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
@@ -214,7 +215,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          backgroundColour={eventPeriod.event.color.toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

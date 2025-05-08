@@ -1,8 +1,13 @@
 import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
+import { useEffect, useState } from 'react';
 
+import { colors } from '../../constants/timetable';
+import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
+import { oklchToHex } from '../../utils/oklchCovert';
+import ColorOptions from './ColorOptions';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
   color,
@@ -16,9 +21,18 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
 
+  const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
+
+  const decodedColor = useColorDecoder(color);
+  const [textFieldValue, setTextFieldValue] = useState(oklchToHex(decodedColor));
+
+  useEffect(() => {
+    setTextFieldValue(oklchToHex(decodedColor));
+  }, [decodedColor]);
+
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
-      <ColorIndicatorBox backgroundColor={color} onClick={handleOpenColorPicker} />
+      <ColorIndicatorBox backgroundColor={useColorDecoder(color)} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
         <ButtonGroup>
           <Button
@@ -52,17 +66,25 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         }}
       >
         <ListItem alignItems="flex-start">
-          <Colorful onChange={(e) => setColor(e.hex)} color={color} />
+          <ColorOptions
+            colors={colors}
+            showCustomColorPicker={showCustomColorPicker}
+            onSelectColor={(selectedColor) => setColor(selectedColor)}
+            onCustomColorSelect={() => setShowCustomColorPicker(!showCustomColorPicker)}
+          />
         </ListItem>
+        {showCustomColorPicker && (
+          <ListItem alignItems="flex-start">
+            <Colorful onChange={(e) => setColor(e.hex)} color={color} disableAlpha />
+          </ListItem>
+        )}
         <ListItem alignItems="flex-start">
           <TextField
             id="outlined-required"
             label="Hex"
             variant="outlined"
-            value={color}
-            onChange={(e) => {
-              setColor(e.target.value);
-            }}
+            value={textFieldValue}
+            onChange={(e) => setColor(e.target.value)}
           />
         </ListItem>
       </Popover>

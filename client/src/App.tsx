@@ -17,7 +17,7 @@ import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, darkTheme, leftContentPadding, lightTheme, rightContentPadding } from './constants/theme';
+import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -30,6 +30,7 @@ import {
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
 import { UserContext } from './context/UserContext';
+import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
@@ -93,6 +94,9 @@ const ICSButton = styled(Button)`
 
 const App: React.FC = () => {
   const {
+    themeObject,
+    currentTheme,
+    setCurrentTheme,
     is12HourMode,
     isDarkMode,
     isSquareEdges,
@@ -136,6 +140,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
+  const decodedAssignedColors = useColorsDecoder(assignedColors);
   const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
@@ -186,7 +191,7 @@ const App: React.FC = () => {
         newTimetableTerms = {
           ...newTimetableTerms,
           ...{
-            [termId as string]: oldData.hasOwnProperty(termId as string)
+            [termId as string]: Object.prototype.hasOwnProperty.call(oldData, termId as string)
               ? oldData[termId as string]
               : createDefaultTimetable(user.userID),
           },
@@ -551,6 +556,10 @@ const App: React.FC = () => {
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
 
   useEffect(() => {
+    storage.set('currentTheme', currentTheme);
+  }, [currentTheme]);
+
+  useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
 
@@ -582,10 +591,16 @@ const App: React.FC = () => {
     storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
   }, [isConvertToLocalTimezone]);
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
+  // Validate the currentTheme
+  useEffect(() => {
+    if (!Object.keys(themes).includes(currentTheme)) {
+      setCurrentTheme(Object.keys(themes)[0]);
+    }
+  }, [currentTheme]);
+
   const globalStyle = {
     body: {
-      background: theme.palette.background.default,
+      background: themeObject.palette.background.default,
       transition: 'background 0.2s',
     },
     '::-webkit-scrollbar': {
@@ -593,23 +608,23 @@ const App: React.FC = () => {
       height: '10px',
     },
     '::-webkit-scrollbar-track': {
-      background: theme.palette.background.default,
+      background: themeObject.palette.background.default,
       borderRadius: '5px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: theme.palette.secondary.main,
+      background: themeObject.palette.secondary.main,
       borderRadius: '5px',
       opacity: 0.5,
       transition: 'background 0.2s',
     },
     '::-webkit-scrollbar-thumb:hover': {
-      background: theme.palette.secondary.dark,
+      background: themeObject.palette.secondary.dark,
     },
   };
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeObject}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
@@ -617,7 +632,7 @@ const App: React.FC = () => {
             <ContentWrapper>
               <Content>
                 <Controls
-                  assignedColors={assignedColors}
+                  assignedColors={decodedAssignedColors}
                   handleSelectClass={handleSelectClass}
                   handleSelectCourse={handleSelectCourse}
                   handleRemoveCourse={handleRemoveCourse}
@@ -626,10 +641,10 @@ const App: React.FC = () => {
                 {groupsSidebarCollapsed ? (
                   <>
                     <TimetableTabs />
-                    <Timetable assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                   </>
                 ) : (
-                  <TimetableShared assignedColors={assignedColors} handleSelectClass={handleSelectClass} />
+                  <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                 )}
                 <ICSButton
                   onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
