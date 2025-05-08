@@ -1,4 +1,4 @@
-FROM python:3.10.11-slim-buster
+FROM python:3.10.17-slim-bookworm
 
 WORKDIR /auto_server
 

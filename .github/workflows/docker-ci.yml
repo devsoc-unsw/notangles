@@ -1,0 +1,70 @@
+name: Docker CI
+on:
+  push:
+    paths:
+      - '**/Dockerfile'
+    branches-ignore:
+      # Pushes to dev will trigger CD anyway
+      - 'dev'
+
+jobs:
+  test-build-client:
+    name: 'Test Build (client)'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: client
+          push: false
+          platforms: linux/amd64
+          file: client/Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
+            GOOGLE_ANALYTICS_ID=${{ secrets.GOOGLE_ANALYTICS_ID }}
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+            GOOGLE_OAUTH_CLIENT_ID=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+            SENTRY_INGEST_CLIENT=${{ secrets.SENTRY_INGEST_CLIENT }}
+            SENTRY_TRACE_RATE_CLIENT=${{ secrets.SENTRY_TRACE_RATE_CLIENT }}
+            GIT_COMMIT=${{ github.sha }}
+
+  test-build:
+    name: 'Test Build (${{ matrix.component }})'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [server, auto_server]
+        include:
+          - component: server
+            name: backend
+          - component: auto_server
+            name: auto-timetabler-server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.component }}
+          push: false
+          platforms: linux/amd64
+          file: ${{ matrix.component }}/Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
