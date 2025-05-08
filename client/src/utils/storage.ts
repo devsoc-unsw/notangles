@@ -81,7 +81,6 @@ const storage = {
     if (localStorage[STORAGE_KEY]) {
       data = JSON.parse(localStorage[STORAGE_KEY]);
       // migrate old data format to new format
-      console.log(data);
       data = storage.migrate(data);
     } else {
       storage.save(data);
