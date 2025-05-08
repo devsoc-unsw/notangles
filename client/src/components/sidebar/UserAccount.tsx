@@ -68,6 +68,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const loginCall = async () => {
     setWindowLocation(window.location.href);
     try {
+      console.log('this gets called when you click on the login button (from side menu)');
       window.location.href = `${API_URL.server}/auth/login`;
     } catch (error) {
       console.log(error);

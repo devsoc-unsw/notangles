@@ -43,6 +43,9 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
 const Sponsors = () => {
   const { isDarkMode } = useContext(AppContext);
 
+  // const data = JSON.parse(localStorage.getItem("data") || '')
+  // console.log('T1 timetable --- ', data.timetables);
+
   const platinumSponsorData = [
     {
       name: 'Arista',

@@ -20,7 +20,7 @@ export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gql: GraphqlService,
-  ) {}
+  ) { }
 
   private async convertClasses(
     classes: ClassDto[],
@@ -98,6 +98,9 @@ export class UserService {
     }
   }
   async getUserInfo(_userID: string): Promise<UserDTO> {
+    if (globalThis?.window !== undefined) {
+      console.log('BEFORE getUserInfo - localStorage', (JSON.parse(window.localStorage.data)).timetables);
+    }
     const { userID, timetables, ...userData } =
       await this.prisma.user.findUniqueOrThrow({
         where: { userID: _userID },
@@ -113,6 +116,21 @@ export class UserService {
           incoming: true,
         },
       });
+
+    // here? for getting timetable data
+    // instead of whats in getUserTimetables
+    console.log('getUserInfo - timetables', timetables);
+    console.log('condition', globalThis?.window !== undefined)
+    // typeof window !== 'undefined' && window.localStorage
+    if (globalThis?.window !== undefined) {
+      // UP TO HERE - looking at what localStorage looks like/structure at this point of the code, seeing if it can be easily added to `timetables`
+      // CURRENT PROBLEM - can't find a way to access localStorage
+      console.log('AFTER getUserInfo - localStorage', (JSON.parse(localStorage.data)).timetables);
+    }
+
+    let isTimetableEmpty = false;
+    // dont forget to account for createdEvents in 'empty' timetables
+
 
     const reconstructedTables = await Promise.all(
       timetables.map(async (t) => {
@@ -183,6 +201,13 @@ export class UserService {
     _userID: string,
   ): Promise<ReconstructedTimetableDto[]> {
     try {
+      console.log("")
+
+      // user timetable needs to be checked on get - 
+      // as soon as the timetable loads, it should be checked if its 
+      // empty and can therefore be overwritten from local storage
+      // (calling editUserTimetable or whatever)
+
       const res = await this.prisma.user.findUniqueOrThrow({
         where: { userID: _userID },
         select: {
@@ -200,6 +225,11 @@ export class UserService {
           return this.convertTimetable(t);
         }),
       );
+
+      // const isTimetableEmpty = _timetable.selectedCourses.length === 0;
+      // console.log('ISTIMETABLEEMPTY -> ', isTimetableEmpty);
+      console.log('getUserTimetables - timetables', timetables);
+      console.log('getUserTimetables - localStorage', localStorage);
 
       return Promise.resolve(timetables);
     } catch (e) {
@@ -252,6 +282,19 @@ export class UserService {
     const _timetableId = _timetable.id;
     const eventIds = _timetable.createdEvents.map((event) => event.id);
     const classIds = _timetable.createdEvents.map((c) => c.id);
+    console.log("timetable stuff --> ", _timetable); // logs in terminal, not console
+
+    const isTimetableEmpty = _timetable.selectedCourses.length === 0;
+    console.log('ISTIMETABLEEMPTY -> ', isTimetableEmpty);
+    console.log("TESTTTTTT");
+
+    if (isTimetableEmpty) {
+      // get timetable from localstorage
+      // TODO: error here, "ReferenceError: localStorage is not defined"
+      const data = JSON.parse(localStorage.getItem("data") || '')
+      const timetables = data.timetables
+      console.log('T1 timetable --- ', timetables);
+    }
 
     const update_timetable = this.prisma.timetable.update({
       where: {

@@ -13,11 +13,11 @@ export class AuthController {
     private authService: AuthService,
     private userService: UserService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   @UseGuards(LoginGuard)
   @Get('/login')
-  login() {}
+  login() { }
 
   checkUserDataUpdatedBeforeLogin = (
     userData: UserDTO,
@@ -44,6 +44,7 @@ export class AuthController {
           firstname: req.user.userinfo.userData.firstName,
           lastname: req.user.userinfo.userData.lastName,
         });
+
       };
       try {
         const userData = await this.userService.getUserInfo(userID);
@@ -55,13 +56,15 @@ export class AuthController {
         ) {
           console.debug(
             'The user ' +
-              userID +
-              ' has their profiles updated! Updating now :)',
+            userID +
+            ' has their profiles updated! Updating now :)',
           );
           updateUserData();
         }
       } catch (e) {
         console.debug(`User ${userID} does not exist in db, adding them now!`);
+        // user does not exist - save timetable from localstorage
+        console.debug('HEREEEEEEEE');
         updateUserData();
       }
       return res.json(req.user.userinfo.sub);
