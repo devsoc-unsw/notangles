@@ -20,7 +20,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
   const colorPickerPopoverId = openColorPickerPopover ? 'simple-popover' : undefined;
-  // Whether the custom colour picker is shown
+
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
   const decodedColor = useColorDecoder(color);
