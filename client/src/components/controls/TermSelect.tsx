@@ -86,16 +86,25 @@ const TermSelect: React.FC<TermSelectProps> = () => {
     const termValue = e.target.value;
     const termInfo = termValue.split(', ');
 
+    
     let termPrefix = '';
     if (termInfo[0].includes('Summer')) {
       termPrefix = 'U1';
     } else {
       termPrefix = 'T' + termInfo[0].split(' ')[1];
     }
-
+    
+    
     const newYear = termInfo[1];
 
     const termName = (termPrefix + newYear) as Term; // To get a string like T12024
+
+    localStorage.setItem(
+      'currSelectedTerm',
+      JSON.stringify({
+        term: termName,
+      }),
+    );
     setTerm(termName);
     setYear(newYear);
     setTermName(convertToTermName(termName!));

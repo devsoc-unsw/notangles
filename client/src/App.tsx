@@ -217,8 +217,9 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList(term.substring(0, 2));
+      const { courses } = await getCoursesList("T1");
       setCoursesList(courses);
+      
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);
