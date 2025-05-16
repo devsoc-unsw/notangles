@@ -1,4 +1,4 @@
-import { Close, Edit, EditNote, FileCopy, Save } from '@mui/icons-material';
+import { Close, Edit, EditNote, FileCopy, Star, Save } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -29,6 +29,7 @@ import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
+import { time } from 'console';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
@@ -87,6 +88,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           return {
             name: timetable.name,
             id: timetable.id,
+            isPrimary: timetable.isPrimary,
             selectedCourses: timetable.selectedCourses,
             selectedClasses: duplicateClasses(timetable.selectedClasses),
             createdEvents: timetable.createdEvents,
@@ -215,6 +217,14 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     }
   };
 
+  const handleSetPrimary = () => {
+    displayTimetables[term].forEach(e => {
+      e.isPrimary = false;
+    });
+    displayTimetables[term][selectedTimetable].isPrimary = true;
+    handleMenuClose();
+  };
+
   /**
    * Menu shortcut (hotkey) event listeners
    */
@@ -330,6 +340,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         onClose={handleMenuClose}
         autoFocus={false}
       >
+        <MenuItem onClick={handleSetPrimary}>
+          <ListItemIcon>
+            <Star fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Set as primary</ListItemText>
+        </MenuItem>
         <MenuItem onClick={handleRenameOpen}>
           <ListItemIcon>
             <Edit fontSize="small" />

@@ -1,5 +1,5 @@
-import { Add, MoreHoriz } from '@mui/icons-material';
-import { Box, Tooltip } from '@mui/material';
+import { Add, MoreHoriz, Star } from '@mui/icons-material';
+import { Box, Icon, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,6 +87,7 @@ const TimetableTabs: React.FC = () => {
       const newTimetable: TimetableData = {
         name: 'New Timetable',
         id: uuidv4(),
+        isPrimary: false,
         selectedCourses: [],
         selectedClasses: {},
         createdEvents: {},
@@ -184,6 +185,11 @@ const TimetableTabs: React.FC = () => {
                               {...props.dragHandleProps}
                               sx={TabStyle(index, selectedTimetable)}
                             >
+                            {displayTimetables[term][index].isPrimary && (
+                              <Tooltip title="A primary timetable is the timetable for social features."> 
+                                <Star fontSize="small" className="pr-1.5">
+                                </Star>
+                              </Tooltip>)}
                               {timetable.name}
                               {selectedTimetable === index ? (
                                 <StyledSpan onClick={handleMenuClick}>
