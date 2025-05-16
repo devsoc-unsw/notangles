@@ -1,6 +1,7 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { AppBar, AppBarProps, Drawer, Divider, Typography, Toolbar } from '@mui/material';
+
+import { Box, styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -25,32 +26,29 @@ const LogoImg = styled('img')`
   display: flex;
 `;
 
-interface StyledSidebarProps extends AppBarProps {
+const drawerWidth = 230;
+const collapsedWidth = 80;
+
+interface StyledDrawerProps {
   collapsed: boolean;
 }
 
-const StyledSidebar = styled(AppBar)<StyledSidebarProps>(({ collapsed }) => ({
-  width: 'fit-content',
-  left: 0,
-  transition: 'width 0.2s ease',
-  zIndex: 1201,
-  display: 'flex',
-  flexDirection: 'row',
+const StyledDrawer = styled(Drawer, {
+  shouldForwardProp: (prop) => prop !== 'collapsed',
+})<StyledDrawerProps>(({ collapsed }) => ({
+  position: 'relative',
+  flexShrink: 0,
+  width: collapsed ? collapsedWidth : drawerWidth,
+  transition: 'width 0.1s ease',
 
-  // overriding MUI select component padding when focused (for the term select)
-  paddingRight: '0 !important',
-  padding: '10px, 0px, 10px, 19px',
-}));
-
-const MainSidebar = styled('div')<StyledSidebarProps>(({ theme, collapsed }) => ({
-  backgroundColor: theme.palette.background.paper,
-  height: '100vh',
-  color: theme.palette.text.primary,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  width: collapsed ? '80px' : '290px',
-  overflowY: 'auto',
+  '& .MuiDrawer-paper': {
+    top: 0,
+    alignSelf: 'flex-start',
+    height: '100vh',
+    width: collapsed ? collapsedWidth : drawerWidth,
+    transition: 'width 0.1s ease',
+    overflowX: 'hidden',
+  },
 }));
 
 const SidebarTitle = styled(Typography)`
@@ -59,14 +57,14 @@ const SidebarTitle = styled(Typography)`
   display: flex;
   flex-direction: column;
   text-align: center;
-  margin-left: -20px;
+  margin-left: 5px;
   align-text: center;
 `;
 
 const HeaderContainer = styled('div')`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 10px 19px 10px 19px;
 `;
@@ -76,6 +74,13 @@ const SideBarContainer = styled('div')`
   flex-direction: column;
   padding: 20px 16px 20px 16px;
   gap: 16px;
+`;
+
+const Container = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 `;
 
 const NavComponentsContainer = styled('div')`
@@ -100,6 +105,11 @@ const SidebarFooterText = styled('div')`
   margin-top: 16px;
 `;
 
+const SidebarFooterWrapper = styled('div')`
+  display: flex;
+  flex-direction: row;
+`;
+
 const StyledGroupContainer = styled('div')`
   height: 100vh;
   width: 60px;
@@ -122,26 +132,12 @@ const StyledGroupContainer = styled('div')`
 const Sidebar: React.FC = () => {
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(true);
-  const sideBarRef = useRef<HTMLDivElement>(null);
   const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
-        setCollapsed(true);
-      }
-    };
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [sideBarRef]);
 
   const modalData = [
     {
@@ -179,13 +175,13 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <StyledSidebar ref={sideBarRef} collapsed={collapsed}>
+    <StyledDrawer variant="permanent" collapsed={collapsed}>
       {!groupsSidebarCollapsed && (
         <StyledGroupContainer>
           <GroupsSidebar />
         </StyledGroupContainer>
       )}
-      <MainSidebar collapsed={collapsed}>
+      <Container>
         <div>
           <HeaderContainer>
             <a href="/">
@@ -199,7 +195,6 @@ const Sidebar: React.FC = () => {
             {!collapsed && (
               <>
                 <SidebarTitle variant="h6">Notangles</SidebarTitle>
-                <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
               </>
             )}
           </HeaderContainer>
@@ -244,19 +239,24 @@ const Sidebar: React.FC = () => {
           <DarkModeButton collapsed={collapsed} />
           <UserAccount collapsed={collapsed} />
           {!collapsed ? (
-            <SidebarFooterText>
-              <Divider />
-              <span>
-                © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
-                {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
-              </span>
-            </SidebarFooterText>
+            <>
+              <SidebarFooterText>
+                <Divider />
+                <SidebarFooterWrapper>
+                  <div>
+                    © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
+                    {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
+                  </div>
+                  <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
+                </SidebarFooterWrapper>
+              </SidebarFooterText>
+            </>
           ) : (
             <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
           )}
         </SidebarFooter>
-      </MainSidebar>
-    </StyledSidebar>
+      </Container>
+    </StyledDrawer>
   );
 };
 
