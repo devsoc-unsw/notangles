@@ -595,7 +595,6 @@ let prevHeight: number = -1;
 const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
   const entryWidth = entries[0].contentRect.width;
   const entryHeight = entries[0].contentRect.height;
-
   if (prevWidth !== -1) {
     // gives the illusion that the width/height grows/shrinks from the center instead of side; balances intersection area across changes
     moveElement(entries[0].target as HTMLElement, (prevWidth - entryWidth) / 2, (prevHeight - entryHeight) / 2);
@@ -633,6 +632,7 @@ export const setDragTarget = (
       element.style.transition = moveTransition;
       freezeTransform(element);
       dragElement = element;
+      console.log(dragElement);
 
       // Save the original coordinates of the card
       // The type of event is different on a computer v.s. a mobile device

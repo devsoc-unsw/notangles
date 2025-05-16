@@ -12,8 +12,6 @@ import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
-//test
-import NewSidebar from './components/sidebar/NewSidebar';
 import Sponsors from './components/Sponsors';
 import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
@@ -58,6 +56,11 @@ const StyledApp = styled(Box)`
   height: 100%;
 `;
 
+const Container = styled(Box)`
+  display: flex;
+  justify-content: center;
+`;
+
 const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
@@ -72,6 +75,7 @@ const ContentWrapper = styled(Box)`
   flex-direction: row-reverse;
   justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
+  overflow: hidden;
 `;
 
 const Content = styled(Box)`
@@ -632,54 +636,57 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <NewSidebar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={decodedAssignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Outlet />
-                {groupsSidebarCollapsed ? (
-                  <>
-                    <TimetableTabs />
-                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  </>
-                ) : (
-                  <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                )}
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Sponsors />
-                <Footer />
-                <Alerts />
-                <SubcomPromotion />
-                <PromotionPopup
-                  imgSrc={T3SelectGif}
-                  title="Next term's timetable has been released! 🎉"
-                  subTitle="Organise, plan and schedule with newly released timetable"
-                  bullets={[
-                    {
-                      main: 'Auto-timetable feature',
-                      description: 'Automate process of manually scheduling tasks saving time and being more efficient',
-                    },
-                    {
-                      main: 'Live data feedback',
-                      description: 'Syncs with the current myUNSW class availabilities',
-                    },
-                    {
-                      main: 'Create personal events',
-                      description: 'Fully customisable and caters to your needs',
-                    },
-                  ]}
-                />
-              </Content>
-            </ContentWrapper>
+            <Container>
+              <Sidebar />
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={decodedAssignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Outlet />
+                  {groupsSidebarCollapsed ? (
+                    <>
+                      <TimetableTabs />
+                      <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                    </>
+                  ) : (
+                    <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                  )}
+                  <ICSButton
+                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                  >
+                    save to calendar
+                  </ICSButton>
+                  <Sponsors />
+                  <Footer />
+                  <Alerts />
+                  <SubcomPromotion />
+                  <PromotionPopup
+                    imgSrc={T3SelectGif}
+                    title="Next term's timetable has been released! 🎉"
+                    subTitle="Organise, plan and schedule with newly released timetable"
+                    bullets={[
+                      {
+                        main: 'Auto-timetable feature',
+                        description:
+                          'Automate process of manually scheduling tasks saving time and being more efficient',
+                      },
+                      {
+                        main: 'Live data feedback',
+                        description: 'Syncs with the current myUNSW class availabilities',
+                      },
+                      {
+                        main: 'Create personal events',
+                        description: 'Fully customisable and caters to your needs',
+                      },
+                    ]}
+                  />
+                </Content>
+              </ContentWrapper>
+            </Container>
           </StyledApp>
         </LocalizationProvider>
       </ThemeProvider>
