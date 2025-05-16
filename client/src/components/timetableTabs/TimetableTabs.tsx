@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuidv4 } from 'uuid';
 
-import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import {
@@ -33,6 +32,7 @@ const TimetableTabs: React.FC = () => {
 
   const {
     isDarkMode,
+    themeObject,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
@@ -49,11 +49,9 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  const theme = isDarkMode ? darkTheme : lightTheme;
-
   const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
 
-  const { TabStyle } = createTimetableStyle(tabTheme, theme);
+  const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
 
   useEffect(() => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);

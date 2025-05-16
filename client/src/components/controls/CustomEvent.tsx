@@ -35,7 +35,7 @@ const CustomEvent: React.FC = () => {
   const [classCode, setClassCode] = useState<string>('');
   const [classesList, setClassesList] = useState<ClassData[]>([]);
   const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
-  const [color, setColor] = useState<string>('#1F7E8C');
+  const [color, setColor] = useState<string>('default-1');
 
   // NO pre-selected fields when event popover is opened from controls bar
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(false);
@@ -63,7 +63,7 @@ const CustomEvent: React.FC = () => {
 
   // Get the list of classes for the selected course code.
   useEffect(() => {
-    const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop'];
+    const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar'];
     if (courseCode !== '') {
       getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), isConvertToLocalTimezone)
         .catch((err) => {
@@ -114,7 +114,7 @@ const CustomEvent: React.FC = () => {
     setEventDays([]);
     setStartTime(createDateWithTime(9));
     setEndTime(createDateWithTime(10));
-    setColor('#1F7E8C');
+    setColor('default-1');
 
     // Reset info about the tutoring event
     setCourseCode('');

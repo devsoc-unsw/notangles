@@ -1,7 +1,7 @@
 import '@fontsource-variable/roboto-flex';
 import './index.css';
 
-import { BrowserTracing } from '@sentry/browser';
+import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -18,7 +18,7 @@ import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
-  integrations: [new BrowserTracing()],
+  integrations: [browserTracingIntegration()],
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 

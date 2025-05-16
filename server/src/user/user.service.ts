@@ -299,16 +299,23 @@ export class UserService {
       },
     });
 
-    const update_classes = _timetable.selectedClasses.map((c) =>
-      this.prisma.class.upsert({
-        where: { id: c.id },
-        update: c,
+    const update_classes = _timetable.selectedClasses.map((c) => {
+      // TODO: Get the actual field instead of computing it
+      // classNo is currently a string such as COMP6420Undergraduate-11965-T1-2025
+      // courseId should be a string such as COMP6420Undergraduate
+      const selectedClass = {
+        courseId: c.classNo.split('-')[0],
+        ...c,
+      };
+      return this.prisma.class.upsert({
+        where: { id: selectedClass.id },
+        update: selectedClass,
         create: {
-          ...c,
+          ...selectedClass,
           timetableId: _timetableId,
         },
-      }),
-    );
+      });
+    });
 
     await this.prisma.$transaction([
       update_timetable,

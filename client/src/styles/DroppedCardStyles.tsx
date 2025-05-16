@@ -104,7 +104,7 @@ export const StyledCardInner = styled(Card, {
 }>`
   display: flex;
   flex-direction: column;
-  color: white;
+  color: ${({ theme }) => theme.palette.in_text.primary};
   font-size: 0.9rem;
   border-radius: ${({ isSquareEdges }) => (isSquareEdges ? '0px' : `${borderRadius}px`)};
   transition:

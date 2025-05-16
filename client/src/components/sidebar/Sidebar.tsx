@@ -14,7 +14,6 @@ import DarkModeButton from './DarkModeButton';
 import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
-import TermSelect from './TermSelect';
 import UserAccount from './UserAccount';
 
 const LogoImg = styled('img')`
@@ -207,7 +206,6 @@ const Sidebar: React.FC = () => {
           <Divider />
 
           <SideBarContainer>
-            <TermSelect collapsed={collapsed} handleExpand={() => handleCollapse(false)} />
             <NavComponentsContainer>
               <CustomModal
                 title="Timetable"

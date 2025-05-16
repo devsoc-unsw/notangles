@@ -1,5 +1,7 @@
-import { createContext, useState } from 'react';
+import { Theme } from '@mui/material';
+import { createContext, useMemo, useState } from 'react';
 
+import { darkTheme, lightTheme, themes } from '../constants/theme';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
@@ -7,6 +9,11 @@ import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
 export interface IAppContext {
+  currentTheme: string;
+  setCurrentTheme: (newTheme: string) => void;
+
+  themeObject: Theme;
+
   is12HourMode: boolean;
   setIs12HourMode: (newIs12HourMode: boolean) => void;
 
@@ -93,6 +100,11 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
+  themeObject: lightTheme(Object.keys(themes)[0]),
+
+  currentTheme: Object.keys(themes)[0],
+  setCurrentTheme: () => {},
+
   is12HourMode: false,
   setIs12HourMode: () => {},
 
@@ -186,6 +198,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
+  const [currentTheme, setCurrentTheme] = useState<string>(storage.get('currentTheme'));
   const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
   const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
@@ -216,7 +229,14 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
+  const themeObject = useMemo(() => {
+    return isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
+  }, [currentTheme, isDarkMode]);
+
   const initialContext: IAppContext = {
+    themeObject,
+    currentTheme,
+    setCurrentTheme,
     is12HourMode,
     setIs12HourMode,
     isDarkMode,

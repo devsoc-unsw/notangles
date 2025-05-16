@@ -7,6 +7,16 @@ import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
+import TermSelect from './TermSelect';
+
+const TermSelectWrapper = styled(Box)`
+  flex: 0 0 auto; 
+  margin-top: 20px;
+  margin-right: 10px;
+  min-width: 140px;
+  display: flex;
+  align-items: flex-start;
+`
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -14,7 +24,9 @@ const SelectWrapper = styled(Box)`
   grid-column: 1 / -1;
   grid-row: 1;
   padding-top: 20px;
-  padding-left: 66px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
 `;
 
 const AutotimetablerWrapper = styled(Box)`
@@ -24,6 +36,7 @@ const AutotimetablerWrapper = styled(Box)`
     flex: none;
   }
 `;
+
 
 const CustomEventsWrapper = styled(Box)`
   flex: 1;
@@ -40,10 +53,15 @@ const Controls: React.FC<ControlsProps> = ({
   handleSelectCourse,
   handleRemoveCourse,
 }) => {
+
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
-        <SelectWrapper>
+    <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
+      <Grid item container xs={12} md={6.5} direction="row">
+        <TermSelectWrapper>
+          <TermSelect />
+        </TermSelectWrapper>
+
+        <SelectWrapper minWidth={"296px"} >
           <CourseSelect
             assignedColors={assignedColors}
             handleSelect={handleSelectCourse}
@@ -51,7 +69,7 @@ const Controls: React.FC<ControlsProps> = ({
           />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={6}>
+      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={5.5}>
         <CustomEventsWrapper>
           <CustomEvents />
         </CustomEventsWrapper>
