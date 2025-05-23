@@ -6,8 +6,8 @@ The Notangles client allows users to interactively plan out their timetables wit
 
 The client has been verified to work with:
 
-- npm v8.3.1
-- node v16.14.0
+- pnpm v10.10.0
+- node v22.16.0
 
 ```bash
 # prerequisite
