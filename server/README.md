@@ -59,7 +59,7 @@ The server will be hosted at `http://localhost:3001`.
 $ cd server
 
 # installation
-$ docker-compose up
+$ docker compose up database
 ```
 
 ## Test
