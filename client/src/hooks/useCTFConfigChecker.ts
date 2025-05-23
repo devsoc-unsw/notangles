@@ -3,7 +3,7 @@ import { CourseContext } from '../context/CourseContext';
 import { useContext } from 'react';
 import { CourseData, CreatedEvents, SelectedClasses } from '../interfaces/Periods';
 
-import ctfconfig from '../constants/ctfConfig.json';
+import ctfconfig from '../constants/ctfconfig.json';
 
 const compareObjects = (obj1: Record<string, any>, obj2: Record<string, any>): boolean => {
   const keys1 = Object.keys(obj1);

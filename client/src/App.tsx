@@ -17,7 +17,7 @@ import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import ctfconfig from './constants/ctfConfig.json';
+import ctfconfig from './constants/ctfconfig.json';
 import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
