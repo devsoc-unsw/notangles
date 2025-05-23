@@ -2,20 +2,28 @@
 
 The Notangles client allows users to interactively plan out their timetables with the latest course information using a simple drag-and-drop system.
 
-## Installation
+## Installation & Running
 
 The client has been verified to work with:
 
-- npm v8.3.1
-- node v16.14.0
+- pnpm v10.10.0
+- node v22.16.0
 
-In the root client directory `client`, run `npm install` to install all the dependencies.
+```bash
+# prerequisite
+$ cd client
 
-## Running
+# installation
+$ pnpm i
 
-Use `npm start` to host the Notangles client locally. The client will be hosted on http://localhost:3000.
+# running
+$ pnpm start # (if you already have the timetable server running locally; connects to that)
 
-Recommended: To connect to the real timetabling server, use `npm run start:mock` instead.
+$ pnpm run start:mock #(if you don’t have the timetable server running locally; connects to our real server)
+```
+
+> Note: both `pnpm start` and `pnpm run start:mock` connect to the local autotimetabler locally if it is running
+> You can then access the client at `http://localhost:5173`.
 
 ## Tech stack
 
