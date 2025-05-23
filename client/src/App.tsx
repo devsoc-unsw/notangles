@@ -3,7 +3,7 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -17,6 +17,7 @@ import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
+import ctfconfig from './constants/ctfConfig.json';
 import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
@@ -32,6 +33,7 @@ import { CourseContext } from './context/CourseContext';
 import { UserContext } from './context/UserContext';
 import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
+import useCTFConfigChecker from './hooks/useCTFConfigChecker';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
 import {
@@ -107,6 +109,7 @@ const App: React.FC = () => {
     isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
+    setAutoVisibility,
     days,
     term,
     year,
@@ -597,6 +600,19 @@ const App: React.FC = () => {
       setCurrentTheme(Object.keys(themes)[0]);
     }
   }, [currentTheme]);
+
+  const [haveValidConfig, setHaveValidConfig] = useState(false);
+
+  const ctfResult = useCTFConfigChecker();
+
+  useEffect(() => {
+    if (!haveValidConfig && ctfResult) {
+      setAlertMsg('CTF: YOU GOT THE FLAG! CHECK ON CONSOLE >_<');
+      setAutoVisibility(true);
+      console.log(ctfconfig.Flag);
+    }
+    setHaveValidConfig(ctfResult);
+  }, [ctfResult]);
 
   const globalStyle = {
     body: {

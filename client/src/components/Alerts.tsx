@@ -32,6 +32,7 @@ const Alerts: React.FC = () => {
     if (alertMsg === 'Copied to clipboard!') return 'success'; // for copying a custom event link
     if (alertMsg.startsWith('Could not')) return 'warning';
     if (alertMsg.startsWith('Delete')) return 'info'; // for deleting a timetable
+    if (alertMsg.startsWith('CTF:')) return 'success'; // for CTF Alert
     return 'error';
   };
 
