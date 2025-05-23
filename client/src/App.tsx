@@ -17,7 +17,6 @@ import SubcomPromotion from './components/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import ctfconfig from './constants/ctfconfig.json';
 import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
@@ -609,7 +608,7 @@ const App: React.FC = () => {
     if (!haveValidConfig && ctfResult) {
       setAlertMsg('CTF: YOU GOT THE FLAG! CHECK ON CONSOLE >_<');
       setAutoVisibility(true);
-      console.log(ctfconfig.Flag);
+      console.log("Here's the flag:", atob(import.meta.env.VITE_CTF_FLAG) ?? 'RCR{SOME_STRING_HERE}');
     }
     setHaveValidConfig(ctfResult);
   }, [ctfResult]);
