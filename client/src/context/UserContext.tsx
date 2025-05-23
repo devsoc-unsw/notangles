@@ -34,8 +34,6 @@ export interface IUserContext {
   fetchUserInfo: (userID: string) => void;
   selectedGroupIndex: number; // selected group is the index of groups;
   setSelectedGroupIndex: (newSelectedGroupIndex: number) => void;
-  groupsSidebarCollapsed: boolean;
-  setGroupsSidebarCollapsed: (isCollapsed: boolean) => void;
 }
 
 export const UserContext = createContext<IUserContext>({
@@ -46,15 +44,12 @@ export const UserContext = createContext<IUserContext>({
   fetchUserInfo: () => {},
   selectedGroupIndex: -1,
   setSelectedGroupIndex: () => {},
-  groupsSidebarCollapsed: true,
-  setGroupsSidebarCollapsed: () => {},
 });
 
 const UserContextProvider = ({ children }: UserContextProviderProps) => {
   const [user, setUser] = useState<User>(undefinedUser);
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
-  const [groupsSidebarCollapsed, setGroupsSidebarCollapsed] = useState<boolean>(true);
   const { setDisplayTimetables, setSelectedTimetable, term, year } = useContext(AppContext);
   const { setSelectedClasses, setSelectedCourses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
 
@@ -162,10 +157,8 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       fetchUserInfo,
       selectedGroupIndex,
       setSelectedGroupIndex,
-      groupsSidebarCollapsed,
-      setGroupsSidebarCollapsed,
     }),
-    [user, groups, selectedGroupIndex, groupsSidebarCollapsed],
+    [user, groups, selectedGroupIndex],
   );
 
   return <UserContext.Provider value={initialContext}>{children}</UserContext.Provider>;

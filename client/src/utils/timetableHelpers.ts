@@ -32,7 +32,6 @@ const duplicateClasses = (selectedClasses: SelectedClasses) => {
       } else {
         newActivityCopy[activity] = null;
       }
-      // newActivityCopy[activity] = classData !== null ? { ...classData } : null;
     });
     newClasses[courseCode] = { ...newActivityCopy };
   });
