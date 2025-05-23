@@ -16,10 +16,12 @@ const StyledMobileMenu = styled('button')(({ theme }) => ({
   justifyContent: 'center',
   padding: theme.spacing(1.5),
   margin: 10,
+  marginRight: 0,
   borderRadius: 8,
   cursor: 'pointer',
   transition: 'background-color 0.3s ease',
   color: theme.palette.text.primary,
+  backgroundColor: '#292929',
 
   '&:hover': {
     backgroundColor: theme.palette.action.hover,
