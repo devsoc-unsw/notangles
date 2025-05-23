@@ -1,7 +1,9 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Drawer, Divider, Typography, Toolbar } from '@mui/material';
 
-import { Box, styled } from '@mui/system';
+import { styled } from '@mui/system';
+import { useMediaQuery, useTheme } from '@mui/material';
+
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -10,6 +12,7 @@ import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
+import MobileMenuButton from './MobileMenuButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
 import FriendsButton from './FriendsButton';
@@ -27,7 +30,7 @@ const LogoImg = styled('img')`
 `;
 
 const drawerWidth = 230;
-const collapsedWidth = 80;
+let collapsedWidth = 80;
 
 interface StyledDrawerProps {
   collapsed: boolean;
@@ -130,14 +133,27 @@ const StyledGroupContainer = styled('div')`
 `;
 
 const Sidebar: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isWide = useMediaQuery(theme.breakpoints.only('xl'));
+
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => !isWide);
+  const [fullyCollapsed, setFullyCollapsed] = useState(isMobile);
   const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
     setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
+
+  const handleFullyCollapsed = () => {
+    setFullyCollapsed(!fullyCollapsed);
+    setCollapsed(!fullyCollapsed);
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
+  };
+
+  collapsedWidth = isMobile ? 0 : 80;
 
   const modalData = [
     {
@@ -175,88 +191,97 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <StyledDrawer variant="permanent" collapsed={collapsed}>
-      {!groupsSidebarCollapsed && (
-        <StyledGroupContainer>
-          <GroupsSidebar />
-        </StyledGroupContainer>
-      )}
-      <Container>
-        <div>
-          <HeaderContainer>
-            <a href="/">
-              <LogoImg
-                src={currLogo}
-                alt="Notangles logo"
-                onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-                onMouseOut={() => setCurrLogo(notanglesLogo)}
-              />
-            </a>
-            {!collapsed && (
-              <>
-                <SidebarTitle variant="h6">Notangles</SidebarTitle>
-              </>
-            )}
-          </HeaderContainer>
+    <>
+      <StyledDrawer variant="permanent" collapsed={collapsed} open={false}>
+        {!groupsSidebarCollapsed && (
+          <StyledGroupContainer>
+            <GroupsSidebar />
+          </StyledGroupContainer>
+        )}
+        <Container>
+          <div>
+            <HeaderContainer>
+              <a href="/">
+                <LogoImg
+                  src={currLogo}
+                  alt="Notangles logo"
+                  onMouseOver={() => setCurrLogo(notanglesLogoGif)}
+                  onMouseOut={() => setCurrLogo(notanglesLogo)}
+                />
+              </a>
+              {!collapsed && (
+                <>
+                  <SidebarTitle variant="h6">Notangles</SidebarTitle>
+                </>
+              )}
+            </HeaderContainer>
 
-          <Divider />
+            <Divider />
 
-          <SideBarContainer>
-
-            <NavComponentsContainer>
-              <CustomModal
-                title="Timetable"
-                toolTipTitle="Timetable"
-                showIcon={<CalendarMonth />}
-                description={'Current Timetable'}
-                content={null}
-                collapsed={collapsed}
-                // currently not clickable since this is our current page
-                isClickable={false}
-                // hardcoded until we move away from single page site
-                isSelected={true}
-              />
-              <FriendsButton collapsed={collapsed} />
-              <Divider />
-              {modalData.map((modal, index) => (
-                <React.Fragment key={index}>
-                  <CustomModal
-                    title={modal.title}
-                    toolTipTitle={modal.toolTipTitle}
-                    showIcon={modal.showIcon}
-                    description={modal.description}
-                    content={modal.content}
-                    collapsed={collapsed}
-                    isClickable={modal.isClickable}
-                  />
-                </React.Fragment>
-              ))}
-            </NavComponentsContainer>
-          </SideBarContainer>
-        </div>
-
-        <SidebarFooter>
-          <DarkModeButton collapsed={collapsed} />
-          <UserAccount collapsed={collapsed} />
-          {!collapsed ? (
-            <>
-              <SidebarFooterText>
+            <SideBarContainer>
+              <NavComponentsContainer>
+                <CustomModal
+                  title="Timetable"
+                  toolTipTitle="Timetable"
+                  showIcon={<CalendarMonth />}
+                  description={'Current Timetable'}
+                  content={null}
+                  collapsed={collapsed}
+                  // currently not clickable since this is our current page
+                  isClickable={false}
+                  // hardcoded until we move away from single page site
+                  isSelected={true}
+                />
+                <FriendsButton collapsed={collapsed} />
                 <Divider />
-                <SidebarFooterWrapper>
-                  <div>
-                    © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
-                    {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
-                  </div>
-                  <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
-                </SidebarFooterWrapper>
-              </SidebarFooterText>
-            </>
-          ) : (
-            <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
-          )}
-        </SidebarFooter>
-      </Container>
-    </StyledDrawer>
+                {modalData.map((modal, index) => (
+                  <React.Fragment key={index}>
+                    <CustomModal
+                      title={modal.title}
+                      toolTipTitle={modal.toolTipTitle}
+                      showIcon={modal.showIcon}
+                      description={modal.description}
+                      content={modal.content}
+                      collapsed={collapsed}
+                      isClickable={modal.isClickable}
+                    />
+                  </React.Fragment>
+                ))}
+              </NavComponentsContainer>
+            </SideBarContainer>
+          </div>
+
+          <SidebarFooter>
+            <DarkModeButton collapsed={collapsed} />
+            <UserAccount collapsed={collapsed} />
+            {!isMobile &&
+              (!collapsed ? (
+                <>
+                  <SidebarFooterText>
+                    <Divider />
+                    <SidebarFooterWrapper>
+                      <div>
+                        © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
+                        {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
+                      </div>
+                      <CollapseButton
+                        collapsed={collapsed}
+                        onClick={() => handleCollapse(true)}
+                        toolTipTitle="Collapse"
+                      />
+                    </SidebarFooterWrapper>
+                  </SidebarFooterText>
+                </>
+              ) : (
+                <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
+              ))}
+          </SidebarFooter>
+        </Container>
+      </StyledDrawer>
+      {isMobile && (
+        <MobileMenuButton onClick={handleFullyCollapsed} toolTipTitle={fullyCollapsed ? 'Expand' : 'Collapse'} />
+      )}
+    </>
   );
 };
 
