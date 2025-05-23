@@ -31,6 +31,7 @@ const LogoImg = styled('img')`
 
 const drawerWidth = 230;
 let collapsedWidth = 80;
+let rightMargin = 50;
 
 interface StyledDrawerProps {
   collapsed: boolean;
@@ -43,6 +44,7 @@ const StyledDrawer = styled(Drawer, {
   flexShrink: 0,
   width: collapsed ? collapsedWidth : drawerWidth,
   transition: 'width 0.1s ease',
+  marginRight: rightMargin,
 
   '& .MuiDrawer-paper': {
     top: 0,
@@ -154,7 +156,7 @@ const Sidebar: React.FC = () => {
   };
 
   collapsedWidth = isMobile ? 0 : 80;
-
+  rightMargin = isMobile ? 0 : 50;
   const modalData = [
     {
       title: 'About',
