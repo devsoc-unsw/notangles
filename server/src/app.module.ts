@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AutoModule } from './auto/auto.module';
+import { CtfModule } from './ctf/ctf.module';
 import config from './config';
 import { FriendModule } from './friend/friend.module';
 import { GroupModule } from './group/group.module';
@@ -20,6 +21,7 @@ import { GraphqlModule } from './graphql/graphql.module';
     }),
     AuthModule,
     AutoModule,
+    CtfModule,
     UserModule,
     FriendModule,
     PrismaModule,
