@@ -83,6 +83,6 @@ export class AuthController {
 
   @Get('/logout')
   async logout(@Request() req, @Res() res: Response) {
-    this.authService.logout(req, res);
+    await this.authService.logout(req, res);
   }
 }

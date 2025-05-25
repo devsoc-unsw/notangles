@@ -66,6 +66,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
       const res = await response.json();
       const timetables = await Promise.all(
@@ -115,6 +116,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const jsonData = await res.json();

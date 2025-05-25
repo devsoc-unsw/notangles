@@ -61,6 +61,7 @@ const AdminMenu: React.FC<{
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
       const groupDeleteStatus = await res.json();
       console.log('group delete status', groupDeleteStatus);
@@ -114,6 +115,7 @@ const MemberMenu: React.FC<{ userID: string; group: Group; fetchUserInfo: (userI
           groupAdminIDs: group.groupAdmins.map((groupAdmins) => groupAdmins.userID),
           imageURL: group.imageURL,
         }),
+        credentials: 'include',
       });
       const leaveGroupStatus = await res.json();
       console.log('leave group status', leaveGroupStatus.data);

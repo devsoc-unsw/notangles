@@ -40,6 +40,7 @@ const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => v
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const getUsersStatus = await res.json();
@@ -83,6 +84,7 @@ const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => v
           senderId: user.userID,
           sendeeId: otherUserID,
         }),
+        credentials: 'include',
       });
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();
@@ -105,6 +107,7 @@ const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => v
           sendeeId: otherUserID,
           senderId: user.userID,
         }),
+        credentials: 'include',
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const declineRequestStatus = await res.json();

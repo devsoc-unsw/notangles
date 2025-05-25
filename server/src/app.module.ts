@@ -5,12 +5,15 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AutoModule } from './auto/auto.module';
 import config from './config';
-import { FriendModule } from './friend/friend.module';
-import { GroupModule } from './group/group.module';
+// import { FriendModule } from './friend/friend.module';
+// import { GroupModule } from './group/group.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { GraphqlService } from './graphql/graphql.service';
 import { GraphqlModule } from './graphql/graphql.module';
+
+// TOOD: Re-enable FriendModule and GroupModule when ready
+// Need to be locked down better, and FE supported
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,10 +24,10 @@ import { GraphqlModule } from './graphql/graphql.module';
     AuthModule,
     AutoModule,
     UserModule,
-    FriendModule,
+    // FriendModule,
     PrismaModule,
     GraphqlModule,
-    GroupModule,
+    // GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService, GraphqlService],

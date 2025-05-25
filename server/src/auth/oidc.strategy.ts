@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import {
@@ -33,14 +34,17 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
         redirect_uri: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI,
         scope: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE,
       },
-      passReqToCallback: false,
+      passReqToCallback: true,
       usePKCE: false,
     });
 
     this.client = client;
   }
 
-  async validate(tokenset: TokenSet): Promise<any> {
+  async validate(
+    req: Request & { login: any },
+    tokenset: TokenSet,
+  ): Promise<any> {
     const userinfo: UserinfoResponse = await this.client.userinfo(tokenset);
     try {
       const id_token = tokenset.id_token;
@@ -53,7 +57,14 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
         userinfo,
       };
 
-      return user;
+      return new Promise((resolve, reject) => {
+        req.login(user, (err) => {
+          if (err) {
+            return reject(new UnauthorizedException('Login failed'));
+          }
+          resolve(user);
+        });
+      });
     } catch (err) {
       throw new UnauthorizedException();
     }

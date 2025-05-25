@@ -6,16 +6,29 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
+  Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClassDto, EventDto, InitUserDTO, TimetableDto } from './dto';
 import { UserService } from './user.service';
+import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @UseGuards(AuthenticatedGuard)
   @Get('profile/:userId')
-  getUserInfo(@Param('userId') userId: string) {
+  getUserInfo(@Request() req, @Param('userId') userId: string) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only access your own profile information.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.getUserInfo(userId).then((data) => {
       return {
         status: 'Successsfully returned user profile',
@@ -24,8 +37,16 @@ export class UserController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Put('profile')
-  setUserInfo(@Body('data') data: InitUserDTO) {
+  setUserInfo(@Request() req, @Body('data') data: InitUserDTO) {
+    if (!req.user || data.userID !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only edit your own profile information.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.setUserProfile(data).then((res) => {
       return {
         status: 'Successfully created user!',
@@ -34,8 +55,16 @@ export class UserController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get('settings/:userId')
-  getUserSettings(@Param('userId') userId: string) {
+  getUserSettings(@Request() req, @Param('userId') userId: string) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only access your own settings.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.getUserSettings(userId).then((data) => {
       return {
         status: 'Successfully found user and their settings!',
@@ -44,12 +73,21 @@ export class UserController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Put('settings')
   // @UsePipes(new ValidationPipe({ transform: true }))
   setUserSettings(
+    @Request() req,
     @Body('userId') userId: string,
     @Body('setting') setting: any, //SettingsDto
   ) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only edit your own settings.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.setUserSettings(userId, setting).then((data) => {
       return {
         status: 'Successfully edited user settings!',
@@ -58,15 +96,25 @@ export class UserController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get('timetable/:userId')
-  getUserTimetables(@Param('userId') userId: string) {
+  getUserTimetables(@Request() req, @Param('userId') userId: string) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only access your own timetables.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.getUserTimetables(userId).then((data) => {
       return { status: `Successfully found user's timetables`, data };
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Post('timetable')
   createUserTimetable(
+    @Request() req,
     @Body('userId') userId: string,
     @Body('selectedCourses') selectedCourses: string[],
     @Body('selectedClasses') selectedClasses: ClassDto[],
@@ -74,6 +122,13 @@ export class UserController {
     @Body('mapKey') mapKey: string,
     @Body('name') timetableName?: string,
   ) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only create timetables for your own user.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService
       .createUserTimetable(
         userId,
@@ -91,11 +146,21 @@ export class UserController {
       });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Put('timetable')
   async editUserTimetable(
+    @Request() req,
     @Body('userId') userId: string,
     @Body('timetable') timetable: TimetableDto,
   ) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      // This is not really doing anything if the underlying function doesn't make use of the provided userId.
+      throw new HttpException(
+        'You can only edit timetables for your own user.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     return this.userService.editUserTimetable(userId, timetable).then((id) => {
       return {
         status: 'Successfully edited timetable',
@@ -104,18 +169,32 @@ export class UserController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Delete('timetable/:timetableId')
-  deleteUserTimetable(@Param('timetableId') timetableId: string) {
-    return this.userService.deleteUserTimetable(timetableId).then((id) => {
-      return {
-        status: 'Successfully deleted timetable',
-        data: { timetableId: id },
-      };
-    });
+  deleteUserTimetable(
+    @Request() req,
+    @Param('timetableId') timetableId: string,
+  ) {
+    return this.userService
+      .deleteUserTimetable(req.user.userinfo.sub, timetableId)
+      .then((id) => {
+        return {
+          status: 'Successfully deleted timetable',
+          data: { timetableId: id },
+        };
+      });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get('group/:userId')
-  getUserGroups(@Param('userId') userId: string) {
+  getUserGroups(@Request() req, @Param('userId') userId: string) {
+    if (!req.user || userId !== req.user.userinfo.sub) {
+      throw new HttpException(
+        'You can only access your own groups.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       return this.userService.getGroups(userId).then((groups) => {
         return {
@@ -128,8 +207,11 @@ export class UserController {
     }
   }
 
+  // Uncomment this and fix perms when adding groups and friends
   @Get('all')
   getAllUsers() {
+    return { status: 'This endpoint is not implemented yet.', data: [] };
+    /*
     try {
       return this.userService.getAllUsers().then((data) => {
         return {
@@ -140,5 +222,6 @@ export class UserController {
     } catch (e) {
       return e;
     }
+    */
   }
 }

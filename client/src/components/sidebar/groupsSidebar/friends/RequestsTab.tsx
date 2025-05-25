@@ -37,6 +37,7 @@ const RequestsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => voi
           sendeeId: user.userID,
           senderId: incomingUserId,
         }),
+        credentials: 'include',
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const declineRequestStatus = await res.json();
@@ -59,6 +60,7 @@ const RequestsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => voi
           senderId: user.userID,
           sendeeId: incomingUserId,
         }),
+        credentials: 'include',
       });
       if (res.status !== 201) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();

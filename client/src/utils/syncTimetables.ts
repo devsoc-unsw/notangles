@@ -176,6 +176,7 @@ export const syncAddTimetable = async (userId: string, newTimetable: TimetableDa
         name,
         mapKey: term,
       }),
+      credentials: 'include',
     });
 
     const json = await res.json();
@@ -193,6 +194,7 @@ const syncDeleteTimetable = async (timetableId: string) => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     });
   } catch (e) {
     console.log(e);
@@ -215,6 +217,7 @@ const syncEditTimetable = async (userId: string, editedTimetable: TimetableData)
         userId: userId,
         timetable: convertTimetableToDTO(editedTimetable),
       }),
+      credentials: 'include',
     });
   } catch (e) {
     console.log(e);

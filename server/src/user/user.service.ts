@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   SettingsDto,
   UserDTO,
@@ -253,6 +253,24 @@ export class UserService {
     const eventIds = _timetable.createdEvents.map((event) => event.id);
     const classIds = _timetable.createdEvents.map((c) => c.id);
 
+    const timetable = await this.prisma.timetable.findFirst({
+      where: {
+        id: _timetableId,
+        user: {
+          some: {
+            userID: _userID,
+          },
+        },
+      },
+    });
+
+    if (!timetable) {
+      throw new HttpException(
+        'Not allowed to edit this timetable',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const update_timetable = this.prisma.timetable.update({
       where: {
         id: _timetableId,
@@ -360,7 +378,28 @@ export class UserService {
     }
   }
 
-  async deleteUserTimetable(_timetableId: string): Promise<string> {
+  async deleteUserTimetable(
+    userID: string,
+    _timetableId: string,
+  ): Promise<string> {
+    const timetable = await this.prisma.timetable.findFirst({
+      where: {
+        id: _timetableId,
+        user: {
+          some: {
+            userID: userID,
+          },
+        },
+      },
+    });
+
+    if (!timetable) {
+      throw new HttpException(
+        'Not allowed to delete this timetable',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       await this.prisma.timetable.delete({
         where: {

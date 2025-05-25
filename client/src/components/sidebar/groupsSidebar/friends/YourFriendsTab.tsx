@@ -32,6 +32,7 @@ const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => 
           senderId: user.userID,
           sendeeId: friendID,
         }),
+        credentials: 'include',
       });
       if (res.status !== 200) throw new NetworkError("Couldn't get response");
       const acceptRequestStatus = await res.json();

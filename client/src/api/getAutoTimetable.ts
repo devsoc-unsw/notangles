@@ -10,6 +10,7 @@ const getAutoTimetable = async (data: any): Promise<[number[], boolean]> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+      credentials: 'include',
     });
 
     if (res.status !== 201) {
