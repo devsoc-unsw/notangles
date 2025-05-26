@@ -3,7 +3,7 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -32,7 +32,6 @@ import { CourseContext } from './context/CourseContext';
 import { UserContext } from './context/UserContext';
 import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
-import useCTFConfigChecker from './hooks/useCTFConfigChecker';
 import useUpdateEffect from './hooks/useUpdateEffect';
 import NetworkError from './interfaces/NetworkError';
 import {
@@ -108,7 +107,6 @@ const App: React.FC = () => {
     isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
-    setAutoVisibility,
     days,
     term,
     year,
@@ -599,19 +597,6 @@ const App: React.FC = () => {
       setCurrentTheme(Object.keys(themes)[0]);
     }
   }, [currentTheme]);
-
-  const [haveValidConfig, setHaveValidConfig] = useState(false);
-
-  const ctfResult = useCTFConfigChecker();
-
-  useEffect(() => {
-    if (!haveValidConfig && ctfResult) {
-      setAlertMsg('CTF: YOU GOT THE FLAG! CHECK ON CONSOLE >_<');
-      setAutoVisibility(true);
-      console.log("Here's the flag:", atob(import.meta.env.VITE_CTF_FLAG) ?? 'RCR{SOME_STRING_HERE}');
-    }
-    setHaveValidConfig(ctfResult);
-  }, [ctfResult]);
 
   const globalStyle = {
     body: {
