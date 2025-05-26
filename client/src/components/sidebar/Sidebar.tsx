@@ -1,4 +1,4 @@
-import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { CalendarMonth, Description, FlagCircle, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { AppBar, AppBarProps, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -8,6 +8,7 @@ import notanglesLogo from '../../assets/notangles_1.png';
 import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
+import CtfValidate from './CtfValidate';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
@@ -176,6 +177,14 @@ const Sidebar: React.FC = () => {
       content: <Settings />,
       isClickable: true,
     },
+    {
+      title: 'CTF Validate',
+      toolTipTitle: 'CTF Validate',
+      showIcon: <FlagCircle />,
+      description: 'Validate CTF configuration',
+      content: <CtfValidate />,
+      isClickable: true,
+    },
   ];
 
   return (
@@ -207,7 +216,6 @@ const Sidebar: React.FC = () => {
           <Divider />
 
           <SideBarContainer>
-
             <NavComponentsContainer>
               <CustomModal
                 title="Timetable"
