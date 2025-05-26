@@ -15,7 +15,6 @@ const CtfValidate = () => {
   const CHUNK_SIZE = 1024 * 10;
 
   const handleValidate = async () => {
-    console.log('Validating CTF configuration...');
     try {
       const localStorageData = btoa(localStorage.getItem('data') || '');
 
@@ -57,17 +56,15 @@ const CtfValidate = () => {
       });
       const result = await completeResponse.json();
       if (completeResponse.ok) {
-        console.log('Validation successful:', result);
         return result;
       } else {
-        console.error('Validation failed:', result);
-        return {
-          status: 'Validation failed',
-          error: result.error || 'Unknown error',
-        };
+        throw new Error(`${result.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error during validation:', error);
+      return {
+        status: 'Validation Failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   };
 

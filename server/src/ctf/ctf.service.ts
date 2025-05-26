@@ -29,10 +29,6 @@ export class CtfService {
   }
 
   checkColorTheme(currentTheme: string): boolean {
-    console.log(
-      'Color theme check:',
-      currentTheme === this.ctfConfig.currentTheme,
-    );
     return currentTheme === this.ctfConfig.currentTheme;
   }
 
@@ -42,10 +38,6 @@ export class CtfService {
         (course) => course.code,
       );
     const selectedCourseCodes = selectedCourses.map((course) => course.code);
-    console.log(
-      'Selected courses check:',
-      selectedCourseCodes.every((code) => configCourseCodes.includes(code)),
-    );
     return selectedCourseCodes.every((code) =>
       configCourseCodes.includes(code),
     );
@@ -80,11 +72,6 @@ export class CtfService {
         ),
       ]),
     );
-
-    console.log(
-      'Selected classes check:',
-      this.compareObjects(normSelectedClasses, normConfigSelectedClasses),
-    );
     return this.compareObjects(normConfigSelectedClasses, normSelectedClasses);
   }
 
@@ -103,11 +90,6 @@ export class CtfService {
         value.event.name,
         value.time,
       ]),
-    );
-
-    console.log(
-      'Created events check:',
-      this.compareObjects(normCreatedEvents, normConfigCreatedEvents),
     );
     return this.compareObjects(normConfigCreatedEvents, normCreatedEvents);
   }
