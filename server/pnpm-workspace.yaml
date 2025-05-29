@@ -1,8 +1,0 @@
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@prisma/client'
-  - '@prisma/engines'
-  - esbuild
-  - grpc-tools
-  - prisma
-  - protobufjs
