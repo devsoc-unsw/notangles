@@ -82,6 +82,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Handler for deleting a timetable
   const handleDeleteTimetable = (targetIndex: number) => {
     if (displayTimetables[term].length > 1) {
+      if (displayTimetables[term].findIndex((t: TimetableData, index: number) => t.isPrimary) === targetIndex) {
+       setAlertMsg('You cannot delete the primary timetable.');
+       setErrorVisibility(true)
+       return;
+      }
+
       prevTimetables = {
         selected: selectedTimetable,
         timetables: displayTimetables[term].map((timetable: TimetableData) => {
@@ -101,7 +107,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       const newDisplayTimetables = {
         ...displayTimetables,
-        [term]: displayTimetables[term].filter((timetable: TimetableData, index: number) => index !== targetIndex),
+        [term]: displayTimetables[term].filter((_: TimetableData, index: number) => index !== targetIndex),
       };
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newDisplayTimetables);
@@ -129,8 +135,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, prevTimetables.selected);
         return;
       });
-    } else {
-      setAlertMsg('Must have at least 1 timetable');
+    } 
+    else {
+      setAlertMsg('Must have at least 1 timetable.');
       setErrorVisibility(true);
     }
   };
@@ -180,11 +187,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setRenamedHelper(`${str.length}/30`);
     str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
   };
-
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
     if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
+
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[term][selectedTimetable];
@@ -218,10 +225,16 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const handleSetPrimary = () => {
-    displayTimetables[term].forEach(e => {
+    if (displayTimetables[term].findIndex((t: TimetableData, index: number) => t.isPrimary) === selectedTimetable) {
+      setAlertMsg('Must have 1 primary timetable.');
+      setErrorVisibility(true)
+      return;
+    }
+    displayTimetables[term].forEach((e) => {
       e.isPrimary = false;
     });
     displayTimetables[term][selectedTimetable].isPrimary = true;
+    storage.set('timetables', displayTimetables);
     handleMenuClose();
   };
 

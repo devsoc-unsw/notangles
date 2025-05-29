@@ -185,11 +185,11 @@ const TimetableTabs: React.FC = () => {
                               {...props.dragHandleProps}
                               sx={TabStyle(index, selectedTimetable)}
                             >
-                            {displayTimetables[term][index].isPrimary && (
-                              <Tooltip title="A primary timetable is the timetable for social features."> 
-                                <Star fontSize="small" className="pr-1.5">
-                                </Star>
-                              </Tooltip>)}
+                              {displayTimetables[term][index].isPrimary && (
+                                <Tooltip title="A primary timetable is the timetable for social features.">
+                                  <Star fontSize="small" className="pr-1.5"></Star>
+                                </Tooltip>
+                              )}
                               {timetable.name}
                               {selectedTimetable === index ? (
                                 <StyledSpan onClick={handleMenuClick}>
