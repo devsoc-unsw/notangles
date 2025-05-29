@@ -209,6 +209,7 @@ export class UserService {
 
   async createUserTimetable(
     _userID: string,
+    _isPrimary: boolean,
     _selectedCourses: string[],
     _selectedClasses: ClassDto[],
     _createdEvents: EventDto[],
@@ -223,6 +224,7 @@ export class UserService {
         data: {
           id: _timetableId,
           name: _timetableName,
+          isPrimary: _isPrimary,
           selectedCourses: _selectedCourses,
           mapKey: _mapKey,
           selectedClasses: {
@@ -277,6 +279,7 @@ export class UserService {
       },
       data: {
         name: _timetable.name,
+        isPrimary: _timetable.isPrimary,
         selectedCourses: _timetable.selectedCourses,
         mapKey: _timetable.mapKey,
       },

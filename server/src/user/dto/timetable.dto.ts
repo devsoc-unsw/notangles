@@ -1,8 +1,10 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsString } from 'class-validator';
 
 export class TimetableDto {
   @IsString()
   id: string; // Randomly generated on the backend
+  @IsBoolean()
+  isPrimary: boolean;
 
   @IsArray()
   @IsString({ each: true })
@@ -16,6 +18,8 @@ export class TimetableDto {
 export class ReconstructedTimetableDto {
   @IsString()
   id: string; // Randomly generated on the backend
+  @IsBoolean()
+  isPrimary: boolean;
 
   @IsArray()
   @IsString({ each: true })

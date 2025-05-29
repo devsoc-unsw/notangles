@@ -116,6 +116,7 @@ export class UserController {
   createUserTimetable(
     @Request() req,
     @Body('userId') userId: string,
+    @Body('isPrimary') isPrimary: boolean,
     @Body('selectedCourses') selectedCourses: string[],
     @Body('selectedClasses') selectedClasses: ClassDto[],
     @Body('createdEvents') createdEvents: EventDto[],
@@ -132,6 +133,7 @@ export class UserController {
     return this.userService
       .createUserTimetable(
         userId,
+        isPrimary,
         selectedCourses,
         selectedClasses,
         createdEvents,
