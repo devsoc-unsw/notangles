@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // Unique per-user ID
+  id      String  @id @default(cuid(2)) @db.VarChar(30)
+  // ID given by auth - probably zID
+  oidcId  String? @unique
+  isGuest Boolean @default(true)
+
+  firstName         String
+  lastName          String
+  profilePictureUrl String?
+  timetables        Timetable[]
+  settings          Settings?
+
+  createdAt DateTime @default(now())
+  lastLogin DateTime @default(now())
+
+  @@map("user")
+}
+
+// model FriendRequest {
+//   id     String @id @default(uuid())
+//   fromId String
+//   toId   String
+
+//   @@unique([fromId, toId])
+//   @@map("friend_request")
+// }
+
+// model Friendship {
+//   id      String @id @default(uuid())
+//   user1Id String
+//   user2Id String
+
+//   @@unique([user1Id, user2Id])
+//   @@map("friendship")
+// }
+
+model Settings {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  preferredTheme             String  @default("classic")
+  use24HourClock             Boolean @default(false)
+  useDarkMode                Boolean @default(false)
+  useSquareEdges             Boolean @default(false)
+  hideFullClasses            Boolean @default(false)
+  hideClassInfo              Boolean @default(false)
+  unscheduleClassesByDefault Boolean @default(true)
+  hideExamClasses            Boolean @default(false)
+
+  @@map("settings")
+}
+
+model Timetable {
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  // Unique ID for the timetable, need this to attach courses and events
+  id      String   @id @default(uuid())
+  name    String
+  year    Int
+  term    String
+  // Courses are UNSW items, events are user-defined/tutoring
+  courses Course[]
+  events  Event[]
+  // One timetable should be primary per term per user
+  primary Boolean  @default(false)
+
+  @@map("timetable")
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  timetableId String
+
+  // This is the course id field in our GraphQL API
+  courseId        String
+  // This is an array of class ids in our GraphQL API 
+  selectedClasses String[]
+  colour          String
+
+  @@map("course")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
+  timetableId String
+
+  colour    String
+  dayOfWeek Int
+  start     Int
+  end       Int
+  type      EventType
+
+  @@map("event")
+}
+
+enum EventType {
+  CUSTOM
+  TUTORING
+}
