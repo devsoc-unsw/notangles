@@ -112,6 +112,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           groupAdminIDs: group.groupAdmins.map((groupAdmin) => groupAdmin.userID),
           imageURL: group.imageURL,
         }),
+        credentials: 'include',
       });
       const groupCreationStatus = await res.json();
       console.log('group creation status', groupCreationStatus.data); // Can see the status of group creation here!
@@ -144,6 +145,7 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           groupAdminIDs: group.groupAdmins.map((groupAdmin) => groupAdmin.userID),
           imageURL: group.imageURL,
         }),
+        credentials: 'include',
       });
       const groupCreationStatus = await res.json();
       console.log('group update status', groupCreationStatus.data); // Can see the status of group creation here!
