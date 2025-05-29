@@ -1,10 +1,10 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, AppBarProps, Drawer, Divider, Typography, Toolbar } from '@mui/material';
+import { Drawer, Divider, Typography } from '@mui/material';
 
 import { styled } from '@mui/system';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -157,6 +157,7 @@ const Sidebar: React.FC = () => {
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
+    // forces window resize event upon sidebar state changing to adjust position of cards
     setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
 
