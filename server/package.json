@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@nestjs/common": "11.1.1",
@@ -27,16 +28,25 @@
     "@nestjs/platform-express": "11.1.1",
     "@prisma/client": "6.8.2",
     "express-session": "1.18.1",
+    "graphql": "16.11.0",
+    "graphql-request": "7.2.0",
     "passport": "0.7.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "1.12.16",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.27.0",
+    "@graphql-codegen/cli": "5.0.6",
+    "@graphql-codegen/client-preset": "4.8.1",
+    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/typescript-graphql-request": "6.3.0",
+    "@graphql-codegen/typescript-operations": "4.6.1",
     "@nestjs/cli": "11.0.7",
     "@nestjs/schematics": "11.0.5",
     "@nestjs/testing": "11.1.1",
+    "@parcel/watcher": "2.5.1",
     "@swc/cli": "0.6.0",
     "@swc/core": "1.11.29",
     "@types/express": "5.0.2",
