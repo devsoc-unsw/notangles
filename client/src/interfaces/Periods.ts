@@ -101,6 +101,7 @@ export interface ScrapedClassDTO {
 export interface TimetableDTO {
   id: string;
   name: string;
+  isPrimary: boolean;
   selectedCourses: string[];
   selectedClasses: ScrapedClassDTO[];
   createdEvents: EventDTO[];

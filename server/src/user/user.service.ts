@@ -190,6 +190,7 @@ export class UserService {
             include: {
               createdEvents: true,
               selectedClasses: true,
+              isPrimary: true,
             },
           },
         },
