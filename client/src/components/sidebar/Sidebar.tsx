@@ -4,7 +4,7 @@ import { AppBar, AppBarProps, Drawer, Divider, Typography, Toolbar } from '@mui/
 import { styled } from '@mui/system';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -22,6 +22,7 @@ import Settings from './Settings';
 import UserAccount from './UserAccount';
 
 const LogoImg = styled('img')`
+  position: relative;
   height: 46px;
   margin-right: 12.5px;
   margin-top: -2px;
@@ -31,20 +32,20 @@ const LogoImg = styled('img')`
 
 const drawerWidth = 230;
 let collapsedWidth = 80;
-let rightMargin = 50;
 
 interface StyledDrawerProps {
   collapsed: boolean;
+  isMobile: boolean;
 }
 
 const StyledDrawer = styled(Drawer, {
-  shouldForwardProp: (prop) => prop !== 'collapsed',
-})<StyledDrawerProps>(({ collapsed }) => ({
-  position: 'relative',
+  shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'isMobile',
+})<StyledDrawerProps>(({ collapsed, isMobile }) => ({
+  position: isMobile ? 'fixed' : 'relative',
   flexShrink: 0,
   width: collapsed ? collapsedWidth : drawerWidth,
   transition: 'width 0.1s ease',
-  marginRight: rightMargin,
+  zIndex: 1200,
 
   '& .MuiDrawer-paper': {
     top: 0,
@@ -56,7 +57,18 @@ const StyledDrawer = styled(Drawer, {
   },
 }));
 
+const GreyOverlay = styled('div')({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  zIndex: 1000,
+});
+
 const SidebarTitle = styled(Typography)`
+  position: relative;
   font-weight: 700;
   font-size: 18px;
   display: flex;
@@ -141,7 +153,6 @@ const Sidebar: React.FC = () => {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(() => !isWide);
-  const [fullyCollapsed, setFullyCollapsed] = useState(isMobile);
   const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
@@ -149,14 +160,7 @@ const Sidebar: React.FC = () => {
     setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
 
-  const handleFullyCollapsed = () => {
-    setFullyCollapsed(!fullyCollapsed);
-    setCollapsed(!fullyCollapsed);
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
-  };
-
   collapsedWidth = isMobile ? 0 : 80;
-  rightMargin = isMobile ? 0 : 50;
   const modalData = [
     {
       title: 'About',
@@ -194,7 +198,9 @@ const Sidebar: React.FC = () => {
 
   return (
     <>
-      <StyledDrawer variant="permanent" collapsed={collapsed} open={false}>
+      {/* transparent grey overlay when mobile sidebar is opened */}
+      {isMobile && !collapsed && <GreyOverlay onClick={() => setCollapsed(true)} />}
+      <StyledDrawer variant="permanent" collapsed={collapsed} isMobile={isMobile} open={false}>
         {!groupsSidebarCollapsed && (
           <StyledGroupContainer>
             <GroupsSidebar />
@@ -281,7 +287,7 @@ const Sidebar: React.FC = () => {
         </Container>
       </StyledDrawer>
       {isMobile && (
-        <MobileMenuButton onClick={handleFullyCollapsed} toolTipTitle={fullyCollapsed ? 'Expand' : 'Collapse'} />
+        <MobileMenuButton onClick={() => handleCollapse(false)} toolTipTitle={collapsed ? 'Expand' : 'Collapse'} />
       )}
     </>
   );

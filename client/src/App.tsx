@@ -17,7 +17,7 @@ import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, rightContentPadding, themes } from './constants/theme';
+import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -65,6 +65,7 @@ const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
   padding-right: ${rightContentPadding}px;
+  padding-left: ${leftContentPadding}px;
   transition:
     background 0.2s,
     color 0.2s;
