@@ -6,7 +6,7 @@ const GET_CLASSES_WITH_TIMES = gql`
     times_aggregate(
       where: {
         classe: {
-          course: { course_code: { _eq: "COMP1511" } },
+          course: { course_code: { _eq: "COMP2521" } },
           term: { _eq: $term }
         }
       }
