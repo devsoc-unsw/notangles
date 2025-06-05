@@ -38,21 +38,26 @@ export class AuthController {
     if (req.user) {
       const userID = req.user.userinfo.sub;
       const updateUserData = async () => {
+        const userData = req.user.userinfo.userData ?? {
+          firstName: `No First (${userID})`,
+          lastName: 'No Last',
+        };
         await this.userService.setUserProfile({
           userID: userID,
           email: '',
-          firstname: req.user.userinfo.userData.firstName,
-          lastname: req.user.userinfo.userData.lastName,
+          firstname: userData.firstName,
+          lastname: userData.lastName,
         });
       };
       try {
         const userData = await this.userService.getUserInfo(userID);
-        if (
-          this.checkUserDataUpdatedBeforeLogin(
-            userData,
-            req.user.userinfo.userData,
-          )
-        ) {
+        const reqUserData = req.user.userinfo.userData ?? {
+          firstName: `No First (${userID})`,
+          lastName: 'No Last',
+          email: '',
+          userID: userID,
+        };
+        if (this.checkUserDataUpdatedBeforeLogin(userData, reqUserData)) {
           console.debug(
             'The user ' +
               userID +
