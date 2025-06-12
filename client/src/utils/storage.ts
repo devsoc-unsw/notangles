@@ -80,8 +80,10 @@ const storage = {
 
     if (localStorage[STORAGE_KEY]) {
       data = JSON.parse(localStorage[STORAGE_KEY]);
-      // migrate old data format to new format
-      data = storage.migrate(data);
+      // migrate old data format to new format when the app is already visited
+      if (localStorage['visited']) {
+        data = storage.migrate(data);
+      }
     } else {
       storage.save(data);
     }
@@ -94,9 +96,10 @@ const storage = {
   },
 
   migrate: (data: Record<string, any>) => {
-    // User has never seen Notangles
-    if (!data || typeof data !== 'object') {
-      data = defaults;
+    // Check if data is empty or not an object or it is {}
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+      localStorage.removeItem('termData');
+      return { ...defaults, version: 1 };
     }
 
     // only do this if version does not exist
