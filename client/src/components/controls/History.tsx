@@ -225,16 +225,13 @@ const History: React.FC = () => {
     // event.metaKey corresponds to the Cmd key on Mac
     if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
     if (!term) return;
-    if (event.repeat) return;
+
 
     const currentTimetable = displayTimetables[term][selectedTimetable];
 
     event.preventDefault();
-    console.log(actionsPointer)
-    console.log(event)
     if (!isMacOS && event.ctrlKey) {
-      if (event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
-        console.log('reverting history 1 move back')
+      if (event.key === 'z' && !disableLeft) {
         changeHistory(-1);
         
       }
@@ -251,10 +248,8 @@ const History: React.FC = () => {
     }
 
     if (isMacOS && event.metaKey) {
-      if (!event.shiftKey && event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
-        console.log('reverting history');
+      if (!event.shiftKey && event.key === 'z' && !disableLeft) {
         changeHistory(-1);
-        
       }
       if (
         event.shiftKey &&
@@ -272,12 +267,12 @@ const History: React.FC = () => {
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-    // document.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
+    document.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [handleKeyDown]);
+  }, [handleKeyDown, disableLeft, disableRight]);
 
   // Hotkey to confirm delete all timetables by pressing enter button
   useEffect(() => {
@@ -292,7 +287,6 @@ const History: React.FC = () => {
 
     document.addEventListener('keydown', handleDeleteEnterShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeleteEnterShortcut);
     };
