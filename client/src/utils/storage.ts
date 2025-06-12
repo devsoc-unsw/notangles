@@ -94,6 +94,11 @@ const storage = {
   },
 
   migrate: (data: Record<string, any>) => {
+    // User has never seen Notangles
+    if (!data || typeof data !== 'object') {
+      data = {};
+    }
+
     // only do this if version does not exist
     if (data.version !== 1 || data.version == null) {
       let migrated = {
