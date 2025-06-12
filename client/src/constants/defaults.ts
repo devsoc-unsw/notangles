@@ -12,7 +12,7 @@ const defaults: Record<string, any> = {
   isHideExamClasses: false,
   isConvertToLocalTimezone: false,
   courseData: { map: [] },
-  timetables: { T0: createDefaultTimetable('') },
+  timetables: [...createDefaultTimetable('')],
   version: 1,
 };
 

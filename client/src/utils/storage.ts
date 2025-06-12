@@ -97,9 +97,9 @@ const storage = {
 
   migrate: (data: Record<string, any>) => {
     // Check if data is empty or not an object or it is {}
-    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
-      localStorage.removeItem('termData');
-      return { ...defaults, version: 1 };
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0 || data.timetables === undefined) {
+      storage.save(defaults);
+      return defaults;
     }
 
     // only do this if version does not exist
