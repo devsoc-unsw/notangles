@@ -354,14 +354,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         onClose={handleMenuClose}
         autoFocus={false}
       >
-        <Tooltip title={isPrimarySelected() ? 'This timetable is already primary' : ''}>
-          <MenuItem onClick={handleSetPrimary} sx={{ opacity: isPrimarySelected() ? 0.5 : 1 }}>
-            <ListItemIcon>
-              <Star fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Set as primary</ListItemText>
-          </MenuItem>
-        </Tooltip>
+        <MenuItem onClick={handleSetPrimary} sx={{ opacity: isPrimarySelected() ? 0.5 : 1 }}>
+          <ListItemIcon>
+            <Star fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Set as primary</ListItemText>
+        </MenuItem>
         <MenuItem onClick={handleRenameOpen}>
           <ListItemIcon>
             <Edit fontSize="small" />
