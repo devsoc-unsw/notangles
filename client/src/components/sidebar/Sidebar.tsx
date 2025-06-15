@@ -4,7 +4,7 @@ import { Drawer, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -22,7 +22,6 @@ import Settings from './Settings';
 import UserAccount from './UserAccount';
 
 const LogoImg = styled('img')`
-  position: relative;
   height: 46px;
   margin-right: 12.5px;
   margin-top: -2px;
@@ -31,16 +30,16 @@ const LogoImg = styled('img')`
 `;
 
 const drawerWidth = 230;
-let collapsedWidth = 80;
 
 interface StyledDrawerProps {
   collapsed: boolean;
   isMobile: boolean;
+  collapsedWidth: number;
 }
 
 const StyledDrawer = styled(Drawer, {
   shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'isMobile',
-})<StyledDrawerProps>(({ collapsed, isMobile }) => ({
+})<StyledDrawerProps>(({ collapsed, isMobile, collapsedWidth }) => ({
   position: isMobile ? 'fixed' : 'relative',
   flexShrink: 0,
   width: collapsed ? collapsedWidth : drawerWidth,
@@ -50,25 +49,14 @@ const StyledDrawer = styled(Drawer, {
   '& .MuiDrawer-paper': {
     top: 0,
     alignSelf: 'flex-start',
-    height: '100vh',
+    height: '100dvh',
     width: collapsed ? collapsedWidth : drawerWidth,
     transition: 'width 0.1s ease',
     overflowX: 'hidden',
   },
 }));
 
-const GreyOverlay = styled('div')({
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100vh',
-  backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  zIndex: 1000,
-});
-
 const SidebarTitle = styled(Typography)`
-  position: relative;
   font-weight: 700;
   font-size: 18px;
   display: flex;
@@ -146,9 +134,45 @@ const StyledGroupContainer = styled('div')`
   }
 `;
 
+const modalData = [
+  {
+    title: 'About',
+    toolTipTitle: 'About',
+    showIcon: <Info />,
+    description: 'Notangles: no more timetable tangles',
+    content: <About />,
+    isClickable: true,
+  },
+  {
+    title: 'Privacy',
+    toolTipTitle: 'Privacy',
+    showIcon: <Security />,
+    description: 'Application Privacy Statement',
+    content: <Privacy />,
+    isClickable: true,
+  },
+  {
+    title: 'Changelog',
+    toolTipTitle: 'Changelog',
+    showIcon: <Description />,
+    description: 'Changelog',
+    content: <Changelog />,
+    isClickable: true,
+  },
+  {
+    title: 'Settings',
+    toolTipTitle: 'Settings',
+    showIcon: <SettingsIcon />,
+    description: 'Settings',
+    content: <Settings />,
+    isClickable: true,
+  },
+];
+
 const Sidebar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const collapsedWidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
   const isWide = useMediaQuery(theme.breakpoints.only('xl'));
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
@@ -161,47 +185,34 @@ const Sidebar: React.FC = () => {
     setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
 
-  collapsedWidth = isMobile ? 0 : 80;
-  const modalData = [
-    {
-      title: 'About',
-      toolTipTitle: 'About',
-      showIcon: <Info />,
-      description: 'Notangles: no more timetable tangles',
-      content: <About />,
-      isClickable: true,
-    },
-    {
-      title: 'Privacy',
-      toolTipTitle: 'Privacy',
-      showIcon: <Security />,
-      description: 'Application Privacy Statement',
-      content: <Privacy />,
-      isClickable: true,
-    },
-    {
-      title: 'Changelog',
-      toolTipTitle: 'Changelog',
-      showIcon: <Description />,
-      description: 'Changelog',
-      content: <Changelog />,
-      isClickable: true,
-    },
-    {
-      title: 'Settings',
-      toolTipTitle: 'Settings',
-      showIcon: <SettingsIcon />,
-      description: 'Settings',
-      content: <Settings />,
-      isClickable: true,
-    },
-  ];
+  const modalComponents = useMemo(
+    () =>
+      modalData.map((modal, index) => (
+        <CustomModal
+          key={index}
+          title={modal.title}
+          toolTipTitle={modal.toolTipTitle}
+          showIcon={modal.showIcon}
+          description={modal.description}
+          content={modal.content}
+          collapsed={collapsed}
+          isClickable={modal.isClickable}
+        />
+      )),
+    [collapsed],
+  );
 
   return (
     <>
-      {/* transparent grey overlay when mobile sidebar is opened */}
-      {isMobile && !collapsed && <GreyOverlay onClick={() => setCollapsed(true)} />}
-      <StyledDrawer variant="permanent" collapsed={collapsed} isMobile={isMobile} open={false}>
+      <StyledDrawer
+        variant={isMobile ? 'temporary' : 'permanent'}
+        collapsed={collapsed}
+        isMobile={isMobile}
+        collapsedWidth={collapsedWidth}
+        open={!collapsed}
+        onClose={() => handleCollapse(true)}
+        elevation={0}
+      >
         {!groupsSidebarCollapsed && (
           <StyledGroupContainer>
             <GroupsSidebar />
@@ -243,19 +254,7 @@ const Sidebar: React.FC = () => {
                 />
                 <FriendsButton collapsed={collapsed} />
                 <Divider />
-                {modalData.map((modal, index) => (
-                  <React.Fragment key={index}>
-                    <CustomModal
-                      title={modal.title}
-                      toolTipTitle={modal.toolTipTitle}
-                      showIcon={modal.showIcon}
-                      description={modal.description}
-                      content={modal.content}
-                      collapsed={collapsed}
-                      isClickable={modal.isClickable}
-                    />
-                  </React.Fragment>
-                ))}
+                {modalComponents}
               </NavComponentsContainer>
             </SideBarContainer>
           </div>
@@ -263,27 +262,22 @@ const Sidebar: React.FC = () => {
           <SidebarFooter>
             <DarkModeButton collapsed={collapsed} />
             <UserAccount collapsed={collapsed} />
-            {!isMobile &&
-              (!collapsed ? (
-                <>
-                  <SidebarFooterText>
-                    <Divider />
-                    <SidebarFooterWrapper>
-                      <div>
-                        © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
-                        {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
-                      </div>
-                      <CollapseButton
-                        collapsed={collapsed}
-                        onClick={() => handleCollapse(true)}
-                        toolTipTitle="Collapse"
-                      />
-                    </SidebarFooterWrapper>
-                  </SidebarFooterText>
-                </>
-              ) : (
+            {!isMobile && !collapsed ? (
+              <SidebarFooterText>
+                <Divider />
+                <SidebarFooterWrapper>
+                  <div>
+                    © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
+                    {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
+                  </div>
+                  <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
+                </SidebarFooterWrapper>
+              </SidebarFooterText>
+            ) : (
+              !isMobile && (
                 <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
-              ))}
+              )
+            )}
           </SidebarFooter>
         </Container>
       </StyledDrawer>

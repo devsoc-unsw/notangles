@@ -1,7 +1,6 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { Tooltip } from '@mui/material';
-import { styled } from '@mui/material/styles'; // Correct styled import
-import { width } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 interface MobileMenuProps {
   onClick: () => void;
@@ -21,7 +20,7 @@ const StyledMobileMenu = styled('button')(({ theme }) => ({
   cursor: 'pointer',
   transition: 'background-color 0.3s ease',
   color: theme.palette.text.primary,
-  backgroundColor: '#292929',
+  backgroundColor: theme.palette.background.paper,
 
   '&:hover': {
     backgroundColor: theme.palette.action.hover,
