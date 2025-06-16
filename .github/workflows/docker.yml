@@ -7,7 +7,7 @@ on:
 
 env:
   ENVIRONMENT: ${{ github.ref_name == 'dev' && 'prod' || 'staging' }}
-  IMAGE_NAME: ${{ format('notangles{0}', github.ref_name == 'dev' && '' || '-staging') }}
+  IMAGE_NAME: ${{ github.ref_name == 'dev' && 'notangles' || 'notangles-staging' }}
 
 jobs:
   build-client:
