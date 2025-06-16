@@ -5,7 +5,7 @@ immutabledict==4.2.0
 numpy==2.1.1
 ortools==9.10.4067
 pandas==2.2.2
-protobuf==5.27.2
+protobuf==6.31.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 sentry-sdk==2.8.0
