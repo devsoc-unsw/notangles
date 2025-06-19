@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import { UserSettings } from './types';
+import { UserSettings, CourseParameters } from './types';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -48,5 +57,46 @@ export class UserController {
   ) {
     await this.userService.setSettings(req.user.id, settings);
     return;
+  }
+
+  @Post('course/add')
+  @UseGuards(AuthenticatedGuard)
+  async addCourse(
+    @Req() req: Request,
+    @Body() courseParameters: CourseParameters,
+  ) {
+    const result = await this.userService.addCourse(
+      req.user!.id,
+      courseParameters,
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message ? result.message : 'Unkown Error',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return { success: true, message: 'Course added successfully' };
+  }
+
+  @Post('course/remove')
+  @UseGuards(AuthenticatedGuard)
+  async removeCourse(
+    @Req() req: Request,
+    @Body() course: { courseId: string; timetableId: string; term: string },
+  ) {
+    const result = await this.userService.removeCourse(
+      req.user!.id,
+      course.courseId,
+      course.timetableId,
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message ? result.message : 'Unkown Error',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return { success: true, message: 'Course removed successfully' };
   }
 }

@@ -15,3 +15,13 @@ export class UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
 }
+export class CourseParameters {
+  courseId: string;
+  term: string;
+  timetableId: string;
+  colour: string;
+}
+export class ExecutionResult {
+  success: boolean;
+  message?: string;
+}
