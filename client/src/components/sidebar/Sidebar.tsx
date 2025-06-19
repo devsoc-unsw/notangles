@@ -8,6 +8,7 @@ import React, { useContext, useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
+import { leftContentPadding } from '../../constants/theme';
 import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
@@ -45,6 +46,7 @@ const StyledDrawer = styled(Drawer, {
   width: collapsed ? collapsedWidth : drawerWidth,
   transition: 'width 0.1s ease',
   zIndex: 1200,
+  marginRight: leftContentPadding,
 
   '& .MuiDrawer-paper': {
     top: 0,
