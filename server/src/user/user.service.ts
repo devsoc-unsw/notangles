@@ -1,12 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CourseParameters,
-  ExecutionResult,
-  UserInfo,
-  UserSettings,
-} from './types';
+import { CourseParameters, UserInfo, UserSettings } from './types';
 
 @Injectable({})
 export class UserService {
@@ -74,142 +69,77 @@ export class UserService {
     });
   }
 
-  isValidCourseParameters(courseParameters: CourseParameters): void {
-    if (
-      !courseParameters ||
-      !courseParameters.courseId ||
-      !courseParameters.timetableId ||
-      !courseParameters.colour ||
-      !courseParameters.term
-    ) {
-      throw new Error('Invalid course parameters');
-    }
-  }
-
-  async courseExistsOnGraphQL(
+  async isCourseExistsOnGraphQL(
     courseId: string,
     term: string,
   ): Promise<boolean> {
     const courseExists = await this.graphqlService.courseExists(courseId, term);
-    if (!courseExists) {
-      throw new Error('Course does not exist');
-    }
-    return true;
+    return courseExists ? true : false;
   }
 
-  async timetableExists(userId: string, timetableId: string): Promise<void> {
+  async isTimetableExists(
+    userId: string,
+    timetableId: string,
+  ): Promise<boolean> {
     const timetable = await this.prisma.timetable.findUnique({
       where: {
         id: timetableId,
         userId: userId,
       },
     });
-    if (!timetable) {
-      throw new Error('Timetable does not exist');
-    }
+    return timetable ? true : false;
   }
 
   async isCourseInTimetable(
     courseId: string,
     timetableId: string,
-  ): Promise<string> {
+  ): Promise<boolean> {
     const course = await this.prisma.course.findFirst({
       where: {
         courseId: courseId,
         timetableId: timetableId,
       },
     });
+    return course ? true : false;
+  }
+
+  async getCourse(courseId: string, tiemtableId: string) {
+    const course = await this.prisma.course.findFirst({
+      where: {
+        courseId: courseId,
+        timetableId: tiemtableId,
+      },
+    });
+    return course;
+  }
+
+  async addCourse(courseParamenters: CourseParameters): Promise<void> {
+    await this.prisma.course.create({
+      data: {
+        courseId: courseParamenters.courseId,
+        colour: courseParamenters.colour,
+        selectedClasses: [],
+        timetable: {
+          connect: {
+            id: courseParamenters.timetableId,
+          },
+        },
+      },
+    });
+  }
+
+  async removeCourse(timetableId: string, courseID: string): Promise<void> {
+    const course = await this.getCourse(courseID, timetableId);
     if (!course) {
-      throw new Error('Course does not exist in the timetable');
-    }
-    return course.id;
-  }
-
-  async addCourse(
-    userId: string,
-    courseParamenters: CourseParameters,
-  ): Promise<ExecutionResult> {
-    try {
-      await this.courseExistsOnGraphQL(
-        courseParamenters.courseId,
-        courseParamenters.term,
+      throw new HttpException(
+        'Course not found in the specified timetable',
+        HttpStatus.NOT_FOUND,
       );
-      this.isValidCourseParameters(courseParamenters);
-      await this.timetableExists(userId, courseParamenters.timetableId);
-      await this.isCourseInTimetable(
-        courseParamenters.courseId,
-        courseParamenters.timetableId,
-      );
-      const newCourse = await this.prisma.course.create({
-        data: {
-          courseId: courseParamenters.courseId,
-          timetableId: courseParamenters.timetableId,
-          colour: courseParamenters.colour,
-          selectedClasses: [], // default to no selected classes
-        },
-      });
-      // If the course does not exist, create a new course entry
-      if (!newCourse) {
-        throw new Error('Failed to create course');
-      }
-      // link the course to the timetable
-      await this.prisma.timetable.update({
-        where: {
-          id: courseParamenters.timetableId,
-        },
-        data: {
-          courses: {
-            connect: { id: newCourse.id },
-          },
-        },
-      });
-      return {
-        success: true,
-        message: 'Course added successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Unknown Error',
-      };
     }
-  }
-
-  async removeCourse(
-    userId: string,
-    timetableId: string,
-    courseID: string,
-  ): Promise<ExecutionResult> {
-    try {
-      await this.timetableExists(userId, timetableId);
-      const course = await this.isCourseInTimetable(courseID, timetableId);
-      const result = await this.prisma.course.delete({
-        where: { id: course },
-      });
-      if (!result) {
-        throw new Error('Failed to remove course');
-      }
-
-      // Remove the course from the timetable
-      await this.prisma.timetable.update({
-        where: {
-          id: timetableId,
-        },
-        data: {
-          courses: {
-            disconnect: { id: course },
-          },
-        },
-      });
-      return {
-        success: true,
-        message: 'Course removed successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Unknown Error',
-      };
-    }
+    await this.prisma.course.delete({
+      where: {
+        id: course.id,
+      },
+    });
   }
 }

@@ -21,7 +21,3 @@ export class CourseParameters {
   timetableId: string;
   colour: string;
 }
-export class ExecutionResult {
-  success: boolean;
-  message?: string;
-}

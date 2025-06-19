@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
 import { UserSettings, CourseParameters } from './types';
+import { validate } from '../utils/validate';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -65,18 +66,42 @@ export class UserController {
     @Req() req: Request,
     @Body() courseParameters: CourseParameters,
   ) {
-    const result = await this.userService.addCourse(
-      req.user!.id,
-      courseParameters,
+    const courseExistsOnGraphQL =
+      await this.userService.isCourseExistsOnGraphQL(
+        courseParameters.courseId,
+        courseParameters.term,
+      );
+    validate(
+      courseExistsOnGraphQL,
+      'Course does not exist',
+      HttpStatus.NOT_FOUND,
     );
-
-    if (!result.success) {
+    const timetableExists = await this.userService.isTimetableExists(
+      req.user!.id,
+      courseParameters.timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const courseInTimetable = await this.userService.isCourseInTimetable(
+      courseParameters.courseId,
+      courseParameters.timetableId,
+    );
+    validate(
+      courseInTimetable,
+      'Course is in timetable already',
+      HttpStatus.FORBIDDEN,
+    );
+    try {
+      await this.userService.addCourse(courseParameters);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException(
-        result.message ? result.message : 'Unkown Error',
-        HttpStatus.BAD_REQUEST,
+        'Failed to add course',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return { success: true, message: 'Course added successfully' };
+    return HttpStatus.CREATED;
   }
 
   @Post('course/remove')
@@ -85,18 +110,21 @@ export class UserController {
     @Req() req: Request,
     @Body() course: { courseId: string; timetableId: string; term: string },
   ) {
-    const result = await this.userService.removeCourse(
+    const timetableExists = await this.userService.isTimetableExists(
       req.user!.id,
-      course.courseId,
       course.timetableId,
     );
-
-    if (!result.success) {
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    try {
+      await this.userService.removeCourse(req.user!.id, course.courseId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException(
-        result.message ? result.message : 'Unkown Error',
-        HttpStatus.BAD_REQUEST,
+        'Failed to remove course',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return { success: true, message: 'Course removed successfully' };
   }
 }
