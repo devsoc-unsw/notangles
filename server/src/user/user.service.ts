@@ -103,6 +103,12 @@ export class UserService {
     return course ? true : false;
   }
 
+  isColourCodeValid(colour: string): boolean {
+    const hexCodeRegex = /^#([0-9A-F]{3}|[0-9A-F]{6})$/i;
+    const defaultColoursRegex = /^default-[1-8]$/;
+    return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
+  }
+
   async getCourse(courseId: string, tiemtableId: string) {
     const course = await this.prisma.course.findFirst({
       where: {
@@ -139,6 +145,28 @@ export class UserService {
     await this.prisma.course.delete({
       where: {
         id: course.id,
+      },
+    });
+  }
+
+  async setCourseColour(
+    courseId: string,
+    timetableId: string,
+    colour: string,
+  ): Promise<void> {
+    const course = await this.getCourse(courseId, timetableId);
+    if (!course) {
+      throw new HttpException(
+        'Course not found in the specified timetable',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.prisma.course.update({
+      where: {
+        id: course.id,
+      },
+      data: {
+        colour: colour,
       },
     });
   }

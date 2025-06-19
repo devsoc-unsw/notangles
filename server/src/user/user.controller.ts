@@ -90,6 +90,10 @@ export class UserController {
       'Course is in timetable already',
       HttpStatus.FORBIDDEN,
     );
+    const colourValid = this.userService.isColourCodeValid(
+      courseParameters.colour,
+    );
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
     try {
       await this.userService.addCourse(courseParameters);
     } catch (error) {
@@ -123,6 +127,45 @@ export class UserController {
       }
       throw new HttpException(
         'Failed to remove course',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('course/set-colour')
+  @UseGuards(AuthenticatedGuard)
+  async setCourseColour(
+    @Req() req: Request,
+    @Body() course: { courseId: string; timetableId: string; colour: string },
+  ) {
+    const timetableExists = await this.userService.isTimetableExists(
+      req.user!.id,
+      course.timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const courseInTimetable = await this.userService.isCourseInTimetable(
+      course.courseId,
+      course.timetableId,
+    );
+    validate(
+      courseInTimetable,
+      'Course is not in timetable',
+      HttpStatus.NOT_FOUND,
+    );
+    const colourValid = this.userService.isColourCodeValid(course.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+    try {
+      await this.userService.setCourseColour(
+        course.courseId,
+        course.timetableId,
+        course.colour,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to set course colour',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
