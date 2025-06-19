@@ -34,7 +34,8 @@
     "openid-client": "6.6.2",
     "passport": "0.7.0",
     "reflect-metadata": "0.2.2",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "swagger-ui-express": "5.0.1"
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "1.13.0",
