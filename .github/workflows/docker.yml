@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - dev
+      - staging
+
+env:
+  ENVIRONMENT: ${{ github.ref_name == 'dev' && 'prod' || 'staging' }}
+  IMAGE_NAME: ${{ github.ref_name == 'dev' && 'notangles' || 'notangles-staging' }}
 
 jobs:
   build-client:
@@ -44,8 +49,8 @@ jobs:
             SENTRY_TRACE_RATE_CLIENT=${{ secrets.SENTRY_TRACE_RATE_CLIENT }}
             GIT_COMMIT=${{ github.sha }}
           tags: |
-            ghcr.io/csesoc/notangles-client:${{ github.sha }}
-            ghcr.io/csesoc/notangles-client:latest
+            ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-client:${{ github.sha }}
+            ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-client:latest
           labels: ${{ steps.meta.outputs.labels }}
   build:
     name: 'Build (${{ matrix.component }})'
@@ -87,8 +92,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ghcr.io/csesoc/notangles-${{ matrix.name }}:${{ github.sha }}
-            ghcr.io/csesoc/notangles-${{ matrix.name }}:latest
+            ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-${{ matrix.name }}:${{ github.sha }}
+            ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-${{ matrix.name }}:latest
           labels: ${{ steps.meta.outputs.labels }}
   deploy:
     name: Deploy (CD)
@@ -96,17 +101,15 @@ jobs:
     needs: [build-client, build]
     if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
     concurrency: production
-    environment:
-      name: production
-      url: https://notangles.csesoc.app
+    environment: production
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          repository: csesoc/deployment
+          repository: devsoc-unsw/deployment
           token: ${{ secrets.GH_TOKEN }}
-          ref: migration
+          ref: dev
       - name: Install yq - portable yaml processor
         uses: mikefarah/yq@v4.44.2
       - name: Update deployment
@@ -115,12 +118,12 @@ jobs:
         run: |
           git config user.name "CSESoc CD"
           git config user.email "technical@csesoc.org.au"
-          git checkout -b update/notangles/${{ github.sha }}
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-client:${{ github.sha }}"' projects/notangles/deploy-frontend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-backend:${{ github.sha }}"' projects/notangles/deploy-backend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/csesoc/notangles-auto-timetabler-server:${{ github.sha }}"' projects/notangles/deploy-auto-timetabler.yml
+          git checkout -b update/${{ env.IMAGE_NAME }}/${{ github.sha }}
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-client:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-frontend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-backend.yml
+          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-auto-timetabler-server:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-auto-timetabler.yml
           git add . 
-          git commit -m "feat(notangles): update images" 
-          git push -u origin update/notangles/${{ github.sha }}
-          gh pr create -B migration --title "feat(notangles): update images" --body "Updates the images for the notangles deployment to commit csesoc/notangles@${{ github.sha }}." > URL
+          git commit -m "feat(${{ env.IMAGE_NAME }}): update images" 
+          git push -u origin update/${{ env.IMAGE_NAME }}/${{ github.sha }}
+          gh pr create -B dev --title "feat(${{ env.IMAGE_NAME }}): update images" --body "Updates the images for the ${{ env.IMAGE_NAME }} deployment to commit devsoc-unsw/${{ env.IMAGE_NAME }}@${{ github.sha }}." > URL
           gh pr merge $(cat URL) --squash -d
