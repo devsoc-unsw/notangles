@@ -47,16 +47,13 @@ export const downloadIcsFile = async (
  * @returns An array of numbers representing details about the class/event
  */
 const generateDateArray = (firstDayOfTerm: string, hour: number, day: number, week: number): DateArray => {
-  // 0 index days and weeks
   const [year, dd, mm] = firstDayOfTerm.split('-');
   firstDayOfTerm = `${year}-${mm}-${dd}`;
-  // initial the currDate using UTC to avoid timezone issues
-  const currDate = dayjs(firstDayOfTerm, 'YYYY-MM-DDTHH:mm:ssZ', true)
+  const currDate = dayjs(firstDayOfTerm, 'YYYY-MM-DD', true)
     .add(week - 1, 'week')
     .add(day - 1, 'day')
     .add(hour, 'hour');
 
-  console.debug('currDate', currDate.format('YYYY-MM-DD HH:mm:ss'));
   return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 };
 
