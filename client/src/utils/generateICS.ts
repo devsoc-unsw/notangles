@@ -20,17 +20,16 @@ export const downloadIcsFile = async (
     return;
   }
 
-  const timezone = await getUtcOffset();
   const formattedClassEvents = getClassEvents(courses, classes).map(([period, week]) => ({
-    start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
-    end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
+    start: generateDateArray(firstDayOfTerm, period.time.start, period.time.day, week),
+    end: generateDateArray(firstDayOfTerm, period.time.end, period.time.day, week),
     title: `${period.courseCode} ${period.activity}`,
     location: period.locations[0],
   }));
 
   const formattedCreatedEvents = getCreatedEvents(createdEvents).map(([period, week]) => ({
-    start: generateDateArray(firstDayOfTerm, timezone, period.time.start, period.time.day, week),
-    end: generateDateArray(firstDayOfTerm, timezone, period.time.end, period.time.day, week),
+    start: generateDateArray(firstDayOfTerm, period.time.start, period.time.day, week),
+    end: generateDateArray(firstDayOfTerm, period.time.end, period.time.day, week),
     title: period.event.name,
     location: period.event.location,
   }));
@@ -47,19 +46,17 @@ export const downloadIcsFile = async (
  * @param week The week the class/event is on
  * @returns An array of numbers representing details about the class/event
  */
-const generateDateArray = (
-  firstDayOfTerm: string,
-  timezone: number,
-  hour: number,
-  day: number,
-  week: number,
-): DateArray => {
+const generateDateArray = (firstDayOfTerm: string, hour: number, day: number, week: number): DateArray => {
   // 0 index days and weeks
-  const currDate = dayjs(firstDayOfTerm + `T00:00:00.000Z`)
-    .subtract(timezone, 'h')
-    .add(week - 1, 'w')
-    .add(day - 1, 'd')
-    .add(hour, 'h');
+  const [year, dd, mm] = firstDayOfTerm.split('-');
+  firstDayOfTerm = `${year}-${mm}-${dd}`;
+  // initial the currDate using UTC to avoid timezone issues
+  const currDate = dayjs(firstDayOfTerm, 'YYYY-MM-DDTHH:mm:ssZ', true)
+    .add(week - 1, 'week')
+    .add(day - 1, 'day')
+    .add(hour, 'hour');
+
+  console.debug('currDate', currDate.format('YYYY-MM-DD HH:mm:ss'));
   return [currDate.year(), currDate.month() + 1, currDate.date(), currDate.hour(), currDate.minute()];
 };
 
