@@ -6,11 +6,11 @@ const config: CodegenConfig = {
   ignoreNoDocuments: true,
   generates: {
     './src/generated/graphql/': {
-      plugins: [
-        'typescript',
-        'typescript-operations',
-        'typescript-graphql-request',
-      ],
+      // plugins: [
+      //   'typescript',
+      //   'typescript-operations',
+      //   'typescript-graphql-request',
+      // ],
       preset: 'client',
       config: {
         documentMode: 'string',

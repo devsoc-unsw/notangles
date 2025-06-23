@@ -1,4 +1,4 @@
-import { graphql } from '../generated/graphql';
+import { graphql } from '../generated/graphql/gql';
 
 export const COURSE_EXISTS = graphql(`
   query CourseExists($courseId: String!, $term: String!) {
