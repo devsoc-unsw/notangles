@@ -8,6 +8,10 @@ interface MobileMenuProps {
 }
 
 const StyledMobileMenu = styled('button')(({ theme }) => ({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  zIndex: 1000,
   display: 'flex',
   height: 40,
   width: 40,
@@ -22,9 +26,16 @@ const StyledMobileMenu = styled('button')(({ theme }) => ({
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.paper,
 
+  // selected instead of hover so it stays opaque when hovering
   '&:hover': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.action.selected,
   },
+
+  boxShadow: `
+  0 0 6px rgba(0, 0, 0, 0.10),
+  0 0 20px rgba(0, 0, 0, 0.05),
+  0 0 40px rgba(0, 0, 0, 0.025)
+`,
 }));
 
 const MobileMenuButton: React.FC<MobileMenuProps> = ({ onClick, toolTipTitle }) => {
