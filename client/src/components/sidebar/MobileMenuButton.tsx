@@ -26,9 +26,8 @@ const StyledMobileMenu = styled('button')(({ theme }) => ({
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.paper,
 
-  // selected instead of hover so it stays opaque when hovering
   '&:hover': {
-    backgroundColor: theme.palette.action.selected,
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.dark : theme.palette.secondary.light,
   },
 
   boxShadow: `
