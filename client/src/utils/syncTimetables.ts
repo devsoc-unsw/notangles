@@ -146,6 +146,7 @@ const parseTimetableDTO = async (timetableDTO: TimetableDTO, currentYear: string
   const parsedTimetable: TimetableData = {
     id: timetableDTO.id,
     name: timetableDTO.name,
+    isPrimary: timetableDTO.isPrimary,
     selectedCourses: courseInfo,
     selectedClasses: selectedClasses,
     createdEvents: createdEvents,

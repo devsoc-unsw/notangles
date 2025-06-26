@@ -72,7 +72,6 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
       const timetables = await Promise.all(
         res.data.timetables.map((timetable: TimetableDTO) => parseTimetableDTO(timetable, year)),
       );
-
       // Unpack timetables based on key
       const timetableMap: DisplayTimetablesMap = {};
 
@@ -93,6 +92,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         timetableMap[term] = createDefaultTimetable(res.data.userID);
       }
       setDisplayTimetables({ ...timetableMap });
+      
+      Object.keys(timetableMap).forEach(() =>{
+        if (timetableMap[term].every((t) => !t.isPrimary)) timetableMap[term][0].isPrimary = true;
+      })
 
       // TODO: check if this conditional is necessary
       if (timetableMap[term] && timetableMap[term][0]) {
