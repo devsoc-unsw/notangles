@@ -37,7 +37,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         <ButtonGroup>
           <Button
             disableElevation
-            variant="contained"
+            variant="outlined"
             size="small"
             aria-describedby={colorPickerPopoverId}
             onClick={handleOpenColorPicker}
@@ -45,7 +45,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             Choose Colour
           </Button>
           {handleSaveNewColor && (
-            <Button variant="outlined" size="small" onClick={handleSaveNewColor}>
+            <Button variant="contained" size="small" onClick={handleSaveNewColor}>
               Save
             </Button>
           )}
