@@ -45,7 +45,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             Choose Colour
           </Button>
           {handleSaveNewColor && (
-            <Button variant="contained" size="small" onClick={handleSaveNewColor}>
+            <Button variant="contained" size="small" onClick={handleSaveNewColor} disableElevation>
               Save
             </Button>
           )}
