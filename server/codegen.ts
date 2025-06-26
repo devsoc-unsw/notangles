@@ -5,17 +5,24 @@ const config: CodegenConfig = {
   documents: ['src/**/*.ts'],
   ignoreNoDocuments: true,
   generates: {
-    './src/generated/graphql/': {
-      // plugins: [
-      //   'typescript',
-      //   'typescript-operations',
-      //   'typescript-graphql-request',
-      // ],
-      preset: 'client',
+    './src/generated/graphql.ts': {
+      plugins: [
+        'typescript',
+        'typescript-operations',
+        'typescript-graphql-request',
+      ],
       config: {
         documentMode: 'string',
       },
     },
+  },
+  pluckConfig: {
+    modules: [
+      {
+        name: 'graphql-tag',
+        identifier: 'graphql',
+      },
+    ],
   },
 };
 
