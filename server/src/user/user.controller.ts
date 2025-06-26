@@ -11,7 +11,12 @@ import {
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import { UserSettings, CourseParameters } from './types';
+import {
+  UserSettings,
+  AddCourseDto,
+  RemoveCourseDto,
+  SetCourseColourDto,
+} from './types';
 import { validate } from '../utils/validate';
 
 interface AuthenticatedRequest extends Request {
@@ -62,14 +67,11 @@ export class UserController {
 
   @Post('course/add')
   @UseGuards(AuthenticatedGuard)
-  async addCourse(
-    @Req() req: Request,
-    @Body() courseParameters: CourseParameters,
-  ) {
+  async addCourse(@Req() req: Request, @Body() addCourseDto: AddCourseDto) {
     const courseExistsOnGraphQL =
       await this.userService.isCourseExistsOnGraphQL(
-        courseParameters.courseId,
-        courseParameters.term,
+        addCourseDto.courseId,
+        addCourseDto.term,
       );
     validate(
       courseExistsOnGraphQL,
@@ -78,24 +80,22 @@ export class UserController {
     );
     const timetableExists = await this.userService.isTimetableExists(
       req.user!.id,
-      courseParameters.timetableId,
+      addCourseDto.timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
     const courseInTimetable = await this.userService.isCourseInTimetable(
-      courseParameters.courseId,
-      courseParameters.timetableId,
+      addCourseDto.courseId,
+      addCourseDto.timetableId,
     );
     validate(
       courseInTimetable,
       'Course is in timetable already',
       HttpStatus.FORBIDDEN,
     );
-    const colourValid = this.userService.isColourCodeValid(
-      courseParameters.colour,
-    );
+    const colourValid = this.userService.isColourCodeValid(addCourseDto.colour);
     validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
     try {
-      await this.userService.addCourse(courseParameters);
+      await this.userService.addCourse(addCourseDto);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -112,15 +112,15 @@ export class UserController {
   @UseGuards(AuthenticatedGuard)
   async removeCourse(
     @Req() req: Request,
-    @Body() course: { courseId: string; timetableId: string; term: string },
+    @Body() removeCourseDto: RemoveCourseDto,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
       req.user!.id,
-      course.timetableId,
+      removeCourseDto.timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
     try {
-      await this.userService.removeCourse(req.user!.id, course.courseId);
+      await this.userService.removeCourse(removeCourseDto);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -136,30 +136,28 @@ export class UserController {
   @UseGuards(AuthenticatedGuard)
   async setCourseColour(
     @Req() req: Request,
-    @Body() course: { courseId: string; timetableId: string; colour: string },
+    @Body() setCourseColourDto: SetCourseColourDto,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
       req.user!.id,
-      course.timetableId,
+      setCourseColourDto.timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
     const courseInTimetable = await this.userService.isCourseInTimetable(
-      course.courseId,
-      course.timetableId,
+      setCourseColourDto.courseId,
+      setCourseColourDto.timetableId,
     );
     validate(
       courseInTimetable,
       'Course is not in timetable',
       HttpStatus.NOT_FOUND,
     );
-    const colourValid = this.userService.isColourCodeValid(course.colour);
+    const colourValid = this.userService.isColourCodeValid(
+      setCourseColourDto.colour,
+    );
     validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
     try {
-      await this.userService.setCourseColour(
-        course.courseId,
-        course.timetableId,
-        course.colour,
-      );
+      await this.userService.setCourseColour(setCourseColourDto);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

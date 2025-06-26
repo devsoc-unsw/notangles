@@ -1,7 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CourseParameters, UserInfo, UserSettings } from './types';
+import {
+  AddCourseDto,
+  RemoveCourseDto,
+  SetCourseColourDto,
+  UserInfo,
+  UserSettings,
+} from './types';
 
 @Injectable({})
 export class UserService {
@@ -119,23 +125,26 @@ export class UserService {
     return course;
   }
 
-  async addCourse(courseParamenters: CourseParameters): Promise<void> {
+  async addCourse(addCourseDto: AddCourseDto): Promise<void> {
     await this.prisma.course.create({
       data: {
-        courseId: courseParamenters.courseId,
-        colour: courseParamenters.colour,
+        courseId: addCourseDto.courseId,
+        colour: addCourseDto.colour,
         selectedClasses: [],
         timetable: {
           connect: {
-            id: courseParamenters.timetableId,
+            id: addCourseDto.timetableId,
           },
         },
       },
     });
   }
 
-  async removeCourse(timetableId: string, courseID: string): Promise<void> {
-    const course = await this.getCourse(courseID, timetableId);
+  async removeCourse(removeCourseDto: RemoveCourseDto): Promise<void> {
+    const course = await this.getCourse(
+      removeCourseDto.courseId,
+      removeCourseDto.timetableId,
+    );
     if (!course) {
       throw new HttpException(
         'Course not found in the specified timetable',
@@ -149,12 +158,11 @@ export class UserService {
     });
   }
 
-  async setCourseColour(
-    courseId: string,
-    timetableId: string,
-    colour: string,
-  ): Promise<void> {
-    const course = await this.getCourse(courseId, timetableId);
+  async setCourseColour(setCourseColourDto: SetCourseColourDto): Promise<void> {
+    const course = await this.getCourse(
+      setCourseColourDto.courseId,
+      setCourseColourDto.timetableId,
+    );
     if (!course) {
       throw new HttpException(
         'Course not found in the specified timetable',
@@ -166,7 +174,7 @@ export class UserService {
         id: course.id,
       },
       data: {
-        colour: colour,
+        colour: setCourseColourDto.colour,
       },
     });
   }
