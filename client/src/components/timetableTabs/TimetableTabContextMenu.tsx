@@ -27,7 +27,6 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
-
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
 import { time } from 'console';
