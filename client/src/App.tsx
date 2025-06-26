@@ -13,7 +13,7 @@ import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
-import SubcomPromotion from './components/SubcomPromotion';
+import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
