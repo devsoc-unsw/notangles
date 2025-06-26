@@ -27,6 +27,8 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
+
+This will break, more testing before merge.
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
 import { time } from 'console';
@@ -186,6 +188,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     setRenamedHelper(`${str.length}/30`);
     str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
   };
+
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
     if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
@@ -236,7 +239,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const isPrimarySelected = () => {
-    return displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable;
+    return displayTimetables[term] !== undefined
+      ? displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable
+      : false;
   };
 
   /**
