@@ -28,7 +28,6 @@ import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../..
 import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 
-This will break, more testing before merge.
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
 import { time } from 'console';
