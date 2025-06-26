@@ -29,7 +29,6 @@ import { StyledSnackbar } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import { duplicateClasses, duplicateEvents } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
-import { time } from 'console';
 
 const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ anchorElement, setAnchorElement }) => {
   const TIMETABLE_LIMIT = 13;
