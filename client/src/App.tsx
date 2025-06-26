@@ -183,7 +183,8 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails(); // term is 
+      // switched after this. this be rpoblem.
       setTerm(term);
       setTermName(termName);
       setYear(year);
@@ -217,7 +218,7 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList("T1");
+      const { courses } = await getCoursesList(term.substring(0, 2));
       setCoursesList(courses);
       
     };

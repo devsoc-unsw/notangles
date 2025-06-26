@@ -4,7 +4,6 @@ import { isWithinInterval, parse } from 'date-fns';
 import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
 import { Term, TermDataList } from '../interfaces/Periods';
-import { getTermsWithClassData } from '../utils/getTermsWithClassData';
 
 export function sortTerms(terms: Term[]): Term[] {
   const termOrder: Record<string, number> = { U1: 0, T1: 1, T2: 2, T3: 3 };
@@ -67,37 +66,41 @@ const constructTermDetailsMap = async (): Promise<Map<Term, TermDateDetails>> =>
  * @param todaysDate The current date to retrieve the latest term from
  * @returns the term data for the latest term
  */
-const getTermToDisplay = async (
+const get_current_term = async (
   termInfoMap: Map<Term, TermDateDetails>,
+  todaysDate: Date = new Date(),
 ): Promise<Term> => {
-
-  // Prioritise last selected term
+  const keys_term = sortTerms(Array.from(termInfoMap.keys()));
   if (localStorage.getItem('currSelectedTerm')) {
     const storedTerm = localStorage.getItem('currSelectedTerm');
 
     if (storedTerm) {
       const currSelectedTerm = JSON.parse(storedTerm)
-      return currSelectedTerm.term
+      console.log("localstorage" + currSelectedTerm.term)
+      return(currSelectedTerm.term)
     }
-    
-  } 
-  
-  // (TODO) If no selected term, display the latest term the user has timetable data for 
-
-  // If no class data, display the latest term with timetable data 
-
-  
-  const keys_term = sortTerms(Array.from(termInfoMap.keys()));
-  // Need to combine this with getavailabletermdetiails...
-  const termsWithData = await getTermsWithClassData(keys_term)
-
-  if (termsWithData && termsWithData.length > 0) {
-    return termsWithData[termsWithData.length - 1]
   }
-  
-  // Default to T1 in case there are 0 terms with course data
-  // Index 1 skips over summer term 
-  return keys_term[1]
+  for (let currTermIndex = 0; currTermIndex < keys_term.length; currTermIndex++) {
+    if (!keys_term[currTermIndex]) continue;
+    const currTermVal = termInfoMap.get(keys_term[currTermIndex])!;
+    
+    if (isWithinInterval(todaysDate, { start: currTermVal.startDate, end: currTermVal.endDate })) {
+      console.log("thist ype of data" + keys_term[currTermIndex])
+      return keys_term[currTermIndex];
+    }
+
+    if (
+      currTermIndex > 0 &&
+      isWithinInterval(todaysDate, {
+        start: termInfoMap.get(keys_term[currTermIndex - 1])!.endDate,
+        end: currTermVal.startDate,
+      })
+    ) {
+      console.log("thist ype of data ", keys_term[currTermIndex])
+      return keys_term[currTermIndex];
+    }
+  }
+  return keys_term[1]; // eg. default to Term 1 next year.
 };
 
 export const convertToTermName = (termId: string) => {
@@ -124,17 +127,30 @@ export const getAvailableTermDetails = async () => {
     firstDayOfTerm: '',
   };
 
+  if (localStorage.getItem('termData')) {
+    termData = JSON.parse(localStorage.getItem('termData')!);
+  }
 
   let firstDayOfTerm = termData.firstDayOfTerm || ``;
 
   try {
     const termMapInfo = await constructTermDetailsMap();
-    // this is what sets the term to display 
-    const currTermId = await getTermToDisplay(termMapInfo);
+    const currTermId = await get_current_term(termMapInfo);
     firstDayOfTerm =
       termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
     const termsSortedList: TermDataList = sortTerms(Array.from(termMapInfo.keys()));
+    // Store the term details in local storage.
+    localStorage.setItem(
+      'termData',
+      JSON.stringify({
+        year: currTermId?.substring(2),
+        term: currTermId,
+        termName: currTermId ? convertToTermName(currTermId.substring(0, 2)) : '',
+        firstDayOfTerm: firstDayOfTerm,
+        termsData: termsSortedList,
+      }),
+    );
 
     return {
       year: currTermId?.substring(2),
