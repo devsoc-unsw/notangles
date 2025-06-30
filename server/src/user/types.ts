@@ -16,35 +16,47 @@ export class UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
 }
-export class AddCourseDto {
+
+export class CourseDto {
   @ApiProperty()
   courseId: string;
-
+  @ApiProperty()
+  timetableId: string;
+}
+export class AddCourseDto extends CourseDto {
   @ApiProperty()
   term: string;
-
   @ApiProperty()
-  timetableId: string;
-
+  colour: string;
+}
+export class SetCourseColourDto extends CourseDto {
   @ApiProperty()
   colour: string;
 }
 
-export class RemoveCourseDto {
-  @ApiProperty()
-  courseId: string;
-
-  @ApiProperty()
-  timetableId: string;
+export class ClassDetails {
+  activity: string;
+  career?: string | null | undefined;
+  course_enrolment: string;
+  mode: string;
+  offering_period: string;
+  section: string;
+  status?: string;
+  term: string;
+  times: ClassTime[];
+  year: string;
+}
+export class ClassTime {
+  day: string;
+  location: string;
+  time: string;
+  weeks: string;
 }
 
-export class SetCourseColourDto {
-  @ApiProperty()
+export class CourseDetails {
+  id: string;
   courseId: string;
-
-  @ApiProperty()
   timetableId: string;
-
-  @ApiProperty()
   colour: string;
+  selectedClasses: string[];
 }

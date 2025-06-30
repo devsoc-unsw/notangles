@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
+import { ClassDetails } from './types';
 
 const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 
@@ -20,5 +21,10 @@ export class GraphqlService {
     });
 
     return courseExists.aggregate != null && courseExists.aggregate.count > 0;
+  }
+
+  async getClassDetails(classId: string): Promise<ClassDetails | null> {
+    const { classDetails } = await this.sdk.ClassDetails({ classId });
+    return classDetails ? classDetails : null;
   }
 }

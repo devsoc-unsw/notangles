@@ -3,7 +3,8 @@ import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddCourseDto,
-  RemoveCourseDto,
+  ClassDetails,
+  CourseDetails,
   SetCourseColourDto,
   UserInfo,
   UserSettings,
@@ -115,13 +116,35 @@ export class UserService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
-  async getCourse(courseId: string, tiemtableId: string) {
+  async getCourseIDs(timetableId: string): Promise<string[]> {
+    const courses = await this.prisma.course.findMany({
+      where: {
+        timetableId: timetableId,
+      },
+      select: {
+        courseId: true,
+      },
+    });
+    return courses.map((course) => course.courseId);
+  }
+
+  async getCourse(
+    courseId: string,
+    timetableId: string,
+  ): Promise<CourseDetails | null> {
     const course = await this.prisma.course.findFirst({
       where: {
         courseId: courseId,
-        timetableId: tiemtableId,
+        timetableId: timetableId,
       },
     });
+    if (course === null) {
+      throw new HttpException(
+        'Course not found in the specified timetable',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return course;
   }
 
@@ -140,11 +163,8 @@ export class UserService {
     });
   }
 
-  async removeCourse(removeCourseDto: RemoveCourseDto): Promise<void> {
-    const course = await this.getCourse(
-      removeCourseDto.courseId,
-      removeCourseDto.timetableId,
-    );
+  async removeCourse(courseId: string, timetableId: string): Promise<void> {
+    const course = await this.getCourse(courseId, timetableId);
     if (!course) {
       throw new HttpException(
         'Course not found in the specified timetable',
@@ -177,5 +197,29 @@ export class UserService {
         colour: setCourseColourDto.colour,
       },
     });
+  }
+
+  async getClasses(courseId: string, timetableId: string): Promise<string[]> {
+    const course = await this.getCourse(courseId, timetableId);
+    if (course === null) {
+      throw new HttpException(
+        'Course not found in the specified timetable',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return course.selectedClasses;
+  }
+
+  async getClasseDetails(classId: string): Promise<ClassDetails> {
+    const classDetails = await this.graphqlService.getClassDetails(classId);
+
+    if (classDetails === null) {
+      throw new HttpException(
+        `Class with ID ${classId} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return classDetails;
   }
 }
