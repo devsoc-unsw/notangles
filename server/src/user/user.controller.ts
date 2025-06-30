@@ -19,7 +19,6 @@ export class UserController {
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
   async getProfile(@Req() req: AuthenticatedRequest) {
-    console.log(req.user);
     const userInfo = await this.userService.getUserInfo(req.user.id);
     return userInfo;
   }
