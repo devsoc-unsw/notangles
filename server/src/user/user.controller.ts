@@ -66,11 +66,11 @@ export class UserController {
   @Get('courses/:timetableId')
   @UseGuards(AuthenticatedGuard)
   async getCourseIDs(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -91,12 +91,12 @@ export class UserController {
   @Get('course/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
   async getCourseDetails(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -128,7 +128,10 @@ export class UserController {
 
   @Post('course')
   @UseGuards(AuthenticatedGuard)
-  async addCourse(@Req() req: Request, @Body() addCourseDto: AddCourseDto) {
+  async addCourse(
+    @Req() req: AuthenticatedRequest,
+    @Body() addCourseDto: AddCourseDto,
+  ) {
     const courseExistsOnGraphQL =
       await this.userService.isCourseExistsOnGraphQL(
         addCourseDto.courseId,
@@ -140,7 +143,7 @@ export class UserController {
       HttpStatus.NOT_FOUND,
     );
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       addCourseDto.timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -172,12 +175,12 @@ export class UserController {
   @Delete('course/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
   async removeCourse(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -197,11 +200,11 @@ export class UserController {
   @Patch('course/colour')
   @UseGuards(AuthenticatedGuard)
   async setCourseColour(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body() setCourseColourDto: SetCourseColourDto,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       setCourseColourDto.timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -234,12 +237,12 @@ export class UserController {
   @Get('classes/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
   async getClasses(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
-      req.user!.id,
+      req.user.id,
       timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
@@ -268,7 +271,10 @@ export class UserController {
 
   @Get('class/:id')
   @UseGuards(AuthenticatedGuard)
-  async getClassDetails(@Req() req: Request, @Param('id') classId: string) {
+  async getClassDetails(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') classId: string,
+  ) {
     try {
       const classInfo = await this.userService.getClasseDetails(classId);
       return classInfo;
