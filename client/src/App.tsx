@@ -27,9 +27,6 @@ import {
   sortTerms,
   unknownErrorMessage,
 } from './constants/timetable';
-import { AppContext } from './context/AppContext';
-import { CourseContext } from './context/CourseContext';
-import { UserContext } from './context/UserContext';
 import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
@@ -46,9 +43,9 @@ import {
 } from './interfaces/Periods';
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
-import storage from './utils/storage';
 import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -93,55 +90,9 @@ const ICSButton = styled(Button)`
 `;
 
 const App: React.FC = () => {
-  const {
-    themeObject,
-    currentTheme,
-    setCurrentTheme,
-    is12HourMode,
-    isDarkMode,
-    isSquareEdges,
-    isShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    isHideClassInfo,
-    isHideExamClasses,
-    isConvertToLocalTimezone,
-    setAlertMsg,
-    setErrorVisibility,
-    days,
-    term,
-    year,
-    setDays,
-    earliestStartTime,
-    setEarliestStartTime,
-    latestEndTime,
-    setLatestEndTime,
-    setTerm,
-    setYear,
-    firstDayOfTerm,
-    setFirstDayOfTerm,
-    setTermName,
-    setTermsData,
-    setCoursesList,
-    selectedTimetable,
-    displayTimetables,
-    setDisplayTimetables,
-    courseData,
-    setCourseData,
-  } = useContext(AppContext);
-
-  const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
-    createdEvents,
-    setCreatedEvents,
-    assignedColors,
-    setAssignedColors,
-  } = useContext(CourseContext);
+  const [queryClient] = React.useState(() => new QueryClient());
 
   const decodedAssignedColors = useColorsDecoder(assignedColors);
-  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -555,41 +506,15 @@ const App: React.FC = () => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
 
-  useEffect(() => {
-    storage.set('currentTheme', currentTheme);
-  }, [currentTheme]);
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
-  useEffect(() => {
-    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
-  }, [isShowOnlyOpenClasses]);
-
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
-
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);
-
-  useEffect(() => {
-    storage.set('isHideExamClasses', isHideExamClasses);
-  }, [isHideExamClasses]);
-
-  useEffect(() => {
-    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone]);
+  // TODO: RQ - Does currentTheme update?
+  // TODO: RQ - Does is12HourMode update?
+  // TODO: RQ - Does isDarkMode update?
+  // TODO: RQ - Does isSquareEdges update?
+  // TODO: RQ - Does isShowOnlyOpenClasses update?
+  // TODO: RQ - Does isDefaultUnscheduled update?
+  // TODO: RQ - Does isHideClassInfo update?
+  // TODO: RQ - Does isHideExamClasses update?
+  // TODO: RQ - Does isConvertToLocalTimezone update?
 
   // Validate the currentTheme
   useEffect(() => {
@@ -623,44 +548,46 @@ const App: React.FC = () => {
   };
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={themeObject}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <GlobalStyles styles={globalStyle} />
-          <StyledApp>
-            <Sidebar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={decodedAssignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Outlet />
-                {groupsSidebarCollapsed ? (
-                  <>
-                    <TimetableTabs />
-                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  </>
-                ) : (
-                  <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                )}
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Sponsors />
-                <Footer />
-                <Alerts />
-                <SubcomPromotion />
-              </Content>
-            </ContentWrapper>
-          </StyledApp>
-        </LocalizationProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <QueryClientProvider client={queryClient}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={themeObject}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <GlobalStyles styles={globalStyle} />
+            <StyledApp>
+              <Sidebar />
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={decodedAssignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Outlet />
+                  {groupsSidebarCollapsed ? (
+                    <>
+                      <TimetableTabs />
+                      <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                    </>
+                  ) : (
+                    <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                  )}
+                  <ICSButton
+                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                  >
+                    save to calendar
+                  </ICSButton>
+                  <Sponsors />
+                  <Footer />
+                  <Alerts />
+                  <SubcomPromotion />
+                </Content>
+              </ContentWrapper>
+            </StyledApp>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </QueryClientProvider>
   );
 };
 
