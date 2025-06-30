@@ -6,8 +6,8 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -194,7 +194,7 @@ export class UserController {
     }
   }
 
-  @Put('course/colour')
+  @Patch('course/colour')
   @UseGuards(AuthenticatedGuard)
   async setCourseColour(
     @Req() req: Request,
