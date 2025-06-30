@@ -3,14 +3,16 @@ import { AuthService } from './auth.service';
 import { getConfig, OidcStrategy } from './oidc.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
+import { SessionSerializer } from './session.serializer';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',
-  useFactory: async (authService: AuthService) => {
+  useFactory: async (prismaService: PrismaService) => {
     const config = await getConfig();
-    return new OidcStrategy(authService, config);
+    return new OidcStrategy(config, prismaService);
   },
-  inject: [AuthService],
+  inject: [PrismaService],
 };
 
 @Module({
@@ -18,6 +20,11 @@ const OidcStrategyFactory = {
     PassportModule.register({ session: true, defaultStrategy: 'oidc' }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OidcStrategyFactory],
+  providers: [
+    AuthService,
+    PrismaService,
+    OidcStrategyFactory,
+    SessionSerializer,
+  ],
 })
 export class AuthModule {}
