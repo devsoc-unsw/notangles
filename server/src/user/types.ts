@@ -15,3 +15,11 @@ export class UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
 }
+
+export class UserTimetable {
+  id: string;
+  name: string;
+  year: number;
+  term: string;
+  primary: boolean;
+}
