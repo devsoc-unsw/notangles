@@ -1,18 +1,16 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
   @Get('login')
   @UseGuards(AuthGuard('oidc'))
-  login() {
-    // Handled by Passport redirect
-  }
+  login() {}
 
-  @Get('callback/csesoc')
+  @Get('callback/devsoc')
   @UseGuards(AuthGuard('oidc'))
-  callback(@Req() req: Request) {
-    return req.user; // user from validate()
+  callback(@Res() res: Response) {
+    res.redirect('http://localhost:3001/api/user/profile');
   }
 }
