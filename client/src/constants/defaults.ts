@@ -13,7 +13,7 @@ const defaults: Record<string, any> = {
   isConvertToLocalTimezone: false,
   courseData: { map: [] },
   timetables: [...createDefaultTimetable('')],
-  version: 1,
+  version: 2,
 };
 
 export default defaults;
