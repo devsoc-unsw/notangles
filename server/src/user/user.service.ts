@@ -3,7 +3,6 @@ import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddCourseDto,
-  ClassData,
   ClassDetails,
   CourseDetails,
   SetCourseColourDto,
@@ -129,11 +128,6 @@ export class UserService {
     return courses.map((course) => course.courseId);
   }
 
-  async isClassExistsOnGraphQL(classId: string): Promise<boolean> {
-    const classDetails = await this.graphqlService.getClassDetails(classId);
-    return classDetails ? true : false;
-  }
-
   async getCourse(
     courseId: string,
     timetableId: string,
@@ -214,23 +208,31 @@ export class UserService {
   async differentTimeSlotsExist(
     timetableId: string,
     courseId: string,
-    classData: ClassData,
+    classId: string,
   ): Promise<string | null> {
     try {
-      const existingClasses = await this.getClasses(courseId, timetableId);
-      if (existingClasses.length === 0 || existingClasses === null) {
+      const classData = await this.getClasseDetails(classId);
+
+      const existingClassIds = await this.getClasses(courseId, timetableId);
+      if (existingClassIds.length === 0 || existingClassIds === null) {
         return null;
       }
-      const classDetailsPromises = await Promise.all(
-        existingClasses.map((classId) => this.getClasseDetails(classId)),
+      const existingClassDetails = await Promise.all(
+        existingClassIds.map(async (classId) => {
+          const details = await this.getClasseDetails(classId);
+          return {
+            ...details,
+            class_id: classId,
+          };
+        }),
       );
-      if (classDetailsPromises === null) {
+      if (existingClassDetails === null) {
         throw new HttpException(
           'Failed to fetch class details',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-      const differentTimeSlotsExist = classDetailsPromises.filter(
+      const differentTimeSlotsExist = existingClassDetails.filter(
         (classDetails: ClassDetails) =>
           classDetails.activity === classData.activity &&
           classDetails.section !== classData.section,
@@ -242,7 +244,7 @@ export class UserService {
         );
       }
       if (differentTimeSlotsExist.length === 1 && differentTimeSlotsExist[0]) {
-        return differentTimeSlotsExist[0].course_id;
+        return differentTimeSlotsExist[0].class_id;
       } else {
         return null;
       }
@@ -260,12 +262,12 @@ export class UserService {
   async updateSelectedClass(
     timetableId: string,
     courseId: string,
-    classData: ClassData,
+    classId: string,
   ): Promise<void> {
     const differentTimeSlotClassId = await this.differentTimeSlotsExist(
       timetableId,
       courseId,
-      classData,
+      classId,
     );
     if (differentTimeSlotClassId) {
       await this.removeSelectedClass(
@@ -274,7 +276,7 @@ export class UserService {
         differentTimeSlotClassId,
       );
     }
-    await this.addSelectedClass(timetableId, courseId, classData.classId);
+    await this.addSelectedClass(timetableId, courseId, classId);
   }
 
   async addSelectedClass(

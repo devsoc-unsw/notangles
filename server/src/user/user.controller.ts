@@ -14,13 +14,9 @@ import {
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import {
-  UserSettings,
-  AddCourseDto,
-  SetCourseColourDto,
-  ClassData,
-} from './types';
+import { UserSettings, AddCourseDto, SetCourseColourDto } from './types';
 import { validate } from '../utils/validate';
+import { GraphqlService } from 'src/graphql/graphql.service';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -32,7 +28,10 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private readonly graphqlService: GraphqlService,
+  ) {}
 
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
@@ -300,7 +299,7 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
-    @Body() classData: ClassData,
+    @Body('classId') classId: string,
   ) {
     const timetableExists = await this.userService.isTimetableExists(
       req.user.id,
@@ -316,15 +315,25 @@ export class UserController {
       'Course is not in timetable',
       HttpStatus.NOT_FOUND,
     );
-    const classExists = await this.userService.isClassExistsOnGraphQL(
-      classData.classId,
+
+    const classValidate = await this.graphqlService.getClassDetails(classId);
+    validate(
+      classValidate !== null,
+      'Class does not exist',
+      HttpStatus.NOT_FOUND,
     );
-    validate(classExists, 'Class does not exist', HttpStatus.NOT_FOUND);
+    validate(
+      classValidate?.activity !== undefined &&
+        classValidate?.activity !== 'Course Enrolment',
+      'Class is not a valid class',
+      HttpStatus.BAD_REQUEST,
+    );
+
     try {
       await this.userService.updateSelectedClass(
         timetableId,
         courseId,
-        classData,
+        classId,
       );
     } catch (error) {
       if (error instanceof HttpException) {
@@ -357,8 +366,14 @@ export class UserController {
       'Course is not in timetable',
       HttpStatus.NOT_FOUND,
     );
-    const classExists = await this.userService.isClassExistsOnGraphQL(classId);
-    validate(classExists, 'Class does not exist', HttpStatus.NOT_FOUND);
+
+    const classValidate = await this.graphqlService.getClassDetails(classId);
+    validate(
+      classValidate !== null,
+      'Class does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+
     try {
       await this.userService.removeSelectedClass(
         timetableId,

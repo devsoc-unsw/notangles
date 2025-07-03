@@ -61,10 +61,3 @@ export class CourseDetails {
   colour: string;
   selectedClasses: string[];
 }
-
-export class ClassData {
-  id: string;
-  classId: string;
-  activity: string;
-  section: string;
-}
