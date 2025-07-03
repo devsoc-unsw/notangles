@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 export class UserInfo {
   id: string;
   firstName: string;
@@ -18,19 +17,14 @@ export class UserSettings {
 }
 
 export class CourseDto {
-  @ApiProperty()
   courseId: string;
-  @ApiProperty()
   timetableId: string;
 }
 export class AddCourseDto extends CourseDto {
-  @ApiProperty()
   term: string;
-  @ApiProperty()
   colour: string;
 }
 export class SetCourseColourDto extends CourseDto {
-  @ApiProperty()
   colour: string;
 }
 

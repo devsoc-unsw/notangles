@@ -92,55 +92,16 @@ export class UserController {
     }
   }
 
-  @Get('course/:timetableId/:courseId')
-  @UseGuards(AuthenticatedGuard)
-  async getCourseDetails(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-  ) {
-    const timetableExists = await this.userService.isTimetableExists(
-      req.user.id,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
-      courseId,
-      timetableId,
-    );
-    validate(
-      courseInTimetable,
-      'Course is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-    try {
-      const courseDetails = await this.userService.getCourse(
-        courseId,
-        timetableId,
-      );
-      return courseDetails;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to get course details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Post('course')
   @UseGuards(AuthenticatedGuard)
   async addCourse(
     @Req() req: AuthenticatedRequest,
     @Body() addCourseDto: AddCourseDto,
   ) {
-    const courseExistsOnGraphQL =
-      await this.userService.isCourseExistsOnGraphQL(
-        addCourseDto.courseId,
-        addCourseDto.term,
-      );
+    const courseExistsOnGraphQL = await this.graphqlService.courseExists(
+      addCourseDto.courseId,
+      addCourseDto.term,
+    );
     validate(
       courseExistsOnGraphQL,
       'Course does not exist',
@@ -273,26 +234,6 @@ export class UserController {
     }
   }
 
-  @Get('class/:id')
-  @UseGuards(AuthenticatedGuard)
-  async getClassDetails(
-    @Req() req: AuthenticatedRequest,
-    @Param('id') classId: string,
-  ) {
-    try {
-      const classInfo = await this.userService.getClasseDetails(classId);
-      return classInfo;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to get class details',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Patch('class/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
   async updateSelectedClass(
@@ -338,9 +279,11 @@ export class UserController {
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
-      } else {
-        throw error;
       }
+      throw new HttpException(
+        'Failed to update selected class',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

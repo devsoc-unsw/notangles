@@ -76,14 +76,6 @@ export class UserService {
     });
   }
 
-  async isCourseExistsOnGraphQL(
-    courseId: string,
-    term: string,
-  ): Promise<boolean> {
-    const courseExists = await this.graphqlService.courseExists(courseId, term);
-    return courseExists ? true : false;
-  }
-
   async isTimetableExists(
     userId: string,
     timetableId: string,
@@ -192,26 +184,16 @@ export class UserService {
     return course.selectedClasses;
   }
 
-  async getClasseDetails(classId: string): Promise<ClassDetails> {
-    const classDetails = await this.graphqlService.getClassDetails(classId);
-
-    if (classDetails === null) {
-      throw new HttpException(
-        `Class with ID ${classId} not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return classDetails;
-  }
-
   async differentTimeSlotsExist(
     timetableId: string,
     courseId: string,
     classId: string,
   ): Promise<string | null> {
     try {
-      const classData = await this.getClasseDetails(classId);
+      const classData = await this.graphqlService.getClassDetails(classId);
+      if (!classData) {
+        throw new HttpException('Class not found', HttpStatus.NOT_FOUND);
+      }
 
       const existingClassIds = await this.getClasses(courseId, timetableId);
       if (existingClassIds.length === 0 || existingClassIds === null) {
@@ -219,7 +201,7 @@ export class UserService {
       }
       const existingClassDetails = await Promise.all(
         existingClassIds.map(async (classId) => {
-          const details = await this.getClasseDetails(classId);
+          const details = await this.graphqlService.getClassDetails(classId);
           return {
             ...details,
             class_id: classId,
@@ -233,7 +215,7 @@ export class UserService {
         );
       }
       const differentTimeSlotsExist = existingClassDetails.filter(
-        (classDetails: ClassDetails) =>
+        (classDetails: ClassDetails & { class_id: string }) =>
           classDetails.activity === classData.activity &&
           classDetails.section !== classData.section,
       );
