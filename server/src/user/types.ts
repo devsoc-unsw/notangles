@@ -15,3 +15,13 @@ export class UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
 }
+
+export class EventParameters {
+  id: string;
+  colour: string;
+  dayOfWeek: number;
+  start: number;
+  end: number;
+  type: EventType;
+  timetableId: string;
+}
