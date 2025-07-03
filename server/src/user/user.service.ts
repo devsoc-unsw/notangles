@@ -3,6 +3,7 @@ import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddCourseDto,
+  ClassData,
   ClassDetails,
   CourseDetails,
   SetCourseColourDto,
@@ -128,10 +129,15 @@ export class UserService {
     return courses.map((course) => course.courseId);
   }
 
+  async isClassExistsOnGraphQL(classId: string): Promise<boolean> {
+    const classDetails = await this.graphqlService.getClassDetails(classId);
+    return classDetails ? true : false;
+  }
+
   async getCourse(
     courseId: string,
     timetableId: string,
-  ): Promise<CourseDetails | null> {
+  ): Promise<CourseDetails> {
     const course = await this.prisma.course.findFirst({
       where: {
         courseId: courseId,
@@ -165,12 +171,6 @@ export class UserService {
 
   async removeCourse(courseId: string, timetableId: string): Promise<void> {
     const course = await this.getCourse(courseId, timetableId);
-    if (!course) {
-      throw new HttpException(
-        'Course not found in the specified timetable',
-        HttpStatus.NOT_FOUND,
-      );
-    }
     await this.prisma.course.delete({
       where: {
         id: course.id,
@@ -183,12 +183,6 @@ export class UserService {
       setCourseColourDto.courseId,
       setCourseColourDto.timetableId,
     );
-    if (!course) {
-      throw new HttpException(
-        'Course not found in the specified timetable',
-        HttpStatus.NOT_FOUND,
-      );
-    }
     await this.prisma.course.update({
       where: {
         id: course.id,
@@ -201,12 +195,6 @@ export class UserService {
 
   async getClasses(courseId: string, timetableId: string): Promise<string[]> {
     const course = await this.getCourse(courseId, timetableId);
-    if (course === null) {
-      throw new HttpException(
-        'Course not found in the specified timetable',
-        HttpStatus.NOT_FOUND,
-      );
-    }
     return course.selectedClasses;
   }
 
@@ -221,5 +209,109 @@ export class UserService {
     }
 
     return classDetails;
+  }
+
+  async differentTimeSlotsExist(
+    timetableId: string,
+    courseId: string,
+    classData: ClassData,
+  ): Promise<string | null> {
+    try {
+      const existingClasses = await this.getClasses(courseId, timetableId);
+      if (existingClasses.length === 0 || existingClasses === null) {
+        return null;
+      }
+      const classDetailsPromises = await Promise.all(
+        existingClasses.map((classId) => this.getClasseDetails(classId)),
+      );
+      if (classDetailsPromises === null) {
+        throw new HttpException(
+          'Failed to fetch class details',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      const differentTimeSlotsExist = classDetailsPromises.filter(
+        (classDetails: ClassDetails) =>
+          classDetails.activity === classData.activity &&
+          classDetails.section !== classData.section,
+      );
+      if (differentTimeSlotsExist.length > 1) {
+        throw new HttpException(
+          'Multiple different time slots found for the same activity',
+          HttpStatus.CONFLICT,
+        );
+      }
+      if (differentTimeSlotsExist.length === 1 && differentTimeSlotsExist[0]) {
+        return differentTimeSlotsExist[0].course_id;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to check for different time slots',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateSelectedClass(
+    timetableId: string,
+    courseId: string,
+    classData: ClassData,
+  ): Promise<void> {
+    const differentTimeSlotClassId = await this.differentTimeSlotsExist(
+      timetableId,
+      courseId,
+      classData,
+    );
+    if (differentTimeSlotClassId) {
+      await this.removeSelectedClass(
+        timetableId,
+        courseId,
+        differentTimeSlotClassId,
+      );
+    }
+    await this.addSelectedClass(timetableId, courseId, classData.classId);
+  }
+
+  async addSelectedClass(
+    timetableId: string,
+    courseId: string,
+    classId: string,
+  ): Promise<void> {
+    const course = await this.getCourse(courseId, timetableId);
+    await this.prisma.course.update({
+      where: {
+        id: course.id,
+      },
+      data: {
+        selectedClasses: {
+          push: classId,
+        },
+      },
+    });
+  }
+
+  async removeSelectedClass(
+    timetableId: string,
+    courseId: string,
+    classId: string,
+  ): Promise<void> {
+    const course = await this.getCourse(courseId, timetableId);
+    const updatedClasses = course.selectedClasses.filter(
+      (existingClassId) => existingClassId !== classId,
+    );
+
+    await this.prisma.course.update({
+      where: {
+        id: course.id,
+      },
+      data: {
+        selectedClasses: updatedClasses,
+      },
+    });
   }
 }

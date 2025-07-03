@@ -35,6 +35,7 @@ export class SetCourseColourDto extends CourseDto {
 }
 
 export class ClassDetails {
+  course_id: string;
   activity: string;
   career?: string | null | undefined;
   course_enrolment: string;
@@ -59,4 +60,11 @@ export class CourseDetails {
   timetableId: string;
   colour: string;
   selectedClasses: string[];
+}
+
+export class ClassData {
+  id: string;
+  classId: string;
+  activity: string;
+  section: string;
 }

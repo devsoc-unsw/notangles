@@ -1,4 +1,5 @@
 export class ClassDetails {
+  course_id: string;
   activity: string;
   career?: string | null | undefined;
   course_enrolment: string;

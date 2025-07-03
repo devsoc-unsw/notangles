@@ -14,7 +14,12 @@ import {
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import { UserSettings, AddCourseDto, SetCourseColourDto } from './types';
+import {
+  UserSettings,
+  AddCourseDto,
+  SetCourseColourDto,
+  ClassData,
+} from './types';
 import { validate } from '../utils/validate';
 
 interface AuthenticatedRequest extends Request {
@@ -152,7 +157,7 @@ export class UserController {
       addCourseDto.timetableId,
     );
     validate(
-      courseInTimetable,
+      !courseInTimetable,
       'Course is in timetable already',
       HttpStatus.FORBIDDEN,
     );
@@ -236,7 +241,7 @@ export class UserController {
 
   @Get('classes/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
-  async getClasses(
+  async getSelectedClassesID(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
@@ -284,6 +289,88 @@ export class UserController {
       }
       throw new HttpException(
         'Failed to get class details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Patch('class/:timetableId/:courseId')
+  @UseGuards(AuthenticatedGuard)
+  async updateSelectedClass(
+    @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+    @Param('courseId') courseId: string,
+    @Body() classData: ClassData,
+  ) {
+    const timetableExists = await this.userService.isTimetableExists(
+      req.user.id,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const courseInTimetable = await this.userService.isCourseInTimetable(
+      courseId,
+      timetableId,
+    );
+    validate(
+      courseInTimetable,
+      'Course is not in timetable',
+      HttpStatus.NOT_FOUND,
+    );
+    const classExists = await this.userService.isClassExistsOnGraphQL(
+      classData.classId,
+    );
+    validate(classExists, 'Class does not exist', HttpStatus.NOT_FOUND);
+    try {
+      await this.userService.updateSelectedClass(
+        timetableId,
+        courseId,
+        classData,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  @Delete('class/:timetableId/:courseId/:classId')
+  @UseGuards(AuthenticatedGuard)
+  async removeSelectedClass(
+    @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+    @Param('courseId') courseId: string,
+    @Param('classId') classId: string,
+  ) {
+    const timetableExists = await this.userService.isTimetableExists(
+      req.user.id,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const courseInTimetable = await this.userService.isCourseInTimetable(
+      courseId,
+      timetableId,
+    );
+    validate(
+      courseInTimetable,
+      'Course is not in timetable',
+      HttpStatus.NOT_FOUND,
+    );
+    const classExists = await this.userService.isClassExistsOnGraphQL(classId);
+    validate(classExists, 'Class does not exist', HttpStatus.NOT_FOUND);
+    try {
+      await this.userService.removeSelectedClass(
+        timetableId,
+        courseId,
+        classId,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to remove selected class',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
