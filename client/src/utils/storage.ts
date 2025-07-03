@@ -68,7 +68,6 @@ const storage = {
         version: 2,
         timetables: migratePrimaryTimetables(data.timetables),
       };
-      console.log('sigma sigma on the wall');
       storage.save(migrated);
       return migrated;
     }
