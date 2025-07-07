@@ -1,58 +1,9 @@
 import defaults from '../constants/defaults';
+import migrateThemes from './migrations/colourTheme';
+import migratePrimaryTimetables from './migrations/primaryTimetables';
+import { createDefaultTimetable } from './timetableHelpers';
 
 const STORAGE_KEY = 'data';
-
-const MIGRATE_COLOR_MAP: Record<string, string> = {
-  '#137786': 'default-1',
-  '#a843a4': 'default-2',
-  '#134e86': 'default-3',
-  '#138652': 'default-4',
-  '#861313': 'default-5',
-  '#868413': 'default-6',
-  '#2e89ff': 'default-7',
-  '#3323ad': 'default-8',
-};
-
-const migrateTimetables = (timetables: Record<string, any>) => {
-  return Object.fromEntries(
-    Object.entries(timetables).map(([termKey, termValue]) => [termKey, termValue.map(migrateTimetable)]),
-  );
-};
-
-const migrateTimetable = (timetable: any) => {
-  return {
-    ...timetable,
-    createdEvents: migrateCreatedEvents(timetable.createdEvents),
-    assignedColors: migrateAssignedColors(timetable.assignedColors),
-  };
-};
-
-const migrateCreatedEvents = (createdEvents: Record<string, any>) => {
-  return Object.fromEntries(
-    Object.entries(createdEvents).map(([eventKey, eventValue]) => [
-      eventKey,
-      {
-        ...eventValue,
-        event: {
-          ...eventValue.event,
-          color:
-            eventValue.event.color in MIGRATE_COLOR_MAP
-              ? MIGRATE_COLOR_MAP[eventValue.event.color]
-              : eventValue.event.color,
-        },
-      },
-    ]),
-  );
-};
-
-const migrateAssignedColors = (assignedColors: Record<string, string>) => {
-  return Object.fromEntries(
-    Object.entries(assignedColors).map(([key, color]) => [
-      key,
-      color in MIGRATE_COLOR_MAP ? MIGRATE_COLOR_MAP[color] : color,
-    ]),
-  );
-};
 
 const storage = {
   get: (key: string): any => {
@@ -96,23 +47,54 @@ const storage = {
   },
 
   migrate: (data: Record<string, any>) => {
-    // Check if data is empty or not an object or it is {}
-    if (!data || typeof data !== 'object' || Object.keys(data).length === 0 || data.timetables === undefined) {
-      storage.save(defaults);
-      return defaults;
-    }
+    let migrated = data;
 
-    // only do this if version does not exist
-    if (data.version !== 1 || data.version == null) {
-      let migrated = {
-        ...data,
-        version: 1,
-        timetables: migrateTimetables(data.timetables),
-      };
+    // Check if data is empty or not an object or it is {}
+    if (
+      !data ||
+      typeof data !== 'object' ||
+      Object.keys(data).length === 0 ||
+      data.timetables === undefined ||
+      typeof data.timetables !== 'object' ||
+      Array.isArray(data.timetables)
+    ) {
+      migrated = { ...defaults };
       storage.save(migrated);
       return migrated;
     }
-    return data;
+
+    // Un-break an existing issue with migrated data
+    if (migrated.version == null || migrated.version < 2) {
+      Object.entries(migrated.timetables).forEach(([term, timetables]) => {
+        if (
+          !Array.isArray(timetables) ||
+          !timetables.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))
+        ) {
+          migrated.timetables[term] = createDefaultTimetable('');
+        }
+      });
+    }
+
+    // only do this if version does not exist
+    if (migrated.version == null) {
+      migrated = {
+        ...migrated,
+        version: 1,
+        timetables: migrateThemes(migrated.timetables),
+      };
+      storage.save(migrated);
+    }
+
+    if (migrated.version === 1) {
+      migrated = {
+        ...migrated,
+        version: 2,
+        timetables: migratePrimaryTimetables(migrated.timetables),
+      };
+      storage.save(migrated);
+    }
+
+    return migrated;
   },
 };
 

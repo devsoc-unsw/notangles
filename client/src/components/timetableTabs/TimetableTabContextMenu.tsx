@@ -236,7 +236,8 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const isPrimarySelected = () => {
-    return displayTimetables[term] !== undefined
+    // TODO: The term check is needed for first ever use of Notangles. Why?
+    return term !== '' && displayTimetables[term] !== undefined
       ? displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable
       : false;
   };
