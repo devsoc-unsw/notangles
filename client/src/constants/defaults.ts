@@ -12,7 +12,13 @@ const defaults: Record<string, any> = {
   isHideExamClasses: false,
   isConvertToLocalTimezone: false,
   courseData: { map: [] },
-  timetables: [...createDefaultTimetable('')],
+  timetables: {
+    // TODO: Find a safer way to handle this across years
+    U12025: createDefaultTimetable(''),
+    T12025: createDefaultTimetable(''),
+    T22025: createDefaultTimetable(''),
+    T32025: createDefaultTimetable(''),
+  },
   version: 2,
 };
 

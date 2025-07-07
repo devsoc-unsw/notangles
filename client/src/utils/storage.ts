@@ -47,32 +47,33 @@ const storage = {
   },
 
   migrate: (data: Record<string, any>) => {
+    let migrated = data;
+
     // Check if data is empty or not an object or it is {}
     if (
       !data ||
       typeof data !== 'object' ||
       Object.keys(data).length === 0 ||
       data.timetables === undefined ||
-      typeof data.timetables !== 'object'
+      typeof data.timetables !== 'object' ||
+      Array.isArray(data.timetables)
     ) {
-      storage.save(defaults);
-      return defaults;
+      migrated = { ...defaults };
+      storage.save(migrated);
+      return migrated;
     }
 
-    let migrated = data;
-
-    // WARNING: If the local storage structure changes the timetables field, this check may need to be skipped for version > 2?
-    Object.entries(migrated.timetables).forEach(([term, timetables]) => {
-      if (
-        !Array.isArray(timetables) ||
-        !timetables.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))
-      ) {
-        console.log(timetables);
-        console.log(`Migrating term ${term} to default timetable structure.`);
-        migrated.timetables[term] = createDefaultTimetable('');
-        console.log(migrated.timetables[term]);
-      }
-    });
+    // Un-break an existing issue with migrated data
+    if (migrated.version == null || migrated.version < 2) {
+      Object.entries(migrated.timetables).forEach(([term, timetables]) => {
+        if (
+          !Array.isArray(timetables) ||
+          !timetables.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))
+        ) {
+          migrated.timetables[term] = createDefaultTimetable('');
+        }
+      });
+    }
 
     // only do this if version does not exist
     if (migrated.version == null) {
