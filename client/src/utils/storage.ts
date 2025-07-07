@@ -1,6 +1,7 @@
 import defaults from '../constants/defaults';
 import migrateThemes from './migrations/colourTheme';
 import migratePrimaryTimetables from './migrations/primaryTimetables';
+import { createDefaultTimetable } from './timetableHelpers';
 
 const STORAGE_KEY = 'data';
 
@@ -47,31 +48,52 @@ const storage = {
 
   migrate: (data: Record<string, any>) => {
     // Check if data is empty or not an object or it is {}
-    if (!data || typeof data !== 'object' || Object.keys(data).length === 0 || data.timetables === undefined) {
+    if (
+      !data ||
+      typeof data !== 'object' ||
+      Object.keys(data).length === 0 ||
+      data.timetables === undefined ||
+      typeof data.timetables !== 'object'
+    ) {
       storage.save(defaults);
       return defaults;
     }
 
+    let migrated = data;
+
+    // WARNING: If the local storage structure changes the timetables field, this check may need to be skipped for version > 2?
+    Object.entries(migrated.timetables).forEach(([term, timetables]) => {
+      if (
+        !Array.isArray(timetables) ||
+        !timetables.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))
+      ) {
+        console.log(timetables);
+        console.log(`Migrating term ${term} to default timetable structure.`);
+        migrated.timetables[term] = createDefaultTimetable('');
+        console.log(migrated.timetables[term]);
+      }
+    });
+
     // only do this if version does not exist
-    if (data.version == null) {
-      let migrated = {
-        ...data,
+    if (migrated.version == null) {
+      migrated = {
+        ...migrated,
         version: 1,
-        timetables: migrateThemes(data.timetables),
+        timetables: migrateThemes(migrated.timetables),
       };
       storage.save(migrated);
-      return migrated;
     }
-    if (data.version === 1) {
-      let migrated = {
-        ...data,
+
+    if (migrated.version === 1) {
+      migrated = {
+        ...migrated,
         version: 2,
-        timetables: migratePrimaryTimetables(data.timetables),
+        timetables: migratePrimaryTimetables(migrated.timetables),
       };
       storage.save(migrated);
-      return migrated;
     }
-    return data;
+
+    return migrated;
   },
 };
 
