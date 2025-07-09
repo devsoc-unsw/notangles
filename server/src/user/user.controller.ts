@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -157,5 +158,85 @@ export class UserController {
       courseId,
       classId,
     );
+  }
+
+  @Get('timetables/:id')
+  @UseGuards(AuthenticatedGuard)
+  async getTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+  ) {
+    const timetable = await this.userService.getTimetable(
+      req.user.id,
+      timetableId,
+    );
+    return timetable;
+  }
+
+  @Get('timetables')
+  @UseGuards(AuthenticatedGuard)
+  async getUserTimetables(
+    @Req() req: AuthenticatedRequest,
+    @Query('year') year: string,
+    @Query('term') term: string,
+  ) {
+    const timetables = await this.userService.getUserTimetables(
+      req.user.id,
+      Number(year),
+      term,
+    );
+    return timetables;
+  }
+
+  @Post('timetables')
+  @UseGuards(AuthenticatedGuard)
+  async createTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: { name: string; year: number; term: string },
+  ) {
+    const timetable = await this.userService.createTimetable(
+      req.user!.id,
+      data,
+    );
+    return timetable;
+  }
+
+  @Delete('timetables/:id')
+  @UseGuards(AuthenticatedGuard)
+  async deleteTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+    @Query('year') year: string,
+    @Query('term') term: string,
+  ) {
+    await this.userService.deleteTimetable(
+      req.user!.id,
+      timetableId,
+      Number(year),
+      term,
+    );
+    return;
+  }
+
+  @Patch('timetables/:id/rename')
+  @UseGuards(AuthenticatedGuard)
+  async renameTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+    @Body('name') newName: string,
+  ) {
+    await this.userService.renameTimetable(req.user!.id, timetableId, newName);
+    return;
+  }
+
+  @Patch('timetables/:id/change-primary')
+  @UseGuards(AuthenticatedGuard)
+  async makePrimary(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+    @Body() data: { year: number; term: string },
+  ) {
+    await this.userService.makePrimary(req.user!.id, timetableId, data);
+    return;
   }
 }
