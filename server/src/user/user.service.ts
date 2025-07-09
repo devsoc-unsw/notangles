@@ -1,7 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AddCourseDto, CourseDetails, UserInfo, UserSettings } from './types';
+import {
+  AddCourseDto,
+  CourseDetails,
+  UserInfo,
+  UserSettings,
+  UserTimetable,
+} from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { validate } from 'src/utils/validate';
 
@@ -392,5 +403,172 @@ export class UserService {
     );
 
     await this.removeClassFromCourse(course, classId);
+  }
+
+  async getTimetable(
+    userId: string,
+    timetableId: string,
+  ): Promise<UserTimetable> {
+    const data = await this.prisma.timetable.findFirstOrThrow({
+      where: {
+        userId,
+        id: timetableId,
+      },
+    });
+
+    return {
+      id: data.id,
+      name: data.name,
+      year: data.year,
+      term: data.term,
+      primary: data.primary,
+    };
+  }
+
+  async getUserTimetables(
+    userId: string,
+    year: number,
+    term: string,
+  ): Promise<UserTimetable[]> {
+    const timetables = await this.prisma.timetable.findMany({
+      where: {
+        userId,
+        year,
+        term,
+      },
+      select: {
+        id: true,
+        name: true,
+        year: true,
+        term: true,
+        primary: true,
+      },
+    });
+
+    return timetables;
+  }
+
+  // get term timetable
+
+  async createTimetable(
+    userId: string,
+    data: { name: string; year: number; term: string },
+  ): Promise<string> {
+    // check if user has existing timetables
+    const numTimetables = await this.prisma.timetable.count({
+      where: {
+        userId,
+        year: data.year,
+        term: data.term,
+      },
+    });
+
+    // add timetable and return id from prisma
+    const timetable = await this.prisma.timetable.create({
+      data: {
+        userId,
+        name: data.name,
+        year: data.year,
+        term: data.term,
+        primary: numTimetables === 0,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return timetable.id;
+  }
+
+  async deleteTimetable(
+    userId: string,
+    timetableId: string,
+    year: number,
+    term: string,
+  ): Promise<void> {
+    const numTimetables = await this.prisma.timetable.count({
+      where: {
+        userId,
+        year,
+        term,
+      },
+    });
+
+    if (numTimetables <= 1) {
+      throw new ForbiddenException('Cannot delete the last timetable.');
+    }
+
+    const timetable = await this.prisma.timetable.findFirst({
+      where: { id: timetableId, userId },
+    });
+
+    if (!timetable) {
+      throw new ForbiddenException('Timetable does not belong to this user.');
+    }
+
+    if (timetable.primary) {
+      throw new ForbiddenException('Cannot delete the primary timetable.');
+    }
+
+    await this.prisma.timetable.delete({
+      where: {
+        id: timetableId,
+      },
+    });
+  }
+
+  async renameTimetable(
+    userId: string,
+    timetableId: string,
+    newName: string,
+  ): Promise<void> {
+    await this.prisma.timetable.updateMany({
+      where: {
+        userId,
+        id: timetableId,
+      },
+      data: {
+        name: newName,
+      },
+    });
+  }
+
+  async makePrimary(
+    userId: string,
+    timetableId: string,
+    data: { year: number; term: string },
+  ): Promise<void> {
+    const timetable = await this.prisma.timetable.findFirst({
+      where: {
+        id: timetableId,
+        userId,
+      },
+    });
+
+    if (!timetable) {
+      throw new ForbiddenException('Timetable does not belong to this user.');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.timetable.updateMany({
+        where: {
+          userId,
+          primary: true,
+          year: data.year,
+          term: data.term,
+        },
+        data: {
+          primary: false,
+        },
+      }),
+      this.prisma.timetable.update({
+        where: {
+          id: timetableId,
+        },
+        data: {
+          primary: true,
+        },
+      }),
+    ]);
   }
 }
