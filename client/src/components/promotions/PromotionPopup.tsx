@@ -14,8 +14,10 @@ const StyledModal = styled(Modal)`
 
 const StyledModalBody = styled(Box)`
   background-color: ${({ theme }) => theme.palette.background.default};
-  width: 70%;
+  width: 80%;
   border-radius: 20px;
+  max-height: 80%;
+  overflow-y: scroll;
 `;
 
 const NewLabel = styled(Box)`
@@ -53,7 +55,6 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopu
   const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isTiny = useMediaQuery(theme.breakpoints.down('sm'));
   const handlePromoDismiss = () => {
     setLastSeenPromoVersion(currentPromoVersion);
     storage.set(NEW_FEATURE_PROMOTION_KEY, currentPromoVersion);
@@ -92,14 +93,10 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopu
                   {title}
                 </Typography>
                 <Divider orientation="horizontal" />
-                {!isTiny && (
-                  <>
-                    <Typography variant="h6" component="h6" sx={{ margin: '15px 0' }}>
-                      {subTitle}
-                    </Typography>
-                    {bulletPoints}
-                  </>
-                )}
+                <Typography variant="h6" component="h6" sx={{ margin: '15px 0' }}>
+                  {subTitle}
+                </Typography>
+                {bulletPoints}
                 <Button
                   variant="contained"
                   disableElevation
