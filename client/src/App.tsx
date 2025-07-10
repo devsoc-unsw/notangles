@@ -3,7 +3,7 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -13,7 +13,7 @@ import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
-import SubcomPromotion from './components/SubcomPromotion';
+import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
@@ -49,6 +49,8 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import PromotionPopup from './components/promotions/PromotionPopup';
+import T3SelectGif from './assets/T3-select.gif';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -655,6 +657,25 @@ const App: React.FC = () => {
                 <Footer />
                 <Alerts />
                 <SubcomPromotion />
+                <PromotionPopup
+                  imgSrc={T3SelectGif}
+                  title="Next term's timetable has been released! 🎉"
+                  subTitle="Organise, plan and schedule with newly released timetable"
+                  bullets={[
+                    {
+                      main: 'Auto-timetable feature',
+                      description: 'Automate process of manually scheduling tasks saving time and being more efficient',
+                    },
+                    {
+                      main: 'Live data feedback',
+                      description: 'Syncs with the current myUNSW class availabilities',
+                    },
+                    {
+                      main: 'Create personal events',
+                      description: 'Fully customisable and caters to your needs',
+                    },
+                  ]}
+                />
               </Content>
             </ContentWrapper>
           </StyledApp>
