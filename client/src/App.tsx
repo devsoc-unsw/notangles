@@ -49,7 +49,7 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import NewFeaturePromotion from './components/promotions/NewFeaturePromotion';
+import PromotionPopup from './components/promotions/PromotionPopup';
 import T3SelectGif from './assets/T3-select.gif';
 
 const StyledApp = styled(Box)`
@@ -657,7 +657,7 @@ const App: React.FC = () => {
                 <Footer />
                 <Alerts />
                 <SubcomPromotion />
-                <NewFeaturePromotion
+                <PromotionPopup
                   imgSrc={T3SelectGif}
                   title="Next term's timetable has been released! 🎉"
                   subTitle="Organise, plan and schedule with newly released timetable"

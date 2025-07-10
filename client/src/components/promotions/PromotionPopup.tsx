@@ -1,6 +1,6 @@
 import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography, useTheme } from '@mui/material';
 import { Box, styled, useMediaQuery } from '@mui/system';
-import { NewFeaturePromotionProps } from '../../interfaces/PropTypes';
+import { PromotionPopupProps } from '../../interfaces/PropTypes';
 import { useMemo, useState } from 'react';
 import storage from '../../utils/storage';
 import { ThemeType } from '../../constants/theme';
@@ -49,7 +49,7 @@ const StyledMedia = styled('img')`
 const currentPromoVersion = 11;
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 
-const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePromotionProps) => {
+const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopupProps) => {
   const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
