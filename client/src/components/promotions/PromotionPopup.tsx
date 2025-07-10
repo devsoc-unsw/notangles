@@ -48,7 +48,7 @@ const StyledMedia = styled('img')`
 `;
 
 // Note: this hard-coded value must be incremented for each new release of a promotional banner
-const currentPromoVersion = 11;
+const CURRENT_PROMO_VERSION = 1;
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 
 const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopupProps) => {
@@ -56,11 +56,11 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopu
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const handlePromoDismiss = () => {
-    setLastSeenPromoVersion(currentPromoVersion);
-    storage.set(NEW_FEATURE_PROMOTION_KEY, currentPromoVersion);
+    setLastSeenPromoVersion(CURRENT_PROMO_VERSION);
+    storage.set(NEW_FEATURE_PROMOTION_KEY, CURRENT_PROMO_VERSION);
   };
 
-  const seenCurrentPromo = lastSeenPromoVersion >= currentPromoVersion;
+  const seenCurrentPromo = lastSeenPromoVersion >= CURRENT_PROMO_VERSION;
 
   const bulletPoints = useMemo(
     () =>
