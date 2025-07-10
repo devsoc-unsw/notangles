@@ -3,6 +3,7 @@ import { Box, styled } from '@mui/system';
 import { NewFeaturePromotionProps } from '../../interfaces/PropTypes';
 import { useMemo, useState } from 'react';
 import storage from '../../utils/storage';
+import { currentPromoVersion } from '../../constants/timetable';
 
 const StyledModal = styled(Modal)`
   display: flex;
@@ -46,12 +47,14 @@ const StyledMedia = styled('img')`
 
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePromotionProps) => {
-  const [seenPromo, setSeenPromo] = useState<boolean>(storage.get(NEW_FEATURE_PROMOTION_KEY) || false);
+  const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
 
   const handlePromoDismiss = () => {
-    setSeenPromo(true);
-    storage.set(NEW_FEATURE_PROMOTION_KEY, true);
+    setLastSeenPromoVersion(currentPromoVersion);
+    storage.set(NEW_FEATURE_PROMOTION_KEY, currentPromoVersion);
   };
+
+  const seenCurrentPromo = lastSeenPromoVersion >= currentPromoVersion;
 
   const bulletPoints = useMemo(
     () =>
@@ -73,12 +76,11 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
   );
 
   return (
-    <StyledModal open={!seenPromo} onClose={handlePromoDismiss} disableAutoFocus>
-      <Fade in={!seenPromo}>
+    <StyledModal open={!seenCurrentPromo} onClose={handlePromoDismiss} disableAutoFocus>
+      <Fade in={!seenCurrentPromo}>
         <StyledModalBody>
           <Grid container spacing={2}>
             <Grid item xs={6} container>
-              {/* Text and stuff */}
               <StyledTextWrapper>
                 <NewLabel>New</NewLabel>
                 <Typography variant="h4" component="h4" sx={{ margin: '20px 0 10px 0' }}>
