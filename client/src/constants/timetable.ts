@@ -239,4 +239,5 @@ export const unknownErrorMessage = 'An unknown error has occurred, please hard r
 
 export const invalidYearFormat = '0000';
 
-export const currentPromoVersion = 2;
+// Note: this hard-coded value must be incremented for each new release of a promotional banner
+export const currentPromoVersion = 1;
