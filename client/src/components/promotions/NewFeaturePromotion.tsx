@@ -1,9 +1,10 @@
-import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography } from '@mui/material';
-import { Box, styled } from '@mui/system';
+import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography, useTheme } from '@mui/material';
+import { Box, styled, useMediaQuery } from '@mui/system';
 import { NewFeaturePromotionProps } from '../../interfaces/PropTypes';
 import { useMemo, useState } from 'react';
 import storage from '../../utils/storage';
 import { currentPromoVersion } from '../../constants/timetable';
+import { themes, ThemeType } from '../../constants/theme';
 
 const StyledModal = styled(Modal)`
   display: flex;
@@ -48,7 +49,8 @@ const StyledMedia = styled('img')`
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePromotionProps) => {
   const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
-
+  const theme = useTheme<ThemeType>();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const handlePromoDismiss = () => {
     setLastSeenPromoVersion(currentPromoVersion);
     storage.set(NEW_FEATURE_PROMOTION_KEY, currentPromoVersion);
@@ -80,7 +82,7 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
       <Fade in={!seenCurrentPromo}>
         <StyledModalBody>
           <Grid container spacing={2}>
-            <Grid item xs={6} container>
+            <Grid item xs={isMobile ? 12 : 6} container>
               <StyledTextWrapper>
                 <NewLabel>New</NewLabel>
                 <Typography variant="h4" component="h4" sx={{ margin: '20px 0 10px 0' }}>
@@ -102,9 +104,11 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
                 </Button>
               </StyledTextWrapper>
             </Grid>
-            <StyledMediaGridWrapper item xs={6}>
-              <StyledMedia src={imgSrc} />
-            </StyledMediaGridWrapper>
+            {!isMobile && (
+              <StyledMediaGridWrapper item xs={6}>
+                <StyledMedia src={imgSrc} />
+              </StyledMediaGridWrapper>
+            )}
           </Grid>
         </StyledModalBody>
       </Fade>
