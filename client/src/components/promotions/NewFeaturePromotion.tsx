@@ -3,8 +3,7 @@ import { Box, styled, useMediaQuery } from '@mui/system';
 import { NewFeaturePromotionProps } from '../../interfaces/PropTypes';
 import { useMemo, useState } from 'react';
 import storage from '../../utils/storage';
-import { currentPromoVersion } from '../../constants/timetable';
-import { themes, ThemeType } from '../../constants/theme';
+import { ThemeType } from '../../constants/theme';
 
 const StyledModal = styled(Modal)`
   display: flex;
@@ -46,11 +45,15 @@ const StyledMedia = styled('img')`
   border-radius: 0 20px 20px 0;
 `;
 
+// Note: this hard-coded value must be incremented for each new release of a promotional banner
+const currentPromoVersion = 11;
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
+
 const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePromotionProps) => {
   const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTiny = useMediaQuery(theme.breakpoints.down('sm'));
   const handlePromoDismiss = () => {
     setLastSeenPromoVersion(currentPromoVersion);
     storage.set(NEW_FEATURE_PROMOTION_KEY, currentPromoVersion);
@@ -60,9 +63,9 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
 
   const bulletPoints = useMemo(
     () =>
-      bullets.map(({ main, description }) => {
+      bullets.map(({ main, description }, index) => {
         return (
-          <>
+          <div key={index}>
             <Typography variant="subtitle1" component="p">
               <b>{main}</b>
             </Typography>
@@ -71,7 +74,7 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
                 <ListItem sx={{ display: 'list-item' }}>{description}</ListItem>
               </List>
             )}
-          </>
+          </div>
         );
       }),
     [bullets],
@@ -89,10 +92,14 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: NewFeaturePro
                   {title}
                 </Typography>
                 <Divider orientation="horizontal" />
-                <Typography variant="h6" component="h6" sx={{ margin: '15px 0' }}>
-                  {subTitle}
-                </Typography>
-                {bulletPoints}
+                {!isTiny && (
+                  <>
+                    <Typography variant="h6" component="h6" sx={{ margin: '15px 0' }}>
+                      {subTitle}
+                    </Typography>
+                    {bulletPoints}
+                  </>
+                )}
                 <Button
                   variant="contained"
                   disableElevation

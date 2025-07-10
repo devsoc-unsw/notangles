@@ -238,6 +238,3 @@ export const weekdaysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr'];
 export const unknownErrorMessage = 'An unknown error has occurred, please hard refresh the page';
 
 export const invalidYearFormat = '0000';
-
-// Note: this hard-coded value must be incremented for each new release of a promotional banner
-export const currentPromoVersion = 1;
