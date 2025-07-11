@@ -31,7 +31,7 @@ export class SetCourseColourDto extends CourseDto {
 export class ClassDetails {
   course_id: string;
   activity: string;
-  career?: string | null | undefined;
+  career?: string | null;
   course_enrolment: string;
   mode: string;
   offering_period: string;

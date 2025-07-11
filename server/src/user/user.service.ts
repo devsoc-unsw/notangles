@@ -188,7 +188,7 @@ export class UserService {
     timetableId: string,
     courseId: string,
     classId: string,
-  ): Promise<string | null> {
+  ): Promise<string | undefined> {
     try {
       const classData = await this.graphqlService.getClassDetails(classId);
       if (!classData) {
@@ -197,7 +197,7 @@ export class UserService {
 
       const existingClassIds = await this.getClasses(courseId, timetableId);
       if (existingClassIds.length === 0 || existingClassIds === null) {
-        return null;
+        return undefined;
       }
       const existingClassDetails = await Promise.all(
         existingClassIds.map(async (classId) => {
@@ -208,7 +208,7 @@ export class UserService {
           };
         }),
       );
-      if (existingClassDetails === null) {
+      if (existingClassDetails === undefined) {
         throw new HttpException(
           'Failed to fetch class details',
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -228,7 +228,7 @@ export class UserService {
       if (differentTimeSlotsExist.length === 1 && differentTimeSlotsExist[0]) {
         return differentTimeSlotsExist[0].class_id;
       } else {
-        return null;
+        return undefined;
       }
     } catch (error) {
       if (error instanceof HttpException) {
