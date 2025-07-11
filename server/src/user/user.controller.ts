@@ -118,7 +118,7 @@ export class UserController {
     validate(
       !courseInTimetable,
       'Course is in timetable already',
-      HttpStatus.FORBIDDEN,
+      HttpStatus.CONFLICT,
     );
     const colourValid = this.userService.isColourCodeValid(addCourseDto.colour);
     validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
@@ -263,7 +263,7 @@ export class UserController {
     validate(
       !classInTimetable,
       'Class is already in timetable',
-      HttpStatus.FORBIDDEN,
+      HttpStatus.CONFLICT,
     );
 
     const classValidate = await this.graphqlService.getClassDetails(classId);

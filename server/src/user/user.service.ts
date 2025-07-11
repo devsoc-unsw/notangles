@@ -219,12 +219,6 @@ export class UserService {
           };
         }),
       );
-      if (existingClassDetails === undefined) {
-        throw new HttpException(
-          'Failed to fetch class details',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
       const differentTimeSlotsExist = existingClassDetails.filter(
         (classDetails: ClassDetails & { class_id: string }) =>
           classDetails.activity === classData.activity &&
