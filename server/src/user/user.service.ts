@@ -76,7 +76,7 @@ export class UserService {
     });
   }
 
-  async isTimetableExists(
+  async isTimetablePresent(
     userId: string,
     timetableId: string,
   ): Promise<boolean> {
@@ -86,7 +86,7 @@ export class UserService {
         userId: userId,
       },
     });
-    return timetable ? true : false;
+    return timetable !== null;
   }
 
   async isCourseInTimetable(
@@ -99,7 +99,7 @@ export class UserService {
         timetableId: timetableId,
       },
     });
-    return course ? true : false;
+    return course !== null;
   }
 
   isColourCodeValid(colour: string): boolean {
@@ -108,7 +108,7 @@ export class UserService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
-  async getCourseIDs(timetableId: string): Promise<string[]> {
+  async getCourseIds(timetableId: string): Promise<string[]> {
     const courses = await this.prisma.course.findMany({
       where: {
         timetableId: timetableId,
@@ -124,20 +124,12 @@ export class UserService {
     courseId: string,
     timetableId: string,
   ): Promise<CourseDetails> {
-    const course = await this.prisma.course.findFirst({
+    return await this.prisma.course.findFirstOrThrow({
       where: {
         courseId: courseId,
         timetableId: timetableId,
       },
     });
-    if (course === null) {
-      throw new HttpException(
-        'Course not found in the specified timetable',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return course;
   }
 
   async addCourse(addCourseDto: AddCourseDto): Promise<void> {
@@ -180,8 +172,7 @@ export class UserService {
   }
 
   async getClasses(courseId: string, timetableId: string): Promise<string[]> {
-    const course = await this.getCourse(courseId, timetableId);
-    return course.selectedClasses;
+    return (await this.getCourse(courseId, timetableId)).selectedClasses;
   }
 
   async differentTimeSlotsExist(

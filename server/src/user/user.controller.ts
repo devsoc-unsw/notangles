@@ -69,18 +69,17 @@ export class UserController {
 
   @Get('courses/:timetableId')
   @UseGuards(AuthenticatedGuard)
-  async getCourseIDs(
+  async getCourseIds(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
     try {
-      const courseIds = await this.userService.getCourseIDs(timetableId);
-      return courseIds;
+      return await this.userService.getCourseIds(timetableId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -107,7 +106,7 @@ export class UserController {
       'Course does not exist',
       HttpStatus.NOT_FOUND,
     );
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       addCourseDto.timetableId,
     );
@@ -144,7 +143,7 @@ export class UserController {
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       timetableId,
     );
@@ -168,7 +167,7 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Body() setCourseColourDto: SetCourseColourDto,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       setCourseColourDto.timetableId,
     );
@@ -206,7 +205,7 @@ export class UserController {
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       timetableId,
     );
@@ -242,7 +241,7 @@ export class UserController {
     @Param('courseId') courseId: string,
     @Body('classId') classId: string,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       timetableId,
     );
@@ -295,7 +294,7 @@ export class UserController {
     @Param('courseId') courseId: string,
     @Param('classId') classId: string,
   ) {
-    const timetableExists = await this.userService.isTimetableExists(
+    const timetableExists = await this.userService.isTimetablePresent(
       req.user.id,
       timetableId,
     );
