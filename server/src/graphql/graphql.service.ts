@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
-import type { ClassDetails } from 'src/user/types';
+import type { ClassDetails } from './types';
 
 const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 

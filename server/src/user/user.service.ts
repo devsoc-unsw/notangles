@@ -3,12 +3,12 @@ import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AddCourseDto,
-  ClassDetails,
   CourseDetails,
   SetCourseColourDto,
   UserInfo,
   UserSettings,
 } from './types';
+import type { ClassDetails } from 'src/graphql/types';
 
 @Injectable({})
 export class UserService {
@@ -108,6 +108,22 @@ export class UserService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
+  async isClassInTimetable(
+    classId: string,
+    courseId: string,
+    timetableId: string,
+  ): Promise<boolean> {
+    const courseExists = await this.isCourseInTimetable(courseId, timetableId);
+    if (!courseExists) {
+      throw new HttpException(
+        'Course not found in timetable',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const course = await this.getCourse(courseId, timetableId);
+    return course.selectedClasses.includes(classId);
+  }
+
   async getCourseIds(timetableId: string): Promise<string[]> {
     const courses = await this.prisma.course.findMany({
       where: {
@@ -125,6 +141,10 @@ export class UserService {
     timetableId: string,
   ): Promise<CourseDetails> {
     return await this.prisma.course.findFirstOrThrow({
+      select: {
+        id: true,
+        selectedClasses: true,
+      },
       where: {
         courseId: courseId,
         timetableId: timetableId,

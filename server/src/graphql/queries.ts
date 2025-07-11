@@ -15,22 +15,8 @@ export const COURSE_EXISTS = gql(`
 export const CLASS_DETAILS = gql(`
   query ClassDetails($classId: String!) {
   classDetails: classes_by_pk(class_id: $classId) {
-    course_id
     activity
-    career
-    course_enrolment
-    mode
-    offering_period
     section
-    status
-    term
-    times {
-      day
-      location
-      time
-      weeks
-    }
-    year
   }
 }
 `);

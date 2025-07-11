@@ -255,6 +255,16 @@ export class UserController {
       'Course is not in timetable',
       HttpStatus.NOT_FOUND,
     );
+    const classInTimetable = await this.userService.isClassInTimetable(
+      classId,
+      courseId,
+      timetableId,
+    );
+    validate(
+      !classInTimetable,
+      'Class is already in timetable',
+      HttpStatus.FORBIDDEN,
+    );
 
     const classValidate = await this.graphqlService.getClassDetails(classId);
     validate(
@@ -306,6 +316,17 @@ export class UserController {
     validate(
       courseInTimetable,
       'Course is not in timetable',
+      HttpStatus.NOT_FOUND,
+    );
+
+    const classInTimetable = await this.userService.isClassInTimetable(
+      classId,
+      courseId,
+      timetableId,
+    );
+    validate(
+      classInTimetable,
+      'Class is not in timetable',
       HttpStatus.NOT_FOUND,
     );
 
