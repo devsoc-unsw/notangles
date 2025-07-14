@@ -82,6 +82,7 @@ model Class {
 model Timetable {
   id              String   @id @unique @default(uuid())
   name            String
+  isPrimary       Boolean  @default(false)
   selectedCourses String[]
   selectedClasses Class[]
   createdEvents   Event[]

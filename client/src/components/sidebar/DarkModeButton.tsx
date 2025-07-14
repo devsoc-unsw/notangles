@@ -14,7 +14,7 @@ const ToggleDarkModeButton = styled(IconButton)`
   padding: 12px 12px 12px 12px;
 `;
 
-const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>`
+const IndividualComponentTypography = styled(Typography)`
   font-size: 16px;
 `;
 
@@ -30,9 +30,9 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
       <Tooltip title={collapsed ? (isDarkMode ? 'Light Mode' : 'Dark Mode') : ''} placement="right">
         <ToggleDarkModeButton color="inherit" onClick={toggleDarkMode}>
           {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
-          <IndividualComponentTypography collapsed={collapsed}>
-            {collapsed ? '' : isDarkMode ? 'Change to Light Mode' : 'Change to Dark Mode'}
-          </IndividualComponentTypography>
+          {!collapsed && (
+            <IndividualComponentTypography>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</IndividualComponentTypography>
+          )}
         </ToggleDarkModeButton>
       </Tooltip>
     </>

@@ -37,7 +37,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         <ButtonGroup>
           <Button
             disableElevation
-            variant="contained"
+            variant="outlined"
             size="small"
             aria-describedby={colorPickerPopoverId}
             onClick={handleOpenColorPicker}
@@ -45,7 +45,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             Choose Colour
           </Button>
           {handleSaveNewColor && (
-            <Button variant="outlined" size="small" onClick={handleSaveNewColor}>
+            <Button variant="contained" size="small" onClick={handleSaveNewColor} disableElevation>
               Save
             </Button>
           )}
@@ -84,7 +84,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             label="Hex"
             variant="outlined"
             value={textFieldValue}
-            onChange={(e) => setColor(e.target.value)}
+            onChange={(e) => {
+              let newColor = e.target.value;
+              if (newColor !== '' && !newColor.startsWith('#')) {
+                newColor = `#${newColor}`;
+              }
+              setColor(newColor);
+            }}
           />
         </ListItem>
       </Popover>
