@@ -9,6 +9,7 @@ import {
   UserSettings,
 } from './types';
 import type { ClassDetails } from 'src/graphql/types';
+import { validate } from 'src/utils/validate';
 
 @Injectable({})
 export class UserService {
@@ -76,27 +77,29 @@ export class UserService {
     });
   }
 
-  async isTimetablePresent(
+  async isTimetableOwnedByUser(
     userId: string,
     timetableId: string,
   ): Promise<boolean> {
     const timetable = await this.prisma.timetable.findUnique({
       where: {
         id: timetableId,
-        userId: userId,
       },
     });
-    return timetable !== null;
+    return timetable?.userId === userId;
   }
 
   async isCourseInTimetable(
-    courseId: string,
     timetableId: string,
+    courseId: string,
   ): Promise<boolean> {
     const course = await this.prisma.course.findFirst({
       where: {
         courseId: courseId,
         timetableId: timetableId,
+      },
+      select: {
+        id: true,
       },
     });
     return course !== null;
@@ -108,23 +111,13 @@ export class UserService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
-  async isClassInTimetable(
-    classId: string,
-    courseId: string,
-    timetableId: string,
-  ): Promise<boolean> {
-    const courseExists = await this.isCourseInTimetable(courseId, timetableId);
-    if (!courseExists) {
-      throw new HttpException(
-        'Course not found in timetable',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const course = await this.getCourse(courseId, timetableId);
-    return course.selectedClasses.includes(classId);
-  }
+  async getCourseIds(userId: string, timetableId: string): Promise<string[]> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
 
-  async getCourseIds(timetableId: string): Promise<string[]> {
     const courses = await this.prisma.course.findMany({
       where: {
         timetableId: timetableId,
@@ -136,23 +129,59 @@ export class UserService {
     return courses.map((course) => course.courseId);
   }
 
-  async getCourse(
-    courseId: string,
+  async getCourseIfExists(
     timetableId: string,
+    courseId: string,
   ): Promise<CourseDetails> {
-    return await this.prisma.course.findFirstOrThrow({
-      select: {
-        id: true,
-        selectedClasses: true,
-      },
-      where: {
-        courseId: courseId,
-        timetableId: timetableId,
-      },
-    });
+    try {
+      return await this.prisma.course.findFirstOrThrow({
+        select: {
+          id: true,
+          selectedClasses: true,
+        },
+        where: {
+          courseId: courseId,
+          timetableId: timetableId,
+        },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Course is not in timetable',
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
-  async addCourse(addCourseDto: AddCourseDto): Promise<void> {
+  async addCourse(userId: string, addCourseDto: AddCourseDto): Promise<void> {
+    const courseExistsOnGraphQL = await this.graphqlService.courseExists(
+      addCourseDto.courseId,
+      addCourseDto.term,
+    );
+    validate(
+      courseExistsOnGraphQL,
+      'Course does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      addCourseDto.timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const courseInTimetable = await this.isCourseInTimetable(
+      addCourseDto.timetableId,
+      addCourseDto.courseId,
+    );
+    validate(
+      !courseInTimetable,
+      'Course is in timetable already',
+      HttpStatus.CONFLICT,
+    );
+    const colourValid = this.isColourCodeValid(addCourseDto.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+
     await this.prisma.course.create({
       data: {
         courseId: addCourseDto.courseId,
@@ -167,8 +196,18 @@ export class UserService {
     });
   }
 
-  async removeCourse(courseId: string, timetableId: string): Promise<void> {
-    const course = await this.getCourse(courseId, timetableId);
+  async removeCourse(
+    userId: string,
+    timetableId: string,
+    courseId: string,
+  ): Promise<void> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const course = await this.getCourseIfExists(timetableId, courseId);
     await this.prisma.course.delete({
       where: {
         id: course.id,
@@ -176,11 +215,22 @@ export class UserService {
     });
   }
 
-  async setCourseColour(setCourseColourDto: SetCourseColourDto): Promise<void> {
-    const course = await this.getCourse(
-      setCourseColourDto.courseId,
+  async setCourseColour(
+    userId: string,
+    setCourseColourDto: SetCourseColourDto,
+  ): Promise<void> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
       setCourseColourDto.timetableId,
     );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const colourValid = this.isColourCodeValid(setCourseColourDto.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+    const course = await this.getCourseIfExists(
+      setCourseColourDto.timetableId,
+      setCourseColourDto.courseId,
+    );
+
     await this.prisma.course.update({
       where: {
         id: course.id,
@@ -191,25 +241,26 @@ export class UserService {
     });
   }
 
-  async getClasses(courseId: string, timetableId: string): Promise<string[]> {
-    return (await this.getCourse(courseId, timetableId)).selectedClasses;
+  async getSelectedClassesId(
+    userId: string,
+    timetableId: string,
+    courseId: string,
+  ): Promise<string[]> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const course = await this.getCourseIfExists(timetableId, courseId);
+    return course.selectedClasses;
   }
 
   async differentTimeSlotsExist(
-    timetableId: string,
-    courseId: string,
-    classId: string,
+    classData: ClassDetails,
+    existingClassIds: string[],
   ): Promise<string | undefined> {
     try {
-      const classData = await this.graphqlService.getClassDetails(classId);
-      if (!classData) {
-        throw new HttpException('Class not found', HttpStatus.NOT_FOUND);
-      }
-
-      const existingClassIds = await this.getClasses(courseId, timetableId);
-      if (existingClassIds.length === 0 || existingClassIds === null) {
-        return undefined;
-      }
       const existingClassDetails = await Promise.all(
         existingClassIds.map(async (classId) => {
           const details = await this.graphqlService.getClassDetails(classId);
@@ -224,12 +275,11 @@ export class UserService {
           classDetails.activity === classData.activity &&
           classDetails.section !== classData.section,
       );
-      if (differentTimeSlotsExist.length > 1) {
-        throw new HttpException(
-          'Multiple different time slots found for the same activity',
-          HttpStatus.CONFLICT,
-        );
-      }
+      validate(
+        differentTimeSlotsExist.length <= 1,
+        'Multiple different time slots found for the same activity',
+        HttpStatus.CONFLICT,
+      );
       if (differentTimeSlotsExist.length === 1 && differentTimeSlotsExist[0]) {
         return differentTimeSlotsExist[0].class_id;
       } else {
@@ -247,21 +297,45 @@ export class UserService {
   }
 
   async updateSelectedClass(
+    userId: string,
     timetableId: string,
     courseId: string,
     classId: string,
   ): Promise<void> {
-    const differentTimeSlotClassId = await this.differentTimeSlotsExist(
+    const classDetails = await this.graphqlService.getClassDetails(classId);
+    validate(
+      classDetails !== undefined,
+      'Class does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+    // Assertion to help TypeScript understand that classDetails is defined
+    if (!classDetails) {
+      throw new Error('Class details should be defined');
+    }
+    validate(
+      classDetails?.activity !== undefined &&
+        classDetails?.activity !== 'Course Enrollment',
+      'Class is not a valid course class',
+      HttpStatus.BAD_REQUEST,
+    );
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
       timetableId,
-      courseId,
-      classId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const course = await this.getCourseIfExists(timetableId, courseId);
+    validate(
+      !course.selectedClasses.includes(classId),
+      'Class is already in course',
+      HttpStatus.CONFLICT,
+    );
+
+    const differentTimeSlotClassId = await this.differentTimeSlotsExist(
+      classDetails,
+      course.selectedClasses,
     );
     if (differentTimeSlotClassId) {
-      await this.removeSelectedClass(
-        timetableId,
-        courseId,
-        differentTimeSlotClassId,
-      );
+      await this.removeClassFromCourse(course, differentTimeSlotClassId);
     }
     await this.addSelectedClass(timetableId, courseId, classId);
   }
@@ -271,7 +345,7 @@ export class UserService {
     courseId: string,
     classId: string,
   ): Promise<void> {
-    const course = await this.getCourse(courseId, timetableId);
+    const course = await this.getCourseIfExists(timetableId, courseId);
     await this.prisma.course.update({
       where: {
         id: course.id,
@@ -284,16 +358,13 @@ export class UserService {
     });
   }
 
-  async removeSelectedClass(
-    timetableId: string,
-    courseId: string,
+  async removeClassFromCourse(
+    course: CourseDetails,
     classId: string,
   ): Promise<void> {
-    const course = await this.getCourse(courseId, timetableId);
     const updatedClasses = course.selectedClasses.filter(
       (existingClassId) => existingClassId !== classId,
     );
-
     await this.prisma.course.update({
       where: {
         id: course.id,
@@ -302,5 +373,32 @@ export class UserService {
         selectedClasses: updatedClasses,
       },
     });
+  }
+
+  async removeSelectedClass(
+    userId: string,
+    timetableId: string,
+    courseId: string,
+    classId: string,
+  ): Promise<void> {
+    const classValidate = await this.graphqlService.getClassDetails(classId);
+    validate(
+      classValidate !== undefined,
+      'Class does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+    const course = await this.getCourseIfExists(timetableId, courseId);
+    validate(
+      course.selectedClasses.includes(classId),
+      'Class is not in course',
+      HttpStatus.NOT_FOUND,
+    );
+
+    await this.removeClassFromCourse(course, classId);
   }
 }

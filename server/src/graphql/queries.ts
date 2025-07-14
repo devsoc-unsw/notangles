@@ -14,9 +14,9 @@ export const COURSE_EXISTS = gql(`
 
 export const CLASS_DETAILS = gql(`
   query ClassDetails($classId: String!) {
-  classDetails: classes_by_pk(class_id: $classId) {
-    activity
-    section
+    classDetails: classes_by_pk(class_id: $classId) {
+      activity
+      section
+    }
   }
-}
 `);

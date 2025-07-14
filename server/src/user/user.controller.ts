@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
   Param,
   Patch,
@@ -15,8 +14,6 @@ import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
 import { UserSettings, AddCourseDto, SetCourseColourDto } from './types';
-import { validate } from '../utils/validate';
-import { GraphqlService } from 'src/graphql/graphql.service';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -28,10 +25,7 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private readonly graphqlService: GraphqlService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
@@ -73,22 +67,7 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
-      req.user.id,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    try {
-      return await this.userService.getCourseIds(timetableId);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to get courses',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.userService.getCourseIds(req.user.id, timetableId);
   }
 
   @Post('course')
@@ -97,42 +76,7 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Body() addCourseDto: AddCourseDto,
   ) {
-    const courseExistsOnGraphQL = await this.graphqlService.courseExists(
-      addCourseDto.courseId,
-      addCourseDto.term,
-    );
-    validate(
-      courseExistsOnGraphQL,
-      'Course does not exist',
-      HttpStatus.NOT_FOUND,
-    );
-    const timetableExists = await this.userService.isTimetablePresent(
-      req.user.id,
-      addCourseDto.timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
-      addCourseDto.courseId,
-      addCourseDto.timetableId,
-    );
-    validate(
-      !courseInTimetable,
-      'Course is in timetable already',
-      HttpStatus.CONFLICT,
-    );
-    const colourValid = this.userService.isColourCodeValid(addCourseDto.colour);
-    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
-    try {
-      await this.userService.addCourse(addCourseDto);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to add course',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.userService.addCourse(req.user.id, addCourseDto);
     return HttpStatus.CREATED;
   }
 
@@ -143,22 +87,7 @@ export class UserController {
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
-      req.user.id,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    try {
-      await this.userService.removeCourse(courseId, timetableId);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to remove course',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.userService.removeCourse(req.user.id, timetableId, courseId);
   }
 
   @Patch('course/colour')
@@ -167,70 +96,21 @@ export class UserController {
     @Req() req: AuthenticatedRequest,
     @Body() setCourseColourDto: SetCourseColourDto,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
-      req.user.id,
-      setCourseColourDto.timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
-      setCourseColourDto.courseId,
-      setCourseColourDto.timetableId,
-    );
-    validate(
-      courseInTimetable,
-      'Course is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-    const colourValid = this.userService.isColourCodeValid(
-      setCourseColourDto.colour,
-    );
-    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
-    try {
-      await this.userService.setCourseColour(setCourseColourDto);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to set course colour',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.userService.setCourseColour(req.user.id, setCourseColourDto);
   }
 
   @Get('classes/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
-  async getSelectedClassesID(
+  async getSelectedClassesId(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
+    return await this.userService.getSelectedClassesId(
       req.user.id,
       timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
       courseId,
-      timetableId,
     );
-    validate(
-      courseInTimetable,
-      'Course is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-    try {
-      const classes = await this.userService.getClasses(courseId, timetableId);
-      return classes;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to get classes',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 
   @Patch('class/:timetableId/:courseId')
@@ -241,59 +121,12 @@ export class UserController {
     @Param('courseId') courseId: string,
     @Body('classId') classId: string,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
+    await this.userService.updateSelectedClass(
       req.user.id,
       timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
       courseId,
-      timetableId,
-    );
-    validate(
-      courseInTimetable,
-      'Course is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-    const classInTimetable = await this.userService.isClassInTimetable(
       classId,
-      courseId,
-      timetableId,
     );
-    validate(
-      !classInTimetable,
-      'Class is already in timetable',
-      HttpStatus.CONFLICT,
-    );
-
-    const classValidate = await this.graphqlService.getClassDetails(classId);
-    validate(
-      classValidate !== null,
-      'Class does not exist',
-      HttpStatus.NOT_FOUND,
-    );
-    validate(
-      classValidate?.activity !== undefined &&
-        classValidate?.activity !== 'Course Enrolment',
-      'Class is not a valid class',
-      HttpStatus.BAD_REQUEST,
-    );
-
-    try {
-      await this.userService.updateSelectedClass(
-        timetableId,
-        courseId,
-        classId,
-      );
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to update selected class',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 
   @Delete('class/:timetableId/:courseId/:classId')
@@ -304,53 +137,11 @@ export class UserController {
     @Param('courseId') courseId: string,
     @Param('classId') classId: string,
   ) {
-    const timetableExists = await this.userService.isTimetablePresent(
+    await this.userService.removeSelectedClass(
       req.user.id,
       timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const courseInTimetable = await this.userService.isCourseInTimetable(
       courseId,
-      timetableId,
-    );
-    validate(
-      courseInTimetable,
-      'Course is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-
-    const classInTimetable = await this.userService.isClassInTimetable(
       classId,
-      courseId,
-      timetableId,
     );
-    validate(
-      classInTimetable,
-      'Class is not in timetable',
-      HttpStatus.NOT_FOUND,
-    );
-
-    const classValidate = await this.graphqlService.getClassDetails(classId);
-    validate(
-      classValidate !== null,
-      'Class does not exist',
-      HttpStatus.NOT_FOUND,
-    );
-
-    try {
-      await this.userService.removeSelectedClass(
-        timetableId,
-        courseId,
-        classId,
-      );
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Failed to remove selected class',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 }
