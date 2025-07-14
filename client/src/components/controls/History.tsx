@@ -221,57 +221,74 @@ const History: React.FC = () => {
    * Undo/redo accordingly when a hotkey is pressed
    * @param event The keyboard event that was triggered
    */
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    // event.metaKey corresponds to the Cmd key on Mac
-    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
-    if (!term) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // event.metaKey corresponds to the Cmd key on Mac
+      if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
+      if (!term) return;
 
+      const currentTimetable = displayTimetables[term][selectedTimetable];
 
-    const currentTimetable = displayTimetables[term][selectedTimetable];
+      event.preventDefault();
+      if (!isMacOS && event.ctrlKey) {
+        if (event.key === 'z' && !disableLeft) {
+          changeHistory(-1);
+        }
+        if (
+          event.key === 'y' &&
+          !disableRight &&
+          actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
+        ) {
+          changeHistory(1);
+        }
+        if (event.key === 'd') {
+          setClearOpen((prev) => !prev);
+        }
+      }
 
-    event.preventDefault();
-    if (!isMacOS && event.ctrlKey) {
-      if (event.key === 'z' && !disableLeft) {
-        changeHistory(-1);
-        
+      if (isMacOS && event.metaKey) {
+        if (!event.shiftKey && event.key === 'z' && !disableLeft) {
+          changeHistory(-1);
+        }
+        if (
+          event.shiftKey &&
+          event.key === 'z' &&
+          !disableRight &&
+          actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
+        ) {
+          changeHistory(1);
+        }
+        if (event.key === 'd') {
+          setClearOpen((prev) => !prev);
+        }
       }
-      if (
-        event.key === 'y' &&
-        !disableRight &&
-        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
-      ) {
-        changeHistory(1);
-      }
-      if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
-      }
-    }
+    },
+    [
+      term,
+      displayTimetables,
+      selectedTimetable,
+      isMacOS,
+      disableLeft,
+      disableRight,
+      actionsPointer,
+      timetableActions,
+      changeHistory,
+      setClearOpen,
+    ],
+  );
 
-    if (isMacOS && event.metaKey) {
-      if (!event.shiftKey && event.key === 'z' && !disableLeft) {
-        changeHistory(-1);
-      }
-      if (
-        event.shiftKey &&
-        event.key === 'z' &&
-        !disableRight &&
-        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
-      ) {
-        changeHistory(1);
-      }
-      if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
-      }
-    }
-  }, [term, displayTimetables, selectedTimetable, isMacOS, disableLeft, disableRight, actionsPointer, timetableActions, changeHistory, setClearOpen]);
+  const handleMouseUp = useCallback(() => {
+    setIsDrag(false);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
+    document.addEventListener('mouseup', handleMouseUp); // Only triggers useEffect function if isDrag was true previously
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-    }
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
   }, [handleKeyDown, disableLeft, disableRight]);
 
   // Hotkey to confirm delete all timetables by pressing enter button
