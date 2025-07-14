@@ -84,7 +84,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             label="Hex"
             variant="outlined"
             value={textFieldValue}
-            onChange={(e) => setColor(e.target.value)}
+            onChange={(e) => {
+              let newColor = e.target.value;
+              if (newColor !== '' && !newColor.startsWith('#')) {
+                newColor = `#${newColor}`;
+              }
+              setColor(newColor);
+            }}
           />
         </ListItem>
       </Popover>
