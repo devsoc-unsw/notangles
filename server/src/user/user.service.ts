@@ -337,15 +337,13 @@ export class UserService {
     if (differentTimeSlotClassId) {
       await this.removeClassFromCourse(course, differentTimeSlotClassId);
     }
-    await this.addSelectedClass(timetableId, courseId, classId);
+    await this.addSelectedClass(course, classId);
   }
 
   async addSelectedClass(
-    timetableId: string,
-    courseId: string,
+    course: CourseDetails,
     classId: string,
   ): Promise<void> {
-    const course = await this.getCourseIfExists(timetableId, courseId);
     await this.prisma.course.update({
       where: {
         id: course.id,
