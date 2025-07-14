@@ -1,7 +1,7 @@
 import { Add, MoreHoriz, Star } from '@mui/icons-material';
 import { Box, Icon, Tooltip } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AppContext } from '../../context/AppContext';
