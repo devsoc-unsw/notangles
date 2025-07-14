@@ -235,3 +235,13 @@ export interface TimetableTabContextMenuProps {
   anchorElement: null | { x: number; y: number };
   setAnchorElement: (anchorElement: null | { x: number; y: number }) => void;
 }
+
+export interface PromotionPopupProps {
+  imgSrc: string;
+  title: string;
+  subTitle: string;
+  bullets: {
+    main: string;
+    description?: string;
+  }[];
+}

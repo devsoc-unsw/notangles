@@ -1,4 +1,4 @@
-import { Close, Edit, EditNote, FileCopy, Save } from '@mui/icons-material';
+import { Close, Edit, EditNote, FileCopy, Star, Save } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -81,12 +81,19 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   // Handler for deleting a timetable
   const handleDeleteTimetable = (targetIndex: number) => {
     if (displayTimetables[term].length > 1) {
+      if (displayTimetables[term].findIndex((t: TimetableData, index: number) => t.isPrimary) === targetIndex) {
+        setAlertMsg('You cannot delete the primary timetable.');
+        setErrorVisibility(true);
+        return;
+      }
+
       prevTimetables = {
         selected: selectedTimetable,
         timetables: displayTimetables[term].map((timetable: TimetableData) => {
           return {
             name: timetable.name,
             id: timetable.id,
+            isPrimary: timetable.isPrimary,
             selectedCourses: timetable.selectedCourses,
             selectedClasses: duplicateClasses(timetable.selectedClasses),
             createdEvents: timetable.createdEvents,
@@ -99,7 +106,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
       const newDisplayTimetables = {
         ...displayTimetables,
-        [term]: displayTimetables[term].filter((timetable: TimetableData, index: number) => index !== targetIndex),
+        [term]: displayTimetables[term].filter((_: TimetableData, index: number) => index !== targetIndex),
       };
       // Updating the timetables state to the new timetable index
       setDisplayTimetables(newDisplayTimetables);
@@ -128,7 +135,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         return;
       });
     } else {
-      setAlertMsg('Must have at least 1 timetable');
+      setAlertMsg('Must have at least 1 timetable.');
       setErrorVisibility(true);
     }
   };
@@ -183,6 +190,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const handleDuplicateTimetable = () => {
     if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
+
       setErrorVisibility(true);
     } else {
       const currentTimetable = displayTimetables[term][selectedTimetable];
@@ -213,6 +221,25 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, selectedTimetable + 1);
       handleMenuClose();
     }
+  };
+
+  const handleSetPrimary = () => {
+    if (displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable) {
+      return;
+    }
+    displayTimetables[term].forEach((e) => {
+      e.isPrimary = false;
+    });
+    displayTimetables[term][selectedTimetable].isPrimary = true;
+    storage.set('timetables', displayTimetables);
+    handleMenuClose();
+  };
+
+  const isPrimarySelected = () => {
+    // TODO: The term check is needed for first ever use of Notangles. Why?
+    return term !== '' && displayTimetables[term] !== undefined
+      ? displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable
+      : false;
   };
 
   /**
@@ -330,6 +357,14 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         onClose={handleMenuClose}
         autoFocus={false}
       >
+        <Tooltip title={isPrimarySelected() ? 'This timetable is already primary' : ''}>
+          <MenuItem onClick={handleSetPrimary} sx={{ opacity: isPrimarySelected() ? 0.5 : 1 }}>
+            <ListItemIcon>
+              <Star fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Set as primary</ListItemText>
+          </MenuItem>
+        </Tooltip>
         <MenuItem onClick={handleRenameOpen}>
           <ListItemIcon>
             <Edit fontSize="small" />

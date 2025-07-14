@@ -149,6 +149,7 @@ const createDefaultTimetable = (userID: string | undefined): TimetableData[] => 
   const defaultTimetable = {
     name: 'My timetable',
     id: uuidv4(),
+    isPrimary: true,
     selectedCourses: [],
     selectedClasses: {},
     createdEvents: {},

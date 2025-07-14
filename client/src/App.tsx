@@ -3,7 +3,7 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -13,11 +13,11 @@ import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
-import SubcomPromotion from './components/SubcomPromotion';
+import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, leftContentPadding, rightContentPadding, themes } from './constants/theme';
+import { contentPadding, rightContentPadding, themes } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -49,15 +49,21 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import PromotionPopup from './components/promotions/PromotionPopup';
+import T3SelectGif from './assets/T3-select.gif';
 
 const StyledApp = styled(Box)`
   height: 100%;
 `;
 
+const Container = styled(Box)`
+  display: flex;
+  justify-content: center;
+`;
+
 const ContentWrapper = styled(Box)`
   text-align: center;
   padding-top: ${contentPadding}px;
-  padding-left: ${leftContentPadding}px;
   padding-right: ${rightContentPadding}px;
   transition:
     background 0.2s,
@@ -68,6 +74,7 @@ const ContentWrapper = styled(Box)`
   flex-direction: row-reverse;
   justify-content: center;
   color: ${({ theme }) => theme.palette.text.primary};
+  overflow: hidden;
 `;
 
 const Content = styled(Box)`
@@ -628,35 +635,57 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
-            <Sidebar />
-            <ContentWrapper>
-              <Content>
-                <Controls
-                  assignedColors={decodedAssignedColors}
-                  handleSelectClass={handleSelectClass}
-                  handleSelectCourse={handleSelectCourse}
-                  handleRemoveCourse={handleRemoveCourse}
-                />
-                <Outlet />
-                {groupsSidebarCollapsed ? (
-                  <>
-                    <TimetableTabs />
-                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  </>
-                ) : (
-                  <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                )}
-                <ICSButton
-                  onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                >
-                  save to calendar
-                </ICSButton>
-                <Sponsors />
-                <Footer />
-                <Alerts />
-                <SubcomPromotion />
-              </Content>
-            </ContentWrapper>
+            <Container>
+              <Sidebar />
+              <ContentWrapper>
+                <Content>
+                  <Controls
+                    assignedColors={decodedAssignedColors}
+                    handleSelectClass={handleSelectClass}
+                    handleSelectCourse={handleSelectCourse}
+                    handleRemoveCourse={handleRemoveCourse}
+                  />
+                  <Outlet />
+                  {groupsSidebarCollapsed ? (
+                    <>
+                      <TimetableTabs />
+                      <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                    </>
+                  ) : (
+                    <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                  )}
+                  <ICSButton
+                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                  >
+                    save to calendar
+                  </ICSButton>
+                  <Sponsors />
+                  <Footer />
+                  <Alerts />
+                  <SubcomPromotion />
+                  <PromotionPopup
+                    imgSrc={T3SelectGif}
+                    title="Next term's timetable has been released! 🎉"
+                    subTitle="Organise, plan and schedule with newly released timetable"
+                    bullets={[
+                      {
+                        main: 'Auto-timetable feature',
+                        description:
+                          'Automate process of manually scheduling tasks saving time and being more efficient',
+                      },
+                      {
+                        main: 'Live data feedback',
+                        description: 'Syncs with the current myUNSW class availabilities',
+                      },
+                      {
+                        main: 'Create personal events',
+                        description: 'Fully customisable and caters to your needs',
+                      },
+                    ]}
+                  />
+                </Content>
+              </ContentWrapper>
+            </Container>
           </StyledApp>
         </LocalizationProvider>
       </ThemeProvider>

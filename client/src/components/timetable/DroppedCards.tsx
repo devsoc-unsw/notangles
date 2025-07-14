@@ -88,20 +88,25 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     /**
      * Updates the computed width of each cell on the grid as the size of the timetable changes
      */
-    const updateCellWidth = () => {
-      if (droppedCardsRef.current) {
-        const gridChildren = (droppedCardsRef.current as unknown as HTMLDivElement).parentElement?.children;
+    const droppedEl = droppedCardsRef.current as HTMLDivElement | null;
+    const gridParent = droppedEl?.parentElement;
 
-        if (gridChildren) {
-          setCellWidth(gridChildren[Math.floor(gridChildren.length / 2)].getBoundingClientRect().width);
-        }
+    if (!gridParent) return;
+
+    const updateCellWidth = () => {
+      const gridChildren = gridParent.children;
+      if (gridChildren.length > 0) {
+        const sampleCell = gridChildren[Math.floor(gridChildren.length / 2)] as HTMLElement;
+        setCellWidth(sampleCell.getBoundingClientRect().width);
       }
     };
 
-    window.addEventListener('resize', updateCellWidth);
+    // Observe the parent element for size changes
+    const resizeObserver = new ResizeObserver(() => updateCellWidth());
+    resizeObserver.observe(gridParent);
     updateCellWidth();
 
-    return () => window.removeEventListener('resize', updateCellWidth);
+    return () => resizeObserver.disconnect();
   }, [days]);
 
   const clashes = findClashes(selectedClasses, createdEvents);

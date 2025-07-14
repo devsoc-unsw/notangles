@@ -3,7 +3,7 @@ import { Alert, Box, IconButton, Link, Slide, Snackbar, Typography } from '@mui/
 import { styled } from '@mui/system';
 import { useCallback, useRef, useState } from 'react';
 
-import storage from '../utils/storage';
+import storage from '../../utils/storage';
 
 const StyledAlertBanner = styled(Alert)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
