@@ -85,11 +85,11 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             variant="outlined"
             value={textFieldValue}
             onChange={(e) => {
-              const newColor = e.target.value
-              if (newColor !== "" && !newColor.startsWith('#')) { 
+              let newColor = e.target.value;
+              if (newColor !== '' && !newColor.startsWith('#')) {
                 newColor = `#${newColor}`;
               }
-              setColor(newColor)
+              setColor(newColor);
             }}
           />
         </ListItem>
