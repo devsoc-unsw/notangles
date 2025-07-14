@@ -85,7 +85,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             variant="outlined"
             value={textFieldValue}
             onChange={(e) => {
-              let newColor = e.target.value
+              const newColor = e.target.value
               if (newColor !== "" && !newColor.startsWith('#')) { 
                 newColor = `#${newColor}`;
               }
