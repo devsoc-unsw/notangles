@@ -1,6 +1,6 @@
 import { Delete, Redo, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -221,53 +221,75 @@ const History: React.FC = () => {
    * Undo/redo accordingly when a hotkey is pressed
    * @param event The keyboard event that was triggered
    */
-  const handleKeyDown = (event: KeyboardEvent) => {
-    // event.metaKey corresponds to the Cmd key on Mac
-    if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
-    if (!term) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // event.metaKey corresponds to the Cmd key on Mac
+      if (!(event.ctrlKey || event.metaKey) || !(event.key === 'z' || event.key === 'y' || event.key === 'd')) return;
+      if (!term) return;
 
-    const currentTimetable = displayTimetables[term][selectedTimetable];
+      const currentTimetable = displayTimetables[term][selectedTimetable];
 
-    event.preventDefault();
+      event.preventDefault();
+      if (!isMacOS && event.ctrlKey) {
+        if (event.key === 'z' && !disableLeft) {
+          changeHistory(-1);
+        }
+        if (
+          event.key === 'y' &&
+          !disableRight &&
+          actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
+        ) {
+          changeHistory(1);
+        }
+        if (event.key === 'd') {
+          setClearOpen((prev) => !prev);
+        }
+      }
 
-    if (!isMacOS && event.ctrlKey) {
-      if (event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
-        changeHistory(-1);
+      if (isMacOS && event.metaKey) {
+        if (!event.shiftKey && event.key === 'z' && !disableLeft) {
+          changeHistory(-1);
+        }
+        if (
+          event.shiftKey &&
+          event.key === 'z' &&
+          !disableRight &&
+          actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
+        ) {
+          changeHistory(1);
+        }
+        if (event.key === 'd') {
+          setClearOpen((prev) => !prev);
+        }
       }
-      if (
-        event.key === 'y' &&
-        !disableRight &&
-        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
-      ) {
-        changeHistory(1);
-      }
-      if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
-      }
-    }
+    },
+    [
+      term,
+      displayTimetables,
+      selectedTimetable,
+      isMacOS,
+      disableLeft,
+      disableRight,
+      actionsPointer,
+      timetableActions,
+      changeHistory,
+      setClearOpen,
+    ],
+  );
 
-    if (isMacOS && event.metaKey) {
-      if (!event.shiftKey && event.key === 'z' && !disableLeft && actionsPointer.current[currentTimetable.id] > 1) {
-        changeHistory(-1);
-      }
-      if (
-        event.shiftKey &&
-        event.key === 'z' &&
-        !disableRight &&
-        actionsPointer.current[currentTimetable.id] + 1 < timetableActions.current[currentTimetable.id].length
-      ) {
-        changeHistory(1);
-      }
-      if (event.key === 'd') {
-        setClearOpen((prev) => !prev);
-      }
-    }
-  };
+  const handleMouseUp = useCallback(() => {
+    setIsDrag(false);
+  }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('mouseup', () => setIsDrag(false)); // Only triggers useEffect function if isDrag was true previously
-  }, [disableLeft, disableRight]);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mouseup', handleMouseUp); // Only triggers useEffect function if isDrag was true previously
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleKeyDown, disableLeft, disableRight]);
 
   // Hotkey to confirm delete all timetables by pressing enter button
   useEffect(() => {
@@ -282,7 +304,6 @@ const History: React.FC = () => {
 
     document.addEventListener('keydown', handleDeleteEnterShortcut);
 
-    // Removing the event listener when the component unmounts
     return () => {
       document.removeEventListener('keydown', handleDeleteEnterShortcut);
     };
