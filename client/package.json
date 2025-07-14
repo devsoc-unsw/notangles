@@ -26,7 +26,7 @@
     "@mui/lab": "5.0.0-alpha.176",
     "@mui/material": "5.17.1",
     "@mui/system": "5.17.1",
-    "@mui/x-date-pickers": "6.20.2",
+    "@mui/x-date-pickers": "7.29.4",
     "@sentry/browser": "9.38.0",
     "@sentry/node": "9.38.0",
     "@sentry/react": "9.38.0",
