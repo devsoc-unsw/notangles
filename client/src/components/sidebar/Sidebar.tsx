@@ -184,7 +184,8 @@ const Sidebar: React.FC = () => {
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
     // forces window resize event upon sidebar state changing to adjust position of cards
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
+    // Not currently used, but here is how you would do it if needed
+    // setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
   };
 
   const modalComponents = useMemo(
