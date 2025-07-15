@@ -31,7 +31,12 @@ jobs:
         working-directory: ${{ matrix.component }}
 
       - name: Generate Prisma Types from Schema
-        run: npx prisma generate
+        run: pnpx prisma generate
+        if: ${{ matrix.component == 'server' }}
+        working-directory: server
+
+      - name: Generate GraphQL Types
+        run: pnpm graphql
         if: ${{ matrix.component == 'server' }}
         working-directory: server
 
