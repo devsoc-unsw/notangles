@@ -27,23 +27,21 @@ model User {
   @@map("user")
 }
 
-// model FriendRequest {
-//   id     String @id @default(uuid())
-//   fromId String
-//   toId   String
+model Friendship {
+  friendshipId      String @id @default(uuid())
+  user1Id           String
+  user2Id           String
+  state             FriendshipType
 
-//   @@unique([fromId, toId])
-//   @@map("friend_request")
-// }
+  @@unique([user1Id, user2Id])
+  @@map("friendship")
+}
 
-// model Friendship {
-//   id      String @id @default(uuid())
-//   user1Id String
-//   user2Id String
-
-//   @@unique([user1Id, user2Id])
-//   @@map("friendship")
-// }
+enum FriendshipType {
+    requestedByUser1
+    requestedByUser2
+    mutual
+}
 
 model Settings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

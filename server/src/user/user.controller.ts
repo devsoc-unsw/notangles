@@ -3,6 +3,9 @@ import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
 import { UserSettings } from './types';
+import { GraphqlService } from 'src/graphql/graphql.service';
+import type { Friendship } from '../graphql/types';
+import type { FriendshipType } from '../graphql/types';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -14,8 +17,31 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private readonly graphqlService: GraphqlService,
+  ) {}
 
+  // Send friend request -> post friendship (with state === reqByUserX)
+  // Cancel friend request -> delete friendship
+  // Get outgoing requests -> get friendships (with state ==== reqByUserX)
+  // See incoming requests -> get friendships (including user but state !=== reqByUserX)
+  // Accept request -> get incoming requests -> post state with user
+  // Reject request -> get incoming requests -> post state with user
+
+  // @Post('friendship')
+  // @Get('friendships')
+  // @Delete('friendship')
+  // @Get('frienship')
+  // @Get('friendship/outgoing')
+  // @Get('friendship/incoming')
+  //
+  // async getFriendRequests(
+  //   @Req(): AuthenticatedRequest,
+  //   @Param('friendshpis') friendshipId:
+  // )
+  //
+  //
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
   async getProfile(@Req() req: AuthenticatedRequest) {
