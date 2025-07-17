@@ -239,7 +239,7 @@ export class UserService {
     });
   }
 
-  async getSelectedClassesId(
+  async getSelectedClassIds(
     userId: string,
     timetableId: string,
     courseId: string,

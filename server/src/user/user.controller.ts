@@ -120,7 +120,7 @@ export class UserController {
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
   ) {
-    return await this.userService.getSelectedClassesId(
+    return await this.userService.getSelectedClassIds(
       req.user.id,
       timetableId,
       courseId,
