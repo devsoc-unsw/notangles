@@ -168,7 +168,6 @@ export const getAvailableTermDetails = async () => {
   try {
     const termMapInfo = await constructTermDetailsMap();
     const currTermId = await getTermToDisplay(termMapInfo);
-    console.log(" curr term id" + currTermId);
     firstDayOfTerm =
       termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
