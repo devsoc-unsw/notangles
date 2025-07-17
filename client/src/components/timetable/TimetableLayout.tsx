@@ -315,10 +315,16 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
         open={contextMenu != null}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
-        onClose={() => setContextMenu(null)}
+        onClose={() => {
+          setContextMenu(null);
+        }}
         autoFocus={false}
       >
-        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+        <MenuItem
+          onClick={() => {
+            handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents);
+          }}
+        >
           <ListItemIcon>
             <ContentPaste fontSize="small" />
           </ListItemIcon>

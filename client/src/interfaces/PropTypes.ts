@@ -142,7 +142,7 @@ export interface DiscardDialogProps {
 }
 
 export interface LocationDropdownProps {
-  sectionsAndLocations: Array<[Section, Location]>;
+  sectionsAndLocations: [Section, Location][];
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
 }

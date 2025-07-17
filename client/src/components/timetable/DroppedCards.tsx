@@ -88,7 +88,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     /**
      * Updates the computed width of each cell on the grid as the size of the timetable changes
      */
-    const droppedEl = droppedCardsRef.current as HTMLDivElement | null;
+    const droppedEl = droppedCardsRef.current;
     const gridParent = droppedEl?.parentElement;
 
     if (!gridParent) return;
@@ -102,11 +102,15 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     };
 
     // Observe the parent element for size changes
-    const resizeObserver = new ResizeObserver(() => updateCellWidth());
+    const resizeObserver = new ResizeObserver(() => {
+      updateCellWidth();
+    });
     resizeObserver.observe(gridParent);
     updateCellWidth();
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [days]);
 
   const clashes = findClashes(selectedClasses, createdEvents);

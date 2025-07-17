@@ -73,7 +73,11 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
     <>
       <div>
         {editGroupData ? (
-          <MenuItem onClick={() => setIsOpen(true)}>
+          <MenuItem
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          >
             <ListItemIcon>
               <Edit fontSize="small" />
             </ListItemIcon>
@@ -81,7 +85,12 @@ const AddOrEditGroupDialog: React.FC<AddGroupDialogProps> = ({ editGroupData, us
           </MenuItem>
         ) : (
           <Tooltip title="Add a Group" placement="right">
-            <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            >
               <AddIcon />
             </IconButton>
           </Tooltip>

@@ -165,7 +165,9 @@ const GroupCircle: React.FC<{
     );
   };
 
-  const handleClose = () => setContextMenu(null);
+  const handleClose = () => {
+    setContextMenu(null);
+  };
 
   return (
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>

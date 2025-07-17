@@ -102,7 +102,9 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     <>
       <StyledDialog
         open={logoutDialog}
-        onClose={() => setLogoutDialog(false)}
+        onClose={() => {
+          setLogoutDialog(false);
+        }}
         onConfirm={() => {
           logoutCall();
           setLogoutDialog(false);
@@ -114,7 +116,11 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
       <UserAuth>
         {collapsed ? (
           <Tooltip title="Log out" placement="right">
-            <StyledIconButton onClick={() => setLogoutDialog(true)}>
+            <StyledIconButton
+              onClick={() => {
+                setLogoutDialog(true);
+              }}
+            >
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>

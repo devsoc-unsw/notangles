@@ -54,8 +54,8 @@ const constructTermDetailsMap = async (): Promise<Map<Term, TermDateDetails>> =>
   const availableTermData = await client.query<{ classes: TermInfoFetch[] }>({ query: GET_CLASSES });
   availableTermData.data.classes.map((cls: TermInfoFetch) => {
     const termOfferingPeriods = parseTermOfferingPeriods(cls);
-    const termKey: Term = (cls.term + termOfferingPeriods.startDate.getFullYear()) as Term;
-    termInfoMap.set(termKey!, termOfferingPeriods);
+    const termKey: Term = cls.term + termOfferingPeriods.startDate.getFullYear();
+    termInfoMap.set(termKey, termOfferingPeriods);
   });
 
   return termInfoMap;

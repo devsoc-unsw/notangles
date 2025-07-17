@@ -92,10 +92,10 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
         timetableMap[term] = createDefaultTimetable(res.data.userID);
       }
       setDisplayTimetables({ ...timetableMap });
-      
-      Object.keys(timetableMap).forEach(() =>{
+
+      Object.keys(timetableMap).forEach(() => {
         if (timetableMap[term].every((t) => !t.isPrimary)) timetableMap[term][0].isPrimary = true;
-      })
+      });
 
       // TODO: check if this conditional is necessary
       if (timetableMap[term] && timetableMap[term][0]) {

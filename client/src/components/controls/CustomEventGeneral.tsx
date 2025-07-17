@@ -46,7 +46,9 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TextField
           id="outlined-required"
           label="Event Name"
-          onChange={(e) => setEventName(e.target.value)}
+          onChange={(e) => {
+            setEventName(e.target.value);
+          }}
           variant="outlined"
           fullWidth
           required
@@ -60,7 +62,9 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TextField
           id="outlined-basic"
           label="Description (optional)"
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => {
+            setDescription(e.target.value);
+          }}
           variant="outlined"
           multiline
           fullWidth
@@ -74,7 +78,9 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TextField
           id="outlined-basic"
           label="Location (optional)"
-          onChange={(e) => setLocation(e.target.value)}
+          onChange={(e) => {
+            setLocation(e.target.value);
+          }}
           variant="outlined"
           fullWidth
           defaultValue={location}

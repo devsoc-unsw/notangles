@@ -44,8 +44,12 @@ const FooterInfo: React.FC = () => {
             <NotanglesLogoImg
               src={currLogo}
               alt="Notangles logo"
-              onMouseOver={() => setCurrLogo(NotanglesLogoGif)}
-              onMouseOut={() => setCurrLogo(NotanglesLogo)}
+              onMouseOver={() => {
+                setCurrLogo(NotanglesLogoGif);
+              }}
+              onMouseOut={() => {
+                setCurrLogo(NotanglesLogo);
+              }}
             />
             <NotanglesFooterInfoContainer>
               <Typography

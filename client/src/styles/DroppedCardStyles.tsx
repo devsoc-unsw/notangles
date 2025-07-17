@@ -15,7 +15,7 @@ export const classTransformStyle = (
   y?: number,
   clashIndex?: number,
   width?: number,
-  cellWidth: number = 0,
+  cellWidth = 0,
 ) =>
   `translate(${classTranslateX(card, nDays, clashIndex, width, cellWidth)}, ${classTranslateY(
     card,
