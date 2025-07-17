@@ -115,7 +115,7 @@ export class UserController {
 
   @Get('classes/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
-  async getSelectedClassesId(
+  async getSelectedClassesIds(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,

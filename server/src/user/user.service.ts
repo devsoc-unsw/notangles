@@ -76,6 +76,9 @@ export class UserService {
     timetableId: string,
   ): Promise<boolean> {
     const timetable = await this.prisma.timetable.findUnique({
+      select: {
+        userId: true,
+      },
       where: {
         id: timetableId,
       },
