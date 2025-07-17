@@ -42,7 +42,6 @@ export class UserController {
     @Body('url') url: string,
   ) {
     await this.userService.setProfilePicture(req.user.id, url);
-    return;
   }
 
   @Get('settings')
@@ -59,7 +58,6 @@ export class UserController {
     @Body() settings: UserSettings,
   ) {
     await this.userService.setSettings(req.user.id, settings);
-    return;
   }
 
   @Get('courses/:timetableId')
@@ -215,7 +213,6 @@ export class UserController {
       Number(year),
       term,
     );
-    return;
   }
 
   @Patch('timetables/:id/rename')
@@ -226,7 +223,6 @@ export class UserController {
     @Body('name') newName: string,
   ) {
     await this.userService.renameTimetable(req.user!.id, timetableId, newName);
-    return;
   }
 
   @Patch('timetables/:id/change-primary')
@@ -237,6 +233,5 @@ export class UserController {
     @Body() data: { year: number; term: string },
   ) {
     await this.userService.makePrimary(req.user!.id, timetableId, data);
-    return;
   }
 }
