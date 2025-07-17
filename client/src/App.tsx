@@ -183,8 +183,7 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails(); // term is 
-      // switched after this. this be rpoblem.
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails(); 
       setTerm(term);
       setTermName(termName);
       setYear(year);
