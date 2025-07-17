@@ -16,15 +16,8 @@ export class UserSettings {
   hideExamClasses: boolean;
 }
 
-export class CourseDto {
-  courseId: string;
-  timetableId: string;
-}
-export class AddCourseDto extends CourseDto {
+export class AddCourseDto {
   term: string;
-  colour: string;
-}
-export class SetCourseColourDto extends CourseDto {
   colour: string;
 }
 export class CourseDetails {

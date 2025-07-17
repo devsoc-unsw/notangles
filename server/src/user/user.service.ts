@@ -1,13 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  AddCourseDto,
-  CourseDetails,
-  SetCourseColourDto,
-  UserInfo,
-  UserSettings,
-} from './types';
+import { AddCourseDto, CourseDetails, UserInfo, UserSettings } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { validate } from 'src/utils/validate';
 
@@ -144,10 +138,7 @@ export class UserService {
           timetableId: timetableId,
         },
       });
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
+    } catch {
       throw new HttpException(
         'Course is not in timetable',
         HttpStatus.NOT_FOUND,
@@ -155,9 +146,14 @@ export class UserService {
     }
   }
 
-  async addCourse(userId: string, addCourseDto: AddCourseDto): Promise<void> {
+  async addCourse(
+    userId: string,
+    timetableId: string,
+    courseId: string,
+    addCourseDto: AddCourseDto,
+  ): Promise<void> {
     const courseExistsOnGraphQL = await this.graphqlService.courseExists(
-      addCourseDto.courseId,
+      courseId,
       addCourseDto.term,
     );
     validate(
@@ -167,12 +163,12 @@ export class UserService {
     );
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
-      addCourseDto.timetableId,
+      timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
     const courseInTimetable = await this.isCourseInTimetable(
-      addCourseDto.timetableId,
-      addCourseDto.courseId,
+      timetableId,
+      courseId,
     );
     validate(
       !courseInTimetable,
@@ -184,12 +180,12 @@ export class UserService {
 
     await this.prisma.course.create({
       data: {
-        courseId: addCourseDto.courseId,
+        courseId: courseId,
         colour: addCourseDto.colour,
         selectedClasses: [],
         timetable: {
           connect: {
-            id: addCourseDto.timetableId,
+            id: timetableId,
           },
         },
       },
@@ -217,26 +213,25 @@ export class UserService {
 
   async setCourseColour(
     userId: string,
-    setCourseColourDto: SetCourseColourDto,
+    timetableId: string,
+    courseId: string,
+    colour: string,
   ): Promise<void> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
-      setCourseColourDto.timetableId,
+      timetableId,
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-    const colourValid = this.isColourCodeValid(setCourseColourDto.colour);
+    const colourValid = this.isColourCodeValid(colour);
     validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
-    const course = await this.getCourseIfExists(
-      setCourseColourDto.timetableId,
-      setCourseColourDto.courseId,
-    );
+    const course = await this.getCourseIfExists(timetableId, courseId);
 
     await this.prisma.course.update({
       where: {
         id: course.id,
       },
       data: {
-        colour: setCourseColourDto.colour,
+        colour: colour,
       },
     });
   }
@@ -308,13 +303,9 @@ export class UserService {
       'Class does not exist',
       HttpStatus.NOT_FOUND,
     );
-    // Assertion to help TypeScript understand that classDetails is defined
-    if (!classDetails) {
-      throw new Error('Class details should be defined');
-    }
     validate(
-      classDetails?.activity !== undefined &&
-        classDetails?.activity !== 'Course Enrollment',
+      classDetails!.activity !== undefined &&
+        classDetails!.activity !== 'Course Enrollment',
       'Class is not a valid course class',
       HttpStatus.BAD_REQUEST,
     );
@@ -331,7 +322,7 @@ export class UserService {
     );
 
     const differentTimeSlotClassId = await this.differentTimeSlotsExist(
-      classDetails,
+      classDetails!,
       course.selectedClasses,
     );
     if (differentTimeSlotClassId) {
@@ -340,7 +331,7 @@ export class UserService {
     await this.addSelectedClass(course, classId);
   }
 
-  async addSelectedClass(
+  private async addSelectedClass(
     course: CourseDetails,
     classId: string,
   ): Promise<void> {
@@ -356,7 +347,7 @@ export class UserService {
     });
   }
 
-  async removeClassFromCourse(
+  private async removeClassFromCourse(
     course: CourseDetails,
     classId: string,
   ): Promise<void> {

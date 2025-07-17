@@ -13,7 +13,7 @@ import {
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import { UserSettings, AddCourseDto, SetCourseColourDto } from './types';
+import { UserSettings, AddCourseDto } from './types';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -70,13 +70,20 @@ export class UserController {
     return await this.userService.getCourseIds(req.user.id, timetableId);
   }
 
-  @Post('course')
+  @Post('course/:timetableId/:courseId')
   @UseGuards(AuthenticatedGuard)
   async addCourse(
     @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+    @Param('courseId') courseId: string,
     @Body() addCourseDto: AddCourseDto,
   ) {
-    await this.userService.addCourse(req.user.id, addCourseDto);
+    await this.userService.addCourse(
+      req.user.id,
+      timetableId,
+      courseId,
+      addCourseDto,
+    );
     return HttpStatus.CREATED;
   }
 
@@ -90,13 +97,20 @@ export class UserController {
     await this.userService.removeCourse(req.user.id, timetableId, courseId);
   }
 
-  @Patch('course/colour')
+  @Patch('course/:timetableId/:courseId/colour')
   @UseGuards(AuthenticatedGuard)
   async setCourseColour(
     @Req() req: AuthenticatedRequest,
-    @Body() setCourseColourDto: SetCourseColourDto,
+    @Param('timetableId') timetableId: string,
+    @Param('courseId') courseId: string,
+    @Body('colour') colour: string,
   ) {
-    await this.userService.setCourseColour(req.user.id, setCourseColourDto);
+    await this.userService.setCourseColour(
+      req.user.id,
+      timetableId,
+      courseId,
+      colour,
+    );
   }
 
   @Get('classes/:timetableId/:courseId')
