@@ -15,3 +15,12 @@ export class UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
 }
+
+export class AddCourseDto {
+  term: string;
+  colour: string;
+}
+export class CourseDetails {
+  id: string;
+  selectedClasses: string[];
+}
