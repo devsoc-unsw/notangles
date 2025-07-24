@@ -48,6 +48,8 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -95,6 +97,8 @@ const ICSButton = styled(Button)`
     }
   }
 `;
+
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const {
@@ -619,54 +623,57 @@ const App: React.FC = () => {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={themeObject}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <GlobalStyles styles={globalStyle} />
-          <StyledApp>
-            <Container>
-              <Sidebar />
-              <ContentWrapper>
-                <Content>
-                  <Controls
-                    assignedColors={decodedAssignedColors}
-                    handleSelectClass={handleSelectClass}
-                    handleSelectCourse={handleSelectCourse}
-                    handleRemoveCourse={handleRemoveCourse}
-                  />
-                  <Outlet />
-                  <TimetableTabs />
-                  <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  <ICSButton
-                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                  >
-                    save to calendar
-                  </ICSButton>
-                  <Sponsors />
-                  <Footer />
-                  <Alerts />
-                  <SubcomPromotion />
-                  <PromotionPopup
-                    imgSrc={T3SelectGif}
-                    title="Next term's timetable has been released! 🎉"
-                    subTitle="Organise, plan and schedule with newly released timetable"
-                    bullets={[
-                      {
-                        main: 'Auto-timetable feature',
-                        description:
-                          'Automate process of manually scheduling tasks saving time and being more efficient',
-                      },
-                      {
-                        main: 'Live data feedback',
-                        description: 'Syncs with the current myUNSW class availabilities',
-                      },
-                      {
-                        main: 'Create personal events',
-                        description: 'Fully customisable and caters to your needs',
-                      },
-                    ]}
-                  />
-                </Content>
-              </ContentWrapper>
-            </Container>
-          </StyledApp>
+          <QueryClientProvider client={queryClient}>
+            <GlobalStyles styles={globalStyle} />
+            <StyledApp>
+              <Container>
+                <Sidebar />
+                <ContentWrapper>
+                  <Content>
+                    <Controls
+                      assignedColors={decodedAssignedColors}
+                      handleSelectClass={handleSelectClass}
+                      handleSelectCourse={handleSelectCourse}
+                      handleRemoveCourse={handleRemoveCourse}
+                    />
+                    <Outlet />
+                    <TimetableTabs />
+                    <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+                    <ICSButton
+                      onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
+                    >
+                      save to calendar
+                    </ICSButton>
+                    <Sponsors />
+                    <Footer />
+                    <Alerts />
+                    <SubcomPromotion />
+                    <PromotionPopup
+                      imgSrc={T3SelectGif}
+                      title="Next term's timetable has been released! 🎉"
+                      subTitle="Organise, plan and schedule with newly released timetable"
+                      bullets={[
+                        {
+                          main: 'Auto-timetable feature',
+                          description:
+                            'Automate process of manually scheduling tasks saving time and being more efficient',
+                        },
+                        {
+                          main: 'Live data feedback',
+                          description: 'Syncs with the current myUNSW class availabilities',
+                        },
+                        {
+                          main: 'Create personal events',
+                          description: 'Fully customisable and caters to your needs',
+                        },
+                      ]}
+                    />
+                  </Content>
+                </ContentWrapper>
+              </Container>
+            </StyledApp>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
         </LocalizationProvider>
       </ThemeProvider>
     </StyledEngineProvider>
