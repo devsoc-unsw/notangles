@@ -3,7 +3,7 @@ import { Close as CloseIcon } from '@mui/icons-material';
 import { Badge, Dialog, DialogTitle, IconButton, Paper, styled, Typography } from '@mui/material';
 import React, { useState } from 'react';
 
-import { User } from '../../UserAccount';
+import { User } from './User';
 import FriendsTablist from './FriendsTablist';
 
 const StyledDialogTitle = styled(DialogTitle)`

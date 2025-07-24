@@ -14,7 +14,6 @@ import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
@@ -30,19 +29,17 @@ const Root: React.FC = () => {
     <ApolloProvider client={client}>
       <AppContextProvider>
         <CourseContextProvider>
-          <UserContextProvider>
-            <BrowserRouter>
-              <Routes>
-                {hasVisited ? (
-                  <Route element={<App />} path="/">
-                    <Route path="/event/:encrypted" element={<EventShareModal />} />
-                  </Route>
-                ) : (
-                  <Route element={<LandingPage />} path="/" />
-                )}
-              </Routes>
-            </BrowserRouter>
-          </UserContextProvider>
+          <BrowserRouter>
+            <Routes>
+              {hasVisited ? (
+                <Route element={<App />} path="/">
+                  <Route path="/event/:encrypted" element={<EventShareModal />} />
+                </Route>
+              ) : (
+                <Route element={<LandingPage />} path="/" />
+              )}
+            </Routes>
+          </BrowserRouter>
         </CourseContextProvider>
       </AppContextProvider>
     </ApolloProvider>
