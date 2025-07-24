@@ -20,12 +20,12 @@ const StyledUsersContainer = styled('div')`
   gap: 2px;
 `;
 
-const StyledItem = styled('div')<{ isSelected: boolean }>(({ isSelected }) => ({
+const StyledItem = styled('div')<{ selected: boolean }>(({ selected }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   padding: '12px 8px',
   borderRadius: '8px',
-  backgroundColor: isSelected ? '#e1eaef' : '',
+  backgroundColor: selected ? '#e1eaef' : '',
 }));
 
 const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
@@ -131,7 +131,7 @@ const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => v
         {filteredUsers.map((otherUser) => (
           <StyledItem
             key={otherUser.userID}
-            isSelected={user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID)}
+            selected={user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID)}
           >
             <UserProfile
               firstname={otherUser.firstname}

@@ -253,7 +253,7 @@ const Sidebar: React.FC = () => {
                   // currently not clickable since this is our current page
                   isClickable={false}
                   // hardcoded until we move away from single page site
-                  isSelected={true}
+                  selected={true}
                 />
                 <FriendsButton collapsed={collapsed} />
                 <Divider />

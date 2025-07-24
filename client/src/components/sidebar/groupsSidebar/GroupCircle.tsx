@@ -143,9 +143,9 @@ const GroupCircle: React.FC<{
   group: Group;
   fetchUserInfo: (userID: string) => void;
   user: User;
-  isSelected: boolean;
+  selected: boolean;
   onClick: () => void;
-}> = ({ group, fetchUserInfo, user, isSelected, onClick }) => {
+}> = ({ group, fetchUserInfo, user, selected, onClick }) => {
   const isAdmin = group.groupAdmins.map((groupAdmin) => groupAdmin.userID).includes(user.userID);
 
   const [contextMenu, setContextMenu] = React.useState<{
@@ -171,7 +171,7 @@ const GroupCircle: React.FC<{
     <div onContextMenu={handleContextMenu} style={{ cursor: 'pointer' }}>
       <Tooltip title={group.name} placement="right">
         <GroupContainer>
-          {isSelected && (
+          {selected && (
             <Zoom in={true}>
               <SelectedCircle />
             </Zoom>

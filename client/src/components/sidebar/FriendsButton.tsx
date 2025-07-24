@@ -9,13 +9,13 @@ interface FriendsButtonProps {
   collapsed: boolean;
 }
 
-const StyledFriendsButton = styled(IconButton)<{ isSelected: boolean }>`
+const StyledFriendsButton = styled(IconButton)<{ selected: boolean }>`
   display: flex;
   border-radius: 8px;
   gap: 16px;
   justify-content: flex-start;
   padding: 12px 12px 12px 12px;
-  background-color: ${({ isSelected }) => (isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
+  background-color: ${({ selected }) => (selected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
 `;
 
 const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>`
@@ -31,7 +31,7 @@ const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed }) => {
         <StyledFriendsButton
           color="inherit"
           // onClick={() => setGroupsSidebarCollapsed(!groupsSidebarCollapsed)}       UNCOMMENT to see shared timetables
-          isSelected={!groupsSidebarCollapsed}
+          selected={!groupsSidebarCollapsed}
         >
           <SwitchAccount />
           <IndividualComponentTypography collapsed={collapsed}>
