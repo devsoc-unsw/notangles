@@ -16,7 +16,6 @@ import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
-import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, rightContentPadding, themes } from './constants/theme';
 import {
@@ -30,7 +29,6 @@ import {
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
-import { UserContext } from './context/UserContext';
 import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
@@ -48,7 +46,6 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
@@ -147,7 +144,6 @@ const App: React.FC = () => {
   } = useContext(CourseContext);
 
   const decodedAssignedColors = useColorsDecoder(assignedColors, currentTheme);
-  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -199,7 +195,7 @@ const App: React.FC = () => {
           ...{
             [termId]: Object.prototype.hasOwnProperty.call(oldData, termId)
               ? oldData[termId]
-              : createDefaultTimetable(user.userID),
+              : createDefaultTimetable(undefined),
           },
         };
       }
@@ -445,14 +441,6 @@ const App: React.FC = () => {
     updateTimetableEvents();
   }, [year, isConvertToLocalTimezone]);
 
-  const syncTimetables = () => {
-    if (!user.userID) {
-      return;
-    }
-
-    runSync(user, setUser, displayTimetables, setDisplayTimetables);
-  };
-
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
@@ -461,7 +449,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -469,7 +456,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
@@ -477,7 +463,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [createdEvents]);
 
   useUpdateEffect(() => {
@@ -485,13 +470,11 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-    syncTimetables();
   }, [displayTimetables]);
 
   /**
@@ -648,14 +631,8 @@ const App: React.FC = () => {
                     handleRemoveCourse={handleRemoveCourse}
                   />
                   <Outlet />
-                  {groupsSidebarCollapsed ? (
-                    <>
-                      <TimetableTabs />
-                      <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                    </>
-                  ) : (
-                    <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  )}
+                  <TimetableTabs />
+                  <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                   <ICSButton
                     onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
                   >
