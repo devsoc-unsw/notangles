@@ -331,9 +331,11 @@ const History: React.FC = () => {
         confirmButtonId="confirm-delete-button"
       />
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
-          <Delete />
-        </IconButton>
+        <span>
+          <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
+            <Delete />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title={undoTooltip}>
         <span>

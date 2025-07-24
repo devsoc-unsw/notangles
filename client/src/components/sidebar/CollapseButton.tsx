@@ -13,8 +13,11 @@ const StyledCollapseButton = styled(IconButton)`
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const StyledExpandMoreIcon = styled(ExpandMoreIcon)<{ collapsed: boolean }>`
+const StyledExpandMoreIcon = styled(ExpandMoreIcon, {
+  shouldForwardProp: (prop) => prop !== 'collapsed',
+})<{ collapsed: boolean }>`
   transform: ${({ collapsed }) => (collapsed ? 'rotate(270deg)' : 'rotate(90deg)')};
+  transition: transform 0.2s ease;
 `;
 
 const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {

@@ -35,15 +35,15 @@ const drawerWidth = 230;
 interface StyledDrawerProps {
   collapsed: boolean;
   isMobile: boolean;
-  collapsedWidth: number;
+  collapsedwidth: number;
 }
 
 const StyledDrawer = styled(Drawer, {
   shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'isMobile',
-})<StyledDrawerProps>(({ collapsed, isMobile, collapsedWidth }) => ({
+})<StyledDrawerProps>(({ collapsed, isMobile, collapsedwidth }) => ({
   position: isMobile ? 'fixed' : 'relative',
   flexShrink: 0,
-  width: collapsed ? collapsedWidth : drawerWidth,
+  width: collapsed ? collapsedwidth : drawerWidth,
   transition: 'width 0.1s ease',
   zIndex: 1200,
   marginRight: leftContentPadding,
@@ -52,7 +52,7 @@ const StyledDrawer = styled(Drawer, {
     top: 0,
     alignSelf: 'flex-start',
     height: '100dvh',
-    width: collapsed ? collapsedWidth : drawerWidth,
+    width: collapsed ? collapsedwidth : drawerWidth,
     transition: 'width 0.1s ease',
     overflowX: 'hidden',
   },
@@ -174,7 +174,7 @@ const modalData = [
 const Sidebar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const collapsedWidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
+  const collapsedwidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
   const isWide = useMediaQuery(theme.breakpoints.only('xl'));
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
@@ -211,7 +211,7 @@ const Sidebar: React.FC = () => {
         variant={isMobile ? 'temporary' : 'permanent'}
         collapsed={collapsed}
         isMobile={isMobile}
-        collapsedWidth={collapsedWidth}
+        collapsedwidth={collapsedwidth}
         open={!collapsed}
         onClose={() => handleCollapse(true)}
         elevation={0}

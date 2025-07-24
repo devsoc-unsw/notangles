@@ -49,9 +49,9 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
+  const [tabtheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
 
-  const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
+  const { TabStyle } = createTimetableStyle(tabtheme, themeObject);
 
   useEffect(() => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
@@ -162,7 +162,7 @@ const TimetableTabs: React.FC = () => {
 
   return (
     <TabsSection>
-      <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
+      <TabsWrapper tabtheme={tabtheme} id="tabs-wrapper">
         <DragDropContext onDragEnd={handleSortTabs}>
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
@@ -211,7 +211,7 @@ const TimetableTabs: React.FC = () => {
         </DragDropContext>
         <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetabletip}>
-          <StyledIconButton tabTheme={tabTheme} id="create-timetables-button" onClick={handleCreateTimetable}>
+          <StyledIconButton tabtheme={tabtheme} id="create-timetables-button" onClick={handleCreateTimetable}>
             <Add />
           </StyledIconButton>
         </Tooltip>

@@ -18,7 +18,7 @@ const StyledFriendsButton = styled(IconButton)<{ selected: boolean }>`
   background-color: ${({ selected }) => (selected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
 `;
 
-const IndividualComponentTypography = styled(Typography)<{ collapsed: boolean }>`
+const IndividualComponentTypography = styled(Typography)`
   font-size: 16px;
 `;
 
@@ -34,7 +34,7 @@ const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed }) => {
           selected={!groupsSidebarCollapsed}
         >
           <SwitchAccount />
-          <IndividualComponentTypography collapsed={collapsed}>
+          <IndividualComponentTypography>
             {collapsed ? '' : 'Shared Timetables'}
           </IndividualComponentTypography>
         </StyledFriendsButton>

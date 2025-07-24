@@ -43,8 +43,8 @@ export const TabsSection = styled(Box)`
   }
 `;
 
-export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+export const TabsWrapper = styled(Box)<BoxProps & { tabtheme: TabTheme }>`
+  background-color: ${(props) => props.tabtheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
   width: max-content;
@@ -59,7 +59,7 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabtheme: TabTheme }>`
   position: sticky;
   right: 0px;
   padding: 10px;
@@ -68,10 +68,10 @@ export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme:
   transition: background - color 0.1s;
   border-radius: 50;
   z-index: 100;
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+  background-color: ${(props) => props.tabtheme.containerBackground.toString()};
   opacity: 0.75;
   &:hover {
-    background-color: ${(props) => props.tabTheme.tabHoverColor.toString()};
+    background-color: ${(props) => props.tabtheme.tabHoverColor.toString()};
   }
 `;
 
@@ -81,7 +81,7 @@ export const StyledModalButton = styled(Button)`
   align-self: center;
 `;
 
-export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
+export const createTimetableStyle = (tabtheme: TabTheme, theme: Theme) => {
   const TabStyle = (index: number, selectedTimetableIndex: number) => {
     const style = {
       boxShadow: '',
@@ -93,8 +93,8 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       borderStyle: 'solid',
       borderWidth: '0px',
       borderRadius: '10px 10px 0 0',
-      borderColor: `${tabTheme.tabBorderColor} `,
-      color: `${tabTheme.tabTextColor} `,
+      borderColor: `${tabtheme.tabBorderColor} `,
+      color: `${tabtheme.tabTextColor} `,
       margin: '0 0 0 0',
       marginLeft: '-2px',
       transition: 'background-color 0.1s',
@@ -114,7 +114,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
         cursor: 'move',
       },
       '&:hover': {
-        backgroundColor: `${tabTheme.tabHoverColor} `,
+        backgroundColor: `${tabtheme.tabHoverColor} `,
       },
     };
 
@@ -124,7 +124,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
 
     if (index === selectedTimetableIndex) {
       style.color = `#3a76f8`;
-      style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
+      style.backgroundColor = `${tabtheme.tabBackgroundColor} `;
       style.borderWidth = '1px';
       style.borderColor = `${theme.palette.primary.main} `;
       style.zIndex = '1';
