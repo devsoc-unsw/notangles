@@ -16,7 +16,6 @@ import MobileMenuButton from './MobileMenuButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
 import FriendsButton from './FriendsButton';
-import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import UserAccount from './UserAccount';
@@ -114,25 +113,6 @@ const SidebarFooterText = styled('div')`
 const SidebarFooterWrapper = styled('div')`
   display: flex;
   flex-direction: row;
-`;
-
-const StyledGroupContainer = styled('div')`
-  height: 100vh;
-  width: 60px;
-  background: ${({ theme }) => theme.palette.primary.main};
-  display: flex;
-  align-items: center;
-  padding: 12px 2px;
-  flex-direction: column;
-  gap: 4px;
-
-  overflow-y: auto;
-  max-height: calc(100vh - 24px);
-
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Edge */
-  }
 `;
 
 const modalData = [

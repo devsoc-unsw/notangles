@@ -1,14 +1,12 @@
 import { LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
-
+import React, { useState } from 'react';
 import { API_URL } from '../../api/config';
-import { DisplayTimetablesMap } from '../../interfaces/Periods';
 import storage from '../../utils/storage';
 import { createDefaultTimetable } from '../../utils/timetableHelpers';
 import StyledDialog from '../StyledDialog';
-import UserProfile from './groupsSidebar/friends/UserProfile';
+import UserProfile from './friends/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -43,21 +41,6 @@ const ExpandedContainer = styled('div')`
   width: 100%;
   padding: 10px 12px;
 `;
-
-// export interface User {
-//   userID: string;
-//   firstname: string;
-//   lastname: string;
-//   email: string;
-//   profileURL: string;
-//   createdAt: string;
-//   lastLogin: string;
-//   loggedIn: boolean;
-//   friends: User[];
-//   incoming: User[];
-//   outgoing: User[];
-//   timetables: DisplayTimetablesMap;
-// }
 
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
   const [windowLocation, setWindowLocation] = useState('');
