@@ -183,7 +183,7 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
+      const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails(); 
       setTerm(term);
       setTermName(termName);
       setYear(year);
@@ -219,6 +219,7 @@ const App: React.FC = () => {
     const fetchCoursesList = async () => {
       const { courses } = await getCoursesList(term.substring(0, 2));
       setCoursesList(courses);
+      
     };
 
     if (year !== invalidYearFormat) fetchReliably(fetchCoursesList);

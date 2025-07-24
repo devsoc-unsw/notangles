@@ -8,13 +8,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { convertToTermName } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { Term } from '../../interfaces/Periods';
+import { getTermsWithClassData } from '../../utils/getTermsWithClassData';
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -86,16 +87,26 @@ const TermSelect: React.FC<TermSelectProps> = () => {
     const termValue = e.target.value;
     const termInfo = termValue.split(', ');
 
+    
     let termPrefix = '';
     if (termInfo[0].includes('Summer')) {
       termPrefix = 'U1';
     } else {
       termPrefix = 'T' + termInfo[0].split(' ')[1];
     }
-
+    
+    
     const newYear = termInfo[1];
 
     const termName = (termPrefix + newYear) as Term; // To get a string like T12024
+
+    localStorage.setItem(
+      'currSelectedTerm',
+      JSON.stringify({
+        term: termName,
+      }),
+    );
+
     setTerm(termName);
     setYear(newYear);
     setTermName(convertToTermName(termName!));
@@ -114,6 +125,23 @@ const TermSelect: React.FC<TermSelectProps> = () => {
   const handleOpen = () => {
     setOpen(true);
   };
+
+  // Set up a list of terms with class data
+  const [termsWithClassData, setTermsWithClassData] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadTermsWithClassData = async () => {
+      const result = await getTermsWithClassData(termsData);
+      setTermsWithClassData(result);
+    };
+  
+    if (termsData.length > 0) {
+      loadTermsWithClassData();
+    }
+  }, [termsData]); // refresh list of terms if the year changes
+
+
+  const keysTerm = ["U1", "T1", "T2", "T3"].map(t => `${t}${year}`);
   return (
     <FormControl >
         <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
@@ -129,11 +157,13 @@ const TermSelect: React.FC<TermSelectProps> = () => {
             onChange={selectTerm}
           >
             {Array.from(termDataStrList).map((term, index) => {
-              return (
-                <MenuItem key={index} value={term}>
-                  {term}
-                </MenuItem>
-              );
+              const isAvailable = termsWithClassData.includes(keysTerm[index])
+                return (
+                  <MenuItem key={index} value={term} disabled={!isAvailable}>
+                    {term}
+                  </MenuItem>
+                )
+              
             })}
         </CustomStyledSelect>
     </FormControl>

@@ -152,6 +152,7 @@ const UserContextProvider = ({ children }: UserContextProviderProps) => {
           throw new NetworkError("Couldn't get response for user information!");
         }
       } catch (error) {
+        setUser(undefinedUser);
         console.log(error);
       }
     };

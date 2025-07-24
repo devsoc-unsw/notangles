@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { isWithinInterval, parse } from 'date-fns';
-
+import { getTermsWithClassData } from '../utils/getTermsWithClassData';
 import { client } from '../api/config';
 import NetworkError from '../interfaces/NetworkError';
 import { Term, TermDataList } from '../interfaces/Periods';
@@ -71,10 +71,21 @@ const get_current_term = async (
   todaysDate: Date = new Date(),
 ): Promise<Term> => {
   const keys_term = sortTerms(Array.from(termInfoMap.keys()));
+  if (localStorage.getItem('currSelectedTerm')) {
+    const storedTerm = localStorage.getItem('currSelectedTerm');
+
+    if (storedTerm) {
+      const currSelectedTerm = JSON.parse(storedTerm)
+      console.log("localstorage" + currSelectedTerm.term)
+      return(currSelectedTerm.term)
+    }
+  }
   for (let currTermIndex = 0; currTermIndex < keys_term.length; currTermIndex++) {
     if (!keys_term[currTermIndex]) continue;
     const currTermVal = termInfoMap.get(keys_term[currTermIndex])!;
+    
     if (isWithinInterval(todaysDate, { start: currTermVal.startDate, end: currTermVal.endDate })) {
+      console.log("thist ype of data" + keys_term[currTermIndex])
       return keys_term[currTermIndex];
     }
 
@@ -85,6 +96,7 @@ const get_current_term = async (
         end: currTermVal.startDate,
       })
     ) {
+      console.log("thist ype of data ", keys_term[currTermIndex])
       return keys_term[currTermIndex];
     }
   }
@@ -99,6 +111,38 @@ export const convertToTermName = (termId: string) => {
   } else {
     return `Term ${termPrefix.substring(1, 2)}`;
   }
+};
+
+const getTermToDisplay = async (
+  termInfoMap: Map<Term, TermDateDetails>,
+
+): Promise<Term> => {
+
+  // (CURRENTLY BUGGED) Prioritise last selected term
+  if (localStorage.getItem('currSelectedTerm')) {
+    const storedTerm = localStorage.getItem('currSelectedTerm');
+
+    if (storedTerm) {
+      const currSelectedTerm = JSON.parse(storedTerm)
+      return currSelectedTerm.term
+
+    }
+    
+  } 
+  
+  // (TODO) If no selected term, display the latest term the user has timetable data for 
+
+  // If no class data, display the latest term with timetable data 
+  
+  const keys_term = sortTerms(Array.from(termInfoMap.keys()));
+  const termsWithData = await getTermsWithClassData(keys_term)
+
+  if (termsWithData && termsWithData.length > 0) {
+    return termsWithData[termsWithData.length - 1]
+  }
+  
+  // Default to T1 in case there are 0 terms with course data
+  return keys_term[1]
 };
 
 /**
@@ -123,7 +167,7 @@ export const getAvailableTermDetails = async () => {
 
   try {
     const termMapInfo = await constructTermDetailsMap();
-    const currTermId = await get_current_term(termMapInfo);
+    const currTermId = await getTermToDisplay(termMapInfo);
     firstDayOfTerm =
       termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
