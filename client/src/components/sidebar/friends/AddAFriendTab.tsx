@@ -3,9 +3,9 @@ import { Add, Close } from '@mui/icons-material';
 import { IconButton, TextField, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { API_URL } from '../../../../api/config';
-import NetworkError from '../../../../interfaces/NetworkError';
-import { User } from '../../UserAccount';
+import { API_URL } from '../../../api/config';
+import NetworkError from '../../../interfaces/NetworkError';
+import { User } from './User';
 import UserProfile from './UserProfile';
 
 const StyledContainer = styled('div')`

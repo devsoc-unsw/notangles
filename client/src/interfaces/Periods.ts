@@ -1,6 +1,3 @@
-import { User } from '../components/sidebar/UserAccount';
-import { Group } from './Group';
-
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
@@ -105,8 +102,6 @@ export interface TimetableDTO {
   selectedCourses: string[];
   selectedClasses: ScrapedClassDTO[];
   createdEvents: EventDTO[];
-  user: User[];
-  groups: Group[];
   mapKey: string;
 }
 

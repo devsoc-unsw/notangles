@@ -3,10 +3,10 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { IconButton, Tooltip } from '@mui/material';
 import React from 'react';
 
-import { API_URL } from '../../../../api/config';
-import NetworkError from '../../../../interfaces/NetworkError';
-import { User } from '../../UserAccount';
+import { API_URL } from '../../../api/config';
+import NetworkError from '../../../interfaces/NetworkError';
 import UserProfile from './UserProfile';
+import { User } from './User';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -45,7 +45,7 @@ const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => 
 
   return (
     <StyledContainer>
-      {user.friends.map((friend: User, i) => (
+      {user.friends.map((friend: User, i: number) => (
         <StyledItem>
           <UserProfile
             key={i}
