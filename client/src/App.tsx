@@ -45,7 +45,6 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 import PromotionPopup from './components/promotions/PromotionPopup';
 import T3SelectGif from './assets/T3-select.gif';
