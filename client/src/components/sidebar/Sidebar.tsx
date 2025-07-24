@@ -9,7 +9,6 @@ import React, { useContext, useMemo, useState } from 'react';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { leftContentPadding } from '../../constants/theme';
-import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
@@ -179,7 +178,6 @@ const Sidebar: React.FC = () => {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(() => !isWide);
-  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -216,11 +214,6 @@ const Sidebar: React.FC = () => {
         onClose={() => handleCollapse(true)}
         elevation={0}
       >
-        {!groupsSidebarCollapsed && (
-          <StyledGroupContainer>
-            <GroupsSidebar />
-          </StyledGroupContainer>
-        )}
         <Container>
           <div>
             <HeaderContainer>
