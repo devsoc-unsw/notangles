@@ -1,20 +1,17 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Divider, Drawer, Typography } from '@mui/material';
-import { useMediaQuery, useTheme } from '@mui/material';
+import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { leftContentPadding } from '../../constants/theme';
-import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
 import FriendsButton from './FriendsButton';
-import GroupsSidebar from './groupsSidebar/GroupsSidebar';
 import MobileMenuButton from './MobileMenuButton';
 import Privacy from './Privacy';
 import Settings from './Settings';
@@ -115,25 +112,6 @@ const SidebarFooterWrapper = styled('div')`
   flex-direction: row;
 `;
 
-const StyledGroupContainer = styled('div')`
-  height: 100vh;
-  width: 60px;
-  background: ${({ theme }) => theme.palette.primary.main};
-  display: flex;
-  align-items: center;
-  padding: 12px 2px;
-  flex-direction: column;
-  gap: 4px;
-
-  overflow-y: auto;
-  max-height: calc(100vh - 24px);
-
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Edge */
-  }
-`;
-
 const modalData = [
   {
     title: 'About',
@@ -177,7 +155,6 @@ const Sidebar: React.FC = () => {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(() => !isWide);
-  const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -216,11 +193,6 @@ const Sidebar: React.FC = () => {
         }}
         elevation={0}
       >
-        {!groupsSidebarCollapsed && (
-          <StyledGroupContainer>
-            <GroupsSidebar />
-          </StyledGroupContainer>
-        )}
         <Container>
           <div>
             <HeaderContainer>
