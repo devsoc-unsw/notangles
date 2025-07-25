@@ -4,7 +4,7 @@ import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  @Get('login')
+  @Get('login/devsoc')
   @UseGuards(AuthGuard('oidc'))
   login() {}
 
