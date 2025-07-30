@@ -422,34 +422,36 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
         isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
-        renderOption={(props, option, { selected }) => (
-          <li {...props}>
-            <StyledOption>
-              <StyledIcon>
-                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
-                  <CheckRounded />
-                ) : (
-                  <AddRounded />
-                )}
-              </StyledIcon>
-              <span>{option.code}</span>
-              <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-              <Career>{getCourseCareer(option.career)}</Career>
-              <RightContainer>
-                {option.online && (
-                  <StyledIconRight>
-                    <VideocamOutlined />
-                  </StyledIconRight>
-                )}
-                {option.inPerson && (
-                  <StyledIconRight>
-                    <PersonOutline />
-                  </StyledIconRight>
-                )}
-              </RightContainer>
-            </StyledOption>
+        renderOption={(props, option, { selected }) => {
+          const { key, ...rest } = props;
+          return (
+            <li key={key} {...rest}>
+              <StyledOption>
+                <StyledIcon>
+                  {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                    <CheckRounded />
+                  ) : (
+                    <AddRounded />
+                  )}
+                </StyledIcon>
+                <span>{option.code}</span>
+                <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+                <Career>{getCourseCareer(option.career)}</Career>
+                <RightContainer>
+                  {option.online && (
+                    <StyledIconRight>
+                      <VideocamOutlined />
+                    </StyledIconRight>
+                  )}
+                  {option.inPerson && (
+                    <StyledIconRight>
+                      <PersonOutline />
+                    </StyledIconRight>
+                  )}
+                </RightContainer>
+              </StyledOption>
           </li>
-        )}
+        )}}
         renderInput={(params) => (
           <StyledTextField
             {...params}
