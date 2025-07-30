@@ -125,10 +125,11 @@ const TermSelect: React.FC<TermSelectProps> = () => {
             open={open}
             onClose={handleClose}
             onOpen={handleOpen}
-            value={termName.concat(', ', term?.substring(2) as string)}
+            value={termName != '' ? termName.concat(', ', term?.substring(2)) as string : ''}
             onChange={selectTerm}
           >
             {Array.from(termDataStrList).map((term, index) => {
+              console.log(termDataStrList);
               return (
                 <MenuItem key={index} value={term}>
                   {term}
