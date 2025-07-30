@@ -129,7 +129,6 @@ const TermSelect: React.FC<TermSelectProps> = () => {
             onChange={selectTerm}
           >
             {Array.from(termDataStrList).map((term, index) => {
-              console.log(termDataStrList);
               return (
                 <MenuItem key={index} value={term}>
                   {term}
