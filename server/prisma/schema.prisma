@@ -57,6 +57,7 @@ model Settings {
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)
   hideExamClasses            Boolean @default(false)
+  convertToLocalTimezone     Boolean @default(true)
 
   @@map("settings")
 }

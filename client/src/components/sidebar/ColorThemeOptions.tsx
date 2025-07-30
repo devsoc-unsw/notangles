@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { themes } from '../../constants/theme';
 import { ColorThemePreview } from './ColorThemePreview';
+import { useSetUserSettings } from '../../api/useUserSettings';
 
 const SettingsItem = styled('div')`
   margin: 0 10px;
@@ -43,10 +44,10 @@ const ControlLabelContent: React.FC<{ theme: string }> = ({ theme }) => {
 
 interface ColorThemeOptionsProps {
   currentTheme: string;
-  setCurrentTheme: (theme: string) => void;
 }
 
-export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentTheme, setCurrentTheme }) => {
+export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentTheme }) => {
+  const { mutate } = useSetUserSettings();
   const themeOptions = useMemo(() => {
     return Object.keys(themes).map((theme) => (
       <SettingsItem key={theme}>
@@ -55,17 +56,17 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentThe
     ));
   }, [themes]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentTheme((event.target as HTMLInputElement).value);
-  };
-
   return (
     <FormControl>
       <StyledRadioGroup
         aria-labelledby="color-theme-radio-group"
         name="color-theme-radio-group"
         value={currentTheme}
-        onChange={handleChange}
+        onChange={(e) =>
+          mutate({
+            preferredTheme: e.target.value,
+          })
+        }
       >
         {themeOptions}
       </StyledRadioGroup>

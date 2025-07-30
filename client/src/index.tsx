@@ -4,7 +4,9 @@ import './index.css';
 import { ApolloProvider } from '@apollo/client';
 import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import React from 'react';
+import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -16,7 +18,15 @@ import { AuthGuard } from './components/login/AuthGuard';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
-import * as swRegistration from './serviceWorkerRegistration';
+declare module '@tanstack/react-query' {
+  interface Register {
+    mutationMeta: {
+      invalidatesQuery?: QueryKey;
+      successMessage?: string;
+      errorMessage?: string;
+    };
+  }
+}
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
@@ -25,28 +35,48 @@ Sentry.init({
 });
 
 const Root: React.FC = () => {
+  const queryClient = new QueryClient({
+    mutationCache: new MutationCache({
+      onSettled: (_data, _error, _variables, _context, mutation) => {
+        {
+          if (mutation.meta?.invalidatesQuery) {
+            queryClient.invalidateQueries({
+              queryKey: mutation.meta.invalidatesQuery,
+            });
+          }
+        }
+      },
+    }),
+  });
+
   return (
     <AuthProvider>
       <ApolloProvider client={client}>
-        <AppContextProvider>
-          <CourseContextProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route element={<LandingPage />} path="/" />
-                <Route
-                  element={
-                    <AuthGuard>
-                      <App />
-                    </AuthGuard>
-                  }
-                  path="/home"
-                >
-                  <Route path="/home/event/:encrypted" element={<EventShareModal />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </CourseContextProvider>
-        </AppContextProvider>
+        <QueryClientProvider client={queryClient}>
+          {/* Require some loading page for all suspense queries */}
+          <Suspense fallback={<div>Loading...</div>}>
+            <AppContextProvider>
+              <CourseContextProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<LandingPage />} path="/" />
+                    <Route
+                      element={
+                        <AuthGuard>
+                          <App />
+                        </AuthGuard>
+                      }
+                      path="/home"
+                    >
+                      <Route path="/home/event/:encrypted" element={<EventShareModal />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </CourseContextProvider>
+            </AppContextProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </Suspense>
+        </QueryClientProvider>
       </ApolloProvider>
     </AuthProvider>
   );

@@ -1,11 +1,12 @@
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/system';
-import { FC, useContext, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 
-import { AppContext } from '../../context/AppContext';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getUserSettingsQueryOption, useSetUserSettings } from '../../api/useUserSettings';
 
 const SettingsItem = styled('div')`
   display: flex;
@@ -37,33 +38,21 @@ const ColorThemeOptionsContainer = styled('div')`
 `;
 
 const Settings: FC = () => {
-  const {
-    currentTheme,
-    setCurrentTheme,
-    isSquareEdges,
-    setIsSquareEdges,
-    is12HourMode,
-    setIs12HourMode,
-    isShowOnlyOpenClasses,
-    setisShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    setIsDefaultUnscheduled,
-    isHideClassInfo,
-    setIsHideClassInfo,
-    isHideExamClasses,
-    setIsHideExamClasses,
-    isConvertToLocalTimezone,
-    setIsConvertToLocalTimezone,
-  } = useContext(AppContext);
+  const { data: settings } = useSuspenseQuery(getUserSettingsQueryOption);
+  const { mutate } = useSetUserSettings();
 
-  const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
-    { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
-    { state: is12HourMode, setter: setIs12HourMode, desc: '12-hour time' },
-    { state: isShowOnlyOpenClasses, setter: setisShowOnlyOpenClasses, desc: 'Show only open classes' },
-    { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
-    { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
-    { state: isHideExamClasses, setter: setIsHideExamClasses, desc: 'Hide exam classes' },
-    { state: isConvertToLocalTimezone, setter: setIsConvertToLocalTimezone, desc: 'Convert to local timezone' },
+  const settingsToggles: { id: string; state: boolean; desc: string }[] = [
+    { id: 'useSquareEdges', state: settings.useSquareEdges, desc: 'Square corners on classes' },
+    { id: 'use24HourClock', state: settings.use24HourClock, desc: '12-hour time' },
+    { id: 'hideFullClasses', state: settings.hideFullClasses, desc: 'Show only open classes' },
+    {
+      id: 'unscheduleClassesByDefault',
+      state: settings.unscheduleClassesByDefault,
+      desc: 'Unschedule classes by default',
+    },
+    { id: 'hideClassInfo', state: settings.hideClassInfo, desc: 'Hide class details' },
+    { id: 'hideExamClasses', state: settings.hideExamClasses, desc: 'Hide exam classes' },
+    { id: 'convertToLocalTimezone', state: settings.convertToLocalTimezone, desc: 'Convert to local timezone' },
   ];
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
@@ -85,7 +74,7 @@ const Settings: FC = () => {
   const mainContent = useMemo(() => {
     return isPreferredThemeOpen ? (
       <ColorThemeOptionsContainer>
-        <ColorThemeOptions currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
+        <ColorThemeOptions currentTheme={settings.preferredTheme} />
       </ColorThemeOptionsContainer>
     ) : (
       <>
@@ -97,8 +86,10 @@ const Settings: FC = () => {
                 value={setting.state}
                 checked={setting.state}
                 color="primary"
-                onChange={() => {
-                  setting.setter(!setting.state);
+                onChange={(e) => {
+                  mutate({
+                    [setting.id]: e.target.checked,
+                  });
                 }}
               />
             </SettingsItem>
@@ -106,7 +97,7 @@ const Settings: FC = () => {
         ))}
       </>
     );
-  }, [isPreferredThemeOpen, settingsToggles, currentTheme, setCurrentTheme]);
+  }, [isPreferredThemeOpen, settingsToggles]);
 
   return (
     <>
