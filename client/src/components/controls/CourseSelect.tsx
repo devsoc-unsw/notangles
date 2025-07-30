@@ -487,19 +487,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           />
         )}
         renderTags={(value: CoursesList, getTagProps) =>
-          value.map((option: CourseOverview, index: number) => (
-            <StyledChip
-              label={option.code}
-              color="primary"
-              backgroundColor={assignedColors[option.code]}
-              deleteIcon={<CloseRounded />}
-              {...getTagProps({ index })}
-              onDelete={() => {
-                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                handleRemove(option.code);
-              }}
-            />
-          ))
+          value.map((option: CourseOverview, index: number) => {
+            const { key, ...rest } = getTagProps({ index });
+            return (
+              <StyledChip
+                key={key} 
+                label={option.code}
+                color="primary"
+                backgroundColor={assignedColors[option.code]}
+                deleteIcon={<CloseRounded />}
+                {...rest}
+                onDelete={() => {
+                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                  handleRemove(option.code);
+                }}
+              />
+            );
+          })
         }
       />
     </StyledSelect>
