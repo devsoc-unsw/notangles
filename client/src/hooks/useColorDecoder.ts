@@ -12,9 +12,10 @@ import { AppContext } from '../context/AppContext';
  * @returns {Record<string, string>} A record of decoded colour values (e.g., { event1: 'oklch(0.8 0.1 200)' }).
  */
 export const useColorsDecoder = (assignedColors: Record<string, string>, previewTheme?: string) => {
+  const { currentTheme } = useContext(AppContext);
   const decodedColors = Object.fromEntries(
     Object.entries(assignedColors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color, previewTheme);
+      const decodedColor = useColorDecoder(color, currentTheme, previewTheme);
       return [key, decodedColor];
     }),
   );
@@ -30,8 +31,7 @@ export const useColorsDecoder = (assignedColors: Record<string, string>, preview
  * @param {string} [previewTheme] An optional theme to use for decoding instead of the current theme.
  * @returns {string} The decoded colour value (e.g., an OKLCH colour string or the original assigned colour).
  */
-export const useColorDecoder = (assignedColor: string, previewTheme?: string) => {
-  const { currentTheme } = useContext(AppContext);
+export const useColorDecoder = (assignedColor: string, currentTheme:string, previewTheme?: string) => {
 
   const theme = previewTheme ?? currentTheme;
 

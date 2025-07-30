@@ -333,13 +333,13 @@ const App: React.FC = () => {
       });
       setSelectedCourses(newSelectedCourses);
       setCourseData(newCourseData);
+      const newMappedColors = useColorMapper(
+        newSelectedCourses.map((course) => course.code),
+        assignedColors,
+      );
+      
       if (term && term in displayTimetables && displayTimetables[term].length > 0) {
-        setAssignedColors(
-          useColorMapper(
-            newSelectedCourses.map((course) => course.code),
-            assignedColors,
-          ),
-        );
+        setAssignedColors(newMappedColors);
       }
 
       if (!noInit) addedCourses.forEach((course) => initCourse(course));
