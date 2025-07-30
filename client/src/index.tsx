@@ -4,9 +4,8 @@ import './index.css';
 import { ApolloProvider } from '@apollo/client';
 import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
-import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { client } from './api/config';
 import App from './App';
@@ -23,34 +22,49 @@ Sentry.init({
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
 
-const Root: React.FC = () => {
-  const hasVisited = localStorage.getItem('visited');
+const hasVisited = localStorage.getItem('visited');
 
-  return (
-    <ApolloProvider client={client}>
-      <AppContextProvider>
-        <CourseContextProvider>
-          <UserContextProvider>
-            <BrowserRouter>
-              <Routes>
-                {hasVisited ? (
-                  <Route element={<App />} path="/">
-                    <Route path="/event/:encrypted" element={<EventShareModal />} />
-                  </Route>
-                ) : (
-                  <Route element={<LandingPage />} path="/" />
-                )}
-              </Routes>
-            </BrowserRouter>
-          </UserContextProvider>
-        </CourseContextProvider>
-      </AppContextProvider>
-    </ApolloProvider>
-  );
-};
+const router = createBrowserRouter(
+  hasVisited
+    ? [
+        {
+          path: '/',
+          element: <App />,
+          children: [
+            { path: 'event/:encrypted', element: <EventShareModal /> },
+          ],
+        },
+      ]
+    : [
+        {
+          path: '/',
+          element: <LandingPage />,
+        },
+      ],
+  {
+    future: {
+      v7_relativeSplatPath: true,
+    },
+  }
+);
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<Root />);
+root.render(
+  <ApolloProvider client={client}>
+    <AppContextProvider>
+      <CourseContextProvider>
+        <UserContextProvider>
+        <RouterProvider
+          router={router}
+          future={{
+            v7_startTransition: true,
+          }}
+        />
+        </UserContextProvider>
+      </CourseContextProvider>
+    </AppContextProvider>
+  </ApolloProvider>
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
