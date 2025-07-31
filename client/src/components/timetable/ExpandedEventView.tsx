@@ -46,6 +46,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
+import { useSettings } from '../../context/QueryContext';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -78,7 +79,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const [newColor, setNewColor] = useState<string>(color);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const settings = useSettings();
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -385,7 +387,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           <StyledDialogContent>
             {description.length > 0 && (
               <StyledListItem>
-                <StyledListItemIcon isDarkMode={isDarkMode}>
+                <StyledListItemIcon isDarkMode={settings.useDarkMode}>
                   <Notes />
                 </StyledListItemIcon>
                 <Typography>{description}</Typography>
@@ -393,14 +395,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             )}
             {location && (
               <StyledListItem>
-                <StyledListItemIcon isDarkMode={isDarkMode}>
+                <StyledListItemIcon isDarkMode={settings.useDarkMode}>
                   <LocationOn />
                 </StyledListItemIcon>
                 <Typography>{location}</Typography>
               </StyledListItem>
             )}
             <StyledListItem>
-              <StyledListItemIcon isDarkMode={isDarkMode}>
+              <StyledListItemIcon isDarkMode={settings.useDarkMode}>
                 <AccessTime />
               </StyledListItemIcon>
               <Typography>
@@ -410,7 +412,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             {eventPeriod.subtype !== 'Tutoring' ? (
               <>
                 <StyledListItem>
-                  <StyledListItemIcon isDarkMode={isDarkMode}>
+                  <StyledListItemIcon isDarkMode={settings.useDarkMode}>
                     <Link />
                   </StyledListItemIcon>
                   <StyledEventLink

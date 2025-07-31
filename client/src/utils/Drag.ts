@@ -98,8 +98,9 @@ export const toPx = (value: number) => `${value}px`;
  */
 export const setShadow = (element: HTMLElement, elevated: boolean) => {
   // shadows are the same for light and dark theme
-  const isSquareEdges = storage.get('isSquareEdges');
-  const theme = lightTheme(storage.get('currentTheme'));
+  // const isSquareEdges = storage.get('isSquareEdges');
+  const isSquareEdges = true; // Not seeing a reason to use square edges for shadows
+  const theme = lightTheme('Classic');
   element.style.boxShadow =
     theme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
 };

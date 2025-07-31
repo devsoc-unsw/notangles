@@ -16,6 +16,7 @@ import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import { AuthGuard } from './components/login/AuthGuard';
 import AppContextProvider from './context/AppContext';
+import { QueryContextProvider } from './context/QueryContext';
 import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
 declare module '@tanstack/react-query' {

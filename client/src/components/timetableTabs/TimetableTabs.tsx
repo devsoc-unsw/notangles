@@ -26,13 +26,14 @@ import {
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
+import { darkTheme, lightTheme } from '../../constants/theme';
+import { useSettings } from '../../context/QueryContext';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
 
   const {
     isDarkMode,
-    themeObject,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
@@ -42,6 +43,8 @@ const TimetableTabs: React.FC = () => {
     term,
   } = useContext(AppContext);
 
+  const settings = useSettings();
+
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
@@ -49,13 +52,24 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
+  // const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
 
-  const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
+  const themeObject = useMemo(
+    () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
+    [settings.useDarkMode, settings.preferredTheme],
+  );
 
-  useEffect(() => {
-    setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
-  }, [isDarkMode]);
+  const tabTheme: TabTheme = useMemo(() => {
+    return settings.useDarkMode ? tabThemeDark : tabThemeLight;
+  }, [settings.useDarkMode]);
+
+  const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
+
+  // const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
+
+  // useEffect(() => {
+  //   setTabTheme(settings.useDarkMode ? tabThemeDark : tabThemeLight);
+  // }, [settings.useDarkMode]);
 
   // Helper function to set the timetable state
   const setTimetableState = (

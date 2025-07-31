@@ -22,6 +22,7 @@ import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMe
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
+import { useSettings } from '../../context/QueryContext';
 
 const RIGHT_CLICK = 2;
 
@@ -45,8 +46,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+  const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
+  const settings = useSettings();
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -154,7 +156,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         card={eventPeriod}
         nDays={days.length}
         earliestStartTime={earliestStartTime}
-        isSquareEdges={isSquareEdges}
+        isSquareEdges={settings.useSquareEdges}
         cardWidth={cardWidth}
         clashIndex={clashIndex}
         cellWidth={cellWidth}
@@ -221,9 +223,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
         <StyledCardInner
           hasClash={false}
-          isSquareEdges={isSquareEdges}
+          isSquareEdges={settings.useSquareEdges}
           clashColour={'none'}
-          backgroundColour={useColorDecoder(eventPeriod.event.color).toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color, settings.preferredTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

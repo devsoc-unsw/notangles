@@ -2,10 +2,11 @@ import styled from '@emotion/styled';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, List, ListItem } from '@mui/material';
-import { FC, useContext } from 'react';
+import { FC, useMemo } from 'react';
 
-import { AppContext } from '../../context/AppContext';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
+import { darkTheme, lightTheme } from '../../constants/theme';
+import { useSettings } from '../../context/QueryContext';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;
@@ -33,20 +34,23 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onSelectColor,
   onCustomColorSelect,
 }) => {
-  // Get the current theme as from AppContext
-  const { themeObject } = useContext(AppContext);
+  const settings = useSettings();
+  const themeObject = useMemo(
+    () => (settings.useDarkMode ? lightTheme(settings.preferredTheme) : darkTheme(settings.preferredTheme)),
+    [settings.useDarkMode, settings.preferredTheme],
+  );
 
   const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color);
+    const decodedColor = useColorDecoder(color, settings.preferredTheme);
     return decodedColor;
   });
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       {/* Default Theme Colors (1-4) */}
-      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
+      <List sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
         {colors.slice(0, maxDefaultColors).map((color, index) => (
-          <ListItem disablePadding>
+          <ListItem key={color} disablePadding>
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index]}
@@ -56,11 +60,11 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             />
           </ListItem>
         ))}
-      </ListItem>
+      </List>
       {/* Default Theme Colors (5-7) */}
-      <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
-        {colors.slice(maxDefaultColors, colors.length - 1).map((color, index) => (
-          <ListItem disablePadding>
+      <List sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
+        {colors.slice(maxDefaultColors, maxDefaultColors + 3).map((color, index) => (
+          <ListItem key={color} disablePadding>
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index + maxDefaultColors]}
@@ -70,7 +74,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             />
           </ListItem>
         ))}
-        <ListItem disablePadding>
+        <ListItem key="custom-color" disablePadding>
           <StyledColorIconButton
             border={themeObject.palette.secondary.main}
             bgColor={themeObject.palette.secondary.dark}
@@ -79,7 +83,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             {showCustomColorPicker ? <CloseIcon /> : <AddIcon />}
           </StyledColorIconButton>
         </ListItem>
-      </ListItem>
+      </List>
     </List>
   );
 };

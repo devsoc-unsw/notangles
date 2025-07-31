@@ -22,6 +22,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
+import { useSettings } from '../../context/QueryContext';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -39,16 +40,10 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
-  const {
-    earliestStartTime,
-    days,
-    isSquareEdges,
-    isHideClassInfo,
-    setIsDrag,
-    setAlertMsg,
-    setInfoVisibility,
-    setErrorVisibility,
-  } = useContext(AppContext);
+  // const { data: settings } = useSuspenseQuery(getUserSettingsQueryOption);
+  const settings = useSettings();
+  const { earliestStartTime, days, isHideClassInfo, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   let currCourse: CourseData | null = null;
@@ -181,7 +176,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         nDays={days.length}
         y={y}
         earliestStartTime={earliestStartTime}
-        isSquareEdges={isSquareEdges}
+        isSquareEdges={settings.useSquareEdges}
         onMouseOver={() => {
           setFullscreenVisible(true);
         }}
@@ -204,7 +199,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }}
       >
         <StyledCardInner
-          isSquareEdges={isSquareEdges}
+          isSquareEdges={settings.useSquareEdges}
           backgroundColour={color}
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}

@@ -5,8 +5,8 @@ import { FC, useMemo, useState } from 'react';
 
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getUserSettingsQueryOption, useSetUserSettings } from '../../api/useUserSettings';
+import { useSetUserSettings } from '../../api/useUserSettings';
+import { useSettings } from '../../context/QueryContext';
 
 const SettingsItem = styled('div')`
   display: flex;
@@ -38,7 +38,7 @@ const ColorThemeOptionsContainer = styled('div')`
 `;
 
 const Settings: FC = () => {
-  const { data: settings } = useSuspenseQuery(getUserSettingsQueryOption);
+  const settings = useSettings();
   const { mutate } = useSetUserSettings();
 
   const settingsToggles: { id: string; state: boolean; desc: string }[] = [
@@ -67,7 +67,7 @@ const Settings: FC = () => {
   ) : (
     <>
       <SettingText>Preferred Theme</SettingText>
-      <ColorThemePreview />
+      <ColorThemePreview previewTheme={settings.preferredTheme} />
     </>
   );
 

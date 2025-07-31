@@ -8,6 +8,7 @@ import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
+import { useSettings } from '../../context/QueryContext';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
   const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
@@ -75,7 +76,8 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 };
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { isDarkMode, earliestStartTime } = useContext(AppContext);
+  const { earliestStartTime } = useContext(AppContext);
+  const settings = useSettings();
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (
@@ -87,7 +89,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
     />
   ));
 
-  const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
+  const inventoryColor = settings.useDarkMode ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(

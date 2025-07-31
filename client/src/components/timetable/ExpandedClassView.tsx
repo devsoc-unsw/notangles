@@ -38,6 +38,7 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
+import { useSettings } from '../../context/QueryContext';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -76,7 +77,8 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
-  const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { days, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const settings = useSettings();
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
@@ -204,7 +206,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
       </StyledDialogTitle>
       <StyledDialogContent>
         <StyledListItem>
-          <StyledListItemIcon isDarkMode={isDarkMode}>
+          <StyledListItemIcon isDarkMode={settings.useDarkMode}>
             <DesktopMac />
           </StyledListItemIcon>
           <Typography>
@@ -214,14 +216,14 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
         </StyledListItem>
 
         <StyledListItem>
-          <StyledListItemIcon isDarkMode={isDarkMode}>
+          <StyledListItemIcon isDarkMode={settings.useDarkMode}>
             <AccessTime />
           </StyledListItemIcon>
           <Typography>{currentPeriod && getTimeData(currentPeriod.time, days)}</Typography>
         </StyledListItem>
 
         <StyledListItem>
-          <StyledListItemIcon isDarkMode={isDarkMode}>
+          <StyledListItemIcon isDarkMode={settings.useDarkMode}>
             <LocationOn />
           </StyledListItemIcon>
           <StyledDropdownContainer item>
@@ -234,7 +236,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
         </StyledListItem>
 
         <StyledListItem>
-          <StyledListItemIcon isDarkMode={isDarkMode}>
+          <StyledListItemIcon isDarkMode={settings.useDarkMode}>
             <PeopleAlt />
           </StyledListItemIcon>
           <Typography>

@@ -1,7 +1,4 @@
-import { useContext } from 'react';
-
 import { themes } from '../constants/theme';
-import { AppContext } from '../context/AppContext';
 
 /**
  * Decodes all assigned colours using the `useColorDecoder` function.
@@ -11,10 +8,10 @@ import { AppContext } from '../context/AppContext';
  * @param {string} [previewTheme] An optional theme to use for decoding instead of the current theme.
  * @returns {Record<string, string>} A record of decoded colour values (e.g., { event1: 'oklch(0.8 0.1 200)' }).
  */
-export const useColorsDecoder = (assignedColors: Record<string, string>, previewTheme?: string) => {
+export const useColorsDecoder = (assignedColors: Record<string, string>, preferredTheme: string) => {
   const decodedColors = Object.fromEntries(
     Object.entries(assignedColors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color, previewTheme);
+      const decodedColor = useColorDecoder(color, preferredTheme);
       return [key, decodedColor];
     }),
   );
@@ -30,12 +27,8 @@ export const useColorsDecoder = (assignedColors: Record<string, string>, preview
  * @param {string} [previewTheme] An optional theme to use for decoding instead of the current theme.
  * @returns {string} The decoded colour value (e.g., an OKLCH colour string or the original assigned colour).
  */
-export const useColorDecoder = (assignedColor: string, previewTheme?: string) => {
-  const { currentTheme } = useContext(AppContext);
-
-  const theme = previewTheme ?? currentTheme;
-
-  const themeObject = themes[theme as keyof typeof themes];
+export const useColorDecoder = (assignedColor: string, preferredTheme: string) => {
+  const themeObject = themes[preferredTheme as keyof typeof themes];
 
   if (assignedColor.startsWith('default-')) {
     // extract the number from the assigned colour key

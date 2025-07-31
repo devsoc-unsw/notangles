@@ -3,7 +3,11 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
+<<<<<<< HEAD
 import React, { useContext, useEffect } from 'react';
+=======
+import React, { useContext, useEffect, useMemo } from 'react';
+>>>>>>> b0552c3 (Connect settings.useSquareEdge,useDarkMode,preferredTheme with FE components)
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -18,7 +22,7 @@ import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, rightContentPadding, themes } from './constants/theme';
+import { contentPadding, darkTheme, lightTheme, rightContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -98,12 +102,12 @@ const ICSButton = styled(Button)`
 
 const App: React.FC = () => {
   const {
-    themeObject,
-    currentTheme,
-    setCurrentTheme,
+    // themeObject,
+    // currentTheme,
+    // setCurrentTheme,
     is12HourMode,
-    isDarkMode,
-    isSquareEdges,
+    // isDarkMode,
+    // isSquareEdges,
     isShowOnlyOpenClasses,
     isDefaultUnscheduled,
     isHideClassInfo,
@@ -144,7 +148,9 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const decodedAssignedColors = useColorsDecoder(assignedColors);
+  const settings = useSettings();
+
+  const decodedAssignedColors = useColorsDecoder(assignedColors, settings.preferredTheme);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -548,22 +554,20 @@ const App: React.FC = () => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
 
-  useEffect(() => {
-    storage.set('currentTheme', currentTheme);
-  }, [currentTheme]);
+  // useEffect(() => {
+  //   storage.set('currentTheme', currentTheme);
+  // }, [currentTheme]);
 
   useEffect(() => {
     storage.set('is12HourMode', is12HourMode);
   }, [is12HourMode]);
 
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
+  // useEffect(() => {
+  //   storage.set('isDarkMode', isDarkMode);
+  // }, [isDarkMode]);
+  // useEffect(() => {
+  //   storage.set('isSquareEdges', isSquareEdges);
+  // }, [isSquareEdges]);
   useEffect(() => {
     storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
   }, [isShowOnlyOpenClasses]);
@@ -585,11 +589,16 @@ const App: React.FC = () => {
   }, [isConvertToLocalTimezone]);
 
   // Validate the currentTheme
-  useEffect(() => {
-    if (!Object.keys(themes).includes(currentTheme)) {
-      setCurrentTheme(Object.keys(themes)[0]);
-    }
-  }, [currentTheme]);
+  // useEffect(() => {
+  //   if (!Object.keys(themes).includes(currentTheme)) {
+  //     setCurrentTheme(Object.keys(themes)[0]);
+  //   }
+  // }, [currentTheme]);
+
+  const themeObject = useMemo(
+    () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
+    [settings],
+  );
 
   const globalStyle = {
     body: {

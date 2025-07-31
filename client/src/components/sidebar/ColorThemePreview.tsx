@@ -26,7 +26,7 @@ const StyledListItem = styled(ListItem, {
 `;
 
 interface ColorThemePreviewProps {
-  previewTheme?: string;
+  previewTheme: string;
 }
 
 export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
