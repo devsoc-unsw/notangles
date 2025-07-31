@@ -15,6 +15,8 @@ import LandingPage from './components/landingPage/LandingPage';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import * as swRegistration from './serviceWorkerRegistration';
+import { AuthGuard } from './components/login/AuthGuard';
+import { AuthProvider } from './hooks/useAuth';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
@@ -23,31 +25,35 @@ Sentry.init({
 });
 
 const Root: React.FC = () => {
-  const hasVisited = localStorage.getItem('visited');
-
   return (
-    <ApolloProvider client={client}>
-      <AppContextProvider>
-        <CourseContextProvider>
-          <BrowserRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true,
-            }}
-          >
-            <Routes>
-              {hasVisited ? (
-                <Route element={<App />} path="/">
-                  <Route path="/event/:encrypted" element={<EventShareModal />} />
-                </Route>
-              ) : (
+    <AuthProvider>
+      <ApolloProvider client={client}>
+        <AppContextProvider>
+          <CourseContextProvider>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
+              <Routes>
                 <Route element={<LandingPage />} path="/" />
-              )}
-            </Routes>
-          </BrowserRouter>
-        </CourseContextProvider>
-      </AppContextProvider>
-    </ApolloProvider>
+                <Route
+                  element={
+                    <AuthGuard>
+                      <App />
+                    </AuthGuard>
+                  }
+                  path="/home"
+                >
+                  <Route path="/home/event/:encrypted" element={<EventShareModal />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </CourseContextProvider>
+        </AppContextProvider>
+      </ApolloProvider>
+    </AuthProvider>
   );
 };
 

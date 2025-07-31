@@ -1,14 +1,19 @@
 import { NavigateNext } from '@mui/icons-material';
-
+import { useNavigate } from 'react-router-dom';
 import notangles from '../../../assets/notangles_1.png';
 import { FlipWords } from '../flip-words';
+import { useAuth } from '../../../hooks/useAuth';
 
-const handleStartClick = () => {
-  localStorage.setItem('visited', 'true');
-  window.location.href = '/';
-};
+const HeroSection = ({ handleStartClick }: { handleStartClick: () => void }) => {
+  const { loggedIn } = useAuth();
+  const navigate = useNavigate();
 
-const HeroSection = () => {
+  // const handleStartClick = () => {
+  //   // TODO: Phase out the visited item
+  //   localStorage.setItem('visited', 'true');
+  //   navigate('/home', { replace: true });
+  // };
+
   const words = ['plan', 'create', 'organise', 'optimise', 'design'];
 
   return (
@@ -36,7 +41,9 @@ const HeroSection = () => {
               className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] hover:scale-105 px-6 sm:px-8 py-2 sm:py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5"
               onClick={handleStartClick}
             >
-              <p className="pr-1 ml-2 text-xl sm:text-2xl md:text-3xl font-medium">Start</p>
+              <p className="pr-1 ml-2 text-xl sm:text-2xl md:text-3xl font-medium">
+                {loggedIn ? 'Goto Timetable' : 'Get Started'}
+              </p>
               <NavigateNext fontSize="large" />
             </button>
           </div>
