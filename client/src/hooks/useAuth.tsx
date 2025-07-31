@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    fetch(`${API_URL.server}/api/user/profile`, { credentials: 'include' })
+    fetch(`${API_URL.server}/user/profile`, { credentials: 'include' })
       .then((res) => {
         if (!res.ok) throw new Error('not logged in');
         return res.json();
