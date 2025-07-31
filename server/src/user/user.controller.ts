@@ -22,26 +22,6 @@ export class UserController {
     private readonly graphqlService: GraphqlService,
   ) {}
 
-  // Send friend request -> post friendship (with state === reqByUserX)
-  // Cancel friend request -> delete friendship
-  // Get outgoing requests -> get friendships (with state ==== reqByUserX)
-  // See incoming requests -> get friendships (including user but state !=== reqByUserX)
-  // Accept request -> get incoming requests -> post state with user
-  // Reject request -> get incoming requests -> post state with user
-
-  // @Post('friendship')
-  // @Get('friendships')
-  // @Delete('friendship')
-  // @Get('frienship')
-  // @Get('friendship/outgoing')
-  // @Get('friendship/incoming')
-  //
-  // async getFriendRequests(
-  //   @Req(): AuthenticatedRequest,
-  //   @Param('friendshpis') friendshipId:
-  // )
-  //
-  //
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
   async getProfile(@Req() req: AuthenticatedRequest) {
