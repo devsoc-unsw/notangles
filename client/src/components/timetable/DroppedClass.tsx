@@ -22,7 +22,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -40,8 +40,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
-  // const { data: settings } = useSuspenseQuery(getUserSettingsQueryOption);
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
   const { earliestStartTime, days, isHideClassInfo, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);

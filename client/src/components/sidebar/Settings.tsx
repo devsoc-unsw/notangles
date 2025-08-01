@@ -5,8 +5,8 @@ import { FC, useMemo, useState } from 'react';
 
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
-import { useSetUserSettings } from '../../api/useUserSettings';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { useSetUserSettings } from '../../api/user/mutations';
 
 const SettingsItem = styled('div')`
   display: flex;
@@ -38,8 +38,8 @@ const ColorThemeOptionsContainer = styled('div')`
 `;
 
 const Settings: FC = () => {
-  const settings = useSettings();
-  const { mutate } = useSetUserSettings();
+  const settings = useGetUserSettingsQuery();
+  const mutate = useSetUserSettings();
 
   const settingsToggles: { id: string; state: boolean; desc: string }[] = [
     { id: 'useSquareEdges', state: settings.useSquareEdges, desc: 'Square corners on classes' },

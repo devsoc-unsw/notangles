@@ -3,11 +3,7 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-<<<<<<< HEAD
-import React, { useContext, useEffect } from 'react';
-=======
 import React, { useContext, useEffect, useMemo } from 'react';
->>>>>>> b0552c3 (Connect settings.useSquareEdge,useDarkMode,preferredTheme with FE components)
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -52,6 +48,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { useGetUserSettingsQuery } from './api/user/queries';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -148,7 +145,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
 
   const decodedAssignedColors = useColorsDecoder(assignedColors, settings.preferredTheme);
 

@@ -8,7 +8,7 @@ import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
   const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
@@ -77,7 +77,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   const { earliestStartTime } = useContext(AppContext);
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (

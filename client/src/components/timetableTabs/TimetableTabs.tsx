@@ -27,7 +27,7 @@ import {
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -43,7 +43,7 @@ const TimetableTabs: React.FC = () => {
     term,
   } = useContext(AppContext);
 
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);

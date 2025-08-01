@@ -38,7 +38,7 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
@@ -78,7 +78,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days, setAlertMsg, setErrorVisibility } = useContext(AppContext);
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);

@@ -4,8 +4,8 @@ import { styled } from '@mui/system';
 import React from 'react';
 
 import { DarkModeButtonProps } from '../../interfaces/PropTypes';
-import { useSetUserSettings } from '../../api/useUserSettings';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { useSetUserSettings } from '../../api/user/mutations';
 
 const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
@@ -20,8 +20,8 @@ const IndividualComponentTypography = styled(Typography)`
 `;
 
 const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
-  const settings = useSettings();
-  const { mutate } = useSetUserSettings();
+  const settings = useGetUserSettingsQuery();
+  const mutate = useSetUserSettings();
 
   return (
     <>

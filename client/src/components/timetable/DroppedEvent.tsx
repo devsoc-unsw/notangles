@@ -22,7 +22,7 @@ import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMe
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const RIGHT_CLICK = 2;
 
@@ -48,7 +48,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 

@@ -46,7 +46,7 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
@@ -80,7 +80,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);

@@ -6,7 +6,7 @@ import { FC, useMemo } from 'react';
 
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;
@@ -34,7 +34,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onSelectColor,
   onCustomColorSelect,
 }) => {
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
   const themeObject = useMemo(
     () => (settings.useDarkMode ? lightTheme(settings.preferredTheme) : darkTheme(settings.preferredTheme)),
     [settings.useDarkMode, settings.preferredTheme],

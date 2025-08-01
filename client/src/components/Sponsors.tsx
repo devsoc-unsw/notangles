@@ -9,7 +9,7 @@ import safetyCultureBlack from '../assets/sponsors/safetyculture_black.png';
 import safetyCultureWhite from '../assets/sponsors/safetyculture_white.png';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
-import { useSettings } from '../context/QueryContext';
+import { useGetUserSettingsQuery } from '../api/user/queries';
 
 const SponsorBox = styled(Box)`
   padding-top: 10px;
@@ -40,7 +40,7 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
 `;
 
 const Sponsors = () => {
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
 
   const platinumSponsorData = [
     {

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { themes } from '../../constants/theme';
 import { ColorThemePreview } from './ColorThemePreview';
-import { useSetUserSettings } from '../../api/useUserSettings';
+import { useSetUserSettings } from '../../api/user/mutations';
 
 const SettingsItem = styled('div')`
   margin: 0 10px;
@@ -47,7 +47,7 @@ interface ColorThemeOptionsProps {
 }
 
 export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentTheme }) => {
-  const { mutate } = useSetUserSettings();
+  const mutate = useSetUserSettings();
   const themeOptions = useMemo(() => {
     return Object.keys(themes).map((theme) => (
       <SettingsItem key={theme}>

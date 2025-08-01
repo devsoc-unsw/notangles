@@ -8,7 +8,7 @@ import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import { oklchToHex } from '../../utils/oklchCovert';
 import ColorOptions from './ColorOptions';
-import { useSettings } from '../../context/QueryContext';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
   color,
@@ -24,7 +24,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
-  const settings = useSettings();
+  const settings = useGetUserSettingsQuery();
   const decodedColor = useColorDecoder(color, settings.preferredTheme);
   const [textFieldValue, setTextFieldValue] = useState(oklchToHex(decodedColor));
 
