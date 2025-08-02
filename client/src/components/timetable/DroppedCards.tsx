@@ -9,6 +9,7 @@ import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DroppedCards: React.FC<DroppedCardsProps> = ({
   assignedColors,
@@ -19,7 +20,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const settings = useGetUserSettingsQuery();
+  const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -44,7 +46,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   // Get all scheduled and unscheduled periods
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
-      if (isHideExamClasses && activity === 'Exam') return;
+      if (settings.convertToLocalTimezone && activity === 'Exam') return;
 
       if (classData) {
         // The current period is a scheduled

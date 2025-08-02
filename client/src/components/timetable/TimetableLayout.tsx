@@ -167,12 +167,11 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const settings = useGetUserSettingsQuery();
   const is12HourMode = settings.use24HourClock ? false : true;
 
-  const { days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
-    useContext(AppContext);
+  const { days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility } = useContext(AppContext);
 
   const hoursRange = [
-    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
-    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
+    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(settings.convertToLocalTimezone))),
+    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(settings.convertToLocalTimezone)) - 1),
   ];
 
   const eventDay = useRef<string>('Mo');
@@ -184,7 +183,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     is12HourMode,
     setAlertMsg,
     setErrorVisibility,
-    isConvertToLocalTimezone,
+    settings.convertToLocalTimezone,
   );
   const hourCells = hours.map((hour, i) => (
     <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>

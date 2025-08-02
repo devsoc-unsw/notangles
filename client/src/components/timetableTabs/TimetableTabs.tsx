@@ -33,7 +33,6 @@ const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
 
   const {
-    isDarkMode,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,

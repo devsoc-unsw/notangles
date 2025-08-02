@@ -17,6 +17,7 @@ import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../u
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const CustomEvent: React.FC = () => {
   // Which element to make the popover stick to
@@ -42,7 +43,8 @@ const CustomEvent: React.FC = () => {
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
-  const { term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
+  const settings = useGetUserSettingsQuery();
+  const { term, coursesList } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
@@ -65,7 +67,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar', 'Project'];
     if (courseCode !== '') {
-      getCourseInfo(term.substring(0, 2), courseCode, term.substring(2), isConvertToLocalTimezone)
+      getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), settings.convertToLocalTimezone)
         .catch((err) => {
           return err;
         })
