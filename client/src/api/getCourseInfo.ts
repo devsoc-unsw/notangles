@@ -1,11 +1,10 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { client } from '../api/config';
-import { DbCourse, DbTimes } from '../interfaces/Database';
 import { CoursesData, GetCourseInfoVars } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
-import { dbCourseToCourseData } from '../utils/DbCourse';
+import { DbCourse, dbCourseToCourseData, DbTimes } from '../utils/DbCourse';
 import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
 const GET_COURSE_INFO: TypedDocumentNode<CoursesData, GetCourseInfoVars> = gql`

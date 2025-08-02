@@ -1,6 +1,6 @@
-import { DbCourse } from '../interfaces/Database';
 import { CoursesData } from '../interfaces/GraphQLCourseInfo';
 import { Status } from '../interfaces/Periods';
+import { DbCourse } from './DbCourse';
 
 const statusMapping: Record<string, Status> = {
   open: 'Open',

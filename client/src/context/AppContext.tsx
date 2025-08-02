@@ -63,9 +63,6 @@ export interface IAppContext {
 
   displayTimetables: DisplayTimetablesMap;
   setDisplayTimetables: (newDisplayTimetable: any) => void;
-
-  courseData: CourseDataMap;
-  setCourseData: (newCourseData: CourseDataMap) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -122,9 +119,6 @@ export const AppContext = createContext<IAppContext>({
 
   displayTimetables: {},
   setDisplayTimetables: () => {},
-
-  courseData: { map: [] },
-  setCourseData: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -161,7 +155,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [coursesList, setCoursesList] = useState<CoursesList>([]);
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
-  const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
     alertMsg,
@@ -200,8 +193,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setSelectedTimetable,
     displayTimetables,
     setDisplayTimetables,
-    courseData,
-    setCourseData,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;

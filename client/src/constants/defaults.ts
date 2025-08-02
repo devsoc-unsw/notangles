@@ -11,7 +11,6 @@ const defaults: Record<string, any> = {
   isHideClassInfo: false,
   isHideExamClasses: false,
   isConvertToLocalTimezone: false,
-  courseData: { map: [] },
   timetables: {
     // TODO: Find a safer way to handle this across years
     U12025: createDefaultTimetable(''),

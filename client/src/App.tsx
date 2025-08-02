@@ -119,8 +119,6 @@ const App: React.FC = () => {
     selectedTimetable,
     displayTimetables,
     setDisplayTimetables,
-    courseData,
-    setCourseData,
   } = useContext(AppContext);
 
   const {
@@ -302,25 +300,17 @@ const App: React.FC = () => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
 
       const newSelectedCourses = [...selectedCourses];
-      const newCourseData = courseData;
 
       // Update the existing courses with the new data (for changing timezone).
       addedCourses.forEach((addedCourse) => {
         if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
           const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
           newSelectedCourses[index] = addedCourse;
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-            newCourseData.map.push(addedCourse);
-          }
         } else {
           newSelectedCourses.push(addedCourse);
         }
-        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
-          newCourseData.map.push(addedCourse);
-        }
       });
       setSelectedCourses(newSelectedCourses);
-      setCourseData(newCourseData);
       if (term && term in displayTimetables && displayTimetables[term].length > 0) {
         setAssignedColors(
           useColorMapper(
@@ -346,18 +336,6 @@ const App: React.FC = () => {
   const handleRemoveCourse = (courseCode: CourseCode) => {
     const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
     setSelectedCourses(newSelectedCourses);
-    const newCourseData = courseData;
-    newCourseData.map = courseData.map.filter(() => {
-      for (const timetable of displayTimetables[term]) {
-        for (const course of timetable.selectedCourses) {
-          if (course.code.localeCompare(courseCode)) {
-            return true;
-          }
-        }
-      }
-      return false;
-    });
-    setCourseData(newCourseData);
 
     setSelectedClasses((prev) => {
       prev = { ...prev };
@@ -437,8 +415,6 @@ const App: React.FC = () => {
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
     displayTimetables[term][selectedTimetable].selectedCourses = selectedCourses;
-    const newCourseData = courseData;
-    storage.set('courseData', newCourseData);
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);

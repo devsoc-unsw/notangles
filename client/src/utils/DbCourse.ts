@@ -2,10 +2,42 @@ import { cloneDeep } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getTimeZoneOffset } from '../constants/timetable';
-import { DbCourse, DbTimes } from '../interfaces/Database';
-import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
+import { Activity, ClassData, ClassPeriod, CourseCode, CourseData, Section, Status } from '../interfaces/Periods';
 import { areDuplicatePeriods } from './areDuplicatePeriods';
 import { getAllPeriods } from './getAllPeriods';
+
+export interface DbCourse {
+  courseCode: CourseCode;
+  name: string;
+  classes: DbClass[];
+}
+
+interface DbClass {
+  activity: Activity;
+  times: DbTimes[];
+  classID: string;
+  status: Status;
+  courseEnrolment: DbCourseEnrolment;
+  section: Section;
+  term: string;
+}
+
+interface DbCourseEnrolment {
+  enrolments: number;
+  capacity: number;
+}
+
+export interface DbTimes {
+  time: DbTime;
+  day: string;
+  location: string;
+  weeks: string;
+}
+
+interface DbTime {
+  start: string;
+  end: string;
+}
 
 /**
  * @param location The location of the class
