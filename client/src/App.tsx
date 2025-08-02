@@ -99,17 +99,6 @@ const ICSButton = styled(Button)`
 
 const App: React.FC = () => {
   const {
-    // themeObject,
-    // currentTheme,
-    // setCurrentTheme,
-    // is12HourMode,
-    // isDarkMode,
-    // isSquareEdges,
-    // isShowOnlyOpenClasses,
-    // isDefaultUnscheduled,
-    // isHideClassInfo,
-    // isHideExamClasses,
-    // isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
     days,
@@ -550,47 +539,6 @@ const App: React.FC = () => {
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
   }, [createdEvents, selectedCourses, settings.convertToLocalTimezone]);
-
-  // useEffect(() => {
-  //   storage.set('currentTheme', currentTheme);
-  // }, [currentTheme]);
-
-  // useEffect(() => {
-  //   storage.set('is12HourMode', is12HourMode);
-  // }, [is12HourMode]);
-
-  // useEffect(() => {
-  //   storage.set('isDarkMode', isDarkMode);
-  // }, [isDarkMode]);
-  // useEffect(() => {
-  //   storage.set('isSquareEdges', isSquareEdges);
-  // }, [isSquareEdges]);
-  // useEffect(() => {
-  //   storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
-  // }, [isShowOnlyOpenClasses]);
-
-  // useEffect(() => {
-  //   storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  // }, [isDefaultUnscheduled]);
-
-  // useEffect(() => {
-  //   storage.set('isHideClassInfo', isHideClassInfo);
-  // }, [isHideClassInfo]);
-
-  // useEffect(() => {
-  //   storage.set('isHideExamClasses', isHideExamClasses);
-  // }, [isHideExamClasses]);
-
-  // useEffect(() => {
-  //   storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  // }, [isConvertToLocalTimezone]);
-
-  // Validate the currentTheme
-  // useEffect(() => {
-  //   if (!Object.keys(themes).includes(currentTheme)) {
-  //     setCurrentTheme(Object.keys(themes)[0]);
-  //   }
-  // }, [currentTheme]);
 
   const themeObject = useMemo(
     () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
