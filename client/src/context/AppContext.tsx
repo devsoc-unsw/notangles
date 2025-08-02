@@ -9,27 +9,6 @@ import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
 export interface IAppContext {
-  is12HourMode: boolean;
-  setIs12HourMode: (newIs12HourMode: boolean) => void;
-
-  isDarkMode: boolean;
-  setIsDarkMode: (newIsDarkMode: boolean) => void;
-
-  isShowOnlyOpenClasses: boolean;
-  setisShowOnlyOpenClasses: (newisShowOnlyOpenClasses: boolean) => void;
-
-  isDefaultUnscheduled: boolean;
-  setIsDefaultUnscheduled: (newIsDefaultUnscheduled: boolean) => void;
-
-  isHideClassInfo: boolean;
-  setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
-
-  isHideExamClasses: boolean;
-  setIsHideExamClasses: (newIsHideExamClasses: boolean) => void;
-
-  isConvertToLocalTimezone: boolean;
-  setIsConvertToLocalTimezone: (newIsConvertToLocalTimezone: boolean) => void;
-
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -92,27 +71,6 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
-  is12HourMode: false,
-  setIs12HourMode: () => {},
-
-  isDarkMode: false,
-  setIsDarkMode: () => {},
-
-  isShowOnlyOpenClasses: false,
-  setisShowOnlyOpenClasses: () => {},
-
-  isDefaultUnscheduled: true,
-  setIsDefaultUnscheduled: () => {},
-
-  isHideClassInfo: false,
-  setIsHideClassInfo: () => {},
-
-  isHideExamClasses: false,
-  setIsHideExamClasses: () => {},
-
-  isConvertToLocalTimezone: false,
-  setIsConvertToLocalTimezone: () => {},
-
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -182,10 +140,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
-  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
-  const [isShowOnlyOpenClasses, setisShowOnlyOpenClasses] = useState<boolean>(storage.get('isShowOnlyOpenClasses'));
-  const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(
@@ -212,20 +166,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
-    is12HourMode,
-    setIs12HourMode,
-    isDarkMode,
-    setIsDarkMode,
-    isShowOnlyOpenClasses,
-    setisShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    setIsDefaultUnscheduled,
-    isHideClassInfo,
-    setIsHideClassInfo,
-    isHideExamClasses,
-    setIsHideExamClasses,
-    isConvertToLocalTimezone,
-    setIsConvertToLocalTimezone,
     alertMsg,
     setAlertMsg,
     alertFunction,

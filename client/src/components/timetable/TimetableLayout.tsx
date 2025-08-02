@@ -21,6 +21,7 @@ import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 
@@ -163,15 +164,11 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
-  const {
-    is12HourMode,
-    days,
-    earliestStartTime,
-    latestEndTime,
-    setAlertMsg,
-    setErrorVisibility,
-    isConvertToLocalTimezone,
-  } = useContext(AppContext);
+  const settings = useGetUserSettingsQuery();
+  const is12HourMode = settings.use24HourClock ? false : true;
+
+  const { days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility, isConvertToLocalTimezone } =
+    useContext(AppContext);
 
   const hoursRange = [
     Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),

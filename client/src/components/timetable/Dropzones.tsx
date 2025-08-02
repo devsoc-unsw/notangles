@@ -11,7 +11,7 @@ import Dropzone from './Dropzone';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
-  const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
+  const settings = useGetUserSettingsQuery();
 
   // Deep-ish copy of activities (so we can combine duplicates without affecting original)
   let newActivities: Record<Activity, ClassData[]> = {};
@@ -28,14 +28,14 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   });
 
   // Show only open classes if setting is toggled on
-  if (isShowOnlyOpenClasses) {
+  if (settings.hideFullClasses) {
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
     });
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (isHideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
+  if (settings.hideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {

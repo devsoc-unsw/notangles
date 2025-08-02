@@ -41,7 +41,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
   const settings = useGetUserSettingsQuery();
-  const { earliestStartTime, days, isHideClassInfo, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+  const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -210,7 +210,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
-                  !isHideClassInfo && <PeriodMetadata period={classCard} />
+                  !settings.hideClassInfo && <PeriodMetadata period={classCard} />
                 ) : (
                   <>
                     {activityMaxPeriods} class

@@ -102,14 +102,14 @@ const App: React.FC = () => {
     // themeObject,
     // currentTheme,
     // setCurrentTheme,
-    is12HourMode,
+    // is12HourMode,
     // isDarkMode,
     // isSquareEdges,
-    isShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    isHideClassInfo,
-    isHideExamClasses,
-    isConvertToLocalTimezone,
+    // isShowOnlyOpenClasses,
+    // isDefaultUnscheduled,
+    // isHideClassInfo,
+    // isHideExamClasses,
+    // isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
     days,
@@ -279,7 +279,7 @@ const App: React.FC = () => {
 
       // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = isDefaultUnscheduled
+        prev[course.code][activity] = settings.unscheduleClassesByDefault
           ? null
           : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
@@ -305,7 +305,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term.substring(0, 2), code, term.substring(2), isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), settings.convertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -443,7 +443,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
-  }, [year, isConvertToLocalTimezone]);
+  }, [year, settings.convertToLocalTimezone]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
@@ -508,8 +508,8 @@ const App: React.FC = () => {
    * Upon switching timetable, reset default bounds
    */
   useEffect(() => {
-    setEarliestStartTime(getDefaultStartTime(isConvertToLocalTimezone));
-    setLatestEndTime(getDefaultEndTime(isConvertToLocalTimezone));
+    setEarliestStartTime(getDefaultStartTime(settings.convertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(settings.convertToLocalTimezone));
   }, [selectedTimetable]);
 
   /**
@@ -520,7 +520,7 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
-        getDefaultStartTime(isConvertToLocalTimezone),
+        getDefaultStartTime(settings.convertToLocalTimezone),
         prev,
       ),
     );
@@ -529,7 +529,7 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-        getDefaultEndTime(isConvertToLocalTimezone),
+        getDefaultEndTime(settings.convertToLocalTimezone),
         prev,
       ),
     );
@@ -549,15 +549,15 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
-  }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
+  }, [createdEvents, selectedCourses, settings.convertToLocalTimezone]);
 
   // useEffect(() => {
   //   storage.set('currentTheme', currentTheme);
   // }, [currentTheme]);
 
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
+  // useEffect(() => {
+  //   storage.set('is12HourMode', is12HourMode);
+  // }, [is12HourMode]);
 
   // useEffect(() => {
   //   storage.set('isDarkMode', isDarkMode);
@@ -565,25 +565,25 @@ const App: React.FC = () => {
   // useEffect(() => {
   //   storage.set('isSquareEdges', isSquareEdges);
   // }, [isSquareEdges]);
-  useEffect(() => {
-    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
-  }, [isShowOnlyOpenClasses]);
+  // useEffect(() => {
+  //   storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
+  // }, [isShowOnlyOpenClasses]);
 
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
+  // useEffect(() => {
+  //   storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
+  // }, [isDefaultUnscheduled]);
 
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);
+  // useEffect(() => {
+  //   storage.set('isHideClassInfo', isHideClassInfo);
+  // }, [isHideClassInfo]);
 
-  useEffect(() => {
-    storage.set('isHideExamClasses', isHideExamClasses);
-  }, [isHideExamClasses]);
+  // useEffect(() => {
+  //   storage.set('isHideExamClasses', isHideExamClasses);
+  // }, [isHideExamClasses]);
 
-  useEffect(() => {
-    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone]);
+  // useEffect(() => {
+  //   storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
+  // }, [isConvertToLocalTimezone]);
 
   // Validate the currentTheme
   // useEffect(() => {
