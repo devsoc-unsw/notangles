@@ -5,6 +5,8 @@ import { ApolloProvider } from '@apollo/client';
 import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
+import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -12,9 +14,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { client } from './api/config';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import { AuthGuard } from './components/login/AuthGuard';
+import PageLoading from './components/pageLoading/PageLoading';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
@@ -52,31 +56,32 @@ const Root: React.FC = () => {
   return (
     <AuthProvider>
       <ApolloProvider client={client}>
-        <QueryClientProvider client={queryClient}>
-          {/* Require some loading page for all suspense queries */}
-          <Suspense fallback={<div>Loading...</div>}>
-            <AppContextProvider>
-              <CourseContextProvider>
-                <BrowserRouter>
-                  <Routes>
-                    <Route element={<LandingPage />} path="/" />
-                    <Route
-                      element={
-                        <AuthGuard>
-                          <App />
-                        </AuthGuard>
-                      }
-                      path="/home"
-                    >
-                      <Route path="/home/event/:encrypted" element={<EventShareModal />} />
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
-              </CourseContextProvider>
-            </AppContextProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </Suspense>
-        </QueryClientProvider>
+        <AppContextProvider>
+          <CourseContextProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<LandingPage />} path="/" />
+                <Route
+                  element={
+                    <QueryClientProvider client={queryClient}>
+                      <ErrorBoundary>
+                        <Suspense fallback={<PageLoading />}>
+                          <AuthGuard>
+                            <App />
+                          </AuthGuard>
+                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+                        </Suspense>
+                      </ErrorBoundary>
+                    </QueryClientProvider>
+                  }
+                  path="/home"
+                >
+                  <Route path="/home/event/:encrypted" element={<EventShareModal />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </CourseContextProvider>
+        </AppContextProvider>
       </ApolloProvider>
     </AuthProvider>
   );

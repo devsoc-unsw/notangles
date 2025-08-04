@@ -2,18 +2,19 @@ import { API_URL } from '../config';
 import { UserSetting } from '../types';
 
 export const getUserSettings = async (): Promise<UserSetting> => {
-  try {
-    const res = await fetch(`${API_URL.server}/user/settings`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    if (res.status !== 200) {
-      throw new Error('Could not fetch user settings');
-    }
-    return await res.json();
-  } catch (error) {
-    throw new Error('Error fetching user settings');
-  }
+  // try {
+  //   const res = await fetch(`${API_URL.server}/user/settings`, {
+  //     method: 'GET',
+  //     credentials: 'include',
+  //   });
+  //   if (res.status !== 200) {
+  //     throw new Error('Could not fetch user settings');
+  //   }
+  //   return await res.json();
+  // } catch (error) {
+  //   throw new Error('Error fetching user settings');
+  // }
+  throw new Error('Simulated error fetching user settings');
 };
 
 export const setUserSettings = async (settings: Partial<UserSetting>): Promise<void> => {

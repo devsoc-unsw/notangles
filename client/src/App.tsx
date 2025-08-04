@@ -135,6 +135,7 @@ const App: React.FC = () => {
   } = useContext(CourseContext);
 
   const settings = useGetUserSettingsQuery();
+  console.log('User Settings:', settings);
 
   const decodedAssignedColors = useColorsDecoder(assignedColors, settings.preferredTheme);
 
