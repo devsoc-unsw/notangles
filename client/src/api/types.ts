@@ -1,4 +1,4 @@
-export type UserSetting = {
+export type UserSettings = {
   preferredTheme: string;
   use24HourClock: boolean;
   useDarkMode: boolean;

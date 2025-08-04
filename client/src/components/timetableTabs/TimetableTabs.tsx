@@ -51,8 +51,6 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  // const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
-
   const themeObject = useMemo(
     () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
     [settings.useDarkMode, settings.preferredTheme],
@@ -63,12 +61,6 @@ const TimetableTabs: React.FC = () => {
   }, [settings.useDarkMode]);
 
   const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
-
-  // const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
-
-  // useEffect(() => {
-  //   setTabTheme(settings.useDarkMode ? tabThemeDark : tabThemeLight);
-  // }, [settings.useDarkMode]);
 
   // Helper function to set the timetable state
   const setTimetableState = (

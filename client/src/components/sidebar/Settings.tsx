@@ -39,7 +39,7 @@ const ColorThemeOptionsContainer = styled('div')`
 
 const Settings: FC = () => {
   const settings = useGetUserSettingsQuery();
-  const mutate = useSetUserSettings();
+  const updateUserSettings = useSetUserSettings();
 
   const settingsToggles: { id: string; state: boolean; desc: string }[] = [
     { id: 'useSquareEdges', state: settings.useSquareEdges, desc: 'Square corners on classes' },
@@ -87,7 +87,7 @@ const Settings: FC = () => {
                 checked={setting.state}
                 color="primary"
                 onChange={(e) => {
-                  mutate({
+                  updateUserSettings({
                     [setting.id]: e.target.checked,
                   });
                 }}

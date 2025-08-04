@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { setUserSettings } from './routes';
 
-import type { UserSetting } from '../types';
+import type { UserSettings } from '../types';
 
 export const useSetUserSettings = () =>
   useMutation({
-    mutationFn: (settings: Partial<UserSetting>) => setUserSettings(settings),
+    mutationFn: (settings: Partial<UserSettings>) => setUserSettings(settings),
     meta: {
       invalidatesQuery: ['settings'],
       errorMessage: 'Error setting user settings',
