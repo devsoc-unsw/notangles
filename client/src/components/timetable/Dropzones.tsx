@@ -11,7 +11,7 @@ import Dropzone from './Dropzone';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
-  const settings = useGetUserSettingsQuery();
+  const { hideFullClasses, hideExamClasses } = useGetUserSettingsQuery();
 
   // Deep-ish copy of activities (so we can combine duplicates without affecting original)
   let newActivities: Record<Activity, ClassData[]> = {};
@@ -28,14 +28,14 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   });
 
   // Show only open classes if setting is toggled on
-  if (settings.hideFullClasses) {
+  if (hideFullClasses) {
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
     });
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (settings.hideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
+  if (hideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {
@@ -77,7 +77,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   const { earliestStartTime } = useContext(AppContext);
-  const settings = useGetUserSettingsQuery();
+  const { useDarkMode } = useGetUserSettingsQuery();
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (
@@ -89,7 +89,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
     />
   ));
 
-  const inventoryColor = settings.useDarkMode ? '255, 255, 255' : '0, 0, 0';
+  const inventoryColor = useDarkMode ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(

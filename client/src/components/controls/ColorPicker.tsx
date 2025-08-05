@@ -24,8 +24,8 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
-  const settings = useGetUserSettingsQuery();
-  const decodedColor = useColorDecoder(color, settings.preferredTheme);
+  const { preferredTheme } = useGetUserSettingsQuery();
+  const decodedColor = useColorDecoder(color, preferredTheme);
   const [textFieldValue, setTextFieldValue] = useState(oklchToHex(decodedColor));
 
   useEffect(() => {
@@ -34,10 +34,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
   return (
     <Box m={1} display="flex" justifyContent="center" alignItems="center">
-      <ColorIndicatorBox
-        backgroundColor={useColorDecoder(color, settings.preferredTheme)}
-        onClick={handleOpenColorPicker}
-      />
+      <ColorIndicatorBox backgroundColor={useColorDecoder(color, preferredTheme)} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
         <ButtonGroup>
           <Button

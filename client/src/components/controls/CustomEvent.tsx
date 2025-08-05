@@ -43,7 +43,7 @@ const CustomEvent: React.FC = () => {
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
-  const settings = useGetUserSettingsQuery();
+  const { convertToLocalTimezone } = useGetUserSettingsQuery();
   const { term, coursesList } = useContext(AppContext);
 
   /**
@@ -67,7 +67,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar', 'Project'];
     if (courseCode !== '') {
-      getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), settings.convertToLocalTimezone)
+      getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), convertToLocalTimezone)
         .catch((err) => {
           return err;
         })

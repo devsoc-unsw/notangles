@@ -49,6 +49,7 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 import { useGetUserSettingsQuery } from './api/user/queries';
+import { is } from 'date-fns/locale';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -134,10 +135,9 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const settings = useGetUserSettingsQuery();
-  console.log('User Settings:', settings);
+  const { preferredTheme, useDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
 
-  const decodedAssignedColors = useColorsDecoder(assignedColors, settings.preferredTheme);
+  const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -269,7 +269,7 @@ const App: React.FC = () => {
 
       // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = settings.unscheduleClassesByDefault
+        prev[course.code][activity] = unscheduleClassesByDefault
           ? null
           : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
@@ -295,7 +295,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), settings.convertToLocalTimezone).catch((err) => {
+        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), convertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -433,7 +433,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
-  }, [year, settings.convertToLocalTimezone]);
+  }, [year, convertToLocalTimezone]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
@@ -498,8 +498,8 @@ const App: React.FC = () => {
    * Upon switching timetable, reset default bounds
    */
   useEffect(() => {
-    setEarliestStartTime(getDefaultStartTime(settings.convertToLocalTimezone));
-    setLatestEndTime(getDefaultEndTime(settings.convertToLocalTimezone));
+    setEarliestStartTime(getDefaultStartTime(convertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(convertToLocalTimezone));
   }, [selectedTimetable]);
 
   /**
@@ -510,7 +510,7 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
-        getDefaultStartTime(settings.convertToLocalTimezone),
+        getDefaultStartTime(convertToLocalTimezone),
         prev,
       ),
     );
@@ -519,7 +519,7 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-        getDefaultEndTime(settings.convertToLocalTimezone),
+        getDefaultEndTime(convertToLocalTimezone),
         prev,
       ),
     );
@@ -539,11 +539,11 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
-  }, [createdEvents, selectedCourses, settings.convertToLocalTimezone]);
+  }, [createdEvents, selectedCourses, convertToLocalTimezone]);
 
   const themeObject = useMemo(
-    () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
-    [settings],
+    () => (useDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
+    [useDarkMode, preferredTheme],
   );
 
   const globalStyle = {

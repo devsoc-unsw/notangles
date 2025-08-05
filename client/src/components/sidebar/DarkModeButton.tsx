@@ -20,18 +20,16 @@ const IndividualComponentTypography = styled(Typography)`
 `;
 
 const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
-  const settings = useGetUserSettingsQuery();
-  const mutate = useSetUserSettings();
+  const { useDarkMode } = useGetUserSettingsQuery();
+  const updateUserSettings = useSetUserSettings();
 
   return (
     <>
-      <Tooltip title={collapsed ? (settings.useDarkMode ? 'Dark Mode' : 'Light Mode') : ''} placement="right">
-        <ToggleDarkModeButton color="inherit" onClick={() => mutate({ useDarkMode: !settings.useDarkMode })}>
-          {settings.useDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+      <Tooltip title={collapsed ? (useDarkMode ? 'Dark Mode' : 'Light Mode') : ''} placement="right">
+        <ToggleDarkModeButton color="inherit" onClick={() => updateUserSettings({ useDarkMode: !useDarkMode })}>
+          {useDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
           {!collapsed && (
-            <IndividualComponentTypography>
-              {settings.useDarkMode ? 'Dark Mode' : 'Light Mode'}
-            </IndividualComponentTypography>
+            <IndividualComponentTypography>{useDarkMode ? 'Dark Mode' : 'Light Mode'}</IndividualComponentTypography>
           )}
         </ToggleDarkModeButton>
       </Tooltip>

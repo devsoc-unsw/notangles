@@ -42,7 +42,7 @@ const TimetableTabs: React.FC = () => {
     term,
   } = useContext(AppContext);
 
-  const settings = useGetUserSettingsQuery();
+  const { useDarkMode, preferredTheme } = useGetUserSettingsQuery();
 
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
@@ -52,13 +52,13 @@ const TimetableTabs: React.FC = () => {
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
   const themeObject = useMemo(
-    () => (settings.useDarkMode ? darkTheme(settings.preferredTheme) : lightTheme(settings.preferredTheme)),
-    [settings.useDarkMode, settings.preferredTheme],
+    () => (useDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
+    [useDarkMode, preferredTheme],
   );
 
   const tabTheme: TabTheme = useMemo(() => {
-    return settings.useDarkMode ? tabThemeDark : tabThemeLight;
-  }, [settings.useDarkMode]);
+    return useDarkMode ? tabThemeDark : tabThemeLight;
+  }, [useDarkMode]);
 
   const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
 

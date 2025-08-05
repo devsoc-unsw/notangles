@@ -48,7 +48,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
-  const settings = useGetUserSettingsQuery();
+  const { useSquareEdges, preferredTheme } = useGetUserSettingsQuery();
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -156,7 +156,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         card={eventPeriod}
         nDays={days.length}
         earliestStartTime={earliestStartTime}
-        isSquareEdges={settings.useSquareEdges}
+        isSquareEdges={useSquareEdges}
         cardWidth={cardWidth}
         clashIndex={clashIndex}
         cellWidth={cellWidth}
@@ -223,9 +223,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
         <StyledCardInner
           hasClash={false}
-          isSquareEdges={settings.useSquareEdges}
+          isSquareEdges={useSquareEdges}
           clashColour={'none'}
-          backgroundColour={useColorDecoder(eventPeriod.event.color, settings.preferredTheme).toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

@@ -7,6 +7,7 @@ import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { useSetUserSettings } from '../../api/user/mutations';
+import { UserSettings } from '../../interfaces/User';
 
 const SettingsItem = styled('div')`
   display: flex;
@@ -37,23 +38,30 @@ const ColorThemeOptionsContainer = styled('div')`
   height: 100%;
 `;
 
+const settingsDescriptions: Record<keyof UserSettings, string> = {
+  useSquareEdges: 'Square corners on classes',
+  use24HourClock: '12-hour time',
+  hideFullClasses: 'Show only open classes',
+  unscheduleClassesByDefault: 'Unschedule classes by default',
+  hideClassInfo: 'Hide class details',
+  hideExamClasses: 'Hide exam classes',
+  convertToLocalTimezone: 'Convert to local timezone',
+  preferredTheme: '',
+  useDarkMode: '',
+};
+
 const Settings: FC = () => {
   const settings = useGetUserSettingsQuery();
+  const { preferredTheme } = settings;
   const updateUserSettings = useSetUserSettings();
 
-  const settingsToggles: { id: string; state: boolean; desc: string }[] = [
-    { id: 'useSquareEdges', state: settings.useSquareEdges, desc: 'Square corners on classes' },
-    { id: 'use24HourClock', state: settings.use24HourClock, desc: '12-hour time' },
-    { id: 'hideFullClasses', state: settings.hideFullClasses, desc: 'Show only open classes' },
-    {
-      id: 'unscheduleClassesByDefault',
-      state: settings.unscheduleClassesByDefault,
-      desc: 'Unschedule classes by default',
-    },
-    { id: 'hideClassInfo', state: settings.hideClassInfo, desc: 'Hide class details' },
-    { id: 'hideExamClasses', state: settings.hideExamClasses, desc: 'Hide exam classes' },
-    { id: 'convertToLocalTimezone', state: settings.convertToLocalTimezone, desc: 'Convert to local timezone' },
-  ];
+  const settingsToggles = Object.keys(settingsDescriptions)
+    .filter((key) => key !== 'preferredTheme' && key !== 'useDarkMode')
+    .map((key) => ({
+      id: key as keyof UserSettings,
+      state: Boolean(settings[key as keyof UserSettings]),
+      desc: settingsDescriptions[key as keyof typeof settingsDescriptions],
+    }));
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
 
@@ -67,14 +75,14 @@ const Settings: FC = () => {
   ) : (
     <>
       <SettingText>Preferred Theme</SettingText>
-      <ColorThemePreview previewTheme={settings.preferredTheme} />
+      <ColorThemePreview previewTheme={preferredTheme} />
     </>
   );
 
   const mainContent = useMemo(() => {
     return isPreferredThemeOpen ? (
       <ColorThemeOptionsContainer>
-        <ColorThemeOptions currentTheme={settings.preferredTheme} />
+        <ColorThemeOptions currentTheme={preferredTheme} />
       </ColorThemeOptionsContainer>
     ) : (
       <>
@@ -97,7 +105,7 @@ const Settings: FC = () => {
         ))}
       </>
     );
-  }, [isPreferredThemeOpen, settingsToggles]);
+  }, [isPreferredThemeOpen, settingsToggles, preferredTheme, updateUserSettings]);
 
   return (
     <>

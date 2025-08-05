@@ -34,14 +34,14 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onSelectColor,
   onCustomColorSelect,
 }) => {
-  const settings = useGetUserSettingsQuery();
+  const { useDarkMode, preferredTheme } = useGetUserSettingsQuery();
   const themeObject = useMemo(
-    () => (settings.useDarkMode ? lightTheme(settings.preferredTheme) : darkTheme(settings.preferredTheme)),
-    [settings.useDarkMode, settings.preferredTheme],
+    () => (useDarkMode ? lightTheme(preferredTheme) : darkTheme(preferredTheme)),
+    [useDarkMode, preferredTheme],
   );
 
   const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color, settings.preferredTheme);
+    const decodedColor = useColorDecoder(color, preferredTheme);
     return decodedColor;
   });
 

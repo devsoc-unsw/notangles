@@ -40,7 +40,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
-  const settings = useGetUserSettingsQuery();
+  const { useSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
   const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
@@ -175,7 +175,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         nDays={days.length}
         y={y}
         earliestStartTime={earliestStartTime}
-        isSquareEdges={settings.useSquareEdges}
+        isSquareEdges={useSquareEdges}
         onMouseOver={() => {
           setFullscreenVisible(true);
         }}
@@ -198,7 +198,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         }}
       >
         <StyledCardInner
-          isSquareEdges={settings.useSquareEdges}
+          isSquareEdges={useSquareEdges}
           backgroundColour={color}
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
@@ -210,7 +210,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
-                  !settings.hideClassInfo && <PeriodMetadata period={classCard} />
+                  !hideClassInfo && <PeriodMetadata period={classCard} />
                 ) : (
                   <>
                     {activityMaxPeriods} class
