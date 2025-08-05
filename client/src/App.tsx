@@ -49,7 +49,6 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 import { useGetUserSettingsQuery } from './api/user/queries';
-import { is } from 'date-fns/locale';
 
 const StyledApp = styled(Box)`
   height: 100%;
