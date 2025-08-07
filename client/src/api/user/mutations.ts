@@ -8,7 +8,5 @@ export const useSetUserSettings = () =>
     mutationFn: (settings: Partial<UserSettings>) => setUserSettings(settings),
     meta: {
       invalidatesQuery: ['settings'],
-      errorMessage: 'Error setting user settings',
-      successMessage: 'User settings updated successfully',
     },
   }).mutate;
