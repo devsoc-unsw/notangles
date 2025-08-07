@@ -26,8 +26,6 @@ declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
       invalidatesQuery?: QueryKey;
-      successMessage?: string;
-      errorMessage?: string;
     };
   }
 }
@@ -54,36 +52,36 @@ const Root: React.FC = () => {
   });
 
   return (
-    <AuthProvider>
-      <ApolloProvider client={client}>
-        <AppContextProvider>
-          <CourseContextProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route element={<LandingPage />} path="/" />
-                <Route
-                  element={
-                    <QueryClientProvider client={queryClient}>
-                      <ErrorBoundary>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ApolloProvider client={client}>
+          <AppContextProvider>
+            <CourseContextProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route element={<LandingPage />} path="/" />
+                  <Route
+                    element={
+                      <QueryClientProvider client={queryClient}>
                         <Suspense fallback={<PageLoading />}>
                           <AuthGuard>
                             <App />
                           </AuthGuard>
                           {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
                         </Suspense>
-                      </ErrorBoundary>
-                    </QueryClientProvider>
-                  }
-                  path="/home"
-                >
-                  <Route path="/home/event/:encrypted" element={<EventShareModal />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </CourseContextProvider>
-        </AppContextProvider>
-      </ApolloProvider>
-    </AuthProvider>
+                      </QueryClientProvider>
+                    }
+                    path="/home"
+                  >
+                    <Route path="/home/event/:encrypted" element={<EventShareModal />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </CourseContextProvider>
+          </AppContextProvider>
+        </ApolloProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 
