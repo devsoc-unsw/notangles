@@ -1,3 +1,4 @@
+export type CourseId = string;
 export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
@@ -12,6 +13,7 @@ export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
 export interface CourseData {
+  courseId: CourseId;
   code: CourseCode;
   name: string;
   earliestStartTime: number;
@@ -40,14 +42,19 @@ export interface ClassData {
   year: string;
 }
 
+type ClassId = string;
+export interface LocalCourse {
+  courseId: CourseId;
+  selectedClasses: ClassId[];
+  color: string;
+}
+
 export interface TimetableData {
   name: string;
   id: string;
   isPrimary: boolean;
-  selectedCourses: CourseData[];
-  selectedClasses: SelectedClasses;
+  selectedCourses: LocalCourse[];
   createdEvents: CreatedEvents;
-  assignedColors: Record<string, string>;
 }
 
 export interface EventDTO {

@@ -235,7 +235,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       </StyledCard>
       {classCard.type === 'class' && (
         <ExpandedView
-          code={classCard.courseCode}
+          courseId={classCard.classId}
           classPeriod={classCard}
           popupOpen={popupOpen}
           handleClose={handleClose}

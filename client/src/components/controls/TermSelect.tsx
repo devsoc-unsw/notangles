@@ -57,10 +57,10 @@ const CustomStyledSelect = (props: SelectProps) => {
 export interface TermSelectProps {}
 
 const TermSelect: React.FC<TermSelectProps> = () => {
-  const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
+  const { term, termName, setTermName, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
+  const { setSelectedCourses, setCreatedEvents } = useContext(CourseContext);
 
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -91,10 +91,8 @@ const TermSelect: React.FC<TermSelectProps> = () => {
     setYear(newYear);
     setTermName(convertToTermName(termName));
     setSelectedTimetable(defaultStartTimetable);
-    setSelectedClasses(displayTimetables[termName][defaultStartTimetable].selectedClasses);
     setCreatedEvents(displayTimetables[termName][defaultStartTimetable].createdEvents);
     setSelectedCourses(displayTimetables[termName][defaultStartTimetable].selectedCourses);
-    setAssignedColors(displayTimetables[termName][defaultStartTimetable].assignedColors);
   };
 
   const handleClose = () => {

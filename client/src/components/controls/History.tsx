@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
+import { CreatedEvents, DisplayTimetablesMap, LocalCourse } from '../../interfaces/Periods';
 import {
   ActionsPointer,
   areIdenticalTimetables,
@@ -26,7 +26,7 @@ const History: React.FC = () => {
   const [disableReset, setDisableReset] = useState({ current: true, all: true });
   const [clearOpen, setClearOpen] = useState(false);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
+  const { selectedCourses, setSelectedCourses, setSelectedClasses, createdEvents, setCreatedEvents } =
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
     useContext(AppContext);
@@ -38,14 +38,12 @@ const History: React.FC = () => {
   const isMounted = useRef(false); //prevents reset timetable disabling on initial render
 
   const setTimetableState = (
-    courses: CourseData[],
-    classes: SelectedClasses,
+    courses: LocalCourse[],
     events: CreatedEvents,
     timetableArg: DisplayTimetablesMap,
     selected?: number,
   ) => {
     setSelectedCourses(courses);
-    setSelectedClasses(classes);
     setCreatedEvents(events);
     setDisplayTimetables(timetableArg);
 
@@ -212,7 +210,7 @@ const History: React.FC = () => {
       ...displayTimetables,
       [term]: newTimetables,
     };
-    setTimetableState([], {}, {}, newDisplayTimetables, 0);
+    setTimetableState([], {}, newDisplayTimetables, 0);
   };
 
   /**

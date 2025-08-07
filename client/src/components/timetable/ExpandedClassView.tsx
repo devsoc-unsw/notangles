@@ -75,20 +75,22 @@ const getTimeData = (time: ClassTime, days: string[]) => {
 
   This is currently only intended to be appear on non-unscheduled classCards -- i.e. classPeriod but technically of type PeriodData
 */
-const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod, popupOpen, handleClose }) => {
+const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ courseId, classPeriod, popupOpen, handleClose }) => {
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
   const { days, setAlertMsg, setErrorVisibility } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
-  const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
-  const [color, setColor] = useState<string>(assignedColors[code]);
+  const { selectedCourses, setAssignedColor } = useContext(CourseContext);
+  const [color, setColor] = useState<string>(
+    selectedCourses.find((course) => course.courseId === courseId)?.color ?? '#000000',
+  );
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   // To reload initial color picker after useColorMapper instantiates context
   useEffect(() => {
-    setColor(assignedColors[code]);
-  }, [assignedColors]);
+    setColor(selectedCourses.find((course) => course.courseId === courseId)?.color ?? '#000000');
+  }, [selectedCourses]);
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -101,7 +103,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   // Upon closing the ECV, change color back to assigned color if user selected color but did not save
   const handleCloseWrapper = (value: ClassData): void => {
     handleClose(value);
-    setColor(assignedColors[code]);
+    if (selectedCourses.find((course) => course.courseId === courseId)) {
+      setColor(selectedCourses.find((course) => course.courseId === courseId)!.color);
+    }
   };
   /**
    * @param currPeriod The currently selected period
@@ -255,7 +259,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
               handleOpenColorPicker={handleOpenColorPicker}
               handleCloseColorPicker={handleCloseColorPicker}
               handleSaveNewColor={() => {
-                setAssignedColors({ ...assignedColors, [code]: color });
+                setAssignedColor(courseId, color);
                 handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
               }}
             />

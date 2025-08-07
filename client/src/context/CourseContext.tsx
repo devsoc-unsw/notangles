@@ -1,55 +1,67 @@
 import { createContext, useMemo, useState } from 'react';
 
-import { CourseData, CreatedEvents, SelectedClasses } from '../interfaces/Periods';
+import { CreatedEvents, SelectedClasses } from '../interfaces/Periods';
 import { CourseContextProviderProps } from '../interfaces/PropTypes';
 
-export interface ICourseContext {
-  selectedCourses: CourseData[];
-  setSelectedCourses: (newSelectedCourses: CourseData[]) => void;
+type classId = string;
+interface LocalCourse {
+  courseId: string;
+  selectedClasses: classId[];
+  color: string;
+}
 
-  selectedClasses: SelectedClasses;
-  setSelectedClasses(newSelectedClasses: SelectedClasses): void;
-  setSelectedClasses(callback: (oldSelectedClasses: SelectedClasses) => SelectedClasses): void;
+export interface ICourseContext {
+  selectedCourses: LocalCourse[];
+  setSelectedCourses: (newSelectedCourses: LocalCourse[]) => void;
+
+  setSelectedClasses: (courseId: string, newSelectedClasses: classId[]) => void;
 
   createdEvents: CreatedEvents;
   setCreatedEvents: (newCreatedEvents: CreatedEvents) => void;
 
-  assignedColors: Record<string, string>;
-  setAssignedColors(newAssignedColours: Record<string, string>): void;
-  setAssignedColors(callback: (newAssignedColours: Record<string, string>) => Record<string, string>): void;
+  setAssignedColor(courseId: string, color: string): void;
 }
 
 export const CourseContext = createContext<ICourseContext>({
   selectedCourses: [],
   setSelectedCourses: () => {},
 
-  selectedClasses: {},
   setSelectedClasses: () => {},
 
   createdEvents: {},
   setCreatedEvents: () => {},
 
-  assignedColors: {},
-  setAssignedColors: () => {},
+  setAssignedColor: () => {},
 });
 
 const CourseContextProvider = ({ children }: CourseContextProviderProps) => {
-  const [selectedCourses, setSelectedCourses] = useState<CourseData[]>([]);
-  const [selectedClasses, setSelectedClasses] = useState<SelectedClasses>({});
+  const [selectedCourses, setSelectedCourses] = useState<LocalCourse[]>([]);
   const [createdEvents, setCreatedEvents] = useState<CreatedEvents>({});
-  const [assignedColors, setAssignedColors] = useState<Record<string, string>>({});
+
+  const setSelectedClasses = (courseId: string, newSelectedClasses: classId[]) => {
+    setSelectedCourses((prevSelectedCourses) =>
+      prevSelectedCourses.map((course) =>
+        course.courseId === courseId ? { ...course, selectedClasses: newSelectedClasses } : course,
+      ),
+    );
+  };
+
+  const setAssignedColor = (courseId: string, color: string) => {
+    setSelectedCourses((prevSelectedCourses) =>
+      prevSelectedCourses.map((course) => (course.courseId === courseId ? { ...course, color } : course)),
+    );
+  };
+
   const initialContext = useMemo(
     () => ({
       selectedCourses,
       setSelectedCourses,
-      selectedClasses,
       setSelectedClasses,
       createdEvents,
       setCreatedEvents,
-      assignedColors,
-      setAssignedColors,
+      setAssignedColor,
     }),
-    [selectedCourses, selectedClasses, createdEvents, assignedColors],
+    [selectedCourses, createdEvents],
   );
 
   return <CourseContext.Provider value={initialContext}>{children}</CourseContext.Provider>;

@@ -8,13 +8,7 @@ import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import {
-  CourseData,
-  CreatedEvents,
-  DisplayTimetablesMap,
-  SelectedClasses,
-  TimetableData,
-} from '../../interfaces/Periods';
+import { CreatedEvents, DisplayTimetablesMap, LocalCourse, TimetableData } from '../../interfaces/Periods';
 import {
   createTimetableStyle,
   StyledIconButton,
@@ -44,7 +38,7 @@ const TimetableTabs: React.FC = () => {
 
   const { isDarkMode, preferredTheme } = useGetUserSettingsQuery();
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
+  const { setSelectedCourses, setSelectedClasses, setCreatedEvents } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
   const isMacOS = navigator.userAgent.includes('Mac');
@@ -63,17 +57,9 @@ const TimetableTabs: React.FC = () => {
   const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
 
   // Helper function to set the timetable state
-  const setTimetableState = (
-    selectedCourses: CourseData[],
-    selectedClasses: SelectedClasses,
-    createdEvents: CreatedEvents,
-    assignedColors: Record<string, string>,
-    timetableIndex: number,
-  ) => {
+  const setTimetableState = (selectedCourses: LocalCourse[], createdEvents: CreatedEvents, timetableIndex: number) => {
     setSelectedCourses(selectedCourses);
-    setSelectedClasses(selectedClasses);
     setCreatedEvents(createdEvents);
-    setAssignedColors(assignedColors);
     setSelectedTimetable(timetableIndex);
   };
 
@@ -94,9 +80,7 @@ const TimetableTabs: React.FC = () => {
         id: uuidv4(),
         isPrimary: false,
         selectedCourses: [],
-        selectedClasses: {},
         createdEvents: {},
-        assignedColors: {},
       };
 
       const addingNewTimetables: DisplayTimetablesMap = {
@@ -106,7 +90,7 @@ const TimetableTabs: React.FC = () => {
       storage.set('timetables', addingNewTimetables);
       setDisplayTimetables(addingNewTimetables);
       // Clearing the selected courses, classes and created events for the new timetable
-      setTimetableState([], {}, {}, {}, nextIndex);
+      setTimetableState([], {}, nextIndex);
     }
   };
 
@@ -115,8 +99,8 @@ const TimetableTabs: React.FC = () => {
    */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetables: TimetableData[], timetableIndex: number) => {
-    const { selectedCourses, selectedClasses, createdEvents, assignedColors } = timetables[timetableIndex];
-    setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, timetableIndex);
+    const { selectedCourses, createdEvents } = timetables[timetableIndex];
+    setTimetableState(selectedCourses, createdEvents, timetableIndex);
   };
 
   // Reordering the tabs when they are dragged and dropped

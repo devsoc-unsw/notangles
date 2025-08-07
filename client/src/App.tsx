@@ -121,16 +121,8 @@ const App: React.FC = () => {
     setDisplayTimetables,
   } = useContext(AppContext);
 
-  const {
-    selectedCourses,
-    setSelectedCourses,
-    selectedClasses,
-    setSelectedClasses,
-    createdEvents,
-    setCreatedEvents,
-    assignedColors,
-    setAssignedColors,
-  } = useContext(CourseContext);
+  const { selectedCourses, setSelectedCourses, setSelectedClasses, createdEvents, setCreatedEvents, setAssignedColor } =
+    useContext(CourseContext);
 
   const { preferredTheme, isDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
 
