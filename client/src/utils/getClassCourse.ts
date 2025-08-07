@@ -6,7 +6,7 @@ import { ClassData, ClassPeriod, CourseData, InventoryData, InventoryPeriod } fr
  * @returns The course data for the course associated with a particular class
  */
 export const getCourseFromClassData = (selectedCourses: CourseData[], data: ClassData | InventoryData) => {
-  const course = selectedCourses.find((course) => course.code === data.courseCode);
+  const course = selectedCourses.find((course) => course.id === data.courseId);
   if (course) {
     return course;
   } else {
@@ -20,7 +20,7 @@ export const getCourseFromClassData = (selectedCourses: CourseData[], data: Clas
  * @returns The class data for the class associated with a particular period
  */
 export const getClassDataFromPeriod = (selectedCourses: CourseData[], period: ClassPeriod | InventoryPeriod) => {
-  const course = selectedCourses.find((course) => course.code === period.courseCode);
+  const course = selectedCourses.find((course) => course.id === period.courseId);
   if (!course) throw new Error();
 
   const classData = course.activities[period.activity].find((classData) => classData.id === period.classId);

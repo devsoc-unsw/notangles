@@ -80,7 +80,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
 
   const dropzones = selectedCourses.map((course) => (
     <DropzoneGroup
-      key={course.code}
+      key={course.id}
       course={course}
       color={assignedColors[course.code]}
       earliestStartTime={earliestStartTime}

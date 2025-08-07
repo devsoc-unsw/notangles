@@ -119,6 +119,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
   const classPeriod: ClassPeriod = {
     type: 'class',
     classId: classData.id,
+    courseId: classData.courseId,
     courseCode: classData.courseCode,
     activity: classData.activity,
     subActivity: subActivity,
@@ -148,6 +149,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
  */
 export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezone: boolean): CourseData => {
   const courseData: CourseData = {
+    id: dbCourse.courseId,
     code: dbCourse.courseCode,
     name: dbCourse.name,
     activities: {},
@@ -159,6 +161,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   dbCourse.classes.forEach((dbClass) => {
     const classData: ClassData = {
       id: uuidv4(),
+      courseId: dbCourse.courseId,
       courseCode: dbCourse.courseCode,
       courseName: dbCourse.name,
       activity: dbClass.activity,
@@ -186,6 +189,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
         const newPeriod: ClassPeriod = {
           type: 'class',
           classId: period.classId,
+          courseId: period.courseId,
           courseCode: period.courseCode,
           activity: period.activity,
           subActivity: period.subActivity,
@@ -246,6 +250,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
     courseData.inventoryData[activity] = {
       type: 'inventory',
       classId: null,
+      courseId: courseData.id,
       courseCode: courseData.code,
       activity: activity,
     };

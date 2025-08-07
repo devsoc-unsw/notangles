@@ -1,6 +1,7 @@
-import { Activity, CourseCode, Section, Status } from './Periods';
+import { Activity, CourseCode, CourseId, Section, Status } from './Periods';
 
 export interface DbCourse {
+  courseId: CourseId;
   courseCode: CourseCode;
   name: string;
   classes: DbClass[];

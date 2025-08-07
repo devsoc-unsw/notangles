@@ -3,7 +3,7 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode } from '../../interfaces/Periods';
+import { Activity, CourseId } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
@@ -34,15 +34,15 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const droppedCardsRef = useRef<HTMLDivElement>(null);
 
   /**
-   * @param courseCode The course code of the activity
+   * @param courseId The course id of the activity
    * @param activity The activity
    * @returns The inventory period corresponding to that activity
    */
-  const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
-    selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
+  const getInventoryPeriod = (courseId: CourseId, activity: Activity) =>
+    selectedCourses.find((course) => course.id === courseId)?.inventoryData[activity];
 
   // Get all scheduled and unscheduled periods
-  Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+  Object.entries(selectedClasses).forEach(([courseId, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
       if (isHideExamClasses && activity === 'Exam') return;
 
@@ -53,7 +53,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
         });
       } else {
         // The current period is in the inventory
-        const inventoryPeriod = getInventoryPeriod(courseCode, activity);
+        const inventoryPeriod = getInventoryPeriod(courseId, activity);
         if (inventoryPeriod) {
           classCards.push(inventoryPeriod);
 
@@ -110,7 +110,6 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   }, [days]);
 
   const clashes = findClashes(selectedClasses, createdEvents);
-
   // Generate classes
   classCards.forEach((classCard) => {
     try {

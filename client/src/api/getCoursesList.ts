@@ -6,6 +6,7 @@ import NetworkError from '../interfaces/NetworkError';
 
 const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
+    id: course.course_id,
     code: course.course_code,
     name: course.course_name,
     online: course.online,
@@ -22,6 +23,7 @@ const GET_COURSE_LIST = gql`
       faculty
       modes
       school
+      course_id
       course_code
       course_name
       terms

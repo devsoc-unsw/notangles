@@ -37,8 +37,8 @@ import NetworkError from './interfaces/NetworkError';
 import {
   Activity,
   ClassData,
-  CourseCode,
   CourseData,
+  CourseId,
   DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
@@ -242,7 +242,7 @@ const App: React.FC = () => {
       prev = { ...prev };
 
       try {
-        prev[classData.courseCode][classData.activity] = classData;
+        prev[classData.courseId][classData.activity] = classData;
       } catch (err) {
         setAlertMsg(unknownErrorMessage);
         setErrorVisibility(true);
@@ -260,7 +260,7 @@ const App: React.FC = () => {
   const handleRemoveClass = (classData: ClassData) => {
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      prev[classData.courseCode][classData.activity] = null;
+      prev[classData.id][classData.activity] = null;
       return prev;
     });
   };
@@ -276,11 +276,11 @@ const App: React.FC = () => {
     setSelectedClasses((prevRef) => {
       const prev = { ...prevRef };
 
-      prev[course.code] = {};
+      prev[course.id] = {};
 
       // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = isDefaultUnscheduled
+        prev[course.id][activity] = isDefaultUnscheduled
           ? null
           : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
@@ -303,10 +303,10 @@ const App: React.FC = () => {
     noInit?: boolean,
     callback?: (_selectedCourses: CourseData[]) => void,
   ) => {
-    const codes: string[] = Array.isArray(data) ? data : [data];
+    const courseIds: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
-      codes.map((code) =>
-        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
+      courseIds.map((id) =>
+        getCourseInfo(term!.substring(0, 2), id, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -318,16 +318,16 @@ const App: React.FC = () => {
 
       // Update the existing courses with the new data (for changing timezone).
       addedCourses.forEach((addedCourse) => {
-        if (newSelectedCourses.find((x) => x.code === addedCourse.code)) {
-          const index = newSelectedCourses.findIndex((x) => x.code === addedCourse.code);
+        if (newSelectedCourses.find((x) => x.id === addedCourse.id)) {
+          const index = newSelectedCourses.findIndex((x) => x.id === addedCourse.id);
           newSelectedCourses[index] = addedCourse;
-          if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+          if (!courseData.map.find((i) => i.id === addedCourse.id)) {
             newCourseData.map.push(addedCourse);
           }
         } else {
           newSelectedCourses.push(addedCourse);
         }
-        if (!courseData.map.find((i) => i.code === addedCourse.code)) {
+        if (!courseData.map.find((i) => i.id === addedCourse.id)) {
           newCourseData.map.push(addedCourse);
         }
       });
@@ -350,16 +350,16 @@ const App: React.FC = () => {
   /**
    * Handles removing a course from the currently selected courses
    *
-   * @param courseCode The course code of the course which was removed
+   * @param courseId The course id of the course which was removed
    */
-  const handleRemoveCourse = (courseCode: CourseCode) => {
-    const newSelectedCourses = selectedCourses.filter((course) => course.code !== courseCode);
+  const handleRemoveCourse = (courseId: CourseId) => {
+    const newSelectedCourses = selectedCourses.filter((course) => course.id !== courseId);
     setSelectedCourses(newSelectedCourses);
     const newCourseData = courseData;
     newCourseData.map = courseData.map.filter(() => {
       for (const timetable of displayTimetables[term]) {
         for (const course of timetable.selectedCourses) {
-          if (course.code.localeCompare(courseCode)) {
+          if (course.id.localeCompare(courseId)) {
             return true;
           }
         }
@@ -370,13 +370,13 @@ const App: React.FC = () => {
 
     setSelectedClasses((prev) => {
       prev = { ...prev };
-      delete prev[courseCode];
+      delete prev[courseId];
       return prev;
     });
   };
 
   type ClassId = string;
-  type SavedClasses = Record<CourseCode, Record<Activity, ClassId | InInventory>>;
+  type SavedClasses = Record<CourseId, Record<Activity, ClassId | InInventory>>;
 
   /**
    * Populate selected courses, classes and created events with the data saved in local storage
@@ -392,7 +392,7 @@ const App: React.FC = () => {
 
     if (!storage.get('timetables') || !storage.get('timetables')[term][selectedTimetable]) return;
     handleSelectCourse(
-      storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.id),
       true,
       (newSelectedCourses) => {
         const timetableSelectedClasses: SelectedClasses =
@@ -400,26 +400,26 @@ const App: React.FC = () => {
 
         const savedClasses: SavedClasses = {};
 
-        Object.keys(timetableSelectedClasses).forEach((courseCode) => {
-          savedClasses[courseCode] = {};
-          Object.keys(timetableSelectedClasses[courseCode]).forEach((activity) => {
-            const classData = timetableSelectedClasses[courseCode][activity];
-            savedClasses[courseCode][activity] = classData ? classData.section : null;
+        Object.keys(timetableSelectedClasses).forEach((courseId) => {
+          savedClasses[courseId] = {};
+          Object.keys(timetableSelectedClasses[courseId]).forEach((activity) => {
+            const classData = timetableSelectedClasses[courseId][activity];
+            savedClasses[courseId][activity] = classData ? classData.section : null;
           });
         });
 
         const newSelectedClasses: SelectedClasses = {};
 
-        Object.keys(savedClasses).forEach((courseCode) => {
-          newSelectedClasses[courseCode] = {};
-          Object.keys(savedClasses[courseCode]).forEach((activity) => {
-            const classId = savedClasses[courseCode][activity];
+        Object.keys(savedClasses).forEach((courseId) => {
+          newSelectedClasses[courseId] = {};
+          Object.keys(savedClasses[courseId]).forEach((activity) => {
+            const classId = savedClasses[courseId][activity];
             let classData: ClassData | null = null;
 
             if (classId) {
               try {
                 const result = newSelectedCourses
-                  .find((x) => x.code === courseCode)
+                  .find((x) => x.id === courseId)
                   ?.activities[activity].find((x) => x.section === classId);
                 if (result) classData = result;
               } catch (err) {
@@ -429,7 +429,7 @@ const App: React.FC = () => {
             }
 
             // classData being null means the activity is unscheduled
-            newSelectedClasses[courseCode][activity] = classData;
+            newSelectedClasses[courseId][activity] = classData;
           });
         });
         setSelectedClasses(newSelectedClasses);
