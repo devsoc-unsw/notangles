@@ -8,6 +8,7 @@ import { UserContext } from '../../context/UserContext';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
 import { ArrowForwardIosOutlined } from '@mui/icons-material';
+import ProfilePictureModal from './ProfilePictureModal';
 
 const SettingsItem = styled('div')`
   display: flex;
@@ -18,6 +19,16 @@ const SettingsItem = styled('div')`
 
 const SettingText = styled('div')`
   padding: 1vh 0;
+  display: flex;
+  align-items: center;
+`;
+
+const ReturnText = styled(SettingText)`
+  padding: 0;
+`
+
+const StyledArrowBackIosIcon = styled(ArrowBackIosIcon)`
+  height: 16px;
 `;
 
 const SettingButton = styled('div')`
@@ -76,12 +87,36 @@ const Settings: FC = () => {
   const mainContent = useMemo(() => (
     <>
       {isPreferredThemeOpen && (
-        <ColorThemeOptionsContainer>
-          <ColorThemeOptions currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
-        </ColorThemeOptionsContainer>
+        <>
+          <SettingButton
+            onClick={() => {
+              setIsPreferredThemeOpen(!isPreferredThemeOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+          <ColorThemeOptionsContainer>
+            <ColorThemeOptions currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
+          </ColorThemeOptionsContainer>
+        </>
       )}
       {isChangeProfilePicOpen && (
-        <div>Placeholder for changing profile pic screen</div>
+        <>
+          <SettingButton
+            onClick={() => {
+              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+          <ProfilePictureModal />
+        </>
       )}
       {!isPreferredThemeOpen && !isChangeProfilePicOpen && settingsToggles.map((setting) => (
         <div key={setting.desc}>
@@ -101,13 +136,14 @@ const Settings: FC = () => {
     </>
   ), [isPreferredThemeOpen, isChangeProfilePicOpen, currentTheme, setCurrentTheme, settingsToggles]);
 
-  const buttons = useMemo(() => {
-    const isHomepageOpen = !isPreferredThemeOpen && !isChangeProfilePicOpen; // RENAME (not clear)
+  const flatMenuButtons = useMemo(() => {
+    const isHomepageOpen = !isPreferredThemeOpen && !isChangeProfilePicOpen;
 
     return (
       <>
-        {isHomepageOpen && !user.userID && (
-          <SettingButton // TODO: FLIP BOOLEAN CHECK (only show when logged in)
+        {/* Only show option to change profile pic when user is logged in */}
+        {isHomepageOpen && !!user.userID && (
+          <SettingButton
             onClick={() => {
               setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
             }}
@@ -126,37 +162,13 @@ const Settings: FC = () => {
             <ColorThemePreview />
           </SettingButton>
         )}
-        {isPreferredThemeOpen && (
-          <SettingButton
-            onClick={() => {
-              setIsPreferredThemeOpen(!isPreferredThemeOpen);
-            }}
-          >
-            <SettingText>
-              <ArrowBackIosIcon />
-              Return
-            </SettingText>
-          </SettingButton>
-        )}
-        {isChangeProfilePicOpen && (
-          <SettingButton
-            onClick={() => {
-              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
-            }}
-          >
-            <SettingText>
-              <ArrowBackIosIcon />
-              Return
-            </SettingText>
-          </SettingButton>
-        )}
       </>
     )
   }, [isChangeProfilePicOpen, isPreferredThemeOpen, user.userID]);
 
   return (
     <>
-      {buttons}
+      {flatMenuButtons}
       {mainContent}
     </>
   );
