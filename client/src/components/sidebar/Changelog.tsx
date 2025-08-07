@@ -11,7 +11,10 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
-type Change = { date: string; changes: string[] };
+interface Change {
+  date: string;
+  changes: string[];
+}
 
 const changelog: Change[] = [
   {

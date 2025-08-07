@@ -68,14 +68,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false);
 
   const [newName, setNewName] = useState<string>(name);
-  const [newDays, setNewDays] = useState<Array<string>>([daysShort[day - 1]]);
+  const [newDays, setNewDays] = useState<string[]>([daysShort[day - 1]]);
   const [newStartTime, setNewStartTime] = useState<Date>(createDateWithTime(start));
   const [newEndTime, setNewEndTime] = useState<Date>(createDateWithTime(end));
   const [newLocation, setNewLocation] = useState<string>(location);
   const [newDescription, setNewDescription] = useState<string>(description);
 
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-  const [newColor, setNewColor] = useState<string>(color as string);
+  const [newColor, setNewColor] = useState<string>(color);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
@@ -338,7 +338,9 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           <ExecuteButton
             variant="contained"
             color="primary"
-            onClick={() => handleUpdateEvent(eventPeriod.event.id)}
+            onClick={() => {
+              handleUpdateEvent(eventPeriod.event.id);
+            }}
             disabled={newName === '' || newDays.length === 0}
           >
             <Save />
@@ -355,11 +357,22 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           />
           <StyledTopIcons>
             {eventPeriod.subtype !== 'Tutoring' && (
-              <IconButton aria-label="edit" onClick={() => setIsEditing(true)} disabled={isEditing}>
+              <IconButton
+                aria-label="edit"
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+                disabled={isEditing}
+              >
                 <Edit />
               </IconButton>
             )}
-            <IconButton aria-label="delete" onClick={() => handleDeleteEvent(eventPeriod.event.id)}>
+            <IconButton
+              aria-label="delete"
+              onClick={() => {
+                handleDeleteEvent(eventPeriod.event.id);
+              }}
+            >
               <Delete />
             </IconButton>
             <IconButton aria-label="close" onClick={handleCloseDialog}>

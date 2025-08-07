@@ -1,9 +1,10 @@
 import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography, useTheme } from '@mui/material';
 import { Box, styled, useMediaQuery } from '@mui/system';
-import { PromotionPopupProps } from '../../interfaces/PropTypes';
 import { useMemo, useState } from 'react';
-import storage from '../../utils/storage';
+
 import { ThemeType } from '../../constants/theme';
+import { PromotionPopupProps } from '../../interfaces/PropTypes';
+import storage from '../../utils/storage';
 
 const StyledModal = styled(Modal)`
   display: flex;

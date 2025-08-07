@@ -162,7 +162,13 @@ const EventShareModal = () => {
           </StyledListItemText>
         </PreviewCard>
       )}
-      <ExecuteButton variant="contained" color="primary" onClick={() => saveToTimetable()}>
+      <ExecuteButton
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          saveToTimetable();
+        }}
+      >
         <Add />
         Add
       </ExecuteButton>

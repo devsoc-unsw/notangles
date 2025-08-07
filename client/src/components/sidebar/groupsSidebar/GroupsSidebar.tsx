@@ -24,7 +24,9 @@ const GroupsSidebar: React.FC = () => {
             fetchUserInfo={fetchUserInfo}
             user={user}
             isSelected={i === selectedGroupIndex}
-            onClick={() => handleChangeSelectedGroup(i)}
+            onClick={() => {
+              handleChangeSelectedGroup(i);
+            }}
           />
         );
       })}

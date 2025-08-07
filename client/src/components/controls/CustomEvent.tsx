@@ -30,7 +30,7 @@ const CustomEvent: React.FC = () => {
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
-  const [eventDays, setEventDays] = useState<Array<string>>([]);
+  const [eventDays, setEventDays] = useState<string[]>([]);
   const [courseCode, setCourseCode] = useState<string>('');
   const [classCode, setClassCode] = useState<string>('');
   const [classesList, setClassesList] = useState<ClassData[]>([]);
@@ -50,7 +50,7 @@ const CustomEvent: React.FC = () => {
    * @returns an array of course codes
    */
   const getCoursesCodes = (coursesList: CoursesList) => {
-    const coursesCodes: Array<Record<string, string>> = [];
+    const coursesCodes: Record<string, string>[] = [];
     coursesList.forEach((course, idx) => {
       coursesCodes.push({ id: idx.toString(), label: course.code });
     });
@@ -65,7 +65,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar', 'Project'];
     if (courseCode !== '') {
-      getCourseInfo(term.substring(0, 2), courseCode, term!.substring(2), isConvertToLocalTimezone)
+      getCourseInfo(term.substring(0, 2), courseCode, term.substring(2), isConvertToLocalTimezone)
         .catch((err) => {
           return err;
         })
@@ -247,7 +247,11 @@ const CustomEvent: React.FC = () => {
         <StyledList>
           <TabContext value={eventType}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <TabList onChange={(_, newEventType) => setEventType(newEventType)}>
+              <TabList
+                onChange={(_, newEventType) => {
+                  setEventType(newEventType);
+                }}
+              >
                 <Tab label="General" value="General" />
                 <Tab label="Tutoring" value="Tutoring" />
               </TabList>

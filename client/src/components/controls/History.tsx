@@ -19,7 +19,7 @@ import StyledDialog from '../StyledDialog';
 // Two actions are created when the page first loads
 // One, when selectedClasses is initialised, and two, when createdEvents is initialised
 const initialIndex = 1;
-const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
+const isMacOS = navigator.userAgent.includes('Mac');
 
 const History: React.FC = () => {
   const [disableLeft, setDisableLeft] = useState(true);
@@ -318,7 +318,9 @@ const History: React.FC = () => {
       {/* Clear timetable(s) Dialog  */}
       <StyledDialog
         open={clearOpen}
-        onClose={() => setClearOpen(false)}
+        onClose={() => {
+          setClearOpen(false);
+        }}
         onConfirm={() => {
           clearAll();
           setClearOpen(false);
@@ -331,20 +333,41 @@ const History: React.FC = () => {
         confirmButtonId="confirm-delete-button"
       />
       <Tooltip title={clearTooltip}>
-        <IconButton disabled={disableReset.all} color="inherit" onClick={() => setClearOpen(true)} size="large">
+        <IconButton
+          disabled={disableReset.all}
+          color="inherit"
+          onClick={() => {
+            setClearOpen(true);
+          }}
+          size="large"
+        >
           <Delete />
         </IconButton>
       </Tooltip>
       <Tooltip title={undoTooltip}>
         <span>
-          <IconButton disabled={disableLeft} color="inherit" onClick={() => changeHistory(-1)} size="large">
+          <IconButton
+            disabled={disableLeft}
+            color="inherit"
+            onClick={() => {
+              changeHistory(-1);
+            }}
+            size="large"
+          >
             <Undo />
           </IconButton>
         </span>
       </Tooltip>
       <Tooltip title={redoTooltip}>
         <span>
-          <IconButton disabled={disableRight} color="inherit" onClick={() => changeHistory(1)} size="large">
+          <IconButton
+            disabled={disableRight}
+            color="inherit"
+            onClick={() => {
+              changeHistory(1);
+            }}
+            size="large"
+          >
             <Redo />
           </IconButton>
         </span>

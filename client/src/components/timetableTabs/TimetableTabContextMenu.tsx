@@ -1,4 +1,4 @@
-import { Close, Edit, EditNote, FileCopy, Star, Save } from '@mui/icons-material';
+import { Close, Edit, EditNote, FileCopy, Save, Star } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -48,7 +48,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, assignedColors, setAssignedColors } =
     useContext(CourseContext);
 
-  const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
+  const isMacOS = navigator.userAgent.includes('Mac');
 
   const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Shift+x)' : 'Delete Tab (Ctrl+Shift+x)';
 
@@ -379,7 +379,11 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         </MenuItem>
         <Divider />
         <Tooltip title={deleteTimetabletip}>
-          <MenuItem onClick={() => setDeleteOpen(true)}>
+          <MenuItem
+            onClick={() => {
+              setDeleteOpen(true);
+            }}
+          >
             <ListItemIcon>
               <RedDeleteIcon fontSize="small" />
             </ListItemIcon>
@@ -398,7 +402,12 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         }}
       >
         <StyledTopIcons>
-          <IconButton aria-label="close" onClick={() => handleRenameClose(false)}>
+          <IconButton
+            aria-label="close"
+            onClick={() => {
+              handleRenameClose(false);
+            }}
+          >
             <Close />
           </IconButton>
         </StyledTopIcons>
@@ -417,7 +426,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
               variant="outlined"
               helperText={renamedHelper}
               value={renamedString}
-              onChange={(e) => handleRenameChange(e)}
+              onChange={(e) => {
+                handleRenameChange(e);
+              }}
               error={renamedErr}
             />
           </ListItem>
@@ -428,7 +439,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
           color="primary"
           id="confirm-rename-button"
           disableElevation
-          onClick={() => handleRenameClose(true)}
+          onClick={() => {
+            handleRenameClose(true);
+          }}
           disabled={renamedString === '' || renamedErr}
         >
           <Save />
@@ -454,7 +467,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
         open={openRestoreAlert}
         autoHideDuration={5000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        onClose={() => setOpenRestoreAlert(false)}
+        onClose={() => {
+          setOpenRestoreAlert(false);
+        }}
         message="Timetable Deleted"
         action={restoreTimetable}
       />

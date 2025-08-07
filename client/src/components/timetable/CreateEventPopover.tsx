@@ -30,7 +30,7 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const [location, setLocation] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(initialStartTime);
   const [endTime, setEndTime] = useState<Date>(initialEndTime);
-  const [eventDays, setEventDays] = useState<Array<string>>([initialDay]);
+  const [eventDays, setEventDays] = useState<string[]>([initialDay]);
 
   // For the pre-selected fields
   const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(true);

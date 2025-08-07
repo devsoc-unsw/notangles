@@ -55,7 +55,9 @@ const CustomEventLink: React.FC<CustomEventLinkProp> = ({ link, setLink, setAler
         <TextField
           id="outlined-required"
           label="Event Link"
-          onChange={(e) => checkRender(e.target.value)}
+          onChange={(e) => {
+            checkRender(e.target.value);
+          }}
           variant="outlined"
           fullWidth
           required

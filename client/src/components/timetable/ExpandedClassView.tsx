@@ -122,7 +122,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
         classData.periods.some((period, index) => index === periodIndex && areDuplicatePeriods(period, currPeriod)),
       );
 
-      const sectionsAndLocations: Array<[Section, Location]> = duplicateClasses.map((duplicate) => [
+      const sectionsAndLocations: [Section, Location][] = duplicateClasses.map((duplicate) => [
         duplicate.section,
         duplicate.periods[periodIndex].locations.at(0) ?? '',
       ]);
@@ -183,12 +183,16 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
     <Dialog
       maxWidth="sm"
       open={popupOpen}
-      onClose={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
+      onClose={() => {
+        handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
+      }}
     >
       <StyledTopIcons>
         <IconButton
           aria-label="close"
-          onClick={() => handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex])}
+          onClick={() => {
+            handleCloseWrapper(duplicateClassData.current.duplicateClasses[selectedIndex]);
+          }}
         >
           <Close />
         </IconButton>

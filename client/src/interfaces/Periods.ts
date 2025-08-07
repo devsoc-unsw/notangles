@@ -174,10 +174,10 @@ export interface PeriodInfo {
   // For each class in the activity there are periodsPerClass groups
   // of (period.time.day, period.time.start) pairs
   // i.e. periodTimes.length == activity.classes.length * periodsPerClass * 2
-  periodTimes: Array<number>;
+  periodTimes: number[];
 
   // The ith period has duration[i] in hours
-  durations: Array<number>;
+  durations: number[];
 }
 
 export interface DuplicateClassData {
@@ -185,7 +185,7 @@ export interface DuplicateClassData {
   duplicateClasses: ClassData[];
 
   // sectionsAndLocations[i] is a tuple of the Section (i.e. the class's "code") and Location for duplicateClasses[i]
-  sectionsAndLocations: Array<[Section, Location]>;
+  sectionsAndLocations: [Section, Location][];
 
   // The relevant index of the class (as classes have multiple periods, i.e. Tut-Labs)
   periodIndex: number;
@@ -204,6 +204,4 @@ export interface CourseDataMap {
 
 export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}` | string;
 export type TermDataList = Term[];
-export interface DisplayTimetablesMap {
-  [key: string]: TimetableData[];
-}
+export type DisplayTimetablesMap = Record<string, TimetableData[]>;

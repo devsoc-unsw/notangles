@@ -95,7 +95,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, currCourse!, eventCopy);
+      setDragTarget(classCard, currCourse, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -161,7 +161,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
     activityMaxPeriods = Math.max(
-      ...currCourse!.activities[classCard.activity].map((classData) => classData.periods.length),
+      ...currCourse.activities[classCard.activity].map((classData) => classData.periods.length),
     );
   }
 
@@ -169,7 +169,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     <>
       <StyledCard
         ref={element}
-        onDoubleClick={() => setPopupOpen(true)}
+        onDoubleClick={() => {
+          setPopupOpen(true);
+        }}
         onMouseDown={onDown}
         onTouchStart={(event) => {
           onDown(event);
@@ -226,7 +228,12 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {classCard.type === 'class' && fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
+            <ExpandButton
+              onClick={() => {
+                setPopupOpen(true);
+              }}
+              sx={{ color: '#f5f5f5' }}
+            >
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}
@@ -245,10 +252,16 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         open={contextMenu != null}
         anchorReference="anchorPosition"
         anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
-        onClose={() => setContextMenu(null)}
+        onClose={() => {
+          setContextMenu(null);
+        }}
         autoFocus={false}
       >
-        <MenuItem onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}>
+        <MenuItem
+          onClick={() => {
+            handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents);
+          }}
+        >
           <ListItemIcon>
             <ContentPaste fontSize="small" />
           </ListItemIcon>

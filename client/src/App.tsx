@@ -3,17 +3,19 @@ import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
+import T3SelectGif from './assets/T3-select.gif';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
 import Footer from './components/footer/Footer';
+import PromotionPopup from './components/promotions/PromotionPopup';
+import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
-import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Timetable from './components/timetable/Timetable';
 import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
@@ -49,8 +51,6 @@ import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import PromotionPopup from './components/promotions/PromotionPopup';
-import T3SelectGif from './assets/T3-select.gif';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -155,11 +155,11 @@ const App: React.FC = () => {
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
    */
-  const maxFetchAttempts: number = 6;
-  const fetchCooldown: number = 120;
+  const maxFetchAttempts = 6;
+  const fetchCooldown = 120;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const fetchReliably = async (callback: () => Promise<void>) => {
-    for (let attempt: number = 1; attempt <= maxFetchAttempts; attempt++) {
+    for (let attempt = 1; attempt <= maxFetchAttempts; attempt++) {
       try {
         await callback();
         break;
@@ -198,8 +198,8 @@ const App: React.FC = () => {
         newTimetableTerms = {
           ...newTimetableTerms,
           ...{
-            [termId as string]: Object.prototype.hasOwnProperty.call(oldData, termId as string)
-              ? oldData[termId as string]
+            [termId]: Object.prototype.hasOwnProperty.call(oldData, termId)
+              ? oldData[termId]
               : createDefaultTimetable(user.userID),
           },
         };
@@ -306,7 +306,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term.substring(0, 2), code, term.substring(2), isConvertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -342,7 +342,10 @@ const App: React.FC = () => {
         );
       }
 
-      if (!noInit) addedCourses.forEach((course) => initCourse(course));
+      if (!noInit)
+        addedCourses.forEach((course) => {
+          initCourse(course);
+        });
       if (callback) callback(newSelectedCourses);
     });
   };
@@ -390,7 +393,7 @@ const App: React.FC = () => {
       setDisplayTimetables(updatedWithTerms);
     }
 
-    if (!storage.get('timetables') || !storage.get('timetables')[term][selectedTimetable]) return;
+    if (!storage.get('timetables')?.[term][selectedTimetable]) return;
     handleSelectCourse(
       storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
       true,
@@ -500,7 +503,7 @@ const App: React.FC = () => {
    * @returns A number corresponding to the latest day of the week. Monday is 1, Tuesday is 2 and so on
    */
   const getLatestDotW = (courses: CourseData[]) => {
-    let maxDay: number = 5;
+    let maxDay = 5;
     for (const course of courses) {
       const activities = Object.values(course.activities);
       for (const activity of activities) {

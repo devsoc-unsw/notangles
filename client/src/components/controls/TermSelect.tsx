@@ -1,12 +1,4 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectProps,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, SelectProps, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useState } from 'react';
 
@@ -14,7 +6,6 @@ import { ThemeType } from '../../constants/theme';
 import { convertToTermName } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Term } from '../../interfaces/Periods';
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
   color: theme.palette.primary.main,
@@ -44,7 +35,7 @@ const StyledSelect = styled(Select)(({ theme }) => ({
     borderColor: theme.palette.primary.main,
   },
   '&:hover': {
-    backgroundColor: "rgba(157, 157, 157, 0.15)",
+    backgroundColor: 'rgba(157, 157, 157, 0.15)',
   },
 }));
 
@@ -77,7 +68,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
   const [open, setOpen] = useState(false);
 
   const termDataStrList = termsData.map((val) => {
-    return `${convertToTermName(val!)}, ${val?.substring(2)}`;
+    return `${convertToTermName(val)}, ${val?.substring(2)}`;
   });
 
   const selectTerm = (e: any) => {
@@ -95,18 +86,17 @@ const TermSelect: React.FC<TermSelectProps> = () => {
 
     const newYear = termInfo[1];
 
-    const termName = (termPrefix + newYear) as Term; // To get a string like T12024
+    const termName = termPrefix + newYear; // To get a string like T12024
     setTerm(termName);
     setYear(newYear);
-    setTermName(convertToTermName(termName!));
+    setTermName(convertToTermName(termName));
     setSelectedTimetable(defaultStartTimetable);
-    setSelectedClasses(displayTimetables[termName!][defaultStartTimetable].selectedClasses);
-    setCreatedEvents(displayTimetables[termName!][defaultStartTimetable].createdEvents);
-    setSelectedCourses(displayTimetables[termName!][defaultStartTimetable].selectedCourses);
-    setAssignedColors(displayTimetables[termName!][defaultStartTimetable].assignedColors);
+    setSelectedClasses(displayTimetables[termName][defaultStartTimetable].selectedClasses);
+    setCreatedEvents(displayTimetables[termName][defaultStartTimetable].createdEvents);
+    setSelectedCourses(displayTimetables[termName][defaultStartTimetable].selectedCourses);
+    setAssignedColors(displayTimetables[termName][defaultStartTimetable].assignedColors);
   };
 
-  
   const handleClose = () => {
     setOpen(false);
   };
@@ -115,29 +105,28 @@ const TermSelect: React.FC<TermSelectProps> = () => {
     setOpen(true);
   };
   return (
-    <FormControl >
-        <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
-        <CustomStyledSelect
-            size="small"
-            labelId="select-term-label"
-            id="select-term"
-            label="Select term"
-            open={open}
-            onClose={handleClose}
-            onOpen={handleOpen}
-            value={termName.concat(', ', term?.substring(2) as string)}
-            onChange={selectTerm}
-          >
-            {Array.from(termDataStrList).map((term, index) => {
-              return (
-                <MenuItem key={index} value={term}>
-                  {term}
-                </MenuItem>
-              );
-            })}
-        </CustomStyledSelect>
+    <FormControl>
+      <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
+      <CustomStyledSelect
+        size="small"
+        labelId="select-term-label"
+        id="select-term"
+        label="Select term"
+        open={open}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        value={termName.concat(', ', term?.substring(2))}
+        onChange={selectTerm}
+      >
+        {Array.from(termDataStrList).map((term, index) => {
+          return (
+            <MenuItem key={index} value={term}>
+              {term}
+            </MenuItem>
+          );
+        })}
+      </CustomStyledSelect>
     </FormControl>
-    
   );
 };
 

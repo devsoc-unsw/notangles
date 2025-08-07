@@ -50,7 +50,9 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       open={contextMenu !== null}
       anchorReference="anchorPosition"
       anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
-      onClose={() => setContextMenu(null)}
+      onClose={() => {
+        setContextMenu(null);
+      }}
       autoFocus={false}
     >
       <MenuItem onClick={handleEditEvent} disabled={eventPeriod.subtype === 'Tutoring'}>
@@ -67,7 +69,9 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
       </MenuItem>
       <MenuItem
         disabled={copiedEvent === null}
-        onClick={() => handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents)}
+        onClick={() => {
+          handlePasteEvent(copiedEvent, setContextMenu, createdEvents, setCreatedEvents);
+        }}
       >
         <ListItemIcon>
           <ContentPaste fontSize="small" />
@@ -81,7 +85,11 @@ const EventContextMenu: React.FC<EventContextMenuProps> = ({
         <ListItemText>Duplicate</ListItemText>
       </MenuItem>
       <Divider />
-      <MenuItem onClick={() => handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod)}>
+      <MenuItem
+        onClick={() => {
+          handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod);
+        }}
+      >
         <ListItemIcon>
           <RedDeleteIcon fontSize="small" />
         </ListItemIcon>

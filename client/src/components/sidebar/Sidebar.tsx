@@ -1,9 +1,7 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Drawer, Divider, Typography } from '@mui/material';
-
-import { styled } from '@mui/system';
+import { Divider, Drawer, Typography } from '@mui/material';
 import { useMediaQuery, useTheme } from '@mui/material';
-
+import { styled } from '@mui/system';
 import React, { useContext, useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
@@ -13,11 +11,11 @@ import { UserContext } from '../../context/UserContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
-import MobileMenuButton from './MobileMenuButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
 import FriendsButton from './FriendsButton';
 import GroupsSidebar from './groupsSidebar/GroupsSidebar';
+import MobileMenuButton from './MobileMenuButton';
 import Privacy from './Privacy';
 import Settings from './Settings';
 import UserAccount from './UserAccount';
@@ -213,7 +211,9 @@ const Sidebar: React.FC = () => {
         isMobile={isMobile}
         collapsedWidth={collapsedWidth}
         open={!collapsed}
-        onClose={() => handleCollapse(true)}
+        onClose={() => {
+          handleCollapse(true);
+        }}
         elevation={0}
       >
         {!groupsSidebarCollapsed && (
@@ -228,8 +228,12 @@ const Sidebar: React.FC = () => {
                 <LogoImg
                   src={currLogo}
                   alt="Notangles logo"
-                  onMouseOver={() => setCurrLogo(notanglesLogoGif)}
-                  onMouseOut={() => setCurrLogo(notanglesLogo)}
+                  onMouseOver={() => {
+                    setCurrLogo(notanglesLogoGif);
+                  }}
+                  onMouseOut={() => {
+                    setCurrLogo(notanglesLogo);
+                  }}
                 />
               </a>
               {!collapsed && (
@@ -273,19 +277,36 @@ const Sidebar: React.FC = () => {
                     © DevSoc {new Date().getFullYear()}, v1.0.0,{' '}
                     {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
                   </div>
-                  <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(true)} toolTipTitle="Collapse" />
+                  <CollapseButton
+                    collapsed={collapsed}
+                    onClick={() => {
+                      handleCollapse(true);
+                    }}
+                    toolTipTitle="Collapse"
+                  />
                 </SidebarFooterWrapper>
               </SidebarFooterText>
             ) : (
               !isMobile && (
-                <CollapseButton collapsed={collapsed} onClick={() => handleCollapse(false)} toolTipTitle="Expand" />
+                <CollapseButton
+                  collapsed={collapsed}
+                  onClick={() => {
+                    handleCollapse(false);
+                  }}
+                  toolTipTitle="Expand"
+                />
               )
             )}
           </SidebarFooter>
         </Container>
       </StyledDrawer>
       {isMobile && (
-        <MobileMenuButton onClick={() => handleCollapse(false)} toolTipTitle={collapsed ? 'Expand' : 'Collapse'} />
+        <MobileMenuButton
+          onClick={() => {
+            handleCollapse(false);
+          }}
+          toolTipTitle={collapsed ? 'Expand' : 'Collapse'}
+        />
       )}
     </>
   );

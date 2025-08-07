@@ -134,7 +134,7 @@ const getCourseInfo = async (
 
             dbClassTimesList = sortUnique(dbClassTimesList);
 
-            let newWeeks: string = '';
+            let newWeeks = '';
             let isEndOfRange = false;
 
             // Convert the numerical representation of the weeks the classes are running back to a string
