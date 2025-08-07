@@ -9,6 +9,7 @@ import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
 import { ArrowForwardIosOutlined } from '@mui/icons-material';
+import ProfilePictureModal from './ProfilePictureModal';
 
 const SettingsPadding = styled('div')`
   padding: 1vh 20px;
@@ -22,6 +23,16 @@ export const SettingsItem = styled(SettingsPadding)`
 
 export const SettingsText = styled('div')`
   padding: 1vh 0;
+  display: flex;
+  align-items: center;
+`;
+
+const ReturnText = styled(SettingsText)`
+  padding: 0;
+`;
+
+const StyledArrowBackIosIcon = styled(ArrowBackIosIcon)`
+  height: 16px;
 `;
 
 export const SettingButton = styled(SettingsPadding)`
@@ -79,7 +90,21 @@ const Settings: FC = () => {
             <ColorThemeOptions currentTheme={preferredTheme} />
           </ColorThemeOptionsContainer>
         )}
-        {isChangeProfilePicOpen && <div>Placeholder for changing profile pic screen</div>}
+        {isChangeProfilePicOpen && (
+          <>
+            <SettingButton
+              onClick={() => {
+                setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+              }}
+            >
+              <ReturnText>
+                <StyledArrowBackIosIcon />
+                Return
+              </ReturnText>
+            </SettingButton>
+            <ProfilePictureModal />
+          </>
+        )}
         {!isPreferredThemeOpen &&
           !isChangeProfilePicOpen &&
           settingsToggles.map((setting) => (
@@ -109,8 +134,9 @@ const Settings: FC = () => {
 
     return (
       <>
-        {isHomepageOpen && (
-          <SettingButton // TODO: FLIP BOOLEAN CHECK (only show when logged in)
+        {/* Only show option to change profile pic when user is logged in */}
+        {isHomepageOpen && !!user.userID && (
+          <SettingButton
             onClick={() => {
               setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
             }}
