@@ -65,57 +65,113 @@ const Settings: FC = () => {
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
 
-  const settingButtonContent = isPreferredThemeOpen ? (
-    <>
-      <SettingText>
-        <ArrowBackIosIcon />
-        Return
-      </SettingText>
-    </>
-  ) : (
-    <>
-      <SettingText>Preferred Theme</SettingText>
-      <ColorThemePreview previewTheme={preferredTheme} />
-    </>
+  // const settingButtonContent = isPreferredThemeOpen ? (
+  //   <>
+  //     <SettingText>
+  //       <ArrowBackIosIcon />
+  //       Return
+  //     </SettingText>
+  //   </>
+  // ) : (
+  //   <>
+  //     <SettingText>Preferred Theme</SettingText>
+  //     <ColorThemePreview previewTheme={preferredTheme} />
+  //   </>
+  // );
+
+  // const mainContent = useMemo(() => {
+  //   return isPreferredThemeOpen ? (
+  //     <ColorThemeOptionsContainer>
+  //       <ColorThemeOptions currentTheme={preferredTheme} />
+  //     </ColorThemeOptionsContainer>
+  //   ) : (
+  //     <>
+  //       {settingsToggles.map((setting) => (
+  //         <div key={setting.desc}>
+  //           <SettingsItem>
+  //             <SettingText>{setting.desc}</SettingText>
+  //             <Switch
+  //               value={setting.state}
+  //               checked={setting.state}
+  //               color="primary"
+  //               onChange={(e) => {
+  //                 updateUserSettings({
+  //                   [setting.id]: e.target.checked,
+  //                 });
+  //               }}
+  //             />
+  //           </SettingsItem>
+  //         </div>
+  //       ))}
+  //     </>
+  //   );
+  // }, [isPreferredThemeOpen, settingsToggles, preferredTheme, updateUserSettings]);
+
+  const mainContent = useMemo(
+    () => (
+      <>
+        {isPreferredThemeOpen && (
+          <>
+            <SettingButton
+              onClick={() => {
+                setIsPreferredThemeOpen(!isPreferredThemeOpen);
+              }}
+            >
+              <SettingText>
+                <ArrowBackIosIcon />
+                Return
+              </SettingText>
+            </SettingButton>
+            <ColorThemeOptionsContainer>
+              <ColorThemeOptions currentTheme={preferredTheme} />
+            </ColorThemeOptionsContainer>
+          </>
+        )}
+        {!isPreferredThemeOpen &&
+          settingsToggles.map((setting) => (
+            <div key={setting.desc}>
+              <SettingsItem>
+                <SettingText>{setting.desc}</SettingText>
+                <Switch
+                  value={setting.state}
+                  checked={setting.state}
+                  color="primary"
+                  onChange={(e) => {
+                    updateUserSettings({
+                      [setting.id]: e.target.checked,
+                    });
+                  }}
+                />
+              </SettingsItem>
+            </div>
+          ))}
+      </>
+    ),
+    [isPreferredThemeOpen, preferredTheme, settingsToggles, updateUserSettings],
   );
 
-  const mainContent = useMemo(() => {
-    return isPreferredThemeOpen ? (
-      <ColorThemeOptionsContainer>
-        <ColorThemeOptions currentTheme={preferredTheme} />
-      </ColorThemeOptionsContainer>
-    ) : (
+  const flatMenuButtons = useMemo(() => {
+    const isHomepageOpen = !isPreferredThemeOpen;
+
+    return (
       <>
-        {settingsToggles.map((setting) => (
-          <div key={setting.desc}>
-            <SettingsItem>
-              <SettingText>{setting.desc}</SettingText>
-              <Switch
-                value={setting.state}
-                checked={setting.state}
-                color="primary"
-                onChange={(e) => {
-                  updateUserSettings({
-                    [setting.id]: e.target.checked,
-                  });
-                }}
-              />
-            </SettingsItem>
-          </div>
-        ))}
+        {isHomepageOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsPreferredThemeOpen(!isPreferredThemeOpen);
+            }}
+          >
+            <SettingText>Preferred Theme</SettingText>
+            <ColorThemePreview previewTheme={preferredTheme} />
+          </SettingButton>
+        )}
       </>
     );
-  }, [isPreferredThemeOpen, settingsToggles, preferredTheme, updateUserSettings]);
+  }, [isPreferredThemeOpen, preferredTheme]);
 
   return (
     <>
-      <SettingButton
-        onClick={() => {
-          setIsPreferredThemeOpen(!isPreferredThemeOpen);
-        }}
-      >
-        {settingButtonContent}
-      </SettingButton>
+      {flatMenuButtons}
       {mainContent}
     </>
   );
