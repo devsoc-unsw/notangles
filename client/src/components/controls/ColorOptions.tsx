@@ -4,9 +4,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, List, ListItem } from '@mui/material';
 import { FC, useMemo } from 'react';
 
-import { useColorDecoder } from '../../hooks/useColorDecoder';
-import { darkTheme, lightTheme } from '../../constants/theme';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { darkTheme, lightTheme } from '../../constants/theme';
+import { useColorDecoder } from '../../hooks/useColorDecoder';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;

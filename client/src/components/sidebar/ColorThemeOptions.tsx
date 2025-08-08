@@ -2,9 +2,9 @@ import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { styled } from '@mui/system';
 import { useMemo } from 'react';
 
+import { useSetUserSettings } from '../../api/user/mutations';
 import { themes } from '../../constants/theme';
 import { ColorThemePreview } from './ColorThemePreview';
-import { useSetUserSettings } from '../../api/user/mutations';
 
 const SettingsItem = styled('div')`
   margin: 0 10px;
@@ -62,11 +62,11 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentThe
         aria-labelledby="color-theme-radio-group"
         name="color-theme-radio-group"
         value={currentTheme}
-        onChange={(e) =>
+        onChange={(e) => {
           mutate({
             preferredTheme: e.target.value,
-          })
-        }
+          });
+        }}
       >
         {themeOptions}
       </StyledRadioGroup>

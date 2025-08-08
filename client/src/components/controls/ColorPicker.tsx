@@ -2,13 +2,13 @@ import { Box, Button, ButtonGroup, List, ListItem, Popover, TextField } from '@m
 import { Colorful } from '@uiw/react-color';
 import { useEffect, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { colors } from '../../constants/timetable';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';
 import { oklchToHex } from '../../utils/oklchCovert';
 import ColorOptions from './ColorOptions';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
   color,
@@ -72,13 +72,23 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             <ColorOptions
               colors={colors}
               showCustomColorPicker={showCustomColorPicker}
-              onSelectColor={(selectedColor) => setColor(selectedColor)}
-              onCustomColorSelect={() => setShowCustomColorPicker(!showCustomColorPicker)}
+              onSelectColor={(selectedColor) => {
+                setColor(selectedColor);
+              }}
+              onCustomColorSelect={() => {
+                setShowCustomColorPicker(!showCustomColorPicker);
+              }}
             />
           </ListItem>
           {showCustomColorPicker && (
             <ListItem alignItems="flex-start">
-              <Colorful onChange={(e) => setColor(e.hex)} color={color} disableAlpha />
+              <Colorful
+                onChange={(e) => {
+                  setColor(e.hex);
+                }}
+                color={color}
+                disableAlpha
+              />
             </ListItem>
           )}
           <ListItem alignItems="flex-start">

@@ -1,5 +1,6 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -9,7 +10,6 @@ import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DroppedCards: React.FC<DroppedCardsProps> = ({
   assignedColors,

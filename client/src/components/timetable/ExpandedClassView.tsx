@@ -11,6 +11,7 @@ import {
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -38,7 +39,6 @@ import { isScheduledPeriod } from '../../utils/Drag';
 import { getClassDataFromPeriod, getCourseFromClassData } from '../../utils/getClassCourse';
 import ColorPicker from '../controls/ColorPicker';
 import LocationDropdown from './LocationDropdown';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;

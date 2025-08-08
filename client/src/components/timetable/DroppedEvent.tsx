@@ -4,6 +4,7 @@ import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -22,7 +23,6 @@ import { handleContextMenu, handleDeleteEvent } from '../../utils/cardsContextMe
 import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import EventContextMenu from './EventContextMenu';
 import ExpandedEventView from './ExpandedEventView';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const RIGHT_CLICK = 2;
 

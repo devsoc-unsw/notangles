@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+
 import logo from '../../assets/notanglesWithBg.png';
 
 const PageWrapper = styled('div')`
@@ -77,7 +78,7 @@ const ErrorStack = styled('pre')`
 `;
 
 interface PageErrorProps {
-  errorStack?: Error | null;
+  errorStack: Error;
 }
 
 const PageError: React.FC<PageErrorProps> = ({ errorStack }) => {
@@ -85,22 +86,21 @@ const PageError: React.FC<PageErrorProps> = ({ errorStack }) => {
     <PageWrapper>
       <LoadingLogo src={logo} alt="Notangles Logo" />
       <MessageWrapper>
-        <ErrorMessage>Oops! It seems we've hit a snag in the Notangles.</ErrorMessage>
-        <HintMessage>Don’t worry, even the best angles sometimes get tangled. You can:</HintMessage>
+        <ErrorMessage>Oops! It seems we&#39;ve hit a snag in the Notangles.</ErrorMessage>
+        <HintMessage>Don&#39;t worry, even the best angles sometimes get tangled. You can:</HintMessage>
         <Button onClick={() => (window.location.href = '/home')}>Return to Notangles</Button>
         <HintMessage>
-          Still stuck? <Link href="https://discord.com/invite/u9p34WUTcs">Report the issue</Link> on Discord, and we'll
-          untangle it for you!
+          Still stuck? <Link href="https://discord.com/invite/u9p34WUTcs">Report the issue</Link> on Discord, and
+          we&#39;ll untangle it for you!
         </HintMessage>
-        {errorStack && (
-          <ErrorWrapper>
-            <strong>Error Details:</strong>
-            <ErrorStack>
-              {errorStack.message}
-              {errorStack.stack ? `\n${errorStack.stack}` : ''}
-            </ErrorStack>
-          </ErrorWrapper>
-        )}
+
+        <ErrorWrapper>
+          <strong>Error Details:</strong>
+          <ErrorStack>
+            {errorStack.message}
+            {errorStack.stack ? `\n${errorStack.stack}` : ''}
+          </ErrorStack>
+        </ErrorWrapper>
       </MessageWrapper>
     </PageWrapper>
   );

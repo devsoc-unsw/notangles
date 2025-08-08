@@ -1,6 +1,7 @@
-import { API_URL } from '../config';
-import { UserInfo, UserSettings } from '../../interfaces/User';
 import axios from 'axios';
+
+import { UserInfo, UserSettings } from '../../interfaces/User';
+import { API_URL } from '../config';
 
 const apiClient = axios.create({
   baseURL: API_URL.server,

@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
+
 import { getUserSettings } from './routes';
 
 export const useGetUserSettingsQuery = () =>

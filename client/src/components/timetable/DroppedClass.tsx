@@ -3,6 +3,7 @@ import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -22,7 +23,6 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,

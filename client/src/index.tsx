@@ -5,8 +5,6 @@ import { ApolloProvider } from '@apollo/client';
 import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
-import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -39,10 +37,10 @@ Sentry.init({
 const Root: React.FC = () => {
   const queryClient = new QueryClient({
     mutationCache: new MutationCache({
-      onSettled: (_data, _error, _variables, _context, mutation) => {
+      onSettled: async (_data, _error, _variables, _context, mutation) => {
         {
           if (mutation.meta?.invalidatesQuery) {
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
               queryKey: mutation.meta.invalidatesQuery,
             });
           }

@@ -3,11 +3,11 @@ import { Switch } from '@mui/material';
 import { styled } from '@mui/system';
 import { FC, useMemo, useState } from 'react';
 
+import { useSetUserSettings } from '../../api/user/mutations';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
-import { useSetUserSettings } from '../../api/user/mutations';
-import { UserSettings } from '../../interfaces/User';
 
 const SettingsItem = styled('div')`
   display: flex;

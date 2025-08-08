@@ -10,7 +10,6 @@ import {
   InInventory,
   InventoryPeriod,
 } from '../interfaces/Periods';
-import storage from './storage';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
 

@@ -1,7 +1,5 @@
-import { Theme } from '@mui/material';
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useState } from 'react';
 
-import { darkTheme, lightTheme, themes } from '../constants/theme';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';

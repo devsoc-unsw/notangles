@@ -8,6 +8,7 @@ import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
+import { useGetUserSettingsQuery } from './api/user/queries';
 import T3SelectGif from './assets/T3-select.gif';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -48,7 +49,6 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
-import { useGetUserSettingsQuery } from './api/user/queries';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -294,7 +294,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term!.substring(0, 2), code, term!.substring(2), convertToLocalTimezone).catch((err) => {
+        getCourseInfo(term.substring(0, 2), code, term.substring(2), convertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),

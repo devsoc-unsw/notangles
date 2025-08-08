@@ -3,6 +3,7 @@ import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import {
   classMargin,
   daysShort,
@@ -21,7 +22,6 @@ import { handlePasteEvent } from '../../utils/cardsContextMenu';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { createDateWithTime } from '../../utils/eventTimes';
 import CreateEventPopover from './CreateEventPopover';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 export const getClassMargin = (isSquareEdges: boolean) => (isSquareEdges ? 0 : classMargin);
 

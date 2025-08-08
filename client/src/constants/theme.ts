@@ -100,7 +100,7 @@ export const lightTheme = (selectedColorTheme: string) => {
         main: '#bdbdbd',
         dark: '#999999',
       },
-      textColor: currentTheme ? currentTheme['text-color'] : '#2d2d2d',
+      textColor: currentTheme['text-color'],
     }),
     typography: {
       fontFamily: [
@@ -134,7 +134,7 @@ export const darkTheme = (selectedColorTheme: string) => {
         main: '#616161',
         dark: '#808080',
       },
-      textColor: currentTheme ? currentTheme['text-color'] : '#ffffff',
+      textColor: currentTheme['text-color'],
     }),
     typography: {
       fontFamily: [

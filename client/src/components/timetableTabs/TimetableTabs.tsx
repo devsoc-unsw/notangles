@@ -4,6 +4,8 @@ import { Box, Tooltip } from '@mui/material';
 import React, { useContext, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import {
@@ -26,8 +28,6 @@ import {
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
-import { darkTheme, lightTheme } from '../../constants/theme';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;

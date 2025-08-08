@@ -25,6 +25,7 @@ import { styled } from '@mui/system';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -46,7 +47,6 @@ import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};

@@ -3,9 +3,9 @@ import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import React from 'react';
 
-import { DarkModeButtonProps } from '../../interfaces/PropTypes';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { useSetUserSettings } from '../../api/user/mutations';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { DarkModeButtonProps } from '../../interfaces/PropTypes';
 
 const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
@@ -26,7 +26,12 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
   return (
     <>
       <Tooltip title={collapsed ? (useDarkMode ? 'Dark Mode' : 'Light Mode') : ''} placement="right">
-        <ToggleDarkModeButton color="inherit" onClick={() => updateUserSettings({ useDarkMode: !useDarkMode })}>
+        <ToggleDarkModeButton
+          color="inherit"
+          onClick={() => {
+            updateUserSettings({ useDarkMode: !useDarkMode });
+          }}
+        >
           {useDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
           {!collapsed && (
             <IndividualComponentTypography>{useDarkMode ? 'Dark Mode' : 'Light Mode'}</IndividualComponentTypography>

@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -8,7 +9,6 @@ import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
-import { useGetUserSettingsQuery } from '../../api/user/queries';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
   const { hideFullClasses, hideExamClasses } = useGetUserSettingsQuery();
@@ -35,7 +35,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (hideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
+  if (hideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {
@@ -62,7 +62,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
     classDatas.flatMap((classData) =>
       classData.periods.flatMap((period, i) => (
         <Dropzone
-          key={`${classData.id}-${i}`}
+          key={`${classData.id}-${String(i)}`}
           classPeriod={period}
           x={period.time.day + 1}
           color={color}
@@ -98,7 +98,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
       key="inventory"
       classPeriod={null} // inventory has no corresponding class period
       x={-2}
-      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
+      color={`rgba(${inventoryColor}, ${String(inventoryDropzoneOpacity)})`}
       earliestStartTime={earliestStartTime}
     />,
   );
