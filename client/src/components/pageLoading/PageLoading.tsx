@@ -1,4 +1,5 @@
 import { keyframes, styled } from '@mui/system';
+
 import logo from '../../assets/notanglesWithBg.png';
 
 const PageWrapper = styled('div')`

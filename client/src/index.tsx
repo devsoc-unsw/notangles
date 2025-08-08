@@ -12,11 +12,11 @@ import { client } from './api/config';
 import App from './App';
 import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
+import { AuthGuard } from './components/login/AuthGuard';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
-import * as swRegistration from './serviceWorkerRegistration';
-import { AuthGuard } from './components/login/AuthGuard';
 import { AuthProvider } from './hooks/useAuth';
+import * as swRegistration from './serviceWorkerRegistration';
 
 Sentry.init({
   dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,

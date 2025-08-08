@@ -1,4 +1,6 @@
 import { useState } from 'react';
+
+import { API_URL } from '../../api/config';
 import notangles from '../../assets/notangles_1.png';
 import { useAuth } from '../../hooks/useAuth';
 import AuthModal, { AuthModalProps } from '../login/AuthModal';
@@ -8,8 +10,6 @@ import HeroSection from './HeroSection/HeroSection';
 import FeaturesSection from './KeyFeaturesSection/FeaturesSection';
 import ScrollingFeaturesSection from './ScrollingFeaturesSection';
 import SponsorsSection from './SponsorsSection';
-import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../../api/config';
 
 const LandingPage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -30,7 +30,11 @@ const LandingPage = () => {
           </div>
         </header>
         <div className="snap-center h-screen">
-          <HeroSection handleStartClick={() => setAuthModalOpen(true)} />
+          <HeroSection
+            handleStartClick={() => {
+              setAuthModalOpen(true);
+            }}
+          />
         </div>
         <div className="snap-center h-screen flex flex-col justify-center items-center">
           <div className="flex pt-20 flex-col items-around justify-around">
@@ -45,7 +49,14 @@ const LandingPage = () => {
           <Footer />
         </div>
       </div>
-      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} loading={loading} onSignIn={onSignIn} />
+      <AuthModal
+        open={authModalOpen}
+        onClose={() => {
+          setAuthModalOpen(false);
+        }}
+        loading={loading}
+        onSignIn={onSignIn}
+      />
     </>
   );
 };

@@ -5,9 +5,9 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import * as React from 'react';
 
-import { User } from './User';
 import AddAFriendTab from './AddAFriendTab';
 import RequestsTab from './RequestsTab';
+import { User } from './User';
 import YourFriendsTab from './YourFriendsTab';
 
 interface TabPanelProps {
