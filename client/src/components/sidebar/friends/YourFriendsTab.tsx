@@ -5,8 +5,8 @@ import React from 'react';
 
 import { API_URL } from '../../../api/config';
 import NetworkError from '../../../interfaces/NetworkError';
-import UserProfile from './UserProfile';
 import { User } from './User';
+import UserProfile from './UserProfile';
 
 const StyledContainer = styled('div')`
   display: flex;

@@ -1,8 +1,9 @@
 import { NavigateNext } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+
 import notangles from '../../../assets/notangles_1.png';
-import { FlipWords } from '../flip-words';
 import { useAuth } from '../../../hooks/useAuth';
+import { FlipWords } from '../flip-words';
 
 const HeroSection = ({ handleStartClick }: { handleStartClick: () => void }) => {
   const { loggedIn } = useAuth();

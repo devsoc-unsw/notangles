@@ -1,12 +1,13 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { UserInfo } from '../interfaces/User';
-import { API_URL } from '../api/config';
+import { createContext, useContext, useEffect, useState } from 'react';
 
-type AuthContextType = {
+import { API_URL } from '../api/config';
+import { UserInfo } from '../interfaces/User';
+
+interface AuthContextType {
   loading: boolean;
   loggedIn: boolean;
   user: UserInfo | null;
-};
+}
 
 const AuthContext = createContext<AuthContextType>({
   loading: true,
@@ -27,8 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error('not logged in');
         return res.json();
       })
-      .then((data) => setState({ loading: false, loggedIn: true, user: data }))
-      .catch(() => setState({ loading: false, loggedIn: false, user: null }));
+      .then((data) => {
+        setState({ loading: false, loggedIn: true, user: data });
+      })
+      .catch(() => {
+        setState({ loading: false, loggedIn: false, user: null });
+      });
   }, []);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;

@@ -1,9 +1,8 @@
-import React from 'react';
-import { Dialog, DialogContent, Grid, Box, Typography, Button, IconButton, Skeleton, useTheme } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import GoogleIcon from '@mui/icons-material/Google';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import GoogleIcon from '@mui/icons-material/Google';
+import { Box, Button, Dialog, DialogContent, Grid, IconButton, Skeleton, Typography } from '@mui/material';
 
 export interface AuthModalProps {
   open: boolean;
@@ -79,19 +78,49 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
                   Sign in to continue
                 </Typography>
 
-                <Button fullWidth startIcon={<AccountCircleIcon />} onClick={() => onSignIn('devsoc')} sx={{ mb: 2 }}>
+                <Button
+                  fullWidth
+                  startIcon={<AccountCircleIcon />}
+                  onClick={() => {
+                    onSignIn('devsoc');
+                  }}
+                  sx={{ mb: 2 }}
+                >
                   Sign in with zID
                 </Button>
 
-                <Button fullWidth startIcon={<GoogleIcon />} onClick={() => onSignIn('google')} sx={{ mb: 2 }} disabled>
+                <Button
+                  fullWidth
+                  startIcon={<GoogleIcon />}
+                  onClick={() => {
+                    onSignIn('google');
+                  }}
+                  sx={{ mb: 2 }}
+                  disabled
+                >
                   Sign in with Google
                 </Button>
 
-                <Button fullWidth startIcon={<GitHubIcon />} onClick={() => onSignIn('github')} sx={{ mb: 2 }} disabled>
+                <Button
+                  fullWidth
+                  startIcon={<GitHubIcon />}
+                  onClick={() => {
+                    onSignIn('github');
+                  }}
+                  sx={{ mb: 2 }}
+                  disabled
+                >
                   Sign in with GitHub
                 </Button>
 
-                <Button fullWidth variant="outlined" onClick={() => onSignIn('guest')} disabled>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => {
+                    onSignIn('guest');
+                  }}
+                  disabled
+                >
                   Continue as Guest
                 </Button>
               </>
