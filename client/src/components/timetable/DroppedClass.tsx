@@ -89,7 +89,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, currCourse, eventCopy);
+      setDragTarget(classCard, currCourse, useSquareEdges, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -142,7 +142,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(classCard, elementCurrent);
+      registerCard(classCard, elementCurrent, useSquareEdges);
     }
 
     return () => {

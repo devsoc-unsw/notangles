@@ -95,10 +95,8 @@ export const toPx = (value: number) => `${value}px`;
  * @param element The HTML element
  * @param elevated Whether the card is being dragged around or not
  */
-export const setShadow = (element: HTMLElement, elevated: boolean) => {
+export const setShadow = (element: HTMLElement, elevated: boolean, isSquareEdges: boolean) => {
   // shadows are the same for light and dark theme
-  // const isSquareEdges = storage.get('isSquareEdges');
-  const isSquareEdges = true; // Not seeing a reason to use square edges for shadows
   const theme = lightTheme('Classic');
   element.style.boxShadow =
     theme.shadows[elevated ? getElevatedShadow(isSquareEdges) : getDefaultShadow(isSquareEdges)];
@@ -272,7 +270,7 @@ const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
  * Updates the CSS for the given HTML elements e.g. when a card is picked up or dropped
  * @param cards The map of periods to HTML elements to update
  */
-const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
+const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>, useSquareEdges: boolean) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
 
@@ -286,7 +284,7 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>) => {
 
     const inner = element.children[0] as HTMLElement;
     inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
-    setShadow(inner, isElevated);
+    setShadow(inner, isElevated, useSquareEdges);
   });
 
   if (dragElement) {
@@ -326,14 +324,14 @@ let updateTimeout: number;
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement) => {
+export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement, useSquareEdges: boolean) => {
   data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
 
   // Delay the update until consecutive `registerCard` calls have concluded
   const cards = data.type === 'event' ? eventCards : classCards;
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => {
-    updateCards(cards);
+    updateCards(cards, useSquareEdges);
   }, 0);
 };
 
@@ -619,6 +617,7 @@ let eventId = '';
 export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
+  useSquareEdges: boolean,
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
 ) => {
@@ -686,10 +685,10 @@ export const setDragTarget = (
 
     if (cardData?.type !== 'event') {
       dragSource = cardData;
-      updateCards(classCards);
+      updateCards(classCards, useSquareEdges);
       updateDropzones();
     } else {
-      updateCards(eventCards);
+      updateCards(eventCards, useSquareEdges);
     }
   }
 };

@@ -85,7 +85,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventPeriod, null, eventCopy, eventId);
+      setDragTarget(eventPeriod, null, useSquareEdges, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -138,7 +138,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(eventPeriod, elementCurrent);
+      registerCard(eventPeriod, elementCurrent, useSquareEdges);
     }
 
     return () => {
