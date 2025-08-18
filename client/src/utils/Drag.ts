@@ -15,8 +15,11 @@ export type ClassCard = ClassPeriod | InventoryPeriod;
 
 export const transitionTime = 350;
 const heightTransitionTime = 150;
-export const defaultTransition = `all ${transitionTime}ms`;
-export const moveTransition = `transform ${transitionTime}ms, height ${heightTransitionTime}ms, width ${transitionTime}ms`;
+
+const toMs = (n: number): string => String(n) + 'ms';
+
+export const defaultTransition = `all ${toMs(transitionTime)}`;
+export const moveTransition = `transform ${toMs(transitionTime)}, height ${toMs(heightTransitionTime)}, width ${toMs(transitionTime)}`;
 
 export const elevatedScale = 1.1; // How much bigger the cards should be when being dragged around
 const inventoryDropIntersection = 0.5; // How much the cards should intersect with the unscheduled column to be placed inside it
@@ -30,7 +33,7 @@ export const getElevatedShadow = (_: boolean) => 24; // How much shadow each car
  * @returns Whether the period is unscheduled
  */
 export const isScheduledPeriod = (data: ClassCard | EventPeriod | null): data is ClassPeriod =>
-  data !== null && (data as ClassPeriod).time !== undefined;
+  !!data && 'time' in data;
 
 let dragTargetCourse: CourseData | null = null; // The course corresponding to the class currently being dragged
 let dragTarget: ClassCard | EventPeriod | null = null; // The period that is currently being dragged around
@@ -88,7 +91,7 @@ const fromPx = (value: string) => Number(value.split('px')[0]);
  * @param value The numerical value of the number of pixels
  * @returns The string representing the number of pixels with the unit px
  */
-export const toPx = (value: number) => `${value}px`;
+export const toPx = (value: number) => String(value) + 'px';
 
 /**
  * Sets the shadow size of the specified HTML element based on whether it is being dragged around or not
@@ -131,7 +134,7 @@ export const checkCanDrop = (a: ClassCard | null, b: ClassCard | null) => {
   const classDataA = getClassDataFromPeriod(a);
   const classDataB = getClassDataFromPeriod(b);
 
-  const classData = classDataA ? classDataA : classDataB;
+  const classData = classDataA ?? classDataB;
 
   if (!classData) return false;
 
@@ -218,8 +221,8 @@ const updateDropzones = () => {
     const canDrop = dropTarget ? checkCanDrop(dropTarget, classPeriod) : false;
 
     const isDropTarget =
-      (classPeriod && classPeriod === dropTarget) || // is period, and period is drop darget
-      (!classPeriod && !isScheduledPeriod(dropTarget)); // is inventory, and drop target is inventory class
+      (classPeriod !== null && classPeriod === dropTarget) || // is period, and period is drop darget
+      (classPeriod == null && !isScheduledPeriod(dropTarget)); // is inventory, and drop target is inventory class
 
     let opacity = '0';
 
@@ -283,7 +286,7 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>, useSquare
     element.style.cursor = dragTarget ? 'inherit' : 'grab';
 
     const inner = element.children[0] as HTMLElement;
-    inner.style.transform = `scale(${isElevated ? elevatedScale : 1})`;
+    inner.style.transform = `scale(${isElevated ? String(elevatedScale) : '1'})`;
     setShadow(inner, isElevated, useSquareEdges);
   });
 
@@ -325,7 +328,11 @@ let updateTimeout: number;
  * @param element The HTML element corresponding to the card for that period
  */
 export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement, useSquareEdges: boolean) => {
-  data.type === 'event' ? eventCards.set(data, element) : classCards.set(data, element);
+  if (data.type === 'event') {
+    eventCards.set(data, element);
+  } else {
+    classCards.set(data, element);
+  }
 
   // Delay the update until consecutive `registerCard` calls have concluded
   const cards = data.type === 'event' ? eventCards : classCards;
@@ -351,9 +358,9 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 
-let selectClass: ClassHandler = () => {};
-let removeClass: ClassHandler = () => {};
-let updateEventTime: EventTimeHandler = () => {};
+let selectClass: ClassHandler = () => undefined; // The function to call when a class is selected
+let removeClass: ClassHandler = () => undefined; // The function to call when a class is removed from the timetable
+let updateEventTime: EventTimeHandler = () => undefined; // The function to call when an event time is updated
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -437,7 +444,6 @@ const updateDropTarget = (now?: boolean) => {
       classPeriod: undefined,
       area: 0,
     });
-  1;
 
   const { classPeriod, area } = bestMatch;
 
@@ -449,9 +455,9 @@ const updateDropTarget = (now?: boolean) => {
   // newDropTarget is the actual period that is associated with the result
   // It may be a ClassPeriod (i.e. the same period as result) if the class is moved to a dropzone in the timetable
   // It may be an InventoryPeriod if the class is moved to the inventory
-  const newDropTarget = result !== null ? result : getInventoryPeriod(dragTargetCourse, dragTarget);
+  const newDropTarget = result ?? getInventoryPeriod(dragTargetCourse, dragTarget);
 
-  if (newDropTarget !== undefined && newDropTarget !== dropTarget) {
+  if (newDropTarget !== dropTarget) {
     // Card moved over a valid period
     dropTarget = newDropTarget;
     updateDropzones();
@@ -466,12 +472,16 @@ const updateDropTarget = (now?: boolean) => {
         newTime.end !== currentClassTime.end
       ) {
         currentClassTime = undefined;
-        selectClass(getClassDataFromPeriod(newDropTarget)!);
+        const classData = getClassDataFromPeriod(newDropTarget);
+        if (classData === undefined) return;
+        selectClass(classData);
       }
     } else if (isScheduledPeriod(dragTarget)) {
       // A scheduled class was moved to the inventory
       currentClassTime = undefined;
-      removeClass(getClassDataFromPeriod(dragTarget)!);
+      const classData = getClassDataFromPeriod(dragTarget);
+      if (classData === undefined) return;
+      removeClass(classData);
     }
   }
   lastUpdate = Date.now();
@@ -487,7 +497,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
   const from = [...a];
   let to = [...b];
 
-  const result: (ClassCard | EventPeriod | null)[] = Array(from.length).fill(null);
+  const result = new Array<ClassCard | EventPeriod | null>(from.length).fill(null);
 
   if (dragTarget && dropTarget && dragTarget !== dropTarget && from.includes(dragTarget) && to.includes(dropTarget)) {
     to = to.filter((cardData) => cardData !== dropTarget);
@@ -523,7 +533,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
           });
 
         const { toCard } = closest;
-        match = toCard || null;
+        match = toCard ?? null;
       } else {
         return;
       }
@@ -540,7 +550,7 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
   return result;
 };
 
-let onScroll = (_?: Event) => {};
+let onScroll = (_?: Event) => undefined; // The scroll handler function, which is set later
 
 /**
  * @returns The div enclosing the timetable grid
@@ -798,7 +808,7 @@ const drop = () => {
       const gridChildren = dragElement.parentElement?.parentElement?.children;
       const dragrect = dragElement.children[0].getBoundingClientRect();
 
-      if (gridChildren && dragTarget) {
+      if (gridChildren !== undefined && gridChildren.length > 1) {
         const baserect = gridChildren[1].getBoundingClientRect();
 
         // x and y displacement of the drag target from the start-point of the grid
@@ -840,7 +850,7 @@ const drop = () => {
     resizeObserver.unobserve(dragElement);
   }
 
-  setDragTarget(null, null);
+  setDragTarget(null, null, false);
   dropTarget = null;
 };
 

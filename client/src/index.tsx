@@ -20,6 +20,8 @@ import PageLoading from './components/pageLoading/PageLoading';
 import AppContextProvider from './context/AppContext';
 import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
+import * as swRegistration from './serviceWorkerRegistration';
+
 declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
@@ -29,7 +31,7 @@ declare module '@tanstack/react-query' {
 }
 
 Sentry.init({
-  dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
+  dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT as string,
   integrations: [browserTracingIntegration()],
   tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
 });
@@ -83,7 +85,11 @@ const Root: React.FC = () => {
   );
 };
 
-const root = createRoot(document.getElementById('root')!);
+const rootContainer = document.getElementById('root');
+if (!rootContainer) {
+  throw new Error('Root container not found');
+}
+const root = createRoot(rootContainer);
 root.render(<Root />);
 
 // If you want your app to work offline and load faster, you can change
