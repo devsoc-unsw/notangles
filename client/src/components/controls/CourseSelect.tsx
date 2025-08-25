@@ -402,6 +402,25 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));
   const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
 
+  // Each time we select a course, add that course to options
+  // (removes MUI warning about course selected not being in options)
+  const mergedOptions = React.useMemo(() => {
+    const map = new Map<string, CourseOverview>();
+  
+    for (const course of selectedValue) {
+      const key = `${course.code}|${course.career ?? ""}`;
+      map.set(key, course);
+    }
+  
+    for (const course of options) {
+      const key = `${course.code}|${course.career ?? ""}`;
+      map.set(key, course);
+    }
+  
+    const merged = Array.from(map.values());
+    return merged;
+  }, [options, selectedValue]);
+
   return (
     <StyledSelect>
       <Autocomplete
@@ -413,7 +432,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         disableListWrap
         noOptionsText="No Results"
         selectOnFocus={false}
-        options={options}
+        options={mergedOptions}
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
