@@ -61,7 +61,7 @@ export class TimetableController {
     @Body() data: { name: string; year: number; term: string },
   ) {
     const timetable = await this.timetableService.createTimetable(
-      req.user!.id,
+      req.user.id,
       data,
     );
     return timetable;
@@ -76,7 +76,7 @@ export class TimetableController {
     @Query('term') term: string,
   ) {
     await this.timetableService.deleteTimetable(
-      req.user!.id,
+      req.user.id,
       timetableId,
       Number(year),
       term,
@@ -91,7 +91,7 @@ export class TimetableController {
     @Body('name') newName: string,
   ) {
     await this.timetableService.renameTimetable(
-      req.user!.id,
+      req.user.id,
       timetableId,
       newName,
     );
@@ -104,6 +104,6 @@ export class TimetableController {
     @Param('id') timetableId: string,
     @Body() data: { year: number; term: string },
   ) {
-    await this.timetableService.makePrimary(req.user!.id, timetableId, data);
+    await this.timetableService.makePrimary(req.user.id, timetableId, data);
   }
 }
