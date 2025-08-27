@@ -7,6 +7,8 @@ export const leftContentPadding = 40;
 export const contentPadding = 15;
 export const inventoryDropzoneOpacity = 0.1;
 export const inventoryMargin = 10; // Gap between inventory column and main timetable
+export const NotanglesBlue = '#3a76f8';
+export const NotanglesHoverBlue = '#598dff';
 
 export interface ThemeType {
   palette: {
@@ -65,7 +67,7 @@ const baseTheme = ({
   palette: {
     mode: mode,
     primary: {
-      main: '#3a76f8',
+      main: NotanglesBlue,
     },
     background: {
       default: background.main,

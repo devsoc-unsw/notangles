@@ -222,7 +222,7 @@ const updateDropzones = () => {
 
     const isDropTarget =
       (classPeriod !== null && classPeriod === dropTarget) || // is period, and period is drop darget
-      (classPeriod == null && !isScheduledPeriod(dropTarget)); // is inventory, and drop target is inventory class
+      (classPeriod === null && !isScheduledPeriod(dropTarget)); // is inventory, and drop target is inventory class
 
     let opacity = '0';
 

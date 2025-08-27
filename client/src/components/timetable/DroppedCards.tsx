@@ -20,7 +20,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { convertToLocalTimezone } = useGetUserSettingsQuery();
+  const { hideExamClasses } = useGetUserSettingsQuery();
   const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
@@ -46,7 +46,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   // Get all scheduled and unscheduled periods
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
-      if (convertToLocalTimezone && activity === 'Exam') return;
+      if (hideExamClasses && activity === 'Exam') return;
 
       if (classData) {
         // The current period is a scheduled

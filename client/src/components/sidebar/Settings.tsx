@@ -55,12 +55,14 @@ const Settings: FC = () => {
   const { preferredTheme } = settings;
   const updateUserSettings = useSetUserSettings();
 
-  const settingsToggles = Object.keys(settingsDescriptions)
-    .filter((key) => key !== 'preferredTheme' && key !== 'isDarkMode')
+  const nonTogglableSet = new Set<keyof UserSettings>(['preferredTheme', 'isDarkMode']);
+
+  const settingsToggles = (Object.keys(settingsDescriptions) as (keyof UserSettings)[])
+    .filter((key) => !nonTogglableSet.has(key))
     .map((key) => ({
-      id: key as keyof UserSettings,
-      state: Boolean(settings[key as keyof UserSettings]),
-      desc: settingsDescriptions[key as keyof typeof settingsDescriptions],
+      id: key,
+      state: Boolean(settings[key]),
+      desc: settingsDescriptions[key],
     }));
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
@@ -87,21 +89,19 @@ const Settings: FC = () => {
         )}
         {!isPreferredThemeOpen &&
           settingsToggles.map((setting) => (
-            <div key={setting.desc}>
-              <SettingsItem>
-                <SettingText>{setting.desc}</SettingText>
-                <Switch
-                  value={setting.state}
-                  checked={setting.state}
-                  color="primary"
-                  onChange={(e) => {
-                    updateUserSettings({
-                      [setting.id]: e.target.checked,
-                    });
-                  }}
-                />
-              </SettingsItem>
-            </div>
+            <SettingsItem key={setting.desc}>
+              <SettingText>{setting.desc}</SettingText>
+              <Switch
+                value={setting.state}
+                checked={setting.state}
+                color="primary"
+                onChange={(e) => {
+                  updateUserSettings({
+                    [setting.id]: e.target.checked,
+                  });
+                }}
+              />
+            </SettingsItem>
           ))}
       </>
     ),
