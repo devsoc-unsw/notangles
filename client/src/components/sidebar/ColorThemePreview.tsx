@@ -1,6 +1,8 @@
 import { List, ListItem } from '@mui/material';
 import { styled } from '@mui/system';
-import { useMemo } from 'react';
+import { useMemo, useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
+
 
 import { colors } from '../../constants/timetable';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
@@ -13,10 +15,10 @@ const StyledPreviewContainer = styled(List)`
 `;
 
 const StyledListItem = styled(ListItem, {
-  shouldForwardProp: (prop) => prop !== 'backgroundColor' && prop !== 'preveiewTheme',
+  shouldForwardProp: (prop) => prop !== 'backgroundColor' && prop !== 'previewTheme',
 })<{
   backgroundColor: string;
-  preveiewTheme?: string;
+  previewTheme?: string;
 }>`
   background-color: ${({ backgroundColor }) => backgroundColor};
   width: 10px;
@@ -32,13 +34,14 @@ interface ColorThemePreviewProps {
 export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
   const decodedColors = Object.fromEntries(
     Object.entries(colors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color, previewTheme);
+      const { currentTheme } = useContext(AppContext);
+      const decodedColor = useColorDecoder(color, currentTheme, previewTheme);
       return [key, decodedColor];
     }),
   );
   const colorPreview = useMemo(() => {
     return Object.values(decodedColors).map((color) => (
-      <StyledListItem key={color} backgroundColor={color} preveiewTheme={previewTheme} />
+      <StyledListItem key={color} backgroundColor={color} previewTheme={previewTheme} />
     ));
   }, [colors, previewTheme]);
 

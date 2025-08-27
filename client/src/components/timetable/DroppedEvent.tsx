@@ -147,6 +147,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   });
 
   const isLessThanOneHour = eventPeriod.time.end - eventPeriod.time.start < 1;
+  const { currentTheme } = useContext(AppContext);
 
   return (
     <>
@@ -215,7 +216,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          backgroundColour={useColorDecoder(eventPeriod.event.color).toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color, currentTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

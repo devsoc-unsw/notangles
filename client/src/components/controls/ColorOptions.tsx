@@ -6,6 +6,7 @@ import { FC, useContext } from 'react';
 
 import { AppContext } from '../../context/AppContext';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
+import App from '../../App';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;
@@ -34,10 +35,10 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onCustomColorSelect,
 }) => {
   // Get the current theme as from AppContext
-  const { themeObject } = useContext(AppContext);
+  const { themeObject, currentTheme } = useContext(AppContext);
 
   const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color);
+    const decodedColor = useColorDecoder(color, currentTheme);
     return decodedColor;
   });
 
