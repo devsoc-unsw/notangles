@@ -1,7 +1,7 @@
 import { Box, Link, Stack } from '@mui/material';
 import styled from '@mui/system/styled';
-import { useContext } from 'react';
 
+import { useGetUserSettingsQuery } from '../api/user/queries';
 import aristaBlack from '../assets/sponsors/arista_black.png';
 import aristaWhite from '../assets/sponsors/arista_white.png';
 import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
@@ -10,7 +10,6 @@ import safetyCultureBlack from '../assets/sponsors/safetyculture_black.png';
 import safetyCultureWhite from '../assets/sponsors/safetyculture_white.png';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
-import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`
   padding-top: 10px;
@@ -41,7 +40,7 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
 `;
 
 const Sponsors = () => {
-  const { isDarkMode } = useContext(AppContext);
+  const { isDarkMode } = useGetUserSettingsQuery();
 
   const platinumSponsorData = [
     {

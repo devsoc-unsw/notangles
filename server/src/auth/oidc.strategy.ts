@@ -94,6 +94,14 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
       },
     });
 
+    if (user.createdAt.getTime() === user.lastLogin.getTime()) {
+      await this.prisma.settings.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
     const login = promisify(req.login.bind(req));
     await login(user);
     return user;

@@ -3,6 +3,7 @@ import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -39,16 +40,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
-  const {
-    earliestStartTime,
-    days,
-    isSquareEdges,
-    isHideClassInfo,
-    setIsDrag,
-    setAlertMsg,
-    setInfoVisibility,
-    setErrorVisibility,
-  } = useContext(AppContext);
+  const { isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
+  const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   let currCourse: CourseData | null = null;
@@ -95,7 +89,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(classCard, currCourse, eventCopy);
+      setDragTarget(classCard, currCourse, isSquareEdges, eventCopy);
       setInfoVisibility(false);
     };
 
@@ -148,7 +142,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(classCard, elementCurrent);
+      registerCard(classCard, elementCurrent, isSquareEdges);
     }
 
     return () => {
@@ -216,7 +210,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
               </StyledCardName>
               <StyledCardInfo>
                 {classCard.type === 'class' ? (
-                  !isHideClassInfo && <PeriodMetadata period={classCard} />
+                  !hideClassInfo && <PeriodMetadata period={classCard} />
                 ) : (
                   <>
                     {activityMaxPeriods} class

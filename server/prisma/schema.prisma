@@ -49,14 +49,15 @@ model Settings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 
-  preferredTheme             String  @default("classic")
-  use24HourClock             Boolean @default(false)
-  useDarkMode                Boolean @default(false)
-  useSquareEdges             Boolean @default(false)
+  preferredTheme             String  @default("Classic")
+  is12HourMode            Boolean @default(true)
+  isDarkMode                Boolean @default(false)
+  isSquareEdges             Boolean @default(false)
   hideFullClasses            Boolean @default(false)
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)
   hideExamClasses            Boolean @default(false)
+  convertToLocalTimezone     Boolean @default(false)
 
   @@map("settings")
 }

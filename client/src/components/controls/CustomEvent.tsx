@@ -4,6 +4,7 @@ import { Box, Popover, Tab } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 
 import getCourseInfo from '../../api/getCourseInfo';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -42,7 +43,8 @@ const CustomEvent: React.FC = () => {
   const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
   const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
 
-  const { term, isConvertToLocalTimezone, coursesList } = useContext(AppContext);
+  const { convertToLocalTimezone } = useGetUserSettingsQuery();
+  const { term, coursesList } = useContext(AppContext);
 
   /**
    * Process coursesList to get an array of course codes
@@ -65,7 +67,7 @@ const CustomEvent: React.FC = () => {
   useEffect(() => {
     const tutoringActivities = ['Tutorial', 'Laboratory', 'Tutorial-Laboratory', 'Workshop', 'Seminar', 'Project'];
     if (courseCode !== '') {
-      getCourseInfo(term.substring(0, 2), courseCode, term.substring(2), isConvertToLocalTimezone)
+      getCourseInfo(term.substring(0, 2), courseCode, term.substring(2), convertToLocalTimezone)
         .catch((err) => {
           return err;
         })

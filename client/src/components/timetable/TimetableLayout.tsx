@@ -3,6 +3,7 @@ import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useContext, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import {
   classMargin,
   daysShort,
@@ -163,19 +164,13 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
-  const {
-    is12HourMode,
-    days,
-    earliestStartTime,
-    latestEndTime,
-    setAlertMsg,
-    setErrorVisibility,
-    isConvertToLocalTimezone,
-  } = useContext(AppContext);
+  const { is12HourMode, convertToLocalTimezone } = useGetUserSettingsQuery();
+
+  const { days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility } = useContext(AppContext);
 
   const hoursRange = [
-    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(isConvertToLocalTimezone))),
-    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(isConvertToLocalTimezone)) - 1),
+    Math.floor(Math.min(earliestStartTime, getDefaultStartTime(convertToLocalTimezone))),
+    Math.ceil(Math.max(latestEndTime, getDefaultEndTime(convertToLocalTimezone)) - 1),
   ];
 
   const eventDay = useRef<string>('Mo');
@@ -187,7 +182,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
     is12HourMode,
     setAlertMsg,
     setErrorVisibility,
-    isConvertToLocalTimezone,
+    convertToLocalTimezone,
   );
   const hourCells = hours.map((hour, i) => (
     <HourCell key={hour} x={1} y={i + 2} is12HourMode={is12HourMode}>

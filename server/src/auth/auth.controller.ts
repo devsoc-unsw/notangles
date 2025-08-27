@@ -13,7 +13,7 @@ export class AuthController {
   callback(@Res() res: Response) {
     res.redirect(
       (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
-        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}`,
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,
     );
   }
 }

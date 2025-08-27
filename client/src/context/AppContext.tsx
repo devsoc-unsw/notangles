@@ -1,7 +1,5 @@
-import { Theme } from '@mui/material';
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useState } from 'react';
 
-import { darkTheme, lightTheme, themes } from '../constants/theme';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
@@ -9,35 +7,6 @@ import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
 
 export interface IAppContext {
-  currentTheme: string;
-  setCurrentTheme: (newTheme: string) => void;
-
-  themeObject: Theme;
-
-  is12HourMode: boolean;
-  setIs12HourMode: (newIs12HourMode: boolean) => void;
-
-  isDarkMode: boolean;
-  setIsDarkMode: (newIsDarkMode: boolean) => void;
-
-  isSquareEdges: boolean;
-  setIsSquareEdges: (newIsSquareEdges: boolean) => void;
-
-  isShowOnlyOpenClasses: boolean;
-  setisShowOnlyOpenClasses: (newisShowOnlyOpenClasses: boolean) => void;
-
-  isDefaultUnscheduled: boolean;
-  setIsDefaultUnscheduled: (newIsDefaultUnscheduled: boolean) => void;
-
-  isHideClassInfo: boolean;
-  setIsHideClassInfo: (newIsHideClassInfo: boolean) => void;
-
-  isHideExamClasses: boolean;
-  setIsHideExamClasses: (newIsHideExamClasses: boolean) => void;
-
-  isConvertToLocalTimezone: boolean;
-  setIsConvertToLocalTimezone: (newIsConvertToLocalTimezone: boolean) => void;
-
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -100,35 +69,6 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
-  themeObject: lightTheme(Object.keys(themes)[0]),
-
-  currentTheme: Object.keys(themes)[0],
-  setCurrentTheme: () => {},
-
-  is12HourMode: false,
-  setIs12HourMode: () => {},
-
-  isDarkMode: false,
-  setIsDarkMode: () => {},
-
-  isSquareEdges: false,
-  setIsSquareEdges: () => {},
-
-  isShowOnlyOpenClasses: false,
-  setisShowOnlyOpenClasses: () => {},
-
-  isDefaultUnscheduled: true,
-  setIsDefaultUnscheduled: () => {},
-
-  isHideClassInfo: false,
-  setIsHideClassInfo: () => {},
-
-  isHideExamClasses: false,
-  setIsHideExamClasses: () => {},
-
-  isConvertToLocalTimezone: false,
-  setIsConvertToLocalTimezone: () => {},
-
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -198,12 +138,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
-  const [currentTheme, setCurrentTheme] = useState<string>(storage.get('currentTheme'));
-  const [is12HourMode, setIs12HourMode] = useState<boolean>(storage.get('is12HourMode'));
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(storage.get('isDarkMode'));
-  const [isSquareEdges, setIsSquareEdges] = useState<boolean>(storage.get('isSquareEdges'));
-  const [isShowOnlyOpenClasses, setisShowOnlyOpenClasses] = useState<boolean>(storage.get('isShowOnlyOpenClasses'));
-  const [isDefaultUnscheduled, setIsDefaultUnscheduled] = useState<boolean>(storage.get('isDefaultUnscheduled'));
   const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
   const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
   const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(
@@ -229,30 +163,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
-  const themeObject = useMemo(() => {
-    return isDarkMode ? darkTheme(currentTheme) : lightTheme(currentTheme);
-  }, [currentTheme, isDarkMode]);
-
   const initialContext: IAppContext = {
-    themeObject,
-    currentTheme,
-    setCurrentTheme,
-    is12HourMode,
-    setIs12HourMode,
-    isDarkMode,
-    setIsDarkMode,
-    isSquareEdges,
-    setIsSquareEdges,
-    isShowOnlyOpenClasses,
-    setisShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    setIsDefaultUnscheduled,
-    isHideClassInfo,
-    setIsHideClassInfo,
-    isHideExamClasses,
-    setIsHideExamClasses,
-    isConvertToLocalTimezone,
-    setIsConvertToLocalTimezone,
     alertMsg,
     setAlertMsg,
     alertFunction,

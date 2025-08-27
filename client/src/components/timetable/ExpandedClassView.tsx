@@ -11,6 +11,7 @@ import {
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -78,7 +79,8 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
   const [currentPeriod, setCurrentPeriod] = useState<ClassPeriod>(classPeriod); // the period currently being used to display data from -- gets changed when a class is selected in dropdown and when classPeriod changes.
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // index of the currently selected class in sectionsAndLocations array; defaults as 0 but it's real initial value is set by the useEffect anyway (most likely ends up 0 however to start with)
 
-  const { days, isDarkMode, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { days, setAlertMsg, setErrorVisibility } = useContext(AppContext);
+  const { isDarkMode } = useGetUserSettingsQuery();
   const { selectedCourses, assignedColors, setAssignedColors } = useContext(CourseContext);
   const [color, setColor] = useState<string>(assignedColors[code]);
   const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);

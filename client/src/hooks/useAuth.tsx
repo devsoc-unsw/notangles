@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { API_URL } from '../api/config';
+import { getUserProfile } from '../api/user/routes';
 import { UserInfo } from '../interfaces/User';
 
 interface AuthContextType {
@@ -23,11 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    fetch(`${API_URL.server}/user/profile`, { credentials: 'include' })
-      .then((res) => {
-        if (!res.ok) throw new Error('not logged in');
-        return res.json();
-      })
+    getUserProfile()
       .then((data) => {
         setState({ loading: false, loggedIn: true, user: data });
       })

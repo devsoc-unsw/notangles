@@ -4,6 +4,7 @@ import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/system';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -45,16 +46,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const {
-    earliestStartTime,
-    days,
-    isSquareEdges,
-    setIsDrag,
-    setAlertMsg,
-    setInfoVisibility,
-    setErrorVisibility,
-    currentTheme,
-  } = useContext(AppContext);
+  const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+    useContext(AppContext);
+  const { isSquareEdges, preferredTheme } = useGetUserSettingsQuery();
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -91,7 +85,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventPeriod, null, eventCopy, eventId);
+      setDragTarget(eventPeriod, null, isSquareEdges, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -144,7 +138,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(eventPeriod, elementCurrent);
+      registerCard(eventPeriod, elementCurrent, isSquareEdges);
     }
 
     return () => {
@@ -231,7 +225,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          backgroundColour={useColorDecoder(eventPeriod.event.color, currentTheme).toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

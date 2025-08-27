@@ -15,6 +15,7 @@ async function bootstrap() {
       'https://notanglesstaging.devsoc.app',
       'https://notangles.devsoc.app',
     ],
+    credentials: true,
   });
 
   // TODO: Validate session secret using configService
