@@ -49,7 +49,7 @@ model Settings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 
-  preferredTheme             String  @default("classic")
+  preferredTheme             String  @default("Classic")
   use24HourClock             Boolean @default(false)
   useDarkMode                Boolean @default(false)
   useSquareEdges             Boolean @default(false)
@@ -57,7 +57,7 @@ model Settings {
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)
   hideExamClasses            Boolean @default(false)
-  convertToLocalTimezone     Boolean @default(true)
+  convertToLocalTimezone     Boolean @default(false)
 
   @@map("settings")
 }

@@ -25,16 +25,16 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
 
   return (
     <>
-      <Tooltip title={collapsed ? (useDarkMode ? 'Dark Mode' : 'Light Mode') : ''} placement="right">
+      <Tooltip title={collapsed ? (useDarkMode ? 'Light Mode' : 'Dark Mode') : ''} placement="right">
         <ToggleDarkModeButton
           color="inherit"
           onClick={() => {
             updateUserSettings({ useDarkMode: !useDarkMode });
           }}
         >
-          {useDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+          {useDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
           {!collapsed && (
-            <IndividualComponentTypography>{useDarkMode ? 'Dark Mode' : 'Light Mode'}</IndividualComponentTypography>
+            <IndividualComponentTypography>{useDarkMode ? 'Light Mode' : 'Dark Mode'}</IndividualComponentTypography>
           )}
         </ToggleDarkModeButton>
       </Tooltip>

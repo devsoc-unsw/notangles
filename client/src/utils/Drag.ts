@@ -358,9 +358,15 @@ export const unregisterCard = (data: ClassCard | EventPeriod, element: HTMLEleme
 type ClassHandler = (classData: ClassData) => void;
 type EventTimeHandler = (eventTime: EventTime, recordKey: string) => void;
 
-let selectClass: ClassHandler = () => undefined; // The function to call when a class is selected
-let removeClass: ClassHandler = () => undefined; // The function to call when a class is removed from the timetable
-let updateEventTime: EventTimeHandler = () => undefined; // The function to call when an event time is updated
+let selectClass: ClassHandler = () => {
+  // This will be replaced by useDrag()
+};
+let removeClass: ClassHandler = () => {
+  // This will be replaced by useDrag()
+};
+let updateEventTime: EventTimeHandler = () => {
+  // This will be replaced by useEventDrag()
+};
 
 /**
  * Sets the select and remove class handler functions (from App)
@@ -550,8 +556,6 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
   return result;
 };
 
-let onScroll = (_?: Event) => undefined; // The scroll handler function, which is set later
-
 /**
  * @returns The div enclosing the timetable grid
  */
@@ -573,7 +577,7 @@ let lastFrame = Date.now();
  * This handler function calculates how far the timetable has been moved
  * to correctly position the cards, including the card currently being dragged around
  */
-onScroll = (event?) => {
+const onScroll = (event?: Event) => {
   const scrollElement = getScrollElement();
 
   if (!scrollElement) return;
