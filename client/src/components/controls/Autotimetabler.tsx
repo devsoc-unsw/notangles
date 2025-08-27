@@ -13,7 +13,7 @@ import {
   Slider,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 

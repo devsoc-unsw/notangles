@@ -1,6 +1,6 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';

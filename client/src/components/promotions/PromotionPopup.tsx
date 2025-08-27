@@ -1,5 +1,6 @@
 import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography, useTheme } from '@mui/material';
-import { Box, styled, useMediaQuery } from '@mui/system';
+import { styled } from '@mui/material/styles';
+import { Box, useMediaQuery } from '@mui/system';
 import { useMemo, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';

@@ -1,6 +1,6 @@
 import { SwitchAccount } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 interface FriendsButtonProps {

@@ -34,7 +34,14 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   }, [decodedColor]);
 
   return (
-    <Box m={1} display="flex" justifyContent="center" alignItems="center">
+    <Box
+      sx={{
+        m: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <ColorIndicatorBox backgroundColor={useColorDecoder(color, preferredTheme)} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
         <ButtonGroup>

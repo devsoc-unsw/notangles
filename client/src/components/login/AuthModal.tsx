@@ -34,7 +34,11 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
               p: 3,
             }}
           >
-            <Box textAlign="center">
+            <Box
+              sx={{
+                textAlign: 'center',
+              }}
+            >
               <Typography variant="h3" gutterBottom>
                 notangles
               </Typography>
@@ -74,7 +78,13 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
                 <Typography variant="h5" gutterBottom>
                   Welcome back
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mb={3}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    mb: 3,
+                  }}
+                >
                   Sign in to continue
                 </Typography>
 

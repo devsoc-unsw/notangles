@@ -1,5 +1,5 @@
 import { Grid, ListItem, ListItemText, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
