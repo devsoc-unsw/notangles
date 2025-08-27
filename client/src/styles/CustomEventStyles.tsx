@@ -3,7 +3,7 @@ import { TabPanel } from '@mui/lab';
 import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
 import { alpha, styled } from '@mui/system';
 
-import { NotanglesHoverBlue } from '../constants/theme';
+import { notanglesHoverBlue } from '../constants/theme';
 
 export const DropdownButton = styled(Button)`
   && {
@@ -13,7 +13,7 @@ export const DropdownButton = styled(Button)`
     margin-right: 10px;
     text-align: left;
     &:hover {
-      background-color: ${NotanglesHoverBlue};
+      background-color: ${notanglesHoverBlue};
     }
   }
 `;
