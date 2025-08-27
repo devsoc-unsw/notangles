@@ -273,7 +273,7 @@ const getElevatedZIndex = () => String(zIndex + elevatedZIndexOffset);
  * Updates the CSS for the given HTML elements e.g. when a card is picked up or dropped
  * @param cards The map of periods to HTML elements to update
  */
-const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>, useSquareEdges: boolean) => {
+const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>, isSquareEdges: boolean) => {
   Array.from(cards.entries()).forEach(([cardData, element]) => {
     const isElevated = getIsElevated(cardData);
 
@@ -287,7 +287,7 @@ const updateCards = (cards: Map<ClassCard | EventPeriod, HTMLElement>, useSquare
 
     const inner = element.children[0] as HTMLElement;
     inner.style.transform = `scale(${isElevated ? String(elevatedScale) : '1'})`;
-    setShadow(inner, isElevated, useSquareEdges);
+    setShadow(inner, isElevated, isSquareEdges);
   });
 
   if (dragElement) {
@@ -327,7 +327,7 @@ let updateTimeout: number;
  * @param data The period
  * @param element The HTML element corresponding to the card for that period
  */
-export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement, useSquareEdges: boolean) => {
+export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement, isSquareEdges: boolean) => {
   if (data.type === 'event') {
     eventCards.set(data, element);
   } else {
@@ -338,7 +338,7 @@ export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement
   const cards = data.type === 'event' ? eventCards : classCards;
   clearTimeout(updateTimeout);
   updateTimeout = window.setTimeout(() => {
-    updateCards(cards, useSquareEdges);
+    updateCards(cards, isSquareEdges);
   }, 0);
 };
 
@@ -631,7 +631,7 @@ let eventId = '';
 export const setDragTarget = (
   cardData: ClassCard | EventPeriod | null,
   courseData: CourseData | null,
-  useSquareEdges: boolean,
+  isSquareEdges: boolean,
   event?: MouseEvent & TouchEvent,
   givenEventId?: string,
 ) => {
@@ -699,10 +699,10 @@ export const setDragTarget = (
 
     if (cardData?.type !== 'event') {
       dragSource = cardData;
-      updateCards(classCards, useSquareEdges);
+      updateCards(classCards, isSquareEdges);
       updateDropzones();
     } else {
-      updateCards(eventCards, useSquareEdges);
+      updateCards(eventCards, isSquareEdges);
     }
   }
 };

@@ -7,9 +7,9 @@ export interface UserInfo {
 
 export interface UserSettings {
   preferredTheme: string;
-  use24HourClock: boolean;
-  useDarkMode: boolean;
-  useSquareEdges: boolean;
+  is12HourMode: boolean;
+  isDarkMode: boolean;
+  isSquareEdges: boolean;
   hideFullClasses: boolean;
   hideClassInfo: boolean;
   unscheduleClassesByDefault: boolean;

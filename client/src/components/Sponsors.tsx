@@ -40,17 +40,17 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
 `;
 
 const Sponsors = () => {
-  const { useDarkMode } = useGetUserSettingsQuery();
+  const { isDarkMode } = useGetUserSettingsQuery();
 
   const platinumSponsorData = [
     {
       name: 'Arista',
-      logo: useDarkMode ? aristaWhite : aristaBlack,
+      logo: isDarkMode ? aristaWhite : aristaBlack,
       link: 'https://www.arista.com/en/',
     },
     {
       name: 'theTradeDesk',
-      logo: useDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
+      logo: isDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
       link: 'https://careers.thetradedesk.com',
     },
   ];
@@ -58,12 +58,12 @@ const Sponsors = () => {
   const goldSponsorData = [
     {
       name: 'Jane Street',
-      logo: useDarkMode ? janeStreetWhite : janeStreetBlack,
+      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
       link: 'https://www.janestreet.com/',
     },
     {
       name: 'SafetyCulture',
-      logo: useDarkMode ? safetyCultureWhite : safetyCultureBlack,
+      logo: isDarkMode ? safetyCultureWhite : safetyCultureBlack,
       link: 'https://safetyculture.com/',
     },
   ];

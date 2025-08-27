@@ -39,15 +39,15 @@ const ColorThemeOptionsContainer = styled('div')`
 `;
 
 const settingsDescriptions: Record<keyof UserSettings, string> = {
-  useSquareEdges: 'Square corners on classes',
-  use24HourClock: '12-hour time',
+  isSquareEdges: 'Square corners on classes',
+  is12HourMode: '12-hour time',
   hideFullClasses: 'Show only open classes',
   unscheduleClassesByDefault: 'Unschedule classes by default',
   hideClassInfo: 'Hide class details',
   hideExamClasses: 'Hide exam classes',
   convertToLocalTimezone: 'Convert to local timezone',
   preferredTheme: '',
-  useDarkMode: '',
+  isDarkMode: '',
 };
 
 const Settings: FC = () => {
@@ -56,7 +56,7 @@ const Settings: FC = () => {
   const updateUserSettings = useSetUserSettings();
 
   const settingsToggles = Object.keys(settingsDescriptions)
-    .filter((key) => key !== 'preferredTheme' && key !== 'useDarkMode')
+    .filter((key) => key !== 'preferredTheme' && key !== 'isDarkMode')
     .map((key) => ({
       id: key as keyof UserSettings,
       state: Boolean(settings[key as keyof UserSettings]),

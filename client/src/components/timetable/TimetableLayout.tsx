@@ -164,8 +164,7 @@ export const TimetableLayout: React.FC<TimetableLayoutProps> = ({ copiedEvent, s
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const open = Boolean(createEventAnchorEl);
 
-  const { use24HourClock, convertToLocalTimezone } = useGetUserSettingsQuery();
-  const is12HourMode = !use24HourClock;
+  const { is12HourMode, convertToLocalTimezone } = useGetUserSettingsQuery();
 
   const { days, earliestStartTime, latestEndTime, setAlertMsg, setErrorVisibility } = useContext(AppContext);
 

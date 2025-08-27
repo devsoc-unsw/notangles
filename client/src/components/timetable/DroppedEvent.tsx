@@ -48,7 +48,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
   const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
-  const { useSquareEdges, preferredTheme } = useGetUserSettingsQuery();
+  const { isSquareEdges, preferredTheme } = useGetUserSettingsQuery();
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -85,7 +85,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const startDrag = () => {
       timer = null;
       setIsDrag(true);
-      setDragTarget(eventPeriod, null, useSquareEdges, eventCopy, eventId);
+      setDragTarget(eventPeriod, null, isSquareEdges, eventCopy, eventId);
       setInfoVisibility(false);
     };
 
@@ -138,7 +138,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
     const elementCurrent = element.current;
 
     if (elementCurrent) {
-      registerCard(eventPeriod, elementCurrent, useSquareEdges);
+      registerCard(eventPeriod, elementCurrent, isSquareEdges);
     }
 
     return () => {
@@ -156,7 +156,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         card={eventPeriod}
         nDays={days.length}
         earliestStartTime={earliestStartTime}
-        isSquareEdges={useSquareEdges}
+        isSquareEdges={isSquareEdges}
         cardWidth={cardWidth}
         clashIndex={clashIndex}
         cellWidth={cellWidth}
@@ -223,7 +223,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
         <StyledCardInner
           hasClash={false}
-          isSquareEdges={useSquareEdges}
+          isSquareEdges={isSquareEdges}
           clashColour={'none'}
           backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >

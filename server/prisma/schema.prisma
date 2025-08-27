@@ -50,9 +50,9 @@ model Settings {
   userId String @unique
 
   preferredTheme             String  @default("Classic")
-  use24HourClock             Boolean @default(false)
-  useDarkMode                Boolean @default(false)
-  useSquareEdges             Boolean @default(false)
+  is12HourMode            Boolean @default(false)
+  isDarkMode                Boolean @default(false)
+  isSquareEdges             Boolean @default(false)
   hideFullClasses            Boolean @default(false)
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)

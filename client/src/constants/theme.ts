@@ -87,7 +87,6 @@ const baseTheme = ({
 
 export const lightTheme = (selectedColorTheme: string) => {
   const currentTheme = themes[selectedColorTheme as keyof typeof themes];
-  console.log('Selected theme in lightTheme(): ', selectedColorTheme, currentTheme);
 
   return createTheme({
     ...baseTheme({
@@ -121,7 +120,6 @@ export const lightTheme = (selectedColorTheme: string) => {
 };
 
 export const darkTheme = (selectedColorTheme: string) => {
-  console.log('Selected theme in darkTheme(): ', selectedColorTheme);
   const currentTheme = themes[selectedColorTheme as keyof typeof themes];
 
   return createTheme({

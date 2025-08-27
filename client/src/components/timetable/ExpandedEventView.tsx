@@ -80,7 +80,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
   const { setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
-  const { useDarkMode } = useGetUserSettingsQuery();
+  const { isDarkMode } = useGetUserSettingsQuery();
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -387,7 +387,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
           <StyledDialogContent>
             {description.length > 0 && (
               <StyledListItem>
-                <StyledListItemIcon isDarkMode={useDarkMode}>
+                <StyledListItemIcon isDarkMode={isDarkMode}>
                   <Notes />
                 </StyledListItemIcon>
                 <Typography>{description}</Typography>
@@ -395,14 +395,14 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             )}
             {location && (
               <StyledListItem>
-                <StyledListItemIcon isDarkMode={useDarkMode}>
+                <StyledListItemIcon isDarkMode={isDarkMode}>
                   <LocationOn />
                 </StyledListItemIcon>
                 <Typography>{location}</Typography>
               </StyledListItem>
             )}
             <StyledListItem>
-              <StyledListItemIcon isDarkMode={useDarkMode}>
+              <StyledListItemIcon isDarkMode={isDarkMode}>
                 <AccessTime />
               </StyledListItemIcon>
               <Typography>
@@ -412,7 +412,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
             {eventPeriod.subtype !== 'Tutoring' ? (
               <>
                 <StyledListItem>
-                  <StyledListItemIcon isDarkMode={useDarkMode}>
+                  <StyledListItemIcon isDarkMode={isDarkMode}>
                     <Link />
                   </StyledListItemIcon>
                   <StyledEventLink

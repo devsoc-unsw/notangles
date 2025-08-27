@@ -134,7 +134,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const { preferredTheme, useDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
+  const { preferredTheme, isDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
 
   const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
 
@@ -541,8 +541,8 @@ const App: React.FC = () => {
   }, [createdEvents, selectedCourses, convertToLocalTimezone]);
 
   const themeObject = useMemo(
-    () => (useDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
-    [useDarkMode, preferredTheme],
+    () => (isDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
+    [isDarkMode, preferredTheme],
   );
 
   const globalStyle = {

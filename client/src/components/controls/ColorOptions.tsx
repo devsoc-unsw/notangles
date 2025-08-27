@@ -6,7 +6,7 @@ import { FC, useMemo } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { darkTheme, lightTheme } from '../../constants/theme';
-import { useColorDecoder } from '../../hooks/useColorDecoder';
+import { useColorsDecoder } from '../../hooks/useColorDecoder';
 interface ColorOptionsProps {
   colors: string[];
   maxDefaultColors?: number;
@@ -34,16 +34,16 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onSelectColor,
   onCustomColorSelect,
 }) => {
-  const { useDarkMode, preferredTheme } = useGetUserSettingsQuery();
+  const { isDarkMode, preferredTheme } = useGetUserSettingsQuery();
   const themeObject = useMemo(
-    () => (useDarkMode ? lightTheme(preferredTheme) : darkTheme(preferredTheme)),
-    [useDarkMode, preferredTheme],
+    () => (isDarkMode ? lightTheme(preferredTheme) : darkTheme(preferredTheme)),
+    [isDarkMode, preferredTheme],
   );
 
-  const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color, preferredTheme);
-    return decodedColor;
-  });
+  const decodedColors = useColorsDecoder(
+    colors.reduce((obj, color, index) => ({ ...obj, [index]: color }), {}),
+    preferredTheme,
+  );
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -74,7 +74,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             />
           </ListItem>
         ))}
-        <ListItem key="custom-color" disablePadding>
+        <ListItem disablePadding>
           <StyledColorIconButton
             border={themeObject.palette.secondary.main}
             bgColor={themeObject.palette.secondary.dark}

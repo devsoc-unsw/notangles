@@ -1,5 +1,15 @@
 import { themes } from '../constants/theme';
 
+const decodeColor = (assignedColor: string, preferredTheme: string) => {
+  const themeObject = themes[preferredTheme as keyof typeof themes];
+  if (assignedColor.startsWith('default-')) {
+    // extract the number from the assigned colour key
+    const colorNumber = parseInt(assignedColor.split('-')[1], 10) - 1;
+    return themeObject.colors[colorNumber] || assignedColor;
+  }
+  return assignedColor;
+};
+
 /**
  * Decodes all assigned colours using the `useColorDecoder` function.
  * Converts each assigned colour key to its corresponding color value in the current or preview theme.
@@ -11,7 +21,7 @@ import { themes } from '../constants/theme';
 export const useColorsDecoder = (assignedColors: Record<string, string>, preferredTheme: string) => {
   const decodedColors = Object.fromEntries(
     Object.entries(assignedColors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color, preferredTheme);
+      const decodedColor = decodeColor(color, preferredTheme);
       return [key, decodedColor];
     }),
   );
@@ -28,13 +38,5 @@ export const useColorsDecoder = (assignedColors: Record<string, string>, preferr
  * @returns {string} The decoded colour value (e.g., an OKLCH colour string or the original assigned colour).
  */
 export const useColorDecoder = (assignedColor: string, preferredTheme: string) => {
-  const themeObject = themes[preferredTheme as keyof typeof themes];
-
-  if (assignedColor.startsWith('default-')) {
-    // extract the number from the assigned colour key
-    const colorNumber = parseInt(assignedColor.split('-')[1], 10) - 1;
-    return themeObject.colors[colorNumber] || assignedColor;
-  }
-
-  return assignedColor;
+  return decodeColor(assignedColor, preferredTheme);
 };

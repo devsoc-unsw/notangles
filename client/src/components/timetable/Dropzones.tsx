@@ -77,7 +77,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
   const { earliestStartTime } = useContext(AppContext);
-  const { useDarkMode } = useGetUserSettingsQuery();
+  const { isDarkMode } = useGetUserSettingsQuery();
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (
@@ -89,7 +89,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
     />
   ));
 
-  const inventoryColor = useDarkMode ? '255, 255, 255' : '0, 0, 0';
+  const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
 
   // inventory
   dropzones.push(
