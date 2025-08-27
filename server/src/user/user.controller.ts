@@ -1,19 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-import { UserSettings, AddCourseDto } from './types';
+import { UserSettings } from './types';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -41,7 +30,6 @@ export class UserController {
     @Body('url') url: string,
   ) {
     await this.userService.setProfilePicture(req.user.id, url);
-    return;
   }
 
   @Get('settings')
@@ -58,104 +46,5 @@ export class UserController {
     @Body() settings: UserSettings,
   ) {
     await this.userService.setSettings(req.user.id, settings);
-    return;
-  }
-
-  @Get('courses/:timetableId')
-  @UseGuards(AuthenticatedGuard)
-  async getCourseIds(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-  ) {
-    return await this.userService.getCourseIds(req.user.id, timetableId);
-  }
-
-  @Post('course/:timetableId/:courseId')
-  @UseGuards(AuthenticatedGuard)
-  async addCourse(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-    @Body() addCourseDto: AddCourseDto,
-  ) {
-    await this.userService.addCourse(
-      req.user.id,
-      timetableId,
-      courseId,
-      addCourseDto,
-    );
-    return HttpStatus.CREATED;
-  }
-
-  @Delete('course/:timetableId/:courseId')
-  @UseGuards(AuthenticatedGuard)
-  async removeCourse(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-  ) {
-    await this.userService.removeCourse(req.user.id, timetableId, courseId);
-  }
-
-  @Patch('course/:timetableId/:courseId/colour')
-  @UseGuards(AuthenticatedGuard)
-  async setCourseColour(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-    @Body('colour') colour: string,
-  ) {
-    await this.userService.setCourseColour(
-      req.user.id,
-      timetableId,
-      courseId,
-      colour,
-    );
-  }
-
-  @Get('classes/:timetableId/:courseId')
-  @UseGuards(AuthenticatedGuard)
-  async getSelectedClassIds(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-  ) {
-    return await this.userService.getSelectedClassIds(
-      req.user.id,
-      timetableId,
-      courseId,
-    );
-  }
-
-  @Patch('class/:timetableId/:courseId')
-  @UseGuards(AuthenticatedGuard)
-  async updateSelectedClass(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-    @Body('classId') classId: string,
-  ) {
-    await this.userService.updateSelectedClass(
-      req.user.id,
-      timetableId,
-      courseId,
-      classId,
-    );
-  }
-
-  @Delete('class/:timetableId/:courseId/:classId')
-  @UseGuards(AuthenticatedGuard)
-  async removeSelectedClass(
-    @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
-    @Param('courseId') courseId: string,
-    @Param('classId') classId: string,
-  ) {
-    await this.userService.removeSelectedClass(
-      req.user.id,
-      timetableId,
-      courseId,
-      classId,
-    );
   }
 }
