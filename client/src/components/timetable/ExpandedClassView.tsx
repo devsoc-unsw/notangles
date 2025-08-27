@@ -228,7 +228,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
           <StyledListItemIcon isDarkMode={isDarkMode}>
             <LocationOn />
           </StyledListItemIcon>
-          <StyledDropdownContainer item>
+          <StyledDropdownContainer>
             <LocationDropdown
               selectedIndex={selectedIndex}
               sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}

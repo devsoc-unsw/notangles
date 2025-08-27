@@ -32,10 +32,10 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
   return (
     <ListItem key={optionName}>
       <Grid container spacing={0}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <ListItemText primary={optionName} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <StyledOptionToggle
             size="small"
             exclusive={multiple ? false : true}

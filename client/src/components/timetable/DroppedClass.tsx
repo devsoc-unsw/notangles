@@ -204,7 +204,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           clashColour={clashColour}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid item xs={11}>
+            <Grid size={11}>
               <StyledCardName>
                 {classCard.courseCode} {classCard.activity}
               </StyledCardName>

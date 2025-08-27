@@ -282,10 +282,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
         <StyledList>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={7} container>
+              <Grid container size={7}>
                 <StyledDatePickerLabel primary="Earliest start time" />
               </Grid>
-              <Grid item xs={5}>
+              <Grid size={5}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
@@ -298,10 +298,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={7} container>
+              <Grid container size={7}>
                 <StyledDatePickerLabel primary="Latest end time" />
               </Grid>
-              <Grid item xs={5}>
+              <Grid size={5}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
@@ -322,10 +322,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           />
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
+              <Grid size={8}>
                 <ListItemText primary="Breaks between classes" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Slider
                   valueLabelDisplay="auto"
                   valueLabelFormat={(e) => e.toString() + ' hr' + (e === 1 ? '' : 's')}
@@ -342,10 +342,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={8}>
+              <Grid size={8}>
                 <ListItemText primary="Max days of Uni" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Slider
                   valueLabelDisplay="auto"
                   step={1}

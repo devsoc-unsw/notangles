@@ -22,9 +22,6 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
         <Grid container sx={{ height: '100%' }}>
           {/* ◀ Illustration Panel */}
           <Grid
-            item
-            xs={12}
-            md={6}
             sx={{
               bgcolor: 'primary.main',
               color: '#fff',
@@ -32,6 +29,10 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
               alignItems: 'center',
               justifyContent: 'center',
               p: 3,
+            }}
+            size={{
+              xs: 12,
+              md: 6,
             }}
           >
             <Box
@@ -48,15 +49,16 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
 
           {/* ▶ Form Panel */}
           <Grid
-            item
-            xs={12}
-            md={6}
             sx={{
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               p: 4,
+            }}
+            size={{
+              xs: 12,
+              md: 6,
             }}
           >
             {loading ? (

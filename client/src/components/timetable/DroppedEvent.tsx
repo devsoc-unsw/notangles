@@ -228,7 +228,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid item xs={11}>
+            <Grid size={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               {/* only display location on card if event not less than one hour */}
               {!isLessThanOneHour && eventPeriod.event.location && (
