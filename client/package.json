@@ -27,9 +27,9 @@
     "@mui/material": "7.3.1",
     "@mui/system": "7.3.1",
     "@mui/x-date-pickers": "8.10.2",
-    "@sentry/browser": "9.38.0",
-    "@sentry/node": "9.38.0",
-    "@sentry/react": "9.38.0",
+    "@sentry/browser": "10.6.0",
+    "@sentry/node": "10.6.0",
+    "@sentry/react": "10.6.0",
     "@tanstack/react-query": "5.85.5",
     "@uiw/react-color": "2.8.0",
     "axios": "1.11.0",
@@ -112,5 +112,5 @@
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.4"
   },
-  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }
