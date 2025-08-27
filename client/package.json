@@ -16,7 +16,7 @@
     "format": "prettier --write 'src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'"
   },
   "dependencies": {
-    "@apollo/client": "^3.14.0",
+    "@apollo/client": "3.14.0",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@fontsource-variable/roboto-flex": "5.2.6",
