@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import logo from '../../assets/notanglesWithBg.png';
-import { NotanglesBlue, NotanglesHoverBlue } from '../../constants/theme';
+import { notanglesBlue, notanglesHoverBlue } from '../../constants/theme';
 
 const PageWrapper = styled('div')`
   height: 100vh;
@@ -22,14 +22,14 @@ const LoadingLogo = styled('img')`
 
 const Button = styled('button')`
   padding: 1rem 2rem;
-  background-color: ${NotanglesBlue};
+  background-color: ${notanglesBlue};
   color: white;
   border: none;
   border-radius: 1rem;
   cursor: pointer;
   font-size: 1.2rem;
   &:hover {
-    background-color: ${NotanglesHoverBlue};
+    background-color: ${notanglesHoverBlue};
   }
 `;
 
@@ -44,11 +44,11 @@ const HintMessage = styled('p')`
 `;
 
 const Link = styled('a')`
-  color: ${NotanglesBlue};
+  color: ${notanglesBlue};
   text-decoration: underline;
   cursor: pointer;
   &:hover {
-    color: ${NotanglesHoverBlue};
+    color: ${notanglesHoverBlue};
   }
 `;
 
