@@ -50,7 +50,7 @@ model Settings {
   userId String @unique
 
   preferredTheme             String  @default("Classic")
-  is12HourMode            Boolean @default(false)
+  is12HourMode            Boolean @default(true)
   isDarkMode                Boolean @default(false)
   isSquareEdges             Boolean @default(false)
   hideFullClasses            Boolean @default(false)

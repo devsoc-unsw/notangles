@@ -10,6 +10,6 @@
 ALTER TABLE "settings" DROP COLUMN "use24HourClock",
 DROP COLUMN "useDarkMode",
 DROP COLUMN "useSquareEdges",
-ADD COLUMN     "is12HourMode" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "is12HourMode" BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN     "isDarkMode" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "isSquareEdges" BOOLEAN NOT NULL DEFAULT false;
