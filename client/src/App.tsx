@@ -1,7 +1,7 @@
 import { Box, Button, GlobalStyles, ThemeProvider } from '@mui/material';
 import { styled, StyledEngineProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
