@@ -55,7 +55,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const [daysAtUni, setDaysAtUni] = useState<number>(5);
   // const [friendsInClasses, setFriendsInClasses] = useState<string | null>('off');
   const [breaksBetweenClasses, setBreaksBetweenClasses] = useState<number>(0);
-  const [days, setDays] = useState<Array<string>>(weekdaysShort);
+  const [days, setDays] = useState<string[]>(weekdaysShort);
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(21));
   const [classMode, setClassMode] = useState<ClassMode>('hybrid');
@@ -74,7 +74,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   const periodInfoPerMode = useRef<Record<ClassMode, PeriodInfo[]>>({ hybrid: [], 'in person': [], online: [] });
 
   useEffect(() => {
-    if (!selectedCourses || !selectedCourses.length) return;
+    if (!selectedCourses?.length) return;
 
     targetActivities.current = selectedCourses
       .map((v) =>
@@ -87,7 +87,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       .filter((classes) => classes.some((c) => c.periods.length))
       .map((classes) => classes.filter((c) => c.periods.length));
 
-    const hasMode: Array<[boolean, boolean]> = targetActivities.current.map((a) => [
+    const hasMode: [boolean, boolean][] = targetActivities.current.map((a) => [
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' !== p.locations[0])),
       a.some((v) => v.periods.some((p) => p.locations.length && 'Online' === p.locations[0])),
     ]);
@@ -161,12 +161,12 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
   };
 
   const doAuto = async () => {
-    if (!selectedCourses || !selectedCourses.length) return;
+    if (!selectedCourses?.length) return;
 
     const selectedDays = days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
     const selectedDaysStr = selectedDays.length ? selectedDays.reduce((a, b) => a + b) : '12345';
 
-    const autoParams: Array<string | number> = [
+    const autoParams: (string | number)[] = [
       startTime.getHours(),
       endTime.getHours(),
       selectedDaysStr,
@@ -174,13 +174,13 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
       daysAtUni,
     ];
 
-    const timetableData: { [k: string]: any } = ['start', 'end', 'days', 'gap', 'maxdays']
+    const timetableData: Record<string, any> = ['start', 'end', 'days', 'gap', 'maxdays']
       .map((k, index) => [k, autoParams[index]])
       .reduce((o, key) => ({ ...o, [key[0]]: key[1] }), {});
 
     // We treat events as single-period classes with a sole time slot
-    timetableData['periodInfoList'] = [
-      ...periodInfoPerMode.current[`${classMode}`],
+    timetableData.periodInfoList = [
+      ...periodInfoPerMode.current[classMode],
       ...Object.values(createdEvents).map(
         (eventPeriod) =>
           ({
@@ -331,7 +331,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                   valueLabelFormat={(e) => e.toString() + ' hr' + (e === 1 ? '' : 's')}
                   step={1}
                   value={breaksBetweenClasses}
-                  onChange={(e, v) => setBreaksBetweenClasses(v as number)}
+                  onChange={(e, v) => {
+                    setBreaksBetweenClasses(v as number);
+                  }}
                   min={0}
                   max={5}
                 />
@@ -348,7 +350,9 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                   valueLabelDisplay="auto"
                   step={1}
                   value={daysAtUni}
-                  onChange={(e, v) => setDaysAtUni(v as number)}
+                  onChange={(e, v) => {
+                    setDaysAtUni(v as number);
+                  }}
                   min={1}
                   max={5}
                 />

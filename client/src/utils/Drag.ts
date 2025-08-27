@@ -332,7 +332,9 @@ export const registerCard = (data: ClassCard | EventPeriod, element: HTMLElement
   // Delay the update until consecutive `registerCard` calls have concluded
   const cards = data.type === 'event' ? eventCards : classCards;
   clearTimeout(updateTimeout);
-  updateTimeout = window.setTimeout(() => updateCards(cards), 0);
+  updateTimeout = window.setTimeout(() => {
+    updateCards(cards);
+  }, 0);
 };
 
 /**
@@ -430,12 +432,12 @@ const updateDropTarget = (now?: boolean) => {
 
       return { classPeriod, area };
     })
-    .reduce((max, current) => (current.area > max.area ? current : max), {
-      classPeriod: undefined,
-      area: 0,
-    } as {
+    .reduce<{
       classPeriod?: ClassPeriod | InInventory;
       area: number;
+    }>((max, current) => (current.area > max.area ? current : max), {
+      classPeriod: undefined,
+      area: 0,
     });
   1;
 
@@ -514,12 +516,12 @@ export const morphCards = (a: ClassCard[] | EventPeriod[], b: ClassCard[] | Even
             const distance = element ? distanceBetween(fromElement, element) : Infinity;
             return { toCard, distance };
           })
-          .reduce((min, current) => (current.distance < min.distance ? current : min), {
-            toCard: undefined,
-            distance: Infinity,
-          } as {
+          .reduce<{
             toCard?: ClassCard;
             distance: number;
+          }>((min, current) => (current.distance < min.distance ? current : min), {
+            toCard: undefined,
+            distance: Infinity,
           });
 
         const { toCard } = closest;
@@ -589,8 +591,8 @@ onScroll = (event?) => {
 window.addEventListener('scroll', onScroll, { passive: false });
 
 // initalize previous width/height of the card for ResizeObserver
-let prevWidth: number = -1;
-let prevHeight: number = -1;
+let prevWidth = -1;
+let prevHeight = -1;
 
 const resizeObserver: ResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
   const entryWidth = entries[0].contentRect.width;

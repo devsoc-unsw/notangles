@@ -6,4 +6,4 @@ import { Activity, ClassData, ClassPeriod } from '../interfaces/Periods';
  * @returns A list of all periods for the activity of the course
  */
 export const getAllPeriods = (activities: Record<Activity, ClassData[]>, activity: string) =>
-  activities[activity].reduce((prev, currClass) => [...prev, ...currClass.periods], [] as ClassPeriod[]);
+  activities[activity].reduce<ClassPeriod[]>((prev, currClass) => [...prev, ...currClass.periods], []);

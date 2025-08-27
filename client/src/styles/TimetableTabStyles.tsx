@@ -1,13 +1,13 @@
 import { Box, BoxProps, Button, IconButton, IconButtonProps, Snackbar, styled, Theme } from '@mui/material';
 
-export type TabTheme = {
+export interface TabTheme {
   containerBackground: string;
   tabBorderColor: string;
   tabTextColor: string;
   tabHoverColor: string;
   tabBackgroundColor: string;
   tabSelectedText: string;
-};
+}
 
 export const tabThemeLight: TabTheme = {
   containerBackground: '#eeeeee',

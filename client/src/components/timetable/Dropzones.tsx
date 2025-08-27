@@ -34,7 +34,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (isHideExamClasses && 'Exam' in newActivities) delete newActivities['Exam'];
+  if (isHideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {

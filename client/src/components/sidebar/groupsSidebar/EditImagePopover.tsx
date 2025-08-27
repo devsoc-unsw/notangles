@@ -37,14 +37,20 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ group, setGroup }) 
   return (
     <EditIconCircle>
       <div>
-        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+        <IconButton
+          onClick={(e) => {
+            setAnchorEl(e.currentTarget);
+          }}
+        >
           <EditIcon />
         </IconButton>
 
         <Popover
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          onClose={() => setAnchorEl(null)}
+          onClose={() => {
+            setAnchorEl(null);
+          }}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'left',
@@ -60,7 +66,9 @@ const EditImagePopOver: React.FC<EditImagePopOverProps> = ({ group, setGroup }) 
               variant="outlined"
               value={group.imageURL}
               fullWidth
-              onChange={(e) => setGroup({ ...group, imageURL: e.target.value })}
+              onChange={(e) => {
+                setGroup({ ...group, imageURL: e.target.value });
+              }}
             />
           </StyledPopoverContent>
         </Popover>

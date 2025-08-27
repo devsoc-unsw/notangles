@@ -23,9 +23,7 @@ import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
 
-interface FacultyMap {
-  [key: string]: string;
-}
+type FacultyMap = Record<string, string>;
 
 interface SearchOptions {
   threshold: number;
@@ -369,7 +367,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
                 key={index}
                 selectedFaculty={selectedFaculty}
                 faculty={faculty}
-                onClick={() => handleFacultyClick(faculty)}
+                onClick={() => {
+                  handleFacultyClick(faculty);
+                }}
                 variant="contained"
                 disableElevation
               >
@@ -436,7 +436,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
-        onBlur={() => setSelectedFaculty('')}
+        onBlur={() => {
+          setSelectedFaculty('');
+        }}
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
@@ -478,7 +480,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             selectedCourses={selectedCourses}
             variant="outlined"
             label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
-            onChange={(event) => setInputValue(event.target.value)}
+            onChange={(event) => {
+              setInputValue(event.target.value);
+            }}
             onKeyDown={(event) => {
               // Delete the latest selected course if backspace is pressed
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {

@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
 
-type TooltipProps = {
+interface TooltipProps {
   children: ReactNode;
   tooltip?: string;
-};
+}
 
 export default function Tooltip({ children, tooltip }: TooltipProps) {
   return (

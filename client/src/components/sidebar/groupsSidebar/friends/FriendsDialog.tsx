@@ -24,11 +24,18 @@ const StyledPaper = styled(Paper)`
 const FriendsDialog: React.FC<{ user: User; fetchUserInfo: (userID: string) => void }> = ({ user, fetchUserInfo }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleClose = () => setIsOpen(false);
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   return (
     <>
-      <IconButton color="inherit" onClick={() => setIsOpen(true)}>
+      <IconButton
+        color="inherit"
+        onClick={() => {
+          setIsOpen(true);
+        }}
+      >
         <Badge color="error" variant="dot" invisible={user.incoming.length === 0}>
           <Group />
         </Badge>

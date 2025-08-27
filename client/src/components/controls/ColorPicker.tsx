@@ -71,13 +71,23 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           <ColorOptions
             colors={colors}
             showCustomColorPicker={showCustomColorPicker}
-            onSelectColor={(selectedColor) => setColor(selectedColor)}
-            onCustomColorSelect={() => setShowCustomColorPicker(!showCustomColorPicker)}
+            onSelectColor={(selectedColor) => {
+              setColor(selectedColor);
+            }}
+            onCustomColorSelect={() => {
+              setShowCustomColorPicker(!showCustomColorPicker);
+            }}
           />
         </ListItem>
         {showCustomColorPicker && (
           <ListItem alignItems="flex-start">
-            <Colorful onChange={(e) => setColor(e.hex)} color={color} disableAlpha />
+            <Colorful
+              onChange={(e) => {
+                setColor(e.hex);
+              }}
+              color={color}
+              disableAlpha
+            />
           </ListItem>
         )}
         <ListItem alignItems="flex-start">

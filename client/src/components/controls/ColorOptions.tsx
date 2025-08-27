@@ -51,7 +51,9 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index]}
-              onClick={() => onSelectColor(color)}
+              onClick={() => {
+                onSelectColor(color);
+              }}
             />
           </ListItem>
         ))}
@@ -63,7 +65,9 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index + maxDefaultColors]}
-              onClick={() => onSelectColor(color)}
+              onClick={() => {
+                onSelectColor(color);
+              }}
             />
           </ListItem>
         ))}

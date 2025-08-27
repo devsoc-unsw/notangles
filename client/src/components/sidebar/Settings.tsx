@@ -92,13 +92,13 @@ const Settings: FC = () => {
         {settingsToggles.map((setting) => (
           <div key={setting.desc}>
             <SettingsItem>
-              <SettingText>{setting['desc']}</SettingText>
+              <SettingText>{setting.desc}</SettingText>
               <Switch
-                value={setting['state']}
-                checked={setting['state']}
+                value={setting.state}
+                checked={setting.state}
                 color="primary"
                 onChange={() => {
-                  setting['setter'](!setting['state']);
+                  setting.setter(!setting.state);
                 }}
               />
             </SettingsItem>

@@ -171,7 +171,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
         onMouseLeave={() => {
           setFullscreenVisible(false);
         }}
-        onDoubleClick={() => setPopupOpen(true)}
+        onDoubleClick={() => {
+          setPopupOpen(true);
+        }}
         onContextMenu={(e) => {
           handleContextMenu(
             e,
@@ -199,10 +201,16 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
               open={contextMenu !== null}
               anchorReference="anchorPosition"
               anchorPosition={contextMenu !== null ? { top: contextMenu.y, left: contextMenu.x } : undefined}
-              onClose={() => setContextMenu(null)}
+              onClose={() => {
+                setContextMenu(null);
+              }}
               autoFocus={false}
             >
-              <MenuItem onClick={() => handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod)}>
+              <MenuItem
+                onClick={() => {
+                  handleDeleteEvent(createdEvents, setCreatedEvents, eventPeriod);
+                }}
+              >
                 <ListItemIcon>
                   <Delete fontSize="small" />
                 </ListItemIcon>
@@ -232,7 +240,12 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
             </Grid>
           </StyledCardInnerGrid>
           {fullscreenVisible && (
-            <ExpandButton onClick={() => setPopupOpen(true)} sx={{ color: '#f5f5f5' }}>
+            <ExpandButton
+              onClick={() => {
+                setPopupOpen(true);
+              }}
+              sx={{ color: '#f5f5f5' }}
+            >
               <MoreHoriz fontSize="large" />
             </ExpandButton>
           )}

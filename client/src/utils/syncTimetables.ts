@@ -32,7 +32,7 @@ const convertClassToDTO = (selectedClasses: SelectedClasses) => {
     return activityNames.map((activity) => {
       const activityData = selectedClasses[courseCode][activity];
       if (activityData) {
-        const { id, classNo, year, term, courseCode, activity } = activityData as ClassData;
+        const { id, classNo, year, term, courseCode, activity } = activityData;
         return { id, classNo: String(classNo), year, term, courseCode, activity };
       } else {
         // if activityData === null, then it is in inventory.

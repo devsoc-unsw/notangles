@@ -72,7 +72,7 @@ const getId = (clash: ClassPeriod | EventPeriod) => {
  * @returns A list of unique clashing classes and custom events
  */
 const getClashes = (selectedClasses: SelectedClasses, createdEvents: CreatedEvents) => {
-  const clashes: Set<ClassPeriod | EventPeriod> = new Set();
+  const clashes = new Set<ClassPeriod | EventPeriod>();
 
   const currSelectedClasses = Object.values(selectedClasses);
   const eventPeriods = Object.values(createdEvents);
@@ -131,7 +131,7 @@ const groupClashes = (sortedClashes: Record<number, (ClassPeriod | EventPeriod)[
 
   Object.entries(sortedClashes).forEach(([day, clashes]) => {
     const dayInt = parseInt(day);
-    let curGroupEndTime: number = -1;
+    let curGroupEndTime = -1;
     for (const clash of clashes) {
       if (clash.time.start >= curGroupEndTime) groupedClashes[dayInt].push([]); // new group if not clashing with cur
       groupedClashes[dayInt].at(-1)?.push(clash);
@@ -194,7 +194,7 @@ export const getClashInfo = (
       // Check if the current card has weeks that are overlapping with the weeks of the current clash.
       // Two classes with clashing times which occur on different weeks are not defined as a clash.
       if (clash.type === 'class' && card.type === 'class') {
-        const hasOverlappingWeeks = card.time.weeks.some((week) => clash.time.weeks.indexOf(week) !== -1);
+        const hasOverlappingWeeks = card.time.weeks.some((week) => clash.time.weeks.includes(week));
         if (hasOverlappingWeeks && clash.classId !== card.classId) {
           isOverlapped = true;
         }

@@ -24,7 +24,9 @@ const CustomEventTutoring: React.FC<CustomEventTutoringProp> = ({
           fullWidth
           autoHighlight
           noOptionsText="No Results"
-          onChange={(_, value) => (value ? setCourseCode(value.label) : setCourseCode(''))}
+          onChange={(_, value) => {
+            value ? setCourseCode(value.label) : setCourseCode('');
+          }}
           renderOption={(props, option) => {
             return (
               <li {...props} key={option.id}>
@@ -51,7 +53,9 @@ const CustomEventTutoring: React.FC<CustomEventTutoringProp> = ({
           fullWidth
           autoHighlight
           noOptionsText="No Results"
-          onChange={(_, value) => (value ? setClassCode(value.label) : setClassCode(''))}
+          onChange={(_, value) => {
+            value ? setClassCode(value.label) : setClassCode('');
+          }}
           renderOption={(props, option) => {
             return (
               <li {...props} key={option.id}>

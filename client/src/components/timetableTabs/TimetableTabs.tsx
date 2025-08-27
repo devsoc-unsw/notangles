@@ -1,7 +1,7 @@
-import { Add, MoreHoriz, Star } from '@mui/icons-material';
-import { Box, Icon, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
+import { Add, MoreHoriz, Star } from '@mui/icons-material';
+import { Box, Tooltip } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AppContext } from '../../context/AppContext';
@@ -45,7 +45,7 @@ const TimetableTabs: React.FC = () => {
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
-  const isMacOS = navigator.userAgent.indexOf('Mac') != -1;
+  const isMacOS = navigator.userAgent.includes('Mac');
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
@@ -178,8 +178,12 @@ const TimetableTabs: React.FC = () => {
                           }
                           return (
                             <Box
-                              onMouseDown={() => handleSwitchTimetables(displayTimetables[term], index)}
-                              onContextMenu={(e) => handleRightTabClick(e, index)}
+                              onMouseDown={() => {
+                                handleSwitchTimetables(displayTimetables[term], index);
+                              }}
+                              onContextMenu={(e) => {
+                                handleRightTabClick(e, index);
+                              }}
                               ref={props.innerRef}
                               {...props.draggableProps}
                               {...props.dragHandleProps}

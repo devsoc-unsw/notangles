@@ -23,8 +23,10 @@ const GroupsSidebar: React.FC = () => {
             group={group}
             fetchUserInfo={fetchUserInfo}
             user={user}
-            selected={i === selectedGroupIndex}
-            onClick={() => handleChangeSelectedGroup(i)}
+            isSelected={i === selectedGroupIndex}
+            onClick={() => {
+              handleChangeSelectedGroup(i);
+            }}
           />
         );
       })}

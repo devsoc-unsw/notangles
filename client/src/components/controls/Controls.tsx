@@ -10,13 +10,13 @@ import History from './History';
 import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
-  flex: 0 0 auto; 
+  flex: 0 0 auto;
   margin-top: 20px;
   margin-right: 10px;
   min-width: 140px;
   display: flex;
   align-items: flex-start;
-`
+`;
 
 const SelectWrapper = styled(Box)`
   display: flex;
@@ -37,7 +37,6 @@ const AutotimetablerWrapper = styled(Box)`
   }
 `;
 
-
 const CustomEventsWrapper = styled(Box)`
   flex: 1;
 `;
@@ -53,7 +52,6 @@ const Controls: React.FC<ControlsProps> = ({
   handleSelectCourse,
   handleRemoveCourse,
 }) => {
-
   return (
     <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
       <Grid item container xs={12} md={6.5} direction="row">
@@ -61,7 +59,7 @@ const Controls: React.FC<ControlsProps> = ({
           <TermSelect />
         </TermSelectWrapper>
 
-        <SelectWrapper minWidth={"296px"} >
+        <SelectWrapper minWidth={'296px'}>
           <CourseSelect
             assignedColors={assignedColors}
             handleSelect={handleSelectCourse}

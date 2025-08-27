@@ -32,7 +32,7 @@ const storage = {
     if (localStorage[STORAGE_KEY]) {
       data = JSON.parse(localStorage[STORAGE_KEY]);
       // migrate old data format to new format when the app is already visited
-      if (localStorage['visited']) {
+      if (localStorage.visited) {
         data = storage.migrate(data);
       }
     } else {

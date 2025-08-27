@@ -21,7 +21,13 @@ const DiscardDialog: React.FC<DiscardDialogProps> = ({
   setOpenSaveDialog,
 }) => {
   return (
-    <Dialog maxWidth="xs" open={openSaveDialog} onClose={() => setOpenSaveDialog(false)}>
+    <Dialog
+      maxWidth="xs"
+      open={openSaveDialog}
+      onClose={() => {
+        setOpenSaveDialog(false);
+      }}
+    >
       {/* This dialog pops up when user tries to exit with unsaved editing changes */}
       <StyledTitleContainer>
         <StyledDialogContent>Discard unsaved changes?</StyledDialogContent>
@@ -35,7 +41,13 @@ const DiscardDialog: React.FC<DiscardDialogProps> = ({
         >
           Cancel
         </Button>
-        <Button onClick={() => handleDiscardChanges()}>Discard</Button>
+        <Button
+          onClick={() => {
+            handleDiscardChanges();
+          }}
+        >
+          Discard
+        </Button>
       </StyledDialogButtons>
     </Dialog>
   );

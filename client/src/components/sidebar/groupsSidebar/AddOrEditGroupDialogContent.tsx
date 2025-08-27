@@ -174,7 +174,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           defaultValue={group.name}
           required
           fullWidth
-          onChange={(e) => setGroup({ ...group, name: e.target.value })}
+          onChange={(e) => {
+            setGroup({ ...group, name: e.target.value });
+          }}
           error={errorMessage === InputError.GROUP_NAME}
           helperText={errorMessage === InputError.GROUP_NAME ? InputError.GROUP_NAME : ''}
         />
@@ -183,7 +185,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           defaultValue={group.description}
           required
           fullWidth
-          onChange={(e) => setGroup({ ...group, description: e.target.value })}
+          onChange={(e) => {
+            setGroup({ ...group, description: e.target.value });
+          }}
           error={errorMessage === InputError.GROUP_DESCRIPTION}
           helperText={errorMessage === InputError.GROUP_DESCRIPTION ? InputError.GROUP_DESCRIPTION : ''}
         />
@@ -194,7 +198,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
           disableCloseOnSelect
           fullWidth
           value={group.members}
-          onChange={(_, value) => setGroup({ ...group, members: value })}
+          onChange={(_, value) => {
+            setGroup({ ...group, members: value });
+          }}
           getOptionLabel={(option) => `${option.firstname} ${option.lastname} ${option.userID}`} // What the search query is based on
           renderOption={(props, option, { selected }) => (
             <li {...props}>
@@ -232,7 +238,9 @@ const AddOrEditGroupDialogContent: React.FC<AddGroupDialogContentProps> = ({
             defaultValue={group.visibility}
             value={group.visibility}
             label="Group Privacy"
-            onChange={(e) => setGroup({ ...group, visibility: e.target.value as Privacy })}
+            onChange={(e) => {
+              setGroup({ ...group, visibility: e.target.value as Privacy });
+            }}
           >
             <MenuItem value={Privacy.PRIVATE}>Private</MenuItem>
             <MenuItem value={Privacy.PUBLIC}>Public</MenuItem>
