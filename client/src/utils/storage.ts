@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import defaults from '../constants/defaults';
 import migrateThemes from './migrations/colourTheme';
 import migratePrimaryTimetables from './migrations/primaryTimetables';
@@ -9,7 +8,7 @@ const STORAGE_KEY = 'data';
 // Something is not playing nice and causing local storage to corrupt across signing in/out
 // We are in the process of migrating data to the backend, so this fix should catch people
 // for now and prevent them from seeing a blank page.
-const hasRunArrayCheck = useRef(false);
+let hasRunArrayCheck = false;
 
 const storage = {
   get: (key: string): any => {
@@ -70,7 +69,7 @@ const storage = {
     }
 
     // Un-break an existing issue with migrated data
-    if (!hasRunArrayCheck.current) {
+    if (!hasRunArrayCheck) {
       Object.entries(migrated.timetables).forEach(([term, timetables]) => {
         if (
           !Array.isArray(timetables) ||
@@ -80,7 +79,8 @@ const storage = {
         }
       });
 
-      hasRunArrayCheck.current = true;
+      storage.save(migrated);
+      hasRunArrayCheck = true;
     }
 
     // only do this if version does not exist
