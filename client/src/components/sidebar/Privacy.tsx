@@ -150,7 +150,8 @@ const StyledTitle = styled(Typography)`
 const Privacy: React.FC = () => {
   const privacyMap = privacyQuestions.map(({ title, content }, index) => {
     return (
-      <StyledAccordion>
+      // Warning: This key only works because the list is stable
+      <StyledAccordion key={index}>
         <StyledAccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls={`privacyPanel${index}-content`}
@@ -161,7 +162,7 @@ const Privacy: React.FC = () => {
           </StyledTitle>
         </StyledAccordionSummary>
         <StyledAccordionDetails>
-          <Typography gutterBottom variant="body2">
+          <Typography component={'div'} gutterBottom variant="body2">
             {content}
           </Typography>
         </StyledAccordionDetails>

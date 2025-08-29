@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { CustomModalProps } from '../../interfaces/PropTypes';
@@ -15,11 +15,6 @@ const CloseButton = styled(IconButton)`
   position: absolute;
   right: 10px;
   top: 10px;
-`;
-
-const StyledTypography = styled(Typography)`
-  margin-top: 10px;
-  margin-bottom: 10px;
 `;
 
 const ShowModalButton = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'isSelected' })<{
@@ -78,8 +73,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
         fullWidth
         maxWidth="sm"
       >
-        <StyledDialogTitle>
-          <StyledTypography variant="h5">{description}</StyledTypography>
+        <StyledDialogTitle id="customized-dialog-title">
+          <Typography variant="h5" component="span" sx={{ marginTop: '10px', marginBottom: '10px', display: 'block' }}>
+            {description}
+          </Typography>
           <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
             <Close />
           </CloseButton>
