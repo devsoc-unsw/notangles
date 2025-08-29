@@ -115,7 +115,7 @@ const TermSelect: React.FC<TermSelectProps> = () => {
         open={open}
         onClose={handleClose}
         onOpen={handleOpen}
-        value={termName.concat(', ', term?.substring(2))}
+        value={termName != '' ? termName.concat(', ', term.substring(2)) : ''}
         onChange={selectTerm}
       >
         {Array.from(termDataStrList).map((term, index) => {

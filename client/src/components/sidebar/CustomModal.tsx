@@ -22,7 +22,9 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 10px;
 `;
 
-const ShowModalButton = styled(IconButton)<{ isSelected: boolean }>`
+const ShowModalButton = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'isSelected' })<{
+  isSelected: boolean;
+}>`
   display: flex;
   flex-direction: row;
   gap: 16px;

@@ -23,11 +23,12 @@ const HeroSection = () => {
             }}
           ></div>
           <div className="flex flex-col justify-center z-10 items-center text-center md:items-start md:text-left w-full md:w-1/2">
-            <p className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal">
+            <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal mb-4">
               Intuitively
-              <FlipWords words={words} duration={4000} className="text-[#0070f3]" /> <br />
+              <FlipWords words={words} duration={4000} className="text-[#0070f3]" />
+              <br />
               the perfect UNSW timetable.
-            </p>
+            </div>
             <p className="text-lg sm:text-2xl md:text-3xl mt-4 font-sans">
               Drag and drop your university classes <br /> and events to prepare for a term.
             </p>

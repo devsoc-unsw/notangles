@@ -34,10 +34,10 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onCustomColorSelect,
 }) => {
   // Get the current theme as from AppContext
-  const { themeObject } = useContext(AppContext);
+  const { themeObject, currentTheme } = useContext(AppContext);
 
   const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color);
+    const decodedColor = useColorDecoder(color, currentTheme);
     return decodedColor;
   });
 

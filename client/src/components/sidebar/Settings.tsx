@@ -78,7 +78,7 @@ const Settings: FC = () => {
   ) : (
     <>
       <SettingText>Preferred Theme</SettingText>
-      <ColorThemePreview />
+      <ColorThemePreview previewTheme={currentTheme} />
     </>
   );
 

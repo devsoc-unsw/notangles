@@ -12,11 +12,8 @@ const StyledPreviewContainer = styled(List)`
   padding: 0 0.7rem;
 `;
 
-const StyledListItem = styled(ListItem, {
-  shouldForwardProp: (prop) => prop !== 'backgroundColor' && prop !== 'preveiewTheme',
-})<{
+const StyledListItem = styled(ListItem, { shouldForwardProp: (prop) => prop !== 'backgroundColor' })<{
   backgroundColor: string;
-  preveiewTheme?: string;
 }>`
   background-color: ${({ backgroundColor }) => backgroundColor};
   width: 10px;
@@ -26,7 +23,7 @@ const StyledListItem = styled(ListItem, {
 `;
 
 interface ColorThemePreviewProps {
-  previewTheme?: string;
+  previewTheme: string;
 }
 
 export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
@@ -37,9 +34,7 @@ export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
     }),
   );
   const colorPreview = useMemo(() => {
-    return Object.values(decodedColors).map((color) => (
-      <StyledListItem key={color} backgroundColor={color} preveiewTheme={previewTheme} />
-    ));
+    return Object.values(decodedColors).map((color) => <StyledListItem key={color} backgroundColor={color} />);
   }, [colors, previewTheme]);
 
   return <StyledPreviewContainer>{colorPreview}</StyledPreviewContainer>;
