@@ -31,7 +31,12 @@ const Root: React.FC = () => {
       <AppContextProvider>
         <CourseContextProvider>
           <UserContextProvider>
-            <BrowserRouter>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
               <Routes>
                 {hasVisited ? (
                   <Route element={<App />} path="/">

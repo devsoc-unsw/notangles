@@ -45,8 +45,16 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const { earliestStartTime, days, isSquareEdges, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
-    useContext(AppContext);
+  const {
+    earliestStartTime,
+    days,
+    isSquareEdges,
+    setIsDrag,
+    setAlertMsg,
+    setInfoVisibility,
+    setErrorVisibility,
+    currentTheme,
+  } = useContext(AppContext);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
@@ -223,7 +231,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           hasClash={false}
           isSquareEdges={isSquareEdges}
           clashColour={'none'}
-          backgroundColour={useColorDecoder(eventPeriod.event.color).toString()}
+          backgroundColour={useColorDecoder(eventPeriod.event.color, currentTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
             <Grid item xs={11}>

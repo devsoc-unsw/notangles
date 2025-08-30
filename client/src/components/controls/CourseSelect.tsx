@@ -10,7 +10,7 @@ import {
 import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 
 import { ThemeType } from '../../constants/theme';
@@ -327,6 +327,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     setSelectedFaculty('');
   };
 
+  const keyOf = (x: { code: string; career: string }) => `${x.code}|${x.career}`;
+  const mergedOptions = useMemo(() => {
+    const map = new Map<string, CourseOverview>();
+    options.forEach((x) => map.set(keyOf(x), x));
+    selectedValue.forEach((x) => map.set(keyOf(x), x));
+    return Array.from(map.values());
+  }, [options, selectedValue]);
+
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
   const OuterElementContext = React.createContext({});
@@ -413,7 +421,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         disableListWrap
         noOptionsText="No Results"
         selectOnFocus={false}
-        options={options}
+        options={mergedOptions}
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
@@ -424,34 +432,38 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
         isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
-        renderOption={(props, option, { selected }) => (
-          <li {...props}>
-            <StyledOption>
-              <StyledIcon>
-                {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
-                  <CheckRounded />
-                ) : (
-                  <AddRounded />
-                )}
-              </StyledIcon>
-              <span>{option.code}</span>
-              <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-              <Career>{getCourseCareer(option.career)}</Career>
-              <RightContainer>
-                {option.online && (
-                  <StyledIconRight>
-                    <VideocamOutlined />
-                  </StyledIconRight>
-                )}
-                {option.inPerson && (
-                  <StyledIconRight>
-                    <PersonOutline />
-                  </StyledIconRight>
-                )}
-              </RightContainer>
-            </StyledOption>
-          </li>
-        )}
+        renderOption={(props, option, { selected }) => {
+          const { key, ...rest } = props;
+
+          return (
+            <li key={key} {...rest}>
+              <StyledOption>
+                <StyledIcon>
+                  {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                    <CheckRounded />
+                  ) : (
+                    <AddRounded />
+                  )}
+                </StyledIcon>
+                <span>{option.code}</span>
+                <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+                <Career>{getCourseCareer(option.career)}</Career>
+                <RightContainer>
+                  {option.online && (
+                    <StyledIconRight>
+                      <VideocamOutlined />
+                    </StyledIconRight>
+                  )}
+                  {option.inPerson && (
+                    <StyledIconRight>
+                      <PersonOutline />
+                    </StyledIconRight>
+                  )}
+                </RightContainer>
+              </StyledOption>
+            </li>
+          );
+        }}
         renderInput={(params) => (
           <StyledTextField
             {...params}
@@ -491,19 +503,24 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           />
         )}
         renderTags={(value: CoursesList, getTagProps) =>
-          value.map((option: CourseOverview, index: number) => (
-            <StyledChip
-              label={option.code}
-              color="primary"
-              backgroundColor={assignedColors[option.code]}
-              deleteIcon={<CloseRounded />}
-              {...getTagProps({ index })}
-              onDelete={() => {
-                setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                handleRemove(option.code);
-              }}
-            />
-          ))
+          value.map((option: CourseOverview, index: number) => {
+            const { key, ...rest } = getTagProps({ index });
+
+            return (
+              <StyledChip
+                key={key}
+                {...rest}
+                label={option.code}
+                color="primary"
+                backgroundColor={assignedColors[option.code]}
+                deleteIcon={<CloseRounded />}
+                onDelete={() => {
+                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                  handleRemove(option.code);
+                }}
+              />
+            );
+          })
         }
       />
     </StyledSelect>

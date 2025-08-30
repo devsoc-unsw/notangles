@@ -37,7 +37,7 @@ interface StyledDrawerProps {
 }
 
 const StyledDrawer = styled(Drawer, {
-  shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'isMobile',
+  shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'isMobile' && prop !== 'collapsedWidth',
 })<StyledDrawerProps>(({ collapsed, isMobile, collapsedWidth }) => ({
   position: isMobile ? 'fixed' : 'relative',
   flexShrink: 0,

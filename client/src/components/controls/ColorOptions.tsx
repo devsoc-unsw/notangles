@@ -34,10 +34,10 @@ const ColorOptions: FC<ColorOptionsProps> = ({
   onCustomColorSelect,
 }) => {
   // Get the current theme as from AppContext
-  const { themeObject } = useContext(AppContext);
+  const { themeObject, currentTheme } = useContext(AppContext);
 
   const decodedColors = colors.map((color) => {
-    const decodedColor = useColorDecoder(color);
+    const decodedColor = useColorDecoder(color, currentTheme);
     return decodedColor;
   });
 
@@ -46,7 +46,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
       {/* Default Theme Colors (1-4) */}
       <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
         {colors.slice(0, maxDefaultColors).map((color, index) => (
-          <ListItem disablePadding>
+          <ListItem component="div" disablePadding key={color}>
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index]}
@@ -60,7 +60,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
       {/* Default Theme Colors (5-7) */}
       <ListItem sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
         {colors.slice(maxDefaultColors, colors.length - 1).map((color, index) => (
-          <ListItem disablePadding>
+          <ListItem component="div" disablePadding key={color}>
             <StyledColorIconButton
               border={themeObject.palette.secondary.main}
               bgColor={decodedColors[index + maxDefaultColors]}
@@ -70,7 +70,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
             />
           </ListItem>
         ))}
-        <ListItem disablePadding>
+        <ListItem component="div" disablePadding>
           <StyledColorIconButton
             border={themeObject.palette.secondary.main}
             bgColor={themeObject.palette.secondary.dark}

@@ -43,7 +43,9 @@ const StyledDropdownContainer = styled(Grid)`
   flex-grow: 1;
 `;
 
-const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps & { isDarkMode: boolean }>`
+const StyledListItemIcon = styled(ListItemIcon, { shouldForwardProp: (prop) => prop !== 'isDarkMode' })<
+  ListItemIconProps & { isDarkMode: boolean }
+>`
   color: ${(props) => (props.isDarkMode ? '#FFFFFF' : '#212121')};
 `;
 

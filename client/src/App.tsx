@@ -147,7 +147,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const decodedAssignedColors = useColorsDecoder(assignedColors);
+  const decodedAssignedColors = useColorsDecoder(assignedColors, currentTheme);
   const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);

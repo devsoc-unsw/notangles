@@ -43,7 +43,9 @@ export const TabsSection = styled(Box)`
   }
 `;
 
-export const TabsWrapper = styled(Box)<BoxProps & { tabTheme: TabTheme }>`
+export const TabsWrapper = styled(Box, { shouldForwardProp: (prop) => prop !== 'tabTheme' })<
+  BoxProps & { tabTheme: TabTheme }
+>`
   background-color: ${(props) => props.tabTheme.containerBackground.toString()};
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -59,7 +61,9 @@ export const StyledSpan = styled('span')`
   padding-top: 3px;
 `;
 
-export const StyledIconButton = styled(IconButton)<IconButtonProps & { tabTheme: TabTheme }>`
+export const StyledIconButton = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'tabTheme' })<
+  IconButtonProps & { tabTheme: TabTheme }
+>`
   position: sticky;
   right: 0px;
   padding: 10px;
