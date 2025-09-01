@@ -35,7 +35,7 @@
     "axios": "1.11.0",
     "clsx": "2.1.1",
     "colorizr": "3.0.8",
-    "date-fns": "2.30.0",
+    "date-fns": "4.1.0",
     "dayjs": "1.11.14",
     "file-saver": "2.0.5",
     "framer-motion": "12.23.12",
