@@ -321,7 +321,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             noOff
           />
           <ListItem>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} flexGrow={1}>
               <Grid size={8}>
                 <ListItemText primary="Breaks between classes" />
               </Grid>
@@ -341,7 +341,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             </Grid>
           </ListItem>
           <ListItem>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} flexGrow={1}>
               <Grid size={8}>
                 <ListItemText primary="Max days of Uni" />
               </Grid>
