@@ -52,6 +52,7 @@ const parseTermOfferingPeriods = (termInfo: TermInfoFetch): TermDateDetails => {
 const constructTermDetailsMap = async (): Promise<Map<Term, TermDateDetails>> => {
   const termInfoMap = new Map<Term, TermDateDetails>();
   const availableTermData = await client.query<{ classes: TermInfoFetch[] }>({ query: GET_CLASSES });
+  if (availableTermData.data === undefined) throw new NetworkError('Internal server error');
   availableTermData.data.classes.map((cls: TermInfoFetch) => {
     const termOfferingPeriods = parseTermOfferingPeriods(cls);
     const termKey: Term = cls.term + termOfferingPeriods.startDate.getFullYear();

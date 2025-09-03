@@ -1,14 +1,14 @@
-import { gql } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
+import { CoursesData, GetCourseInfoVars } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
 import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
-const GET_COURSE_INFO = gql`
+const GET_COURSE_INFO: TypedDocumentNode<CoursesData, GetCourseInfoVars> = gql`
   query GetCourseInfo($courseCode: String!, $term: String!, $year: String!) {
     courses(where: { course_code: { _eq: $courseCode } }) {
       course_code
@@ -109,10 +109,11 @@ const getCourseInfo = async (
   isConvertToLocalTimezone: boolean,
 ): Promise<CourseData> => {
   try {
-    const data: GraphQLCourse = await client.query({
+    const { data } = await client.query({
       query: GET_COURSE_INFO,
       variables: { courseCode, term, year },
     });
+    if (data === undefined) throw new NetworkError('Internal server error');
 
     const json: DbCourse = graphQLCourseToDbCourse(data);
     json.classes.forEach((dbClass) => {
@@ -140,10 +141,10 @@ const getCourseInfo = async (
             // Convert the numerical representation of the weeks the classes are running back to a string
             for (let k = 0; k < dbClassTimesList.length; k++) {
               if (k == 0 || k == dbClassTimesList.length - 1) {
-                newWeeks += dbClassTimesList[k];
+                newWeeks += String(dbClassTimesList[k]);
               } else if (isEndOfRange) {
                 // Add the start of the range
-                newWeeks += dbClassTimesList[k];
+                newWeeks += String(dbClassTimesList[k]);
                 isEndOfRange = false;
               }
 
@@ -154,7 +155,7 @@ const getCourseInfo = async (
 
               if (!isEndOfRange) {
                 // Add the end of the range (last consecutive number)
-                newWeeks += '-' + dbClassTimesList[k];
+                newWeeks += '-' + String(dbClassTimesList[k]);
 
                 // If this isn't the last week, we will need to add more weeks
                 if (k !== dbClassTimesList.length - 1) {
@@ -173,7 +174,6 @@ const getCourseInfo = async (
       }
     });
 
-    if (!json) throw new NetworkError('Internal server error');
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);
