@@ -1,7 +1,7 @@
 import '@fontsource-variable/roboto-flex';
 import './index.css';
 
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
