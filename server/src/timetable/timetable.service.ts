@@ -73,14 +73,21 @@ export class TimetableService {
   }
 
   async getEvent(
-    timetableId: string,
+    userId: string,
     eventId: string
   ): Promise<EventParameters> {
     try {
-      return await this.prisma.event.findFirstOrThrow({
-        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true },
+      const event = await this.prisma.event.findFirstOrThrow({
+        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true , timetable: { select: { userId: true } }},
         where: { id: eventId  }
       });
+
+      if (!event || event.timetable.userId !== userId) {
+        throw new HttpException('Event not found or access denied', HttpStatus.NOT_FOUND);
+      }
+
+      const { timetable, ...eventData } = event;
+      return eventData;
     } catch {
       throw new HttpException(
         'Event not in timetable',
@@ -483,20 +490,9 @@ export class TimetableService {
 
   async removeEvent(
     userId: string,
-    timetableId: string,
     eventId: string,
-    eventDetails: EventParameters
   ): Promise<void> {
-    const timetableExists = await this.isTimetableOwnedByUser(
-      userId,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-
-    const colourValid = this.isColourCodeValid(eventDetails.colour);
-    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
-
-    const event = await this.getEvent(timetableId, eventId);
+    const event = await this.getEvent(userId, eventId);
 
     await this.prisma.event.delete({
       where: { id: event.id },
@@ -505,20 +501,10 @@ export class TimetableService {
 
   async updateEvent(
     userId: string,
-    timetableId: string,
     eventId: string,
     eventDetails: EventParameters
   ): Promise<void> {
-    const timetableExists = await this.isTimetableOwnedByUser(
-      userId,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
-
-    const colourValid = this.isColourCodeValid(eventDetails.colour);
-    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
-
-    const event = await this.getEvent(timetableId, eventId);
+    const event = await this.getEvent(userId, eventId);
 
     if (!(eventDetails.type in EventType)) {
       throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
@@ -535,7 +521,6 @@ export class TimetableService {
         start: eventDetails.start,
         end: eventDetails.end,
         type: eventType,
-        timetable: { connect: { id: timetableId } },
       }
     })
   }
