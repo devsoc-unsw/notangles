@@ -77,7 +77,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
     const eventCopy = { ...eventDown };
 
-    if (rippleRef.current && 'start' in rippleRef.current) {
+    if (rippleRef.current !== null) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -101,11 +101,11 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
       window.removeEventListener('mousemove', onUp);
       window.removeEventListener('touchmove', onUp);
 
-      if ((timer || !eventUp.type.includes('move')) && rippleRef.current && 'stop' in rippleRef.current) {
+      if (timer || !eventUp.type.includes('move')) {
         window.removeEventListener('mouseup', onUp);
         window.removeEventListener('touchend', onUp);
 
-        if (!rippleStopped && 'stop' in rippleRef.current) {
+        if (!rippleStopped) {
           rippleStopped = true;
 
           setTimeout(() => {

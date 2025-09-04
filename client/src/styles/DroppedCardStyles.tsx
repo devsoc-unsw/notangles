@@ -1,4 +1,4 @@
-import { Button, ButtonBase, Card, Grid, List } from '@mui/material';
+import { Button, ButtonBase, Card, Grid, List, TouchRippleActions } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ReactNode, Ref } from 'react';
 
@@ -94,7 +94,13 @@ export const StyledCard = styled('div', {
   } */
 `;
 
-export const StyledCardButtonBase = ({ children, rippleRef }: { children: ReactNode; rippleRef: Ref<any> }) => (
+export const StyledCardButtonBase = ({
+  children,
+  rippleRef,
+}: {
+  children: ReactNode;
+  rippleRef: Ref<TouchRippleActions | null>;
+}) => (
   <ButtonBase
     disableTouchRipple={false}
     disableRipple={false}

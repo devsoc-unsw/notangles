@@ -54,15 +54,13 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     setErrorVisibility(true);
   }
 
-  if (!currCourse) return <></>;
+  const element = useRef<HTMLDivElement>(null);
+  const rippleRef = useRef<TouchRippleActions | null>(null);
 
   const handleClose = (value: ClassData) => {
     handleSelectClass(value);
     setPopupOpen(!popupOpen);
   };
-
-  const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<TouchRippleActions | null>(null);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -81,7 +79,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
     const eventCopy = { ...eventDown };
 
-    if (rippleRef.current !== null && 'start' in rippleRef.current) {
+    if (rippleRef.current !== null) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -105,11 +103,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       window.removeEventListener('mousemove', onUp);
       window.removeEventListener('touchmove', onUp);
 
-      if ((timer || !eventUp.type.includes('move')) && rippleRef.current && 'stop' in rippleRef.current) {
+      if (timer || !eventUp.type.includes('move')) {
         window.removeEventListener('mouseup', onUp);
         window.removeEventListener('touchend', onUp);
 
-        if (!rippleStopped && 'stop' in rippleRef.current) {
+        if (!rippleStopped) {
           rippleStopped = true;
 
           setTimeout(() => {
@@ -151,6 +149,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       }
     };
   });
+
+  if (!currCourse) return <></>;
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
