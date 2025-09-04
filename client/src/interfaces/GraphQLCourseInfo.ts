@@ -33,11 +33,3 @@ export interface GetCourseInfoVars {
   term: string;
   year: string;
 }
-
-// export interface GraphQLCourse {
-//   courses: CoursesData;
-//   // data: CoursesData;
-//   // // loading: boolean;
-//   // // networkStatus: number;
-//   // error: Error | undefined;
-// }
