@@ -16,7 +16,7 @@
     "format": "prettier --write 'src/**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'"
   },
   "dependencies": {
-    "@apollo/client": "3.14.0",
+    "@apollo/client": "4.0.4",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@fontsource-variable/roboto-flex": "5.2.6",
@@ -40,6 +40,7 @@
     "file-saver": "2.0.5",
     "framer-motion": "12.23.12",
     "fuse.js": "7.1.0",
+    "graphql": "16.11.0",
     "ics": "3.8.1",
     "is-base64": "1.1.0",
     "lodash-es": "4.17.21",
@@ -49,6 +50,7 @@
     "react-router-dom": "6.30.0",
     "react-transition-group": "4.4.5",
     "react-window": "1.8.11",
+    "rxjs": "7.8.2",
     "tailwind-merge": "3.3.1",
     "uuid": "11.1.0",
     "web-vitals": "5.1.0",

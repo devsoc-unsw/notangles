@@ -24,12 +24,12 @@ interface Course {
   classes: Class[];
 }
 
-interface CoursesData {
+export interface CoursesData {
   courses: Course[];
 }
 
-export interface GraphQLCourse {
-  data: CoursesData;
-  loading: boolean;
-  networkStatus: number;
+export interface GetCourseInfoVars {
+  courseCode: string;
+  term: string;
+  year: string;
 }
