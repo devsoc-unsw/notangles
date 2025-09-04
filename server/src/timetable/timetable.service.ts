@@ -72,30 +72,6 @@ export class TimetableService {
     }
   }
 
-  async getEvent(
-    userId: string,
-    eventId: string
-  ): Promise<EventParameters> {
-    try {
-      const event = await this.prisma.event.findFirstOrThrow({
-        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true , timetable: { select: { userId: true } }},
-        where: { id: eventId  }
-      });
-
-      if (!event || event.timetable.userId !== userId) {
-        throw new HttpException('Event not found or access denied', HttpStatus.NOT_FOUND);
-      }
-
-      const { timetable, ...eventData } = event;
-      return eventData;
-    } catch {
-      throw new HttpException(
-        'Event not in timetable',
-        HttpStatus.NOT_FOUND,
-      )
-    }
-  }
-
   async addCourse(
     userId: string,
     timetableId: string,
@@ -452,6 +428,55 @@ export class TimetableService {
         data: { primary: true },
       }),
     ]);
+  }
+
+  async getEvent(
+    userId: string,
+    eventId: string
+  ): Promise<EventParameters> {
+    try {
+      const event = await this.prisma.event.findFirstOrThrow({
+        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true , timetable: { select: { userId: true } }},
+        where: { id: eventId  }
+      });
+
+      if (!event || event.timetable.userId !== userId) {
+        throw new HttpException('Event not found or access denied', HttpStatus.NOT_FOUND);
+      }
+
+      const { timetable, ...eventData } = event;
+      return eventData;
+    } catch {
+      throw new HttpException(
+        'Event not in timetable',
+        HttpStatus.NOT_FOUND,
+      )
+    }
+  }
+
+  async getAllEvent(
+    userId: string,
+    timetableId: string
+  ): Promise<EventParameters[]> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const events = await this.prisma.event.findMany({
+      where: { timetableId },
+      select: {
+        id: true,
+        colour: true,
+        dayOfWeek: true,
+        start: true,
+        end: true,
+        type: true,
+      },
+    });
+
+    return events;
   }
 
   async addEvent(
