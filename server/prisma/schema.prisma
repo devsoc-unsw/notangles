@@ -9,8 +9,9 @@ datasource db {
 }
 
 enum AuthProvider {
-  GOOGLE
   ZID
+  GOOGLE
+  GITHUB
 }
 
 model User {
