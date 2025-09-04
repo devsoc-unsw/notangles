@@ -35,4 +35,6 @@ export class AuthController {
         `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,
     );
   }
+
+  // TODO: Add logout (and deleting guest users)
 }

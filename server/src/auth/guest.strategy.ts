@@ -5,6 +5,7 @@ import { Strategy } from 'passport-custom';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { promisify } from 'util';
 
+// TODO: Track usage of guest accounts, delete inactive ones
 @Injectable()
 export class GuestStrategy extends PassportStrategy(Strategy, 'guest') {
   constructor(private readonly prisma: PrismaService) {
@@ -15,6 +16,7 @@ export class GuestStrategy extends PassportStrategy(Strategy, 'guest') {
 
   async validate(req: Request) {
     const user = await this.prisma.user.create({
+      // TODO: Generate unique names for guest users (to help with debugging)
       data: {
         firstName: 'Guest',
         lastName: 'User',
