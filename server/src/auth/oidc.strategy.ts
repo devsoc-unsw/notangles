@@ -81,13 +81,17 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
 
     const user = await this.prisma.user.upsert({
       where: {
-        oidcId: userInfo.sub,
+        authProvider_authSubject: {
+          authProvider: 'ZID',
+          authSubject: userInfo.sub,
+        },
       },
       update: {
         lastLogin: new Date(),
       },
       create: {
-        oidcId: userInfo.sub,
+        authProvider: 'ZID',
+        authSubject: userInfo.sub,
         firstName: userData.firstName,
         lastName: userData.lastName,
         isGuest: false,

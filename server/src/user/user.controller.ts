@@ -1,16 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
-import { Request } from 'express';
 import { UserSettings } from './types';
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    id: string;
-    oidcId?: string;
-    isGuest: boolean;
-  };
-}
+import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
 @Controller('user')
 export class UserController {

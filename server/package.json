@@ -35,6 +35,7 @@
     "graphql-tag": "2.12.6",
     "openid-client": "6.6.2",
     "passport": "0.7.0",
+    "passport-custom": "1.1.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },

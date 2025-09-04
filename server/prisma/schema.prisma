@@ -8,12 +8,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AuthProvider {
+  ZID
+  GOOGLE
+  GITHUB
+}
+
 model User {
   // Unique per-user ID
-  id      String  @id @default(cuid(2)) @db.VarChar(30)
-  // ID given by auth - probably zID
-  oidcId  String? @unique
-  isGuest Boolean @default(true)
+  id String @id @default(cuid(2)) @db.VarChar(30)
+
+  authProvider AuthProvider?
+  authSubject  String?       @db.VarChar(100)
+  isGuest      Boolean       @default(true)
 
   firstName         String
   lastName          String
@@ -24,6 +31,7 @@ model User {
   createdAt DateTime @default(now())
   lastLogin DateTime @default(now())
 
+  @@unique([authProvider, authSubject])
   @@map("user")
 }
 
@@ -50,9 +58,9 @@ model Settings {
   userId String @unique
 
   preferredTheme             String  @default("Classic")
-  is12HourMode            Boolean @default(true)
-  isDarkMode                Boolean @default(false)
-  isSquareEdges             Boolean @default(false)
+  is12HourMode               Boolean @default(true)
+  isDarkMode                 Boolean @default(false)
+  isSquareEdges              Boolean @default(false)
   hideFullClasses            Boolean @default(false)
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)

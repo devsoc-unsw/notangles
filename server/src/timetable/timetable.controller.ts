@@ -13,14 +13,7 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { Request } from 'express';
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    id: string;
-    oidcId?: string;
-    isGuest: boolean;
-  };
-}
+import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
 @Controller('user/timetables')
 export class TimetableController {
