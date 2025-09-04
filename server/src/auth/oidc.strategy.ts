@@ -13,6 +13,7 @@ import {
 import { AuthenticateOptions } from 'openid-client/build/passport';
 import { promisify } from 'util';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Term } from 'src/timetable/types';
 const { Strategy } =
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('openid-client/passport') as typeof import('openid-client/build/passport');
@@ -104,6 +105,23 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
           userId: user.id,
         },
       });
+    }
+
+    const currentYear = new Date().getFullYear();
+    for (const term of Object.values(Term)) {
+      const existing = await this.prisma.timetable.findFirst({
+        where: { userId: user.id, year: currentYear, term },
+      });
+      if (!existing) {
+        await this.prisma.timetable.create({
+          data: {
+            userId: user.id,
+            name: 'My Timetable',
+            year: currentYear,
+            term,
+          },
+        });
+      }
     }
 
     const login = promisify(req.login.bind(req));
