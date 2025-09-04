@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { Strategy } from 'passport-custom';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { promisify } from 'util';
+import { Term } from 'src/timetable/types';
 
 // TODO: Track usage of guest accounts, delete inactive ones
 @Injectable()
@@ -29,6 +30,23 @@ export class GuestStrategy extends PassportStrategy(Strategy, 'guest') {
         userId: user.id,
       },
     });
+
+    const currentYear = new Date().getFullYear();
+    for (const term of Object.values(Term)) {
+      const existing = await this.prisma.timetable.findFirst({
+        where: { userId: user.id, year: currentYear, term },
+      });
+      if (!existing) {
+        await this.prisma.timetable.create({
+          data: {
+            userId: user.id,
+            name: 'My Timetable',
+            year: currentYear,
+            term,
+          },
+        });
+      }
+    }
 
     const login = promisify(req.login.bind(req));
     await login(user);
