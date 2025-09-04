@@ -1,5 +1,5 @@
 import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
+import { Grid, ListItemIcon, ListItemText, MenuItem, TouchRippleActions } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
@@ -53,7 +53,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<any>(null);
+  const rippleRef = useRef<TouchRippleActions | null>(null);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -110,7 +110,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
           setTimeout(() => {
             try {
-              rippleRef.current.stop(eventUp);
+              rippleRef.current?.stop(eventUp);
             } catch (error) {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);

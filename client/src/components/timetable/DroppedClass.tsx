@@ -1,5 +1,5 @@
 import { ContentPaste, MoreHoriz } from '@mui/icons-material';
-import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
+import { Grid, ListItemIcon, ListItemText, MenuItem, TouchRippleActions } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
@@ -62,7 +62,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   };
 
   const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<any>(null);
+  const rippleRef = useRef<TouchRippleActions | null>(null);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -81,7 +81,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
     const eventCopy = { ...eventDown };
 
-    if ('start' in rippleRef.current) {
+    if (rippleRef.current !== null && 'start' in rippleRef.current) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -114,7 +114,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
 
           setTimeout(() => {
             try {
-              rippleRef.current.stop(eventUp);
+              rippleRef.current?.stop(eventUp);
             } catch (error) {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);
