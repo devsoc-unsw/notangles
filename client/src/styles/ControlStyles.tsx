@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Box, DialogContent, DialogTitle, ListItem, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 export const StyledButtonText = styled(Box)`
   margin-top: 3px;

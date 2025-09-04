@@ -1,5 +1,5 @@
 import { Box, Button, Dialog } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { DiscardDialogProps } from '../../interfaces/PropTypes';

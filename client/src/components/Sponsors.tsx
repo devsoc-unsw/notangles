@@ -72,11 +72,13 @@ const Sponsors = () => {
     <SponsorBox>
       <h1 className="text-lg font-bold">Our Sponsors</h1>
       <Stack
-        justifyContent="center"
-        alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
-        marginY={3}
         spacing={{ xs: 1.5, sm: 2, lg: 8 }}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginY: 3,
+        }}
       >
         {platinumSponsorData.map((sponsor, index) => {
           return (
@@ -87,11 +89,13 @@ const Sponsors = () => {
         })}
       </Stack>
       <Stack
-        justifyContent="center"
-        alignItems="center"
         direction={{ xs: 'column', lg: 'row' }}
-        marginY={3}
         spacing={{ xs: 1.5, sm: 2, lg: 14 }}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginY: 3,
+        }}
       >
         {goldSponsorData.map((sponsor, index) => {
           return (

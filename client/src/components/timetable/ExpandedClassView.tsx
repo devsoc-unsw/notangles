@@ -8,7 +8,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
@@ -228,7 +228,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
           <StyledListItemIcon isDarkMode={isDarkMode}>
             <LocationOn />
           </StyledListItemIcon>
-          <StyledDropdownContainer item>
+          <StyledDropdownContainer>
             <LocationDropdown
               selectedIndex={selectedIndex}
               sectionsAndLocations={duplicateClassData.current.sectionsAndLocations}

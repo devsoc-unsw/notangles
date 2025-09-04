@@ -13,7 +13,7 @@ import {
   Slider,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
@@ -282,10 +282,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
         <StyledList>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={7} container>
+              <Grid container size={7}>
                 <StyledDatePickerLabel primary="Earliest start time" />
               </Grid>
-              <Grid item xs={5}>
+              <Grid size={5}>
                 <TimePicker
                   views={['hours']}
                   value={startTime}
@@ -298,10 +298,10 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
           </ListItem>
           <ListItem>
             <Grid container spacing={0}>
-              <Grid item xs={7} container>
+              <Grid container size={7}>
                 <StyledDatePickerLabel primary="Latest end time" />
               </Grid>
-              <Grid item xs={5}>
+              <Grid size={5}>
                 <TimePicker
                   views={['hours']}
                   value={endTime}
@@ -321,11 +321,11 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             noOff
           />
           <ListItem>
-            <Grid container spacing={0}>
-              <Grid item xs={8}>
+            <Grid container spacing={0} sx={{ flexGrow: 1 }}>
+              <Grid size={8}>
                 <ListItemText primary="Breaks between classes" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Slider
                   valueLabelDisplay="auto"
                   valueLabelFormat={(e) => e.toString() + ' hr' + (e === 1 ? '' : 's')}
@@ -341,11 +341,11 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
             </Grid>
           </ListItem>
           <ListItem>
-            <Grid container spacing={0}>
-              <Grid item xs={8}>
+            <Grid container spacing={0} sx={{ flexGrow: 1 }}>
+              <Grid size={8}>
                 <ListItemText primary="Max days of Uni" />
               </Grid>
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Slider
                   valueLabelDisplay="auto"
                   step={1}

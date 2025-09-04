@@ -1,6 +1,6 @@
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { FC, useMemo, useState } from 'react';
 
 import { useSetUserSettings } from '../../api/user/mutations';

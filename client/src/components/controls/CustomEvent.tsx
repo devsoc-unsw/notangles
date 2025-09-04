@@ -227,7 +227,13 @@ const CustomEvent: React.FC = () => {
   return (
     <StyledControlsButton>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
-        <Box ml="1px" flexGrow={1} marginTop="3px">
+        <Box
+          sx={{
+            ml: '1px',
+            flexGrow: 1,
+            marginTop: '3px',
+          }}
+        >
           CREATE EVENT
         </Box>
         {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}

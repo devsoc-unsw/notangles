@@ -1,5 +1,5 @@
-import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, Button, GlobalStyles, ThemeProvider } from '@mui/material';
+import { styled, StyledEngineProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';

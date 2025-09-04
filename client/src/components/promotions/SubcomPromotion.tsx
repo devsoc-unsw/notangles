@@ -1,6 +1,6 @@
 import { Announcement, Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, Slide, Snackbar, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { useCallback, useRef, useState } from 'react';
 
 import storage from '../../utils/storage';
@@ -43,10 +43,21 @@ const SubcomPromotion = () => {
       >
         <Slide in={!seenSubcomPromotional} timeout={500}>
           <StyledAlertBanner severity="info" icon={<Announcement />} action={closingAction}>
-            <Typography fontSize={18} marginBottom={1} textAlign={'left'}>
+            <Typography
+              sx={{
+                fontSize: 18,
+                marginBottom: 1,
+                textAlign: 'left',
+              }}
+            >
               Subcommittee Recruitment!
             </Typography>
-            <Typography fontSize={15} textAlign={'left'}>
+            <Typography
+              sx={{
+                fontSize: 15,
+                textAlign: 'left',
+              }}
+            >
               Interested in working on Notangles or one of our other flagship projects? DevSoc is currently recruiting
               members for our 2024 subcommittee!
               <br />

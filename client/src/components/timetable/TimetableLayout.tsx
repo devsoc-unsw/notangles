@@ -1,6 +1,6 @@
 import { ContentPaste } from '@mui/icons-material';
 import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useContext, useRef, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';

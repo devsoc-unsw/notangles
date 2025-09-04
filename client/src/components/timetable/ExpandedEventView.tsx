@@ -21,7 +21,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useState } from 'react';
 
@@ -243,7 +243,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       {isEditing ? (
         <>
           <StyledTopIcons>
-            <Grid container justifyContent="flex-end" alignItems="center">
+            <Grid
+              container
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }}
+            >
               <IconButton aria-label="close" onClick={handleCloseDialog}>
                 <Close />
               </IconButton>

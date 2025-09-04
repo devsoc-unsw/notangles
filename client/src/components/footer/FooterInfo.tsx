@@ -1,5 +1,5 @@
 import { Grid, Stack, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
 
 import NotanglesLogoGif from '../../assets/notangles.gif';
@@ -38,9 +38,14 @@ const FooterInfo: React.FC = () => {
 
   return (
     <Grid container spacing={0} style={{ textAlign: 'left', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Grid item xs={6}>
+      <Grid size={6}>
         <Stack direction="column" spacing={2}>
-          <Stack direction="row" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <NotanglesLogoImg
               src={currLogo}
               alt="Notangles logo"
@@ -86,7 +91,7 @@ const FooterInfo: React.FC = () => {
           </BodyText>
         </Stack>
       </Grid>
-      <Grid item xs={5}>
+      <Grid size={5}>
         <Typography
           component="h2"
           sx={{

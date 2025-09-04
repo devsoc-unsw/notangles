@@ -10,6 +10,20 @@ export const inventoryMargin = 10; // Gap between inventory column and main time
 export const notanglesBlue = '#3a76f8';
 export const notanglesHoverBlue = '#598dff';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    in_text: {
+      primary: string;
+    };
+  }
+  interface PaletteOptions {
+    in_text?: {
+      primary?: string;
+    };
+  }
+}
+
+// TODO: Remove this interface in favour of using the augmented Theme from MUI (above)
 export interface ThemeType {
   palette: {
     mode: string | undefined;

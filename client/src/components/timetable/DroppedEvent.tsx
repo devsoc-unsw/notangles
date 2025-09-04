@@ -1,7 +1,7 @@
 import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
@@ -228,7 +228,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
           <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid item xs={11}>
+            <Grid size={11}>
               <StyledCardName>{eventPeriod.event.name}</StyledCardName>
               {/* only display location on card if event not less than one hour */}
               {!isLessThanOneHour && eventPeriod.event.location && (
