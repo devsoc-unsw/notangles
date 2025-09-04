@@ -1,6 +1,5 @@
 import { ContentPaste, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
-import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
@@ -13,6 +12,7 @@ import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
+  StyledCardButtonBase,
   StyledCardInfo,
   StyledCardInner,
   StyledCardInnerGrid,
@@ -203,34 +203,35 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           hasClash={clashColour !== 'transparent'}
           clashColour={clashColour}
         >
-          <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid size={11}>
-              <StyledCardName>
-                {classCard.courseCode} {classCard.activity}
-              </StyledCardName>
-              <StyledCardInfo>
-                {classCard.type === 'class' ? (
-                  !hideClassInfo && <PeriodMetadata period={classCard} />
-                ) : (
-                  <>
-                    {activityMaxPeriods} class
-                    {activityMaxPeriods !== 1 && 'es'}
-                  </>
-                )}
-              </StyledCardInfo>
-              <TouchRipple ref={rippleRef} />
-            </Grid>
-          </StyledCardInnerGrid>
-          {classCard.type === 'class' && fullscreenVisible && (
-            <ExpandButton
-              onClick={() => {
-                setPopupOpen(true);
-              }}
-              sx={{ color: '#f5f5f5' }}
-            >
-              <MoreHoriz fontSize="large" />
-            </ExpandButton>
-          )}
+          <StyledCardButtonBase rippleRef={rippleRef}>
+            <StyledCardInnerGrid container justifyContent="center" alignItems="center">
+              <Grid size={11}>
+                <StyledCardName>
+                  {classCard.courseCode} {classCard.activity}
+                </StyledCardName>
+                <StyledCardInfo>
+                  {classCard.type === 'class' ? (
+                    !hideClassInfo && <PeriodMetadata period={classCard} />
+                  ) : (
+                    <>
+                      {activityMaxPeriods} class
+                      {activityMaxPeriods !== 1 && 'es'}
+                    </>
+                  )}
+                </StyledCardInfo>
+              </Grid>
+            </StyledCardInnerGrid>
+            {classCard.type === 'class' && fullscreenVisible && (
+              <ExpandButton
+                onClick={() => {
+                  setPopupOpen(true);
+                }}
+                sx={{ color: '#f5f5f5' }}
+              >
+                <MoreHoriz fontSize="large" />
+              </ExpandButton>
+            )}
+          </StyledCardButtonBase>
         </StyledCardInner>
       </StyledCard>
       {classCard.type === 'class' && (

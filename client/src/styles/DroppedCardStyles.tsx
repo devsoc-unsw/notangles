@@ -1,5 +1,6 @@
-import { Button, Card, Grid, List } from '@mui/material';
+import { Button, ButtonBase, Card, Grid, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ReactNode, Ref } from 'react';
 
 import { borderRadius, borderWidth } from '../constants/theme';
 import { EventPeriod } from '../interfaces/Periods';
@@ -92,6 +93,24 @@ export const StyledCard = styled('div', {
     }
   } */
 `;
+
+export const StyledCardButtonBase = ({ children, rippleRef }: { children: ReactNode; rippleRef: Ref<any> }) => (
+  <ButtonBase
+    disableTouchRipple={false}
+    disableRipple={false}
+    TouchRippleProps={{ ref: rippleRef }}
+    component="div"
+    sx={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+    }}
+  >
+    {children}
+  </ButtonBase>
+);
 
 export const StyledCardInner = styled(Card, {
   shouldForwardProp: (prop) =>

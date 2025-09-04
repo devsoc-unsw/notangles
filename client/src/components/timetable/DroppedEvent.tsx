@@ -1,6 +1,5 @@
 import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
-import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
@@ -14,6 +13,7 @@ import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
+  StyledCardButtonBase,
   StyledCardInfo,
   StyledCardInner,
   StyledCardInnerGrid,
@@ -227,29 +227,30 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           clashColour={'none'}
           backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
-          <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid size={11}>
-              <StyledCardName>{eventPeriod.event.name}</StyledCardName>
-              {/* only display location on card if event not less than one hour */}
-              {!isLessThanOneHour && eventPeriod.event.location && (
-                <StyledCardInfo>
-                  <StyledLocationIcon />
-                  {eventPeriod.event.location}
-                </StyledCardInfo>
-              )}
-              <TouchRipple ref={rippleRef} />
-            </Grid>
-          </StyledCardInnerGrid>
-          {fullscreenVisible && (
-            <ExpandButton
-              onClick={() => {
-                setPopupOpen(true);
-              }}
-              sx={{ color: '#f5f5f5' }}
-            >
-              <MoreHoriz fontSize="large" />
-            </ExpandButton>
-          )}
+          <StyledCardButtonBase rippleRef={rippleRef}>
+            <StyledCardInnerGrid container justifyContent="center" alignItems="center">
+              <Grid size={11}>
+                <StyledCardName>{eventPeriod.event.name}</StyledCardName>
+                {/* only display location on card if event not less than one hour */}
+                {!isLessThanOneHour && eventPeriod.event.location && (
+                  <StyledCardInfo>
+                    <StyledLocationIcon />
+                    {eventPeriod.event.location}
+                  </StyledCardInfo>
+                )}
+              </Grid>
+            </StyledCardInnerGrid>
+            {fullscreenVisible && (
+              <ExpandButton
+                onClick={() => {
+                  setPopupOpen(true);
+                }}
+                sx={{ color: '#f5f5f5' }}
+              >
+                <MoreHoriz fontSize="large" />
+              </ExpandButton>
+            )}
+          </StyledCardButtonBase>
         </StyledCardInner>
       </StyledCard>
       <ExpandedEventView

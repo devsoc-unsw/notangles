@@ -197,7 +197,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     Science: 'Faculty of Science',
   };
 
-  const searchTimer = useRef<number | undefined>();
+  const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
   const { coursesList } = useContext(AppContext);
