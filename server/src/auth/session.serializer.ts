@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
+import { AuthProvider } from 'src/generated/prisma/enums';
 
 type SessionUser = {
   id: string;
-  oidcId: string;
+  authSubject?: string;
+  authProvider?: AuthProvider;
   isGuest: boolean;
 };
 
@@ -16,7 +18,8 @@ export class SessionSerializer extends PassportSerializer {
     // Only cache the minimal required fields in session
     done(null, {
       id: user.id,
-      oidcId: user.oidcId,
+      authSubject: user.authSubject,
+      authProvider: user.authProvider,
       isGuest: user.isGuest,
     });
   }
