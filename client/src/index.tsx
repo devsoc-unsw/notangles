@@ -8,7 +8,7 @@ import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tans
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { client } from './api/config';
 import App from './App';
@@ -57,12 +57,7 @@ const Root: React.FC = () => {
         <ApolloProvider client={client}>
           <AppContextProvider>
             <CourseContextProvider>
-              <BrowserRouter
-                future={{
-                  v7_startTransition: true,
-                  v7_relativeSplatPath: true,
-                }}
-              >
+              <BrowserRouter>
                 <Routes>
                   <Route element={<LandingPage />} path="/" />
                   <Route

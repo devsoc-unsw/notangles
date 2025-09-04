@@ -3,7 +3,7 @@ import { Card, CardProps, Dialog, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import isBase64 from 'is-base64';
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import { AppContext } from '../context/AppContext';
 import { CourseContext } from '../context/CourseContext';
