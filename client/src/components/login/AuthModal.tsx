@@ -131,7 +131,6 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
                   onClick={() => {
                     onSignIn('guest');
                   }}
-                  disabled
                 >
                   Continue as Guest
                 </Button>

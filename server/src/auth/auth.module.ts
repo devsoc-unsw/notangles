@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { getConfig, OidcStrategy } from './oidc.strategy';
+import { GuestStrategy } from './guest.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { SessionSerializer } from './session.serializer';
@@ -24,6 +25,7 @@ const OidcStrategyFactory = {
     AuthService,
     PrismaService,
     OidcStrategyFactory,
+    GuestStrategy,
     SessionSerializer,
   ],
 })
