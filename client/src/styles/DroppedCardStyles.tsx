@@ -104,7 +104,7 @@ export const StyledCardButtonBase = ({
   <ButtonBase
     disableTouchRipple={false}
     disableRipple={false}
-    TouchRippleProps={{ ref: rippleRef }}
+    touchRippleRef={rippleRef}
     component="div"
     sx={{
       width: '100%',
