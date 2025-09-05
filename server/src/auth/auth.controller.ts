@@ -14,9 +14,22 @@ export interface AuthenticatedRequest extends Request {
 
 @Controller('auth')
 export class AuthController {
+  @Get('login/github')
+  @UseGuards(AuthGuard('github'))
+  githubLogin() {}
+
   @Get('login/devsoc')
   @UseGuards(AuthGuard('oidc'))
-  login() {}
+  devsocLogin() {}
+
+  @Get('callback/github')
+  @UseGuards(AuthGuard('github'))
+  githubCallback(@Res() res: Response) {
+    res.redirect(
+      (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,
+    );
+  }
 
   @Get('callback/devsoc')
   @UseGuards(AuthGuard('oidc'))
