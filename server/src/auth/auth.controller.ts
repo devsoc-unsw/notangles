@@ -18,6 +18,10 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   githubLogin() {}
 
+  @Get('login/google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin() {}
+
   @Get('login/devsoc')
   @UseGuards(AuthGuard('oidc'))
   devsocLogin() {}
@@ -25,6 +29,15 @@ export class AuthController {
   @Get('callback/github')
   @UseGuards(AuthGuard('github'))
   githubCallback(@Res() res: Response) {
+    res.redirect(
+      (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,
+    );
+  }
+
+  @Get('callback/google')
+  @UseGuards(AuthGuard('google'))
+  googleCallback(@Res() res: Response) {
     res.redirect(
       (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
         `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,

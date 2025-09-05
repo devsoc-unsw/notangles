@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GithubStrategy } from './github.strategy';
+import { GoogleStrategy } from './google.strategy';
 import { GuestStrategy } from './guest.strategy';
 import { getConfig, OidcStrategy } from './oidc.strategy';
 import { SessionSerializer } from './session.serializer';
@@ -26,6 +27,7 @@ const OidcStrategyFactory = {
     PrismaService,
     // OidcStrategyFactory,
     GithubStrategy,
+    GoogleStrategy,
     GuestStrategy,
     SessionSerializer,
     AuthService,
