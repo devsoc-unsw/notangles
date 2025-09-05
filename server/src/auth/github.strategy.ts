@@ -21,8 +21,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     req: Request,
     _accessToken: string,
     _refreshToken: string,
-    profile: { id: number; name: string; email: string },
+    profile: { id: number; displayName: string | null; email: string },
   ) {
+    const displayName = profile.displayName?.trim() ?? 'GitHub User';
+
     const user = await this.prisma.user.upsert({
       where: {
         authProvider_authSubject: {
@@ -36,21 +38,16 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       create: {
         authProvider: 'GITHUB',
         authSubject: profile.id.toString(),
-        firstName: profile.name?.split(' ')[0] || 'GitHub',
-        lastName: profile.name?.split(' ').slice(1).join(' ') || 'User',
+        firstName: displayName.split(' ')[0] || 'GitHub',
+        lastName: displayName.split(' ').slice(1).join(' ') || 'User',
         isGuest: false,
+        settings: {
+          create: {},
+        },
       },
     });
 
-    if (user.createdAt.getTime() === user.lastLogin.getTime()) {
-      await this.prisma.settings.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
-
-    const login = promisify(req.login.bind(this));
+    const login = promisify(req.login.bind(req));
     await login(user);
     return user;
   }

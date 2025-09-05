@@ -43,16 +43,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         isGuest: false,
+        settings: {
+          create: {},
+        },
       },
     });
-    if (user.createdAt.getTime() === user.lastLogin.getTime()) {
-      await this.prisma.settings.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
-    const login = promisify(req.login.bind(this));
+
+    const login = promisify(req.login.bind(req));
     await login(user);
     return user;
   }

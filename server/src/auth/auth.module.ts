@@ -25,7 +25,7 @@ const OidcStrategyFactory = {
   controllers: [AuthController],
   providers: [
     PrismaService,
-    // OidcStrategyFactory,
+    OidcStrategyFactory,
     GithubStrategy,
     GoogleStrategy,
     GuestStrategy,
