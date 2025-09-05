@@ -1,5 +1,5 @@
 import { NavigateNext } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import notangles from '../../../assets/notangles_1.png';
 import { useAuth } from '../../../hooks/useAuth';

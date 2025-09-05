@@ -1,6 +1,5 @@
 import { Delete, LocationOn, MoreHoriz } from '@mui/icons-material';
-import { Grid, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
-import TouchRipple from '@mui/material/ButtonBase/TouchRipple';
+import { Grid, ListItemIcon, ListItemText, MenuItem, TouchRippleActions } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
@@ -14,6 +13,7 @@ import { StyledMenu } from '../../styles/CustomEventStyles';
 import {
   ExpandButton,
   StyledCard,
+  StyledCardButtonBase,
   StyledCardInfo,
   StyledCardInner,
   StyledCardInnerGrid,
@@ -53,7 +53,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const element = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<any>(null);
+  const rippleRef = useRef<TouchRippleActions | null>(null);
 
   let timer: number | null = null;
   let rippleStopped = false;
@@ -77,7 +77,7 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
     const eventCopy = { ...eventDown };
 
-    if (rippleRef.current && 'start' in rippleRef.current) {
+    if (rippleRef.current !== null) {
       rippleStopped = false;
       rippleRef.current.start(eventCopy);
     }
@@ -101,16 +101,16 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
       window.removeEventListener('mousemove', onUp);
       window.removeEventListener('touchmove', onUp);
 
-      if ((timer || !eventUp.type.includes('move')) && rippleRef.current && 'stop' in rippleRef.current) {
+      if (timer || !eventUp.type.includes('move')) {
         window.removeEventListener('mouseup', onUp);
         window.removeEventListener('touchend', onUp);
 
-        if (!rippleStopped && 'stop' in rippleRef.current) {
+        if (!rippleStopped) {
           rippleStopped = true;
 
           setTimeout(() => {
             try {
-              rippleRef.current.stop(eventUp);
+              rippleRef.current?.stop(eventUp);
             } catch (error) {
               setAlertMsg(unknownErrorMessage);
               setErrorVisibility(true);
@@ -227,29 +227,30 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
           clashColour={'none'}
           backgroundColour={useColorDecoder(eventPeriod.event.color, preferredTheme).toString()}
         >
-          <StyledCardInnerGrid container justifyContent="center" alignItems="center">
-            <Grid size={11}>
-              <StyledCardName>{eventPeriod.event.name}</StyledCardName>
-              {/* only display location on card if event not less than one hour */}
-              {!isLessThanOneHour && eventPeriod.event.location && (
-                <StyledCardInfo>
-                  <StyledLocationIcon />
-                  {eventPeriod.event.location}
-                </StyledCardInfo>
-              )}
-              <TouchRipple ref={rippleRef} />
-            </Grid>
-          </StyledCardInnerGrid>
-          {fullscreenVisible && (
-            <ExpandButton
-              onClick={() => {
-                setPopupOpen(true);
-              }}
-              sx={{ color: '#f5f5f5' }}
-            >
-              <MoreHoriz fontSize="large" />
-            </ExpandButton>
-          )}
+          <StyledCardButtonBase rippleRef={rippleRef}>
+            <StyledCardInnerGrid container justifyContent="center" alignItems="center">
+              <Grid size={11}>
+                <StyledCardName>{eventPeriod.event.name}</StyledCardName>
+                {/* only display location on card if event not less than one hour */}
+                {!isLessThanOneHour && eventPeriod.event.location && (
+                  <StyledCardInfo>
+                    <StyledLocationIcon />
+                    {eventPeriod.event.location}
+                  </StyledCardInfo>
+                )}
+              </Grid>
+            </StyledCardInnerGrid>
+            {fullscreenVisible && (
+              <ExpandButton
+                onClick={() => {
+                  setPopupOpen(true);
+                }}
+                sx={{ color: '#f5f5f5' }}
+              >
+                <MoreHoriz fontSize="large" />
+              </ExpandButton>
+            )}
+          </StyledCardButtonBase>
         </StyledCardInner>
       </StyledCard>
       <ExpandedEventView

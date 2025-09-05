@@ -1,4 +1,5 @@
-import { Navigate } from 'react-router-dom';
+import type { JSX } from 'react';
+import { Navigate } from 'react-router';
 
 import { useAuth } from '../../hooks/useAuth';
 import PageLoading from '../pageLoading/PageLoading';
