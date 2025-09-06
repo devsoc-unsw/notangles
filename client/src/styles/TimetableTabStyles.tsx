@@ -90,7 +90,7 @@ export const StyledModalButton = styled(Button)`
 `;
 
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const TabStyle = (index: number, selectedTimetableIndex: number) => {
+  const TabStyle = (index: number, timetableId: string, selectedTimetableId: string) => {
     const style = {
       boxShadow: '',
       maxWidth: '360px',
@@ -130,7 +130,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       style.marginLeft = '0px';
     }
 
-    if (index === selectedTimetableIndex) {
+    if (timetableId === selectedTimetableId) {
       style.color = `#3a76f8`;
       style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
       style.borderWidth = '1px';

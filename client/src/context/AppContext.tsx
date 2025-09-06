@@ -2,11 +2,19 @@ import { createContext, useState } from 'react';
 
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
+import { CourseDataMap, DisplayTimetablesMap, NewData, Term, TermDataList } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
-import storage from '../utils/storage';
 
 export interface IAppContext {
+  timetableIds: string[];
+  setTimetableIds: React.Dispatch<React.SetStateAction<string[]>>;
+
+  timetables: Record<string, { name: string; primary: boolean }>;
+  setTimetables: (newTimetables: Record<string, { name: string; primary: boolean }>) => void;
+
+  selectedTimetableId: string;
+  setSelectedTimetableId: (newSelectedTimetableId: string) => void;
+
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -69,6 +77,15 @@ export interface IAppContext {
 }
 
 export const AppContext = createContext<IAppContext>({
+  timetableIds: [],
+  setTimetableIds: () => {},
+
+  timetables: {},
+  setTimetables: () => {},
+
+  selectedTimetableId: '',
+  setSelectedTimetableId: () => {},
+
   alertMsg: '',
   setAlertMsg: () => {},
 
@@ -127,6 +144,8 @@ export const AppContext = createContext<IAppContext>({
   setCourseData: () => {},
 });
 
+const newData = localStorage.getItem('newData');
+
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   let termData = {
     year: '',
@@ -138,11 +157,18 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   if (localStorage.getItem('termData')) {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
-  const [isHideClassInfo, setIsHideClassInfo] = useState<boolean>(storage.get('isHideClassInfo'));
-  const [isHideExamClasses, setIsHideExamClasses] = useState<boolean>(storage.get('isHideExamClasses'));
-  const [isConvertToLocalTimezone, setIsConvertToLocalTimezone] = useState<boolean>(
-    storage.get('isConvertToLocalTimezone'),
+
+  const [timetableIds, setTimetableIds] = useState<string[]>(
+    newData ? (JSON.parse(newData) as NewData).timetableIds : [],
   );
+  const [timetables, setTimetables] = useState<Record<string, { name: string; primary: boolean }>>(
+    newData ? (JSON.parse(newData) as NewData).timetables : {},
+  );
+  const [selectedTimetableId, setSelectedTimetableId] = useState<string>(
+    newData ? (JSON.parse(newData) as NewData).selectedTimetableId : '',
+  );
+
+  const isConvertToLocalTimezone = true;
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
   const [errorVisibility, setErrorVisibility] = useState<boolean>(false);
@@ -164,6 +190,12 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
 
   const initialContext: IAppContext = {
+    timetableIds,
+    setTimetableIds,
+    timetables,
+    setTimetables,
+    selectedTimetableId,
+    setSelectedTimetableId,
     alertMsg,
     setAlertMsg,
     alertFunction,

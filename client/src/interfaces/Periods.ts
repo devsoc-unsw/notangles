@@ -11,6 +11,18 @@ export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | In
 export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
+export interface NewData {
+  timetableIds: string[];
+  timetables: Record<
+    string,
+    {
+      name: string;
+      primary: boolean;
+    }
+  >;
+  selectedTimetableId: string;
+}
+
 export interface CourseData {
   code: CourseCode;
   name: string;

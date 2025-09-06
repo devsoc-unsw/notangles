@@ -92,9 +92,7 @@ const Controls: React.FC<ControlsProps> = ({
         <AutotimetablerWrapper>
           <Autotimetabler handleSelectClass={handleSelectClass} />
         </AutotimetablerWrapper>
-        <HistoryWrapper>
-          <History />
-        </HistoryWrapper>
+        <HistoryWrapper>{/* <History /> */}</HistoryWrapper>
       </Grid>
     </Grid>
   );

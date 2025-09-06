@@ -7,14 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
-import {
-  CourseData,
-  CreatedEvents,
-  DisplayTimetablesMap,
-  SelectedClasses,
-  TimetableData,
-} from '../../interfaces/Periods';
+import { NewData } from '../../interfaces/Periods';
 import {
   createTimetableStyle,
   StyledIconButton,
@@ -26,17 +19,18 @@ import {
   tabThemeDark,
   tabThemeLight,
 } from '../../styles/TimetableTabStyles';
-import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
 
   const {
-    selectedTimetable,
-    setSelectedTimetable,
-    displayTimetables,
-    setDisplayTimetables,
+    timetableIds,
+    setTimetableIds,
+    timetables,
+    setTimetables,
+    selectedTimetableId,
+    setSelectedTimetableId,
     setAlertMsg,
     setErrorVisibility,
     term,
@@ -44,7 +38,6 @@ const TimetableTabs: React.FC = () => {
 
   const { isDarkMode, preferredTheme } = useGetUserSettingsQuery();
 
-  const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
   const isMacOS = navigator.userAgent.includes('Mac');
@@ -62,51 +55,40 @@ const TimetableTabs: React.FC = () => {
 
   const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
 
-  // Helper function to set the timetable state
-  const setTimetableState = (
-    selectedCourses: CourseData[],
-    selectedClasses: SelectedClasses,
-    createdEvents: CreatedEvents,
-    assignedColors: Record<string, string>,
-    timetableIndex: number,
-  ) => {
-    setSelectedCourses(selectedCourses);
-    setSelectedClasses(selectedClasses);
-    setCreatedEvents(createdEvents);
-    setAssignedColors(assignedColors);
-    setSelectedTimetable(timetableIndex);
-  };
-
   /**
    * Timetable handlers
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
     if (!term) return;
-    if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
+    if (timetableIds.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
-      const nextIndex = displayTimetables[term].length;
-
-      const newTimetable: TimetableData = {
-        name: 'New Timetable',
-        id: uuidv4(),
-        isPrimary: false,
-        selectedCourses: [],
-        selectedClasses: {},
-        createdEvents: {},
-        assignedColors: {},
+      const id = uuidv4();
+      const newTimetable: Record<
+        string,
+        {
+          name: string;
+          primary: boolean;
+        }
+      > = {
+        [id]: { name: 'New Timetable', primary: false },
       };
+      const newTimetableIds = [...timetableIds, ...Object.keys(newTimetable)];
+      const newTimetables = { ...timetables, ...newTimetable };
+      setTimetableIds(newTimetableIds);
+      setTimetables(newTimetables);
 
-      const addingNewTimetables: DisplayTimetablesMap = {
-        ...displayTimetables,
-        [term]: [...displayTimetables[term], newTimetable],
-      };
-      storage.set('timetables', addingNewTimetables);
-      setDisplayTimetables(addingNewTimetables);
-      // Clearing the selected courses, classes and created events for the new timetable
-      setTimetableState([], {}, {}, {}, nextIndex);
+      localStorage.setItem(
+        'newData',
+        JSON.stringify({
+          timetableIds: newTimetableIds,
+          timetables: newTimetables,
+          selectedTimetableId: id,
+        } as NewData),
+      );
+      setSelectedTimetableId(Object.keys(newTimetable)[0]);
     }
   };
 
@@ -114,36 +96,40 @@ const TimetableTabs: React.FC = () => {
    * Drag and drop functions for rearranging timetable tabs
    */
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
-  const handleSwitchTimetables = (timetables: TimetableData[], timetableIndex: number) => {
-    const { selectedCourses, selectedClasses, createdEvents, assignedColors } = timetables[timetableIndex];
-    setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, timetableIndex);
+  const handleSwitchTimetables = (ids: string[], index: number) => {
+    const id = ids[index];
+    if (!id) return;
+    setSelectedTimetableId(id);
+    localStorage.setItem(
+      'newData',
+      JSON.stringify({
+        timetableIds: ids,
+        timetables: timetables,
+        selectedTimetableId: id,
+      } as NewData),
+    );
   };
 
   // Reordering the tabs when they are dragged and dropped
   const handleSortTabs = (result: DropResult) => {
     const { destination, source } = result;
+    if (!destination) return;
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-    if (!destination || !term) {
-      return;
-    }
+    const newOrder = Array.from(timetableIds);
+    const [moved] = newOrder.splice(source.index, 1);
+    newOrder.splice(destination.index, 0, moved);
 
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
+    setTimetableIds(newOrder);
 
-    const newTimetables: TimetableData[] = [...displayTimetables[term]];
-    const draggedItem = newTimetables[source.index];
-    newTimetables.splice(source.index, 1);
-    newTimetables.splice(destination.index, 0, draggedItem);
-
-    const rearrangedTimetables: DisplayTimetablesMap = {
-      ...displayTimetables,
-      [term]: newTimetables,
-    };
-
-    setDisplayTimetables(rearrangedTimetables);
-
-    handleSwitchTimetables(newTimetables, destination.index);
+    localStorage.setItem(
+      'newData',
+      JSON.stringify({
+        timetableIds: newOrder,
+        timetables: timetables,
+        selectedTimetableId: selectedTimetableId,
+      } as NewData),
+    );
   };
 
   /**
@@ -159,7 +145,7 @@ const TimetableTabs: React.FC = () => {
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
     if (!term) return;
     event.preventDefault();
-    handleSwitchTimetables(displayTimetables[term], index);
+    handleSwitchTimetables(timetableIds, index);
 
     // Anchoring the menu to the mouse position
     setAnchorElement({ x: event.clientX, y: event.clientY });
@@ -172,19 +158,19 @@ const TimetableTabs: React.FC = () => {
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {Object.keys(displayTimetables).length > 0 && term && displayTimetables[term]
-                  ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
-                      <Draggable draggableId={index.toString()} index={index} key={index}>
+                {timetableIds.length > 0
+                  ? timetableIds.map((id: string, index) => (
+                      <Draggable draggableId={id} index={index} key={id}>
                         {(props) => {
                           if (props.draggableProps.style?.transform) {
-                            const horizShift = props.draggableProps.style?.transform.match(/(-?\d+)/g)?.map(Number)![0];
+                            const horizShift = props.draggableProps.style.transform.match(/(-?\d+)/g)?.map(Number)[0];
                             // forcing horizontal movement
-                            props.draggableProps.style.transform = `translate(${horizShift ? horizShift : 0}px, 0)`;
+                            props.draggableProps.style.transform = `translate(${String(horizShift ?? 0)}px, 0)`;
                           }
                           return (
                             <Box
                               onMouseDown={() => {
-                                handleSwitchTimetables(displayTimetables[term], index);
+                                handleSwitchTimetables(timetableIds, index);
                               }}
                               onContextMenu={(e) => {
                                 handleRightTabClick(e, index);
@@ -192,15 +178,15 @@ const TimetableTabs: React.FC = () => {
                               ref={props.innerRef}
                               {...props.draggableProps}
                               {...props.dragHandleProps}
-                              sx={TabStyle(index, selectedTimetable)}
+                              sx={TabStyle(index, id, selectedTimetableId)}
                             >
-                              {displayTimetables[term][index].isPrimary && (
+                              {timetables[id].primary && (
                                 <Tooltip title="A primary timetable is the timetable for social features.">
                                   <Star fontSize="small" className="pr-1.5"></Star>
                                 </Tooltip>
                               )}
-                              {timetable.name}
-                              {selectedTimetable === index ? (
+                              {timetables[id].name}
+                              {selectedTimetableId === id ? (
                                 <StyledSpan onClick={handleMenuClick}>
                                   <MoreHoriz />
                                 </StyledSpan>
