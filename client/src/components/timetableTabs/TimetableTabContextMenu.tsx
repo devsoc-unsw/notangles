@@ -235,6 +235,7 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       [newId]: {
         name: timetables[selectedTimetableId].name + ' - Copy',
         primary: false,
+        courseIds: [...timetables[selectedTimetableId].courseIds],
       },
     };
 

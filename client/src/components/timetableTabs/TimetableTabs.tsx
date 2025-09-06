@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { NewData } from '../../interfaces/Periods';
+import { NewData, NewTimetableData } from '../../interfaces/Periods';
 import {
   createTimetableStyle,
   StyledIconButton,
@@ -33,7 +33,6 @@ const TimetableTabs: React.FC = () => {
     setSelectedTimetableId,
     setAlertMsg,
     setErrorVisibility,
-    term,
   } = useContext(AppContext);
 
   const { isDarkMode, preferredTheme } = useGetUserSettingsQuery();
@@ -60,20 +59,13 @@ const TimetableTabs: React.FC = () => {
    */
   // Creates new timetable
   const handleCreateTimetable = () => {
-    if (!term) return;
     if (timetableIds.length >= TIMETABLE_LIMIT) {
       setAlertMsg('Maximum timetables reached');
       setErrorVisibility(true);
     } else {
       const id = uuidv4();
-      const newTimetable: Record<
-        string,
-        {
-          name: string;
-          primary: boolean;
-        }
-      > = {
-        [id]: { name: 'New Timetable', primary: false },
+      const newTimetable: Record<string, NewTimetableData> = {
+        [id]: { name: 'New Timetable', primary: false, courseIds: [] },
       };
       const newTimetableIds = [...timetableIds, ...Object.keys(newTimetable)];
       const newTimetables = { ...timetables, ...newTimetable };
@@ -143,7 +135,6 @@ const TimetableTabs: React.FC = () => {
 
   // Right clicking a tab will switch to that tab and open the menu
   const handleRightTabClick = (event: React.MouseEvent, index: number) => {
-    if (!term) return;
     event.preventDefault();
     handleSwitchTimetables(timetableIds, index);
 

@@ -50,7 +50,7 @@ export const TabsSection = styled(Box)`
 export const TabsWrapper = styled(Box, { shouldForwardProp: (prop) => prop !== 'tabTheme' })<
   BoxProps & { tabTheme: TabTheme }
 >`
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+  background-color: ${(props) => props.tabTheme.containerBackground satisfies string};
   border-radius: 10px 10px 0 0;
   display: flex;
   width: max-content;
@@ -76,10 +76,10 @@ export const StyledIconButton = styled(IconButton, { shouldForwardProp: (prop) =
   transition: background - color 0.1s;
   border-radius: 50;
   z-index: 100;
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+  background-color: ${(props) => props.tabTheme.containerBackground satisfies string};
   opacity: 0.75;
   &:hover {
-    background-color: ${(props) => props.tabTheme.tabHoverColor.toString()};
+    background-color: ${(props) => props.tabTheme.tabHoverColor satisfies string};
   }
 `;
 

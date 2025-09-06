@@ -2,15 +2,22 @@ import { createContext, useState } from 'react';
 
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import { CourseDataMap, DisplayTimetablesMap, NewData, Term, TermDataList } from '../interfaces/Periods';
+import {
+  CourseDataMap,
+  DisplayTimetablesMap,
+  NewData,
+  NewTimetableData,
+  Term,
+  TermDataList,
+} from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 
 export interface IAppContext {
   timetableIds: string[];
   setTimetableIds: React.Dispatch<React.SetStateAction<string[]>>;
 
-  timetables: Record<string, { name: string; primary: boolean }>;
-  setTimetables: (newTimetables: Record<string, { name: string; primary: boolean }>) => void;
+  timetables: Record<string, NewTimetableData>;
+  setTimetables: (newTimetables: Record<string, NewTimetableData>) => void;
 
   selectedTimetableId: string;
   setSelectedTimetableId: (newSelectedTimetableId: string) => void;
@@ -161,7 +168,7 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [timetableIds, setTimetableIds] = useState<string[]>(
     newData ? (JSON.parse(newData) as NewData).timetableIds : [],
   );
-  const [timetables, setTimetables] = useState<Record<string, { name: string; primary: boolean }>>(
+  const [timetables, setTimetables] = useState<Record<string, NewTimetableData>>(
     newData ? (JSON.parse(newData) as NewData).timetables : {},
   );
   const [selectedTimetableId, setSelectedTimetableId] = useState<string>(

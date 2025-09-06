@@ -11,15 +11,14 @@ export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | In
 export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
+export interface NewTimetableData {
+  name: string;
+  primary: boolean;
+  courseIds: string[];
+}
 export interface NewData {
   timetableIds: string[];
-  timetables: Record<
-    string,
-    {
-      name: string;
-      primary: boolean;
-    }
-  >;
+  timetables: Record<string, NewTimetableData>;
   selectedTimetableId: string;
 }
 
@@ -209,6 +208,6 @@ export interface CourseDataMap {
   map: CourseData[];
 }
 
-export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}` | string;
+export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}`;
 export type TermDataList = Term[];
 export type DisplayTimetablesMap = Record<string, TimetableData[]>;
