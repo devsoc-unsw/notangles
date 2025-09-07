@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, List, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { colors } from '../../constants/timetable';
-import { AppContext } from '../../context/AppContext';
 import { useColorDecoder } from '../../hooks/useColorDecoder';
 import { ColorPickerProps } from '../../interfaces/PropTypes';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../styles/ControlStyles';

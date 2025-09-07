@@ -1,5 +1,5 @@
 import { LogoutRounded } from '@mui/icons-material';
-import { Button, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
 
