@@ -65,7 +65,7 @@ export class AuthController {
     req.logout((err) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       req.session?.destroy((err) => {
-        res.send();
+        this.redirectAfterAuth(res, false);
       });
     });
 
@@ -74,10 +74,10 @@ export class AuthController {
     }
   }
 
-  private redirectAfterAuth(res: Response) {
+  private redirectAfterAuth(res: Response, home: boolean = true) {
     res.redirect(
       (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
-        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}/home`,
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}${home ? '/home' : ''}`,
     );
   }
 }
