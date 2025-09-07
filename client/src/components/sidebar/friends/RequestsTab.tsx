@@ -75,13 +75,7 @@ const RequestsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => voi
     <StyledFriendsListContainer>
       {user.incoming.map((friend: User, i: number) => (
         <StyledFriendContainer>
-          <UserProfile
-            key={i}
-            firstname={friend.firstname}
-            lastname={friend.lastname}
-            email={friend.email}
-            profileURL={friend.profileURL}
-          />
+          <UserProfile key={i} firstName={friend.firstname} lastName={friend.lastname} profileURL={friend.profileURL} />
           <StyledActionButtons>
             <Tooltip title="Accept Request">
               <IconButton onClick={() => handleAcceptRequest(friend.userID)}>

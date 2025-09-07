@@ -47,13 +47,7 @@ const YourFriendsTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => 
     <StyledContainer>
       {user.friends.map((friend: User, i: number) => (
         <StyledItem>
-          <UserProfile
-            key={i}
-            firstname={friend.firstname}
-            lastname={friend.lastname}
-            email={friend.email}
-            profileURL={friend.profileURL}
-          />
+          <UserProfile key={i} firstName={friend.firstname} lastName={friend.lastname} profileURL={friend.profileURL} />
           <Tooltip title="Remove Friend">
             <IconButton onClick={() => handleRemoveFriend(friend.userID)}>
               <DeleteOutlineIcon />
