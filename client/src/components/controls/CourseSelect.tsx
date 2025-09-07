@@ -1,24 +1,27 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import {
-  AddRounded,
-  CheckRounded,
-  CloseRounded,
-  PersonOutline,
-  SearchRounded,
-  VideocamOutlined,
-} from '@mui/icons-material';
-import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+  Autocomplete,
+  AutocompleteRenderInputParams,
+  Box,
+  Button,
+  Chip,
+  InputAdornment,
+  TextField,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 
+import { useGetCoursesByTermAndFaculty } from '../../api/graphql/queries';
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CourseOverview, CoursesList } from '../../interfaces/Courses';
-import { CourseCode, CourseData } from '../../interfaces/Periods';
+import { CoursesList } from '../../interfaces/Courses';
+import { CourseCode, GQLCourseOverview } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
@@ -47,7 +50,7 @@ const searchOptions: SearchOptions = {
   ],
 };
 
-let fuzzy = new Fuse<CourseOverview>([], searchOptions);
+// let fuzzy = new Fuse<CourseOverview>([], searchOptions);
 
 const ListboxContainer = styled('div')`
   overflow: hidden;
@@ -61,7 +64,7 @@ const StyledSelect = styled(Box)`
 const StyledTextField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'selectedCourses',
 })<{
-  selectedCourses: CourseData[];
+  selectedCourses: string[];
 }>`
   .MuiOutlinedInput-root {
     fieldset {
@@ -175,9 +178,9 @@ const FacultyTags = styled(Button, {
 `;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
-  const [options, setOptionsState] = useState<CoursesList>([]);
+  const [options, setOptionsState] = useState<GQLCourseOverview[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
-  const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
+  const [selectedValue, setSelectedValue] = useState<GQLCourseOverview[]>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
   const faculties = [
     'Art, Design & Architecture',
@@ -200,27 +203,43 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { coursesList } = useContext(AppContext);
+  const { coursesList, term, timetables, selectedTimetableId } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
+
+  const courses = useGetCoursesByTermAndFaculty(term.substring(0, 2));
+  console.table(courses);
 
   useEffect(() => {
     fuzzy = new Fuse(coursesList, searchOptions);
   }, [coursesList]);
 
   // Generate a list of the user's selected courses
+  // useEffect(() => {
+  //   if (!selectedCourses.length) {
+  //     setSelectedValue([]);
+  //     return;
+  //   }
+
+  //   setSelectedValue(
+  //     selectedCourses
+  //       .map((x) => x.code) // Get the course code of each course
+  //       .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
+  //       .filter((overview): overview is CourseOverview => overview !== undefined),
+  //   );
+  // }, [selectedCourses, coursesList]);
   useEffect(() => {
-    if (!selectedCourses.length) {
+    const selectedCourse = timetables[selectedTimetableId].courseIds;
+    if (selectedCourse.length === 0) {
       setSelectedValue([]);
       return;
     }
 
     setSelectedValue(
-      selectedCourses
-        .map((x) => x.code) // Get the course code of each course
-        .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
-        .filter((overview): overview is CourseOverview => overview !== undefined),
+      selectedCourse
+        .map((courseId) => courses.find((course) => course.id === courseId)) // Get the corresponding CourseOverview for each CourseData object
+        .filter((overview): overview is GQLCourseOverview => overview !== undefined),
     );
-  }, [selectedCourses, coursesList]);
+  }, [selectedCourses, courses, timetables, selectedTimetableId]);
 
   /**
    * @param courseCode A course code
@@ -253,11 +272,12 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   // The courses shown when a user clicks on the search bar
-  let defaultOptions = coursesList;
+  // let defaultOptions = coursesList;
+  let defaultOptions = courses;
 
-  if (selectedFaculty) {
-    defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-  }
+  // if (selectedFaculty) {
+  //   defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
+  // }
 
   if (selectedValue.length && !selectedFaculty) {
     const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
@@ -272,8 +292,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    * Refresh the list of courses to choose from
    * @param newOptions The new list of courses to choose from
    */
-  const setOptions = (newOptions: CoursesList) => {
-    listRef?.current?.scrollTo(0);
+  const setOptions = (newOptions: GQLCourseOverview[]) => {
+    listRef.current?.scrollTo(0);
     setOptionsState(newOptions);
   };
 
@@ -293,15 +313,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       return defaultOptions;
     }
 
-    let searchOptionsList = coursesList;
+    const searchOptionsList = courses;
 
-    if (selectedFaculty) {
-      searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-    }
+    // if (selectedFaculty) {
+    //   searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
+    // }
 
     // create a new fuse instance with the searchOptionsList after filtering by faculty
     // so that it allows for searching within the faculty's options
-    const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
+    const fuzzy = new Fuse<GQLCourseOverview>(searchOptionsList, searchOptions);
 
     const fuzzyResults = fuzzy.search(query).map((result) => result.item);
 
@@ -329,7 +349,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const keyOf = (x: { code: string; career: string }) => `${x.code}|${x.career}`;
   const mergedOptions = useMemo(() => {
-    const map = new Map<string, CourseOverview>();
+    const map = new Map<string, GQLCourseOverview>();
     options.forEach((x) => map.set(keyOf(x), x));
     selectedValue.forEach((x) => map.set(keyOf(x), x));
     return Array.from(map.values());
@@ -413,6 +433,35 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   return (
     <StyledSelect>
       <Autocomplete
+        getOptionDisabled={() => timetables[selectedTimetableId].courseIds.length >= maxAddedCourses}
+        getOptionLabel={(option) => option.code}
+        multiple
+        autoHighlight
+        disableClearable
+        disableListWrap
+        noOptionsText="No Results"
+        selectOnFocus={false}
+        options={defaultOptions}
+        filterOptions={(o) => o}
+        renderInput={(params: AutocompleteRenderInputParams) => (
+          <StyledTextField
+            {...params}
+            autoFocus
+            selectedCourses={timetables[selectedTimetableId].courseIds}
+            variant="outlined"
+            label={
+              timetables[selectedTimetableId].courseIds.length < maxAddedCourses
+                ? 'Select your courses'
+                : 'Maximum courses selected'
+            }
+            onChange={(event) => {
+              setInputValue(event.target.value);
+            }}
+          />
+        )}
+      />
+
+      {/* <Autocomplete
         getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
         multiple
@@ -522,7 +571,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             );
           })
         }
-      />
+      /> */}
     </StyledSelect>
   );
 };

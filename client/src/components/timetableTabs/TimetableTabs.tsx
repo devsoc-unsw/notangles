@@ -65,7 +65,7 @@ const TimetableTabs: React.FC = () => {
     } else {
       const id = uuidv4();
       const newTimetable: Record<string, NewTimetableData> = {
-        [id]: { name: 'New Timetable', primary: false, courseIds: [] },
+        [id]: { name: 'New Timetable', primary: false, courseIds: [], courses: {} },
       };
       const newTimetableIds = [...timetableIds, ...Object.keys(newTimetable)];
       const newTimetables = { ...timetables, ...newTimetable };

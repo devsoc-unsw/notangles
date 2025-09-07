@@ -11,10 +11,24 @@ export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | In
 export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
+export interface GQLCourseOverview {
+  id: string;
+  code: string;
+  name: string;
+  career: string;
+}
+
+export interface NewCourseData {
+  code: CourseCode;
+  colors: string[];
+  selectedClasses: string[];
+}
+
 export interface NewTimetableData {
   name: string;
   primary: boolean;
   courseIds: string[];
+  courses: Record<string, NewCourseData>;
 }
 export interface NewData {
   timetableIds: string[];
