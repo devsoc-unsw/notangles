@@ -79,7 +79,7 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
       program: number;
     };
 
-    const user = await this.authService.userOnboard({
+    const user = await this.authService.createUser({
       provider: 'ZID',
       subject: userInfo.sub,
       firstName: userData.firstName,

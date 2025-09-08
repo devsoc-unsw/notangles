@@ -29,7 +29,7 @@ const OidcStrategyFactory = {
     PrismaService,
     UserService,
     GraphqlService,
-    // OidcStrategyFactory,
+    OidcStrategyFactory,
     GithubStrategy,
     GoogleStrategy,
     GuestStrategy,

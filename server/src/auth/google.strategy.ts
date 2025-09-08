@@ -27,7 +27,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       emails: { value: string; verified: boolean }[];
     },
   ) {
-    const user = await this.authService.userOnboard({
+    const user = await this.authService.createUser({
       firstName: profile.name.givenName,
       lastName: profile.name.familyName,
       isGuest: false,

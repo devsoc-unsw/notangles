@@ -25,7 +25,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   ) {
     const displayName = profile.displayName?.trim() ?? 'GitHub User';
 
-    const user = await this.authService.userOnboard({
+    const user = await this.authService.createUser({
       firstName: displayName.split(' ')[0] || 'GitHub',
       lastName: displayName.split(' ').slice(1).join(' ') || 'User',
       isGuest: false,

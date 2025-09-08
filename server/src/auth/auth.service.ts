@@ -8,8 +8,6 @@ interface OnboardParams {
   firstName: string;
   lastName: string;
   isGuest: boolean;
-  timetableYear?: number;
-  timetableName?: string;
   provider?: AuthProvider;
   subject?: string;
 }
@@ -21,22 +19,25 @@ export class AuthService {
     private readonly graphql: GraphqlService,
   ) {}
 
-  async userOnboard(params: OnboardParams): Promise<User> {
+  private readonly TIMETABLE_DEFAULT_NAME = 'My Timetable';
+
+  async createUser(params: OnboardParams): Promise<User> {
     if (!params.isGuest) {
-      return await this.authUserOnboard(params);
+      return await this.createAuthUser(params);
     } else {
-      return await this.guestUserOnboard(params);
+      return await this.createGuest(params);
     }
   }
 
-  private async authUserOnboard(params: OnboardParams): Promise<User> {
+  private async createAuthUser(params: OnboardParams): Promise<User> {
     const { provider, subject } = params;
 
     if (provider === undefined || subject === undefined) {
       throw new Error('Provider and subject must be defined for auth users');
     }
-
-    const { availableTerms } = await this.graphql.getAvailableTerms();
+    const currentYear = new Date().getFullYear().toString();
+    const { availableTerms } =
+      await this.graphql.getAvailableTermsFrom(currentYear);
     if (availableTerms.length === 0) {
       throw new Error('No available terms found');
     }
@@ -66,15 +67,17 @@ export class AuthService {
         transaction,
         user.id,
         availableTerms,
-        params.timetableName ?? 'My Timetable',
+        this.TIMETABLE_DEFAULT_NAME,
       );
 
       return user;
     });
   }
 
-  private async guestUserOnboard(params: OnboardParams): Promise<User> {
-    const { availableTerms } = await this.graphql.getAvailableTerms();
+  private async createGuest(params: OnboardParams): Promise<User> {
+    const currentYear = new Date().getFullYear().toString();
+    const { availableTerms } =
+      await this.graphql.getAvailableTermsFrom(currentYear);
     if (availableTerms.length === 0) {
       throw new Error('No available terms found');
     }
@@ -90,7 +93,7 @@ export class AuthService {
             const term = availableTerm.split('-')[0] as Term;
             const year = parseInt(availableTerm.split('-')[1]);
             return {
-              name: params.timetableName ?? 'My Timetable',
+              name: this.TIMETABLE_DEFAULT_NAME,
               year,
               term,
             };
@@ -100,7 +103,7 @@ export class AuthService {
     });
   }
 
-  async createDefaultTimetablesIfNotExist(
+  private async createDefaultTimetablesIfNotExist(
     transaction: Prisma.TransactionClient,
     userId: string,
     availableTerms: string[],
