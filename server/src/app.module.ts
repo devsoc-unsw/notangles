@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import config from './config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { TimetableModule } from './timetable/timetable.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
       expandVariables: true,
     }),
     UserModule,
+    TimetableModule,
     AuthModule,
   ],
   controllers: [AppController],

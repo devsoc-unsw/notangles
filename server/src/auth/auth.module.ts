@@ -9,14 +9,15 @@ import { GoogleStrategy } from './google.strategy';
 import { GuestStrategy } from './guest.strategy';
 import { getConfig, OidcStrategy } from './oidc.strategy';
 import { SessionSerializer } from './session.serializer';
+import { GraphqlService } from 'src/graphql/graphql.service';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',
-  useFactory: async (prismaService: PrismaService) => {
+  useFactory: async (authService: AuthService) => {
     const config = await getConfig();
-    return new OidcStrategy(config, prismaService);
+    return new OidcStrategy(config, authService);
   },
-  inject: [PrismaService],
+  inject: [AuthService],
 };
 
 @Module({
@@ -27,6 +28,7 @@ const OidcStrategyFactory = {
   providers: [
     PrismaService,
     UserService,
+    GraphqlService,
     OidcStrategyFactory,
     GithubStrategy,
     GoogleStrategy,

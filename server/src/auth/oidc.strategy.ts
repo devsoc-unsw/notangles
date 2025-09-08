@@ -12,7 +12,7 @@ import {
 } from 'openid-client';
 import { AuthenticateOptions } from 'openid-client/build/passport';
 import { promisify } from 'util';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 const { Strategy } =
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('openid-client/passport') as typeof import('openid-client/build/passport');
@@ -31,7 +31,7 @@ export const getConfig = async (): Promise<Configuration> => {
 export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
   constructor(
     private readonly config: Configuration,
-    private readonly prisma: PrismaService,
+    private readonly authService: AuthService,
   ) {
     super({
       config,
@@ -79,32 +79,13 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
       program: number;
     };
 
-    const user = await this.prisma.user.upsert({
-      where: {
-        authProvider_authSubject: {
-          authProvider: 'ZID',
-          authSubject: userInfo.sub,
-        },
-      },
-      update: {
-        lastLogin: new Date(),
-      },
-      create: {
-        authProvider: 'ZID',
-        authSubject: userInfo.sub,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        isGuest: false,
-      },
+    const user = await this.authService.createUser({
+      provider: 'ZID',
+      subject: userInfo.sub,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      isGuest: false,
     });
-
-    if (user.createdAt.getTime() === user.lastLogin.getTime()) {
-      await this.prisma.settings.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
 
     const login = promisify(req.login.bind(req));
     await login(user);

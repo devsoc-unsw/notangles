@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-google-oauth20';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 import { promisify } from 'util';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(private readonly authService: AuthService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -27,26 +27,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       emails: { value: string; verified: boolean }[];
     },
   ) {
-    const user = await this.prisma.user.upsert({
-      where: {
-        authProvider_authSubject: {
-          authProvider: 'GOOGLE',
-          authSubject: profile.id,
-        },
-      },
-      update: {
-        lastLogin: new Date(),
-      },
-      create: {
-        authProvider: 'GOOGLE',
-        authSubject: profile.id,
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName,
-        isGuest: false,
-        settings: {
-          create: {},
-        },
-      },
+    const user = await this.authService.createUser({
+      firstName: profile.name.givenName,
+      lastName: profile.name.familyName,
+      isGuest: false,
+      provider: 'GOOGLE',
+      subject: profile.id,
     });
 
     const login = promisify(req.login.bind(req));
