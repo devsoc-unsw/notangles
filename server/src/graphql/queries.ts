@@ -20,3 +20,15 @@ export const CLASS_DETAILS = gql(`
     }
   }
 `);
+
+export const GET_AVAILABLE_TERMS = gql(`
+  query GetAvailableTerms {
+    classes(
+      where: {term: {_in: ["T1", "T2", "T3", "U1"]}}
+      distinct_on: offering_period
+    ) {
+      term
+      year
+    }
+  }
+`);

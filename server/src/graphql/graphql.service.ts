@@ -27,4 +27,16 @@ export class GraphqlService {
     const { classDetails } = await this.sdk.ClassDetails({ classId });
     return classDetails ? classDetails : undefined;
   }
+
+  async getAvailableTerms(): Promise<{ availableTerms: string[] }> {
+    const result = await this.sdk.GetAvailableTerms();
+    const classes = result.classes ?? [];
+    const termsSet = new Set<string>();
+    for (const cls of classes) {
+      if (cls.term && cls.year) {
+        termsSet.add(`${cls.term}-${cls.year}`);
+      }
+    }
+    return { availableTerms: Array.from(termsSet) };
+  }
 }

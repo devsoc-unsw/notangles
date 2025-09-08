@@ -12,8 +12,7 @@ import {
 } from 'openid-client';
 import { AuthenticateOptions } from 'openid-client/build/passport';
 import { promisify } from 'util';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { userOnboard } from './userOnboard.util';
+import { AuthService } from './auth.service';
 const { Strategy } =
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('openid-client/passport') as typeof import('openid-client/build/passport');
@@ -32,7 +31,7 @@ export const getConfig = async (): Promise<Configuration> => {
 export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
   constructor(
     private readonly config: Configuration,
-    private readonly prisma: PrismaService,
+    private readonly authService: AuthService,
   ) {
     super({
       config,
@@ -80,8 +79,7 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
       program: number;
     };
 
-    const user = await userOnboard({
-      prisma: this.prisma,
+    const user = await this.authService.userOnboard({
       provider: 'ZID',
       subject: userInfo.sub,
       firstName: userData.firstName,

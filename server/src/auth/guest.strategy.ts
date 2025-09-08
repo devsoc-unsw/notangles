@@ -2,20 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-custom';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 import { promisify } from 'util';
-import { userOnboard } from './userOnboard.util';
 
 // TODO: Track usage of guest accounts, delete inactive ones
 @Injectable()
 export class GuestStrategy extends PassportStrategy(Strategy, 'guest') {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(private readonly authService: AuthService) {
     super();
   }
 
   async validate(req: Request) {
-    const user = await userOnboard({
-      prisma: this.prisma,
+    const user = await this.authService.userOnboard({
       firstName: 'Guest',
       lastName: `User-${Date.now()}`,
       isGuest: true,
