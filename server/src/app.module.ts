@@ -1,35 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { AutoModule } from './auto/auto.module';
+import { ConfigModule } from '@nestjs/config';
 import config from './config';
-// import { FriendModule } from './friend/friend.module';
-// import { GroupModule } from './group/group.module';
-import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
-import { GraphqlService } from './graphql/graphql.service';
-import { GraphqlModule } from './graphql/graphql.module';
+import { AuthModule } from './auth/auth.module';
+import { TimetableModule } from './timetable/timetable.module';
 
-// TOOD: Re-enable FriendModule and GroupModule when ready
-// Need to be locked down better, and FE supported
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [config],
       isGlobal: true,
-      envFilePath: '../.env',
+      expandVariables: true,
     }),
-    AuthModule,
-    AutoModule,
     UserModule,
-    // FriendModule,
-    PrismaModule,
-    GraphqlModule,
-    // GroupModule,
+    TimetableModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, GraphqlService],
+  providers: [AppService],
 })
 export class AppModule {}

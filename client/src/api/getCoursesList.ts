@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { client } from '../api/config';
 import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/Courses';
@@ -14,7 +14,7 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
     faculty: course.faculty,
   }));
 
-const GET_COURSE_LIST = gql`
+const GET_COURSE_LIST: TypedDocumentNode<{ courses: FetchedCourse[] }, { term: string }> = gql`
   query GetCoursesByTerm($term: String!) {
     courses(where: { terms: { _ilike: $term } }) {
       campus
@@ -46,6 +46,7 @@ const getCoursesList = async (term: string): Promise<CoursesListWithDate> => {
   try {
     const termWithWildcard = `%${term}%`;
     const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term: termWithWildcard } });
+    if (data === undefined) throw new NetworkError('Internal server error');
 
     return {
       courses: toCoursesList(data.courses),

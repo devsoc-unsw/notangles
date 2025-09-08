@@ -8,7 +8,7 @@ import {
   VideocamOutlined,
 } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
@@ -197,7 +197,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     Science: 'Faculty of Science',
   };
 
-  const searchTimer = useRef<number | undefined>();
+  const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
   const { coursesList } = useContext(AppContext);

@@ -1,8 +1,8 @@
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@parcel/watcher'
   - '@prisma/client'
   - '@prisma/engines'
-  - esbuild
-  - grpc-tools
+  - '@swc/core'
   - prisma
-  - protobufjs
+  - unrs-resolver

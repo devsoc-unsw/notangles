@@ -1,5 +1,5 @@
 import { DbCourse } from '../interfaces/Database';
-import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
+import { CoursesData } from '../interfaces/GraphQLCourseInfo';
 import { Status } from '../interfaces/Periods';
 
 const statusMapping: Record<string, Status> = {
@@ -11,15 +11,15 @@ const statusMapping: Record<string, Status> = {
 /**
  * An adapter that formats a GraphQLCourse object to a DBCourse object
  *
- * @param graphQLCourse A GraphQLCourse object
+ * @param CoursesData A GraphQLCourse object
  * @return A DBCourse object
  *
  * @example
  * const data = await client.query({query: GET_COURSE_INFO, variables: { courseCode, term }});
  * const json: DbCourse = graphQLCourseToDbCourse(data);
  */
-export const graphQLCourseToDbCourse = (graphQLCourse: GraphQLCourse): DbCourse => {
-  const course = graphQLCourse.data.courses[0];
+export const graphQLCourseToDbCourse = (graphQLCourse: CoursesData): DbCourse => {
+  const course = graphQLCourse.courses[0];
 
   return {
     courseCode: course.course_code,
@@ -27,7 +27,7 @@ export const graphQLCourseToDbCourse = (graphQLCourse: GraphQLCourse): DbCourse 
     classes: course.classes.map((classItem) => ({
       section: classItem.section,
       activity: classItem.activity,
-      status: statusMapping[classItem.status.toLowerCase()] || 'Open',
+      status: statusMapping[classItem.status.toLowerCase()] ?? 'Open',
       courseEnrolment: {
         enrolments: parseInt(classItem.course_enrolment.split('/')[0].trim()),
         capacity: parseInt(classItem.course_enrolment.split('/')[1].trim()),

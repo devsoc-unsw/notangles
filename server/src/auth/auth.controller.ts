@@ -1,93 +1,83 @@
-import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
-
-import { AuthService } from './auth.service';
-import { LoginGuard } from './login.guard';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Request, Response } from 'express';
+import { AuthProvider } from 'src/generated/prisma/enums';
 import { UserService } from 'src/user/user.service';
-import { ConfigService } from '@nestjs/config';
-import { InitUserDTO, UserDTO } from 'src/user/dto';
+
+export interface AuthenticatedRequest extends Request {
+  user: {
+    id: string;
+    authProvider?: AuthProvider;
+    authSub?: string;
+    isGuest: boolean;
+  };
+}
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private userService: UserService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private userService: UserService) {}
 
-  @UseGuards(LoginGuard)
-  @Get('/login')
-  login() {}
+  @Get('login/github')
+  @UseGuards(AuthGuard('github'))
+  githubLogin() {}
 
-  checkUserDataUpdatedBeforeLogin = (
-    userData: UserDTO,
-    updatedUserData: InitUserDTO,
-  ) => {
-    if (
-      userData.firstname !== updatedUserData.firstname ||
-      userData.lastname !== updatedUserData.lastname ||
-      userData.email !== updatedUserData.email
-    ) {
-      return true;
-    }
+  @Get('login/google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin() {}
 
-    return false;
-  };
-  @Get('/user')
-  async user(@Request() req, @Res() res: Response) {
-    if (req.user) {
-      const userID = req.user.userinfo.sub;
-      const updateUserData = async () => {
-        const userData = req.user.userinfo.userData ?? {
-          firstName: `No First (${userID})`,
-          lastName: 'No Last',
-        };
-        await this.userService.setUserProfile({
-          userID: userID,
-          email: '',
-          firstname: userData.firstName,
-          lastname: userData.lastName,
-        });
-      };
-      try {
-        const userData = await this.userService.getUserInfo(userID);
-        const reqUserData = req.user.userinfo.userData ?? {
-          firstName: `No First (${userID})`,
-          lastName: 'No Last',
-          email: '',
-          userID: userID,
-        };
-        if (this.checkUserDataUpdatedBeforeLogin(userData, reqUserData)) {
-          console.debug(
-            'The user ' +
-              userID +
-              ' has their profiles updated! Updating now :)',
-          );
-          updateUserData();
-        }
-      } catch (e) {
-        console.debug(`User ${userID} does not exist in db, adding them now!`);
-        updateUserData();
-      }
-      return res.json(req.user.userinfo.sub);
-    }
+  @Get('login/devsoc')
+  @UseGuards(AuthGuard('oidc'))
+  devsocLogin() {}
 
-    return res.json(req.user);
+  @Get('callback/github')
+  @UseGuards(AuthGuard('github'))
+  githubCallback(@Res() res: Response) {
+    this.redirectAfterAuth(res);
   }
 
-  @UseGuards(LoginGuard)
-  @Get('/callback/csesoc')
-  loginCallback(@Res() res: Response) {
+  @Get('callback/google')
+  @UseGuards(AuthGuard('google'))
+  googleCallback(@Res() res: Response) {
+    this.redirectAfterAuth(res);
+  }
+
+  @Get('callback/devsoc')
+  @UseGuards(AuthGuard('oidc'))
+  callback(@Res() res: Response) {
+    this.redirectAfterAuth(res);
+  }
+
+  @Get('login/guest')
+  @UseGuards(AuthGuard('guest'))
+  guest(@Res() res: Response) {
+    this.redirectAfterAuth(res);
+  }
+
+  @Get('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    let userId: string | undefined = undefined;
+    if (req.isAuthenticated() && (req as AuthenticatedRequest).user.isGuest) {
+      userId = (res.req as AuthenticatedRequest).user.id;
+    }
+
+    res.clearCookie('connect.sid');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    req.logout((err) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      req.session?.destroy((err) => {
+        this.redirectAfterAuth(res, false);
+      });
+    });
+
+    if (userId) {
+      await this.userService.deleteUser(userId);
+    }
+  }
+
+  private redirectAfterAuth(res: Response, home: boolean = true) {
     res.redirect(
-      this.configService.get<string>(
-        'app.redirectLink',
-        'https://notangles.devsoc.app/api/auth/callback/csesoc',
-      ),
+      (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
+        `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}${home ? '/home' : ''}`,
     );
-  }
-
-  @Get('/logout')
-  async logout(@Request() req, @Res() res: Response) {
-    await this.authService.logout(req, res);
   }
 }

@@ -1,5 +1,5 @@
 import { Grid, ListItem, ListItemText, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { DropdownOptionProps } from '../../interfaces/PropTypes';
@@ -31,11 +31,11 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 
   return (
     <ListItem key={optionName}>
-      <Grid container spacing={0}>
-        <Grid item xs={12}>
+      <Grid container spacing={0} sx={{ flexGrow: 1 }}>
+        <Grid size={12}>
           <ListItemText primary={optionName} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <StyledOptionToggle
             size="small"
             exclusive={multiple ? false : true}

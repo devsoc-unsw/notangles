@@ -1,15 +1,12 @@
-import { LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, IconButton, Tooltip } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useContext, useState } from 'react';
+import { LogoutRounded } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
 
 import { API_URL } from '../../api/config';
-import { undefinedUser, UserContext } from '../../context/UserContext';
-import { DisplayTimetablesMap } from '../../interfaces/Periods';
-import storage from '../../utils/storage';
-import { createDefaultTimetable } from '../../utils/timetableHelpers';
+import { useAuth } from '../../hooks/useAuth';
 import StyledDialog from '../StyledDialog';
-import UserProfile from './groupsSidebar/friends/UserProfile';
+import UserProfile from './friends/UserProfile';
 
 interface UserAccountProps {
   collapsed: boolean;
@@ -30,13 +27,6 @@ const StyledIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const StyledButton = styled(Button)`
-  min-width: 200px;
-  min-height: 40px;
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  border: 1px solid ${({ theme }) => theme.palette.primary.main};
-`;
-
 const ExpandedContainer = styled('div')`
   display: flex;
   align-items: center;
@@ -45,57 +35,17 @@ const ExpandedContainer = styled('div')`
   padding: 10px 12px;
 `;
 
-export interface User {
-  userID: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  profileURL: string;
-  createdAt: string;
-  lastLogin: string;
-  loggedIn: boolean;
-  friends: User[];
-  incoming: User[];
-  outgoing: User[];
-  timetables: DisplayTimetablesMap;
-}
-
 const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
-  const [windowLocation, setWindowLocation] = useState('');
   const [logoutDialog, setLogoutDialog] = useState(false);
+  const { user } = useAuth();
 
-  const { user, setUser } = useContext(UserContext);
-  const loginCall = async () => {
-    setWindowLocation(window.location.href);
-    try {
-      window.location.href = `${API_URL.server}/auth/login`;
-    } catch (error) {
-      console.log(error);
-    }
+  const onLogout = () => {
+    window.location.href = `${API_URL.server}/auth/logout`;
   };
 
-  const logoutCall = async () => {
-    try {
-      await fetch(`${API_URL.server}/auth/logout`, {
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    window.location.replace(windowLocation);
-    setUser(undefinedUser);
-    storage.set('timetables', createDefaultTimetable(undefined));
-  };
-  if (!user.userID) {
-    return collapsed ? (
-      <Tooltip title="Log in" placement="right">
-        <StyledIconButton onClick={loginCall}>
-          <LoginRounded />
-        </StyledIconButton>
-      </Tooltip>
-    ) : (
-      <StyledButton onClick={loginCall}>Log in</StyledButton>
-    );
+  // Shouldn't be possible;
+  if (!user) {
+    return <></>;
   }
 
   return (
@@ -106,7 +56,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           setLogoutDialog(false);
         }}
         onConfirm={() => {
-          logoutCall();
+          onLogout();
           setLogoutDialog(false);
         }}
         title="Confirm Log out"
@@ -126,15 +76,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           </Tooltip>
         ) : (
           <ExpandedContainer>
-            <UserProfile
-              firstname={user.firstname}
-              lastname={user.lastname}
-              email={user.email}
-              profileURL={user.profileURL}
-            />
+            <UserProfile firstName={user.firstName} lastName={user.lastName} profileURL={user.profilePictureUrl} />
             <Tooltip title="Log out" placement="right">
               {/* TODO: error handling for when logging out */}
-              <StyledIconButton color="inherit" onClick={logoutCall}>
+              <StyledIconButton color="inherit" onClick={onLogout}>
                 <LogoutRounded />
               </StyledIconButton>
             </Tooltip>

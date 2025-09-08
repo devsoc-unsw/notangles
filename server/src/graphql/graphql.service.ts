@@ -1,67 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { GQLCourseData } from './graphql.response';
-const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
+import { GraphQLClient } from 'graphql-request';
+import { getSdk } from '../generated/graphql';
+import type { ClassDetails } from './types';
 
-export const GET_COURSE_INFO = `
-  query GetCourseInfo($courseCode: String!, $term: String!, $year: String!) {
-    courses(where: { course_code: { _eq: $courseCode } }) {
-      course_code
-      course_name
-      classes(
-        where: {
-          term: { _eq: $term }
-          year: { _eq: $year }
-          activity: { _neq: "Course Enrolment" }
-        }
-      ) {
-        activity
-        status
-        course_enrolment
-        class_id
-        term
-        section
-        times {
-          day
-          time
-          weeks
-          location
-        }
-        consent
-        mode
-        class_notes
-      }
-    }
-  }
-`;
+const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 
 @Injectable()
 export class GraphqlService {
-  async fetchData(
-    query: string,
-    variables?: Record<string, any>,
-  ): Promise<GQLCourseData> {
-    try {
-      const data = await fetch(HASURAGRES_GRAPHQL_API, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        }),
-      });
-      return data.json();
-    } catch (error) {
-      console.error('GraphQL Request Error:', error);
-      throw error;
-    }
+  private readonly sdk: ReturnType<typeof getSdk>;
+
+  constructor() {
+    const client = new GraphQLClient(HASURAGRES_GRAPHQL_API);
+    this.sdk = getSdk(client);
   }
-  async fetchCourseData(
-    courseCode: string,
-    term: string,
-    year: string,
-  ): Promise<GQLCourseData> {
-    return this.fetchData(GET_COURSE_INFO, { courseCode, term, year });
+
+  async courseExists(courseId: string, term: string): Promise<boolean> {
+    const { courseExists } = await this.sdk.CourseExists({
+      courseId,
+      term,
+    });
+
+    return courseExists.aggregate != null && courseExists.aggregate.count > 0;
+  }
+
+  async getClassDetails(classId: string): Promise<ClassDetails | undefined> {
+    const { classDetails } = await this.sdk.ClassDetails({ classId });
+    return classDetails ? classDetails : undefined;
+  }
+
+  async getAvailableTermsFrom(
+    currentYear: string = new Date().getFullYear().toString(),
+  ): Promise<{ availableTerms: string[] }> {
+    const result = await this.sdk.GetAvailableTerms({
+      currentYear: currentYear,
+    });
+    const classes = result.classes ?? [];
+    const termsSet = new Set<string>();
+    for (const cls of classes) {
+      if (cls.term && cls.year) {
+        termsSet.add(`${cls.term}-${cls.year}`);
+      }
+    }
+    return { availableTerms: Array.from(termsSet) };
   }
 }

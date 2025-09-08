@@ -1,72 +1,94 @@
-import { Request } from 'express';
-import { UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import {
-  Strategy,
-  Client,
-  UserinfoResponse,
-  TokenSet,
-  Issuer,
+  Configuration,
+  discovery,
+  fetchUserInfo,
+  randomState,
+  TokenEndpointResponse,
+  TokenEndpointResponseHelpers,
+  UserInfoResponse,
 } from 'openid-client';
+import { AuthenticateOptions } from 'openid-client/build/passport';
+import { promisify } from 'util';
 import { AuthService } from './auth.service';
+const { Strategy } =
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('openid-client/passport') as typeof import('openid-client/build/passport');
 
-export const buildOpenIdClient = async () => {
-  const TrustIssuer = await Issuer.discover(
-    `${process.env.OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER}/.well-known/openid-configuration`,
+export const getConfig = async (): Promise<Configuration> => {
+  return await discovery(
+    new URL(
+      `${process.env.OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER}/.well-known/openid-configuration`,
+    ),
+    process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_ID!,
+    process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_SECRET,
   );
-  const client = new TrustIssuer.Client({
-    client_id: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_ID,
-    client_secret: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_SECRET,
-  });
-  return client;
 };
 
+@Injectable()
 export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
-  client: Client;
-
   constructor(
+    private readonly config: Configuration,
     private readonly authService: AuthService,
-    client: Client,
   ) {
     super({
-      client: client,
-      params: {
-        redirect_uri: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI,
-        scope: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE,
-      },
+      config,
+      scope: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE!,
+      callbackURL: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI!,
+      name: 'oidc',
       passReqToCallback: true,
-      usePKCE: false,
     });
+  }
 
-    this.client = client;
+  authorizationRequestParams<TOptions extends AuthenticateOptions>(
+    req: Request,
+    options: TOptions,
+  ): URLSearchParams | Record<string, string> | undefined {
+    const params = super.authorizationRequestParams(req, options);
+    return {
+      ...params,
+      state: randomState(),
+    };
   }
 
   async validate(
-    req: Request & { login: any },
-    tokenset: TokenSet,
-  ): Promise<any> {
-    const userinfo: UserinfoResponse = await this.client.userinfo(tokenset);
-    try {
-      const id_token = tokenset.id_token;
-      const access_token = tokenset.access_token;
-      const refresh_token = tokenset.refresh_token;
-      const user = {
-        id_token,
-        access_token,
-        refresh_token,
-        userinfo,
-      };
-
-      return new Promise((resolve, reject) => {
-        req.login(user, (err) => {
-          if (err) {
-            return reject(new UnauthorizedException('Login failed'));
-          }
-          resolve(user);
-        });
-      });
-    } catch (err) {
-      throw new UnauthorizedException();
+    req: Request,
+    tokenset: TokenEndpointResponse & TokenEndpointResponseHelpers,
+  ) {
+    const claims = tokenset.claims();
+    if (!claims) {
+      throw new HttpException(
+        'No claims found in tokenset',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
+    const userInfo: UserInfoResponse = await fetchUserInfo(
+      this.config,
+      tokenset.access_token,
+      claims.sub,
+    );
+
+    const userData = userInfo.userData as {
+      firstName: string;
+      lastName: string;
+      zid: string;
+      department: string;
+      program: number;
+    };
+
+    const user = await this.authService.createUser({
+      provider: 'ZID',
+      subject: userInfo.sub,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      isGuest: false,
+    });
+
+    const login = promisify(req.login.bind(req));
+    await login(user);
+    return user;
   }
 }

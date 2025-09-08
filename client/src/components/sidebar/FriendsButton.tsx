@@ -1,9 +1,7 @@
 import { SwitchAccount } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useContext } from 'react';
-
-import { UserContext } from '../../context/UserContext';
+import { styled } from '@mui/material/styles';
+import React from 'react';
 
 interface FriendsButtonProps {
   collapsed: boolean;
@@ -24,16 +22,15 @@ const IndividualComponentTypography = styled(Typography)`
   font-size: 16px;
 `;
 
+// TODO: Repurpose using Sunny's design for friends
 const FriendsButton: React.FC<FriendsButtonProps> = ({ collapsed }) => {
-  const { groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
-
   return (
     <>
       <Tooltip title="Coming Soon: Shared Timetables" placement="right">
         <StyledFriendsButton
           color="inherit"
           // onClick={() => setGroupsSidebarCollapsed(!groupsSidebarCollapsed)}       UNCOMMENT to see shared timetables
-          isSelected={!groupsSidebarCollapsed}
+          isSelected={false}
         >
           <SwitchAccount />
           <IndividualComponentTypography>{collapsed ? '' : 'Shared Timetables'}</IndividualComponentTypography>

@@ -31,9 +31,20 @@ jobs:
         working-directory: ${{ matrix.component }}
 
       - name: Generate Prisma Types from Schema
-        run: npx prisma generate
+        run: pnpm prisma generate
         if: ${{ matrix.component == 'server' }}
         working-directory: server
+
+      - name: Generate GraphQL Types
+        run: pnpm graphql
+        if: ${{ matrix.component == 'server' }}
+        working-directory: server
+
+      - name: Lint
+        run: pnpm run lint
+        # Only running in server currently - need to fix more linting issues in client first
+        if: ${{ matrix.component == 'server' }}
+        working-directory: ${{ matrix.component }}
 
       - name: Build
         run: pnpm run build

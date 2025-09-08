@@ -1,5 +1,5 @@
 import { Box, Grid } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import { ControlsProps } from '../../interfaces/PropTypes';
@@ -54,7 +54,14 @@ const Controls: React.FC<ControlsProps> = ({
 }) => {
   return (
     <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
-      <Grid item container xs={12} md={6.5} direction="row">
+      <Grid
+        container
+        direction="row"
+        size={{
+          xs: 12,
+          md: 6.5,
+        }}
+      >
         <TermSelectWrapper>
           <TermSelect />
         </TermSelectWrapper>
@@ -67,7 +74,18 @@ const Controls: React.FC<ControlsProps> = ({
           />
         </SelectWrapper>
       </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={5.5}>
+      <Grid
+        container
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+        size={{
+          xs: 12,
+          md: 5.5,
+        }}
+      >
         <CustomEventsWrapper>
           <CustomEvents />
         </CustomEventsWrapper>

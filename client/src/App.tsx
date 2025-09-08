@@ -1,13 +1,14 @@
-import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
-import { styled } from '@mui/system';
+import { Box, Button, GlobalStyles, ThemeProvider } from '@mui/material';
+import { styled, StyledEngineProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useContext, useEffect, useMemo } from 'react';
+import { Outlet } from 'react-router';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
+import { useGetUserSettingsQuery } from './api/user/queries';
 import T3SelectGif from './assets/T3-select.gif';
 import Alerts from './components/Alerts';
 import Controls from './components/controls/Controls';
@@ -17,9 +18,8 @@ import SubcomPromotion from './components/promotions/SubcomPromotion';
 import Sidebar from './components/sidebar/Sidebar';
 import Sponsors from './components/Sponsors';
 import Timetable from './components/timetable/Timetable';
-import TimetableShared from './components/timetableShared.tsx/TimetableShared';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
-import { contentPadding, rightContentPadding, themes } from './constants/theme';
+import { contentPadding, darkTheme, lightTheme, rightContentPadding } from './constants/theme';
 import {
   daysLong,
   getAvailableTermDetails,
@@ -31,7 +31,6 @@ import {
 } from './constants/timetable';
 import { AppContext } from './context/AppContext';
 import { CourseContext } from './context/CourseContext';
-import { UserContext } from './context/UserContext';
 import { useColorsDecoder } from './hooks/useColorDecoder';
 import useColorMapper from './hooks/useColorMapper';
 import useUpdateEffect from './hooks/useUpdateEffect';
@@ -49,7 +48,6 @@ import {
 import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
-import { runSync } from './utils/syncTimetables';
 import { createDefaultTimetable } from './utils/timetableHelpers';
 
 const StyledApp = styled(Box)`
@@ -101,17 +99,6 @@ const ICSButton = styled(Button)`
 
 const App: React.FC = () => {
   const {
-    themeObject,
-    currentTheme,
-    setCurrentTheme,
-    is12HourMode,
-    isDarkMode,
-    isSquareEdges,
-    isShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    isHideClassInfo,
-    isHideExamClasses,
-    isConvertToLocalTimezone,
     setAlertMsg,
     setErrorVisibility,
     days,
@@ -147,8 +134,9 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
-  const decodedAssignedColors = useColorsDecoder(assignedColors, currentTheme);
-  const { user, setUser, groupsSidebarCollapsed, setGroupsSidebarCollapsed } = useContext(UserContext);
+  const { preferredTheme, isDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
+
+  const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
@@ -200,7 +188,7 @@ const App: React.FC = () => {
           ...{
             [termId]: Object.prototype.hasOwnProperty.call(oldData, termId)
               ? oldData[termId]
-              : createDefaultTimetable(user.userID),
+              : createDefaultTimetable(undefined),
           },
         };
       }
@@ -280,7 +268,7 @@ const App: React.FC = () => {
 
       // null means a class is unscheduled
       Object.keys(course.activities).forEach((activity) => {
-        prev[course.code][activity] = isDefaultUnscheduled
+        prev[course.code][activity] = unscheduleClassesByDefault
           ? null
           : (course.activities[activity].find((x) => x.enrolments !== x.capacity && x.periods.length) ??
             course.activities[activity].find((x) => x.periods.length) ??
@@ -306,7 +294,7 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term.substring(0, 2), code, term.substring(2), isConvertToLocalTimezone).catch((err) => {
+        getCourseInfo(term.substring(0, 2), code, term.substring(2), convertToLocalTimezone).catch((err) => {
           return err;
         }),
       ),
@@ -444,15 +432,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     updateTimetableEvents();
-  }, [year, isConvertToLocalTimezone]);
-
-  const syncTimetables = () => {
-    if (!user.userID) {
-      return;
-    }
-
-    runSync(user, setUser, displayTimetables, setDisplayTimetables);
-  };
+  }, [year, convertToLocalTimezone]);
 
   // The following three useUpdateEffects update local storage whenever a change is made to the timetable
   useUpdateEffect(() => {
@@ -462,7 +442,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [selectedCourses]);
 
   useUpdateEffect(() => {
@@ -470,7 +449,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [selectedClasses]);
 
   useUpdateEffect(() => {
@@ -478,7 +456,6 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [createdEvents]);
 
   useUpdateEffect(() => {
@@ -486,13 +463,11 @@ const App: React.FC = () => {
 
     storage.set('timetables', displayTimetables);
     setDisplayTimetables(displayTimetables);
-    syncTimetables();
   }, [assignedColors]);
 
   // Update storage when dragging timetables
   useUpdateEffect(() => {
     storage.set('timetables', displayTimetables);
-    syncTimetables();
   }, [displayTimetables]);
 
   /**
@@ -522,8 +497,8 @@ const App: React.FC = () => {
    * Upon switching timetable, reset default bounds
    */
   useEffect(() => {
-    setEarliestStartTime(getDefaultStartTime(isConvertToLocalTimezone));
-    setLatestEndTime(getDefaultEndTime(isConvertToLocalTimezone));
+    setEarliestStartTime(getDefaultStartTime(convertToLocalTimezone));
+    setLatestEndTime(getDefaultEndTime(convertToLocalTimezone));
   }, [selectedTimetable]);
 
   /**
@@ -534,7 +509,7 @@ const App: React.FC = () => {
       Math.min(
         ...selectedCourses.map((course) => course.earliestStartTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.floor(eventPeriod.time.start)),
-        getDefaultStartTime(isConvertToLocalTimezone),
+        getDefaultStartTime(convertToLocalTimezone),
         prev,
       ),
     );
@@ -543,7 +518,7 @@ const App: React.FC = () => {
       Math.max(
         ...selectedCourses.map((course) => course.latestFinishTime),
         ...Object.entries(createdEvents).map(([_, eventPeriod]) => Math.ceil(eventPeriod.time.end)),
-        getDefaultEndTime(isConvertToLocalTimezone),
+        getDefaultEndTime(convertToLocalTimezone),
         prev,
       ),
     );
@@ -563,50 +538,12 @@ const App: React.FC = () => {
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
-  }, [createdEvents, selectedCourses, isConvertToLocalTimezone]);
+  }, [createdEvents, selectedCourses, convertToLocalTimezone]);
 
-  useEffect(() => {
-    storage.set('currentTheme', currentTheme);
-  }, [currentTheme]);
-
-  useEffect(() => {
-    storage.set('is12HourMode', is12HourMode);
-  }, [is12HourMode]);
-
-  useEffect(() => {
-    storage.set('isDarkMode', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    storage.set('isSquareEdges', isSquareEdges);
-  }, [isSquareEdges]);
-
-  useEffect(() => {
-    storage.set('isShowOnlyOpenClasses', isShowOnlyOpenClasses);
-  }, [isShowOnlyOpenClasses]);
-
-  useEffect(() => {
-    storage.set('isDefaultUnscheduled', isDefaultUnscheduled);
-  }, [isDefaultUnscheduled]);
-
-  useEffect(() => {
-    storage.set('isHideClassInfo', isHideClassInfo);
-  }, [isHideClassInfo]);
-
-  useEffect(() => {
-    storage.set('isHideExamClasses', isHideExamClasses);
-  }, [isHideExamClasses]);
-
-  useEffect(() => {
-    storage.set('isConvertToLocalTimezone', isConvertToLocalTimezone);
-  }, [isConvertToLocalTimezone]);
-
-  // Validate the currentTheme
-  useEffect(() => {
-    if (!Object.keys(themes).includes(currentTheme)) {
-      setCurrentTheme(Object.keys(themes)[0]);
-    }
-  }, [currentTheme]);
+  const themeObject = useMemo(
+    () => (isDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
+    [isDarkMode, preferredTheme],
+  );
 
   const globalStyle = {
     body: {
@@ -649,14 +586,8 @@ const App: React.FC = () => {
                     handleRemoveCourse={handleRemoveCourse}
                   />
                   <Outlet />
-                  {groupsSidebarCollapsed ? (
-                    <>
-                      <TimetableTabs />
-                      <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                    </>
-                  ) : (
-                    <TimetableShared assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  )}
+                  <TimetableTabs />
+                  <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                   <ICSButton
                     onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
                   >
