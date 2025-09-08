@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-github2';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from './auth.service';
 import { promisify } from 'util';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(private readonly authService: AuthService) {
     super({
       clientID: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
@@ -25,26 +25,12 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   ) {
     const displayName = profile.displayName?.trim() ?? 'GitHub User';
 
-    const user = await this.prisma.user.upsert({
-      where: {
-        authProvider_authSubject: {
-          authProvider: 'GITHUB',
-          authSubject: profile.id.toString(),
-        },
-      },
-      update: {
-        lastLogin: new Date(),
-      },
-      create: {
-        authProvider: 'GITHUB',
-        authSubject: profile.id.toString(),
-        firstName: displayName.split(' ')[0] || 'GitHub',
-        lastName: displayName.split(' ').slice(1).join(' ') || 'User',
-        isGuest: false,
-        settings: {
-          create: {},
-        },
-      },
+    const user = await this.authService.userOnboard({
+      firstName: displayName.split(' ')[0] || 'GitHub',
+      lastName: displayName.split(' ').slice(1).join(' ') || 'User',
+      isGuest: false,
+      provider: 'GITHUB',
+      subject: profile.id.toString(),
     });
 
     const login = promisify(req.login.bind(req));

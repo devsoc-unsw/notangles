@@ -15,7 +15,7 @@ export class GuestStrategy extends PassportStrategy(Strategy, 'guest') {
   async validate(req: Request) {
     const user = await this.authService.userOnboard({
       firstName: 'Guest',
-      lastName: `User-${Date.now()}`,
+      lastName: `${Date.now()}`,
       isGuest: true,
     });
 
