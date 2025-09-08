@@ -52,7 +52,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   const [openRestoreAlert, setOpenRestoreAlert] = useState<boolean>(false);
-  // let prevTimetables: { selected: number; timetables: TimetableData[] } = { selected: 0, timetables: [] };
 
   /**
    * Timetable handlers
@@ -91,65 +90,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       } as NewData),
     );
     handleMenuClose();
-
-    // if (displayTimetables[term].length > 1) {
-    //   if (displayTimetables[term].findIndex((t: TimetableData, index: number) => t.isPrimary) === targetIndex) {
-    //     setAlertMsg('You cannot delete the primary timetable.');
-    //     setErrorVisibility(true);
-    //     return;
-    //   }
-
-    //   prevTimetables = {
-    //     selected: selectedTimetable,
-    //     timetables: displayTimetables[term].map((timetable: TimetableData) => {
-    //       return {
-    //         name: timetable.name,
-    //         id: timetable.id,
-    //         isPrimary: timetable.isPrimary,
-    //         selectedCourses: timetable.selectedCourses,
-    //         selectedClasses: duplicateClasses(timetable.selectedClasses),
-    //         createdEvents: timetable.createdEvents,
-    //         assignedColors: timetable.assignedColors,
-    //       };
-    //     }),
-    //   };
-
-    //   const newIndex = targetIndex === displayTimetables[term].length - 1 ? targetIndex - 1 : targetIndex;
-
-    //   const newDisplayTimetables = {
-    //     ...displayTimetables,
-    //     [term]: displayTimetables[term].filter((_: TimetableData, index: number) => index !== targetIndex),
-    //   };
-    //   // Updating the timetables state to the new timetable index
-    //   setDisplayTimetables(newDisplayTimetables);
-
-    //   // Destructure and rename (for clarity, do not shadow context variables)
-    //   const {
-    //     selectedCourses: newCourses,
-    //     selectedClasses: newClasses,
-    //     createdEvents: newEvents,
-    //     assignedColors: newColors,
-    //   } = newDisplayTimetables[term][newIndex];
-    //   setTimetableState(newCourses, newClasses, newEvents, newColors, newIndex);
-
-    //   setOpenRestoreAlert(true);
-
-    //   // If user chooses to undo the deletion then we will restore the previous state
-    //   setAlertFunction(() => () => {
-    //     const restoredTimetables = {
-    //       ...displayTimetables,
-    //       [term]: prevTimetables.timetables,
-    //     };
-
-    //     setDisplayTimetables(restoredTimetables);
-    //     const { selectedCourses, selectedClasses, createdEvents } = prevTimetables.timetables[prevTimetables.selected];
-    //     setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, prevTimetables.selected);
-    //     return;
-    //   });
-    // } else {
-    //   setAlertMsg('Must have at least 1 timetable.');
-    //   setErrorVisibility(true);
-    // }
   };
 
   // Collapse all modals and menus
@@ -160,11 +100,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
   };
 
   const handleRenameOpen = () => {
-    // const timetableName = displayTimetables[term][selectedTimetable].name;
-    // setRenamedString(timetableName);
-    // setRenamedHelper(`${timetableName.length}/30`);
-    // timetableName.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
-    // setRenameOpen(true);
     const timetableName = timetables[selectedTimetableId].name;
     setRenamedString(timetableName);
     setRenamedHelper(`${String(timetableName.length)}/30`);
@@ -181,18 +116,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
     }
 
     if (renamedErr) return;
-
-    // const newTimetables = {
-    //   ...displayTimetables,
-    //   [term]: displayTimetables[term].map((timetable, index) => {
-    //     return index === selectedTimetable ? { ...timetable, name: renamedString } : timetable;
-    //   }),
-    // };
-
-    // storage.set('timetables', newTimetables);
-    // setDisplayTimetables(newTimetables);
-
-    // setRenameOpen(false);
     const newTimetables = {
       ...timetables,
       [selectedTimetableId]: { ...timetables[selectedTimetableId], name: renamedString },
@@ -252,52 +175,9 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
       } as NewData),
     );
     handleMenuClose();
-
-    // if (displayTimetables[term].length >= TIMETABLE_LIMIT) {
-    //   setAlertMsg('Maximum timetables reached');
-
-    //   setErrorVisibility(true);
-    // } else {
-    //   const currentTimetable = displayTimetables[term][selectedTimetable];
-
-    //   const newTimetable = {
-    //     name: currentTimetable.name + ' - Copy',
-    //     id: uuidv4(),
-    //     selectedClasses: duplicateClasses(currentTimetable.selectedClasses),
-    //     selectedCourses: currentTimetable.selectedCourses,
-    //     createdEvents: duplicateEvents(currentTimetable.createdEvents),
-    //     assignedColors: currentTimetable.assignedColors,
-    //   };
-
-    //   const newTimetables = [
-    //     ...displayTimetables[term].slice(0, selectedTimetable + 1),
-    //     newTimetable,
-    //     ...displayTimetables[term].slice(selectedTimetable + 1),
-    //   ];
-
-    //   const updatedTimetables = {
-    //     ...displayTimetables,
-    //     [term]: newTimetables,
-    //   };
-
-    //   storage.set('timetables', updatedTimetables);
-    //   setDisplayTimetables(updatedTimetables);
-    //   const { selectedCourses, selectedClasses, createdEvents } = newTimetable;
-    //   setTimetableState(selectedCourses, selectedClasses, createdEvents, assignedColors, selectedTimetable + 1);
-    //   handleMenuClose();
-    // }
   };
 
   const handleSetPrimary = () => {
-    // if (displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable) {
-    //   return;
-    // }
-    // displayTimetables[term].forEach((e) => {
-    //   e.isPrimary = false;
-    // });
-    // displayTimetables[term][selectedTimetable].isPrimary = true;
-    // storage.set('timetables', displayTimetables);
-    // handleMenuClose();
     if (timetables[selectedTimetableId].primary) {
       return;
     }
@@ -318,9 +198,6 @@ const TimetableTabContextMenu: React.FC<TimetableTabContextMenuProps> = ({ ancho
 
   const isPrimarySelected = () => {
     // TODO: The term check is needed for first ever use of Notangles. Why?
-    // return term !== '' && displayTimetables[term]
-    //   ? displayTimetables[term].findIndex((t: TimetableData, _: number) => t.isPrimary) === selectedTimetable
-    //   : false;
     return timetables[selectedTimetableId].primary;
   };
 

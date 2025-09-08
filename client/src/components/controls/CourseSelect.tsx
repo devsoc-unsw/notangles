@@ -59,8 +59,6 @@ const searchOptions: SearchOptions = {
   ],
 };
 
-// let fuzzy = new Fuse<CourseOverview>([], searchOptions);
-
 const ListboxContainer = styled('div')`
   overflow: hidden;
 `;
@@ -236,24 +234,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     deleteCourse(courseId);
   };
 
-  // useEffect(() => {
-  //   let fuzzy = new Fuse(coursesList, searchOptions);
-  // }, [coursesList]);
-
-  // Generate a list of the user's selected courses
-  // useEffect(() => {
-  //   if (!selectedCourses.length) {
-  //     setSelectedValue([]);
-  //     return;
-  //   }
-
-  //   setSelectedValue(
-  //     selectedCourses
-  //       .map((x) => x.code) // Get the course code of each course
-  //       .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
-  //       .filter((overview): overview is CourseOverview => overview !== undefined),
-  //   );
-  // }, [selectedCourses, coursesList]);
   useEffect(() => {
     const selectedCourse = timetables[selectedTimetableId].courseIds;
     if (selectedCourse.length === 0) {
@@ -335,10 +315,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       return newOptions;
     });
   };
-
-  // useEffect(() => {
-  //   setOptions(defaultOptions);
-  // }, [coursesList, defaultOptions]);
 
   // Add a delay between the search query changing and updating the search results
   useEffect(() => {
@@ -563,7 +539,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             }}
           />
         )}
-        renderTags={(value: GQLCourseOverview[], getTagProps) =>
+        renderValue={(value: GQLCourseOverview[], getTagProps) =>
           value.map((option: GQLCourseOverview, index: number) => {
             const { key, ...rest } = getTagProps({ index });
 
@@ -587,118 +563,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           })
         }
       />
-
-      {/* <Autocomplete
-        getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
-        getOptionLabel={(option) => option.name}
-        multiple
-        autoHighlight
-        disableClearable
-        disableListWrap
-        noOptionsText="No Results"
-        selectOnFocus={false}
-        options={mergedOptions}
-        value={selectedValue}
-        onChange={onChange}
-        inputValue={inputValue}
-        onBlur={() => {
-          setSelectedFaculty('');
-        }}
-        // Prevent built-in option filtering
-        filterOptions={(o) => o}
-        ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
-        renderOption={(props, option, { selected }) => {
-          const { key, ...rest } = props;
-
-          return (
-            <li key={key} {...rest}>
-              <StyledOption>
-                <StyledIcon>
-                  {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
-                    <CheckRounded />
-                  ) : (
-                    <AddRounded />
-                  )}
-                </StyledIcon>
-                <span>{option.code}</span>
-                <Weak>{!(isMedium || isTiny) && option.name}</Weak>
-                <Career>{getCourseCareer(option.career)}</Career>
-                <RightContainer>
-                  {option.online && (
-                    <StyledIconRight>
-                      <VideocamOutlined />
-                    </StyledIconRight>
-                  )}
-                  {option.inPerson && (
-                    <StyledIconRight>
-                      <PersonOutline />
-                    </StyledIconRight>
-                  )}
-                </RightContainer>
-              </StyledOption>
-            </li>
-          );
-        }}
-        renderInput={(params) => (
-          <StyledTextField
-            {...params}
-            autoFocus
-            selectedCourses={selectedCourses}
-            variant="outlined"
-            label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
-            onChange={(event) => {
-              setInputValue(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              // Delete the latest selected course if backspace is pressed
-              if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
-                event.stopPropagation();
-                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
-                handleRemove(selectedValue[selectedValue.length - 1].code);
-              }
-            }}
-            InputLabelProps={{
-              ...params.InputLabelProps,
-              shrink: shrinkLabel,
-              style: {
-                marginLeft: shrinkLabel ? 2 : 38,
-              },
-            }}
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <>
-                  <StyledInputAdornment position="start">
-                    <SearchRounded />
-                  </StyledInputAdornment>
-                  {params.InputProps.startAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
-        renderTags={(value: CoursesList, getTagProps) =>
-          value.map((option: CourseOverview, index: number) => {
-            const { key, ...rest } = getTagProps({ index });
-
-            return (
-              <StyledChip
-                key={key}
-                {...rest}
-                label={option.code}
-                color="primary"
-                backgroundColor={assignedColors[option.code]}
-                deleteIcon={<CloseRounded />}
-                onDelete={() => {
-                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                  handleRemove(option.code);
-                }}
-              />
-            );
-          })
-        }
-      /> */}
     </StyledSelect>
   );
 };
