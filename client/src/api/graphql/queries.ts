@@ -6,35 +6,30 @@ import { GQLCourseOverview } from '../../interfaces/Periods';
 interface CoursesQueryResponse {
   courses: GQLCourseOverview[];
 }
-
-interface CoursesBoolExp {
-  terms?: { _like?: string };
-  faculty?: { _in?: string[] };
-  _and?: CoursesBoolExp[];
-  _or?: CoursesBoolExp[];
-}
-
 interface CoursesQueryVars {
-  where: CoursesBoolExp;
+  term: string;
 }
 
 const GET_COURSES: TypedDocumentNode<CoursesQueryResponse, CoursesQueryVars> = gql`
-  query GetCourses($where: courses_bool_exp!) {
-    courses(where: $where) {
+  query GetCourses($term: String!) {
+    courses(where: { terms: { _ilike: $term } }) {
       id: course_id
       code: course_code
       name: course_name
       career
+      modes
+      faculty
     }
   }
 `;
 
-export const useGetCoursesByTermAndFaculty = (term: string, faculties?: string[]) => {
-  const where: CoursesBoolExp = {
-    terms: { _like: `%${term}%` },
-    ...(faculties?.length ? { faculty: { _in: faculties } } : {}),
-  };
+export const useGetCoursesByTermAndFaculty = (term: string) => {
+  const termWithWildcard = `%${term}%`;
+  const { data } = useSuspenseQuery(GET_COURSES, { variables: { term: termWithWildcard } });
 
-  const { data } = useSuspenseQuery(GET_COURSES, { variables: { where } });
-  return data.courses;
+  return data.courses.map((course) => ({
+    ...course,
+    inPerson: course.modes.includes('In Person'),
+    online: course.modes.includes('Online'),
+  }));
 };

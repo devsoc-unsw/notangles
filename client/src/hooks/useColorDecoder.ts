@@ -1,6 +1,6 @@
 import { themes } from '../constants/theme';
 
-const decodeColor = (assignedColor: string, preferredTheme: string) => {
+export const decodeColor = (assignedColor: string, preferredTheme: string) => {
   const themeObject = themes[preferredTheme as keyof typeof themes];
   if (assignedColor.startsWith('default-')) {
     // extract the number from the assigned colour key

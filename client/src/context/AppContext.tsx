@@ -22,6 +22,12 @@ export interface IAppContext {
   selectedTimetableId: string;
   setSelectedTimetableId: (newSelectedTimetableId: string) => void;
 
+  courseIds: string[];
+  setCourseIds: (newCourseIds: string[]) => void;
+
+  addCourse: (newCourse: { id: string; code: string; color: string }) => void;
+  deleteCourse: (courseId: string) => void;
+
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;
 
@@ -92,6 +98,12 @@ export const AppContext = createContext<IAppContext>({
 
   selectedTimetableId: '',
   setSelectedTimetableId: () => {},
+
+  courseIds: [],
+  setCourseIds: () => {},
+
+  addCourse: () => {},
+  deleteCourse: () => {},
 
   alertMsg: '',
   setAlertMsg: () => {},
@@ -175,6 +187,48 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     newData ? (JSON.parse(newData) as NewData).selectedTimetableId : '',
   );
 
+  const courseIds = timetables[selectedTimetableId].courseIds;
+  const setCourseIds = (newCourseIds: string[]) => {
+    const newTimetables = { ...timetables };
+    newTimetables[selectedTimetableId].courseIds = newCourseIds;
+    setTimetables(newTimetables);
+    const newData = {
+      timetableIds,
+      timetables: newTimetables,
+      selectedTimetableId,
+    };
+    localStorage.setItem('newData', JSON.stringify(newData));
+  };
+
+  const addCourse = (newCourse: { id: string; code: string; color: string }) => {
+    const newTimetables = { ...timetables };
+    newTimetables[selectedTimetableId].courses[newCourse.id] = {
+      code: newCourse.code,
+      color: newCourse.color,
+      selectedClasses: [],
+    };
+    setTimetables(newTimetables);
+    const newData = {
+      timetableIds,
+      timetables: newTimetables,
+      selectedTimetableId,
+    };
+    localStorage.setItem('newData', JSON.stringify(newData));
+  };
+
+  const deleteCourse = (courseId: string) => {
+    const newTimetables = { ...timetables };
+    const { [courseId]: _, ...remainingCourses } = newTimetables[selectedTimetableId].courses;
+    newTimetables[selectedTimetableId].courses = remainingCourses;
+    setTimetables(newTimetables);
+    const newData = {
+      timetableIds,
+      timetables: newTimetables,
+      selectedTimetableId,
+    };
+    localStorage.setItem('newData', JSON.stringify(newData));
+  };
+
   const isConvertToLocalTimezone = true;
   const [alertMsg, setAlertMsg] = useState<string>('');
   const [alertFunction, setAlertFunction] = useState<() => void>(() => () => {});
@@ -203,6 +257,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTimetables,
     selectedTimetableId,
     setSelectedTimetableId,
+    courseIds,
+    setCourseIds,
+    addCourse,
+    deleteCourse,
     alertMsg,
     setAlertMsg,
     alertFunction,

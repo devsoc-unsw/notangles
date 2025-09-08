@@ -1,5 +1,13 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import {
+  AddRounded,
+  CheckRounded,
+  CloseRounded,
+  PersonOutline,
+  SearchRounded,
+  VideocamOutlined,
+} from '@mui/icons-material';
+import {
   Autocomplete,
   AutocompleteRenderInputParams,
   Box,
@@ -16,11 +24,12 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 
 import { useGetCoursesByTermAndFaculty } from '../../api/graphql/queries';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { CoursesList } from '../../interfaces/Courses';
+import { decodeColor } from '../../hooks/useColorDecoder';
 import { CourseCode, GQLCourseOverview } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
 
@@ -191,27 +200,45 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     'Science',
   ];
 
-  const facultyNameMap: FacultyMap = {
-    'Art, Design & Architecture': 'Faculty of Arts, Design & Arch',
-    'Law & Justice': 'Faculty of Law and Justice',
-    Engineering: 'Faculty of Engineering',
-    'Medicine & Health': 'Faculty of Medicine and Health',
-    'Business School': 'UNSW Business School',
-    Science: 'Faculty of Science',
-  };
+  const facultyNameMap = useMemo<FacultyMap>(
+    () => ({
+      'Art, Design & Architecture': 'Faculty of Arts, Design & Arch',
+      'Law & Justice': 'Faculty of Law and Justice',
+      Engineering: 'Faculty of Engineering',
+      'Medicine & Health': 'Faculty of Medicine and Health',
+      'Business School': 'UNSW Business School',
+      Science: 'Faculty of Science',
+    }),
+    [],
+  );
 
   const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { coursesList, term, timetables, selectedTimetableId } = useContext(AppContext);
+  const { coursesList, term, timetables, selectedTimetableId, courseIds, setCourseIds, addCourse, deleteCourse } =
+    useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
+  const { preferredTheme } = useGetUserSettingsQuery();
+
+  console.log(timetables[selectedTimetableId]);
 
   const courses = useGetCoursesByTermAndFaculty(term.substring(0, 2));
-  console.table(courses);
 
-  useEffect(() => {
-    fuzzy = new Fuse(coursesList, searchOptions);
-  }, [coursesList]);
+  const setNewCourse = (course: GQLCourseOverview) => {
+    // Store the selected courses into localStorage newData
+    setCourseIds([...courseIds, course.id]);
+    addCourse({ id: course.id, code: course.code, color: 'default-1' });
+  };
+
+  const removeCourse = (courseId: string) => {
+    // Remove the course from localStorage newData
+    setCourseIds(courseIds.filter((id) => id !== courseId));
+    deleteCourse(courseId);
+  };
+
+  // useEffect(() => {
+  //   let fuzzy = new Fuse(coursesList, searchOptions);
+  // }, [coursesList]);
 
   // Generate a list of the user's selected courses
   // useEffect(() => {
@@ -230,16 +257,22 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   useEffect(() => {
     const selectedCourse = timetables[selectedTimetableId].courseIds;
     if (selectedCourse.length === 0) {
-      setSelectedValue([]);
+      if (selectedValue.length !== 0) setSelectedValue([]);
       return;
     }
 
-    setSelectedValue(
-      selectedCourse
-        .map((courseId) => courses.find((course) => course.id === courseId)) // Get the corresponding CourseOverview for each CourseData object
-        .filter((overview): overview is GQLCourseOverview => overview !== undefined),
-    );
-  }, [selectedCourses, courses, timetables, selectedTimetableId]);
+    const newSelected = selectedCourse
+      .map((courseId) => courses.find((course) => course.id === courseId))
+      .filter((course): course is GQLCourseOverview => course !== undefined);
+
+    // Only update if the array contents are different
+    const isSame =
+      newSelected.length === selectedValue.length && newSelected.every((c, i) => c.id === selectedValue[i]?.id);
+
+    if (!isSame) {
+      setSelectedValue(newSelected);
+    }
+  }, [courses, timetables, selectedTimetableId, selectedValue]);
 
   /**
    * @param courseCode A course code
@@ -275,9 +308,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   // let defaultOptions = coursesList;
   let defaultOptions = courses;
 
-  // if (selectedFaculty) {
-  //   defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-  // }
+  if (selectedFaculty) {
+    defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
+  }
 
   if (selectedValue.length && !selectedFaculty) {
     const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
@@ -294,52 +327,54 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
    */
   const setOptions = (newOptions: GQLCourseOverview[]) => {
     listRef.current?.scrollTo(0);
-    setOptionsState(newOptions);
+    setOptionsState((prev) => {
+      // Only update if the array contents are different
+      if (prev.length === newOptions.length && prev.every((opt, i) => opt.id === newOptions[i].id)) {
+        return prev;
+      }
+      return newOptions;
+    });
   };
 
-  useEffect(() => {
-    setOptions(defaultOptions);
-  }, [coursesList, selectedFaculty]);
-
-  /**
-   * Filters the list of courses to only include the ones matching the search term
-   * @param query The search query entered in the search bar
-   */
-  const search = (query: string) => {
-    query = query.trim();
-
-    if (query.length === 0) {
-      setOptions(defaultOptions);
-      return defaultOptions;
-    }
-
-    const searchOptionsList = courses;
-
-    // if (selectedFaculty) {
-    //   searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-    // }
-
-    // create a new fuse instance with the searchOptionsList after filtering by faculty
-    // so that it allows for searching within the faculty's options
-    const fuzzy = new Fuse<GQLCourseOverview>(searchOptionsList, searchOptions);
-
-    const fuzzyResults = fuzzy.search(query).map((result) => result.item);
-
-    setOptions(fuzzyResults);
-  };
+  // useEffect(() => {
+  //   setOptions(defaultOptions);
+  // }, [coursesList, defaultOptions]);
 
   // Add a delay between the search query changing and updating the search results
   useEffect(() => {
+    /**
+     * Filters the list of courses to only include the ones matching the search term
+     * @param query The search query entered in the search bar
+     */
+    const search = (query: string) => {
+      query = query.trim();
+
+      if (query.length === 0) {
+        setOptions(defaultOptions);
+        return defaultOptions;
+      }
+
+      let searchOptionsList = courses;
+      if (selectedFaculty) {
+        searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
+      }
+
+      // create a new fuse instance with the searchOptionsList after filtering by faculty
+      // so that it allows for searching within the faculty's options
+      const fuzzy = new Fuse<GQLCourseOverview>(searchOptionsList, searchOptions);
+      const fuzzyResults = fuzzy.search(query).map((result) => result.item);
+      setOptions(fuzzyResults);
+    };
     clearTimeout(searchTimer.current);
     searchTimer.current = window.setTimeout(() => {
       search(inputValue);
       searchTimer.current = undefined;
     }, SEARCH_DELAY);
-  }, [inputValue, coursesList]);
+  }, [inputValue, coursesList, courses, defaultOptions, selectedFaculty, facultyNameMap]);
 
-  const onChange = (_: any, value: CoursesList) => {
+  const onChange = (_: React.SyntheticEvent, value: GQLCourseOverview[]) => {
     if (value.length > selectedValue.length) {
-      handleSelect(value[value.length - 1].code);
+      setNewCourse(value.find((x) => !selectedValue.includes(x)));
       setSelectedValue([...value]);
     }
     setOptions(defaultOptions);
@@ -347,11 +382,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     setSelectedFaculty('');
   };
 
-  const keyOf = (x: { code: string; career: string }) => `${x.code}|${x.career}`;
+  useEffect(() => {
+    console.log('Selected value changed', selectedValue);
+  }, [selectedValue]);
+
   const mergedOptions = useMemo(() => {
     const map = new Map<string, GQLCourseOverview>();
-    options.forEach((x) => map.set(keyOf(x), x));
-    selectedValue.forEach((x) => map.set(keyOf(x), x));
+    options.forEach((x) => map.set(x.id, x));
+    selectedValue.forEach((x) => map.set(x.id, x));
     return Array.from(map.values());
   }, [options, selectedValue]);
 
@@ -441,8 +479,48 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         disableListWrap
         noOptionsText="No Results"
         selectOnFocus={false}
-        options={defaultOptions}
+        options={mergedOptions}
+        value={selectedValue}
+        onChange={onChange}
+        inputValue={inputValue}
+        onBlur={() => {
+          setSelectedFaculty('');
+        }}
+        // Prevent built-in option filtering
         filterOptions={(o) => o}
+        ListboxComponent={ListboxComponent}
+        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
+        renderOption={(props, option, { selected }) => {
+          const { key, ...rest } = props;
+          return (
+            <li key={option.id} {...rest}>
+              <StyledOption>
+                <StyledIcon>
+                  {selectedValue.find((course: GQLCourseOverview) => course.code === option.code) ? (
+                    <CheckRounded />
+                  ) : (
+                    <AddRounded />
+                  )}
+                </StyledIcon>
+                <span>{option.code}</span>
+                <Weak>{!(isMedium || isTiny) && option.name}</Weak>
+                <Career>{getCourseCareer(option.career)}</Career>
+                <RightContainer>
+                  {option.online && (
+                    <StyledIconRight>
+                      <VideocamOutlined />
+                    </StyledIconRight>
+                  )}
+                  {option.inPerson && (
+                    <StyledIconRight>
+                      <PersonOutline />
+                    </StyledIconRight>
+                  )}
+                </RightContainer>
+              </StyledOption>
+            </li>
+          );
+        }}
         renderInput={(params: AutocompleteRenderInputParams) => (
           <StyledTextField
             {...params}
@@ -457,8 +535,57 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             onChange={(event) => {
               setInputValue(event.target.value);
             }}
+            onKeyDown={(event) => {
+              // Delete the latest selected course if backspace is pressed
+              if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
+                event.stopPropagation();
+                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                handleRemove(selectedValue[selectedValue.length - 1].code);
+              }
+            }}
+            InputLabelProps={{
+              ...params.InputLabelProps,
+              shrink: shrinkLabel,
+              style: {
+                marginLeft: shrinkLabel ? 2 : 38,
+              },
+            }}
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <StyledInputAdornment position="start">
+                    <SearchRounded />
+                  </StyledInputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
           />
         )}
+        renderTags={(value: GQLCourseOverview[], getTagProps) =>
+          value.map((option: GQLCourseOverview, index: number) => {
+            const { key, ...rest } = getTagProps({ index });
+
+            const backgroundColor = timetables[selectedTimetableId].courses[option.id].color;
+            const decodedColor = decodeColor(backgroundColor, preferredTheme);
+
+            return (
+              <StyledChip
+                key={key}
+                {...rest}
+                label={option.code}
+                color="primary"
+                backgroundColor={decodedColor}
+                deleteIcon={<CloseRounded />}
+                onDelete={() => {
+                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                  removeCourse(option.id);
+                }}
+              />
+            );
+          })
+        }
       />
 
       {/* <Autocomplete
