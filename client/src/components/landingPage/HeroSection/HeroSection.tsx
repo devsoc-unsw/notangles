@@ -5,15 +5,15 @@ import notangles from '../../../assets/notangles_1.png';
 import { useAuth } from '../../../hooks/useAuth';
 import { FlipWords } from '../flip-words';
 
-const HeroSection = ({ handleStartClick }: { handleStartClick: () => void }) => {
+const HeroSection = ({ openModal }: { openModal: () => void }) => {
   const { loggedIn } = useAuth();
   const navigate = useNavigate();
 
-  // const handleStartClick = () => {
-  //   // TODO: Phase out the visited item
-  //   localStorage.setItem('visited', 'true');
-  //   navigate('/home', { replace: true });
-  // };
+  const handleStartClick = async () => {
+    // TODO: Phase out the visited item
+    localStorage.setItem('visited', 'true');
+    await navigate('/home', { replace: true });
+  };
 
   const words = ['plan', 'create', 'organise', 'optimise', 'design'];
 
@@ -40,7 +40,7 @@ const HeroSection = ({ handleStartClick }: { handleStartClick: () => void }) => 
             </p>
             <button
               className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] hover:scale-105 px-6 sm:px-8 py-2 sm:py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5"
-              onClick={handleStartClick}
+              onClick={loggedIn ? handleStartClick : openModal}
             >
               <p className="pr-1 ml-2 text-xl sm:text-2xl md:text-3xl font-medium">
                 {loggedIn ? 'Goto Timetable' : 'Get Started'}

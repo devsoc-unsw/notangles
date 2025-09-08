@@ -6,6 +6,14 @@ import { UserInfo, UserSettings } from './types';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async deleteUser(userId: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+  }
+
   async getUserInfo(userId: string): Promise<UserInfo> {
     const data = await this.prisma.user.findUniqueOrThrow({
       where: {

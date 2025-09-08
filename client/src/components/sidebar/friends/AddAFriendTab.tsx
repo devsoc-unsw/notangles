@@ -134,9 +134,8 @@ const AddAFriendTab: React.FC<{ user: User; fetchUserInfo: (userID: string) => v
             isSelected={user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID)}
           >
             <UserProfile
-              firstname={otherUser.firstname}
-              lastname={otherUser.lastname}
-              email={otherUser.email}
+              firstName={otherUser.firstname}
+              lastName={otherUser.lastname}
               profileURL={otherUser.profileURL}
             />
             {user.outgoing.map((userRequested) => userRequested.userID).includes(otherUser.userID) ? (

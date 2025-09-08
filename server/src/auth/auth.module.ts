@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { getConfig, OidcStrategy } from './oidc.strategy';
-import { GuestStrategy } from './guest.strategy';
 import { PassportModule } from '@nestjs/passport';
-import { AuthController } from './auth.controller';
-import { SessionSerializer } from './session.serializer';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserService } from 'src/user/user.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { GithubStrategy } from './github.strategy';
+import { GoogleStrategy } from './google.strategy';
+import { GuestStrategy } from './guest.strategy';
+import { getConfig, OidcStrategy } from './oidc.strategy';
+import { SessionSerializer } from './session.serializer';
 
 const OidcStrategyFactory = {
   provide: 'OidcStrategy',
@@ -22,11 +25,14 @@ const OidcStrategyFactory = {
   ],
   controllers: [AuthController],
   providers: [
-    AuthService,
     PrismaService,
+    UserService,
     OidcStrategyFactory,
+    GithubStrategy,
+    GoogleStrategy,
     GuestStrategy,
     SessionSerializer,
+    AuthService,
   ],
 })
 export class AuthModule {}

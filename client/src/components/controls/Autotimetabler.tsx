@@ -332,7 +332,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                   step={1}
                   value={breaksBetweenClasses}
                   onChange={(e, v) => {
-                    setBreaksBetweenClasses(v as number);
+                    setBreaksBetweenClasses(v);
                   }}
                   min={0}
                   max={5}
@@ -351,7 +351,7 @@ const Autotimetabler: React.FC<AutotimetableProps> = ({ handleSelectClass }) => 
                   step={1}
                   value={daysAtUni}
                   onChange={(e, v) => {
-                    setDaysAtUni(v as number);
+                    setDaysAtUni(v);
                   }}
                   min={1}
                   max={5}

@@ -31,7 +31,7 @@ const LandingPage = () => {
         </header>
         <div className="snap-center h-screen">
           <HeroSection
-            handleStartClick={() => {
+            openModal={() => {
               setAuthModalOpen(true);
             }}
           />

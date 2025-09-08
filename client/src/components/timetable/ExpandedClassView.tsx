@@ -175,11 +175,9 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
    * @param e The HTML event triggered
    */
   const handleLocationChange = (e: SelectChangeEvent<number>) => {
-    setSelectedIndex(e.target.value as number);
+    setSelectedIndex(e.target.value);
     const newPeriod =
-      duplicateClassData.current.duplicateClasses[e.target.value as number].periods[
-        duplicateClassData.current.periodIndex
-      ];
+      duplicateClassData.current.duplicateClasses[e.target.value].periods[duplicateClassData.current.periodIndex];
     if (isScheduledPeriod(newPeriod)) setCurrentPeriod(newPeriod);
   };
 

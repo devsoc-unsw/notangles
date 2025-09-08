@@ -108,7 +108,6 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
                     onSignIn('google');
                   }}
                   sx={{ mb: 2 }}
-                  disabled
                 >
                   Sign in with Google
                 </Button>
@@ -120,7 +119,6 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
                     onSignIn('github');
                   }}
                   sx={{ mb: 2 }}
-                  disabled
                 >
                   Sign in with GitHub
                 </Button>

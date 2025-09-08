@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
-import { Request } from 'express';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
 @Controller('user/timetables')
