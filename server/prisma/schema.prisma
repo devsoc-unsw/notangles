@@ -24,6 +24,7 @@ model User {
 
   firstName         String
   lastName          String
+  inviteCode        String @unique
   profilePictureUrl String?
   timetables        Timetable[]
   settings          Settings?

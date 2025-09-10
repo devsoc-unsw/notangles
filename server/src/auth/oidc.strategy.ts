@@ -13,6 +13,7 @@ import {
 import { AuthenticateOptions } from 'openid-client/build/passport';
 import { promisify } from 'util';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
 const { Strategy } =
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('openid-client/passport') as typeof import('openid-client/build/passport');
@@ -74,6 +75,7 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
     const userData = userInfo.userData as {
       firstName: string;
       lastName: string;
+      inviteCode: string;
       zid: string;
       department: string;
       program: number;
