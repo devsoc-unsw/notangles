@@ -2,6 +2,7 @@ export class UserInfo {
   id: string;
   firstName: string;
   lastName: string;
+  inviteCode: string;
   profilePictureUrl?: string;
   isGuest: boolean;
 }

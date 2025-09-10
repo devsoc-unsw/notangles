@@ -25,6 +25,7 @@ export class UserService {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
+      inviteCode: data.inviteCode,
       profilePictureUrl: data.profilePictureUrl ?? undefined,
       isGuest: data.isGuest,
     };
@@ -72,5 +73,38 @@ export class UserService {
         },
       },
     });
+  }
+
+  private async isInviteCodeAlreadyUsed(inviteCode: string): Promise<boolean> {
+    const code = await this.prisma.user.findFirst({
+      where: {
+        inviteCode: inviteCode,
+      },
+      select: {
+        inviteCode: true,
+      },
+    });
+
+    return code !== null;
+  }
+
+  // Note: this does NOT guarantee uniqueness
+  private generateInviteCode(): string {
+    return new Array(6)
+      .fill(undefined)
+      .map(() =>
+        Math.floor(Math.random() * 36)
+          .toString(36)
+          .toUpperCase(),
+      )
+      .join('');
+  }
+
+  async generateUniqueInviteCode(): Promise<string> {
+    let code = this.generateInviteCode();
+    while (this.isInviteCodeAlreadyUsed(code)) {
+      code = this.generateInviteCode();
+    }
+    return code;
   }
 }
