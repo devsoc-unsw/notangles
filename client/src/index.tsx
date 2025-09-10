@@ -2,8 +2,7 @@ import '@fontsource-variable/roboto-flex';
 import './index.css';
 
 import { ApolloProvider } from '@apollo/client';
-import { browserTracingIntegration } from '@sentry/browser';
-import * as Sentry from '@sentry/react';
+import Clarity from '@microsoft/clarity';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -17,11 +16,10 @@ import CourseContextProvider from './context/CourseContext';
 import UserContextProvider from './context/UserContext';
 import * as swRegistration from './serviceWorkerRegistration';
 
-Sentry.init({
-  dsn: import.meta.env.VITE_APP_SENTRY_INGEST_CLIENT,
-  integrations: [browserTracingIntegration()],
-  tracesSampleRate: Number(import.meta.env.VITE_APP_SENTRY_TRACE_RATE_CLIENT),
-});
+if (import.meta.env.PROD) {
+  Clarity.init(import.meta.env.VITE_CLARITY_PROJECT_ID as string);
+  Clarity.consent(false);
+}
 
 const Root: React.FC = () => {
   const hasVisited = localStorage.getItem('visited');

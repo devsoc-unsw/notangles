@@ -2,7 +2,6 @@ import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
@@ -696,4 +695,4 @@ const App: React.FC = () => {
   );
 };
 
-export default Sentry.withProfiler(App);
+export default App;
