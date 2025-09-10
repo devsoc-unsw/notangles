@@ -1,5 +1,5 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useContext, useMemo, useState } from 'react';
 
@@ -44,6 +44,7 @@ const StyledDrawer = styled(Drawer, {
   transition: 'width 0.1s ease',
   zIndex: 1200,
   marginRight: leftContentPadding,
+  height: '100vh',
 
   '& .MuiDrawer-paper': {
     top: 0,
@@ -243,7 +244,12 @@ const Sidebar = () => {
                     {modalComponents}
                   </>
                 ) : (
-                  <FriendsList />
+                  <>
+                    <FriendsList />
+                    <Button variant="outlined" disableElevation>
+                      Add Friend
+                    </Button>
+                  </>
                 )}
               </NavComponentsContainer>
             </SideBarContainer>

@@ -14,15 +14,19 @@ const StyledFriendContainer = styled(Box)`
   padding: 4px;
 `;
 
-const Friend = () => {
+interface FriendProps {
+  firstName: string;
+}
+
+const Friend = ({ firstName }: FriendProps) => {
   const [kebabOpen, setKebabOpen] = useState(false);
   const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <>
-      <Tooltip title={sidebarCollapsed ? 'Lucas Harvey' : ''} placement="right">
+      <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
         <StyledFriendContainer>
-          <UserProfile firstName="Lucas" lastName="Harvey" />
+          <UserProfile firstName={firstName} lastName="" />
           {!sidebarCollapsed && (
             <IconButton
               onClick={() => {
