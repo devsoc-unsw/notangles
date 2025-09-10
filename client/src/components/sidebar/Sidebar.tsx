@@ -1,16 +1,18 @@
 import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
 import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { leftContentPadding } from '../../constants/theme';
+import { AppContext } from '../../context/AppContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
 import CustomModal from './CustomModal';
 import DarkModeButton from './DarkModeButton';
+import FriendsList from './friends/FriendsList';
 import FriendsButton from './FriendsButton';
 import MobileMenuButton from './MobileMenuButton';
 import Privacy from './Privacy';
@@ -147,18 +149,17 @@ const modalData = [
   },
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const collapsedWidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
-  const isWide = useMediaQuery(theme.breakpoints.only('xl'));
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const [collapsed, setCollapsed] = useState(() => !isWide);
   const [friendsListOpen, setFriendsListOpen] = useState(false);
+  const { sidebarCollapsed, setSidebarCollapsed } = useContext(AppContext);
 
   const handleCollapse = (val: boolean) => {
-    setCollapsed(val);
+    setSidebarCollapsed(val);
     // forces window resize event upon sidebar state changing to adjust position of cards
     // Not currently used, but here is how you would do it if needed
     // setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
@@ -174,21 +175,21 @@ const Sidebar: React.FC = () => {
           showIcon={modal.showIcon}
           description={modal.description}
           content={modal.content}
-          collapsed={collapsed}
+          collapsed={sidebarCollapsed}
           isClickable={modal.isClickable}
         />
       )),
-    [collapsed],
+    [sidebarCollapsed],
   );
 
   return (
     <>
       <StyledDrawer
         variant={isMobile ? 'temporary' : 'permanent'}
-        collapsed={collapsed}
+        collapsed={sidebarCollapsed}
         isMobile={isMobile}
         collapsedWidth={collapsedWidth}
-        open={!collapsed}
+        open={!sidebarCollapsed}
         onClose={() => {
           handleCollapse(true);
         }}
@@ -209,7 +210,7 @@ const Sidebar: React.FC = () => {
                   }}
                 />
               </a>
-              {!collapsed && (
+              {!sidebarCollapsed && (
                 <>
                   <SidebarTitle variant="h6">Notangles</SidebarTitle>
                 </>
@@ -226,33 +227,35 @@ const Sidebar: React.FC = () => {
                   showIcon={<CalendarMonth />}
                   description={'Current Timetable'}
                   content={null}
-                  collapsed={collapsed}
+                  collapsed={sidebarCollapsed}
                   // currently not clickable since this is our current page
                   isClickable={false}
                   // hardcoded until we move away from single page site
                   isSelected={true}
                 />
                 <FriendsButton
-                  collapsed={collapsed}
+                  collapsed={sidebarCollapsed}
                   friendsListOpen={friendsListOpen}
                   handleFriendsListToggle={() => {
                     setFriendsListOpen((prev) => !prev);
                   }}
                 />
-                {!friendsListOpen && (
+                {!friendsListOpen ? (
                   <>
                     <Divider />
                     {modalComponents}
                   </>
+                ) : (
+                  <FriendsList />
                 )}
               </NavComponentsContainer>
             </SideBarContainer>
           </div>
 
           <SidebarFooter>
-            <DarkModeButton collapsed={collapsed} />
-            <UserAccount collapsed={collapsed} />
-            {!isMobile && !collapsed ? (
+            <DarkModeButton collapsed={sidebarCollapsed} />
+            <UserAccount collapsed={sidebarCollapsed} />
+            {!isMobile && !sidebarCollapsed ? (
               <SidebarFooterText>
                 <Divider />
                 <SidebarFooterWrapper>
@@ -261,7 +264,7 @@ const Sidebar: React.FC = () => {
                     {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
                   </div>
                   <CollapseButton
-                    collapsed={collapsed}
+                    collapsed={sidebarCollapsed}
                     onClick={() => {
                       handleCollapse(true);
                     }}
@@ -272,7 +275,7 @@ const Sidebar: React.FC = () => {
             ) : (
               !isMobile && (
                 <CollapseButton
-                  collapsed={collapsed}
+                  collapsed={sidebarCollapsed}
                   onClick={() => {
                     handleCollapse(false);
                   }}
@@ -288,7 +291,7 @@ const Sidebar: React.FC = () => {
           onClick={() => {
             handleCollapse(false);
           }}
-          toolTipTitle={collapsed ? 'Expand' : 'Collapse'}
+          toolTipTitle={sidebarCollapsed ? 'Expand' : 'Collapse'}
         />
       )}
     </>
