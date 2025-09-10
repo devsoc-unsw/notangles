@@ -155,6 +155,7 @@ const Sidebar: React.FC = () => {
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [collapsed, setCollapsed] = useState(() => !isWide);
+  const [friendsListOpen, setFriendsListOpen] = useState(false);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
@@ -231,9 +232,19 @@ const Sidebar: React.FC = () => {
                   // hardcoded until we move away from single page site
                   isSelected={true}
                 />
-                <FriendsButton collapsed={collapsed} />
-                <Divider />
-                {modalComponents}
+                <FriendsButton
+                  collapsed={collapsed}
+                  friendsListOpen={friendsListOpen}
+                  handleFriendsListToggle={() => {
+                    setFriendsListOpen((prev) => !prev);
+                  }}
+                />
+                {!friendsListOpen && (
+                  <>
+                    <Divider />
+                    {modalComponents}
+                  </>
+                )}
               </NavComponentsContainer>
             </SideBarContainer>
           </div>
