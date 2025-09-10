@@ -1,16 +1,13 @@
 import { LogoutRounded } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
+import { AppContext } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './friends/UserProfile';
-
-interface UserAccountProps {
-  collapsed: boolean;
-}
 
 const UserAuth = styled('div')`
   display: flex;
@@ -27,17 +24,20 @@ const StyledIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const ExpandedContainer = styled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 10px 12px;
-`;
+const ExpandedContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'sidebarCollapsed',
+})<{ sidebarCollapsed: boolean }>(({ sidebarCollapsed }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: sidebarCollapsed ? 'center' : 'space-between',
+  width: '100%',
+  padding: '10px 12px',
+}));
 
-const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
+const UserAccount = () => {
   const [logoutDialog, setLogoutDialog] = useState(false);
   const { user } = useAuth();
+  const { sidebarCollapsed } = useContext(AppContext);
 
   const onLogout = () => {
     window.location.href = `${API_URL.server}/auth/logout`;
@@ -64,7 +64,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         confirmButtonText="Log out"
       />
       <UserAuth>
-        {collapsed ? (
+        <ExpandedContainer sidebarCollapsed={sidebarCollapsed}>
+          {!sidebarCollapsed && (
+            <UserProfile firstName={user.firstName} lastName={user.lastName} profileURL={user.profilePictureUrl} />
+          )}
           <Tooltip title="Log out" placement="right">
             <StyledIconButton
               onClick={() => {
@@ -74,17 +77,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>
-        ) : (
-          <ExpandedContainer>
-            <UserProfile firstName={user.firstName} lastName={user.lastName} profileURL={user.profilePictureUrl} />
-            <Tooltip title="Log out" placement="right">
-              {/* TODO: error handling for when logging out */}
-              <StyledIconButton color="inherit" onClick={onLogout}>
-                <LogoutRounded />
-              </StyledIconButton>
-            </Tooltip>
-          </ExpandedContainer>
-        )}
+        </ExpandedContainer>
       </UserAuth>
     </>
   );

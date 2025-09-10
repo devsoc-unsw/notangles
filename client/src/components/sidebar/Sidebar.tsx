@@ -254,7 +254,7 @@ const Sidebar = () => {
 
           <SidebarFooter>
             <DarkModeButton collapsed={sidebarCollapsed} />
-            <UserAccount collapsed={sidebarCollapsed} />
+            <UserAccount />
             {!isMobile && !sidebarCollapsed ? (
               <SidebarFooterText>
                 <Divider />

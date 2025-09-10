@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
-import React from 'react';
+import React, { useContext } from 'react';
+
+import { AppContext } from '../../../context/AppContext';
 
 export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
@@ -11,21 +13,24 @@ const StyledContainer = styled('div')`
 
 const StyledFullname = styled('div')`
   word-break: break-all;
+  font-size: 0.9rem;
 `;
+
+const getFullName = (firstName: string, lastName: string) => {
+  let fullname = firstName + ' ' + lastName;
+  if (fullname.length >= 32) {
+    fullname = fullname.slice(0, 32);
+    return fullname + '...';
+  }
+  return fullname;
+};
 
 const UserProfile: React.FC<{ firstName: string; lastName: string; profileURL?: string }> = ({
   firstName,
   lastName,
   profileURL,
 }) => {
-  const getFullName = () => {
-    let fullname = firstName + ' ' + lastName;
-    if (fullname.length >= 32) {
-      fullname = fullname.slice(0, 32);
-      return fullname + '...';
-    }
-    return fullname;
-  };
+  const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <StyledContainer>
@@ -35,9 +40,11 @@ const UserProfile: React.FC<{ firstName: string; lastName: string; profileURL?: 
         height={34}
         style={{ borderRadius: 999, backgroundColor: 'white' }}
       />
-      <div>
-        <StyledFullname>{getFullName()}</StyledFullname>
-      </div>
+      {!sidebarCollapsed && (
+        <div>
+          <StyledFullname>{getFullName(firstName, lastName)}</StyledFullname>
+        </div>
+      )}
     </StyledContainer>
   );
 };
