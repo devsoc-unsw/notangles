@@ -101,7 +101,7 @@ export class UserService {
 
   async generateUniqueInviteCode(): Promise<string> {
     let code = this.generateInviteCode();
-    while (this.isInviteCodeAlreadyUsed(code)) {
+    while (await this.isInviteCodeAlreadyUsed(code)) {
       code = this.generateInviteCode();
     }
     return code;
