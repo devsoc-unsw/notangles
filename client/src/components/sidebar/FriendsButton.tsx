@@ -2,10 +2,11 @@ import { ArrowDropDown, ArrowDropUp, Person } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
+
+import { AppContext } from '../../context/AppContext';
 
 interface FriendsButtonProps {
-  collapsed: boolean;
   friendsListOpen: boolean;
   handleFriendsListToggle: () => void;
 }
@@ -32,11 +33,12 @@ const IndividualComponentTypography = styled(Typography)`
 `;
 
 // TODO: Repurpose using Sunny's design for friends
-const FriendsButton = ({ collapsed, friendsListOpen, handleFriendsListToggle }: FriendsButtonProps) => {
+const FriendsButton = ({ friendsListOpen, handleFriendsListToggle }: FriendsButtonProps) => {
+  const { sidebarCollapsed } = useContext(AppContext);
   const friendToggleArrow = useMemo(() => {
-    if (collapsed) return null;
+    if (sidebarCollapsed) return null;
     return friendsListOpen ? <ArrowDropUp /> : <ArrowDropDown />;
-  }, [collapsed, friendsListOpen]);
+  }, [sidebarCollapsed, friendsListOpen]);
 
   return (
     <>
@@ -44,7 +46,7 @@ const FriendsButton = ({ collapsed, friendsListOpen, handleFriendsListToggle }: 
         <StyledFriendsButton color="inherit" isSelected={false} onClick={handleFriendsListToggle}>
           <StyledFriendsContainer>
             <Person />
-            <IndividualComponentTypography>{collapsed ? '' : 'Friends'}</IndividualComponentTypography>
+            <IndividualComponentTypography>{sidebarCollapsed ? '' : 'Friends'}</IndividualComponentTypography>
           </StyledFriendsContainer>
           {friendToggleArrow}
         </StyledFriendsButton>

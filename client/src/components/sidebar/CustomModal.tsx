@@ -1,9 +1,19 @@
 import { Close } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import { ReactNode, useContext, useState } from 'react';
 
-import { CustomModalProps } from '../../interfaces/PropTypes';
+import { AppContext } from '../../context/AppContext';
+
+interface CustomModalProps {
+  title: string;
+  toolTipTitle: string;
+  showIcon: ReactNode;
+  description: string;
+  content: ReactNode;
+  isClickable: boolean;
+  isSelected?: boolean;
+}
 
 const StyledDialogTitle = styled(DialogTitle)`
   background-color: ${({ theme }) => theme.palette.background.paper};
@@ -45,11 +55,11 @@ const CustomModal: React.FC<CustomModalProps> = ({
   showIcon,
   description,
   content,
-  collapsed,
   isClickable,
   isSelected = false,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { sidebarCollapsed } = useContext(AppContext);
 
   const toggleIsOpen = () => {
     if (isClickable) {
@@ -59,10 +69,10 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
   return (
     <>
-      <Tooltip title={collapsed || !isClickable ? toolTipTitle : ''} placement="right">
+      <Tooltip title={sidebarCollapsed || !isClickable ? toolTipTitle : ''} placement="right">
         <ShowModalButton color="inherit" onClick={toggleIsOpen} isSelected={isSelected}>
           {showIcon}
-          <IndividualComponentTypography>{collapsed ? '' : title}</IndividualComponentTypography>
+          <IndividualComponentTypography>{sidebarCollapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>
       </Tooltip>
       <Dialog

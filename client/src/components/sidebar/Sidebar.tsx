@@ -175,11 +175,10 @@ const Sidebar = () => {
           showIcon={modal.showIcon}
           description={modal.description}
           content={modal.content}
-          collapsed={sidebarCollapsed}
           isClickable={modal.isClickable}
         />
       )),
-    [sidebarCollapsed],
+    [],
   );
 
   return (
@@ -227,14 +226,12 @@ const Sidebar = () => {
                   showIcon={<CalendarMonth />}
                   description={'Current Timetable'}
                   content={null}
-                  collapsed={sidebarCollapsed}
                   // currently not clickable since this is our current page
                   isClickable={false}
                   // hardcoded until we move away from single page site
                   isSelected={true}
                 />
                 <FriendsButton
-                  collapsed={sidebarCollapsed}
                   friendsListOpen={friendsListOpen}
                   handleFriendsListToggle={() => {
                     setFriendsListOpen((prev) => !prev);
@@ -253,7 +250,7 @@ const Sidebar = () => {
           </div>
 
           <SidebarFooter>
-            <DarkModeButton collapsed={sidebarCollapsed} />
+            <DarkModeButton />
             <UserAccount />
             {!isMobile && !sidebarCollapsed ? (
               <SidebarFooterText>
@@ -264,7 +261,6 @@ const Sidebar = () => {
                     {import.meta.env.VITE_COMMIT?.substring(0, 7) ?? 'unknown commit'}
                   </div>
                   <CollapseButton
-                    collapsed={sidebarCollapsed}
                     onClick={() => {
                       handleCollapse(true);
                     }}
@@ -275,7 +271,6 @@ const Sidebar = () => {
             ) : (
               !isMobile && (
                 <CollapseButton
-                  collapsed={sidebarCollapsed}
                   onClick={() => {
                     handleCollapse(false);
                   }}

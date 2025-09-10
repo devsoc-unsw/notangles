@@ -1,11 +1,11 @@
 import { LightMode as LightModeIcon, NightsStay as DarkModeIcon } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import { useContext } from 'react';
 
 import { useSetUserSettings } from '../../api/user/mutations';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
-import { DarkModeButtonProps } from '../../interfaces/PropTypes';
+import { AppContext } from '../../context/AppContext';
 
 const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
@@ -19,13 +19,14 @@ const IndividualComponentTypography = styled(Typography)`
   font-size: 16px;
 `;
 
-const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
+const DarkModeButton = () => {
   const { isDarkMode } = useGetUserSettingsQuery();
   const updateUserSettings = useSetUserSettings();
+  const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <>
-      <Tooltip title={collapsed ? (isDarkMode ? 'Light Mode' : 'Dark Mode') : ''} placement="right">
+      <Tooltip title={sidebarCollapsed ? (isDarkMode ? 'Light Mode' : 'Dark Mode') : ''} placement="right">
         <ToggleDarkModeButton
           color="inherit"
           onClick={() => {
@@ -33,7 +34,7 @@ const DarkModeButton: React.FC<DarkModeButtonProps> = ({ collapsed }) => {
           }}
         >
           {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
-          {!collapsed && (
+          {!sidebarCollapsed && (
             <IndividualComponentTypography>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</IndividualComponentTypography>
           )}
         </ToggleDarkModeButton>
