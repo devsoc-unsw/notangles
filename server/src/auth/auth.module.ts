@@ -7,18 +7,18 @@ import { AuthService } from './auth.service';
 import { GithubStrategy } from './github.strategy';
 import { GoogleStrategy } from './google.strategy';
 import { GuestStrategy } from './guest.strategy';
-import { getConfig, OidcStrategy } from './oidc.strategy';
+// import { getConfig, OidcStrategy } from './oidc.strategy';
 import { SessionSerializer } from './session.serializer';
 import { GraphqlService } from 'src/graphql/graphql.service';
 
-const OidcStrategyFactory = {
-  provide: 'OidcStrategy',
-  useFactory: async (authService: AuthService) => {
-    const config = await getConfig();
-    return new OidcStrategy(config, authService);
-  },
-  inject: [AuthService],
-};
+// const OidcStrategyFactory = {
+//   provide: 'OidcStrategy',
+//   useFactory: async (authService: AuthService) => {
+//     const config = await getConfig();
+//     return new OidcStrategy(config, authService);
+//   },
+//   inject: [AuthService],
+// };
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ const OidcStrategyFactory = {
     PrismaService,
     UserService,
     GraphqlService,
-    OidcStrategyFactory,
+    // OidcStrategyFactory,
     GithubStrategy,
     GoogleStrategy,
     GuestStrategy,
