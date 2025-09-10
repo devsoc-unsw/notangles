@@ -34,5 +34,29 @@ const useColorMapper = (courseCodes: string[], assignedColors: Record<string, st
 
   return newAssignedColors;
 };
+// TODO Refactor to Utility function
+export function colorMapper(courseCodes: string[], assignedColors: Record<string, string>): Record<string, string> {
+  const takenColors = new Set<string>();
+  const newAssignedColors: Record<string, string> = {};
+
+  courseCodes.forEach((course) => {
+    let color;
+    if (course in assignedColors) {
+      color = assignedColors[course];
+      newAssignedColors[course] = color || defaultColor;
+    }
+
+    if (!(course in newAssignedColors)) {
+      color = colors.find((c) => !takenColors.has(c));
+      newAssignedColors[course] = color || defaultColor;
+    }
+
+    if (color) {
+      takenColors.add(color);
+    }
+  });
+
+  return newAssignedColors;
+}
 
 export default useColorMapper;

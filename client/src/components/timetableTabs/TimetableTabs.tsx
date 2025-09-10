@@ -31,6 +31,7 @@ const TimetableTabs: React.FC = () => {
     setTimetables,
     selectedTimetableId,
     setSelectedTimetableId,
+    setSelectedCourses,
     setAlertMsg,
     setErrorVisibility,
   } = useContext(AppContext);
@@ -71,16 +72,8 @@ const TimetableTabs: React.FC = () => {
       const newTimetables = { ...timetables, ...newTimetable };
       setTimetableIds(newTimetableIds);
       setTimetables(newTimetables);
-
-      localStorage.setItem(
-        'newData',
-        JSON.stringify({
-          timetableIds: newTimetableIds,
-          timetables: newTimetables,
-          selectedTimetableId: id,
-        } as NewData),
-      );
       setSelectedTimetableId(Object.keys(newTimetable)[0]);
+      setSelectedCourses(newTimetable[id].courses);
     }
   };
 
@@ -90,16 +83,10 @@ const TimetableTabs: React.FC = () => {
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (ids: string[], index: number) => {
     const id = ids[index];
+    console.log('Switching to timetable', id);
     if (!id) return;
     setSelectedTimetableId(id);
-    localStorage.setItem(
-      'newData',
-      JSON.stringify({
-        timetableIds: ids,
-        timetables: timetables,
-        selectedTimetableId: id,
-      } as NewData),
-    );
+    setSelectedCourses(timetables[id].courses);
   };
 
   // Reordering the tabs when they are dragged and dropped
@@ -113,15 +100,6 @@ const TimetableTabs: React.FC = () => {
     newOrder.splice(destination.index, 0, moved);
 
     setTimetableIds(newOrder);
-
-    localStorage.setItem(
-      'newData',
-      JSON.stringify({
-        timetableIds: newOrder,
-        timetables: timetables,
-        selectedTimetableId: selectedTimetableId,
-      } as NewData),
-    );
   };
 
   /**

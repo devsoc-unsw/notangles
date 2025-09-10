@@ -30,13 +30,6 @@ export interface CustomModalProps {
   isClickable: boolean;
   isSelected?: boolean;
 }
-
-export interface CourseSelectProps {
-  assignedColors: Record<string, string>;
-  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
-  handleRemove(courseCode: CourseCode): void;
-}
-
 export interface ControlsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;

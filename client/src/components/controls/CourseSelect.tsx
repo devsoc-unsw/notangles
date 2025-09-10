@@ -28,10 +28,9 @@ import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
 import { decodeColor } from '../../hooks/useColorDecoder';
+import { colorMapper } from '../../hooks/useColorMapper';
 import { CourseCode, GQLCourseOverview } from '../../interfaces/Periods';
-import { CourseSelectProps } from '../../interfaces/PropTypes';
 
 const SEARCH_DELAY = 300;
 
@@ -102,11 +101,11 @@ const StyledInputAdornment = styled(InputAdornment)`
 const StyledChip = styled(Chip, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor',
 })<{
-  backgroundColor: string;
+  backgroundColor?: string;
 }>`
   transition: none !important;
   color: ${({ theme }) => theme.palette.in_text.primary};
-  background: ${({ backgroundColor, theme }) => backgroundColor || theme.palette.secondary.main} !important;
+  background: ${({ backgroundColor, theme }) => backgroundColor ?? theme.palette.secondary.main} !important;
 
   .MuiChip-deleteIcon {
     color: ${({ theme }) => theme.palette.in_text.primary};
@@ -184,7 +183,7 @@ const FacultyTags = styled(Button, {
   }
 `;
 
-const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+const CourseSelect: React.FC = () => {
   const [options, setOptionsState] = useState<GQLCourseOverview[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<GQLCourseOverview[]>([]);
@@ -213,35 +212,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
-  const { coursesList, term, timetables, selectedTimetableId, courseIds, setCourseIds, addCourse, deleteCourse } =
-    useContext(AppContext);
-  const { selectedCourses } = useContext(CourseContext);
+  const { term, timetables, selectedTimetableId, selectedCourses, addCourse, deleteCourse } = useContext(AppContext);
   const { preferredTheme } = useGetUserSettingsQuery();
-
-  console.log(timetables[selectedTimetableId]);
 
   const courses = useGetCoursesByTermAndFaculty(term.substring(0, 2));
 
-  const setNewCourse = (course: GQLCourseOverview) => {
-    // Store the selected courses into localStorage newData
-    setCourseIds([...courseIds, course.id]);
-    addCourse({ id: course.id, code: course.code, color: 'default-1' });
-  };
-
-  const removeCourse = (courseId: string) => {
-    // Remove the course from localStorage newData
-    setCourseIds(courseIds.filter((id) => id !== courseId));
-    deleteCourse(courseId);
-  };
-
   useEffect(() => {
-    const selectedCourse = timetables[selectedTimetableId].courseIds;
-    if (selectedCourse.length === 0) {
-      if (selectedValue.length !== 0) setSelectedValue([]);
-      return;
-    }
-
-    const newSelected = selectedCourse
+    const newSelected = Object.keys(timetables[selectedTimetableId].courses)
       .map((courseId) => courses.find((course) => course.id === courseId))
       .filter((course): course is GQLCourseOverview => course !== undefined);
 
@@ -252,7 +229,28 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     if (!isSame) {
       setSelectedValue(newSelected);
     }
-  }, [courses, timetables, selectedTimetableId, selectedValue]);
+  }, [courses, selectedValue, selectedCourses, timetables, selectedTimetableId]);
+
+  const setNewCourse = (course: GQLCourseOverview) => {
+    let assignedColors: Record<string, string> = {};
+    Object.entries(selectedCourses).forEach(([key, course]) => {
+      assignedColors[key] = course.color;
+    });
+    const courseIds = Object.keys(timetables[selectedTimetableId].courses);
+    assignedColors = colorMapper([...courseIds, course.id], assignedColors);
+    addCourse({ id: course.id, code: course.code, color: assignedColors[course.id] });
+    setSelectedValue((prev) => [...prev, course]);
+  };
+
+  const removeCourse = (courseId: string) => {
+    // Remove the course from localStorage newData
+    deleteCourse(courseId);
+    setSelectedValue(selectedValue.filter((course) => course.id !== courseId));
+  };
+
+  useEffect(() => {
+    console.table(timetables);
+  }, [timetables]);
 
   /**
    * @param courseCode A course code
@@ -285,7 +283,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   };
 
   // The courses shown when a user clicks on the search bar
-  // let defaultOptions = coursesList;
   let defaultOptions = courses;
 
   if (selectedFaculty) {
@@ -346,21 +343,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       search(inputValue);
       searchTimer.current = undefined;
     }, SEARCH_DELAY);
-  }, [inputValue, coursesList, courses, defaultOptions, selectedFaculty, facultyNameMap]);
+  }, [inputValue, courses, defaultOptions, selectedFaculty, facultyNameMap]);
 
   const onChange = (_: React.SyntheticEvent, value: GQLCourseOverview[]) => {
     if (value.length > selectedValue.length) {
-      setNewCourse(value.find((x) => !selectedValue.includes(x)));
+      const newCourse = value.find((x) => !selectedValue.includes(x));
+      if (newCourse) {
+        setNewCourse(newCourse);
+      }
       setSelectedValue([...value]);
     }
     setOptions(defaultOptions);
     setInputValue('');
     setSelectedFaculty('');
   };
-
-  useEffect(() => {
-    console.log('Selected value changed', selectedValue);
-  }, [selectedValue]);
 
   const mergedOptions = useMemo(() => {
     const map = new Map<string, GQLCourseOverview>();
@@ -465,14 +461,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
-        renderOption={(props, option, { selected }) => {
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        renderOption={(props, option) => {
           const { key, ...rest } = props;
           return (
             <li key={option.id} {...rest}>
               <StyledOption>
                 <StyledIcon>
-                  {selectedValue.find((course: GQLCourseOverview) => course.code === option.code) ? (
+                  {selectedValue.find((course: GQLCourseOverview) => course.id === option.id) ? (
                     <CheckRounded />
                   ) : (
                     <AddRounded />
@@ -516,7 +512,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
                 setSelectedValue(selectedValue.slice(selectedValue.length - 1));
-                handleRemove(selectedValue[selectedValue.length - 1].code);
+                removeCourse(selectedValue[selectedValue.length - 1].id);
               }
             }}
             InputLabelProps={{
@@ -542,9 +538,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         renderValue={(value: GQLCourseOverview[], getTagProps) =>
           value.map((option: GQLCourseOverview, index: number) => {
             const { key, ...rest } = getTagProps({ index });
-
-            const backgroundColor = timetables[selectedTimetableId].courses[option.id].color;
-            const decodedColor = decodeColor(backgroundColor, preferredTheme);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            const backgroundColor = selectedCourses[option.id]?.color;
+            const decodedColor =
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              backgroundColor !== undefined ? decodeColor(backgroundColor, preferredTheme) : undefined;
 
             return (
               <StyledChip

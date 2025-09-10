@@ -1,5 +1,5 @@
 import { themes } from '../constants/theme';
-
+// TODO Refactor to Utility function
 export const decodeColor = (assignedColor: string, preferredTheme: string) => {
   const themeObject = themes[preferredTheme as keyof typeof themes];
   if (assignedColor.startsWith('default-')) {

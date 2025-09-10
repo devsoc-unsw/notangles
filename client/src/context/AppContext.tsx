@@ -1,11 +1,12 @@
 import { createContext, useState } from 'react';
 
+import newData from '../../test';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
 import {
   CourseDataMap,
   DisplayTimetablesMap,
-  NewData,
+  NewCourseData,
   NewTimetableData,
   Term,
   TermDataList,
@@ -14,7 +15,7 @@ import { AppContextProviderProps } from '../interfaces/PropTypes';
 
 export interface IAppContext {
   timetableIds: string[];
-  setTimetableIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setTimetableIds: (newTimetableIds: string[]) => void;
 
   timetables: Record<string, NewTimetableData>;
   setTimetables: (newTimetables: Record<string, NewTimetableData>) => void;
@@ -22,9 +23,8 @@ export interface IAppContext {
   selectedTimetableId: string;
   setSelectedTimetableId: (newSelectedTimetableId: string) => void;
 
-  courseIds: string[];
-  setCourseIds: (newCourseIds: string[]) => void;
-
+  selectedCourses: Record<string, NewCourseData>;
+  setSelectedCourses: (newSelectedCourses: Record<string, NewCourseData>) => void;
   addCourse: (newCourse: { id: string; code: string; color: string }) => void;
   deleteCourse: (courseId: string) => void;
 
@@ -102,6 +102,8 @@ export const AppContext = createContext<IAppContext>({
   courseIds: [],
   setCourseIds: () => {},
 
+  selectedCourses: {},
+  setSelectedCourses: () => {},
   addCourse: () => {},
   deleteCourse: () => {},
 
@@ -163,8 +165,6 @@ export const AppContext = createContext<IAppContext>({
   setCourseData: () => {},
 });
 
-const newData = localStorage.getItem('newData');
-
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   let termData = {
     year: '',
@@ -177,56 +177,37 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     termData = JSON.parse(localStorage.getItem('termData')!);
   }
 
-  const [timetableIds, setTimetableIds] = useState<string[]>(
-    newData ? (JSON.parse(newData) as NewData).timetableIds : [],
-  );
-  const [timetables, setTimetables] = useState<Record<string, NewTimetableData>>(
-    newData ? (JSON.parse(newData) as NewData).timetables : {},
-  );
-  const [selectedTimetableId, setSelectedTimetableId] = useState<string>(
-    newData ? (JSON.parse(newData) as NewData).selectedTimetableId : '',
-  );
+  const [timetableIds, setTimetableIds] = useState<string[]>(newData.timetableIds);
 
-  const courseIds = timetables[selectedTimetableId].courseIds;
-  const setCourseIds = (newCourseIds: string[]) => {
-    const newTimetables = { ...timetables };
-    newTimetables[selectedTimetableId].courseIds = newCourseIds;
-    setTimetables(newTimetables);
-    const newData = {
-      timetableIds,
-      timetables: newTimetables,
-      selectedTimetableId,
-    };
-    localStorage.setItem('newData', JSON.stringify(newData));
-  };
+  const [timetables, setTimetables] = useState<Record<string, NewTimetableData>>(newData.timetables);
+
+  const [selectedTimetableId, setSelectedTimetableId] = useState<string>(newData.selectedTimetableId);
+
+  const [selectedCourses, setSelectedCourses] = useState<Record<string, NewCourseData>>(
+    newData.timetables[newData.selectedTimetableId].courses,
+  );
 
   const addCourse = (newCourse: { id: string; code: string; color: string }) => {
     const newTimetables = { ...timetables };
+    newTimetables[selectedTimetableId].courseIds.push(newCourse.id);
     newTimetables[selectedTimetableId].courses[newCourse.id] = {
       code: newCourse.code,
       color: newCourse.color,
       selectedClasses: [],
     };
     setTimetables(newTimetables);
-    const newData = {
-      timetableIds,
-      timetables: newTimetables,
-      selectedTimetableId,
-    };
-    localStorage.setItem('newData', JSON.stringify(newData));
+    console.log(newData);
   };
 
   const deleteCourse = (courseId: string) => {
+    // Delete course from courses and courseIds
     const newTimetables = { ...timetables };
+    newTimetables[selectedTimetableId].courseIds = newTimetables[selectedTimetableId].courseIds.filter(
+      (id) => id === courseId,
+    );
     const { [courseId]: _, ...remainingCourses } = newTimetables[selectedTimetableId].courses;
     newTimetables[selectedTimetableId].courses = remainingCourses;
     setTimetables(newTimetables);
-    const newData = {
-      timetableIds,
-      timetables: newTimetables,
-      selectedTimetableId,
-    };
-    localStorage.setItem('newData', JSON.stringify(newData));
   };
 
   const isConvertToLocalTimezone = true;
@@ -257,8 +238,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTimetables,
     selectedTimetableId,
     setSelectedTimetableId,
-    courseIds,
-    setCourseIds,
+    selectedCourses,
+    setSelectedCourses,
     addCourse,
     deleteCourse,
     alertMsg,
