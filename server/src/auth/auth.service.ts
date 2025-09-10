@@ -90,6 +90,7 @@ export class AuthService {
         firstName: params.firstName,
         lastName: params.lastName,
         isGuest: params.isGuest,
+        inviteCode: await this.user.generateUniqueInviteCode(),
         settings: { create: {} },
         timetables: {
           create: availableTerms.map((availableTerm) => {
