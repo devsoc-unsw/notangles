@@ -23,6 +23,7 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
+import { useGetCourseDataFromCourseId } from '../../api/graphql/queries';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
@@ -41,12 +42,14 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
 
   const { isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
-  const { earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
+  const { term, earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
   const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   let currCourse: CourseData | null = null;
 
+  if (classCard.courseId === undefined) throw new Error('Class card missing courseId');
+  // const test = useGetCourseDataFromCourseId(classCard.courseId, term.substring(0, 2));
   try {
     currCourse = getCourseFromClassData(selectedCourses, classCard);
   } catch (err) {

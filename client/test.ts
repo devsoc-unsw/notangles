@@ -17,7 +17,13 @@ const initData = {
       name: 'Testing timetable',
       primary: true,
       courseIds: [],
-      courses: {},
+      courses: {
+        COMP1511Undergraduate: {
+          code: 'COMP1511',
+          color: 'default-1',
+          classIds: ['COMP1511Undergraduate-9237-T3-2025'],
+        },
+      },
     },
     'cd65a200-b0c2-417c-9e1f-572c4e137fcc': {
       name: 'Testing timetable - Copy',

@@ -193,21 +193,22 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     newTimetables[selectedTimetableId].courses[newCourse.id] = {
       code: newCourse.code,
       color: newCourse.color,
-      selectedClasses: [],
+      classIds: [],
     };
     setTimetables(newTimetables);
-    console.log(newData);
+    setSelectedCourses(newTimetables[selectedTimetableId].courses);
   };
 
   const deleteCourse = (courseId: string) => {
     // Delete course from courses and courseIds
     const newTimetables = { ...timetables };
     newTimetables[selectedTimetableId].courseIds = newTimetables[selectedTimetableId].courseIds.filter(
-      (id) => id === courseId,
+      (id) => id !== courseId,
     );
     const { [courseId]: _, ...remainingCourses } = newTimetables[selectedTimetableId].courses;
     newTimetables[selectedTimetableId].courses = remainingCourses;
     setTimetables(newTimetables);
+    setSelectedCourses(newTimetables[selectedTimetableId].courses);
   };
 
   const isConvertToLocalTimezone = true;

@@ -1,10 +1,11 @@
 import React, { type JSX, useContext, useLayoutEffect, useRef, useState } from 'react';
 
+import { useGetClassesActivityByClassIds, useGetDistinctActivitiesForCourse } from '../../api/graphql/queries';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode } from '../../interfaces/Periods';
+import { Activity, CourseCode, InventoryPeriod } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
@@ -22,7 +23,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
 
   const { hideExamClasses } = useGetUserSettingsQuery();
   const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
-  const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
+  const { selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
   const droppedEvents: JSX.Element[] = [];
@@ -116,6 +117,42 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   }, [days]);
 
   const clashes = findClashes(selectedClasses, createdEvents);
+
+  const { selectedCourses, term } = useContext(AppContext);
+  const courseIds = Object.keys(selectedCourses);
+  const courseActivities = useGetDistinctActivitiesForCourse(courseIds, term.substring(0, 2));
+  console.log('Course Activities', courseActivities);
+
+  // Get all selected classes for each course
+  const selectedClassIds: string[] = [];
+  Object.values(selectedCourses).forEach((course) => {
+    selectedClassIds.push(...course.classIds);
+  });
+
+  const selectedCourseClasses = useGetClassesActivityByClassIds(selectedClassIds, term.substring(0, 2));
+  console.log('Selected Course Activities', selectedCourseClasses);
+
+  // Unselect activities
+  courseActivities.forEach((activities, courseId) => {
+    if (selectedCourseClasses?.has(courseId)) {
+      const selectedActivity = selectedCourseClasses.get(courseId);
+      activities.forEach((activity) => {
+        if (activity !== selectedActivity) {
+          const inventoryPeriod: InventoryPeriod = {
+            type: 'inventory',
+            classId: null,
+            courseCode: selectedCourses[courseId].code,
+            courseId: courseId,
+            activity: activity,
+          };
+          classCards.push(inventoryPeriod);
+          inventoryCards.current.push(inventoryPeriod);
+        } else {
+          // TODO handle case of selected activity
+        }
+      });
+    }
+  });
 
   // Generate classes
   classCards.forEach((classCard) => {

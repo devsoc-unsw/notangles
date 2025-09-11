@@ -26,7 +26,7 @@ export interface GQLCourseOverview {
 export interface NewCourseData {
   code: CourseCode;
   color: string;
-  selectedClasses: string[];
+  classIds: string[];
 }
 
 export interface NewTimetableData {
@@ -152,6 +152,7 @@ export interface ClassPeriod {
   type: 'class';
   classId: string;
   courseCode: CourseCode;
+  courseId?: string;
   activity: Activity;
   subActivity: string;
   time: ClassTime;
@@ -162,6 +163,7 @@ export interface InventoryPeriod {
   type: 'inventory';
   classId: null;
   courseCode: CourseCode;
+  courseId?: string;
   activity: Activity;
 }
 
