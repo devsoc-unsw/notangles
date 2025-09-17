@@ -25,7 +25,7 @@ model User {
 
   firstName         String
   lastName          String
-  inviteCode        String @unique
+  inviteCode        String      @unique @db.Char(6)
   profilePictureUrl String?
   timetables        Timetable[]
   settings          Settings?
@@ -34,6 +34,8 @@ model User {
   lastLogin DateTime @default(now())
 
   @@unique([authProvider, authSubject])
+  @@index([inviteCode], name: "friendsId")
+  @@index([id], name: "userId")
   @@map("user")
 }
 
