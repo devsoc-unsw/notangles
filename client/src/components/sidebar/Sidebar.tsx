@@ -1,5 +1,5 @@
 import { AddCircle, CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Divider, Drawer, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Divider, Drawer, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useContext, useMemo, useState } from 'react';
 
@@ -263,8 +263,10 @@ const Sidebar = () => {
           <SidebarFooter>
             {friendsListOpen && (
               <AddFriendsButton>
-                <Typography fontSize={15}>Add Friends</Typography>
-                <StyledAddIcon />
+                {!sidebarCollapsed && <Typography fontSize={15}>Add Friends</Typography>}
+                <Tooltip title="Add Friends" placement="right">
+                  <StyledAddIcon />
+                </Tooltip>
               </AddFriendsButton>
             )}
             <DarkModeButton />

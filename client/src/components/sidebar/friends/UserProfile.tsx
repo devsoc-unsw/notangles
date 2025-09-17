@@ -9,6 +9,7 @@ const StyledContainer = styled('div')`
   display: flex;
   gap: 14px;
   align-items: center;
+  user-select: none;
 `;
 
 const StyledFullname = styled('div')`
