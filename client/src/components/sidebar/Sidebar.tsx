@@ -209,29 +209,28 @@ const Sidebar = () => {
         elevation={0}
       >
         <Container>
+          <HeaderContainer>
+            <a href="/">
+              <LogoImg
+                src={currLogo}
+                alt="Notangles logo"
+                onMouseOver={() => {
+                  setCurrLogo(notanglesLogoGif);
+                }}
+                onMouseOut={() => {
+                  setCurrLogo(notanglesLogo);
+                }}
+              />
+            </a>
+            {!sidebarCollapsed && (
+              <>
+                <SidebarTitle variant="h6">Notangles</SidebarTitle>
+              </>
+            )}
+          </HeaderContainer>
+
           <HeaderAndControlsContainer>
-            <HeaderContainer>
-              <a href="/">
-                <LogoImg
-                  src={currLogo}
-                  alt="Notangles logo"
-                  onMouseOver={() => {
-                    setCurrLogo(notanglesLogoGif);
-                  }}
-                  onMouseOut={() => {
-                    setCurrLogo(notanglesLogo);
-                  }}
-                />
-              </a>
-              {!sidebarCollapsed && (
-                <>
-                  <SidebarTitle variant="h6">Notangles</SidebarTitle>
-                </>
-              )}
-            </HeaderContainer>
-
             <Divider />
-
             <NavComponentsContainer>
               <CustomModal
                 title="Timetable"
