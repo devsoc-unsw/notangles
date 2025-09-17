@@ -16,21 +16,6 @@ export interface UserContextProviderProps {
   children: ReactNode;
 }
 
-export interface DarkModeButtonProps {
-  collapsed: boolean;
-}
-
-export interface CustomModalProps {
-  title: string;
-  toolTipTitle: string;
-  showIcon: ReactNode;
-  description: string;
-  content: ReactNode;
-  collapsed: boolean;
-  isClickable: boolean;
-  isSelected?: boolean;
-}
-
 export interface CourseSelectProps {
   assignedColors: Record<string, string>;
   handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;

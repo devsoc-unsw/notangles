@@ -1,9 +1,11 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useContext } from 'react';
+
+import { AppContext } from '../../context/AppContext';
 
 interface CollapseButtonProps {
-  collapsed: boolean;
   onClick: () => void;
   toolTipTitle: string;
 }
@@ -19,12 +21,13 @@ const StyledExpandMoreIcon = styled(ExpandMoreIcon, { shouldForwardProp: (prop) 
   transform: ${({ collapsed }) => (collapsed ? 'rotate(270deg)' : 'rotate(90deg)')};
 `;
 
-const CollapseButton: React.FC<CollapseButtonProps> = ({ collapsed, onClick, toolTipTitle }) => {
+const CollapseButton: React.FC<CollapseButtonProps> = ({ onClick, toolTipTitle }) => {
+  const { sidebarCollapsed } = useContext(AppContext);
   return (
     <>
       <Tooltip title={toolTipTitle} placement="right">
         <StyledCollapseButton onClick={onClick}>
-          <StyledExpandMoreIcon collapsed={collapsed} />
+          <StyledExpandMoreIcon collapsed={sidebarCollapsed} />
         </StyledCollapseButton>
       </Tooltip>
     </>
