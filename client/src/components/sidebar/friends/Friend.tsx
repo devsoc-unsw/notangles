@@ -33,22 +33,20 @@ const Friend = ({ firstName }: FriendProps) => {
   const { isDarkMode } = useGetUserSettingsQuery();
 
   return (
-    <>
-      <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
-        <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
-          <UserProfile firstName={firstName} lastName="" />
-          {!sidebarCollapsed && (
-            <IconButton
-              onClick={() => {
-                setKebabOpen((prev) => !prev);
-              }}
-            >
-              <MoreVertIcon />
-            </IconButton>
-          )}
-        </StyledFriendContainer>
-      </Tooltip>
-    </>
+    <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
+      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
+        <UserProfile firstName={firstName} lastName="" />
+        {!sidebarCollapsed && (
+          <IconButton
+            onClick={() => {
+              setKebabOpen((prev) => !prev);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )}
+      </StyledFriendContainer>
+    </Tooltip>
   );
 };
 

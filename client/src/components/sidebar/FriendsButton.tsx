@@ -41,17 +41,15 @@ const FriendsButton = ({ friendsListOpen, handleFriendsListToggle }: FriendsButt
   }, [sidebarCollapsed, friendsListOpen]);
 
   return (
-    <>
-      <Tooltip title="Friends" placement="right">
-        <StyledFriendsButton color="inherit" isSelected={false} onClick={handleFriendsListToggle}>
-          <StyledFriendsContainer>
-            <Person />
-            <IndividualComponentTypography>{sidebarCollapsed ? '' : 'Friends'}</IndividualComponentTypography>
-          </StyledFriendsContainer>
-          {friendToggleArrow}
-        </StyledFriendsButton>
-      </Tooltip>
-    </>
+    <Tooltip title="Friends" placement="right">
+      <StyledFriendsButton color="inherit" isSelected={false} onClick={handleFriendsListToggle}>
+        <StyledFriendsContainer>
+          <Person />
+          <IndividualComponentTypography>{sidebarCollapsed ? '' : 'Friends'}</IndividualComponentTypography>
+        </StyledFriendsContainer>
+        {friendToggleArrow}
+      </StyledFriendsButton>
+    </Tooltip>
   );
 };
 
