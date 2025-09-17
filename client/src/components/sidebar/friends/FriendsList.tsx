@@ -59,6 +59,9 @@ const FriendsList = () => {
             onChange={(e) => {
               setSearchVal(e.target.value.toLowerCase());
             }}
+            inputRef={(input: HTMLInputElement | null) => {
+              input?.focus();
+            }}
           />
         </FormControl>
       )}
