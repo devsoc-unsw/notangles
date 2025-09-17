@@ -63,6 +63,10 @@ const Container = styled('div')`
   height: 100vh;
 `;
 
+const HeaderAndControlsContainer = styled('div')`
+  overflow-y: scroll;
+`;
+
 const SidebarTitle = styled(Typography)`
   font-weight: 700;
   font-size: 18px;
@@ -81,17 +85,10 @@ const HeaderContainer = styled('div')`
   padding: 10px 19px 10px 19px;
 `;
 
-const ControlsContainer = styled('div')`
-  display: flex;
-  flex-direction: column;
-  padding: 20px 16px 20px 16px;
-  gap: 16px;
-  height: 100%;
-`;
-
 const NavComponentsContainer = styled('div')`
   display: flex;
   flex-direction: column;
+  padding: 20px 16px 20px 16px;
   height: 100%;
   gap: 8px;
 `;
@@ -196,7 +193,7 @@ const Sidebar = () => {
         elevation={0}
       >
         <Container>
-          <div>
+          <HeaderAndControlsContainer>
             <HeaderContainer>
               <a href="/">
                 <LogoImg
@@ -219,36 +216,34 @@ const Sidebar = () => {
 
             <Divider />
 
-            <ControlsContainer>
-              <NavComponentsContainer>
-                <CustomModal
-                  title="Timetable"
-                  toolTipTitle="Timetable"
-                  showIcon={<CalendarMonth />}
-                  description={'Current Timetable'}
-                  content={null}
-                  // currently not clickable since this is our current page
-                  isClickable={false}
-                  // hardcoded until we move away from single page site
-                  isSelected={true}
-                />
-                <FriendsButton
-                  friendsListOpen={friendsListOpen}
-                  handleFriendsListToggle={() => {
-                    setFriendsListOpen((prev) => !prev);
-                  }}
-                />
-                {!friendsListOpen ? (
-                  <>
-                    <Divider />
-                    {modalComponents}
-                  </>
-                ) : (
-                  <FriendsList />
-                )}
-              </NavComponentsContainer>
-            </ControlsContainer>
-          </div>
+            <NavComponentsContainer>
+              <CustomModal
+                title="Timetable"
+                toolTipTitle="Timetable"
+                showIcon={<CalendarMonth />}
+                description={'Current Timetable'}
+                content={null}
+                // currently not clickable since this is our current page
+                isClickable={false}
+                // hardcoded until we move away from single page site
+                isSelected={true}
+              />
+              <FriendsButton
+                friendsListOpen={friendsListOpen}
+                handleFriendsListToggle={() => {
+                  setFriendsListOpen((prev) => !prev);
+                }}
+              />
+              {!friendsListOpen ? (
+                <>
+                  <Divider />
+                  {modalComponents}
+                </>
+              ) : (
+                <FriendsList />
+              )}
+            </NavComponentsContainer>
+          </HeaderAndControlsContainer>
 
           <SidebarFooter>
             {friendsListOpen && (

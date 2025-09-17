@@ -6,10 +6,9 @@ import { useMemo, useState } from 'react';
 import Friend from './Friend';
 import friendList from './friends.json';
 
-const StyledFriendsList = styled(Box)`
-  overflow-y: overlay;
-  // max-height: calc(100vh - 64px - 64px - 48px - 48px - 235px - 90px);
-  max-height: 25vh;
+const FriendsListContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
 `;
 
 const FriendsList = () => {
@@ -26,25 +25,23 @@ const FriendsList = () => {
   }, [searchVal]);
 
   return (
-    <Grid container spacing={1} sx={{ marginBottom: 2 }}>
-      <Grid size={12}>
-        <FormControl fullWidth size="small" margin="normal">
-          <InputLabel>Search</InputLabel>
-          <OutlinedInput
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-            label="Search"
-            onChange={(e) => {
-              setSearchVal(e.target.value.toLowerCase());
-            }}
-          />
-        </FormControl>
-      </Grid>
-      <StyledFriendsList>{renderedFriends}</StyledFriendsList>
-    </Grid>
+    <FriendsListContainer>
+      <FormControl fullWidth size="small" margin="normal">
+        <InputLabel>Search</InputLabel>
+        <OutlinedInput
+          startAdornment={
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          }
+          label="Search"
+          onChange={(e) => {
+            setSearchVal(e.target.value.toLowerCase());
+          }}
+        />
+      </FormControl>
+      {renderedFriends}
+    </FriendsListContainer>
   );
 };
 
