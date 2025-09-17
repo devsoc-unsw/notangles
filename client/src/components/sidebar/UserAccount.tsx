@@ -31,7 +31,7 @@ const ExpandedContainer = styled('div', {
   alignItems: 'center',
   justifyContent: sidebarCollapsed ? 'center' : 'space-between',
   width: '100%',
-  padding: '10px 12px',
+  padding: '10px 6px',
 }));
 
 const UserAccount = () => {

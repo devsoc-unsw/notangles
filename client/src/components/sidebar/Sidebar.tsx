@@ -56,6 +56,13 @@ const StyledDrawer = styled(Drawer, {
   },
 }));
 
+const Container = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+`;
+
 const SidebarTitle = styled(Typography)`
   font-weight: 700;
   font-size: 18px;
@@ -74,18 +81,12 @@ const HeaderContainer = styled('div')`
   padding: 10px 19px 10px 19px;
 `;
 
-const SideBarContainer = styled('div')`
+const ControlsContainer = styled('div')`
   display: flex;
   flex-direction: column;
   padding: 20px 16px 20px 16px;
   gap: 16px;
-`;
-
-const Container = styled('div')`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
+  height: 100%;
 `;
 
 const NavComponentsContainer = styled('div')`
@@ -107,7 +108,6 @@ const SidebarFooterText = styled('div')`
   flex-direction: column;
   gap: 16px;
   font-size: 0.8rem;
-  margin-top: 16px;
 `;
 
 const SidebarFooterWrapper = styled('div')`
@@ -219,7 +219,7 @@ const Sidebar = () => {
 
             <Divider />
 
-            <SideBarContainer>
+            <ControlsContainer>
               <NavComponentsContainer>
                 <CustomModal
                   title="Timetable"
@@ -244,18 +244,18 @@ const Sidebar = () => {
                     {modalComponents}
                   </>
                 ) : (
-                  <>
-                    <FriendsList />
-                    <Button variant="outlined" disableElevation>
-                      Add Friend
-                    </Button>
-                  </>
+                  <FriendsList />
                 )}
               </NavComponentsContainer>
-            </SideBarContainer>
+            </ControlsContainer>
           </div>
 
           <SidebarFooter>
+            {friendsListOpen && (
+              <Button variant="outlined" disableElevation>
+                Add Friend
+              </Button>
+            )}
             <DarkModeButton />
             <UserAccount />
             {!isMobile && !sidebarCollapsed ? (
