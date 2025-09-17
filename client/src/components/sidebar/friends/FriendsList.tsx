@@ -2,6 +2,7 @@ import { Search } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
 import { Box, styled } from '@mui/system';
+import Fuse from 'fuse.js';
 import { useContext, useMemo, useState } from 'react';
 
 import { AppContext } from '../../../context/AppContext';
@@ -26,17 +27,21 @@ const FriendsList = () => {
   const [searchVal, setSearchVal] = useState('');
   const { sidebarCollapsed, setSidebarCollapsed } = useContext(AppContext);
 
-  // TODO: implement fuzzy search
   const renderedFriends = useMemo(() => {
     // TODO: replace hard coded data with integration with server
-    const filteredFriends = friendList.filter((friend) => friend.toLowerCase().includes(searchVal));
-    return filteredFriends.map((friend, index) => <Friend key={index} firstName={friend} />);
+    let friends = friendList;
+    if (searchVal.length === 0) {
+      return friends.map((friend, index) => <Friend key={index} firstName={friend} />);
+    }
+
+    const fuzzy = new Fuse<string>(friendList, { threshold: 0.4 });
+    friends = fuzzy.search(searchVal).map((result) => result.item);
+    return friends.map((friend, index) => <Friend key={index} firstName={friend} />);
   }, [searchVal]);
 
   const handleClickSearchBarIcon = () => {
     if (sidebarCollapsed) {
       setSidebarCollapsed(false);
-      // TODO: put form search in focus
     }
   };
 
@@ -57,7 +62,7 @@ const FriendsList = () => {
             }
             label="Search"
             onChange={(e) => {
-              setSearchVal(e.target.value.toLowerCase());
+              setSearchVal(e.target.value.trim().toLowerCase());
             }}
             inputRef={(input: HTMLInputElement | null) => {
               input?.focus();
