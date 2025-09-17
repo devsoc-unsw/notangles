@@ -5,6 +5,7 @@ import { CoursesList } from '../interfaces/Courses';
 import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
 import storage from '../utils/storage';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 export interface IAppContext {
   alertMsg: string;
@@ -66,6 +67,9 @@ export interface IAppContext {
 
   courseData: CourseDataMap;
   setCourseData: (newCourseData: CourseDataMap) => void;
+
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (isCollapsed: boolean) => void;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -125,6 +129,9 @@ export const AppContext = createContext<IAppContext>({
 
   courseData: { map: [] },
   setCourseData: () => {},
+
+  sidebarCollapsed: false,
+  setSidebarCollapsed: () => {},
 });
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
@@ -162,6 +169,10 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [selectedTimetable, setSelectedTimetable] = useState<number>(0);
   const [displayTimetables, setDisplayTimetables] = useState<DisplayTimetablesMap>({});
   const [courseData, setCourseData] = useState<CourseDataMap>({ map: [] });
+
+  const theme = useTheme();
+  const isWide = useMediaQuery(theme.breakpoints.only('xl'));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => !isWide);
 
   const initialContext: IAppContext = {
     alertMsg,
@@ -202,6 +213,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setDisplayTimetables,
     courseData,
     setCourseData,
+    sidebarCollapsed,
+    setSidebarCollapsed,
   };
 
   return <AppContext.Provider value={initialContext}>{children}</AppContext.Provider>;
