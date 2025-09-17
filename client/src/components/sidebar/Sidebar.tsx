@@ -1,5 +1,5 @@
-import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Button, Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { AddCircle, CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { Divider, Drawer, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useContext, useMemo, useState } from 'react';
 
@@ -110,6 +110,22 @@ const SidebarFooterText = styled('div')`
 const SidebarFooterWrapper = styled('div')`
   display: flex;
   flex-direction: row;
+`;
+
+const AddFriendsButton = styled(IconButton)`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  border-radius: 8px;
+  justify-content: space-around;
+  padding: 8px;
+  color: ${({ theme }) => theme.palette.text.primary};
+  border: 1px solid;
+  border-color: ${({ theme }) => theme.palette.primary.main};
+`;
+
+const StyledAddIcon = styled(AddCircle)`
+  color: ${({ theme }) => theme.palette.primary.main};
 `;
 
 const modalData = [
@@ -247,9 +263,10 @@ const Sidebar = () => {
 
           <SidebarFooter>
             {friendsListOpen && (
-              <Button variant="outlined" disableElevation>
-                Add Friend
-              </Button>
+              <AddFriendsButton>
+                <Typography fontSize={15}>Add Friends</Typography>
+                <StyledAddIcon />
+              </AddFriendsButton>
             )}
             <DarkModeButton />
             <UserAccount />
