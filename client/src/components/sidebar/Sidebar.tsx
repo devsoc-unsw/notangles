@@ -64,7 +64,8 @@ const Container = styled('div')`
 `;
 
 const HeaderAndControlsContainer = styled('div')`
-  overflow-y: scroll;
+  flex: 1;
+  overflow-y: auto;
 `;
 
 const SidebarTitle = styled(Typography)`
@@ -89,7 +90,6 @@ const NavComponentsContainer = styled('div')`
   display: flex;
   flex-direction: column;
   padding: 20px 16px 20px 16px;
-  height: 100%;
   gap: 8px;
 `;
 
