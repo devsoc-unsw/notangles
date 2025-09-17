@@ -16,6 +16,7 @@ const FriendsList = () => {
 
   // TODO: implement fuzzy search
   const renderedFriends = useMemo(() => {
+    // TODO: replace hard coded data with integration with server
     const filteredFriends = friendList.filter((friend) => friend.toLowerCase().includes(searchVal));
     return filteredFriends.map((friend, index) => (
       <Grid size={12} key={index}>
