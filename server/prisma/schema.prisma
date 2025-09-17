@@ -38,23 +38,22 @@ model User {
   @@map("user")
 }
 
-// model FriendRequest {
-//   id     String @id @default(uuid())
-//   fromId String
-//   toId   String
+model Friendship {
+  id      String @id @default(uuid())
+  user1Id String
+  user2Id String
+  status  Status
 
-//   @@unique([fromId, toId])
-//   @@map("friend_request")
-// }
+  @@unique([user1Id, user2Id])
+  @@index([id], name: "friendshipId")
+  @@map("friendship")
+}
 
-// model Friendship {
-//   id      String @id @default(uuid())
-//   user1Id String
-//   user2Id String
-
-//   @@unique([user1Id, user2Id])
-//   @@map("friendship")
-// }
+enum Status {
+  REQ_UID1
+  REQ_UID2
+  FRIEND
+}
 
 model Settings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
