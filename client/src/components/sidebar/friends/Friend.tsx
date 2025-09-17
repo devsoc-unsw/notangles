@@ -8,11 +8,11 @@ import { AppContext } from '../../../context/AppContext';
 import UserProfile from './UserProfile';
 
 const StyledFriendContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isDarkMode',
-})<{ isDarkMode: boolean }>`
+  shouldForwardProp: (prop) => prop !== 'isDarkMode' && prop !== 'sidebarCollapsed',
+})<{ isDarkMode: boolean; sidebarCollapsed: boolean }>`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: ${({ sidebarCollapsed }) => (sidebarCollapsed ? 'center' : 'space-between')};
   align-items: center;
   padding: 4px;
   cursor: pointer;
@@ -35,7 +35,7 @@ const Friend = ({ firstName }: FriendProps) => {
   return (
     <>
       <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
-        <StyledFriendContainer isDarkMode={isDarkMode}>
+        <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
           <UserProfile firstName={firstName} lastName="" />
           {!sidebarCollapsed && (
             <IconButton

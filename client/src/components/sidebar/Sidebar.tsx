@@ -66,6 +66,11 @@ const Container = styled('div')`
 const HeaderAndControlsContainer = styled('div')`
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const SidebarTitle = styled(Typography)`
