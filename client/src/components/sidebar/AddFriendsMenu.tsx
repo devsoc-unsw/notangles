@@ -8,6 +8,12 @@ const AddFriendText = styled(SettingText)`
   font-weight: 500;
 `;
 
+const MenuSubContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const InviteCodeButtonGroup = styled(ButtonGroup)`
   height: 100%;
 `;
@@ -29,10 +35,24 @@ const StyledRefreshIcon = styled(Cached)`
   color: ${({ theme }) => theme.palette.primary.main};
 `;
 
-const MenuSubContainer = styled('div')`
+const SendRequestFormContainer = styled(Paper)`
+  border: 0.75px solid;
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+`;
+
+const SendRequestButton = styled(Button)`
+  text-transform: none;
+  font-size: 0.75rem;
+`;
+
+const CopyLinkButton = styled(Button)`
+  text-transform: none;
+  font-size: 0.75rem;
+  margin-top: 10px;
 `;
 
 enum State {
@@ -70,7 +90,7 @@ const AddFriendsMenu = () => {
       });
   };
 
-  const handleSendRequest = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendRequest = (e: React.FormEvent<HTMLDivElement>) => {
     e.preventDefault();
     setHasSentRequest(true);
   };
@@ -136,43 +156,25 @@ const AddFriendsMenu = () => {
       <SettingsItem>
         <MenuSubContainer>
           <AddFriendText>Enter friend code:</AddFriendText>
-          <Paper
-            elevation={0}
-            component="form"
-            sx={{
-              border: '0.75px solid',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-            }}
-            onSubmit={handleSendRequest}
-          >
+          <SendRequestFormContainer elevation={0} onSubmit={handleSendRequest}>
             <InputBase placeholder="Add a friend with their friend code." sx={{ width: '60%', marginRight: '10px' }} />
-            <Button
-              variant="contained"
-              disableElevation
-              type="submit"
-              sx={{ textTransform: 'none', fontSize: '0.75rem' }}
-            >
+            <SendRequestButton variant="contained" disableElevation type="submit">
               Send Friend Request
-            </Button>
-          </Paper>
+            </SendRequestButton>
+          </SendRequestFormContainer>
         </MenuSubContainer>
       </SettingsItem>
 
       <SettingsItem>
-        <Button
+        <CopyLinkButton
           variant="contained"
           disableElevation
           onClick={() => {
             handleCodeCopy(false);
           }}
-          sx={{ textTransform: 'none', fontSize: '0.75rem', marginTop: '10px' }}
         >
           Copy Invite Link
-        </Button>
+        </CopyLinkButton>
       </SettingsItem>
       <Snackbar
         sx={{ position: 'absolute' }}
