@@ -9,22 +9,24 @@ import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
 
-const SettingsItem = styled('div')`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const SettingsPadding = styled('div')`
   padding: 1vh 20px;
 `;
 
-const SettingText = styled('div')`
+export const SettingsItem = styled(SettingsPadding)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SettingText = styled('div')`
   padding: 1vh 0;
 `;
 
-const SettingButton = styled('div')`
+export const SettingButton = styled(SettingsPadding)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1vh 20px;
   border-radius: 1rem;
   cursor: pointer;
   &:hover {
