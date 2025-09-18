@@ -18,6 +18,7 @@ const InviteCodeButton = styled(Button)`
   font-weight: bold;
   letter-spacing: 0.3rem;
   padding: 5px 20px;
+  border: 0.75px solid;
 `;
 
 const StyledCopyIcon = styled(ContentCopy)`
@@ -139,11 +140,11 @@ const AddFriendsMenu = () => {
             elevation={0}
             component="form"
             sx={{
-              border: '1px solid',
+              border: '0.75px solid',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: '12px',
+              padding: '6px 12px',
               fontSize: '0.75rem',
             }}
             onSubmit={handleSendRequest}
