@@ -175,6 +175,7 @@ const AddFriendsMenu = () => {
         </Button>
       </SettingsItem>
       <Snackbar
+        sx={{ position: 'absolute' }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={snackbarMessage !== ''}
         autoHideDuration={5000}
