@@ -7,7 +7,6 @@ import { SettingButton, SettingsItem, SettingText } from './Settings';
 const AddFriendText = styled(SettingText)`
   font-weight: 500;
 `;
-
 const MenuSubContainer = styled('div')`
   display: flex;
   flex-direction: column;
@@ -33,15 +32,6 @@ const StyledCopyIcon = styled(ContentCopy)`
 
 const StyledRefreshIcon = styled(Cached)`
   color: ${({ theme }) => theme.palette.primary.main};
-`;
-
-const SendRequestFormContainer = styled(Paper)`
-  border: 0.75px solid;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px;
-  font-size: 0.75rem;
 `;
 
 const SendRequestButton = styled(Button)`
@@ -90,7 +80,7 @@ const AddFriendsMenu = () => {
       });
   };
 
-  const handleSendRequest = (e: React.FormEvent<HTMLDivElement>) => {
+  const handleSendRequest = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setHasSentRequest(true);
   };
@@ -156,12 +146,24 @@ const AddFriendsMenu = () => {
       <SettingsItem>
         <MenuSubContainer>
           <AddFriendText>Enter friend code:</AddFriendText>
-          <SendRequestFormContainer elevation={0} onSubmit={handleSendRequest}>
+          <Paper
+            component="form"
+            elevation={0}
+            onSubmit={handleSendRequest}
+            sx={{
+              border: '0.75px solid',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+            }}
+          >
             <InputBase placeholder="Add a friend with their friend code." sx={{ width: '60%', marginRight: '10px' }} />
             <SendRequestButton variant="contained" disableElevation type="submit">
               Send Friend Request
             </SendRequestButton>
-          </SendRequestFormContainer>
+          </Paper>
         </MenuSubContainer>
       </SettingsItem>
 
