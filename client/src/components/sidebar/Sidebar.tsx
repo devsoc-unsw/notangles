@@ -10,7 +10,7 @@ import { AppContext } from '../../context/AppContext';
 import About from './About';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
-import CustomModal from './CustomModal';
+import CustomModalOpener from './CustomModalOpener';
 import DarkModeButton from './DarkModeButton';
 import FriendsList from './friends/FriendsList';
 import FriendsButton from './FriendsButton';
@@ -187,7 +187,7 @@ const Sidebar = () => {
   const modalComponents = useMemo(
     () =>
       modalData.map((modal, index) => (
-        <CustomModal
+        <CustomModalOpener
           key={index}
           title={modal.title}
           toolTipTitle={modal.toolTipTitle}
@@ -237,7 +237,7 @@ const Sidebar = () => {
           <HeaderAndControlsContainer>
             <Divider />
             <NavComponentsContainer>
-              <CustomModal
+              <CustomModalOpener
                 title="Timetable"
                 toolTipTitle="Timetable"
                 showIcon={<CalendarMonth />}
