@@ -19,7 +19,7 @@ export const SettingsItem = styled(SettingsPadding)`
   align-items: center;
 `;
 
-export const SettingText = styled('div')`
+export const SettingsText = styled('div')`
   padding: 1vh 0;
 `;
 
@@ -79,10 +79,10 @@ const Settings: FC = () => {
                 setIsPreferredThemeOpen(!isPreferredThemeOpen);
               }}
             >
-              <SettingText>
+              <SettingsText>
                 <ArrowBackIosIcon />
                 Return
-              </SettingText>
+              </SettingsText>
             </SettingButton>
             <ColorThemeOptionsContainer>
               <ColorThemeOptions currentTheme={preferredTheme} />
@@ -92,7 +92,7 @@ const Settings: FC = () => {
         {!isPreferredThemeOpen &&
           settingsToggles.map((setting) => (
             <SettingsItem key={setting.desc}>
-              <SettingText>{setting.desc}</SettingText>
+              <SettingsText>{setting.desc}</SettingsText>
               <Switch
                 value={setting.state}
                 checked={setting.state}
@@ -121,7 +121,7 @@ const Settings: FC = () => {
               setIsPreferredThemeOpen(!isPreferredThemeOpen);
             }}
           >
-            <SettingText>Preferred Theme</SettingText>
+            <SettingsText>Preferred Theme</SettingsText>
             <ColorThemePreview previewTheme={preferredTheme} />
           </SettingButton>
         )}

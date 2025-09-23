@@ -2,9 +2,9 @@ import { ArrowRight, Cached, ContentCopy } from '@mui/icons-material';
 import { Button, ButtonGroup, CircularProgress, Grid, InputBase, Paper, Snackbar, styled } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-import { SettingButton, SettingsItem, SettingText } from './Settings';
+import { SettingButton, SettingsItem, SettingsText } from './Settings';
 
-const AddFriendText = styled(SettingText)`
+const AddFriendText = styled(SettingsText)`
   font-weight: 500;
 `;
 const MenuSubContainer = styled('div')`
