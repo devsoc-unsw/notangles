@@ -9,22 +9,24 @@ import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
 
-const SettingsItem = styled('div')`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const SettingsPadding = styled('div')`
   padding: 1vh 20px;
 `;
 
-const SettingText = styled('div')`
+export const SettingsItem = styled(SettingsPadding)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SettingsText = styled('div')`
   padding: 1vh 0;
 `;
 
-const SettingButton = styled('div')`
+export const SettingButton = styled(SettingsPadding)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1vh 20px;
   border-radius: 1rem;
   cursor: pointer;
   &:hover {
@@ -77,10 +79,10 @@ const Settings: FC = () => {
                 setIsPreferredThemeOpen(!isPreferredThemeOpen);
               }}
             >
-              <SettingText>
+              <SettingsText>
                 <ArrowBackIosIcon />
                 Return
-              </SettingText>
+              </SettingsText>
             </SettingButton>
             <ColorThemeOptionsContainer>
               <ColorThemeOptions currentTheme={preferredTheme} />
@@ -90,7 +92,7 @@ const Settings: FC = () => {
         {!isPreferredThemeOpen &&
           settingsToggles.map((setting) => (
             <SettingsItem key={setting.desc}>
-              <SettingText>{setting.desc}</SettingText>
+              <SettingsText>{setting.desc}</SettingsText>
               <Switch
                 value={setting.state}
                 checked={setting.state}
@@ -119,7 +121,7 @@ const Settings: FC = () => {
               setIsPreferredThemeOpen(!isPreferredThemeOpen);
             }}
           >
-            <SettingText>Preferred Theme</SettingText>
+            <SettingsText>Preferred Theme</SettingsText>
             <ColorThemePreview previewTheme={preferredTheme} />
           </SettingButton>
         )}

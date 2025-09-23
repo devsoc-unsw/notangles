@@ -1,5 +1,5 @@
-import { AddCircle, CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
-import { Divider, Drawer, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } from '@mui/icons-material';
+import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useContext, useMemo, useState } from 'react';
 
@@ -8,9 +8,10 @@ import notanglesLogo from '../../assets/notangles_1.png';
 import { leftContentPadding } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import About from './About';
+import AddFriendsButton from './AddFriendsButton';
 import Changelog from './Changelog';
 import CollapseButton from './CollapseButton';
-import CustomModal from './CustomModal';
+import CustomModalOpener from './CustomModalOpener';
 import DarkModeButton from './DarkModeButton';
 import FriendsList from './friends/FriendsList';
 import FriendsButton from './FriendsButton';
@@ -117,22 +118,6 @@ const SidebarFooterWrapper = styled('div')`
   flex-direction: row;
 `;
 
-const AddFriendsButton = styled(IconButton)`
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  border-radius: 8px;
-  justify-content: space-around;
-  padding: 8px;
-  color: ${({ theme }) => theme.palette.text.primary};
-  border: 1px solid;
-  border-color: ${({ theme }) => theme.palette.primary.main};
-`;
-
-const StyledAddIcon = styled(AddCircle)`
-  color: ${({ theme }) => theme.palette.primary.main};
-`;
-
 const modalData = [
   {
     title: 'About',
@@ -187,7 +172,7 @@ const Sidebar = () => {
   const modalComponents = useMemo(
     () =>
       modalData.map((modal, index) => (
-        <CustomModal
+        <CustomModalOpener
           key={index}
           title={modal.title}
           toolTipTitle={modal.toolTipTitle}
@@ -237,7 +222,7 @@ const Sidebar = () => {
           <HeaderAndControlsContainer>
             <Divider />
             <NavComponentsContainer>
-              <CustomModal
+              <CustomModalOpener
                 title="Timetable"
                 toolTipTitle="Timetable"
                 showIcon={<CalendarMonth />}
@@ -266,14 +251,7 @@ const Sidebar = () => {
           </HeaderAndControlsContainer>
 
           <SidebarFooter>
-            {friendsListOpen && (
-              <AddFriendsButton>
-                {!sidebarCollapsed && <Typography fontSize={15}>Add Friends</Typography>}
-                <Tooltip title="Add Friends" placement="right">
-                  <StyledAddIcon />
-                </Tooltip>
-              </AddFriendsButton>
-            )}
+            <AddFriendsButton friendsListOpen={friendsListOpen} />
             <DarkModeButton />
             <UserAccount />
             {!isMobile && !sidebarCollapsed ? (

@@ -1,11 +1,11 @@
-import { Close } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ReactNode, useContext, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
+import CustomModal from './CustomModel';
 
-interface CustomModalProps {
+interface CustomModalOpenerProps {
   title: string;
   toolTipTitle: string;
   showIcon: ReactNode;
@@ -14,18 +14,6 @@ interface CustomModalProps {
   isClickable: boolean;
   isSelected?: boolean;
 }
-
-const StyledDialogTitle = styled(DialogTitle)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  margin: 0;
-  padding: 20px;
-`;
-
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-`;
 
 const ShowModalButton = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'isSelected' })<{
   isSelected: boolean;
@@ -39,17 +27,12 @@ const ShowModalButton = styled(IconButton, { shouldForwardProp: (prop) => prop !
   background-color: ${({ isSelected }) => (isSelected ? 'rgb(157, 157, 157, 0.15)' : 'transparent')};
 `;
 
-const StyledDialogContent = styled(DialogContent)`
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  padding: 20px;
-`;
-
 const IndividualComponentTypography = styled(Typography)`
   margin: 0px;
   fontsize: 16px;
 `;
 
-const CustomModal: React.FC<CustomModalProps> = ({
+const CustomModalOpener: React.FC<CustomModalOpenerProps> = ({
   title,
   toolTipTitle,
   showIcon,
@@ -75,27 +58,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
           <IndividualComponentTypography>{sidebarCollapsed ? '' : title}</IndividualComponentTypography>
         </ShowModalButton>
       </Tooltip>
-      <Dialog
-        disableScrollLock
-        onClose={toggleIsOpen}
-        aria-labelledby="customized-dialog-title"
-        open={isOpen}
-        fullWidth
-        maxWidth="sm"
-      >
-        <StyledDialogTitle id="customized-dialog-title">
-          <Typography variant="h5" component="span" sx={{ marginTop: '10px', marginBottom: '10px', display: 'block' }}>
-            {description}
-          </Typography>
-          <CloseButton color="inherit" aria-label="close" onClick={toggleIsOpen}>
-            <Close />
-          </CloseButton>
-        </StyledDialogTitle>
-        <Divider />
-        <StyledDialogContent>{content}</StyledDialogContent>
-      </Dialog>
+      <CustomModal description={description} content={content} toggleIsOpen={toggleIsOpen} isOpen={isOpen} />
     </>
   );
 };
 
-export default CustomModal;
+export default CustomModalOpener;
