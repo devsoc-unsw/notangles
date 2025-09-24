@@ -523,13 +523,13 @@ export class TimetableService {
     userId: string,
     eventId: string,
   ): Promise<void> {
-    // const event = await this.getEvent(userId, eventId);
-
-    // FIX 
-    await this.prisma.event.deleteAll({
+    if (!(await this.isEventOwnedByUser(userId, eventId))) {
+      throw new HttpException('Event could not be found', HttpStatus.NOT_FOUND);
+    }
+    
+    await this.prisma.event.delete({
       where: {
         id: eventId,
-        userId, 
       },
     });
   }
@@ -558,5 +558,21 @@ export class TimetableService {
         type: eventType,
       }
     })
+  }
+
+  async isEventOwnedByUser(
+    userId: string,
+    eventId: string
+  ): Promise<boolean> {
+    const event = await this.prisma.event.findUnique({
+      select: { timetableId: true },
+      where: { id: eventId }
+    });
+
+    if (!event?.timetableId) {
+      return false; 
+    }
+
+    return this.isTimetableOwnedByUser(userId, event?.timetableId);
   }
 }
