@@ -1,7 +1,8 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, styled, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { AppContext } from '../../../context/AppContext';
@@ -24,11 +25,13 @@ const StyledFriendContainer = styled(Box, {
       isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light}
 `;
 
-interface FriendProps {
+export interface FriendDTO {
   firstName: string;
+  lastName: string;
+  id: string;
 }
 
-const Friend = ({ firstName }: FriendProps) => {
+const Friend = ({ firstName, lastName, id }: FriendDTO) => {
   const { sidebarCollapsed } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -43,10 +46,16 @@ const Friend = ({ firstName }: FriendProps) => {
 
   const kebabOpen = Boolean(anchorEl);
 
+  const navigate = useNavigate();
+
+  const handleFriendClick = useCallback(() => {
+    navigate(`/friend/${id}`);
+  }, [id, navigate]);
+
   return (
-    <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
-      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
-        <UserProfile firstName={firstName} lastName="" />
+    <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
+      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
+        <UserProfile firstName={firstName} lastName={lastName} />
         {!sidebarCollapsed && (
           <>
             <IconButton onClick={handleKebabClick}>
