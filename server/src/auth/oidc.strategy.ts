@@ -20,10 +20,10 @@ const { Strategy } =
 export const getConfig = async (): Promise<Configuration> => {
   return await discovery(
     new URL(
-      `${process.env.OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER}/.well-known/openid-configuration`,
+      `${process.env.ZID_CLIENT_PROVIDER_OIDC_ISSUER}/.well-known/openid-configuration`,
     ),
-    process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_ID!,
-    process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_SECRET,
+    process.env.ZID_CLIENT_REGISTRATION_LOGIN_CLIENT_ID!,
+    process.env.ZID_CLIENT_REGISTRATION_LOGIN_CLIENT_SECRET,
   );
 };
 
@@ -35,8 +35,8 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
   ) {
     super({
       config,
-      scope: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE!,
-      callbackURL: process.env.OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI!,
+      scope: process.env.ZID_CLIENT_REGISTRATION_LOGIN_SCOPE!,
+      callbackURL: process.env.ZID_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI!,
       name: 'oidc',
       passReqToCallback: true,
     });

@@ -76,7 +76,7 @@ export class AuthController {
 
   private redirectAfterAuth(res: Response, home: boolean = true) {
     res.redirect(
-      (process.env.NODE_ENV === 'dev' ? `http://` : `https://`) +
+      (process.env.NODE_ENV === 'development' ? `http://` : `https://`) +
         `${process.env.CLIENT_HOST_NAME}:${process.env.CLIENT_HOST_PORT}${home ? '/home' : ''}`,
     );
   }
