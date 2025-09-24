@@ -31,15 +31,27 @@ const FriendsList = () => {
     // TODO: replace hard coded data with integration with server
     let friends = friendList;
     if (searchVal.length === 0) {
-      return friends.map(({ firstName, lastName, id }) => (
-        <Friend key={id as string} firstName={firstName as string} lastName={lastName as string} id={id as string} />
+      return friends.map(({ firstName, lastName, id, profileURL }) => (
+        <Friend
+          key={id as string}
+          firstName={firstName as string}
+          lastName={lastName as string}
+          id={id as string}
+          profileURL={profileURL as string}
+        />
       ));
     }
 
     const fuzzy = new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
     friends = fuzzy.search(searchVal).map((result) => result.item);
-    return friends.map(({ firstName, lastName, id }) => (
-      <Friend key={id as string} firstName={firstName as string} lastName={lastName as string} id={id as string} />
+    return friends.map(({ firstName, lastName, id, profileURL }) => (
+      <Friend
+        key={id as string}
+        firstName={firstName as string}
+        lastName={lastName as string}
+        id={id as string}
+        profileURL={profileURL as string}
+      />
     ));
   }, [searchVal]);
 
