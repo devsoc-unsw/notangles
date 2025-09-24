@@ -29,9 +29,11 @@ export interface FriendDTO {
   firstName: string;
   lastName: string;
   id: string;
+  profileURL: string;
 }
 
-const Friend = ({ firstName, lastName, id }: FriendDTO) => {
+const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
+  const [kebabOpen, setKebabOpen] = useState(false);
   const { sidebarCollapsed } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -55,7 +57,7 @@ const Friend = ({ firstName, lastName, id }: FriendDTO) => {
   return (
     <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
       <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
-        <UserProfile firstName={firstName} lastName={lastName} />
+        <UserProfile firstName={firstName} lastName={lastName} profileURL={profileURL} />
         {!sidebarCollapsed && (
           <>
             <IconButton onClick={handleKebabClick}>
