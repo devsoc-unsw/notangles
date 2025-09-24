@@ -1,0 +1,32 @@
+// todo: Should these be combined or kept explicit?
+// Im just doing this explicit but now but will combine them :D
+// Union types?
+
+export class CreateFriendRequestDto {
+  requesteeCode: string;
+}
+
+export class CancelFriendRequestDto {
+  requestorCode: string;
+}
+
+export class AcceptFriendRequestDto {
+  requestorCode: string;
+}
+
+export class RejectFriendRequestDto {
+  requestorCode: string;
+}
+
+export class Friendship {
+  id: string;
+  user1Id: string;
+  user2Id: string;
+  status: Status;
+}
+
+export enum Status {
+  REQ_UID1,
+  REQ_UID2,
+  FRIEND,
+}
