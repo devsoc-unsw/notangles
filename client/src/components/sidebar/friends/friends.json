@@ -1,12 +1,37 @@
 [
-  "Lucas Harvey",
-  "Mark Tran",
-  "Ben Quin",
-  "Jason Poon",
-  "Fritz Rehde",
-  "Sunny Chen",
-  "Ana Kiperas",
-  "Tet Nay Lin",
-  "Kai Fox",
-  "Meredith Zhang"
+  {
+    "firstName": "Lucas",
+    "lastName": "Harvey",
+    "id": "awbdawiudbwau"
+  },
+  {
+    "firstName": "Mark",
+    "lastName": "Tran",
+    "id": "daiwhdwoahdwioahd"
+  },
+  {
+    "firstName": "Ana",
+    "lastName": "Kiperas",
+    "id": "21y39821y3hb"
+  },
+  {
+    "firstName": "Ben",
+    "lastName": "Quin",
+    "id": "21073y89hujbfeo"
+  },
+  {
+    "firstName": "Fritz",
+    "lastName": "Rehde",
+    "id": "2190e7210eyhfboj"
+  },
+  {
+    "firstName": "Jason",
+    "lastName": "Poon",
+    "id": "2109ey218yeh21boj"
+  },
+  {
+    "firstName": "Sunny",
+    "lastName": "Chen",
+    "id": "028y3812y3h21be"
+  }
 ]
