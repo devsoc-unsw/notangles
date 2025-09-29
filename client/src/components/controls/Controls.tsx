@@ -6,7 +6,6 @@ import { ControlsProps } from '../../interfaces/PropTypes';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
-import History from './History';
 import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
@@ -27,23 +26,23 @@ const SelectWrapper = styled(Box)`
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: 0;
+  min-width: 420px; // Wider search bar
+`;
+
+const ButtonRow = styled(Box)`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
 `;
 
 const AutotimetablerWrapper = styled(Box)`
-  flex: 1;
-
-  ${({ theme }) => theme.breakpoints.down('sm')} {
-    flex: none;
-  }
+  flex: none;
 `;
 
 const CustomEventsWrapper = styled(Box)`
-  flex: 1;
-`;
-
-const HistoryWrapper = styled(Box)`
-  margin-top: 20px;
-  margin-left: 3px;
+  flex: none;
 `;
 
 const Controls: React.FC<ControlsProps> = ({
@@ -53,30 +52,34 @@ const Controls: React.FC<ControlsProps> = ({
   handleRemoveCourse,
 }) => {
   return (
-    <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
-      <Grid item container xs={12} md={6.5} direction="row">
-        <TermSelectWrapper>
-          <TermSelect />
-        </TermSelectWrapper>
-
-        <SelectWrapper minWidth={'296px'}>
-          <CourseSelect
-            assignedColors={assignedColors}
-            handleSelect={handleSelectCourse}
-            handleRemove={handleRemoveCourse}
-          />
-        </SelectWrapper>
+    <Grid container sx={{ paddingLeft: '66px' }} spacing={2} alignItems="center">
+      {/* Term select and search bar */}
+      <Grid item container xs={12} md={8} direction="row" alignItems="center" spacing={2}>
+        <Grid item>
+          <TermSelectWrapper>
+            <TermSelect />
+          </TermSelectWrapper>
+        </Grid>
+        <Grid item sx={{ flexGrow: 1 }}>
+          <SelectWrapper sx={{ minWidth: 500 }}>
+            <CourseSelect
+              assignedColors={assignedColors}
+              handleSelect={handleSelectCourse}
+              handleRemove={handleRemoveCourse}
+            />
+          </SelectWrapper>
+        </Grid>
       </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={5.5}>
-        <CustomEventsWrapper>
-          <CustomEvents />
-        </CustomEventsWrapper>
-        <AutotimetablerWrapper>
-          <Autotimetabler handleSelectClass={handleSelectClass} />
-        </AutotimetablerWrapper>
-        <HistoryWrapper>
-          <History />
-        </HistoryWrapper>
+      {/* Create Event and Auto-Timetable buttons */}
+      <Grid item xs={12} md={4}>
+        <ButtonRow>
+          <CustomEventsWrapper>
+            <CustomEvents />
+          </CustomEventsWrapper>
+          <AutotimetablerWrapper>
+            <Autotimetabler handleSelectClass={handleSelectClass} />
+          </AutotimetablerWrapper>
+        </ButtonRow>
       </Grid>
     </Grid>
   );
