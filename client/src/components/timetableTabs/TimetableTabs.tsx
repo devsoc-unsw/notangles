@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { NewData, NewTimetableData } from '../../interfaces/Periods';
+import { NewTimetableData } from '../../interfaces/Timetable';
 import {
   createTimetableStyle,
   StyledIconButton,

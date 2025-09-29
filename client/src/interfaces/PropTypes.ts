@@ -2,8 +2,8 @@ import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
 
 import { ClassCard } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
-
+import { CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
+import { ClassData, ClassPeriod, CourseActivities } from './Timetable';
 export interface AppContextProviderProps {
   children: ReactNode;
 }
@@ -69,22 +69,24 @@ export interface DropzoneProps {
 }
 
 export interface DropzoneGroupProps {
-  course: CourseData;
+  courseActivities: Record<string, ClassData[]>;
   color: string;
   earliestStartTime: number;
 }
 
 export interface DropzonesProps {
-  assignedColors: Record<string, string>;
+  courseActivities: CourseActivities;
 }
 
 export interface PeriodMetadataProps {
   period: ClassPeriod;
+  classData: ClassData;
 }
 
 export interface DroppedClassProps {
   classCard: ClassCard;
   color: string;
+  classData?: ClassData; // undefined if inventory
   y?: number;
   handleSelectClass(classData: ClassData): void;
   cardWidth: number;
@@ -107,6 +109,7 @@ export interface DroppedEventProps {
 
 export interface DroppedCardsProps {
   assignedColors: Record<string, string>;
+  courseActivities: CourseActivities;
   handleSelectClass(classData: ClassData): void;
   copiedEvent: EventPeriod | null;
   setCopiedEvent: (copiedEvent: EventPeriod | null) => void;

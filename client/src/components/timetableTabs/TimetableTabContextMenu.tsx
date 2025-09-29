@@ -15,8 +15,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AppContext } from '../../context/AppContext';
-import { NewData } from '../../interfaces/Periods';
 import { TimetableTabContextMenuProps } from '../../interfaces/PropTypes';
+import { NewData } from '../../interfaces/Timetable';
 import {
   StyledDialogContent,
   StyledDialogTitle,

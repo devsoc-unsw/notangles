@@ -1,7 +1,7 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
 import { useQuery, useSuspenseQuery } from '@apollo/client/react';
 
-import { ClassData, GQLCourseOverview, Status } from '../../interfaces/Periods';
+import { GQLClassData, GQLCourseOverview } from '../../interfaces/Timetable';
 
 interface CoursesQueryResponse {
   courses: GQLCourseOverview[];
@@ -39,7 +39,10 @@ const GET_DISTINCT_ACTIVITIES_FOR_COURSE: TypedDocumentNode<
   { courseIds: string[]; term: string }
 > = gql`
   query GetDistinctActivitiesForCourse($courseIds: [String!]!, $term: String!) {
-    classes(where: { course_id: { _in: $courseIds }, term: { _ilike: $term } }, distinct_on: [activity, course_id]) {
+    classes(
+      where: { course_id: { _in: $courseIds }, term: { _ilike: $term }, activity: { _neq: "Course Enrolment" } }
+      distinct_on: [activity, course_id]
+    ) {
       activity
       course_id
     }
@@ -85,73 +88,79 @@ export const useGetClassesActivityByClassIds = (classIds: string[], term: string
   }
 };
 
-const GET_CLASS_DATA_FROM_COURSE_ID: TypedDocumentNode<
+const GET_CLASS_DATA_FROM_COURSE_IDS: TypedDocumentNode<
   {
-    classes: {
-      id: string;
-      classNo: string;
-      activity: string;
-      status: Status;
-      enrolments: string;
-      capacity: string;
-      section: string;
-      term: string;
-      year: string;
-      course: { course_code: string; course_name: string };
-    }[];
+    classes: GQLClassData[];
   },
-  { courseId: string; term: string }
+  { courseIds: string[]; term: string }
 > = gql`
-  query GetClassDataFromCourseId($courseId: String!, $term: String!) {
-    classes(where: { course_id: { _eq: $courseId }, term: { _ilike: $term } }) {
+  query GetClassDataFromCourseId($courseIds: [String!]!, $term: String!) {
+    classes(
+      where: { course_id: { _in: $courseIds }, term: { _ilike: $term }, activity: { _neq: "Course Enrolment" } }
+    ) {
       id: class_id
-      classNo: class_id
       activity
       status
       enrolments: course_enrolment
-      capacity: course_enrolment
       section
       term
       year
       course {
+        course_id
         course_code
         course_name
+      }
+      times {
+        day
+        time
+        weeks
+        location
       }
     }
   }
 `;
 
-export const useGetCourseDataFromCourseId = (courseId: string, term: string, class_id: string) => {
-  const { data, loading } = useQuery(GET_CLASS_DATA_FROM_COURSE_ID, {
-    variables: { courseId, term: `%${term}%` },
+export const useGetAllClassesFromCourseIds = ($courseIds: string[], term: string) => {
+  const { data, loading } = useQuery(GET_CLASS_DATA_FROM_COURSE_IDS, {
+    variables: { courseIds: $courseIds, term: `%${term}%` },
   });
-  if (!loading && data) {
-    console.log('Course Data', data);
-    const activities: Record<string, ClassData[]> = {};
-    data.classes.forEach((cls) => {
-      activities[cls.activity].push({
-        id: cls.id,
-        classNo: cls.classNo,
-        courseCode: cls.course.course_code,
-        courseName: cls.course.course_name,
-        activity: cls.activity,
-        status: cls.status,
-        enrolments: parseInt(cls.enrolments.split('/')[0]),
-        capacity: parseInt(cls.capacity.split('/')[1]),
-        periods: [],
-        section: cls.section,
-        term: cls.term,
-        year: cls.year,
-      });
-    });
+  if (loading || !data) return [];
 
-    return {
-      code: '',
-      name: '',
-      earliestStartTime: 24,
-      latestFinishTime: 0,
-      activities: {},
-      inventoryData: {},
-    };
-  }
+  return data.classes;
+
+  // const coursesActivities: CourseActivities = {};
+  // for (const courseId of $courseIds) {
+  //   coursesActivities[courseId] = {};
+  // }
+  // if (!loading && data) {
+  //   data.classes.forEach((cls) => {
+  //     const classData: ClassData = {
+  //       id: cls.id,
+  //       classNo: cls.classNo,
+  //       courseCode: cls.course.course_code,
+  //       courseName: cls.course.course_name,
+  //       section: cls.section,
+  //       activity: cls.activity,
+  //       subActivity: undefined, // TODO: Identify sub-activities completed courseActivities
+  //       status: cls.status,
+  //       enrolments: parseInt(cls.enrolments.split('/')[0]),
+  //       capacity: parseInt(cls.capacity.split('/')[1]),
+  //       location: cls.times.location,
+  //       times: {
+  //         day: parseDay(cls.times.day),
+  //         start: parseTime(cls.times.time.split('-')[0]),
+  //         end: parseTime(cls.times.time.split('-')[1]),
+  //         weeks: parseWeeks(cls.times.weeks),
+  //       },
+  //       term: cls.term,
+  //       year: cls.year,
+  //     };
+  //     if (!(cls.activity in coursesActivities[cls.course.course_id])) {
+  //       coursesActivities[cls.course.course_id][cls.activity] = [];
+  //     }
+  //     coursesActivities[cls.course.course_id][cls.activity].push(classData);
+  //   });
+  // }
+
+  // return coursesActivities;
 };

@@ -1,47 +1,31 @@
-import React, { useContext } from 'react';
+import React, { JSX, useContext } from 'react';
 
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
-import { CourseContext } from '../../context/CourseContext';
-import { Activity, ClassData } from '../../interfaces/Periods';
 import { DropzoneGroupProps, DropzonesProps } from '../../interfaces/PropTypes';
 import { areDuplicatePeriods } from '../../utils/areDuplicatePeriods';
 import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
 
-const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
+const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ courseActivities, color, earliestStartTime }) => {
   const { hideFullClasses, hideExamClasses } = useGetUserSettingsQuery();
-
-  // Deep-ish copy of activities (so we can combine duplicates without affecting original)
-  let newActivities: Record<Activity, ClassData[]> = {};
-
-  // Copy over course activities
-  Object.keys(course.activities).forEach((activity) => {
-    newActivities[activity] = [];
-
-    course.activities[activity].forEach((classData) => {
-      const newClassData = { ...classData };
-      newClassData.periods = [...classData.periods];
-      newActivities[activity].push(newClassData);
-    });
-  });
 
   // Show only open classes if setting is toggled on
   if (hideFullClasses) {
-    Object.keys(newActivities).forEach((activity) => {
-      newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
+    Object.keys(courseActivities).forEach((activity) => {
+      courseActivities[activity] = courseActivities[activity].filter((classData) => classData.status === 'Open');
     });
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (hideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
+  if (hideExamClasses && 'Exam' in courseActivities) delete courseActivities.Exam;
 
   // Filter out duplicate class periods
-  Object.keys(newActivities).forEach((activity) => {
-    const allPeriods = getAllPeriods(newActivities, activity);
+  Object.keys(courseActivities).forEach((activity) => {
+    const allPeriods = getAllPeriods(courseActivities, activity);
 
-    newActivities[activity].forEach((classData) => {
+    courseActivities[activity].forEach((classData) => {
       classData.periods = classData.periods.filter((period) => {
         const duplicates = allPeriods.filter((other) => areDuplicatePeriods(period, other));
 
@@ -51,14 +35,16 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   });
 
   // Filter out classes with no periods
-  Object.keys(newActivities).forEach((activity) => {
-    newActivities[activity] = newActivities[activity].filter((classData) => classData.periods.length !== 0);
+  Object.keys(courseActivities).forEach((activity) => {
+    courseActivities[activity] = courseActivities[activity].filter((classData) => classData.periods.length !== 0);
   });
 
   // Filter out activities with no classes
-  newActivities = Object.fromEntries(Object.entries(newActivities).filter(([_, classes]) => classes.length !== 0));
+  courseActivities = Object.fromEntries(
+    Object.entries(courseActivities).filter(([_, classes]) => classes.length !== 0),
+  );
 
-  const dropzones = Object.values(newActivities).flatMap((classDatas) =>
+  const dropzones = Object.values(courseActivities).flatMap((classDatas) =>
     classDatas.flatMap((classData) =>
       classData.periods.flatMap((period, i) => (
         <Dropzone
@@ -75,19 +61,21 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   return <>{dropzones}</>;
 };
 
-const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { earliestStartTime } = useContext(AppContext);
+const Dropzones: React.FC<DropzonesProps> = ({ courseActivities }) => {
+  const { earliestStartTime, selectedCourses } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
-  const { selectedCourses } = useContext(CourseContext);
 
-  const dropzones = selectedCourses.map((course) => (
-    <DropzoneGroup
-      key={course.code}
-      course={course}
-      color={assignedColors[course.code]}
-      earliestStartTime={earliestStartTime}
-    />
-  ));
+  const dropzones: JSX.Element[] = [];
+  for (const [courseId, course] of Object.entries(selectedCourses)) {
+    dropzones.push(
+      <DropzoneGroup
+        key={courseId}
+        courseActivities={courseActivities[courseId]}
+        color={course.color}
+        earliestStartTime={earliestStartTime}
+      />,
+    );
+  }
 
   const inventoryColor = isDarkMode ? '255, 255, 255' : '0, 0, 0';
 

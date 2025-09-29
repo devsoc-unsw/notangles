@@ -12,34 +12,6 @@ export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
 export type Modes = 'In Person' | 'Online';
-export interface GQLCourseOverview {
-  id: string;
-  code: string;
-  name: string;
-  career: string;
-  modes: Modes[];
-  faculty: string;
-  inPerson: boolean;
-  online: boolean;
-}
-
-export interface NewCourseData {
-  code: CourseCode;
-  color: string;
-  classIds: string[];
-}
-
-export interface NewTimetableData {
-  name: string;
-  primary: boolean;
-  courseIds: string[];
-  courses: Record<string, NewCourseData>;
-}
-export interface NewData {
-  timetableIds: string[];
-  timetables: Record<string, NewTimetableData>;
-  selectedTimetableId: string;
-}
 
 export interface CourseData {
   code: CourseCode;

@@ -2,6 +2,7 @@ import { ContentPaste, MoreHoriz } from '@mui/icons-material';
 import { Grid, ListItemIcon, ListItemText, MenuItem, TouchRippleActions } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+import { useGetCourseDataFromCourseId } from '../../api/graphql/queries';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
@@ -23,10 +24,10 @@ import { registerCard, setDragTarget, unregisterCard } from '../../utils/Drag';
 import { getCourseFromClassData } from '../../utils/getClassCourse';
 import ExpandedView from './ExpandedClassView';
 import PeriodMetadata from './PeriodMetadata';
-import { useGetCourseDataFromCourseId } from '../../api/graphql/queries';
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
   classCard,
+  classData,
   color,
   y,
   handleSelectClass,
@@ -44,18 +45,19 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   const { isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
   const { term, earliestStartTime, days, setIsDrag, setAlertMsg, setInfoVisibility, setErrorVisibility } =
     useContext(AppContext);
-  const { selectedCourses, createdEvents, setCreatedEvents } = useContext(CourseContext);
+  const { createdEvents, setCreatedEvents } = useContext(CourseContext);
+
+  const { selectedCourses } = useContext(AppContext);
 
   let currCourse: CourseData | null = null;
 
-  if (classCard.courseId === undefined) throw new Error('Class card missing courseId');
   // const test = useGetCourseDataFromCourseId(classCard.courseId, term.substring(0, 2));
-  try {
-    currCourse = getCourseFromClassData(selectedCourses, classCard);
-  } catch (err) {
-    setAlertMsg(unknownErrorMessage);
-    setErrorVisibility(true);
-  }
+  // try {
+  //   currCourse = getCourseFromClassData(selectedCourses, classCard);
+  // } catch (err) {
+  //   setAlertMsg(unknownErrorMessage);
+  //   setErrorVisibility(true);
+  // }
 
   const element = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<TouchRippleActions | null>(null);
@@ -153,13 +155,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     };
   });
 
-  if (!currCourse) return <></>;
+  // if (!currCourse) return <></>;
 
   let activityMaxPeriods = 0;
   if (classCard.type === 'inventory') {
-    activityMaxPeriods = Math.max(
-      ...currCourse.activities[classCard.activity].map((classData) => classData.periods.length),
-    );
+    activityMaxPeriods = classCard.numberClass;
   }
 
   return (
@@ -210,11 +210,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
             <StyledCardInnerGrid container justifyContent="center" alignItems="center">
               <Grid size={11}>
                 <StyledCardName>
-                  {classCard.courseCode} {classCard.activity}
+                  {selectedCourses[classCard.courseId].code} {classCard.activity}
                 </StyledCardName>
                 <StyledCardInfo>
-                  {classCard.type === 'class' ? (
-                    !hideClassInfo && <PeriodMetadata period={classCard} />
+                  {classCard.type === 'class' && classData ? (
+                    !hideClassInfo && <PeriodMetadata period={classCard} classData={classData} />
                   ) : (
                     <>
                       {activityMaxPeriods} class
@@ -239,7 +239,7 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
       </StyledCard>
       {classCard.type === 'class' && (
         <ExpandedView
-          code={classCard.courseCode}
+          code={selectedCourses[classCard.courseId].code}
           classPeriod={classCard}
           popupOpen={popupOpen}
           handleClose={handleClose}

@@ -30,7 +30,7 @@ import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { decodeColor } from '../../hooks/useColorDecoder';
 import { colorMapper } from '../../hooks/useColorMapper';
-import { CourseCode, GQLCourseOverview } from '../../interfaces/Periods';
+import { GQLCourseOverview } from '../../interfaces/Timetable';
 
 const SEARCH_DELAY = 300;
 
@@ -256,7 +256,7 @@ const CourseSelect: React.FC = () => {
    * @param courseCode A course code
    * @returns The area of study of the course
    */
-  const getCourseArea = (courseCode: CourseCode) => courseCode.substring(0, 4);
+  const getCourseArea = (courseCode: string) => courseCode.substring(0, 4);
 
   /**
    * @param faculty The faculty of the course

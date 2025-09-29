@@ -1,4 +1,4 @@
-import { NewTimetableData } from './src/interfaces/Periods';
+import { NewTimetableData } from './src/interfaces/Timetable';
 
 const initData = {
   timetableIds: [

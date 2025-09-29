@@ -3,17 +3,12 @@ import { createContext, useState } from 'react';
 import newData from '../../test';
 import { getDefaultEndTime, getDefaultStartTime } from '../constants/timetable';
 import { CoursesList } from '../interfaces/Courses';
-import {
-  CourseDataMap,
-  DisplayTimetablesMap,
-  NewCourseData,
-  NewTimetableData,
-  Term,
-  TermDataList,
-} from '../interfaces/Periods';
+import { CourseDataMap, DisplayTimetablesMap, Term, TermDataList } from '../interfaces/Periods';
 import { AppContextProviderProps } from '../interfaces/PropTypes';
+import { NewCourseData, NewTimetableData } from '../interfaces/Timetable';
 
 export interface IAppContext {
+  // TODO: migrate these to react-query
   timetableIds: string[];
   setTimetableIds: (newTimetableIds: string[]) => void;
 
@@ -27,6 +22,7 @@ export interface IAppContext {
   setSelectedCourses: (newSelectedCourses: Record<string, NewCourseData>) => void;
   addCourse: (newCourse: { id: string; code: string; color: string }) => void;
   deleteCourse: (courseId: string) => void;
+  // End TODO
 
   alertMsg: string;
   setAlertMsg: (newErrorMsg: string) => void;

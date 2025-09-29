@@ -1,15 +1,7 @@
 import { contentPadding, lightTheme } from '../constants/theme';
 import { timetableWidth } from '../constants/timetable';
-import {
-  ClassData,
-  ClassPeriod,
-  ClassTime,
-  CourseData,
-  EventPeriod,
-  EventTime,
-  InInventory,
-  InventoryPeriod,
-} from '../interfaces/Periods';
+import { CourseData, EventPeriod, EventTime, InInventory } from '../interfaces/Periods';
+import { ClassData, ClassPeriod, ClassTime, InventoryPeriod } from '../interfaces/Timetable';
 
 export type ClassCard = ClassPeriod | InventoryPeriod;
 

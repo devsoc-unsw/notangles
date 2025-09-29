@@ -2,11 +2,15 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useState } from 'react';
 
+import { useGetAllClassesFromCourseIds } from '../../api/graphql/queries';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { contentPadding, inventoryMargin } from '../../constants/theme';
 import { timetableWidth } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { EventPeriod } from '../../interfaces/Periods';
 import { TimetableProps } from '../../interfaces/PropTypes';
+import { ClassData, CourseActivities } from '../../interfaces/Timetable';
+import { graphQLClassesToClassData } from '../../utils/graphQLClassesToClassData';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
@@ -42,11 +46,35 @@ const StyledTimetableScroll = styled(Box)`
 `;
 
 const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass }) => {
-  const { days, earliestStartTime, latestEndTime } = useContext(AppContext);
+  // TODO: migrate selectedCourses to react-query
+  const { days, earliestStartTime, latestEndTime, selectedCourses, term } = useContext(AppContext);
   const [copiedEvent, setCopiedEvent] = useState<EventPeriod | null>(null);
+  const { convertToLocalTimezone } = useGetUserSettingsQuery();
+
+  const courseIds = Object.keys(selectedCourses);
+  // Fetch all classes for the selected courses
+  const gqlClasses = useGetAllClassesFromCourseIds(courseIds, term.substring(0, 2));
+
+  // Covert all graphql classes to ClassData
+  const classes: Record<string, ClassData[]> = graphQLClassesToClassData(gqlClasses, convertToLocalTimezone);
+
+  // Format the classes into courseActivities
+  const courseActivities: CourseActivities = {};
+  courseIds.forEach((courseId) => {
+    courseActivities[courseId] = {};
+    if (courseId in classes) {
+      classes[courseId].forEach((classData) => {
+        if (!(classData.activity in courseActivities[courseId])) {
+          courseActivities[courseId][classData.activity] = [];
+        }
+        courseActivities[courseId][classData.activity].push(classData);
+      });
+    }
+  });
 
   // Calculate the correct number of rows, accounting for when the earliest start time is later than latest end time.
   // E.g. starting at 7pm and ending at 4am.
+  // TODO: fix the logic by using the new class data
   const numRows =
     latestEndTime > earliestStartTime ? latestEndTime - earliestStartTime : 24 - earliestStartTime + latestEndTime;
 
@@ -54,9 +82,10 @@ const Timetable: React.FC<TimetableProps> = ({ assignedColors, handleSelectClass
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable cols={days.length} rows={numRows}>
         <TimetableLayout copiedEvent={copiedEvent} setCopiedEvent={setCopiedEvent} />
-        <Dropzones assignedColors={assignedColors} />
+        <Dropzones courseActivities={courseActivities} />
         <DroppedCards
           assignedColors={assignedColors}
+          courseActivities={courseActivities}
           handleSelectClass={handleSelectClass}
           setCopiedEvent={setCopiedEvent}
           copiedEvent={copiedEvent}

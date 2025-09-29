@@ -1,4 +1,4 @@
-import { ClassPeriod } from '../interfaces/Periods';
+import { ClassPeriod } from '../interfaces/Timetable';
 
 /**
  * @param a A class period

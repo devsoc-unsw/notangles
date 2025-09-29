@@ -3,8 +3,9 @@ import { styled } from '@mui/material/styles';
 import React, { useEffect, useRef } from 'react';
 
 import { borderRadius } from '../../constants/theme';
-import { ClassPeriod, InInventory } from '../../interfaces/Periods';
+import { InInventory } from '../../interfaces/Periods';
 import { DropzoneProps } from '../../interfaces/PropTypes';
+import { ClassPeriod } from '../../interfaces/Timetable';
 import { defaultTransition, registerDropzone, unregisterDropzone } from '../../utils/Drag';
 import { classTranslateY, getClassHeight } from '../../utils/translateCard';
 

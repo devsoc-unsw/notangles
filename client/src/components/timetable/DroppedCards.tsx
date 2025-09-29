@@ -5,8 +5,10 @@ import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { Activity, CourseCode, InventoryPeriod } from '../../interfaces/Periods';
+import { decodeColor } from '../../hooks/useColorDecoder';
+// import { Activity, CourseCode, InventoryPeriod } from '../../interfaces/Periods';
 import { DroppedCardsProps } from '../../interfaces/PropTypes';
+import { ClassData, InventoryPeriod } from '../../interfaces/Timetable';
 import { findClashes, getClashInfo } from '../../utils/clashes';
 import { ClassCard, morphCards } from '../../utils/Drag';
 import DroppedClass from './DroppedClass';
@@ -14,6 +16,7 @@ import DroppedEvent from './DroppedEvent';
 
 const DroppedCards: React.FC<DroppedCardsProps> = ({
   assignedColors,
+  courseActivities,
   handleSelectClass,
   setCopiedEvent,
   copiedEvent,
@@ -21,7 +24,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { hideExamClasses } = useGetUserSettingsQuery();
+  const { hideExamClasses, preferredTheme } = useGetUserSettingsQuery();
   const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedClasses, createdEvents } = useContext(CourseContext);
 
@@ -41,50 +44,47 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
    * @param activity The activity
    * @returns The inventory period corresponding to that activity
    */
-  const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
-    selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
+  // const getInventoryPeriod = (courseCode: CourseCode, activity: Activity) =>
+  //   selectedCourses.find((course) => course.code === courseCode)?.inventoryData[activity];
 
-  // Get all scheduled and unscheduled periods
-  Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
-    Object.entries(activities).forEach(([activity, classData]) => {
-      if (hideExamClasses && activity === 'Exam') return;
+  // // Get all scheduled and unscheduled periods
+  // Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
+  //   Object.entries(activities).forEach(([activity, classData]) => {
+  //     if (hideExamClasses && activity === 'Exam') return;
 
-      if (classData) {
-        // The current period is a scheduled
-        classData.periods.forEach((classPeriod) => {
-          classCards.push(classPeriod);
-        });
-      } else {
-        // The current period is in the inventory
-        const inventoryPeriod = getInventoryPeriod(courseCode, activity);
-        if (inventoryPeriod) {
-          classCards.push(inventoryPeriod);
+  //     if (classData) {
+  //       // The current period is a scheduled
+  //       classData.periods.forEach((classPeriod) => {
+  //         classCards.push(classPeriod);
+  //       });
+  //     } else {
+  //       // The current period is in the inventory
+  //       const inventoryPeriod = getInventoryPeriod(courseCode, activity);
+  //       if (inventoryPeriod) {
+  //         classCards.push(inventoryPeriod);
 
-          if (!inventoryCards.current.includes(inventoryPeriod)) {
-            inventoryCards.current.push(inventoryPeriod);
-          }
-        }
-      }
-    });
-  });
+  //         if (!inventoryCards.current.includes(inventoryPeriod)) {
+  //           inventoryCards.current.push(inventoryPeriod);
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
 
-  // Clear any inventory cards which no longer exist
-  inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card));
+  // const prevCardKeys = new Map(cardKeys);
+  // morphCards(prevClassCards.current, classCards).forEach((morphCard, i) => {
+  //   const prevCard = prevClassCards.current[i];
 
-  const prevCardKeys = new Map(cardKeys);
-  morphCards(prevClassCards.current, classCards).forEach((morphCard, i) => {
-    const prevCard = prevClassCards.current[i];
+  //   if (morphCard && morphCard !== prevCard) {
+  //     const cardKey = prevCardKeys.get(prevCard);
 
-    if (morphCard && morphCard !== prevCard) {
-      const cardKey = prevCardKeys.get(prevCard);
+  //     if (cardKey) {
+  //       cardKeys.set(morphCard as ClassCard, cardKey);
+  //     }
+  //   }
+  // });
 
-      if (cardKey) {
-        cardKeys.set(morphCard as ClassCard, cardKey);
-      }
-    }
-  });
-
-  prevClassCards.current = [...classCards];
+  // prevClassCards.current = [...classCards];
 
   // Handles getting width of a cell in the grid
   useLayoutEffect(() => {
@@ -120,52 +120,62 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
 
   const { selectedCourses, term } = useContext(AppContext);
   const courseIds = Object.keys(selectedCourses);
-  const courseActivities = useGetDistinctActivitiesForCourse(courseIds, term.substring(0, 2));
-  console.log('Course Activities', courseActivities);
-
-  // Get all selected classes for each course
-  const selectedClassIds: string[] = [];
-  Object.values(selectedCourses).forEach((course) => {
-    selectedClassIds.push(...course.classIds);
-  });
-
-  const selectedCourseClasses = useGetClassesActivityByClassIds(selectedClassIds, term.substring(0, 2));
-  console.log('Selected Course Activities', selectedCourseClasses);
-
-  // Unselect activities
-  courseActivities.forEach((activities, courseId) => {
-    if (selectedCourseClasses?.has(courseId)) {
-      const selectedActivity = selectedCourseClasses.get(courseId);
-      activities.forEach((activity) => {
-        if (activity !== selectedActivity) {
-          const inventoryPeriod: InventoryPeriod = {
-            type: 'inventory',
-            classId: null,
-            courseCode: selectedCourses[courseId].code,
-            courseId: courseId,
-            activity: activity,
-          };
-          classCards.push(inventoryPeriod);
+  console.log('DroppedCards - courseActivities:', courseActivities);
+  const classCardDataMap = new Map<ClassCard, ClassData>();
+  // For each course, get all selected classes
+  courseIds.forEach((courseId) => {
+    if (courseId in courseActivities) {
+      const selectedClassIds = selectedCourses[courseId].classIds;
+      const remainingActivities = new Set<string>();
+      Object.keys(courseActivities[courseId]).forEach((activity) => {
+        courseActivities[courseId][activity].forEach((classData) => {
+          if (selectedClassIds.includes(classData.id)) {
+            // If this class is selected, remove the activity from remainingActivities
+            if (remainingActivities.has(activity)) remainingActivities.delete(activity);
+            // Add the selected class to classCards as ClassPeriod
+            classData.periods.forEach((classPeriod) => {
+              classCards.push(classPeriod);
+              classCardDataMap.set(classPeriod, classData);
+            });
+          } else {
+            // If this class is not selected, add the activity to remainingActivities
+            remainingActivities.add(activity);
+          }
+        });
+      });
+      // Add the remaining activities to classCards as InventoryPeriod
+      remainingActivities.forEach((activity) => {
+        const inventoryPeriod: InventoryPeriod = {
+          type: 'inventory',
+          courseId: courseId,
+          activity: activity,
+          numberClass: Math.max(...courseActivities[courseId][activity].map((classData) => classData.periods.length)),
+        };
+        classCards.push(inventoryPeriod);
+        if (!inventoryCards.current.includes(inventoryPeriod)) {
           inventoryCards.current.push(inventoryPeriod);
-        } else {
-          // TODO handle case of selected activity
         }
       });
     }
   });
 
+  // Clear any inventory cards which no longer exist
+  inventoryCards.current = inventoryCards.current.filter((card) => classCards.includes(card));
+
   // Generate classes
   classCards.forEach((classCard) => {
     try {
       let key = cardKeys.get(classCard);
-      key = key !== undefined ? key : ++keyCounter.current;
+      key = key ?? ++keyCounter.current;
       const [cardWidth, clashIndex, clashColour] = getClashInfo(clashes, classCard);
+      const currClassData = classCardDataMap.get(classCard);
 
       droppedClasses.push(
         <DroppedClass
           key={key}
           classCard={classCard}
-          color={assignedColors[classCard.courseCode]}
+          classData={currClassData}
+          color={classCard.courseId ? decodeColor(selectedCourses[classCard.courseId].color, preferredTheme) : '#999'}
           y={classCard.type === 'inventory' ? inventoryCards.current.indexOf(classCard) : undefined}
           handleSelectClass={handleSelectClass}
           cardWidth={cardWidth as number}
@@ -191,6 +201,9 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
     if (!classCards.includes(classCard)) cardKeys.delete(classCard);
   });
 
+  console.log('Class Cards', classCards);
+  console.log('Dropped Classes', droppedClasses);
+  console.log('Inventory Cards', inventoryCards.current);
   // Generate events
   Object.entries(createdEvents).forEach(([key, eventPeriod]) => {
     try {

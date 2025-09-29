@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getTimeZoneOffset } from '../constants/timetable';
-import { DbCourse, DbTimes } from '../interfaces/Database';
+import { DbClass, DbCourse, DbTimes } from '../interfaces/Database';
 import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
 import { areDuplicatePeriods } from './areDuplicatePeriods';
 import { getAllPeriods } from './getAllPeriods';

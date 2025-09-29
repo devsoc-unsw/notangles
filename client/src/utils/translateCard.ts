@@ -26,7 +26,7 @@ export const classTranslateX = (
 
     // cellWidth + 1 is the length of the gap between two cells, and we shift by this length times the day of the week of the class to shift it into the right cell
     // cellWidth / numClashing gives the width of this card in px, so we shift it extra by its width times the index it's in in the clash group
-    return `${(cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing)}px`;
+    return `${String((cellWidth + 1) * (card.time.day - 1) + clashIndex * (cellWidth / numClashing))}px`;
     // p.s. The reason we are hardcoding cellWidth in pixels is so that it doesn't do such a wonky transition when the width of the card gets changed reacting to cards being moved around
   }
 
@@ -35,7 +35,7 @@ export const classTranslateX = (
     // This shifts by the cards length times the number of days
     // plus nDays + 1 to account for the amount of column borders (of length 1px),
     // plus the margin separating the days of the week from unscheduled section
-    return `calc(${nDays * 100}% + ${nDays + 1 + inventoryMargin}px)`;
+    return `calc(${String(nDays * 100)}% + ${String(nDays + 1 + inventoryMargin)}px)`;
   }
 
   return 0;
@@ -49,7 +49,7 @@ export const getClassHeight = (card: ClassCard | InInventory | EventPeriod) => {
   // height compared to standard row height
   const heightFactor = getHeightFactor(card);
 
-  return `${rowHeight * heightFactor + (heightFactor - 1)}px`;
+  return `${String(rowHeight * heightFactor + (heightFactor - 1))}px`;
 };
 
 /**
@@ -86,5 +86,5 @@ export const classTranslateY = (classCard: ClassCard | EventPeriod, earliestStar
     result = y;
   }
 
-  return `calc(${result * 100}% + ${result}px)`;
+  return `calc(${String(result * 100)}% + ${String(result)}px)`;
 };
