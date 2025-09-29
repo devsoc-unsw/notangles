@@ -26,6 +26,7 @@ import {
 } from '../../styles/TimetableTabStyles';
 import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
+import History from '../controls/History';
 
 const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
@@ -160,67 +161,74 @@ const TimetableTabs: React.FC = () => {
     setAnchorElement({ x: event.clientX, y: event.clientY });
   };
 
+  
   return (
-    <TabsSection>
-      <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
-        <DragDropContext onDragEnd={handleSortTabs}>
-          <Droppable droppableId="tabs" direction="horizontal">
-            {(props) => (
-              <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {Object.keys(displayTimetables).length > 0 && term && displayTimetables[term]
-                  ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
-                      <Draggable draggableId={index.toString()} index={index} key={index}>
-                        {(props) => {
-                          if (props.draggableProps.style?.transform) {
-                            const horizShift = props.draggableProps.style?.transform.match(/(-?\d+)/g)?.map(Number)![0];
-                            // forcing horizontal movement
-                            props.draggableProps.style.transform = `translate(${horizShift ? horizShift : 0}px, 0)`;
-                          }
-                          return (
-                            <Box
-                              onMouseDown={() => {
-                                handleSwitchTimetables(displayTimetables[term], index);
-                              }}
-                              onContextMenu={(e) => {
-                                handleRightTabClick(e, index);
-                              }}
-                              ref={props.innerRef}
-                              {...props.draggableProps}
-                              {...props.dragHandleProps}
-                              sx={TabStyle(index, selectedTimetable)}
-                            >
-                              {displayTimetables[term][index].isPrimary && (
-                                <Tooltip title="A primary timetable is the timetable for social features.">
-                                  <Star fontSize="small" className="pr-1.5"></Star>
-                                </Tooltip>
-                              )}
-                              {timetable.name}
-                              {selectedTimetable === index ? (
-                                <StyledSpan onClick={handleMenuClick}>
-                                  <MoreHoriz />
-                                </StyledSpan>
-                              ) : (
-                                <></>
-                              )}
-                            </Box>
-                          );
-                        }}
-                      </Draggable>
-                    ))
-                  : null}
-                {props.placeholder}
-              </StyledTabs>
-            )}
-          </Droppable>
-        </DragDropContext>
-        <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
-        <Tooltip title={addTimetabletip}>
-          <StyledIconButton tabTheme={tabTheme} id="create-timetables-button" onClick={handleCreateTimetable}>
-            <Add />
-          </StyledIconButton>
-        </Tooltip>
-      </TabsWrapper>
-    </TabsSection>
+    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mt: 2, pr: `${16 + 16}px` }}>
+      {/* Tabs section (left) */}
+      <TabsSection sx={{ flexGrow: 1 }}>
+        <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
+          <DragDropContext onDragEnd={handleSortTabs}>
+            <Droppable droppableId="tabs" direction="horizontal">
+              {(props) => (
+                <StyledTabs ref={props.innerRef} {...props.droppableProps}>
+                  {Object.keys(displayTimetables).length > 0 && term && displayTimetables[term]
+                    ? displayTimetables[term]?.map((timetable: TimetableData, index: number) => (
+                        <Draggable draggableId={index.toString()} index={index} key={index}>
+                          {(props) => {
+                            if (props.draggableProps.style?.transform) {
+                              const horizShift = props.draggableProps.style?.transform.match(/(-?\d+)/g)?.map(Number)![0];
+                              props.draggableProps.style.transform = `translate(${horizShift ? horizShift : 0}px, 0)`;
+                            }
+                            return (
+                              <Box
+                                onMouseDown={() => {
+                                  handleSwitchTimetables(displayTimetables[term], index);
+                                }}
+                                onContextMenu={(e) => {
+                                  handleRightTabClick(e, index);
+                                }}
+                                ref={props.innerRef}
+                                {...props.draggableProps}
+                                {...props.dragHandleProps}
+                                sx={TabStyle(index, selectedTimetable)}
+                              >
+                                {displayTimetables[term][index].isPrimary && (
+                                  <Tooltip title="A primary timetable is the timetable for social features.">
+                                    <Star fontSize="small" className="pr-1.5"></Star>
+                                  </Tooltip>
+                                )}
+                                {timetable.name}
+                                {selectedTimetable === index ? (
+                                  <StyledSpan onClick={handleMenuClick}>
+                                    <MoreHoriz />
+                                  </StyledSpan>
+                                ) : (
+                                  <></>
+                                )}
+                              </Box>
+                            );
+                          }}
+                        </Draggable>
+                      ))
+                    : null}
+                  {props.placeholder}
+                </StyledTabs>
+              )}
+            </Droppable>
+          </DragDropContext>
+          <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
+          <Tooltip title={addTimetabletip}>
+            <StyledIconButton tabTheme={tabTheme} id="create-timetables-button" onClick={handleCreateTimetable}>
+              <Add />
+            </StyledIconButton>
+          </Tooltip>
+        </TabsWrapper>
+      </TabsSection>
+      {/* History buttons (right) */}
+      <Box sx={{ ml: 2 }}>
+        <History />
+      </Box>
+    </Box>
   );
 };
 export { TimetableTabs };
