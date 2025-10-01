@@ -17,16 +17,3 @@ export class AcceptFriendRequestDto {
 export class RejectFriendRequestDto {
   requestorCode: string;
 }
-
-export class Friendship {
-  id: string;
-  user1Id: string;
-  user2Id: string;
-  status: Status;
-}
-
-export enum Status {
-  REQ_UID1,
-  REQ_UID2,
-  FRIEND,
-}
