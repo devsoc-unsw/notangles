@@ -13,7 +13,6 @@ import {
   CancelFriendRequestDto,
   AcceptFriendRequestDto,
   RejectFriendRequestDto,
-  Status,
 } from './types';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
