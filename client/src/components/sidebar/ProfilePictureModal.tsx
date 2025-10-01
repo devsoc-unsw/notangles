@@ -1,26 +1,21 @@
-import React, { useContext, useState, useRef, useEffect } from 'react'
-import ReactCrop, {
-  centerCrop,
-  makeAspectCrop,
-  Crop,
-  PixelCrop,
-} from 'react-image-crop'
+import React, { useState, useRef, useEffect } from 'react';
+import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
 import { API_URL } from '../../api/config';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { UserContext } from '../../context/UserContext';
-import { emptyProfile } from './groupsSidebar/friends/UserProfile'
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import { canvasPreview } from './canvasPreview'
-import { useDebounceEffect } from './useDebounceEffect'
+import { canvasPreview } from './canvasPreview';
+import { useDebounceEffect } from './useDebounceEffect';
 
-import 'react-image-crop/dist/ReactCrop.css'
-import { Button, styled } from '@mui/material'
+import 'react-image-crop/dist/ReactCrop.css';
+import { Button, styled } from '@mui/material';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
+import { useAuth } from '../../hooks/useAuth';
+import { emptyProfile } from './friends/UserProfile';
 
 const MAX_FILE_SIZE_BYTES = 2000000;
 
@@ -38,47 +33,43 @@ const VisuallyHiddenInput = styled('input')({
 
 const StyledContainer = styled('div')({
   margin: '20px 0',
-  padding: '0 20px'
+  padding: '0 20px',
 });
 
 const StyledPromptText = styled('div')({
   fontWeight: 'bold',
   marginBottom: '10px',
-})
+});
 
 const fileButtonProps = {
   marginTop: '30px',
   textTransform: 'none',
   fontSize: '16px',
-}
+};
 
 const removeButtonProps = {
   marginTop: '30px',
   marginLeft: '10px',
   textTransform: 'none',
   fontSize: '16px',
-}
+};
 
 const saveButtonProps = {
   marginTop: '10px',
   textTransform: 'none',
   fontSize: '16px',
-  width: '100%'
-}
+  width: '100%',
+};
 
 const StyledReactCrop = styled(ReactCrop)`
   width: 100%;
-  
+
   & * {
     width: 100%;
   }
 `;
 
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number,
-) {
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
   return centerCrop(
     makeAspectCrop(
       {
@@ -91,19 +82,19 @@ function centerAspectCrop(
     ),
     mediaWidth,
     mediaHeight,
-  )
+  );
 }
 
 export default function App() {
-  const [currentImgSrc, setCurrentImgSrc] = useState('')
-  const [newImgSrc, setNewImgSrc] = useState('')
+  const [currentImgSrc, setCurrentImgSrc] = useState('');
+  const [newImgSrc, setNewImgSrc] = useState('');
 
-  const imgRef = useRef<HTMLImageElement>(null)
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const aspect = 1;
-  const blobUrlRef = useRef('')
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+  const blobUrlRef = useRef('');
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -112,11 +103,11 @@ export default function App() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { user } = useContext(UserContext);
+  const { user } = useAuth();
 
   useEffect(() => {
-    setCurrentImgSrc(user.profileURL || emptyProfile);
-  }, [user, user.profileURL])
+    setCurrentImgSrc(user?.profilePictureUrl || emptyProfile);
+  }, [user]);
 
   const CustomDialog = () => (
     <Dialog open={isDialogOpen}>
@@ -128,7 +119,7 @@ export default function App() {
         <Button onClick={handleDelete}>Ok</Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 
   function onRemovePhoto() {
     setIsDialogOpen(true);
@@ -150,8 +141,8 @@ export default function App() {
         return;
       }
 
-      setCrop(undefined) // Makes crop preview update between images.
-      const reader = new FileReader()
+      setCrop(undefined); // Makes crop preview update between images.
+      const reader = new FileReader();
       reader.addEventListener('load', () => {
         setNewImgSrc(reader.result?.toString() || '');
       });
@@ -160,19 +151,19 @@ export default function App() {
         setErrorMsg('Error reading file, please try again');
         setNewImgSrc('');
         return;
-      })
+      });
 
-      reader.readAsDataURL(e.target.files[0])
+      reader.readAsDataURL(e.target.files[0]);
     }
   }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
-    const { width, height } = e.currentTarget
-    setCrop(centerAspectCrop(width, height, aspect))
+    const { width, height } = e.currentTarget;
+    setCrop(centerAspectCrop(width, height, aspect));
   }
 
   function getCroppedProfileV2() {
-    const canvas = document.querySelector("canvas");
+    const canvas = document.querySelector('canvas');
     if (canvas) {
       canvas.toBlob((blob) => {
         if (blob) {
@@ -185,7 +176,7 @@ export default function App() {
             if (reader.result) {
               setCurrentImgSrc(reader.result.toString());
             }
-          }
+          };
         }
       });
     }
@@ -193,22 +184,13 @@ export default function App() {
 
   useDebounceEffect(
     async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
-        canvasPreview(
-          imgRef.current,
-          previewCanvasRef.current,
-          completedCrop,
-        )
+      if (completedCrop?.width && completedCrop?.height && imgRef.current && previewCanvasRef.current) {
+        canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
       }
     },
     100,
     [completedCrop],
-  )
+  );
 
   function onSubmit() {
     getCroppedProfileV2();
@@ -217,7 +199,7 @@ export default function App() {
     setCurrentImgSrc(blobUrlRef.current);
     setNewImgSrc('');
     setSuccessAlertOpen(true);
-    setCrop(undefined)
+    setCrop(undefined);
     setCompletedCrop(undefined);
   }
 
@@ -262,71 +244,45 @@ export default function App() {
             minHeight={100}
             circularCrop
           >
-            <img
-              ref={imgRef}
-              src={newImgSrc}
-              onLoad={onImageLoad}
-            />
+            <img ref={imgRef} src={newImgSrc} onLoad={onImageLoad} />
           </StyledReactCrop>
         </>
       )}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {!completedCrop && <>
-          <Button
-            component="label"
-            role={undefined}
-            variant="outlined"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            sx={fileButtonProps}
-          >
-            Choose file
-            <VisuallyHiddenInput
-              type="file"
-              onChange={onSelectFile}
-              accept="image/*"
-            />
-          </Button>
-          <Button
-            onClick={onRemovePhoto}
-            variant="contained"
-            sx={removeButtonProps}
-            disableElevation
-          >
-            Remove photo
-          </Button>
-        </>}
+        {!completedCrop && (
+          <>
+            <Button
+              component="label"
+              role={undefined}
+              variant="outlined"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              sx={fileButtonProps}
+            >
+              Choose file
+              <VisuallyHiddenInput type="file" onChange={onSelectFile} accept="image/*" />
+            </Button>
+            <Button onClick={onRemovePhoto} variant="contained" sx={removeButtonProps} disableElevation>
+              Remove photo
+            </Button>
+          </>
+        )}
         {!!completedCrop && (
-          <Button
-            onClick={onSubmit}
-            variant="contained"
-            sx={saveButtonProps}
-            disableElevation
-          >
+          <Button onClick={onSubmit} variant="contained" sx={saveButtonProps} disableElevation>
             Set new profile picture
           </Button>
         )}
       </div>
 
       <Snackbar open={successAlertOpen} autoHideDuration={6000} onClose={() => setSuccessAlertOpen(false)}>
-        <Alert
-          onClose={() => setSuccessAlertOpen(false)}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setSuccessAlertOpen(false)} severity="success" variant="filled" sx={{ width: '100%' }}>
           <AlertTitle>Success</AlertTitle>
           Profile picture updated!
         </Alert>
       </Snackbar>
 
       <Snackbar open={isErrorAlertOpen} autoHideDuration={6000} onClose={() => setIsErrorAlertOpen(false)}>
-        <Alert
-          onClose={() => setIsErrorAlertOpen(false)}
-          severity="error"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setIsErrorAlertOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
           <AlertTitle>Error</AlertTitle>
           {errorMsg}
         </Alert>
@@ -335,10 +291,8 @@ export default function App() {
       <CustomDialog />
 
       <div style={{ display: 'none' }}>
-        <canvas
-          ref={previewCanvasRef}
-        />
+        <canvas ref={previewCanvasRef} />
       </div>
     </StyledContainer>
-  )
+  );
 }

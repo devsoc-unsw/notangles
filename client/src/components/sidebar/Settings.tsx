@@ -1,4 +1,3 @@
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FC, useMemo, useState } from 'react';
@@ -8,8 +7,9 @@ import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
-import { ArrowForwardIosOutlined } from '@mui/icons-material';
+import { ArrowBackIos, ArrowForwardIosOutlined } from '@mui/icons-material';
 import ProfilePictureModal from './ProfilePictureModal';
+import { useAuth } from '../../hooks/useAuth';
 
 const SettingsPadding = styled('div')`
   padding: 1vh 20px;
@@ -31,7 +31,11 @@ const ReturnText = styled(SettingsText)`
   padding: 0;
 `;
 
-const StyledArrowBackIosIcon = styled(ArrowBackIosIcon)`
+const StyledArrowBackIosIcon = styled(ArrowBackIos)`
+  height: 16px;
+`;
+
+const StyledArrowForwardIcon = styled(ArrowForwardIosOutlined)`
   height: 16px;
 `;
 
@@ -68,6 +72,7 @@ const Settings: FC = () => {
   const settings = useGetUserSettingsQuery();
   const { preferredTheme } = settings;
   const updateUserSettings = useSetUserSettings();
+  const { user } = useAuth();
 
   const nonTogglableSet = new Set<keyof UserSettings>(['preferredTheme', 'isDarkMode']);
 
@@ -90,21 +95,7 @@ const Settings: FC = () => {
             <ColorThemeOptions currentTheme={preferredTheme} />
           </ColorThemeOptionsContainer>
         )}
-        {isChangeProfilePicOpen && (
-          <>
-            <SettingButton
-              onClick={() => {
-                setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
-              }}
-            >
-              <ReturnText>
-                <StyledArrowBackIosIcon />
-                Return
-              </ReturnText>
-            </SettingButton>
-            <ProfilePictureModal />
-          </>
-        )}
+        {isChangeProfilePicOpen && <ProfilePictureModal />}
         {!isPreferredThemeOpen &&
           !isChangeProfilePicOpen &&
           settingsToggles.map((setting) => (
@@ -135,14 +126,14 @@ const Settings: FC = () => {
     return (
       <>
         {/* Only show option to change profile pic when user is logged in */}
-        {isHomepageOpen && !!user.userID && (
+        {isHomepageOpen && user?.id && (
           <SettingButton
             onClick={() => {
               setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
             }}
           >
             <SettingsText>Change Profile Picture</SettingsText>
-            <ArrowForwardIosOutlined />
+            <StyledArrowForwardIcon />
           </SettingButton>
         )}
         {isHomepageOpen && (
@@ -152,7 +143,7 @@ const Settings: FC = () => {
             }}
           >
             <SettingsText>Preferred Theme</SettingsText>
-            <ColorThemePreview />
+            <ColorThemePreview previewTheme={preferredTheme} />
           </SettingButton>
         )}
         {isPreferredThemeOpen && (
@@ -162,7 +153,7 @@ const Settings: FC = () => {
             }}
           >
             <SettingsText>
-              <ArrowBackIosIcon />
+              <StyledArrowBackIosIcon />
               Return
             </SettingsText>
           </SettingButton>
@@ -174,14 +165,14 @@ const Settings: FC = () => {
             }}
           >
             <SettingsText>
-              <ArrowBackIosIcon />
+              <StyledArrowBackIosIcon />
               Return
             </SettingsText>
           </SettingButton>
         )}
       </>
     );
-  }, [isChangeProfilePicOpen, isPreferredThemeOpen]);
+  }, [isChangeProfilePicOpen, isPreferredThemeOpen, user]);
 
   return (
     <>
