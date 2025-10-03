@@ -126,7 +126,7 @@ const Settings: FC = () => {
     return (
       <>
         {/* Only show option to change profile pic when user is logged in */}
-        {isHomepageOpen && user?.id && (
+        {isHomepageOpen && user?.id && !user.isGuest && (
           <SettingButton
             onClick={() => {
               setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
@@ -152,10 +152,10 @@ const Settings: FC = () => {
               setIsPreferredThemeOpen(!isPreferredThemeOpen);
             }}
           >
-            <SettingsText>
+            <ReturnText>
               <StyledArrowBackIosIcon />
               Return
-            </SettingsText>
+            </ReturnText>
           </SettingButton>
         )}
         {isChangeProfilePicOpen && (
@@ -164,10 +164,10 @@ const Settings: FC = () => {
               setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
             }}
           >
-            <SettingsText>
+            <ReturnText>
               <StyledArrowBackIosIcon />
               Return
-            </SettingsText>
+            </ReturnText>
           </SettingButton>
         )}
       </>
