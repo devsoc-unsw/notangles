@@ -163,7 +163,7 @@ const TimetableTabs: React.FC = () => {
 
   
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mt: 2, pr: `${16 + 16}px` }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mt: 2, pr: '32px' }}>
       {/* Tabs section (left) */}
       <TabsSection sx={{ flexGrow: 1 }}>
         <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
