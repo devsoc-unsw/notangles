@@ -195,29 +195,35 @@ export class TimetableController {
       classId,
     );
   }
-  
+
   @Get('event/:eventId')
   @UseGuards(AuthenticatedGuard)
   async getEventById(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
   ) {
-      try {
-        const eventDetails = await this.timetableService.getEvent(req.user.id, eventId);
-        return eventDetails;
-      } catch (error) {
-        if (error instanceof HttpException) {
-          throw error
-        }
-        throw new HttpException('Failed to get event details', HttpStatus.INTERNAL_SERVER_ERROR);
+    try {
+      const eventDetails = await this.timetableService.getEvent(
+        req.user.id,
+        eventId,
+      );
+      return eventDetails;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
       }
+      throw new HttpException(
+        'Failed to get event details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('event')
   @UseGuards(AuthenticatedGuard)
   async addEvent(
     @Req() req: AuthenticatedRequest,
-    @Body() body: { timetableId: string, event: EventParameters }
+    @Body() body: { timetableId: string; event: EventParameters },
   ) {
     try {
       const generateUniqueId = () => {
@@ -228,12 +234,20 @@ export class TimetableController {
 
       console.log(generateUniqueId());
 
-      await this.timetableService.addEvent(req.user.id, generateUniqueId(), body.event, body.timetableId);
+      await this.timetableService.addEvent(
+        req.user.id,
+        generateUniqueId(),
+        body.event,
+        body.timetableId,
+      );
     } catch (error) {
       if (error instanceof HttpException) {
-        throw error
+        throw error;
       }
-      throw new HttpException('Failed to add event', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to add event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return HttpStatus.CREATED;
   }
@@ -242,16 +256,19 @@ export class TimetableController {
   @UseGuards(AuthenticatedGuard)
   async deleteEvent(
     @Req() req: AuthenticatedRequest,
-    @Param('eventId') eventId: string
+    @Param('eventId') eventId: string,
   ) {
     try {
-      await this.timetableService.removeEvent(req.user.id, eventId)
-      return { message: 'Event deleted successfuly' }
+      await this.timetableService.removeEvent(req.user.id, eventId);
+      return { message: 'Event deleted successfuly' };
     } catch (error) {
       if (error instanceof HttpException) {
-        throw error
+        throw error;
       }
-      throw new HttpException('Failed to delete event', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to delete event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -260,16 +277,23 @@ export class TimetableController {
   async updateEvent(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
-    @Body() body: { eventDetails: Partial<EventParameters> } 
+    @Body() body: { eventDetails: Partial<EventParameters> },
   ) {
     try {
-      await this.timetableService.updateEvent(req.user.id, eventId, body.eventDetails);
+      await this.timetableService.updateEvent(
+        req.user.id,
+        eventId,
+        body.eventDetails,
+      );
       return { message: 'Event updated successfully' };
     } catch (error) {
       if (error instanceof HttpException) {
-        throw error
+        throw error;
       }
-      throw new HttpException('Failed to update event', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to update event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

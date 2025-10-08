@@ -26,7 +26,6 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
     }),
-
   );
 
   app.use(passport.initialize());

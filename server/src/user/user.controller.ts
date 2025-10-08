@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
-import { UserSettings, EventParameters } from './types';
+import { UserSettings } from './types';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
 @Controller('user')

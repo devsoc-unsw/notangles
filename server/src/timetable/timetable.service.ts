@@ -2,7 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
-import { AddCourseDto, CourseDetails, UserTimetable, EventParameters } from './types';
+import {
+  AddCourseDto,
+  CourseDetails,
+  UserTimetable,
+  EventParameters,
+} from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
 
@@ -430,25 +435,22 @@ export class TimetableService {
     ]);
   }
 
-  async getEvent(
-    userId: string,
-    eventId: string
-  ): Promise<EventParameters> {
+  async getEvent(userId: string, eventId: string): Promise<EventParameters> {
     try {
       const event = await this.prisma.event.findUnique({
-        select: { 
-          id: true, 
-          colour: true, 
-          dayOfWeek: true, 
-          start: true, 
-          end: true, 
-          type: true, 
+        select: {
+          id: true,
+          colour: true,
+          dayOfWeek: true,
+          start: true,
+          end: true,
+          type: true,
           title: true,
           description: true,
           location: true,
-          timetable: { select: { userId: true } }
+          timetable: { select: { userId: true } },
         },
-        where: { id: eventId  }
+        where: { id: eventId },
       });
 
       if (!event || event.timetable.userId !== userId) {
@@ -469,16 +471,13 @@ export class TimetableService {
 
       return eventData;
     } catch {
-      throw new HttpException(
-        'Event not in timetable',
-        HttpStatus.NOT_FOUND,
-      )
+      throw new HttpException('Event not in timetable', HttpStatus.NOT_FOUND);
     }
   }
 
   async getAllEvent(
     userId: string,
-    timetableId: string
+    timetableId: string,
   ): Promise<EventParameters[]> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
@@ -486,9 +485,9 @@ export class TimetableService {
     );
     validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
 
-    const events = await this.prisma.event.findMany({
+    const events = (await this.prisma.event.findMany({
       where: { timetableId },
-    }) as EventParameters[];
+    })) as EventParameters[];
 
     return events;
   }
@@ -497,7 +496,7 @@ export class TimetableService {
     userId: string,
     eventId: string,
     eventDetails: EventParameters,
-    timetableId: string
+    timetableId: string,
   ): Promise<void> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
@@ -512,7 +511,7 @@ export class TimetableService {
       throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
     }
 
-    await this.prisma.event.create({ 
+    await this.prisma.event.create({
       data: {
         id: eventId,
         title: eventDetails.title,
@@ -524,18 +523,15 @@ export class TimetableService {
         end: eventDetails.end,
         type: eventDetails.type,
         timetable: { connect: { id: timetableId } },
-      }
-    })
+      },
+    });
   }
 
-  async removeEvent(
-    userId: string,
-    eventId: string,
-  ): Promise<void> {
+  async removeEvent(userId: string, eventId: string): Promise<void> {
     if (!(await this.isEventOwnedByUser(userId, eventId))) {
       throw new HttpException('Event could not be found', HttpStatus.NOT_FOUND);
     }
-    
+
     await this.prisma.event.delete({
       where: {
         id: eventId,
@@ -544,9 +540,9 @@ export class TimetableService {
   }
 
   async updateEvent(
-  userId: string,
-  eventId: string,
-  eventDetails: Partial<EventParameters>
+    userId: string,
+    eventId: string,
+    eventDetails: Partial<EventParameters>,
   ): Promise<void> {
     const event = await this.getEvent(userId, eventId);
 
@@ -554,10 +550,14 @@ export class TimetableService {
       where: { id: event.id },
       data: {
         ...(eventDetails.title && { title: eventDetails.title }),
-        ...(eventDetails.description && { description: eventDetails.description }),
+        ...(eventDetails.description && {
+          description: eventDetails.description,
+        }),
         ...(eventDetails.location && { location: eventDetails.location }),
         ...(eventDetails.colour && { colour: eventDetails.colour }),
-        ...(eventDetails.dayOfWeek !== undefined && { dayOfWeek: eventDetails.dayOfWeek }),
+        ...(eventDetails.dayOfWeek !== undefined && {
+          dayOfWeek: eventDetails.dayOfWeek,
+        }),
         ...(eventDetails.start !== undefined && { start: eventDetails.start }),
         ...(eventDetails.end !== undefined && { end: eventDetails.end }),
         ...(eventDetails.type && { type: eventDetails.type }),
@@ -565,17 +565,14 @@ export class TimetableService {
     });
   }
 
-  async isEventOwnedByUser(
-    userId: string,
-    eventId: string
-  ): Promise<boolean> {
+  async isEventOwnedByUser(userId: string, eventId: string): Promise<boolean> {
     const event = await this.prisma.event.findUnique({
       select: { timetableId: true },
-      where: { id: eventId }
+      where: { id: eventId },
     });
 
     if (!event?.timetableId) {
-      return false; 
+      return false;
     }
 
     return this.isTimetableOwnedByUser(userId, event?.timetableId);

@@ -1,4 +1,4 @@
-import { EventType } from "src/generated/prisma/enums";
+import { EventType } from 'src/generated/prisma/enums';
 
 export class UserInfo {
   id: string;
