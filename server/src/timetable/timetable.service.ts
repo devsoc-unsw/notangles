@@ -84,7 +84,7 @@ export class TimetableService {
 
     const courseExistsOnGraphQL = await this.graphqlService.courseExists(
       courseId,
-      `%${timetable.term}%`,
+      timetable.term,
     );
     validate(
       courseExistsOnGraphQL,
