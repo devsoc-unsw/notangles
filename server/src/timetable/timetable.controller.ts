@@ -226,17 +226,8 @@ export class TimetableController {
     @Body() body: { timetableId: string; event: EventParameters },
   ) {
     try {
-      const generateUniqueId = () => {
-        const dateString = Date.now().toString(36);
-        const randomness = Math.random().toString(36).substring(2);
-        return dateString + randomness;
-      };
-
-      console.log(generateUniqueId());
-
       await this.timetableService.addEvent(
         req.user.id,
-        generateUniqueId(),
         body.event,
         body.timetableId,
       );
@@ -260,7 +251,6 @@ export class TimetableController {
   ) {
     try {
       await this.timetableService.removeEvent(req.user.id, eventId);
-      return { message: 'Event deleted successfuly' };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -285,7 +275,6 @@ export class TimetableController {
         eventId,
         body.eventDetails,
       );
-      return { message: 'Event updated successfully' };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

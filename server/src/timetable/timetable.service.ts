@@ -494,7 +494,6 @@ export class TimetableService {
 
   async addEvent(
     userId: string,
-    eventId: string,
     eventDetails: EventParameters,
     timetableId: string,
   ): Promise<void> {
@@ -513,7 +512,6 @@ export class TimetableService {
 
     await this.prisma.event.create({
       data: {
-        id: eventId,
         title: eventDetails.title,
         description: eventDetails.description ?? undefined,
         location: eventDetails.location ?? undefined,
@@ -566,15 +564,10 @@ export class TimetableService {
   }
 
   async isEventOwnedByUser(userId: string, eventId: string): Promise<boolean> {
-    const event = await this.prisma.event.findUnique({
-      select: { timetableId: true },
-      where: { id: eventId },
+    const hit = await this.prisma.event.findFirst({
+      where: { id: eventId, timetable: { userId } },
+      select: { id: true },
     });
-
-    if (!event?.timetableId) {
-      return false;
-    }
-
-    return this.isTimetableOwnedByUser(userId, event?.timetableId);
+    return !!hit;
   }
 }
