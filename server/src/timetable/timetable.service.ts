@@ -88,7 +88,7 @@ export class TimetableService {
     );
     validate(
       courseExistsOnGraphQL,
-      'Course does not exist' + `in term ${timetable.term}` + courseId,
+      'Course does not exist',
       HttpStatus.NOT_FOUND,
     );
 
