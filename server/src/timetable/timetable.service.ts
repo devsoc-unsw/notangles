@@ -514,7 +514,7 @@ export class TimetableService {
 
     await this.prisma.event.create({ 
       data: {
-        id: eventDetails.id,
+        id: eventId,
         title: eventDetails.title,
         description: eventDetails.description ?? undefined,
         location: eventDetails.location ?? undefined,

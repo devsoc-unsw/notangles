@@ -220,7 +220,15 @@ export class TimetableController {
     @Body() body: { timetableId: string, event: EventParameters }
   ) {
     try {
-      await this.timetableService.addEvent(req.user.id, body.event.id, body.event, body.timetableId);
+      const generateUniqueId = () => {
+        const dateString = Date.now().toString(36);
+        const randomness = Math.random().toString(36).substring(2);
+        return dateString + randomness;
+      };
+
+      console.log(generateUniqueId());
+
+      await this.timetableService.addEvent(req.user.id, generateUniqueId(), body.event, body.timetableId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error
@@ -230,15 +238,15 @@ export class TimetableController {
     return HttpStatus.CREATED;
   }
 
-  @Delete('event/:timetableId/:eventId')
+  @Delete('event/:eventId')
   @UseGuards(AuthenticatedGuard)
   async deleteEvent(
     @Req() req: AuthenticatedRequest,
-    @Param('timetableId') timetableId: string,
     @Param('eventId') eventId: string
   ) {
     try {
-      await this.timetableService.removeEvent(eventId, timetableId)
+      await this.timetableService.removeEvent(req.user.id, eventId)
+      return { message: 'Event deleted successfuly' }
     } catch (error) {
       if (error instanceof HttpException) {
         throw error
