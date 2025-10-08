@@ -128,6 +128,7 @@ export class AuthService {
             name: timetableName,
             year: year,
             term,
+            primary: true,
           },
         });
       }
