@@ -1,4 +1,5 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import axios from 'axios';
 
 export enum Env {
   DEV = 'development',
@@ -12,7 +13,9 @@ interface Config {
   auto: string;
   server: string;
 }
-const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
+
+// TODO: Load from .env file
+const HASURAGRES_GRAPHQL_API = 'https://graphqlstaging.devsoc.app/v1/graphql';
 const LOCAL = 'http://localhost:3001';
 
 export const client = new ApolloClient({
@@ -30,3 +33,11 @@ const API_CONFIG: Record<string, Config> = Object.freeze({
   [Env.PROD]: { auto: `/api/auto`, server: `/api` },
 });
 export const API_URL: Config = API_CONFIG[import.meta.env.VITE_APP_ENVIRONMENT || Env.DEV];
+
+export const apiClient = axios.create({
+  baseURL: API_URL.server,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});

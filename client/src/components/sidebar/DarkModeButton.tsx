@@ -1,11 +1,9 @@
 import { LightMode as LightModeIcon, NightsStay as DarkModeIcon } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useContext } from 'react';
 
 import { useSetUserSettings } from '../../api/user/mutations';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
-import { AppContext } from '../../context/AppContext';
 
 const ToggleDarkModeButton = styled(IconButton)`
   display: flex;
@@ -19,10 +17,9 @@ const IndividualComponentTypography = styled(Typography)`
   font-size: 16px;
 `;
 
-const DarkModeButton = () => {
+const DarkModeButton = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
   const { isDarkMode } = useGetUserSettingsQuery();
   const updateUserSettings = useSetUserSettings();
-  const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <>

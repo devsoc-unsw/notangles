@@ -96,11 +96,11 @@ export class TimetableController {
 
   @Get('courses/:timetableId')
   @UseGuards(AuthenticatedGuard)
-  async getCourseIds(
+  async getCourses(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
   ) {
-    return await this.timetableService.getCourseIds(req.user.id, timetableId);
+    return await this.timetableService.getCourses(req.user.id, timetableId);
   }
 
   @Post('course/:timetableId/:courseId')

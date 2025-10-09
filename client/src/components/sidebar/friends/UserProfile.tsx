@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
-import React, { useContext } from 'react';
-
-import { AppContext } from '../../../context/AppContext';
+import React from 'react';
 
 export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
 
@@ -26,13 +24,12 @@ const getFullName = (firstName: string, lastName: string) => {
   return fullname;
 };
 
-const UserProfile: React.FC<{ firstName: string; lastName: string; profileURL?: string }> = ({
-  firstName,
-  lastName,
-  profileURL,
-}) => {
-  const { sidebarCollapsed } = useContext(AppContext);
-
+const UserProfile: React.FC<{
+  sidebarCollapsed: boolean;
+  firstName: string;
+  lastName: string;
+  profileURL?: string;
+}> = ({ sidebarCollapsed, firstName, lastName, profileURL }) => {
   return (
     <StyledContainer>
       <img

@@ -1,11 +1,11 @@
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
-import { AppContext } from '../../context/AppContext';
 import CustomModal from './CustomModel';
 
 interface CustomModalOpenerProps {
+  sidebarCollapsed: boolean;
   title: string;
   toolTipTitle: string;
   showIcon: ReactNode;
@@ -33,6 +33,7 @@ const IndividualComponentTypography = styled(Typography)`
 `;
 
 const CustomModalOpener: React.FC<CustomModalOpenerProps> = ({
+  sidebarCollapsed,
   title,
   toolTipTitle,
   showIcon,
@@ -42,7 +43,6 @@ const CustomModalOpener: React.FC<CustomModalOpenerProps> = ({
   isSelected = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { sidebarCollapsed } = useContext(AppContext);
 
   const toggleIsOpen = () => {
     if (isClickable) {
