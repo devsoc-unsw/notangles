@@ -14,7 +14,6 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { AddCourseDto } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -66,15 +65,8 @@ export class TimetableController {
   async deleteTimetable(
     @Req() req: AuthenticatedRequest,
     @Param('id') timetableId: string,
-    @Query('year') year: string,
-    @Query('term') term: string,
   ) {
-    await this.timetableService.deleteTimetable(
-      req.user.id,
-      timetableId,
-      Number(year),
-      term,
-    );
+    await this.timetableService.deleteTimetable(req.user.id, timetableId);
   }
 
   @Patch(':id/rename')
@@ -96,9 +88,8 @@ export class TimetableController {
   async makePrimary(
     @Req() req: AuthenticatedRequest,
     @Param('id') timetableId: string,
-    @Body() data: { year: number; term: string },
   ) {
-    await this.timetableService.makePrimary(req.user.id, timetableId, data);
+    await this.timetableService.makePrimary(req.user.id, timetableId);
   }
 
   @Get('courses/:timetableId')
@@ -116,13 +107,13 @@ export class TimetableController {
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
-    @Body() addCourseDto: AddCourseDto,
+    @Body('colour') colour: string,
   ) {
     await this.timetableService.addCourse(
       req.user.id,
       timetableId,
       courseId,
-      addCourseDto,
+      colour,
     );
     return HttpStatus.CREATED;
   }
