@@ -45,7 +45,10 @@ export class TimetableService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
-  async getCourseIds(userId: string, timetableId: string): Promise<string[]> {
+  async getCourses(
+    userId: string,
+    timetableId: string,
+  ): Promise<{ courseId: string; colour: string }[]> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
       timetableId,
@@ -54,9 +57,9 @@ export class TimetableService {
 
     const courses = await this.prisma.course.findMany({
       where: { timetableId },
-      select: { courseId: true },
+      select: { courseId: true, colour: true },
     });
-    return courses.map((course) => course.courseId);
+    return courses;
   }
 
   async getCourseIfExists(

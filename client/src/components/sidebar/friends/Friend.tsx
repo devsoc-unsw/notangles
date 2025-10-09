@@ -1,13 +1,12 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, styled, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
-import { AppContext } from '../../../context/AppContext';
-import UserProfile from './UserProfile';
 import RemoveFriend from './RemoveFriend';
+import UserProfile from './UserProfile';
 
 const StyledFriendContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isDarkMode' && prop !== 'sidebarCollapsed',
@@ -22,7 +21,8 @@ const StyledFriendContainer = styled(Box, {
 
   &:hover {
     background-color: ${({ theme, isDarkMode }) =>
-      isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light}
+      isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light};
+  }
 `;
 
 export interface FriendDTO {
@@ -32,8 +32,11 @@ export interface FriendDTO {
   profileURL: string;
 }
 
-const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
-  const { sidebarCollapsed } = useContext(AppContext);
+interface FriendProps extends FriendDTO {
+  sidebarCollapsed: boolean;
+}
+
+const Friend = ({ sidebarCollapsed, firstName, lastName, id, profileURL }: FriendProps) => {
   const { isDarkMode } = useGetUserSettingsQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -57,7 +60,12 @@ const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
   return (
     <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
       <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
-        <UserProfile firstName={firstName} lastName={lastName} profileURL={profileURL} />
+        <UserProfile
+          sidebarCollapsed={sidebarCollapsed}
+          firstName={firstName}
+          lastName={lastName}
+          profileURL={profileURL}
+        />
         {!sidebarCollapsed && (
           <>
             <IconButton onClick={handleKebabClick}>

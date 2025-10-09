@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
-import React, { useContext } from 'react';
+import React from 'react';
 
-import { AppContext } from '../../../context/AppContext';
 import UserProfilePicture from './UserProfilePicture';
 
 const StyledContainer = styled('div')`
@@ -50,13 +49,12 @@ const getFullName = (firstName: string, lastName: string) => {
 };
 
 const UserProfile: React.FC<{
+  sidebarCollapsed: boolean;
   firstName: string;
   lastName: string;
   profileURL?: string;
   overrideCollapse?: boolean;
-}> = ({ firstName, lastName, profileURL, overrideCollapse }) => {
-  const { sidebarCollapsed } = useContext(AppContext);
-
+}> = ({ sidebarCollapsed, firstName, lastName, profileURL, overrideCollapse }) => {
   return (
     <StyledContainer>
       <UserProfilePicture profileURL={profileURL} size={34} alt={`${firstName} ${lastName}`} />

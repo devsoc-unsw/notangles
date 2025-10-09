@@ -3,9 +3,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import Fuse from 'fuse.js';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { AppContext } from '../../../context/AppContext';
 import Friend, { FriendDTO } from './Friend';
 import friendList from './friends.json';
 
@@ -23,9 +22,14 @@ const StyledSearchButton = styled(IconButton)`
   padding: 12px;
 `;
 
-const FriendsList = () => {
+const FriendsList = ({
+  sidebarCollapsed,
+  setSidebarCollapsed,
+}: {
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (val: boolean) => void;
+}) => {
   const [searchVal, setSearchVal] = useState('');
-  const { sidebarCollapsed, setSidebarCollapsed } = useContext(AppContext);
 
   const renderedFriends = useMemo(() => {
     // TODO: replace hard coded data with integration with server
@@ -33,11 +37,12 @@ const FriendsList = () => {
     if (searchVal.length === 0) {
       return friends.map(({ firstName, lastName, id, profileURL }) => (
         <Friend
-          key={id as string}
-          firstName={firstName as string}
-          lastName={lastName as string}
-          id={id as string}
-          profileURL={profileURL as string}
+          key={id}
+          sidebarCollapsed={sidebarCollapsed}
+          firstName={firstName}
+          lastName={lastName}
+          id={id}
+          profileURL={profileURL}
         />
       ));
     }
@@ -46,14 +51,15 @@ const FriendsList = () => {
     friends = fuzzy.search(searchVal).map((result) => result.item);
     return friends.map(({ firstName, lastName, id, profileURL }) => (
       <Friend
-        key={id as string}
-        firstName={firstName as string}
-        lastName={lastName as string}
-        id={id as string}
-        profileURL={profileURL as string}
+        key={id}
+        sidebarCollapsed={sidebarCollapsed}
+        firstName={firstName}
+        lastName={lastName}
+        id={id}
+        profileURL={profileURL}
       />
     ));
-  }, [searchVal]);
+  }, [searchVal, sidebarCollapsed]);
 
   const handleClickSearchBarIcon = () => {
     if (sidebarCollapsed) {

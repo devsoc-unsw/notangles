@@ -13,14 +13,10 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import { client } from './api/config';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
-import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import { AuthGuard } from './components/login/AuthGuard';
 import PageLoading from './components/pageLoading/PageLoading';
-import AppContextProvider from './context/AppContext';
-import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
-import * as swRegistration from './serviceWorkerRegistration';
 
 declare module '@tanstack/react-query' {
   interface Register {
@@ -55,43 +51,40 @@ const Root: React.FC = () => {
     <ErrorBoundary>
       <AuthProvider>
         <ApolloProvider client={client}>
-          <AppContextProvider>
-            <CourseContextProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<LandingPage />} path="/" />
-                  <Route
-                    element={
-                      <QueryClientProvider client={queryClient}>
-                        <Suspense fallback={<PageLoading />}>
-                          <AuthGuard>
-                            <App />
-                          </AuthGuard>
-                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                        </Suspense>
-                      </QueryClientProvider>
-                    }
-                    path="/home"
-                  >
-                    <Route path="/home/event/:encrypted" element={<EventShareModal />} />
-                  </Route>
-                  <Route
-                    element={
-                      <QueryClientProvider client={queryClient}>
-                        <Suspense fallback={<PageLoading />}>
-                          <AuthGuard>
-                            <App />
-                          </AuthGuard>
-                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                        </Suspense>
-                      </QueryClientProvider>
-                    }
-                    path="/friend/:friendId"
-                  />
-                </Routes>
-              </BrowserRouter>
-            </CourseContextProvider>
-          </AppContextProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<LandingPage />} path="/" />
+              <Route
+                element={
+                  <QueryClientProvider client={queryClient}>
+                    <Suspense fallback={<PageLoading />}>
+                      <AuthGuard>
+                        <App />
+                      </AuthGuard>
+                    </Suspense>
+                    {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+                  </QueryClientProvider>
+                }
+                path="/home"
+              >
+                {/* <Route path="/home/event/:encrypted" element={<EventShareModal />} /> */}
+              </Route>
+              {/* TODO: Can this route be combined with above? */}
+              <Route
+                element={
+                  <QueryClientProvider client={queryClient}>
+                    <Suspense fallback={<PageLoading />}>
+                      <AuthGuard>
+                        <App />
+                      </AuthGuard>
+                    </Suspense>
+                    {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+                  </QueryClientProvider>
+                }
+                path="/friend/:friendId"
+              />
+            </Routes>
+          </BrowserRouter>
         </ApolloProvider>
       </AuthProvider>
     </ErrorBoundary>
@@ -104,8 +97,3 @@ if (!rootContainer) {
 }
 const root = createRoot(rootContainer);
 root.render(<Root />);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-swRegistration.unregister();

@@ -3,7 +3,7 @@ import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
 import type { ClassDetails } from './types';
 
-const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
+const HASURAGRES_GRAPHQL_API = 'https://graphqlstaging.devsoc.app/v1/graphql';
 
 @Injectable()
 export class GraphqlService {
@@ -15,6 +15,7 @@ export class GraphqlService {
   }
 
   async courseExists(courseId: string, term: string): Promise<boolean> {
+    console.log(`Checking if course ${courseId} exists for term ${term}`);
     const { courseExists } = await this.sdk.CourseExists({
       courseId,
       term,

@@ -1,4 +1,4 @@
-import { Badge, styled } from "@mui/material";
+import { Badge, styled } from '@mui/material';
 
 const StyledBadge = styled(Badge)`
   & .MuiBadge-badge {
@@ -23,5 +23,3 @@ const PendingInvitesBadge = ({ count, showBadge = true }: PendingInvitesBadgePro
 };
 
 export default PendingInvitesBadge;
-
-

@@ -1,9 +1,8 @@
 import { AddCircle } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
-import { AppContext } from '../../context/AppContext';
 import AddFriendsMenu from './AddFriendsMenu';
 import CustomModal from './CustomModel';
 import PendingInvitesBadge from './PendingInvitesBadge';
@@ -39,11 +38,11 @@ const StyledAddIcon = styled(AddCircle)`
 const friendInvites = 2;
 
 interface AddFriendsButtonProps {
+  sidebarCollapsed: boolean;
   friendsListOpen: boolean;
 }
 
-const AddFriendsButton = ({ friendsListOpen }: AddFriendsButtonProps) => {
-  const { sidebarCollapsed } = useContext(AppContext);
+const AddFriendsButton = ({ sidebarCollapsed, friendsListOpen }: AddFriendsButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   if (!friendsListOpen) return null;
