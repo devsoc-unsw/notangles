@@ -6,6 +6,7 @@ import { useContext, useState } from 'react';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { AppContext } from '../../../context/AppContext';
 import UserProfile from './UserProfile';
+import RemoveFriend from './RemoveFriend';
 
 const StyledFriendContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isDarkMode' && prop !== 'sidebarCollapsed',
@@ -28,22 +29,31 @@ interface FriendProps {
 }
 
 const Friend = ({ firstName }: FriendProps) => {
-  const [kebabOpen, setKebabOpen] = useState(false);
   const { sidebarCollapsed } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleKebabClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const kebabOpen = Boolean(anchorEl);
 
   return (
     <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
       <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
         <UserProfile firstName={firstName} lastName="" />
         {!sidebarCollapsed && (
-          <IconButton
-            onClick={() => {
-              setKebabOpen((prev) => !prev);
-            }}
-          >
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton onClick={handleKebabClick}>
+              <MoreVertIcon />
+            </IconButton>
+            <RemoveFriend anchorEl={anchorEl} open={kebabOpen} onClose={handlePopoverClose} firstName={firstName} />
+          </>
         )}
       </StyledFriendContainer>
     </Tooltip>
