@@ -169,21 +169,23 @@ const modalData = [
   },
 ];
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  collapsed: boolean;
+  setCollapsed: (val: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const collapsedWidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
   const isWide = useMediaQuery(theme.breakpoints.only('xl'));
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
-  const [collapsed, setCollapsed] = useState(() => !isWide);
   const { groupsSidebarCollapsed } = useContext(UserContext);
 
   const handleCollapse = (val: boolean) => {
     setCollapsed(val);
-    // forces window resize event upon sidebar state changing to adjust position of cards
-    // Not currently used, but here is how you would do it if needed
-    // setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
+    
   };
 
   const modalComponents = useMemo(

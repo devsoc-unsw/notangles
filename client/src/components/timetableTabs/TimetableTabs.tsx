@@ -28,7 +28,11 @@ import storage from '../../utils/storage';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 import History from '../controls/History';
 
-const TimetableTabs: React.FC = () => {
+interface TimetableTabsProps {
+  collapsed: boolean;
+}
+
+const TimetableTabs: React.FC<TimetableTabsProps> = ({ collapsed }) => {
   const TIMETABLE_LIMIT = 13;
 
   const {
@@ -58,7 +62,7 @@ const TimetableTabs: React.FC = () => {
     setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
   }, [isDarkMode]);
 
-  // Helper function to set the timetable state
+  
   const setTimetableState = (
     selectedCourses: CourseData[],
     selectedClasses: SelectedClasses,
@@ -73,9 +77,7 @@ const TimetableTabs: React.FC = () => {
     setSelectedTimetable(timetableIndex);
   };
 
-  /**
-   * Timetable handlers
-   */
+  
   // Creates new timetable
   const handleCreateTimetable = () => {
     if (!term) return;
@@ -106,9 +108,7 @@ const TimetableTabs: React.FC = () => {
     }
   };
 
-  /**
-   * Drag and drop functions for rearranging timetable tabs
-   */
+  
   // Handles timetable switching by updating the selected courses, classes and events to the new timetable
   const handleSwitchTimetables = (timetables: TimetableData[], timetableIndex: number) => {
     const { selectedCourses, selectedClasses, createdEvents, assignedColors } = timetables[timetableIndex];
@@ -142,9 +142,7 @@ const TimetableTabs: React.FC = () => {
     handleSwitchTimetables(newTimetables, destination.index);
   };
 
-  /**
-   * Dropdown menu tab handlers
-   */
+  
   // Left click handler for the three dots icon (editing the timetable tab)
   const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -164,8 +162,11 @@ const TimetableTabs: React.FC = () => {
   
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mt: 2, pr: '32px' }}>
-      {/* Tabs section (left) */}
-      <TabsSection sx={{ flexGrow: 1 }}>
+      
+      <TabsSection 
+        sx={{ maxWidth: !collapsed ? '800px' : '970px', flex: '1 1 auto' }} 
+        shouldScroll={!!(term && displayTimetables[term] && displayTimetables[term].length > 5)}
+      >
         <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
           <DragDropContext onDragEnd={handleSortTabs}>
             <Droppable droppableId="tabs" direction="horizontal">
@@ -224,8 +225,8 @@ const TimetableTabs: React.FC = () => {
           </Tooltip>
         </TabsWrapper>
       </TabsSection>
-      {/* History buttons (right) */}
-      <Box sx={{ ml: 2 }}>
+      
+  <Box sx={{ ml: collapsed ? 4 : 8, pt: 1 }}>
         <History />
       </Box>
     </Box>

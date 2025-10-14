@@ -9,25 +9,25 @@ import CustomEvents from './CustomEvent';
 import TermSelect from './TermSelect';
 const ControlsBar = styled(Box)`
   display: flex;
-  align-items: flex-end; // Align all controls to the bottom
+  align-items: flex-end;
   padding-left: 66px;
   gap: 12px;
 `;
 
 const TermSelectWrapper = styled(Box)`
   min-width: 140px;
-  margin-bottom: 0; // Remove any margin that could misalign
+  margin-bottom: 0;
 `;
 
 const SelectWrapper = styled(Box)`
   flex-grow: 2;
-  min-width: 600px; // Wider search bar
+  min-width: 600px;
   margin-bottom: 0;
 `;
 
 const ButtonRow = styled(Box)`
   display: flex;
-  gap: 8px; // Reduced gap between buttons
+  gap: 8px;
   margin-bottom: 0;
 `;
 
