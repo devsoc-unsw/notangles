@@ -164,7 +164,7 @@ const TimetableTabs: React.FC<TimetableTabsProps> = ({ collapsed }) => {
     <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mt: 2, pr: '32px' }}>
       
       <TabsSection 
-        sx={{ maxWidth: !collapsed ? '800px' : '970px', flex: '1 1 auto' }} 
+        sx={{ maxWidth: !collapsed ? '850px' : '970px', flex: '1 1 auto' }} 
         shouldScroll={!!(term && displayTimetables[term] && displayTimetables[term].length > 5)}
       >
         <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
@@ -226,7 +226,7 @@ const TimetableTabs: React.FC<TimetableTabsProps> = ({ collapsed }) => {
         </TabsWrapper>
       </TabsSection>
       
-  <Box sx={{ ml: collapsed ? 4 : 8, pt: 1 }}>
+  <Box sx={{ ml: collapsed ? 4 : 2.5, pt: 1 }}>
         <History />
       </Box>
     </Box>
