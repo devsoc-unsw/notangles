@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
-import { AddCourseDto, CourseDetails, UserTimetable } from './types';
+import { CourseDetails, UserTimetable } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 
 @Injectable()
@@ -75,23 +75,22 @@ export class TimetableService {
     userId: string,
     timetableId: string,
     courseId: string,
-    addCourseDto: AddCourseDto,
+    colour: string,
   ): Promise<void> {
+    const timetable = await this.prisma.timetable.findUniqueOrThrow({
+      select: { term: true },
+      where: { id: timetableId, userId },
+    });
+
     const courseExistsOnGraphQL = await this.graphqlService.courseExists(
       courseId,
-      addCourseDto.term,
+      timetable.term,
     );
     validate(
       courseExistsOnGraphQL,
       'Course does not exist',
       HttpStatus.NOT_FOUND,
     );
-
-    const timetableExists = await this.isTimetableOwnedByUser(
-      userId,
-      timetableId,
-    );
-    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
 
     const courseInTimetable = await this.isCourseInTimetable(
       timetableId,
@@ -103,13 +102,13 @@ export class TimetableService {
       HttpStatus.CONFLICT,
     );
 
-    const colourValid = this.isColourCodeValid(addCourseDto.colour);
+    const colourValid = this.isColourCodeValid(colour);
     validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
 
     await this.prisma.course.create({
       data: {
         courseId,
-        colour: addCourseDto.colour,
+        colour: colour,
         selectedClasses: [],
         timetable: { connect: { id: timetableId } },
       },
@@ -355,14 +354,14 @@ export class TimetableService {
     return timetable.id;
   }
 
-  async deleteTimetable(
-    userId: string,
-    timetableId: string,
-    year: number,
-    term: string,
-  ): Promise<void> {
+  async deleteTimetable(userId: string, timetableId: string): Promise<void> {
+    const timetable = await this.prisma.timetable.findUniqueOrThrow({
+      select: { primary: true, year: true, term: true },
+      where: { id: timetableId, userId },
+    });
+
     const numTimetables = await this.prisma.timetable.count({
-      where: { userId, year, term },
+      where: { userId, year: timetable.year, term: timetable.term },
     });
 
     if (numTimetables <= 1) {
@@ -371,10 +370,6 @@ export class TimetableService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    const timetable = await this.prisma.timetable.findFirst({
-      where: { id: timetableId, userId },
-    });
 
     if (!timetable) {
       throw new HttpException(
@@ -404,12 +399,9 @@ export class TimetableService {
     });
   }
 
-  async makePrimary(
-    userId: string,
-    timetableId: string,
-    data: { year: number; term: string },
-  ): Promise<void> {
+  async makePrimary(userId: string, timetableId: string): Promise<void> {
     const timetable = await this.prisma.timetable.findFirst({
+      select: { year: true, term: true },
       where: { id: timetableId, userId },
     });
 
@@ -425,8 +417,8 @@ export class TimetableService {
         where: {
           userId,
           primary: true,
-          year: data.year,
-          term: data.term,
+          year: timetable.year,
+          term: timetable.term,
         },
         data: { primary: false },
       }),
