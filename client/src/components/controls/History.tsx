@@ -1,5 +1,6 @@
 import { Delete, Redo, Undo } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
+import { Box } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../context/AppContext';
@@ -31,7 +32,7 @@ const History: React.FC = () => {
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
     useContext(AppContext);
-  const { user } = useContext(UserContext);
+  const { user, groupsSidebarCollapsed } = useContext(UserContext);
 
   const timetableActions = useRef<TimetableActions>({});
   const actionsPointer = useRef<ActionsPointer>({});
@@ -332,46 +333,52 @@ const History: React.FC = () => {
         disableConfirm={disableReset.all}
         confirmButtonId="confirm-delete-button"
       />
-      <Tooltip title={clearTooltip}>
-        <IconButton
-          disabled={disableReset.all}
-          color="inherit"
-          onClick={() => {
-            setClearOpen(true);
-          }}
-          size="large"
-        >
-          <Delete />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={undoTooltip}>
-        <span>
+      <Box sx={{
+        display: 'flex',
+        gap: !groupsSidebarCollapsed ? '6px' : '6px',
+        alignItems: 'center',
+      }}>
+        <Tooltip title={clearTooltip}>
           <IconButton
-            disabled={disableLeft}
+            disabled={disableReset.all}
             color="inherit"
             onClick={() => {
-              changeHistory(-1);
+              setClearOpen(true);
             }}
-            size="large"
+            size={!groupsSidebarCollapsed ? 'small' : 'large'}
           >
-            <Undo />
+            <Delete />
           </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title={redoTooltip}>
-        <span>
-          <IconButton
-            disabled={disableRight}
-            color="inherit"
-            onClick={() => {
-              changeHistory(1);
-            }}
-            size="large"
-          >
-            <Redo />
-          </IconButton>
-        </span>
-      </Tooltip>
+        </Tooltip>
+        <Tooltip title={undoTooltip}>
+          <span>
+            <IconButton
+              disabled={disableLeft}
+              color="inherit"
+              onClick={() => {
+                changeHistory(-1);
+              }}
+              size={!groupsSidebarCollapsed ? 'small' : 'large'}
+            >
+              <Undo />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title={redoTooltip}>
+          <span>
+            <IconButton
+              disabled={disableRight}
+              color="inherit"
+              onClick={() => {
+                changeHistory(1);
+              }}
+              size={!groupsSidebarCollapsed ? 'small' : 'large'}
+            >
+              <Redo />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Box>
     </>
   );
 };

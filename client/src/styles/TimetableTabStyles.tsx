@@ -34,10 +34,17 @@ export const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
   },
 }));
 
-export const TabsSection = styled(Box)`
+export const TabsSection = styled(Box, { shouldForwardProp: (prop) => prop !== 'shouldScroll' })<
+  BoxProps & { shouldScroll?: boolean }
+>`
   padding-top: 20px;
   margin-left: 66px;
-  overflow: auto;
+  ${(props) => props.shouldScroll ? `
+    overflow: auto;
+    max-width: calc(100vw - 200px); /* Adjust based on your layout */
+  ` : `
+    overflow: visible;
+  `}
   &::-webkit-scrollbar {
     height: 5px;
   }

@@ -2,7 +2,7 @@ import { Box, Button, GlobalStyles, StyledEngineProvider, ThemeProvider } from '
 import { styled } from '@mui/system';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -99,6 +99,8 @@ const ICSButton = styled(Button)`
 `;
 
 const App: React.FC = () => {
+  
+  const [collapsed, setCollapsed] = useState(false);
   const {
     themeObject,
     currentTheme,
@@ -638,7 +640,7 @@ const App: React.FC = () => {
           <GlobalStyles styles={globalStyle} />
           <StyledApp>
             <Container>
-              <Sidebar />
+              <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
               <ContentWrapper>
                 <Content>
                   <Controls
@@ -650,7 +652,7 @@ const App: React.FC = () => {
                   <Outlet />
                   {groupsSidebarCollapsed ? (
                     <>
-                      <TimetableTabs />
+                      <TimetableTabs collapsed={collapsed} />
                       <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
                     </>
                   ) : (
