@@ -13,6 +13,7 @@ import {
   CancelFriendRequestDto,
   AcceptFriendRequestDto,
   RejectFriendRequestDto,
+  RemoveFriendDto,
 } from './types';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
@@ -29,71 +30,86 @@ export class FriendshipController {
   // [X] @post rejectFriendRequest
   // [X] @post removeMutualFriend
 
-  @Get()
-  @UseGuards(AuthenticatedGuard)
-  getFriendRequest(
-    @Req() req: AuthenticatedRequest,
-    @Param('id') friendshipId: string,
-  ): string {
-    // todo: call this.friendshipService.getFriendship(userId, friendshipId)
-    throw new Error('Unimplemented Route: getFriendRequest');
-  }
-
   @Post()
   @UseGuards(AuthenticatedGuard)
-  createFriendRequest(
+  async createFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() createFriendRequest: CreateFriendRequestDto,
   ) {
-    // todo: call this.friendshipService.createFriendship(...)
-    throw new Error('Unimplemented Route: createFriendRequest');
+    this.friendshipService.createRelationship(
+      await this.friendshipService.fetchUserFriendCode(req.user.id),
+      createFriendRequest.requesteeCode,
+    );
   }
 
   @Post()
   @UseGuards(AuthenticatedGuard)
-  cancelFriendRequest(
+  async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() cancelFriendRequest: CancelFriendRequestDto,
   ) {
-    // todo: handle this
-    throw new Error('Unimplemented Route: createFriendRequest');
+    this.friendshipService.deleteRelationship(
+      await this.friendshipService.fetchUserFriendCode(req.user.id),
+      cancelFriendRequest.requestorCode,
+      true,
+    );
   }
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  getOutgoingFriendRequests(@Req() req: AuthenticatedRequest): string {
-    // todo: call this.friendshipService.getOutgoingFriendRequests(...)
-    throw new Error('Unimplemented Route: getOutgoingFriendRequests');
+  async getOutgoingFriendRequests(@Req() req: AuthenticatedRequest) {
+    const userCode = await this.friendshipService.fetchUserFriendCode(
+      req.user.id,
+    );
+    return this.friendshipService.getUserFriendRequests(userCode);
   }
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  getFriendRequests(@Req() req: AuthenticatedRequest): string {
-    // todo: call this.friendshipService.getIncomingFriendRequests(...)
-    // and other things :D
-    throw new Error('Unimplemented Route: getIncomingFriendRequests');
+  async getFriendRequests(@Req() req: AuthenticatedRequest) {
+    const userCode = await this.friendshipService.fetchUserFriendCode(
+      req.user.id,
+    );
+    return await this.friendshipService.getUserFriendships(userCode);
   }
 
   @Post()
   @UseGuards(AuthenticatedGuard)
-  acceptFriendRequest(
+  async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() acceptFriendRequest: AcceptFriendRequestDto,
   ) {
-    // todo: call this.friendshipService.createFriendship(...)
-    throw new Error('Unimplemented Route: acceptFriendRequest');
+    const userCode = await this.friendshipService.fetchUserFriendCode(
+      req.user.id,
+    );
+    return await this.friendshipService.acceptFriendRequest(
+      userCode,
+      acceptFriendRequest.requestorCode,
+    );
   }
 
   @Post()
   @UseGuards(AuthenticatedGuard)
-  rejectFriendRequest(
+  async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() rejectFriendRequest: RejectFriendRequestDto,
   ) {
-    // todo: call this.friendshipService.rejectFriendRequest(...)
-    throw new Error('Unimplemented Route: rejectFriendRequest');
+    this.friendshipService.deleteRelationship(
+      await this.friendshipService.fetchUserFriendCode(req.user.id),
+      rejectFriendRequest.requestorCode,
+      false,
+    );
   }
 
-  // Todo: Do we really need a rejectExisting/mutual friend?
-  // Does this require a seperate rest request?
+  @Post()
+  @UseGuards(AuthenticatedGuard)
+  async removeFriend(
+    @Req() req: AuthenticatedRequest,
+    @Body() removeFriendRequest: RemoveFriendDto,
+  ) {
+    this.friendshipService.deleteFriendship(
+      await this.friendshipService.fetchUserFriendCode(req.user.id),
+      removeFriendRequest.otherCode,
+    );
+  }
 }

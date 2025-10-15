@@ -17,3 +17,7 @@ export class AcceptFriendRequestDto {
 export class RejectFriendRequestDto {
   requestorCode: string;
 }
+
+export class RemoveFriendDto {
+  otherCode: string;
+}

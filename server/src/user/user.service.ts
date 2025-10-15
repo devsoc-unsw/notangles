@@ -87,7 +87,7 @@ export class UserService {
     return code !== null;
   }
 
-  // Note: this does NOT guarantee uniqueness
+  // Note: this does NOT guarantee uniqueness, use generateUniqueInviteCode for that.
   private generateInviteCode(): string {
     return new Array(6)
       .fill(undefined)
