@@ -96,6 +96,12 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             if (e) setStartTime(e);
             setIsInitialStartTime(false);
           }}
+          slotProps={{ 
+            textField: { 
+              size: 'small',
+              sx: { width: '140px' }
+            } 
+          }}
         />
       </StyledListItem>
       <StyledListItem>
@@ -103,7 +109,13 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TimePicker
           value={isInitialEndTime ? initialEndTime : endTime}
           label={!areValidEventTimes(startTime, endTime) ? 'End time must be after start' : ''}
-          slotProps={{ textField: { color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error' } }}
+          slotProps={{ 
+            textField: { 
+              size: 'small', 
+              color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error',
+              sx: { width: '140px' }
+            } 
+          }}
           onChange={(e) => {
             if (e) setEndTime(e);
             setIsInitialEndTime(false);
