@@ -149,7 +149,7 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: Remove
         onClose={handleBannerClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert severity="success" sx={{ width: '100%' }} onClose={handleBannerClose}>
+        <Alert variant="filled" severity="success" sx={{ width: '100%' }} onClose={handleBannerClose}>
           Removed friend from friendlist
         </Alert>
       </Snackbar>
