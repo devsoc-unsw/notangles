@@ -9,7 +9,7 @@ const RemoveFriendDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    minWidth: '450px',
+    minWidth: '400px',
     minHeight: '250px',
     display: 'flex',
     justifyContent: 'center',
