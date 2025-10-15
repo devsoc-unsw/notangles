@@ -190,6 +190,7 @@ export interface CustomEventGeneralProps {
   setIsInitialEndTime: (isInitialEndTime: boolean) => void;
   isInitialDay: boolean;
   setIsInitialDay: (isInitialDay: boolean) => void;
+  timePickerWidth?: number;
 }
 
 export interface CustomEventTutoringProp {

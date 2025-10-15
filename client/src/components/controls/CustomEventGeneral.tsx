@@ -31,6 +31,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   setIsInitialEndTime,
   isInitialDay,
   setIsInitialDay,
+  timePickerWidth = 180,
 }) => {
   const handleFormat = (newFormats: string[]) => {
     setEventDays(newFormats);
@@ -89,18 +90,16 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
       <StyledListItem>
         <StyledListItemText primary="Start time" />
         <TimePicker
-          // Displays time as the time of the grid the user pressed
-          // when popover has just been opened
           value={isInitialStartTime ? initialStartTime : startTime}
           onChange={(e) => {
             if (e) setStartTime(e);
             setIsInitialStartTime(false);
           }}
-          slotProps={{ 
-            textField: { 
+          slotProps={{
+            textField: {
               size: 'small',
-              sx: { width: '140px' }
-            } 
+              sx: { width: timePickerWidth }
+            }
           }}
         />
       </StyledListItem>
@@ -109,12 +108,12 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TimePicker
           value={isInitialEndTime ? initialEndTime : endTime}
           label={!areValidEventTimes(startTime, endTime) ? 'End time must be after start' : ''}
-          slotProps={{ 
-            textField: { 
-              size: 'small', 
+          slotProps={{
+            textField: {
+              size: 'small',
               color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error',
-              sx: { width: '140px' }
-            } 
+              sx: { width: timePickerWidth }
+            }
           }}
           onChange={(e) => {
             if (e) setEndTime(e);

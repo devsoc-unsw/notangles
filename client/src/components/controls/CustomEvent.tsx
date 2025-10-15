@@ -243,6 +243,11 @@ const CustomEvent: React.FC = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
+        PaperProps={{
+          style: {
+            minWidth: createEventAnchorEl?.clientWidth || undefined,
+          },
+        }}
       >
         <StyledList>
           <TabContext value={eventType}>
@@ -279,6 +284,7 @@ const CustomEvent: React.FC = () => {
                 setIsInitialEndTime={setIsInitialEndTime}
                 isInitialDay={isInitialDay}
                 setIsInitialDay={setIsInitialDay}
+                timePickerWidth={180}
               />
             </StyledTabPanel>
             <StyledTabPanel value="Tutoring">
