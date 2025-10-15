@@ -1,6 +1,5 @@
 import { Alert, Button, Dialog, Popover, Snackbar, Typography } from '@mui/material';
-import { margin, minHeight, styled } from '@mui/system';
-import { min } from 'date-fns';
+import { styled } from '@mui/system';
 import { useState } from 'react';
 
 export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
@@ -103,13 +102,6 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: Remove
         <StyledContainer>
           <StyledDialogTitle>Remove {firstName}?</StyledDialogTitle>
           <StyledDialogText>Are you sure you want to remove {firstName} from your friends?</StyledDialogText>
-
-          {/* <img
-          src={profileURL ?? emptyProfile}
-          width={34}
-          height={34}
-          style={{ borderRadius: 999, backgroundColor: 'white' }}
-        /> */}
           <StyledButtonContainer>
             <CancelRemove onClick={handleDialogClose}> Cancel </CancelRemove>
             <ConfirmRemove onClick={handleConfirmRemove}>Confirm</ConfirmRemove>
