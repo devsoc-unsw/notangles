@@ -219,17 +219,18 @@ export class TimetableController {
     }
   }
 
-  @Post('event')
+  @Post('event/:timetableId')
   @UseGuards(AuthenticatedGuard)
   async addEvent(
     @Req() req: AuthenticatedRequest,
-    @Body() body: { timetableId: string; event: EventParameters },
+    @Param('timetableId') timetableId: string,
+    @Body() body: { event: EventParameters },
   ) {
     try {
       await this.timetableService.addEvent(
         req.user.id,
         body.event,
-        body.timetableId,
+        timetableId,
       );
     } catch (error) {
       if (error instanceof HttpException) {

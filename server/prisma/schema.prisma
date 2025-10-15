@@ -8,116 +8,84 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-enum AuthProvider {
-  ZID
-  GOOGLE
-  GITHUB
-}
-
 model User {
-  // Unique per-user ID
-  id String @id @default(cuid(2)) @db.VarChar(30)
-
-  authProvider AuthProvider?
-  authSubject  String?       @db.VarChar(100)
-  isGuest      Boolean       @default(true)
-
+  id                String        @id @default(cuid(2)) @db.VarChar(30)
+  isGuest           Boolean       @default(true)
   firstName         String
   lastName          String
   profilePictureUrl String?
-  timetables        Timetable[]
+  createdAt         DateTime      @default(now())
+  lastLogin         DateTime      @default(now())
+  authProvider      AuthProvider?
+  authSubject       String?       @db.VarChar(100)
   settings          Settings?
-
-  createdAt DateTime @default(now())
-  lastLogin DateTime @default(now())
+  timetables        Timetable[]
 
   @@unique([authProvider, authSubject])
   @@map("user")
 }
 
-// model FriendRequest {
-//   id     String @id @default(uuid())
-//   fromId String
-//   toId   String
-
-//   @@unique([fromId, toId])
-//   @@map("friend_request")
-// }
-
-// model Friendship {
-//   id      String @id @default(uuid())
-//   user1Id String
-//   user2Id String
-
-//   @@unique([user1Id, user2Id])
-//   @@map("friendship")
-// }
-
 model Settings {
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
-
+  userId                     String  @unique
   preferredTheme             String  @default("Classic")
-  is12HourMode               Boolean @default(true)
-  isDarkMode                 Boolean @default(false)
-  isSquareEdges              Boolean @default(false)
   hideFullClasses            Boolean @default(false)
   hideClassInfo              Boolean @default(false)
   unscheduleClassesByDefault Boolean @default(true)
   hideExamClasses            Boolean @default(false)
   convertToLocalTimezone     Boolean @default(false)
+  is12HourMode               Boolean @default(true)
+  isDarkMode                 Boolean @default(false)
+  isSquareEdges              Boolean @default(false)
+  user                       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("settings")
 }
 
 model Timetable {
-  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  // Unique ID for the timetable, need this to attach courses and events
+  userId  String
   id      String   @id @default(uuid())
   name    String
   year    Int
   term    String
-  // Courses are UNSW items, events are user-defined/tutoring
+  primary Boolean  @default(false)
   courses Course[]
   events  Event[]
-  // One timetable should be primary per term per user
-  primary Boolean  @default(false)
+  User    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("timetable")
 }
 
 model Course {
-  id          String    @id @default(uuid())
-  timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
-  timetableId String
-
-  // This is the course id field in our GraphQL API
+  id              String    @id @default(uuid())
+  timetableId     String
   courseId        String
-  // This is an array of class ids in our GraphQL API 
   selectedClasses String[]
   colour          String
+  timetable       Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
 
   @@map("course")
 }
 
 model Event {
   id          String    @id @default(uuid())
-  timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String
-
   title       String
-  description String?
   location    String?
-
+  description String?
   colour      String
-  dayOfWeek   Int         // 0 = Sunday, 6 = Saturday
-  start       Int         // Mins since midnight
-  end         Int         // Mins since midnight
+  dayOfWeek   Int
+  start       Int
+  end         Int
   type        EventType
+  timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
 
   @@map("event")
+}
+
+enum AuthProvider {
+  GOOGLE
+  ZID
+  GITHUB
 }
 
 enum EventType {

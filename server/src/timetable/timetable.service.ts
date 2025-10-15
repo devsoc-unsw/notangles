@@ -540,26 +540,18 @@ export class TimetableService {
   async updateEvent(
     userId: string,
     eventId: string,
-    eventDetails: Partial<EventParameters>,
+    eventDetails: Partial<Omit<EventParameters, 'id' | 'timetableId'>>,
   ): Promise<void> {
-    const event = await this.getEvent(userId, eventId);
+    console.log('inside services')
+    // console
+    const filteredData = Object.fromEntries(
+      Object.entries(eventDetails).filter(([_, value]) => value !== undefined)
+    );
 
+    console.log(filteredData)
     await this.prisma.event.update({
-      where: { id: event.id },
-      data: {
-        ...(eventDetails.title && { title: eventDetails.title }),
-        ...(eventDetails.description && {
-          description: eventDetails.description,
-        }),
-        ...(eventDetails.location && { location: eventDetails.location }),
-        ...(eventDetails.colour && { colour: eventDetails.colour }),
-        ...(eventDetails.dayOfWeek !== undefined && {
-          dayOfWeek: eventDetails.dayOfWeek,
-        }),
-        ...(eventDetails.start !== undefined && { start: eventDetails.start }),
-        ...(eventDetails.end !== undefined && { end: eventDetails.end }),
-        ...(eventDetails.type && { type: eventDetails.type }),
-      },
+      where: { id: eventId },
+        data: filteredData,
     });
   }
 
