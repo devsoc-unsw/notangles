@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
-import { API_URL } from '../../api/config';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import { canvasPreview } from './canvasPreview';
-import { useDebounceEffect } from './useDebounceEffect';
+import { canvasPreview, centerAspectCrop } from './canvasPreview';
+import { useDebounceEffect } from '../../hooks/useDebounceEffect';
+import { postUserProfilePicture } from '../../api/user/routes';
 
 import 'react-image-crop/dist/ReactCrop.css';
-import { Button, styled } from '@mui/material';
-
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -41,26 +41,29 @@ const StyledPromptText = styled('div')({
   marginBottom: '10px',
 });
 
-const fileButtonProps = {
+const fileButtonStyleProps = {
   marginTop: '30px',
   textTransform: 'none',
   fontSize: '16px',
 };
 
-const removeButtonProps = {
+const removeButtonStyleProps = {
   marginTop: '30px',
   marginLeft: '10px',
   textTransform: 'none',
   fontSize: '16px',
 };
 
-const saveButtonProps = {
+const saveButtonStyleProps = {
   marginTop: '10px',
   textTransform: 'none',
   fontSize: '16px',
   width: '100%',
 };
 
+// Set width of the crop component (including all child components) to be 100% of the parent
+// container (the modal).
+// All child components have to be targeted to ensure they also take up 100% width.
 const StyledReactCrop = styled(ReactCrop)`
   width: 100%;
 
@@ -69,23 +72,7 @@ const StyledReactCrop = styled(ReactCrop)`
   }
 `;
 
-function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: '%',
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
-    mediaWidth,
-    mediaHeight,
-  );
-}
-
-export default function App() {
+export default function ProfilePictureModal() {
   const [currentImgSrc, setCurrentImgSrc] = useState('');
   const [newImgSrc, setNewImgSrc] = useState('');
 
@@ -109,29 +96,23 @@ export default function App() {
     setCurrentImgSrc(user?.profilePictureUrl || emptyProfile);
   }, [user]);
 
-  const CustomDialog = () => (
+  const CustomDialog = useMemo(() => (
     <Dialog open={isDialogOpen}>
       <DialogTitle>Are you sure you want to reset your current avatar?</DialogTitle>
       <DialogActions>
         <Button autoFocus onClick={() => setIsDialogOpen(false)}>
           Cancel
         </Button>
-        <Button onClick={handleDelete}>Ok</Button>
+        <Button onClick={() => {
+          postUserProfilePicture('');
+          setSuccessAlertOpen(true);
+          setCurrentImgSrc(emptyProfile);
+          setNewImgSrc('');
+          setIsDialogOpen(false);
+        }}>Ok</Button>
       </DialogActions>
     </Dialog>
-  );
-
-  function onRemovePhoto() {
-    setIsDialogOpen(true);
-  }
-
-  function handleDelete() {
-    postNewProfilePicture('');
-    setSuccessAlertOpen(true);
-    setCurrentImgSrc(emptyProfile);
-    setNewImgSrc('');
-    setIsDialogOpen(false);
-  }
+  ), [isDialogOpen]);
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
@@ -162,7 +143,7 @@ export default function App() {
     setCrop(centerAspectCrop(width, height, aspect));
   }
 
-  function getCroppedProfileV2() {
+  function getCroppedProfile() {
     const canvas = document.querySelector('canvas');
     if (canvas) {
       canvas.toBlob((blob) => {
@@ -192,35 +173,6 @@ export default function App() {
     [completedCrop],
   );
 
-  function onSubmit() {
-    getCroppedProfileV2();
-    postNewProfilePicture(currentImgSrc);
-
-    setCurrentImgSrc(blobUrlRef.current);
-    setNewImgSrc('');
-    setSuccessAlertOpen(true);
-    setCrop(undefined);
-    setCompletedCrop(undefined);
-  }
-
-  async function postNewProfilePicture(imgSrc: string) {
-    try {
-      await fetch(`${API_URL.server}/user/profile/picture`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: imgSrc,
-        }),
-        credentials: 'include',
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   return (
     <StyledContainer>
       {!newImgSrc && (
@@ -249,7 +201,20 @@ export default function App() {
         </>
       )}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {!completedCrop && (
+        {completedCrop ?
+          <Button onClick={() => {
+            getCroppedProfile();
+            postUserProfilePicture(currentImgSrc);
+
+            setCurrentImgSrc(blobUrlRef.current);
+            setNewImgSrc('');
+            setSuccessAlertOpen(true);
+            setCrop(undefined);
+            setCompletedCrop(undefined);
+          }} variant="contained" sx={saveButtonStyleProps} disableElevation>
+            Set new profile picture
+          </Button>
+          :
           <>
             <Button
               component="label"
@@ -257,21 +222,16 @@ export default function App() {
               variant="outlined"
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
-              sx={fileButtonProps}
+              sx={fileButtonStyleProps}
             >
               Choose file
               <VisuallyHiddenInput type="file" onChange={onSelectFile} accept="image/*" />
             </Button>
-            <Button onClick={onRemovePhoto} variant="contained" sx={removeButtonProps} disableElevation>
+            <Button onClick={() => setIsDialogOpen(true)} variant="contained" sx={removeButtonStyleProps} disableElevation>
               Remove photo
             </Button>
           </>
-        )}
-        {!!completedCrop && (
-          <Button onClick={onSubmit} variant="contained" sx={saveButtonProps} disableElevation>
-            Set new profile picture
-          </Button>
-        )}
+        }
       </div>
 
       <Snackbar open={successAlertOpen} autoHideDuration={6000} onClose={() => setSuccessAlertOpen(false)}>
@@ -288,7 +248,7 @@ export default function App() {
         </Alert>
       </Snackbar>
 
-      <CustomDialog />
+      {CustomDialog}
 
       <div style={{ display: 'none' }}>
         <canvas ref={previewCanvasRef} />

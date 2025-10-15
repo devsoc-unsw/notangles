@@ -19,6 +19,10 @@ export const getUserSettings = async (): Promise<UserSettings> => {
   return (await apiClient.get('/user/settings')).data;
 };
 
+export const postUserProfilePicture = async (imgSrc: string): Promise<void> => {
+  await apiClient.post('/user/profile/picture', { url: imgSrc });
+};
+
 export const setUserSettings = async (settings: Partial<UserSettings>): Promise<void> => {
   await apiClient.post('/user/settings', settings);
 };
