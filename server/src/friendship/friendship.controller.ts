@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Post,
-  Req,
-  UseGuards,
-  Param,
-} from '@nestjs/common';
+import { Controller, Get, Body, Post, Req, UseGuards } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import {
   CreateFriendRequestDto,
@@ -36,7 +28,7 @@ export class FriendshipController {
     @Req() req: AuthenticatedRequest,
     @Body() createFriendRequest: CreateFriendRequestDto,
   ) {
-    this.friendshipService.createRelationship(
+    await this.friendshipService.createRelationship(
       await this.friendshipService.fetchUserFriendCode(req.user.id),
       createFriendRequest.requesteeCode,
     );
@@ -48,7 +40,7 @@ export class FriendshipController {
     @Req() req: AuthenticatedRequest,
     @Body() cancelFriendRequest: CancelFriendRequestDto,
   ) {
-    this.friendshipService.deleteRelationship(
+    await this.friendshipService.deleteRelationship(
       await this.friendshipService.fetchUserFriendCode(req.user.id),
       cancelFriendRequest.requestorCode,
       true,
@@ -61,7 +53,7 @@ export class FriendshipController {
     const userCode = await this.friendshipService.fetchUserFriendCode(
       req.user.id,
     );
-    return this.friendshipService.getUserFriendRequests(userCode);
+    return await this.friendshipService.getUserFriendRequests(userCode);
   }
 
   @Get()
@@ -94,7 +86,7 @@ export class FriendshipController {
     @Req() req: AuthenticatedRequest,
     @Body() rejectFriendRequest: RejectFriendRequestDto,
   ) {
-    this.friendshipService.deleteRelationship(
+    await this.friendshipService.deleteRelationship(
       await this.friendshipService.fetchUserFriendCode(req.user.id),
       rejectFriendRequest.requestorCode,
       false,
@@ -107,7 +99,7 @@ export class FriendshipController {
     @Req() req: AuthenticatedRequest,
     @Body() removeFriendRequest: RemoveFriendDto,
   ) {
-    this.friendshipService.deleteFriendship(
+    await this.friendshipService.deleteFriendship(
       await this.friendshipService.fetchUserFriendCode(req.user.id),
       removeFriendRequest.otherCode,
     );

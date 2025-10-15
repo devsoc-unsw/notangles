@@ -1,7 +1,6 @@
 import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Friendship } from 'src/generated/prisma/client';
-import { Status } from 'src/generated/prisma/client';
 
 @Injectable({})
 export class FriendshipService {
@@ -33,7 +32,7 @@ export class FriendshipService {
     if (friendship == undefined) return undefined;
     if (friendship?.status == 'FRIEND') return 'FRIEND';
 
-    var ret;
+    let ret;
     if (!doSwap) ret = friendship?.status;
     else ret = friendship?.status == 'REQ_UID1' ? 'REQ_UID2' : 'REQ_UID1';
     return ret;
@@ -170,7 +169,6 @@ export class FriendshipService {
   async createRelationship(userId: string, otherId: string): Promise<void> {
     const isOrdered = userId < otherId;
     const statusIfExists = await this.doesRelationshipExist(userId, otherId);
-    var status;
 
     if (statusIfExists !== undefined) {
       throw new HttpException(
