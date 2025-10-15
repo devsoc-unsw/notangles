@@ -4,7 +4,6 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
-import { UserContext } from '../../context/UserContext';
 import { CourseData, CreatedEvents, DisplayTimetablesMap, SelectedClasses } from '../../interfaces/Periods';
 import {
   ActionsPointer,
@@ -31,7 +30,6 @@ const History: React.FC = () => {
     useContext(CourseContext);
   const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
     useContext(AppContext);
-  const { user } = useContext(UserContext);
 
   const timetableActions = useRef<TimetableActions>({});
   const actionsPointer = useRef<ActionsPointer>({});
@@ -207,7 +205,7 @@ const History: React.FC = () => {
    * Resets all timetables - leave one as default
    */
   const clearAll = () => {
-    const newTimetables = createDefaultTimetable(user.userID);
+    const newTimetables = createDefaultTimetable(undefined);
     if (!term) return;
 
     const newDisplayTimetables: DisplayTimetablesMap = {
