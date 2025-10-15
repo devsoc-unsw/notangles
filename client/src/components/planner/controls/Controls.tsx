@@ -8,6 +8,7 @@ import { useLocation } from 'react-router';
 // import History from './History';
 import { Term } from '../../../api/times/times';
 import UserProfile from '../../sidebar/friends/UserProfile';
+import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import TermSelect from './TermSelect';
 
@@ -120,7 +121,9 @@ const Controls: React.FC<{
           }}
         >
           <CustomEventsWrapper>{/* <CustomEvents /> */}</CustomEventsWrapper>
-          <AutotimetablerWrapper>{/* <Autotimetabler /> */}</AutotimetablerWrapper>
+          <AutotimetablerWrapper>
+            <Autotimetabler />
+          </AutotimetablerWrapper>
           <HistoryWrapper>{/* <History /> */}</HistoryWrapper>
         </Grid>
       </>

@@ -320,7 +320,6 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
               timetableId,
               courseId: course.course_id,
               colour: leastUsedColor(selectedCourses.map((c) => c.colour)),
-              term,
             });
           }
         }}

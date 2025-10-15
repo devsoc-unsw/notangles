@@ -1,6 +1,6 @@
 import { Delete, LocationOn } from '@mui/icons-material';
 import { TabPanel } from '@mui/lab';
-import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
+import { Button, List, ListItemText, Menu, MenuProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { alpha } from '@mui/system';
 
@@ -21,6 +21,11 @@ export const DropdownButton = styled(Button)`
 
 export const StyledTabPanel = styled(TabPanel)`
   padding-bottom: 0;
+`;
+
+export const StyledList = styled(List)`
+  width: 395px;
+  padding: 12px 15px;
 `;
 
 export const StyledListItemText = styled(ListItemText)`
