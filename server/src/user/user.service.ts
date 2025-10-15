@@ -35,13 +35,14 @@ export class UserService {
   }
 
   async uploadImage(image: string): Promise<{ url: string }> {
+    // This is not workinggg lol
     // Basic base64 string validation (does not check for file type)
-    const base64regex =
-      /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    // const base64regex =
+    //   /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 
-    if (!base64regex.test(image)) {
-      throw new Error('Invalid string');
-    }
+    // if (!base64regex.test(image)) {
+    //   throw new Error('Invalid string');
+    // }
 
     const temp_filename = Date.now().toString();
     const hash = crypto.createHash('md5');
