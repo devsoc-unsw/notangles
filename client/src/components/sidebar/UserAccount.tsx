@@ -2,6 +2,7 @@ import { LoginRounded, LogoutRounded } from '@mui/icons-material';
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState } from 'react';
+
 import { API_URL } from '../../api/config';
 import storage from '../../utils/storage';
 import { createDefaultTimetable } from '../../utils/timetableHelpers';
@@ -74,17 +75,18 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
     window.location.replace(windowLocation);
     storage.set('timetables', createDefaultTimetable(undefined));
   };
-  if (!user.userID) {
-    return collapsed ? (
-      <Tooltip title="Log in" placement="right">
-        <StyledIconButton onClick={loginCall}>
+
+  return (
+    <Tooltip title="Improved login and social functionality releasing late 2025!" placement="right">
+      {collapsed ? (
+        <StyledIconButton onClick={() => {}}>
           <LoginRounded />
         </StyledIconButton>
-      </Tooltip>
-    ) : (
-      <StyledButton onClick={loginCall}>Log in</StyledButton>
-    );
-  }
+      ) : (
+        <StyledButton onClick={() => {}}>Log in - releasing soon</StyledButton>
+      )}
+    </Tooltip>
+  );
 
   return (
     <>
