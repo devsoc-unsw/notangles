@@ -6,6 +6,7 @@ import React from 'react';
 // import CustomEvents from './CustomEvent';
 // import History from './History';
 import { Term } from '../../../api/times/times';
+import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import TermSelect from './TermSelect';
 
@@ -84,7 +85,9 @@ const Controls: React.FC<{ term: Term; setTerm: (term: Term) => void; timetableI
         }}
       >
         <CustomEventsWrapper>{/* <CustomEvents /> */}</CustomEventsWrapper>
-        <AutotimetablerWrapper>{/* <Autotimetabler /> */}</AutotimetablerWrapper>
+        <AutotimetablerWrapper>
+          <Autotimetabler />
+        </AutotimetablerWrapper>
         <HistoryWrapper>{/* <History /> */}</HistoryWrapper>
       </Grid>
     </Grid>

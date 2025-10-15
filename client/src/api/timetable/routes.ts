@@ -1,5 +1,4 @@
 import { apiClient } from '../config';
-import { Term } from '../times/times';
 
 export const getTimetableIds = async (year: string, term: string): Promise<string[]> => {
   return (await apiClient.get('/user/timetables', { params: { year, term } })).data;
@@ -23,14 +22,12 @@ export const addTimetableCourse = async ({
   timetableId,
   courseId,
   colour,
-  term,
 }: {
   timetableId: string;
   courseId: string;
   colour: string;
-  term: Term;
 }): Promise<void> => {
-  await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour, term: term.term });
+  await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour });
 };
 
 export const getTimetableInfo = async (
