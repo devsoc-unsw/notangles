@@ -5,16 +5,16 @@ import { addTimetableCourse, createTimetable, removeTimetableCourse } from './ro
 export const useRemoveTimetableCourse = (queryClient: QueryClient) =>
   useMutation({
     mutationFn: removeTimetableCourse,
-    onSuccess: (_data, variables, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
   });
 
 export const useAddTimetableCourse = (queryClient: QueryClient) =>
   useMutation({
     mutationFn: addTimetableCourse,
-    onSuccess: (_data, variables, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
   });
 
@@ -31,8 +31,8 @@ export const useCreateTimetable = (queryClient: QueryClient) =>
       term: string;
       onSuccess: (id: string) => void;
     }) => createTimetable({ name, year, term }),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
       variables.onSuccess(data);
     },
   });

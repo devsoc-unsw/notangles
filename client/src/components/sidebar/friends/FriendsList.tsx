@@ -31,21 +31,11 @@ const FriendsList = ({
 }) => {
   const [searchVal, setSearchVal] = useState('');
 
-  const renderedFriends = useMemo(() => {
-    // TODO: replace hard coded data with integration with server
-    let friends = friendList;
-    if (searchVal.length === 0) {
-      return friends.map((friend, index) => (
-        <Friend sidebarCollapsed={sidebarCollapsed} key={index} firstName={friend} />
-      ));
-    }
+  const fuse = useMemo(() => {
+    return new Fuse<string>(friendList, { threshold: 0.4 });
+  }, []);
 
-    const fuzzy = new Fuse<string>(friendList, { threshold: 0.4 });
-    friends = fuzzy.search(searchVal).map((result) => result.item);
-    return friends.map((friend, index) => (
-      <Friend sidebarCollapsed={sidebarCollapsed} key={index} firstName={friend} />
-    ));
-  }, [searchVal]);
+  const friends = searchVal.length === 0 ? friendList : fuse.search(searchVal).map((result) => result.item);
 
   const handleClickSearchBarIcon = () => {
     if (sidebarCollapsed) {
@@ -78,7 +68,9 @@ const FriendsList = ({
           />
         </FormControl>
       )}
-      {renderedFriends}
+      {friends.map((friend, index) => (
+        <Friend sidebarCollapsed={sidebarCollapsed} key={index} firstName={friend} />
+      ))}
     </FriendsListContainer>
   );
 };

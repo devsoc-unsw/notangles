@@ -1,7 +1,7 @@
 import { Announcement, Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, Slide, Snackbar, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const StyledAlertBanner = styled(Alert)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -11,16 +11,17 @@ const StyledAlertBanner = styled(Alert)(({ theme }) => ({
 }));
 
 const SUBCOM_PROMOTION_KEY = 'seenSubcom';
+const month = new Date().getMonth();
 
 const SubcomPromotion = () => {
   const [seenSubcomPromotional, setSeenSubcomPromotional] = useState<boolean>(
     (localStorage.getItem(SUBCOM_PROMOTION_KEY) ?? 'false') == 'true',
   );
-  const activeRecruitment = useRef(new Date().getMonth() === 1); // Subcommittee recruitment peaks in February annually
+  const activeRecruitment = month === 1; // Subcommittee recruitment peaks in February annually
 
   const handlePromotionClose = useCallback(() => {
     setSeenSubcomPromotional((prev) => !prev);
-    localStorage.set(SUBCOM_PROMOTION_KEY, true);
+    localStorage.setItem(SUBCOM_PROMOTION_KEY, 'true');
   }, []);
 
   const closingAction = (
@@ -30,7 +31,7 @@ const SubcomPromotion = () => {
   );
 
   // Not displaying subcom recruitment banner outside of active recruitment times
-  if (!activeRecruitment.current) return null;
+  if (!activeRecruitment) return null;
 
   return (
     <Box>

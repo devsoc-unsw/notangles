@@ -185,7 +185,7 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedInputValue = useMemo(
     () =>
-      debounce((value) => {
+      debounce((value: string) => {
         setSearchTerm(value);
       }, 150),
     [],
@@ -270,7 +270,11 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
                   selectedFaculty={faculty ?? ''}
                   faculty={name}
                   onClick={() => {
-                    faculty === name ? setFaculty(undefined) : setFaculty(name);
+                    if (faculty === name) {
+                      setFaculty(undefined);
+                    } else {
+                      setFaculty(name);
+                    }
                   }}
                   variant="contained"
                   disableElevation
@@ -422,7 +426,7 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
                 label={option.course_code}
                 color="primary"
                 backgroundColor={decodeColor(
-                  selectedCourses.find((course) => course.courseId === option.course_id)?.colour || '',
+                  selectedCourses.find((course) => course.courseId === option.course_id)?.colour ?? '',
                   preferredTheme,
                 )}
                 deleteIcon={<CloseRounded />}

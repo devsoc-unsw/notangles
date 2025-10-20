@@ -131,7 +131,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
             onClick={() => {
               if (timetableIds.length >= TIMETABLE_LIMIT) {
                 // TODO: Handle alerts properly
-                alert(`You have reached the limit of ${TIMETABLE_LIMIT} timetables per term.`);
+                alert(`You have reached the limit of ${String(TIMETABLE_LIMIT)} timetables per term.`);
                 return;
               }
 
