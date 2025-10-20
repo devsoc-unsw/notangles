@@ -26,4 +26,7 @@ export class EventParameters {
   end: number;
   type: EventType;
   timetableId: string;
+  title: string;
+  description?: string;
+  location?: string;
 }

@@ -60,7 +60,7 @@ export class AuthController {
       userId = (res.req as AuthenticatedRequest).user.id;
     }
 
-    res.clearCookie('connect.sid');
+    // res.clearCookie('connect.sid');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     req.logout((err) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

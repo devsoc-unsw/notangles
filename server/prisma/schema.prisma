@@ -107,11 +107,15 @@ model Event {
   timetable   Timetable @relation(fields: [timetableId], references: [id], onDelete: Cascade)
   timetableId String
 
-  colour    String
-  dayOfWeek Int         // 0 = Sunday, 6 = Saturday
-  start     Int         // Mins since midnight
-  end       Int         // Mins since midnight
-  type      EventType
+  title       String
+  description String?
+  location    String?
+
+  colour      String
+  dayOfWeek   Int         // 0 = Sunday, 6 = Saturday
+  start       Int         // Mins since midnight
+  end         Int         // Mins since midnight
+  type        EventType
 
   @@map("event")
 }

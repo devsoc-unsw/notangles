@@ -443,6 +443,9 @@ export class TimetableService {
           start: true, 
           end: true, 
           type: true, 
+          title: true,
+          description: true,
+          location: true,
           timetable: { select: { userId: true } }
         },
         where: { id: eventId  }
@@ -452,7 +455,18 @@ export class TimetableService {
         throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
       }
 
-      const { timetable, ...eventData } = event;
+      const eventData: EventParameters = {
+        id: event.id,
+        colour: event.colour,
+        dayOfWeek: event.dayOfWeek,
+        start: event.start,
+        end: event.end,
+        type: event.type,
+        title: event.title,
+        description: event.description ?? undefined,
+        location: event.location ?? undefined,
+      };
+
       return eventData;
     } catch {
       throw new HttpException(
@@ -474,15 +488,7 @@ export class TimetableService {
 
     const events = await this.prisma.event.findMany({
       where: { timetableId },
-      select: {
-        id: true,
-        colour: true,
-        dayOfWeek: true,
-        start: true,
-        end: true,
-        type: true,
-      },
-    });
+    }) as EventParameters[];
 
     return events;
   }
@@ -508,7 +514,10 @@ export class TimetableService {
 
     await this.prisma.event.create({ 
       data: {
-        id: eventId,
+        id: eventDetails.id,
+        title: eventDetails.title,
+        description: eventDetails.description ?? undefined,
+        location: eventDetails.location ?? undefined,
         colour: eventDetails.colour,
         dayOfWeek: eventDetails.dayOfWeek,
         start: eventDetails.start,
@@ -535,29 +544,25 @@ export class TimetableService {
   }
 
   async updateEvent(
-    userId: string,
-    eventId: string,
-    eventDetails: EventParameters
+  userId: string,
+  eventId: string,
+  eventDetails: Partial<EventParameters>
   ): Promise<void> {
     const event = await this.getEvent(userId, eventId);
 
-    if (!(eventDetails.type in EventType)) {
-      throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
-    }
-
-    const eventType: EventType = EventType[eventDetails.type as keyof typeof EventType];
-
-    await this.prisma.event.update({ 
+    await this.prisma.event.update({
       where: { id: event.id },
       data: {
-        id: eventId,
-        colour: eventDetails.colour,
-        dayOfWeek: eventDetails.dayOfWeek,
-        start: eventDetails.start,
-        end: eventDetails.end,
-        type: eventType,
-      }
-    })
+        ...(eventDetails.title && { title: eventDetails.title }),
+        ...(eventDetails.description && { description: eventDetails.description }),
+        ...(eventDetails.location && { location: eventDetails.location }),
+        ...(eventDetails.colour && { colour: eventDetails.colour }),
+        ...(eventDetails.dayOfWeek !== undefined && { dayOfWeek: eventDetails.dayOfWeek }),
+        ...(eventDetails.start !== undefined && { start: eventDetails.start }),
+        ...(eventDetails.end !== undefined && { end: eventDetails.end }),
+        ...(eventDetails.type && { type: eventDetails.type }),
+      },
+    });
   }
 
   async isEventOwnedByUser(

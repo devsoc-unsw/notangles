@@ -32,4 +32,7 @@ export class EventParameters {
   start: number;      // Mins since midnight
   end: number;        // Mins since midnight
   type: EventType;
+  title: string;
+  description?: string;
+  location?: string;
 }

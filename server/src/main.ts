@@ -25,7 +25,14 @@ async function bootstrap() {
       secret: configService.get('SESSION_SECRET') ?? 'secret',
       resave: false,
       saveUninitialized: false,
+      cookie: {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
+      sameSite: 'lax', // or 'none' if cross-site
+    },
     }),
+
   );
 
   app.use(passport.initialize());

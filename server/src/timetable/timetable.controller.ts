@@ -252,15 +252,16 @@ export class TimetableController {
   async updateEvent(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
-    @Body() eventDetails: EventParameters
+    @Body() body: { eventDetails: Partial<EventParameters> } 
   ) {
     try {
-      await this.timetableService.updateEvent(req.user.id, eventDetails.id, eventDetails);
+      await this.timetableService.updateEvent(req.user.id, eventId, body.eventDetails);
+      return { message: 'Event updated successfully' };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error
       }
-      throw new HttpException('Failed to add event', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('Failed to update event', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
