@@ -108,9 +108,9 @@ model Event {
   timetableId String
 
   colour    String
-  dayOfWeek Int
-  start     Int
-  end       Int
+  dayOfWeek Int         // 0 = Sunday, 6 = Saturday
+  start     Int         // Mins since midnight
+  end       Int         // Mins since midnight
   type      EventType
 
   @@map("event")

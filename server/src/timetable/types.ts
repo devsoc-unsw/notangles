@@ -28,8 +28,8 @@ export enum Term {
 export class EventParameters {
   id: string;
   colour: string;
-  dayOfWeek: number;
-  start: number;
-  end: number;
+  dayOfWeek: number;  // 0 = Sunday, 6 = Saturday
+  start: number;      // Mins since midnight
+  end: number;        // Mins since midnight
   type: EventType;
 }

@@ -435,7 +435,7 @@ export class TimetableService {
     eventId: string
   ): Promise<EventParameters> {
     try {
-      const event = await this.prisma.event.findFirstOrThrow({
+      const event = await this.prisma.event.findUnique({
         select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true , timetable: { select: { userId: true } }},
         where: { id: eventId  }
       });
@@ -498,8 +498,6 @@ export class TimetableService {
       throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
     }
 
-    const eventType: EventType = EventType[eventDetails.type as keyof typeof EventType];
-
     await this.prisma.event.create({ 
       data: {
         id: eventId,
@@ -507,7 +505,7 @@ export class TimetableService {
         dayOfWeek: eventDetails.dayOfWeek,
         start: eventDetails.start,
         end: eventDetails.end,
-        type: eventType,
+        type: eventDetails.type,
         timetable: { connect: { id: timetableId } },
       }
     })

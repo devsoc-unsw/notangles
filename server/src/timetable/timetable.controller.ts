@@ -3,6 +3,10 @@ import {
   Controller,
   Delete,
   Get,
+<<<<<<< HEAD
+=======
+  HttpException,
+>>>>>>> 75fe2be (Add routes)
   HttpStatus,
   Param,
   Patch,
@@ -13,7 +17,20 @@ import {
 } from '@nestjs/common';
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
+<<<<<<< HEAD
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
+=======
+import { Request } from 'express';
+import { EventParameters } from './types';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: string;
+    oidcId?: string;
+    isGuest: boolean;
+  };
+}
+>>>>>>> 75fe2be (Add routes)
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -92,6 +109,7 @@ export class TimetableController {
     await this.timetableService.makePrimary(req.user.id, timetableId);
   }
 
+<<<<<<< HEAD
   @Get('courses/:timetableId')
   @UseGuards(AuthenticatedGuard)
   async getCourseIds(
@@ -192,5 +210,73 @@ export class TimetableController {
       courseId,
       classId,
     );
+=======
+  @Get('event/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async getEventById(
+    @Req() req: AuthenticatedRequest,
+    @Param('eventId') eventId: string,
+  ) {
+      try {
+        const eventDetails = await this.timetableService.getEvent(req.user.id, eventId);
+        return eventDetails;
+      } catch (error) {
+        if (error instanceof HttpException) {
+          throw error
+        }
+        throw new HttpException('Failed to get event details', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+  }
+
+  @Post('event')
+  @UseGuards(AuthenticatedGuard)
+  async addEvent(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: { timetableId: string, event: EventParameters }
+  ) {
+    try {
+      await this.timetableService.addEvent(req.user.id, body.event.id, body.event, body.timetableId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error
+      }
+      throw new HttpException('Failed to add event', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return HttpStatus.CREATED;
+  }
+
+  @Delete('event/:timetableId/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async deleteEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+    @Param('eventId') eventId: string
+  ) {
+    try {
+      await this.timetableService.removeEvent(eventId, timetableId)
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error
+      }
+      throw new HttpException('Failed to delete event', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Patch('event/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async updateEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('eventId') eventId: string,
+    @Body() eventDetails: EventParameters
+  ) {
+    try {
+      await this.timetableService.updateEvent(req.user.id, eventDetails.id, eventDetails);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error
+      }
+      throw new HttpException('Failed to add event', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+>>>>>>> 75fe2be (Add routes)
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Param, HttpException, HttpStatus, Delete, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { UserSettings, EventParameters } from './types';
@@ -39,4 +39,6 @@ export class UserController {
   ) {
     await this.userService.setSettings(req.user.id, settings);
   }
+
+  
 }
