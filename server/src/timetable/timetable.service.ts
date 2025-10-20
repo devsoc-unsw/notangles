@@ -10,7 +10,7 @@ import {
 } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
-// import { Prisma, Event } from '@prisma/client'
+import { EventMinAggregateOutputType } from '../generated/prisma/models/Event'
 
 @Injectable()
 export class TimetableService {
@@ -436,7 +436,7 @@ export class TimetableService {
     ]);
   }
 
-  async getEvent(userId: string, eventId: string): Promise<EventParameters> {
+  async getEvent(userId: string, eventId: string): Promise<EventMinAggregateOutputType> {
     try {
       const event = await this.prisma.event.findUnique({
         select: {
@@ -449,7 +449,7 @@ export class TimetableService {
           title: true,
           description: true,
           location: true,
-          timetable: { select: { userId: true } },
+          timetable: { select: { userId: true , id: true,} },
         },
         where: { id: eventId },
       });
@@ -458,16 +458,17 @@ export class TimetableService {
         throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
       }
 
-      const eventData: EventParameters = {
+      const eventData: EventMinAggregateOutputType = {
         id: event.id,
+        timetableId: event.timetable.id,
         colour: event.colour,
         dayOfWeek: event.dayOfWeek,
         start: event.start,
         end: event.end,
         type: event.type,
         title: event.title,
-        description: event.description ?? undefined,
-        location: event.location ?? undefined,
+        description: event.description ?? null,
+        location: event.location ?? null,
       };
 
       return eventData;
@@ -479,7 +480,7 @@ export class TimetableService {
   async getAllEvent(
     userId: string,
     timetableId: string,
-  ): Promise<EventParameters[]> {
+  ): Promise<EventMinAggregateOutputType[]> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
       timetableId,
@@ -488,7 +489,7 @@ export class TimetableService {
 
     const events = (await this.prisma.event.findMany({
       where: { timetableId },
-    })) as EventParameters[];
+    })) as EventMinAggregateOutputType[];
 
     return events;
   }
