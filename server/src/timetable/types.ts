@@ -35,15 +35,3 @@ export class EventParametersDto {
   description?: string;
   location?: string;
 }
-
-export class EventParameters {
-  id: string;
-  colour: string;
-  dayOfWeek: number; // 0 = Monday, 6 = Sunday
-  start: number; // Mins since midnight
-  end: number; // Mins since midnight
-  type: EventType;
-  title: string;
-  description?: string;
-  location?: string;
-}

@@ -6,10 +6,11 @@ import {
   AddCourseDto,
   CourseDetails,
   UserTimetable,
-  EventParameters,
+  EventParametersDto,
 } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
+// import { Prisma, Event } from '@prisma/client'
 
 @Injectable()
 export class TimetableService {
@@ -494,7 +495,7 @@ export class TimetableService {
 
   async addEvent(
     userId: string,
-    eventDetails: EventParameters,
+    eventDetails: EventParametersDto,
     timetableId: string,
   ): Promise<void> {
     const timetableExists = await this.isTimetableOwnedByUser(
@@ -540,7 +541,7 @@ export class TimetableService {
   async updateEvent(
     userId: string,
     eventId: string,
-    eventDetails: Partial<Omit<EventParameters, 'id' | 'timetableId'>>,
+    eventDetails: EventParametersDto,
   ): Promise<void> {
     console.log('inside services')
     // console

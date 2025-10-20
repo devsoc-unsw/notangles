@@ -15,7 +15,7 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { AddCourseDto, EventParameters } from './types';
+import { AddCourseDto, EventParametersDto } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -224,7 +224,7 @@ export class TimetableController {
   async addEvent(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
-    @Body() body: { event: EventParameters },
+    @Body() body: { event: EventParametersDto },
   ) {
     try {
       await this.timetableService.addEvent(
@@ -268,7 +268,7 @@ export class TimetableController {
   async updateEvent(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
-    @Body() body: { eventDetails: Partial<EventParameters> },
+    @Body() body: { eventDetails: EventParametersDto },
   ) {
     try {
       await this.timetableService.updateEvent(
