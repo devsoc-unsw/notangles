@@ -23,7 +23,12 @@ import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../..
 import { StyledSnackbar } from '../../../styles/TimetableTabStyles';
 import StyledDialog from '../../StyledDialog';
 import { useTimetableIdsQuery, useTimetableInfoQueries, useTimetableInfoQuery } from '../../../api/timetable/queries';
-import { useDeleteTimetable, useMakePrimaryTimetable, useRenameTimetable } from '../../../api/timetable/mutations';
+import {
+  useDeleteTimetable,
+  useDuplicateTimetable,
+  useMakePrimaryTimetable,
+  useRenameTimetable,
+} from '../../../api/timetable/mutations';
 import { useQueryClient } from '@tanstack/react-query';
 import { Term } from '../../../api/times/times';
 
@@ -53,6 +58,7 @@ const TimetableTabContextMenu = ({
   const timetables = useTimetableInfoQueries(timetableIds);
   const deleteTimetable = useDeleteTimetable(queryClient);
   const renameTimetable = useRenameTimetable(queryClient);
+  const duplicateTimetable = useDuplicateTimetable(queryClient);
   const setPrimaryTimetable = useMakePrimaryTimetable(queryClient);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
@@ -109,6 +115,13 @@ const TimetableTabContextMenu = ({
         handleMenuClose();
       },
     });
+  };
+
+  // Handler to duplicate the selected timetable
+  const handleDuplicateTimetable = () => {
+    // TODO: Handle error case where exceeds timetable limit (on BE)
+    duplicateTimetable.mutate(selectedTimetableId);
+    handleMenuClose();
   };
 
   // Handle changes to the rename text field
