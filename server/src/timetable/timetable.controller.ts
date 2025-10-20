@@ -15,7 +15,7 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { AddCourseDto, EventParametersDto } from './types';
+import { EventParametersDto } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {

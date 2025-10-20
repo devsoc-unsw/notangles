@@ -2,11 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
-import {
-  CourseDetails,
-  UserTimetable,
-  EventParametersDto,
-} from './types';
+import { CourseDetails, UserTimetable, EventParametersDto } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
 import { EventMinAggregateOutputType } from '../generated/prisma/models/Event';
