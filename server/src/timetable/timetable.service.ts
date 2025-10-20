@@ -547,9 +547,12 @@ export class TimetableService {
     eventId: string,
     eventDetails: EventParametersDto,
   ): Promise<void> {
-    console.log('inside services');
+    const dtoKeys = Object.keys(new EventParametersDto());
+
     const filteredData = Object.fromEntries(
-      Object.entries(eventDetails).filter(([, value]) => value !== undefined),
+      Object.entries(eventDetails).filter(
+        ([key, value]) => value !== undefined && dtoKeys.includes(key),
+      ),
     );
 
     await this.prisma.event.update({

@@ -268,13 +268,14 @@ export class TimetableController {
   async updateEvent(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
-    @Body() body: { eventDetails: EventParametersDto },
+    @Body() body: EventParametersDto,
   ) {
     try {
+      console.log(req.user.id, eventId, body)
       await this.timetableService.updateEvent(
         req.user.id,
         eventId,
-        body.eventDetails,
+        body,
       );
     } catch (error) {
       if (error instanceof HttpException) {
