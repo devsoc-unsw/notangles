@@ -5,10 +5,6 @@ import React, { useState } from 'react';
 import NotanglesLogoGif from '../../assets/notangles.gif';
 import NotanglesLogo from '../../assets/notangles_1.png';
 
-interface TitleTextProps {
-  isLarge?: boolean;
-}
-
 const NotanglesLogoImg = styled('img')`
   height: 45px;
   margin-left: -11.5px;

@@ -70,8 +70,12 @@ const TermSelect: React.FC<{ term: Term; setTerm: (term: Term) => void }> = ({ t
         id="select-term"
         label="Select term"
         open={open}
-        onClose={() => setOpen(false)}
-        onOpen={() => setOpen(true)}
+        onClose={() => {
+          setOpen(false);
+        }}
+        onOpen={() => {
+          setOpen(true);
+        }}
         value={term.term}
         onChange={selectTerm}
       >

@@ -183,7 +183,13 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
   const [inputValue, setInputValue] = useState('');
 
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedInputValue = useMemo(() => debounce((value) => setSearchTerm(value), 150), []);
+  const debouncedInputValue = useMemo(
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+      }, 150),
+    [],
+  );
   // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
@@ -263,7 +269,9 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
                   key={index}
                   selectedFaculty={faculty ?? ''}
                   faculty={name}
-                  onClick={() => (faculty === name ? setFaculty(undefined) : setFaculty(name))}
+                  onClick={() => {
+                    faculty === name ? setFaculty(undefined) : setFaculty(name);
+                  }}
                   variant="contained"
                   disableElevation
                 >
@@ -418,7 +426,9 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
                   preferredTheme,
                 )}
                 deleteIcon={<CloseRounded />}
-                onDelete={() => removeCourseMutation.mutate({ timetableId, courseId: option.course_id })}
+                onDelete={() => {
+                  removeCourseMutation.mutate({ timetableId, courseId: option.course_id });
+                }}
               />
             );
           })
