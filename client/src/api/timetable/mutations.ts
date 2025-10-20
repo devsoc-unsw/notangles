@@ -9,7 +9,6 @@ import {
   removeTimetableCourse,
   renameTimetable,
 } from './routes';
-import { data } from 'react-router';
 
 export const useRemoveTimetableCourse = (queryClient: QueryClient) =>
   useMutation({
