@@ -360,6 +360,37 @@ export class TimetableService {
     return timetable.id;
   }
 
+  async duplicateTimetable(
+    userId: string,
+    timetableId: string,
+  ): Promise<string> {
+    const timetable = await this.prisma.timetable.findUniqueOrThrow({
+      where: { id: timetableId, userId },
+      include: { courses: true, events: true },
+    });
+
+    const newTimetable = await this.prisma.timetable.create({
+      data: {
+        userId,
+        name: `Copy of ${timetable.name}`,
+        year: timetable.year,
+        term: timetable.term,
+        primary: false,
+        courses: {
+          create: timetable.courses.map((course) => ({
+            courseId: course.courseId,
+            colour: course.colour,
+            selectedClasses: course.selectedClasses,
+          })),
+        },
+        // TODO: Duplicate events as well
+      },
+      select: { id: true },
+    });
+
+    return newTimetable.id;
+  }
+
   async deleteTimetable(userId: string, timetableId: string): Promise<void> {
     const timetable = await this.prisma.timetable.findUniqueOrThrow({
       select: { primary: true, year: true, term: true },
