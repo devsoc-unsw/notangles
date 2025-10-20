@@ -120,7 +120,12 @@ const TimetableTabContextMenu = ({
   // Handler to duplicate the selected timetable
   const handleDuplicateTimetable = () => {
     // TODO: Handle error case where exceeds timetable limit (on BE)
-    duplicateTimetable.mutate(selectedTimetableId);
+    duplicateTimetable.mutate({
+      timetableId: selectedTimetableId,
+      onSuccess: (id: string) => {
+        selectTimetableId(id);
+      },
+    });
     handleMenuClose();
   };
 
@@ -179,7 +184,7 @@ const TimetableTabContextMenu = ({
           </ListItemIcon>
           <ListItemText>Rename</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleDuplicateTimetable}>
           <ListItemIcon>
             <FileCopy fontSize="small" />
           </ListItemIcon>

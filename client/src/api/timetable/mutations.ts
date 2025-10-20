@@ -83,8 +83,10 @@ export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
 
 export const useDuplicateTimetable = (queryClient: QueryClient) =>
   useMutation({
-    mutationFn: duplicateTimetable,
-    onSuccess: (_data, _variables, _context) => {
+    mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: (id: string) => void }) =>
+      duplicateTimetable(timetableId),
+    onSuccess: (data, variables, _context) => {
       queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+      variables.onSuccess(data);
     },
   });

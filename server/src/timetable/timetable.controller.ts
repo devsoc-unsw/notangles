@@ -62,11 +62,11 @@ export class TimetableController {
     return timetable;
   }
 
-  @Post()
+  @Post(':id/duplicate')
   @UseGuards(AuthenticatedGuard)
   async duplicateTimetable(
     @Req() req: AuthenticatedRequest,
-    @Body('timetableId') timetableId: string,
+    @Param('id') timetableId: string,
   ) {
     const timetable = await this.timetableService.duplicateTimetable(
       req.user.id,
