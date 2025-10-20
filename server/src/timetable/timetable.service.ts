@@ -2,8 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
-import { CourseDetails, UserTimetable } from './types';
+import { AddCourseDto, CourseDetails, UserTimetable, EventParameters } from './types';
 import type { ClassDetails } from 'src/graphql/types';
+import { EventType } from '../generated/prisma/enums';
 
 @Injectable()
 export class TimetableService {
@@ -68,6 +69,23 @@ export class TimetableService {
         'Course is not in timetable',
         HttpStatus.NOT_FOUND,
       );
+    }
+  }
+
+  async getEvent(
+    timetableId: string,
+    eventId: string
+  ): Promise<EventParameters> {
+    try {
+      return await this.prisma.event.findFirstOrThrow({
+        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true },
+        where: { id: eventId  }
+      });
+    } catch {
+      throw new HttpException(
+        'Event not in timetable',
+        HttpStatus.NOT_FOUND,
+      )
     }
   }
 
@@ -427,5 +445,98 @@ export class TimetableService {
         data: { primary: true },
       }),
     ]);
+  }
+
+  async addEvent(
+    userId: string,
+    eventId: string,
+    eventDetails: EventParameters,
+    timetableId: string
+  ): Promise<void> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const colourValid = this.isColourCodeValid(eventDetails.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+
+    if (!(eventDetails.type in EventType)) {
+      throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
+    }
+
+    const eventType: EventType = EventType[eventDetails.type as keyof typeof EventType];
+
+    await this.prisma.event.create({ 
+      data: {
+        id: eventId,
+        colour: eventDetails.colour,
+        dayOfWeek: eventDetails.dayOfWeek,
+        start: eventDetails.start,
+        end: eventDetails.end,
+        type: eventType,
+        timetable: { connect: { id: timetableId } },
+      }
+    })
+  }
+
+  async removeEvent(
+    userId: string,
+    timetableId: string,
+    eventId: string,
+    eventDetails: EventParameters
+  ): Promise<void> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const colourValid = this.isColourCodeValid(eventDetails.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+
+    const event = await this.getEvent(timetableId, eventId);
+
+    await this.prisma.event.delete({
+      where: { id: event.id },
+    });
+  }
+
+  async updateEvent(
+    userId: string,
+    timetableId: string,
+    eventId: string,
+    eventDetails: EventParameters
+  ): Promise<void> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const colourValid = this.isColourCodeValid(eventDetails.colour);
+    validate(colourValid, 'Colour code is not valid', HttpStatus.BAD_REQUEST);
+
+    const event = await this.getEvent(timetableId, eventId);
+
+    if (!(eventDetails.type in EventType)) {
+      throw new HttpException('Invalid event type', HttpStatus.BAD_REQUEST);
+    }
+
+    const eventType: EventType = EventType[eventDetails.type as keyof typeof EventType];
+
+    await this.prisma.event.update({ 
+      where: { id: event.id },
+      data: {
+        id: eventId,
+        colour: eventDetails.colour,
+        dayOfWeek: eventDetails.dayOfWeek,
+        start: eventDetails.start,
+        end: eventDetails.end,
+        type: eventType,
+        timetable: { connect: { id: timetableId } },
+      }
+    })
   }
 }
