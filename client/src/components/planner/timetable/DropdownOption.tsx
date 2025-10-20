@@ -15,14 +15,14 @@ const StyledOptionButtonToggle = styled(ToggleButton)`
 
 type OptionState<T extends string> = T | T[] | null;
 
-type DropdownOptionProps<T extends string> = {
+interface DropdownOptionProps<T extends string> {
   optionName: string;
   optionState: OptionState<T>;
   setOptionState(value: OptionState<T>): void;
   optionChoices: T[];
   multiple?: boolean;
   noOff?: boolean;
-};
+}
 
 const DropdownOption = <T extends string>({
   optionName,

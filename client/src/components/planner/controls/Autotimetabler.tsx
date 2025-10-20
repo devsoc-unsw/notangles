@@ -247,7 +247,9 @@ const Autotimetabler: React.FC = () => {
           <DropdownOption
             optionName="Mode"
             optionState={classMode}
-            setOptionState={(c: ClassMode) => setClassMode(c)}
+            setOptionState={(c: ClassMode) => {
+              setClassMode(c);
+            }}
             optionChoices={['hybrid', 'in person', 'online']}
             noOff
           />
