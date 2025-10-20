@@ -74,3 +74,7 @@ export const renameTimetable = async ({
 export const makePrimaryTimetable = async (timetableId: string): Promise<void> => {
   await apiClient.patch(`/user/timetables/${timetableId}/change-primary`);
 };
+
+export const duplicateTimetable = async (timetableId: string): Promise<string> => {
+  return (await apiClient.post(`/user/timetables/${timetableId}/duplicate`)).data;
+};

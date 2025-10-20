@@ -4,6 +4,7 @@ import {
   addTimetableCourse,
   createTimetable,
   deleteTimetable,
+  duplicateTimetable,
   makePrimaryTimetable,
   removeTimetableCourse,
   renameTimetable,
@@ -76,6 +77,14 @@ export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
     onSuccess: (_data, { timetableId, currentPrimaryTimetableId }, _context) => {
       queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'info'] });
       queryClient.invalidateQueries({ queryKey: ['timetable', currentPrimaryTimetableId, 'info'] });
+      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+    },
+  });
+
+export const useDuplicateTimetable = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: duplicateTimetable,
+    onSuccess: (_data, _variables, _context) => {
       queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
     },
   });
