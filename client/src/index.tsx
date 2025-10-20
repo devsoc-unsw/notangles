@@ -6,7 +6,7 @@ import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import React, { Suspense } from 'react';
+import React, { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
@@ -96,4 +96,8 @@ if (!rootContainer) {
   throw new Error('Root container not found');
 }
 const root = createRoot(rootContainer);
-root.render(<Root />);
+root.render(
+  <StrictMode>
+    <Root />
+  </StrictMode>,
+);
