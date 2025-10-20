@@ -56,3 +56,21 @@ export const createTimetable = async ({
 }): Promise<string> => {
   return (await apiClient.post<string>('/user/timetables', { name, year, term })).data;
 };
+
+export const deleteTimetable = async (timetableId: string): Promise<void> => {
+  await apiClient.delete(`/user/timetables/${timetableId}`);
+};
+
+export const renameTimetable = async ({
+  timetableId,
+  newName,
+}: {
+  timetableId: string;
+  newName: string;
+}): Promise<void> => {
+  await apiClient.patch(`/user/timetables/${timetableId}/rename`, { name: newName });
+};
+
+export const makePrimaryTimetable = async (timetableId: string): Promise<void> => {
+  await apiClient.patch(`/user/timetables/${timetableId}/change-primary`);
+};

@@ -1,6 +1,13 @@
 import { QueryClient, useMutation } from '@tanstack/react-query';
 
-import { addTimetableCourse, createTimetable, removeTimetableCourse } from './routes';
+import {
+  addTimetableCourse,
+  createTimetable,
+  deleteTimetable,
+  makePrimaryTimetable,
+  removeTimetableCourse,
+  renameTimetable,
+} from './routes';
 
 export const useRemoveTimetableCourse = (queryClient: QueryClient) =>
   useMutation({
@@ -34,5 +41,30 @@ export const useCreateTimetable = (queryClient: QueryClient) =>
     onSuccess: async (data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
       variables.onSuccess(data);
+    },
+  });
+
+export const useDeleteTimetable = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: deleteTimetable,
+    onSuccess: (_data, timetableId, _context) => {
+      queryClient.invalidateQueries({ queryKey: ['timetable', timetableId] });
+      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+    },
+  });
+
+export const useRenameTimetable = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: renameTimetable,
+    onSuccess: (_data, variables, _context) => {
+      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'info'] });
+    },
+  });
+
+export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: makePrimaryTimetable,
+    onSuccess: (_data, timetableId, _context) => {
+      queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'info'] });
     },
   });
