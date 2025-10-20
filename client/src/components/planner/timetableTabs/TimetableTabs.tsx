@@ -2,7 +2,7 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { Add, MoreHoriz, Star } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Term } from '../../../api/times/times';
 import { useCreateTimetable } from '../../../api/timetable/mutations';
@@ -20,6 +20,7 @@ import {
   tabThemeDark,
   tabThemeLight,
 } from '../../../styles/TimetableTabStyles';
+import TimetableTabContextMenu from './TimetableTabContextMenu';
 
 // TODO: Enforce this in the backend
 const TIMETABLE_LIMIT = 5; // Per term
@@ -39,6 +40,8 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
   }, [isDarkMode]);
   const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
 
+  const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
+
   const isMacOS = navigator.userAgent.includes('Mac');
   // TODO: Implement shortcut
   const addTimetableTip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
@@ -48,6 +51,24 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
 
   const queryClient = useQueryClient();
   const createTimetableMutation = useCreateTimetable(queryClient);
+
+  /**
+   * Dropdown menu tab handlers
+   */
+  // Left click handler for the three dots icon (editing the timetable tab)
+  const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setAnchorElement({ x: e.clientX, y: e.clientY });
+  };
+
+  // Right clicking a tab will switch to that tab and open the menu
+  const handleRightTabClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (!term) return;
+    e.preventDefault();
+
+    // Anchoring the menu to the mouse position
+    setAnchorElement({ x: e.clientX, y: e.clientY });
+  };
 
   return (
     <TabsSection>
@@ -74,7 +95,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
                           onMouseDown={() => {
                             selectTimetableId(timetable.id);
                           }}
-                          // onContextMenu
+                          onContextMenu={handleRightTabClick}
                           ref={props.innerRef}
                           {...props.draggableProps}
                           {...props.dragHandleProps}
@@ -87,9 +108,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
                           )}
                           {timetable.name}
                           {selectedTimetableId === timetable.id ? (
-                            <StyledSpan
-                            // onClick
-                            >
+                            <StyledSpan onClick={handleMenuClick}>
                               <MoreHoriz />
                             </StyledSpan>
                           ) : (
@@ -104,7 +123,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
             )}
           </Droppable>
         </DragDropContext>
-        {/* <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} /> */}
+        <TimetableTabContextMenu anchorElement={anchorElement} setAnchorElement={setAnchorElement} />
         <Tooltip title={addTimetableTip}>
           <StyledIconButton
             tabTheme={tabTheme}
