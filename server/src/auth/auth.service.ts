@@ -96,6 +96,7 @@ export class AuthService {
               name: this.TIMETABLE_DEFAULT_NAME,
               year,
               term,
+              primary: true,
             };
           }),
         },
