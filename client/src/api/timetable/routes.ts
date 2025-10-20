@@ -57,7 +57,7 @@ export const createTimetable = async ({
   return (await apiClient.post<string>('/user/timetables', { name, year, term })).data;
 };
 
-export const deleteTimetable = async (timetableId: string): Promise<void> => {
+export const deleteTimetable = async ({ timetableId }: { timetableId: string }): Promise<void> => {
   await apiClient.delete(`/user/timetables/${timetableId}`);
 };
 

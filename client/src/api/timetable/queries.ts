@@ -25,3 +25,9 @@ export const useTimetableInfoQueries = (timetableIds: string[]) => {
 
   return queries.map((query) => query.data);
 };
+
+export const useTimetableInfoQuery = (timetableId: string) =>
+  useSuspenseQuery({
+    queryKey: ['timetable', timetableId, 'info'],
+    queryFn: () => getTimetableInfo(timetableId),
+  }).data;
