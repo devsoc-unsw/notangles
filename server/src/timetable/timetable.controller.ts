@@ -3,10 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-<<<<<<< HEAD
-=======
   HttpException,
->>>>>>> 75fe2be (Add routes)
   HttpStatus,
   Param,
   Patch,
@@ -17,20 +14,8 @@ import {
 } from '@nestjs/common';
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
-<<<<<<< HEAD
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-=======
-import { Request } from 'express';
-import { EventParameters } from './types';
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    id: string;
-    oidcId?: string;
-    isGuest: boolean;
-  };
-}
->>>>>>> 75fe2be (Add routes)
+import { AddCourseDto, EventParameters } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -109,7 +94,6 @@ export class TimetableController {
     await this.timetableService.makePrimary(req.user.id, timetableId);
   }
 
-<<<<<<< HEAD
   @Get('courses/:timetableId')
   @UseGuards(AuthenticatedGuard)
   async getCourseIds(
@@ -210,7 +194,8 @@ export class TimetableController {
       courseId,
       classId,
     );
-=======
+  }
+  
   @Get('event/:eventId')
   @UseGuards(AuthenticatedGuard)
   async getEventById(
@@ -277,6 +262,5 @@ export class TimetableController {
       }
       throw new HttpException('Failed to add event', HttpStatus.INTERNAL_SERVER_ERROR);
     }
->>>>>>> 75fe2be (Add routes)
   }
 }

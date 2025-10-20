@@ -39,6 +39,4 @@ export class UserController {
   ) {
     await this.userService.setSettings(req.user.id, settings);
   }
-
-  
 }

@@ -20,7 +20,6 @@ export const CLASS_DETAILS = gql(`
     }
   }
 `);
-<<<<<<< HEAD
 
 export const GET_AVAILABLE_TERMS = gql(`
   query GetAvailableTerms($currentYear: String!) {
@@ -33,5 +32,3 @@ export const GET_AVAILABLE_TERMS = gql(`
     }
   }
 `);
-=======
->>>>>>> 75fe2be (Add routes)

@@ -436,12 +436,20 @@ export class TimetableService {
   ): Promise<EventParameters> {
     try {
       const event = await this.prisma.event.findUnique({
-        select: { id: true, colour: true, dayOfWeek: true, start: true, end: true, type: true , timetable: { select: { userId: true } }},
+        select: { 
+          id: true, 
+          colour: true, 
+          dayOfWeek: true, 
+          start: true, 
+          end: true, 
+          type: true, 
+          timetable: { select: { userId: true } }
+        },
         where: { id: eventId  }
       });
 
       if (!event || event.timetable.userId !== userId) {
-        throw new HttpException('Event not found or access denied', HttpStatus.NOT_FOUND);
+        throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
       }
 
       const { timetable, ...eventData } = event;
@@ -515,10 +523,14 @@ export class TimetableService {
     userId: string,
     eventId: string,
   ): Promise<void> {
-    const event = await this.getEvent(userId, eventId);
+    // const event = await this.getEvent(userId, eventId);
 
-    await this.prisma.event.delete({
-      where: { id: event.id },
+    // FIX 
+    await this.prisma.event.deleteAll({
+      where: {
+        id: eventId,
+        userId, 
+      },
     });
   }
 
