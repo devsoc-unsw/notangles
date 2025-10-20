@@ -271,7 +271,6 @@ export class TimetableController {
     @Body() body: EventParametersDto,
   ) {
     try {
-      console.log(req.user.id, eventId, body);
       await this.timetableService.updateEvent(req.user.id, eventId, body);
     } catch (error) {
       if (error instanceof HttpException) {
