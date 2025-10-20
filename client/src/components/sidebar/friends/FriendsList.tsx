@@ -31,35 +31,11 @@ const FriendsList = ({
 }) => {
   const [searchVal, setSearchVal] = useState('');
 
-  const renderedFriends = useMemo(() => {
-    // TODO: replace hard coded data with integration with server
-    let friends = friendList;
-    if (searchVal.length === 0) {
-      return friends.map(({ firstName, lastName, id, profileURL }) => (
-        <Friend
-          key={id}
-          sidebarCollapsed={sidebarCollapsed}
-          firstName={firstName}
-          lastName={lastName}
-          id={id}
-          profileURL={profileURL}
-        />
-      ));
-    }
+  const fuse = useMemo(() => {
+    return new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
+  }, []);
 
-    const fuzzy = new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
-    friends = fuzzy.search(searchVal).map((result) => result.item);
-    return friends.map(({ firstName, lastName, id, profileURL }) => (
-      <Friend
-        key={id}
-        sidebarCollapsed={sidebarCollapsed}
-        firstName={firstName}
-        lastName={lastName}
-        id={id}
-        profileURL={profileURL}
-      />
-    ));
-  }, [searchVal, sidebarCollapsed]);
+  const friends = searchVal.length === 0 ? friendList : fuse.search(searchVal).map((result) => result.item);
 
   const handleClickSearchBarIcon = () => {
     if (sidebarCollapsed) {
@@ -92,7 +68,16 @@ const FriendsList = ({
           />
         </FormControl>
       )}
-      {renderedFriends}
+      {friends.map((friend) => (
+        <Friend
+          key={friend.id}
+          sidebarCollapsed={sidebarCollapsed}
+          firstName={friend.firstName}
+          lastName={friend.lastName}
+          id={friend.id}
+          profileURL={friend.profileURL}
+        />
+      ))}
     </FriendsListContainer>
   );
 };

@@ -80,7 +80,7 @@ const Autotimetabler: React.FC = () => {
     setDays(newFormats);
   };
 
-  const doAuto = async () => {
+  const doAuto = () => {
     const selectedDays = days.map((v) => (weekdaysShort.indexOf(v) + 1).toString());
     const selectedDaysStr = selectedDays.length ? selectedDays.reduce((a, b) => a + b) : '12345';
 

@@ -32,9 +32,10 @@ export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
       return [key, decodedColor];
     }),
   );
+
   const colorPreview = useMemo(() => {
     return Object.values(decodedColors).map((color) => <StyledListItem key={color} backgroundColor={color} />);
-  }, [colors, previewTheme]);
+  }, [decodedColors]);
 
   return <StyledPreviewContainer>{colorPreview}</StyledPreviewContainer>;
 };

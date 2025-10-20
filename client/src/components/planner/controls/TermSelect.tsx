@@ -1,4 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectProps } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
 
@@ -55,10 +56,13 @@ const TermSelect: React.FC<{ term: Term; setTerm: (term: Term) => void }> = ({ t
   const [open, setOpen] = useState(false);
   const terms = useAvailableTerms();
 
-  const selectTerm = (e: any) => {
+  const selectTerm = (e: SelectChangeEvent<unknown>) => {
     // Convert to Term data
-    const termValue = e.target.value;
-    setTerm(terms.find((t) => t.term === termValue)!);
+    const termValue = e.target.value as string;
+    const selected = terms.find((t) => t.term === termValue);
+    if (selected) {
+      setTerm(selected);
+    }
   };
 
   return (
@@ -77,6 +81,7 @@ const TermSelect: React.FC<{ term: Term; setTerm: (term: Term) => void }> = ({ t
           setOpen(true);
         }}
         value={term.term}
+        // Warning: This function expects a string. If you change the value type, you'll need to adjust this.
         onChange={selectTerm}
       >
         {terms.map((term, index) => {

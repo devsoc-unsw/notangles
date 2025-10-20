@@ -64,7 +64,7 @@ export function useAvailableTerms(): Term[] {
   const terms: Term[] = data.classes.map((c) => ({
     year: c.year,
     term: c.term,
-    name: `${termNameMap[c.term]}, ${c.year}`,
+    name: `${termNameMap[c.term]}, ${String(c.year)}`,
     termIndex: termOrder[c.term],
     startDate: parse(c.offering_period.split(' - ')[0], 'dd/MM/yyyy', new Date()),
     endDate: parse(c.offering_period.split(' - ')[1], 'dd/MM/yyyy', new Date()),

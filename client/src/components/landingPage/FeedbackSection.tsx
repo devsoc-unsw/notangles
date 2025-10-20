@@ -18,9 +18,9 @@ const FeedbackSection = () => {
       <div className="flex flex-col justify-center text-center max-w-[800px] sm:max-w-[1200px] lg:max-w-[1500px] text-black space-y-6 sm:space-y-10 px-4 sm:px-20">
         <p className="text-3xl sm:text-5xl font-semibold mb-4 sm:mb-10">Interested in Notangles?</p>
         <p className="text-lg sm:text-xl">
-          If you're a CSE student with a keen interest in Notangles and looking to get involved, keep an eye out for our
-          recruitment announcements on DevSoc's socials. Otherwise, you can also contribute by suggesting cool new
-          features, reporting any bugs, or even making a pull request on the Notangles repo.
+          If you&apos;re a CSE student with a keen interest in Notangles and looking to get involved, keep an eye out
+          for our recruitment announcements on DevSoc&apos;s socials. Otherwise, you can also contribute by suggesting
+          cool new features, reporting any bugs, or even making a pull request on the Notangles repo.
         </p>
         <div className="flex flex-row items-center justify-center gap-4 md:gap-10">
           <FeedbackButton link="https://forms.gle/rV3QCwjsEbLNyESE6" text="Feedback" />

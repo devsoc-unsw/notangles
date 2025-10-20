@@ -1,11 +1,15 @@
 import { apiClient } from '../config';
 
 export const getTimetableIds = async (year: string, term: string): Promise<string[]> => {
-  return (await apiClient.get('/user/timetables', { params: { year, term } })).data;
+  return (await apiClient.get<string[]>('/user/timetables', { params: { year, term } })).data;
 };
 
-export const getTimetableCourses = async (timetableId: string): Promise<{ courseId: string; colour: string }[]> => {
-  return (await apiClient.get(`/user/timetables/courses/${timetableId}`)).data;
+interface TimetableCourse {
+  courseId: string;
+  colour: string;
+}
+export const getTimetableCourses = async (timetableId: string): Promise<TimetableCourse[]> => {
+  return (await apiClient.get<TimetableCourse[]>(`/user/timetables/courses/${timetableId}`)).data;
 };
 
 export const removeTimetableCourse = async ({
@@ -30,10 +34,15 @@ export const addTimetableCourse = async ({
   await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour });
 };
 
-export const getTimetableInfo = async (
-  timetableId: string,
-): Promise<{ id: string; name: string; year: number; term: string; primary: boolean }> => {
-  return (await apiClient.get(`/user/timetables/${timetableId}`)).data;
+interface TimetableInfo {
+  id: string;
+  name: string;
+  year: number;
+  term: string;
+  primary: boolean;
+}
+export const getTimetableInfo = async (timetableId: string): Promise<TimetableInfo> => {
+  return (await apiClient.get<TimetableInfo>(`/user/timetables/${timetableId}`)).data;
 };
 
 export const createTimetable = async ({
@@ -45,5 +54,5 @@ export const createTimetable = async ({
   year: number;
   term: string;
 }): Promise<string> => {
-  return (await apiClient.post('/user/timetables', { name, year, term })).data;
+  return (await apiClient.post<string>('/user/timetables', { name, year, term })).data;
 };
