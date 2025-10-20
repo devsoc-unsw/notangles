@@ -62,6 +62,19 @@ export class TimetableController {
     return timetable;
   }
 
+  @Post()
+  @UseGuards(AuthenticatedGuard)
+  async duplicateTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Body('timetableId') timetableId: string,
+  ) {
+    const timetable = await this.timetableService.duplicateTimetable(
+      req.user.id,
+      timetableId,
+    );
+    return timetable;
+  }
+
   @Delete(':id')
   @UseGuards(AuthenticatedGuard)
   async deleteTimetable(
