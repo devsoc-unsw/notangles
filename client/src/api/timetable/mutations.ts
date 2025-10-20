@@ -8,6 +8,7 @@ import {
   removeTimetableCourse,
   renameTimetable,
 } from './routes';
+import { data } from 'react-router';
 
 export const useRemoveTimetableCourse = (queryClient: QueryClient) =>
   useMutation({
@@ -46,10 +47,12 @@ export const useCreateTimetable = (queryClient: QueryClient) =>
 
 export const useDeleteTimetable = (queryClient: QueryClient) =>
   useMutation({
-    mutationFn: deleteTimetable,
-    onSuccess: (_data, timetableId, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetable', timetableId] });
+    mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: () => void }) =>
+      deleteTimetable({ timetableId }),
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId] });
+      variables.onSuccess();
     },
   });
 
@@ -63,8 +66,16 @@ export const useRenameTimetable = (queryClient: QueryClient) =>
 
 export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
   useMutation({
-    mutationFn: makePrimaryTimetable,
-    onSuccess: (_data, timetableId, _context) => {
+    mutationFn: ({
+      timetableId,
+      currentPrimaryTimetableId: _,
+    }: {
+      timetableId: string;
+      currentPrimaryTimetableId: string;
+    }) => makePrimaryTimetable(timetableId),
+    onSuccess: (_data, { timetableId, currentPrimaryTimetableId }, _context) => {
       queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'info'] });
+      queryClient.invalidateQueries({ queryKey: ['timetable', currentPrimaryTimetableId, 'info'] });
+      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
     },
   });

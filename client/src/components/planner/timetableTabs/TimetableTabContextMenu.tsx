@@ -22,17 +22,38 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../../styles/TimetableTabStyles';
 import StyledDialog from '../../StyledDialog';
+import { useTimetableIdsQuery, useTimetableInfoQueries, useTimetableInfoQuery } from '../../../api/timetable/queries';
+import { useDeleteTimetable, useMakePrimaryTimetable, useRenameTimetable } from '../../../api/timetable/mutations';
+import { useQueryClient } from '@tanstack/react-query';
+import { Term } from '../../../api/times/times';
 
 const TIMETABLE_LIMIT = 13;
 
 interface TimetableTabContextMenuProps {
   anchorElement: null | { x: number; y: number };
   setAnchorElement: (anchorElement: null | { x: number; y: number }) => void;
+  selectedTimetableId: string;
+  selectTimetableId: (id: string) => void;
+  term: Term;
 }
 
-const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableTabContextMenuProps) => {
+const TimetableTabContextMenu = ({
+  anchorElement,
+  setAnchorElement,
+  selectedTimetableId,
+  selectTimetableId,
+  term,
+}: TimetableTabContextMenuProps) => {
   const isMacOS = navigator.userAgent.includes('Mac');
   const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Shift+x)' : 'Delete Tab (Ctrl+Shift+x)';
+
+  const queryClient = useQueryClient();
+  const { name, primary } = useTimetableInfoQuery(selectedTimetableId);
+  const timetableIds = useTimetableIdsQuery(term);
+  const timetables = useTimetableInfoQueries(timetableIds);
+  const deleteTimetable = useDeleteTimetable(queryClient);
+  const renameTimetable = useRenameTimetable(queryClient);
+  const setPrimaryTimetable = useMakePrimaryTimetable(queryClient);
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');
@@ -76,6 +97,35 @@ const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableT
     </>
   );
 
+  // Handle changes to deleting a timetable
+  const handleDeleteTimetable = () => {
+    const currentIndex = timetableIds.indexOf(selectedTimetableId);
+    const newIndex = currentIndex === 0 ? 0 : currentIndex - 1;
+    selectTimetableId(timetableIds[newIndex]);
+    deleteTimetable.mutate({
+      timetableId: selectedTimetableId,
+      onSuccess: () => {
+        setOpenRestoreAlert(true);
+        handleMenuClose();
+      },
+    });
+  };
+
+  // Handle changes to the rename text field
+  const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const str = e.target.value;
+    setRenamedString(str);
+    setRenamedHelper(`${str.length}/30`);
+    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+  };
+
+  const handleRenameOpen = () => {
+    setRenamedString(name);
+    setRenamedHelper(`${name.length}/30`);
+    name.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+    setRenameOpen(true);
+  };
+
   // Collapse all modals and menus
   const handleMenuClose = useCallback(() => {
     setRenameOpen(false);
@@ -93,15 +143,24 @@ const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableT
         onClose={handleMenuClose}
         autoFocus={false}
       >
-        <Tooltip title="">
-          <MenuItem>
+        <Tooltip title={primary ? 'This timetable is already primary' : ''}>
+          <MenuItem
+            onClick={() => {
+              setPrimaryTimetable.mutate({
+                timetableId: selectedTimetableId,
+                currentPrimaryTimetableId: timetables.find((t) => t.primary)!!.id,
+              });
+              handleMenuClose();
+            }}
+            sx={{ opacity: primary ? 0.5 : 1 }}
+          >
             <ListItemIcon>
               <Star fontSize="small" />
             </ListItemIcon>
             <ListItemText>Set as primary</ListItemText>
           </MenuItem>
         </Tooltip>
-        <MenuItem>
+        <MenuItem onClick={handleRenameOpen}>
           <ListItemIcon>
             <Edit fontSize="small" />
           </ListItemIcon>
@@ -151,6 +210,7 @@ const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableT
               helperText={renamedHelper}
               value={renamedString}
               error={renamedErr}
+              onChange={handleRenameChange}
             />
           </ListItem>
         </StyledDialogContent>
@@ -161,6 +221,10 @@ const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableT
           id="confirm-rename-button"
           disableElevation
           disabled={renamedString === '' || renamedErr}
+          onClick={() => {
+            renameTimetable.mutate({ timetableId: selectedTimetableId, newName: renamedString });
+            handleMenuClose();
+          }}
         >
           <Save />
           SAVE
@@ -175,10 +239,7 @@ const TimetableTabContextMenu = ({ anchorElement, setAnchorElement }: TimetableT
         confirmButtonText="Delete"
         confirmButtonId="confirm-delete-button"
         onClose={handleMenuClose}
-        onConfirm={() => {
-          // TODO: Delete timetable logic
-          handleMenuClose();
-        }}
+        onConfirm={handleDeleteTimetable}
       />
       {/* Restore deleted timetable Alert */}
       <StyledSnackbar
