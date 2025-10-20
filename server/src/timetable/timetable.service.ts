@@ -3,7 +3,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
 import {
-  AddCourseDto,
   CourseDetails,
   UserTimetable,
   EventParametersDto,
