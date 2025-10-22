@@ -91,10 +91,7 @@ export class TimetableController {
     @Req() req: AuthenticatedRequest,
     @Param('id') timetableId: string,
   ) {
-    await this.timetableService.clearTimetable(
-      req.user.id,
-      timetableId,
-    )
+    await this.timetableService.clearTimetable(req.user.id, timetableId);
   }
 
   @Patch(':id/change-primary')

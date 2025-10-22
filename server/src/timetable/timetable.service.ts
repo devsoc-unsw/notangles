@@ -402,33 +402,14 @@ export class TimetableService {
     });
   }
 
-  async clearTimetable(
-    userId: string,
-    timetableId: string
-  ): Promise<void> {
-    const timetable = await this.prisma.timetable.findUniqueOrThrow({
-      select: { primary: true, year: true, term: true },
-      where: { id: timetableId, userId },
-    });
+  async clearTimetable(userId: string, timetableId: string): Promise<void> {
+    const events = await this.getAllEvent(userId, timetableId);
+    await Promise.all(events.map((e) => this.removeEvent(userId, e.id ?? '')));
 
-    if (!timetable) {
-      throw new HttpException(
-        'Timetable does not belong to this user.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const events = this.getAllEvent(userId, timetableId);
-
-    for (const e in events) {
-      this.removeEvent(userId, e);
-    }
-
-    const courses = this.getCourseIds(userId, timetableId)
-
-    for (const c in courses) {
-      this.removeCourse(userId, timetableId, c)
-    }
+    const courses = await this.getCourseIds(userId, timetableId);
+    await Promise.all(
+      courses.map((c) => this.removeCourse(userId, timetableId, c)),
+    );
   }
 
   async makePrimary(userId: string, timetableId: string): Promise<void> {
