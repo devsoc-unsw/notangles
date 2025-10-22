@@ -2,12 +2,11 @@ import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 
-// import Autotimetabler from './Autotimetabler';
-// import CustomEvents from './CustomEvent';
-// import History from './History';
 import { Term } from '../../../api/times/times';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
+import CustomEvents from './customEvents/CustomEvents';
+import History from './History';
 import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
@@ -84,11 +83,15 @@ const Controls: React.FC<{ term: Term; setTerm: (term: Term) => void; timetableI
           md: 5.5,
         }}
       >
-        <CustomEventsWrapper>{/* <CustomEvents /> */}</CustomEventsWrapper>
+        <CustomEventsWrapper>
+          <CustomEvents />
+        </CustomEventsWrapper>
         <AutotimetablerWrapper>
           <Autotimetabler />
         </AutotimetablerWrapper>
-        <HistoryWrapper>{/* <History /> */}</HistoryWrapper>
+        <HistoryWrapper>
+          <History />
+        </HistoryWrapper>
       </Grid>
     </Grid>
   );
