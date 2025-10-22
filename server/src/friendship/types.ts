@@ -7,7 +7,7 @@ export class CreateFriendRequestDto {
 }
 
 export class CancelFriendRequestDto {
-  requestorCode: string;
+  requesteeCode: string;
 }
 
 export class AcceptFriendRequestDto {
