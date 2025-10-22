@@ -5,4 +5,6 @@
 
 */
 -- AlterTable
-ALTER TABLE "event" ADD COLUMN     "title" TEXT NOT NULL;
+ALTER TABLE "event" ADD COLUMN     "description" TEXT,
+ADD COLUMN     "location" TEXT,
+ADD COLUMN     "title" TEXT NOT NULL;

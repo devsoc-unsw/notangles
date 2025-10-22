@@ -6,6 +6,7 @@ import { CourseDetails, UserTimetable, EventParametersDto } from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
 import { EventMinAggregateOutputType } from '../generated/prisma/models/Event';
+import type { Event } from 'src/generated/prisma/client';
 
 @Injectable()
 export class TimetableService {
@@ -431,10 +432,7 @@ export class TimetableService {
     ]);
   }
 
-  async getEvent(
-    userId: string,
-    eventId: string,
-  ): Promise<EventMinAggregateOutputType> {
+  async getEvent(userId: string, eventId: string): Promise<Event> {
     try {
       const event = await this.prisma.event.findUnique({
         select: {
@@ -456,7 +454,7 @@ export class TimetableService {
         throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
       }
 
-      const eventData: EventMinAggregateOutputType = {
+      const eventData = {
         id: event.id,
         timetableId: event.timetable.id,
         colour: event.colour,
