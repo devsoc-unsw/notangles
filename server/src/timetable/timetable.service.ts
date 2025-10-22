@@ -15,6 +15,8 @@ export class TimetableService {
     private readonly graphqlService: GraphqlService,
   ) {}
 
+  private readonly TIMETABLE_DEFAULT_NAME = 'My Timetable';
+
   async isTimetableOwnedByUser(
     userId: string,
     timetableId: string,
@@ -402,14 +404,20 @@ export class TimetableService {
     });
   }
 
-  async clearTimetable(userId: string, timetableId: string): Promise<void> {
-    const events = await this.getAllEvent(userId, timetableId);
-    await Promise.all(events.map((e) => this.removeEvent(userId, e.id ?? '')));
-
-    const courses = await this.getCourseIds(userId, timetableId);
-    await Promise.all(
-      courses.map((c) => this.removeCourse(userId, timetableId, c)),
-    );
+  async clearTimetable(userId: string, year: number, term: string): Promise<void> {
+    await this.prisma.$transaction([
+      this.prisma.timetable.deleteMany({ where: { year: Number(year), term: term } }),
+      this.prisma.timetable.create({
+        data: {
+          userId: userId,
+          name: this.TIMETABLE_DEFAULT_NAME,
+          year: Number(year),
+          term: term,
+          primary: true,
+        },
+        select: { id: true },
+      })
+    ])
   }
 
   async makePrimary(userId: string, timetableId: string): Promise<void> {
