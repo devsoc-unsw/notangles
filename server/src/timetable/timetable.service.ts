@@ -411,7 +411,7 @@ export class TimetableService {
   ): Promise<void> {
     await this.prisma.$transaction([
       this.prisma.timetable.deleteMany({
-        where: { year: Number(year), term: term },
+        where: { userId: userId, year: Number(year), term: term },
       }),
       this.prisma.timetable.create({
         data: {
