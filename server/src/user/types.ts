@@ -3,6 +3,7 @@ export class UserInfo {
   firstName: string;
   lastName: string;
   profilePictureUrl?: string;
+  isGuest: boolean;
 }
 
 export class UserSettings {
