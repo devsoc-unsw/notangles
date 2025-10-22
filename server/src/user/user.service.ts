@@ -55,7 +55,7 @@ export class UserService {
     const bucketName = process.env.MINIO_BUCKET_NAME;
 
     try {
-      const bucketExists = await this.minio.client.bucketExists(bucketName!);
+      await this.minio.client.bucketExists(bucketName!);
     } catch (err) {
       throw new Error('Error checking if bucket exists: ' + err);
     }
