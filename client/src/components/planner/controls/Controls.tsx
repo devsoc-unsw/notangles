@@ -3,13 +3,12 @@ import { styled } from '@mui/material/styles';
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router';
 
-// import Autotimetabler from './Autotimetabler';
-// import CustomEvents from './CustomEvent';
-// import History from './History';
 import { Term } from '../../../api/times/times';
 import UserProfile from '../../sidebar/friends/UserProfile';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
+import CustomEvents from './customEvents/CustomEvents';
+import History from './History';
 import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
@@ -120,11 +119,15 @@ const Controls: React.FC<{
             md: 5.5,
           }}
         >
-          <CustomEventsWrapper>{/* <CustomEvents /> */}</CustomEventsWrapper>
+          <CustomEventsWrapper>
+            <CustomEvents />
+          </CustomEventsWrapper>
           <AutotimetablerWrapper>
             <Autotimetabler />
           </AutotimetablerWrapper>
-          <HistoryWrapper>{/* <History /> */}</HistoryWrapper>
+          <HistoryWrapper>
+            <History />
+          </HistoryWrapper>
         </Grid>
       </>
     );
