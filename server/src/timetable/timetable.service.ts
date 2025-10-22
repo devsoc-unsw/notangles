@@ -402,6 +402,35 @@ export class TimetableService {
     });
   }
 
+  async clearTimetable(
+    userId: string,
+    timetableId: string
+  ): Promise<void> {
+    const timetable = await this.prisma.timetable.findUniqueOrThrow({
+      select: { primary: true, year: true, term: true },
+      where: { id: timetableId, userId },
+    });
+
+    if (!timetable) {
+      throw new HttpException(
+        'Timetable does not belong to this user.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const events = this.getAllEvent(userId, timetableId);
+
+    for (const e in events) {
+      this.removeEvent(userId, e);
+    }
+
+    const courses = this.getCourseIds(userId, timetableId)
+
+    for (const c in courses) {
+      this.removeCourse(userId, timetableId, c)
+    }
+  }
+
   async makePrimary(userId: string, timetableId: string): Promise<void> {
     const timetable = await this.prisma.timetable.findFirst({
       select: { year: true, term: true },

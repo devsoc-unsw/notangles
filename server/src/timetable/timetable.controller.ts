@@ -85,6 +85,18 @@ export class TimetableController {
     );
   }
 
+  @Patch(':id/clear')
+  @UseGuards(AuthenticatedGuard)
+  async clearTimetable(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+  ) {
+    await this.timetableService.clearTimetable(
+      req.user.id,
+      timetableId,
+    )
+  }
+
   @Patch(':id/change-primary')
   @UseGuards(AuthenticatedGuard)
   async makePrimary(
