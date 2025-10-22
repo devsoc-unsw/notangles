@@ -2,7 +2,7 @@ import { Badge, styled } from "@mui/material";
 
 const StyledBadge = styled(Badge)`
   & .MuiBadge-badge {
-    background-color: #FF383C;
+    background-color: theme.palette.error.light;
     color: white;
     font-weight: 700;
     font-size: 10px;
