@@ -14,14 +14,6 @@ import { AuthenticatedRequest } from 'src/auth/auth.controller';
 export class FriendshipController {
   constructor(private readonly friendshipService: FriendshipService) {}
 
-  // [X] @post createFriendRequest
-  // [X] @post cancelFriendRequest
-  // [X] @get getOutgoingFriendRequests
-  // [X] @get getIncomingFriendRequests
-  // [X] @post acceptFriendRequest
-  // [X] @post rejectFriendRequest
-  // [X] @post removeMutualFriend
-
   @Post()
   @UseGuards(AuthenticatedGuard)
   async createFriendRequest(
@@ -34,7 +26,7 @@ export class FriendshipController {
     );
   }
 
-  @Post()
+  @Post('cancel')
   @UseGuards(AuthenticatedGuard)
   async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -42,12 +34,12 @@ export class FriendshipController {
   ) {
     await this.friendshipService.deleteRelationship(
       await this.friendshipService.fetchUserFriendCode(req.user.id),
-      cancelFriendRequest.requestorCode,
+      cancelFriendRequest.requesteeCode,
       true,
     );
   }
 
-  @Get()
+  @Get('requests')
   @UseGuards(AuthenticatedGuard)
   async getOutgoingFriendRequests(@Req() req: AuthenticatedRequest) {
     const userCode = await this.friendshipService.fetchUserFriendCode(
@@ -58,14 +50,14 @@ export class FriendshipController {
 
   @Get()
   @UseGuards(AuthenticatedGuard)
-  async getFriendRequests(@Req() req: AuthenticatedRequest) {
+  async getUserFriends(@Req() req: AuthenticatedRequest) {
     const userCode = await this.friendshipService.fetchUserFriendCode(
       req.user.id,
     );
     return await this.friendshipService.getUserFriendships(userCode);
   }
 
-  @Post()
+  @Post('accept')
   @UseGuards(AuthenticatedGuard)
   async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -80,7 +72,7 @@ export class FriendshipController {
     );
   }
 
-  @Post()
+  @Post('reject')
   @UseGuards(AuthenticatedGuard)
   async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -93,7 +85,7 @@ export class FriendshipController {
     );
   }
 
-  @Post()
+  @Post('remove')
   @UseGuards(AuthenticatedGuard)
   async removeFriend(
     @Req() req: AuthenticatedRequest,

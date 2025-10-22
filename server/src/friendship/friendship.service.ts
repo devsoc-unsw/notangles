@@ -100,10 +100,10 @@ export class FriendshipService {
       },
     });
     // TODO: How to handle this proplery?
-    if (relationship === undefined) return;
+    if (relationship === null) return;
 
     await this.prisma.friendship.update({
-      where: { id: relationship?.id },
+      where: { id: relationship.id },
       data: { status: 'FRIEND' },
     });
   }
