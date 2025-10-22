@@ -31,7 +31,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const port = configService.get('port') ?? 3001;
-  await app.listen(port, '0.0.0.0');
+  await app.listen(configService.get('port') ?? 3001);
 }
-void bootstrap(); 
+void bootstrap();
