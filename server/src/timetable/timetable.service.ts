@@ -542,6 +542,10 @@ export class TimetableService {
     eventId: string,
     eventDetails: EventParametersDto,
   ): Promise<void> {
+    if (!(await this.isEventOwnedByUser(userId, eventId))) {
+      throw new HttpException('Event could not be found', HttpStatus.NOT_FOUND);
+    }
+
     const dtoKeys = Object.keys(new EventParametersDto());
 
     const filteredData = Object.fromEntries(
