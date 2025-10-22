@@ -55,6 +55,12 @@ export class UserService {
     const bucketName = process.env.MINIO_BUCKET_NAME;
 
     try {
+      const bucketExists = await this.minio.client.bucketExists(bucketName!);
+    } catch (err) {
+      throw new Error('Error checking if bucket exists: ' + err);
+    }
+
+    try {
       await this.minio.client.putObject(bucketName!, filename, buffer);
     } catch (err) {
       throw new Error('Error uploading file to MinIO: ' + err);
