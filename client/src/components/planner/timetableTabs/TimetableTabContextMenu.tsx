@@ -11,8 +11,17 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
+import { Term } from '../../../api/times/times';
+import {
+  useDeleteTimetable,
+  useDuplicateTimetable,
+  useMakePrimaryTimetable,
+  useRenameTimetable,
+} from '../../../api/timetable/mutations';
+import { useTimetableIdsQuery, useTimetableInfoQueries, useTimetableInfoQuery } from '../../../api/timetable/queries';
 import {
   StyledDialogContent,
   StyledDialogTitle,
@@ -22,15 +31,6 @@ import {
 import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../../../styles/CustomEventStyles';
 import { StyledSnackbar } from '../../../styles/TimetableTabStyles';
 import StyledDialog from '../../StyledDialog';
-import { useTimetableIdsQuery, useTimetableInfoQueries, useTimetableInfoQuery } from '../../../api/timetable/queries';
-import {
-  useDeleteTimetable,
-  useDuplicateTimetable,
-  useMakePrimaryTimetable,
-  useRenameTimetable,
-} from '../../../api/timetable/mutations';
-import { useQueryClient } from '@tanstack/react-query';
-import { Term } from '../../../api/times/times';
 
 const TIMETABLE_LIMIT = 13;
 
@@ -67,6 +67,8 @@ const TimetableTabContextMenu = ({
   const [renamedErr, setRenamedErr] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
   const [openRestoreAlert, setOpenRestoreAlert] = useState<boolean>(false);
+
+  const primaryTimetableId = timetables.find((t) => t.primary)?.id;
 
   // Hotkey to confirm delete prompt by pressing enter button
   useEffect(() => {
@@ -133,14 +135,14 @@ const TimetableTabContextMenu = ({
   const handleRenameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const str = e.target.value;
     setRenamedString(str);
-    setRenamedHelper(`${str.length}/30`);
-    str.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+    setRenamedHelper(`${String(str.length)}/30`);
+    setRenamedErr(str.length > 30);
   };
 
   const handleRenameOpen = () => {
     setRenamedString(name);
-    setRenamedHelper(`${name.length}/30`);
-    name.length > 30 ? setRenamedErr(true) : setRenamedErr(false);
+    setRenamedHelper(`${String(name.length)}/30`);
+    setRenamedErr(name.length > 30);
     setRenameOpen(true);
   };
 
@@ -164,9 +166,11 @@ const TimetableTabContextMenu = ({
         <Tooltip title={primary ? 'This timetable is already primary' : ''}>
           <MenuItem
             onClick={() => {
+              if (primaryTimetableId === undefined) return;
+
               setPrimaryTimetable.mutate({
                 timetableId: selectedTimetableId,
-                currentPrimaryTimetableId: timetables.find((t) => t.primary)!!.id,
+                currentPrimaryTimetableId: primaryTimetableId,
               });
               handleMenuClose();
             }}

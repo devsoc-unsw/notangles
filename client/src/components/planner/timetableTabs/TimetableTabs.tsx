@@ -63,7 +63,6 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
 
   // Right clicking a tab will switch to that tab and open the menu
   const handleRightTabClick = (e: React.MouseEvent<HTMLElement>) => {
-    if (!term) return;
     e.preventDefault();
 
     // Anchoring the menu to the mouse position

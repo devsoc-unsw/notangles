@@ -49,9 +49,9 @@ export const useDeleteTimetable = (queryClient: QueryClient) =>
   useMutation({
     mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: () => void }) =>
       deleteTimetable({ timetableId }),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
-      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId] });
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId] });
       variables.onSuccess();
     },
   });
@@ -59,8 +59,8 @@ export const useDeleteTimetable = (queryClient: QueryClient) =>
 export const useRenameTimetable = (queryClient: QueryClient) =>
   useMutation({
     mutationFn: renameTimetable,
-    onSuccess: (_data, variables, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'info'] });
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'info'] });
     },
   });
 
@@ -73,10 +73,10 @@ export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
       timetableId: string;
       currentPrimaryTimetableId: string;
     }) => makePrimaryTimetable(timetableId),
-    onSuccess: (_data, { timetableId, currentPrimaryTimetableId }, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'info'] });
-      queryClient.invalidateQueries({ queryKey: ['timetable', currentPrimaryTimetableId, 'info'] });
-      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+    onSuccess: async (_data, { timetableId, currentPrimaryTimetableId }, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'info'] });
+      await queryClient.invalidateQueries({ queryKey: ['timetable', currentPrimaryTimetableId, 'info'] });
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
     },
   });
 
@@ -84,8 +84,8 @@ export const useDuplicateTimetable = (queryClient: QueryClient) =>
   useMutation({
     mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: (id: string) => void }) =>
       duplicateTimetable(timetableId),
-    onSuccess: (data, variables, _context) => {
-      queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
+    onSuccess: async (data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
       variables.onSuccess(data);
     },
   });

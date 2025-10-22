@@ -76,5 +76,5 @@ export const makePrimaryTimetable = async (timetableId: string): Promise<void> =
 };
 
 export const duplicateTimetable = async (timetableId: string): Promise<string> => {
-  return (await apiClient.post(`/user/timetables/${timetableId}/duplicate`)).data;
+  return (await apiClient.post<string>(`/user/timetables/${timetableId}/duplicate`)).data;
 };
