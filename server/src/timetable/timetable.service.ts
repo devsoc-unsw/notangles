@@ -404,9 +404,15 @@ export class TimetableService {
     });
   }
 
-  async clearTimetable(userId: string, year: number, term: string): Promise<void> {
+  async clearTimetable(
+    userId: string,
+    year: number,
+    term: string,
+  ): Promise<void> {
     await this.prisma.$transaction([
-      this.prisma.timetable.deleteMany({ where: { year: Number(year), term: term } }),
+      this.prisma.timetable.deleteMany({
+        where: { year: Number(year), term: term },
+      }),
       this.prisma.timetable.create({
         data: {
           userId: userId,
@@ -416,8 +422,8 @@ export class TimetableService {
           primary: true,
         },
         select: { id: true },
-      })
-    ])
+      }),
+    ]);
   }
 
   async makePrimary(userId: string, timetableId: string): Promise<void> {
