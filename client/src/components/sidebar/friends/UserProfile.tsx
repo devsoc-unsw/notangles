@@ -13,16 +13,40 @@ const StyledContainer = styled('div')`
 `;
 
 const StyledFullname = styled('div')`
-  word-break: break-all;
   font-size: 0.9rem;
+  white-space: nowrap;
 `;
 
-const getFullName = (firstName: string, lastName: string) => {
-  let fullname = firstName + ' ' + lastName;
-  if (fullname.length >= 32) {
-    fullname = fullname.slice(0, 32);
-    return fullname + '...';
+const getTextWidth = (text: string, font: string): number => {
+  let canvas = document.createElement('canvas');
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    return 0;
   }
+
+  context.font = font;
+  const metrics = context.measureText(text);
+  canvas.remove();
+
+  return metrics.width;
+};
+
+const getFullName = (firstName: string, lastName: string) => {
+  const font = '400 14.4px Roboto, Helvetica, Arial, sans-serif';
+  const maxWidth = 100;
+
+  let fullname = firstName + ' ' + lastName;
+
+  if (getTextWidth(fullname, font) > maxWidth) {
+    fullname = firstName + ' ' + lastName[0] + '.';
+    let i = 2;
+    while (getTextWidth(fullname, font) > maxWidth) {
+      fullname = firstName.slice(0, -i) + '. ' + lastName[0] + '.';
+      i++;
+    }
+  }
+
   return fullname;
 };
 
