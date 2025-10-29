@@ -1,0 +1,19 @@
+meta {
+  name: Timetable Make Primary
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{Local Host URL}}/user/timetables/:id/change-primary
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 3b0cd623-3105-4503-9e0c-0e949134be51
+}
+
+settings {
+  encodeUrl: true
+}

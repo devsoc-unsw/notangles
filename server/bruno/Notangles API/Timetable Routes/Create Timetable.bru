@@ -1,0 +1,27 @@
+meta {
+  name: Create Timetable
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{Local Host URL}}/user/timetables
+  body: json
+  auth: inherit
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+body:json {
+  {
+      "name":"New Timetable 1",
+      "year":2025,
+      "term": "T3"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Update event
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{Local Host URL}}/user/timetables/event/:eventid
+  body: json
+  auth: inherit
+}
+
+params:path {
+  eventid: 5
+}
+
+body:json {
+  {
+      "title": "Math Tute",
+      "description": "Calculus 101",
+      "start": 10,
+      "end": 100,
+      "location": "Room 301",
+      "colour": "default-7",
+      "dayOfWeek": 1
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

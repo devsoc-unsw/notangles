@@ -1,0 +1,24 @@
+meta {
+  name: Get ClassesID from Course
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{Local Host URL}}/user/timetables/classes/:timetableId/:courseId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  timetableId: 7050d820-fa7f-41e1-806e-88df665340f0
+  courseId: COMP2521Undergraduate
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+settings {
+  encodeUrl: true
+}

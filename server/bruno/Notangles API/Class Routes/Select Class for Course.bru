@@ -1,0 +1,31 @@
+meta {
+  name: Select Class for Course
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{Local Host URL}}/user/timetables/class/:timetableId/:courseId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  timetableId: 1aba85cf-b2bc-41ea-acdf-008e9e335f34
+  courseId: ACTL3301Undergraduate
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+body:json {
+  {
+      "classId": "ACTL3301Undergraduate-10135-T2-2025"
+      // "classId": "ACTL3301Undergraduate-10138-T2-2025"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

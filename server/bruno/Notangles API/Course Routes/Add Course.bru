@@ -1,0 +1,30 @@
+meta {
+  name: Add Course
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{Local Host URL}}/user/timetables/course/:timetableId/:courseId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  timetableId: d9b19625-0e05-40d0-bef8-cc3bfdf1a6d3
+  courseId: COMP6420Undergraduate
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+body:json {
+  {
+      "colour": "default-1"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

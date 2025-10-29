@@ -1,0 +1,19 @@
+meta {
+  name: Delete Timetable
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{Local Host URL}}/user/timetables/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: d533e368-5666-4abc-88ca-347e5725b318
+}
+
+settings {
+  encodeUrl: true
+}

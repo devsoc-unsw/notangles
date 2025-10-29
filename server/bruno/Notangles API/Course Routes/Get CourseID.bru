@@ -1,0 +1,37 @@
+meta {
+  name: Get CourseID
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{Local Host URL}}/user/timetables/courses/:timetableId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  timetableId: d9b19625-0e05-40d0-bef8-cc3bfdf1a6d3
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+script:post-response {
+  test("Status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response is correct format", function () {
+      var jsonData = res.getBody();
+      expect(jsonData).to.be.an('array');
+      jsonData.forEach(function(id) {
+          expect(id).to.be.a('string');
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+}

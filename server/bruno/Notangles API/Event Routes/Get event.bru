@@ -1,0 +1,24 @@
+meta {
+  name: Get event
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{Local Host URL}}/user/classes/:timetableId/:eventId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  timetableId: 
+  eventId: 
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+settings {
+  encodeUrl: true
+}

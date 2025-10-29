@@ -3,7 +3,7 @@ import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
 import type { ClassDetails } from './types';
 
-const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
+const HASURAGRES_GRAPHQL_API = 'https://graphql.devsoc.app/v1/graphql';
 
 @Injectable()
 export class GraphqlService {

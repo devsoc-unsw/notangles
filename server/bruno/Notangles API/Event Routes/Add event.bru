@@ -1,0 +1,40 @@
+meta {
+  name: Add event
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{Local Host URL}}/user/timetables/event
+  body: json
+  auth: inherit
+}
+
+params:query {
+  ~timetableId: {}
+}
+
+headers {
+  Cookie: {{Session Cookie}}
+}
+
+body:json {
+  {
+    "timetableId": "225ac72d-6015-40da-b41f-66099f080d99",
+    "event": {
+      "title": "2069 LEc",
+      "description": "Calculus 101",
+      "start": 10,
+      "end": 190,
+      "location": "Room 301",
+      "colour": "default-7",
+      "type": "CUSTOM",
+      "dayOfWeek": 1
+    }
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}
