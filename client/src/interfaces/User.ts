@@ -3,6 +3,7 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   profilePictureUrl?: string;
+  isGuest: boolean;
 }
 
 export interface UserSettings {

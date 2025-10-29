@@ -3,6 +3,13 @@ import { Button, ButtonGroup, CircularProgress, Grid, InputBase, Paper, Snackbar
 import { useMemo, useState } from 'react';
 
 import { SettingButton, SettingsItem, SettingsText } from './Settings';
+import PendingInvitesBadge from './PendingInvitesBadge';
+
+const RightContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
 
 const AddFriendText = styled(SettingsText)`
   font-weight: 500;
@@ -54,6 +61,7 @@ enum State {
 // TODO: replace hard code with server implementation
 const code = 'MQ7T2';
 const link = 'http://notangles.devsoc.app/invite?code=MQ7T2';
+const friendInvites = 2;
 
 const AddFriendsMenu = () => {
   const [codeCopyState, setCodeCopyState] = useState<State>(State.Ready);
@@ -101,7 +109,11 @@ const AddFriendsMenu = () => {
     <>
       <SettingButton>
         <AddFriendText>Friend Requests</AddFriendText>
-        <ArrowRight />
+        <RightContainer>
+          <PendingInvitesBadge count={friendInvites}/>
+          <ArrowRight />
+        </RightContainer>
+        
       </SettingButton>
       <SettingsItem>
         <MenuSubContainer>

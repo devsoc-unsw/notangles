@@ -1,4 +1,3 @@
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FC, useMemo, useState } from 'react';
@@ -8,6 +7,9 @@ import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
+import { ArrowBackIos, ArrowForwardIosOutlined } from '@mui/icons-material';
+import ProfilePictureModal from './ProfilePictureModal';
+import { useAuth } from '../../hooks/useAuth';
 
 const SettingsPadding = styled('div')`
   padding: 1vh 20px;
@@ -21,6 +23,20 @@ export const SettingsItem = styled(SettingsPadding)`
 
 export const SettingsText = styled('div')`
   padding: 1vh 0;
+  display: flex;
+  align-items: center;
+`;
+
+const ReturnText = styled(SettingsText)`
+  padding: 0;
+`;
+
+const StyledArrowBackIosIcon = styled(ArrowBackIos)`
+  height: 16px;
+`;
+
+const StyledArrowForwardIcon = styled(ArrowForwardIosOutlined)`
+  height: 16px;
 `;
 
 export const SettingButton = styled(SettingsPadding)`
@@ -56,6 +72,7 @@ const Settings: FC = () => {
   const settings = useGetUserSettingsQuery();
   const { preferredTheme } = settings;
   const updateUserSettings = useSetUserSettings();
+  const { user } = useAuth();
 
   const nonTogglableSet = new Set<keyof UserSettings>(['preferredTheme', 'isDarkMode']);
 
@@ -68,53 +85,57 @@ const Settings: FC = () => {
     }));
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
+  const [isChangeProfilePicOpen, setIsChangeProfilePicOpen] = useState(false);
 
   const mainContent = useMemo(
     () => (
       <>
         {isPreferredThemeOpen && (
-          <>
-            <SettingButton
-              onClick={() => {
-                setIsPreferredThemeOpen(!isPreferredThemeOpen);
-              }}
-            >
-              <SettingsText>
-                <ArrowBackIosIcon />
-                Return
-              </SettingsText>
-            </SettingButton>
-            <ColorThemeOptionsContainer>
-              <ColorThemeOptions currentTheme={preferredTheme} />
-            </ColorThemeOptionsContainer>
-          </>
+          <ColorThemeOptionsContainer>
+            <ColorThemeOptions currentTheme={preferredTheme} />
+          </ColorThemeOptionsContainer>
         )}
+        {isChangeProfilePicOpen && <ProfilePictureModal />}
         {!isPreferredThemeOpen &&
+          !isChangeProfilePicOpen &&
           settingsToggles.map((setting) => (
-            <SettingsItem key={setting.desc}>
-              <SettingsText>{setting.desc}</SettingsText>
-              <Switch
-                value={setting.state}
-                checked={setting.state}
-                color="primary"
-                onChange={(e) => {
-                  updateUserSettings({
-                    [setting.id]: e.target.checked,
-                  });
-                }}
-              />
-            </SettingsItem>
+            <div key={setting.desc}>
+              <SettingsItem>
+                <SettingsText>{setting.desc}</SettingsText>
+                <Switch
+                  value={setting.state}
+                  checked={setting.state}
+                  color="primary"
+                  onChange={(e) => {
+                    updateUserSettings({
+                      [setting.id]: e.target.checked,
+                    });
+                  }}
+                />
+              </SettingsItem>
+            </div>
           ))}
       </>
     ),
-    [isPreferredThemeOpen, preferredTheme, settingsToggles, updateUserSettings],
+    [isPreferredThemeOpen, isChangeProfilePicOpen, settingsToggles],
   );
 
   const flatMenuButtons = useMemo(() => {
-    const isHomepageOpen = !isPreferredThemeOpen;
+    const isHomepageOpen = !isPreferredThemeOpen && !isChangeProfilePicOpen;
 
     return (
       <>
+        {/* Only show option to change profile pic when user is logged in */}
+        {isHomepageOpen && user?.id && !user.isGuest && (
+          <SettingButton
+            onClick={() => {
+              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+            }}
+          >
+            <SettingsText>Change Profile Picture</SettingsText>
+            <StyledArrowForwardIcon />
+          </SettingButton>
+        )}
         {isHomepageOpen && (
           <SettingButton
             onClick={() => {
@@ -125,9 +146,33 @@ const Settings: FC = () => {
             <ColorThemePreview previewTheme={preferredTheme} />
           </SettingButton>
         )}
+        {isPreferredThemeOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsPreferredThemeOpen(!isPreferredThemeOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+        )}
+        {isChangeProfilePicOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+        )}
       </>
     );
-  }, [isPreferredThemeOpen, preferredTheme]);
+  }, [isChangeProfilePicOpen, isPreferredThemeOpen, user]);
 
   return (
     <>

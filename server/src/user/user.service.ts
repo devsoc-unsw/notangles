@@ -31,6 +31,7 @@ export class UserService {
       firstName: data.firstName,
       lastName: data.lastName,
       profilePictureUrl: data.profilePictureUrl ?? undefined,
+      isGuest: data.isGuest,
     };
   }
 

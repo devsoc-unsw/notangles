@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   HttpStatus,
   Param,
   Patch,
@@ -14,7 +15,7 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { AddCourseDto } from './types';
+import { EventParametersDto } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -66,15 +67,8 @@ export class TimetableController {
   async deleteTimetable(
     @Req() req: AuthenticatedRequest,
     @Param('id') timetableId: string,
-    @Query('year') year: string,
-    @Query('term') term: string,
   ) {
-    await this.timetableService.deleteTimetable(
-      req.user.id,
-      timetableId,
-      Number(year),
-      term,
-    );
+    await this.timetableService.deleteTimetable(req.user.id, timetableId);
   }
 
   @Patch(':id/rename')
@@ -91,14 +85,23 @@ export class TimetableController {
     );
   }
 
+  @Patch('clear')
+  @UseGuards(AuthenticatedGuard)
+  async clearTimetables(
+    @Req() req: AuthenticatedRequest,
+    @Query('year') year: number,
+    @Query('term') term: string,
+  ) {
+    await this.timetableService.clearTimetables(req.user.id, year, term);
+  }
+
   @Patch(':id/change-primary')
   @UseGuards(AuthenticatedGuard)
   async makePrimary(
     @Req() req: AuthenticatedRequest,
     @Param('id') timetableId: string,
-    @Body() data: { year: number; term: string },
   ) {
-    await this.timetableService.makePrimary(req.user.id, timetableId, data);
+    await this.timetableService.makePrimary(req.user.id, timetableId);
   }
 
   @Get('courses/:timetableId')
@@ -116,13 +119,13 @@ export class TimetableController {
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
     @Param('courseId') courseId: string,
-    @Body() addCourseDto: AddCourseDto,
+    @Body('colour') colour: string,
   ) {
     await this.timetableService.addCourse(
       req.user.id,
       timetableId,
       courseId,
-      addCourseDto,
+      colour,
     );
     return HttpStatus.CREATED;
   }
@@ -201,5 +204,92 @@ export class TimetableController {
       courseId,
       classId,
     );
+  }
+
+  @Get('event/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async getEventById(
+    @Req() req: AuthenticatedRequest,
+    @Param('eventId') eventId: string,
+  ) {
+    try {
+      const eventDetails = await this.timetableService.getEvent(
+        req.user.id,
+        eventId,
+      );
+      return eventDetails;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to get event details',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('event/:timetableId')
+  @UseGuards(AuthenticatedGuard)
+  async addEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+    @Body() body: { event: EventParametersDto },
+  ) {
+    try {
+      await this.timetableService.addEvent(
+        req.user.id,
+        body.event,
+        timetableId,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to add event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return HttpStatus.CREATED;
+  }
+
+  @Delete('event/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async deleteEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('eventId') eventId: string,
+  ) {
+    try {
+      await this.timetableService.removeEvent(req.user.id, eventId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to delete event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Patch('event/:eventId')
+  @UseGuards(AuthenticatedGuard)
+  async updateEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('eventId') eventId: string,
+    @Body() body: EventParametersDto,
+  ) {
+    try {
+      await this.timetableService.updateEvent(req.user.id, eventId, body);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to update event',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
