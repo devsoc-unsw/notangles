@@ -18,18 +18,21 @@ const StyledFullname = styled('div')`
 `;
 
 const getTextWidth = (text: string, font: string): number => {
-  const canvas = document.createElement('canvas');
+  let canvas = document.createElement('canvas');
 
   const context = canvas.getContext('2d');
   if (!context) {
     return 0;
   }
+  
   context.font = font;
   const metrics = context.measureText(text);
-  return metrics.width
-}
+  canvas.remove();
 
-const getFullName = (firstName:string, lastName: string) => {
+  return metrics.width;
+};
+
+const getFullName = (firstName: string, lastName: string) => {
   const font = '400 14.4px Roboto, Helvetica, Arial, sans-serif';
   const maxWidth = 100;
 
