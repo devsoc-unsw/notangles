@@ -15,6 +15,8 @@ export class TimetableService {
     private readonly graphqlService: GraphqlService,
   ) {}
 
+  private readonly TIMETABLE_DEFAULT_NAME = 'My Timetable';
+
   async isTimetableOwnedByUser(
     userId: string,
     timetableId: string,
@@ -400,6 +402,30 @@ export class TimetableService {
       where: { userId, id: timetableId },
       data: { name: newName },
     });
+  }
+
+  async clearTimetables(
+    userId: string,
+    year: number,
+    term: string,
+  ): Promise<string> {
+    const [_, newTimetable] = await this.prisma.$transaction([
+      this.prisma.timetable.deleteMany({
+        where: { userId: userId, year: Number(year), term: term },
+      }),
+      this.prisma.timetable.create({
+        data: {
+          userId: userId,
+          name: this.TIMETABLE_DEFAULT_NAME,
+          year: Number(year),
+          term: term,
+          primary: true,
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    return newTimetable.id;
   }
 
   async makePrimary(userId: string, timetableId: string): Promise<void> {
