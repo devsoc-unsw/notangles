@@ -35,22 +35,19 @@ export class UserService {
   }
 
   async uploadImage(image: string): Promise<{ url: string }> {
-    // This is not workinggg lol
-    // Basic base64 string validation (does not check for file type)
-    // const base64regex =
-    //   /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    // expected image format: data:<mime-type>;base64,<data>
+    const validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const mimeType = image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/);
 
-    // if (!base64regex.test(image)) {
-    //   throw new Error('Invalid string');
-    // }
+    if (!mimeType || !validMimeTypes.includes(mimeType[0])) {
+      throw new Error('Invalid image mime type');
+    }
 
     const temp_filename = Date.now().toString();
     const hash = crypto.createHash('md5');
     hash.update(temp_filename);
     const hashedFileName = hash.digest('hex');
     const filename = hashedFileName;
-
-    const buffer = Buffer.from(image, 'base64');
 
     const bucketName = process.env.MINIO_BUCKET_NAME;
 
@@ -61,7 +58,7 @@ export class UserService {
     }
 
     try {
-      await this.minio.client.putObject(bucketName!, filename, buffer);
+      await this.minio.client.putObject(bucketName!, filename, image);
     } catch (err) {
       throw new Error('Error uploading file to MinIO: ' + err);
     }
@@ -95,7 +92,6 @@ export class UserService {
         id: userId,
       },
       data: {
-        // consider for empty string being passed in -> set to default image
         profilePictureUrl: minioImageLink.url,
       },
     });
