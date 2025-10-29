@@ -26,10 +26,10 @@ const getTextWidth = (text: string, font: string): number => {
   }
   context.font = font;
   const metrics = context.measureText(text);
-  return metrics.width
-}
+  return metrics.width;
+};
 
-const getFullName = (firstName:string, lastName: string) => {
+const getFullName = (firstName: string, lastName: string) => {
   const font = '400 14.4px Roboto, Helvetica, Arial, sans-serif';
   const maxWidth = 100;
 
