@@ -24,7 +24,7 @@ const getTextWidth = (text: string, font: string): number => {
   if (!context) {
     return 0;
   }
-  
+
   context.font = font;
   const metrics = context.measureText(text);
   canvas.remove();
