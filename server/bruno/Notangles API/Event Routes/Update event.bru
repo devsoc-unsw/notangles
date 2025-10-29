@@ -5,13 +5,17 @@ meta {
 }
 
 patch {
-  url: {{Local Host URL}}/user/timetables/event/:eventid
+  url: {{HostURL}}/user/timetables/event/:eventid
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
   eventid: 5
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {
@@ -29,4 +33,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

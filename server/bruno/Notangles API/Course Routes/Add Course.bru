@@ -5,9 +5,9 @@ meta {
 }
 
 post {
-  url: {{Local Host URL}}/user/timetables/course/:timetableId/:courseId
+  url: {{HostURL}}/user/timetables/course/:timetableId/:courseId
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -16,7 +16,7 @@ params:path {
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {
@@ -27,4 +27,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -5,15 +5,20 @@ meta {
 }
 
 patch {
-  url: {{Local Host URL}}/user/timetables/:id/change-primary
+  url: {{HostURL}}/user/timetables/:id/change-primary
   body: none
-  auth: inherit
+  auth: none
 }
 
 params:path {
   id: 3b0cd623-3105-4503-9e0c-0e949134be51
 }
 
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
 settings {
   encodeUrl: true
+  timeout: 0
 }

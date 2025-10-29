@@ -5,9 +5,9 @@ meta {
 }
 
 delete {
-  url: {{Local Host URL}}/user/timetables/class/:timetableId/:courseId/:classId
+  url: {{HostURL}}/user/timetables/class/:timetableId/:courseId/:classId
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -17,7 +17,7 @@ params:path {
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 settings {

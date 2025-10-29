@@ -5,9 +5,9 @@ meta {
 }
 
 patch {
-  url: {{Local Host URL}}/user/timetables/class/:timetableId/:courseId
+  url: {{HostURL}}/user/timetables/class/:timetableId/:courseId
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -16,7 +16,7 @@ params:path {
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {

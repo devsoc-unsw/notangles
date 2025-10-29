@@ -5,15 +5,20 @@ meta {
 }
 
 delete {
-  url: {{Local Host URL}}/user/timetables/:id
+  url: {{HostURL}}/user/timetables/:id
   body: none
-  auth: inherit
+  auth: none
 }
 
 params:path {
-  id: d533e368-5666-4abc-88ca-347e5725b318
+  id: 4ed45635-90c6-44cc-b6ce-3d4622c0d0f7
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

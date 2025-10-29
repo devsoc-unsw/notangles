@@ -6,6 +6,20 @@ auth {
   mode: none
 }
 
-vars:pre-request {
-  Local_Host_URL: http://localhost:3001/api
+docs {
+  # Notangles API Collection
+
+  This collection contains all **Notangles API** endpoints and usage notes.
+
+  ## Setup Instructions
+
+  Before using the requests, follow these steps to set up your Bruno environment variables:
+
+  1. Go to **Settings > General** and disable:
+     - `Store Cookies automatically`
+     - `Send Cookies automatically`
+  2. Select one of the user environments (e.g., **Alice**, **Bob**).
+  3. Use the **Guest Login** endpoint to get a session cookie first.
+     - If you see an error about not finding the FE on port `:5173`, check that the request setting **Automatically Follow Redirects** is disabled.
+  4. Use the other endpoints as needed.
 }

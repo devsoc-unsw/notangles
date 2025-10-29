@@ -7,12 +7,12 @@ meta {
 get {
   url: {{HostURL}}/auth/login/guest
   body: none
-  auth: inherit
+  auth: none
 }
 
 script:post-response {
   const sessionCookie = res.getHeader('set-cookie')
-  bru.setEnvVar("Session_Cookie", sessionCookie);
+  bru.setEnvVar("Session_Cookie", sessionCookie[0].split(';')[0]);
   
 }
 

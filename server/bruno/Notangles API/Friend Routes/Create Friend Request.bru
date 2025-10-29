@@ -4,12 +4,20 @@ meta {
   seq: 1
 }
 
-get {
-  url: 
-  body: none
-  auth: inherit
+post {
+  url: {{HostURL}}/friendships
+  body: json
+  auth: none
+
+}
+
+body:json {
+  {
+    "requesteeCode": ""
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

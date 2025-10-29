@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{Local Host URL}}/user/timetables
+  url: {{HostURL}}/user/timetables
   body: json
-  auth: inherit
+  auth: none
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {
@@ -24,4 +24,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

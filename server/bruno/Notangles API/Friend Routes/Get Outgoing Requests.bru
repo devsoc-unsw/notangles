@@ -5,11 +5,16 @@ meta {
 }
 
 get {
-  url: 
+  url: {{HostURL}}/friendships/requests
   body: none
-  auth: inherit
+  auth: none
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

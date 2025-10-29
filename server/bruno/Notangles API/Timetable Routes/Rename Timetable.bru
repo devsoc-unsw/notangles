@@ -5,13 +5,17 @@ meta {
 }
 
 patch {
-  url: {{Local Host URL}}/user/timetables/:id/rename
+  url: {{HostURL}}/user/timetables/:id/rename
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
-  id: 7050d820-fa7f-41e1-806e-88df665340f0
+  id: ab83b07a-a1cf-4579-83a2-f9dcf71eecc4
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {
@@ -22,4 +26,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

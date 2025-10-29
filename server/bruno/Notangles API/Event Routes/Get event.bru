@@ -5,9 +5,9 @@ meta {
 }
 
 get {
-  url: {{Local Host URL}}/user/classes/:timetableId/:eventId
+  url: {{HostURL}}/user/classes/:timetableId/:eventId
   body: none
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -16,7 +16,7 @@ params:path {
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 settings {

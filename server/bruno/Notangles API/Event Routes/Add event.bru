@@ -5,9 +5,9 @@ meta {
 }
 
 post {
-  url: {{Local Host URL}}/user/timetables/event
+  url: {{HostURL}}/user/timetables/event
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:query {
@@ -15,7 +15,7 @@ params:query {
 }
 
 headers {
-  Cookie: {{Session Cookie}}
+  Cookie: {{Session_Cookie}}
 }
 
 body:json {
