@@ -179,44 +179,15 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
-      const oldData = storage.get('timetables');
       const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
-
-      const storedTerm = localStorage.getItem('selectedTerm');
-      const storedYear = localStorage.getItem('selectedYear');
-      if (storedTerm && storedYear) {
-        setTerm(storedTerm);
-        setYear(storedYear);
-        setTermName(convertToTermName(storedTerm));
-      } else {
-        // Look and see if timetable is non-empty for current term
-        let nonEmptyFound = false;
-        if (Object.prototype.hasOwnProperty.call(oldData, term)) {
-          for (const timetable of oldData[term]) {
-            if (timetable.selectedCourses.length > 0) {
-              nonEmptyFound = true;
-              break;
-            }
-          }
-        }
-        if (nonEmptyFound) {
-          setTerm(term);
-          setYear(year);
-          setTermName(termName);
-        } else {
-          // Use the latest term instead
-          const latestTerm = termsData[termsData.length - 1];
-          const latestTermName = convertToTermName(latestTerm);
-          const latestYear = latestTerm.substring(2);
-          setTerm(latestTerm);
-          setYear(latestYear);
-          setTermName(latestTermName);
-        }
-      }
-
+      setTerm(term);
+      setYear(year);
+      setTermName(termName);
       setFirstDayOfTerm(firstDayOfTerm);
       const termsSortedList: TermDataList = sortTerms(termsData);
       setTermsData(termsSortedList);
+
+      const oldData = storage.get('timetables');
 
       let newTimetableTerms: DisplayTimetablesMap = {};
       for (const termId of termsData) {
