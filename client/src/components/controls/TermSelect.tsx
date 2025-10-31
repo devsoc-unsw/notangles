@@ -89,6 +89,10 @@ const TermSelect: React.FC<TermSelectProps> = () => {
     const termName = termPrefix + newYear; // To get a string like T12024
     setTerm(termName);
     setYear(newYear);
+
+    localStorage.setItem('selectedTerm', termName);
+    localStorage.setItem('selectedYear', newYear);
+
     setTermName(convertToTermName(termName));
     setSelectedTimetable(defaultStartTimetable);
     setSelectedClasses(displayTimetables[termName][defaultStartTimetable].selectedClasses);

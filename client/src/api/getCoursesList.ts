@@ -15,8 +15,8 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   }));
 
 const GET_COURSE_LIST = gql`
-  query GetCoursesByTerm($term: String!) {
-    courses(where: { terms: { _ilike: $term } }) {
+  query GetCoursesByTerm {
+    courses {
       campus
       career
       faculty
@@ -24,6 +24,7 @@ const GET_COURSE_LIST = gql`
       school
       course_code
       course_name
+      year
       terms
       uoc
     }
@@ -42,13 +43,14 @@ const GET_COURSE_LIST = gql`
  * @example
  * const coursesList = await getCoursesList('T1')
  */
-const getCoursesList = async (term: string): Promise<CoursesListWithDate> => {
+const getCoursesList = async (year: number, term: string): Promise<CoursesListWithDate> => {
   try {
     const termWithWildcard = `%${term}%`;
-    const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term: termWithWildcard } });
+    const { data } = await client.query({ query: GET_COURSE_LIST });
+    const courses = data.courses.filter((course: any) => course.terms.includes(term) && course.year === year);
 
     return {
-      courses: toCoursesList(data.courses),
+      courses: toCoursesList(courses),
     };
   } catch (error) {
     throw new NetworkError('Could not connect to server');

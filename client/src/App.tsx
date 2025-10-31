@@ -19,6 +19,7 @@ import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, rightContentPadding, themes } from './constants/theme';
 import {
+  convertToTermName,
   daysLong,
   getAvailableTermDetails,
   getDefaultEndTime,
@@ -178,15 +179,44 @@ const App: React.FC = () => {
      * Retrieves term data from the scraper backend
      */
     const fetchTermData = async () => {
+      const oldData = storage.get('timetables');
       const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
-      setTerm(term);
-      setTermName(termName);
-      setYear(year);
+
+      const storedTerm = localStorage.getItem('selectedTerm');
+      const storedYear = localStorage.getItem('selectedYear');
+      if (storedTerm && storedYear) {
+        setTerm(storedTerm);
+        setYear(storedYear);
+        setTermName(convertToTermName(storedTerm));
+      } else {
+        // Look and see if timetable is non-empty for current term
+        let nonEmptyFound = false;
+        if (Object.prototype.hasOwnProperty.call(oldData, term)) {
+          for (const timetable of oldData[term]) {
+            if (timetable.selectedCourses.length > 0) {
+              nonEmptyFound = true;
+              break;
+            }
+          }
+        }
+        if (nonEmptyFound) {
+          setTerm(term);
+          setYear(year);
+          setTermName(termName);
+        } else {
+          // Use the latest term instead
+          const latestTerm = termsData[termsData.length - 1];
+          const latestTermName = convertToTermName(latestTerm);
+          const latestYear = latestTerm.substring(2);
+          setTerm(latestTerm);
+          setYear(latestYear);
+          setTermName(latestTermName);
+        }
+      }
+
       setFirstDayOfTerm(firstDayOfTerm);
       const termsSortedList: TermDataList = sortTerms(termsData);
       setTermsData(termsSortedList);
-
-      const oldData = storage.get('timetables');
 
       let newTimetableTerms: DisplayTimetablesMap = {};
       for (const termId of termsData) {
@@ -212,7 +242,7 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList(term.substring(0, 2));
+      const { courses } = await getCoursesList(parseInt(year, 10), term.substring(0, 2));
       setCoursesList(courses);
     };
 
@@ -301,9 +331,11 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term.substring(0, 2), code, term.substring(2), isConvertToLocalTimezone).catch((err) => {
-          return err;
-        }),
+        getCourseInfo(term.substring(0, 2), code, parseInt(term.substring(2), 10), isConvertToLocalTimezone).catch(
+          (err) => {
+            return err;
+          },
+        ),
       ),
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
