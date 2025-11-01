@@ -1,16 +1,15 @@
 meta {
-  name: TODO Accept Friend Request
+  name: Get Friends
   type: http
   seq: 4
 }
 
 get {
-  url: 
+  url: {{HostURL}}/friendships/
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
-  timeout: 0
 }

@@ -1,16 +1,15 @@
 meta {
-  name: TODO Cancel Friend Request
+  name: Accept Friend Request
   type: http
-  seq: 3
+  seq: 5
 }
 
-get {
-  url: 
+post {
+  url: {{HostURL}}/friendships/accept
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
-  timeout: 0
 }

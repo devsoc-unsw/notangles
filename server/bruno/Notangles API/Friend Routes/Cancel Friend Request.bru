@@ -1,13 +1,13 @@
 meta {
-  name: Create Friend Request
+  name: Cancel Friend Request
   type: http
-  seq: 1
+  seq: 5
 }
 
 post {
-  url: {{HostURL}}/friendships
+  url: friendships/cancel
   body: json
-  auth: none
+  auth: inherit
 }
 
 body:json {

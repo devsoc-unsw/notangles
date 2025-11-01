@@ -1,0 +1,22 @@
+meta {
+  name: Reject Friend Request
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{HostURL}}/friendships/reject
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "requestorCode": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

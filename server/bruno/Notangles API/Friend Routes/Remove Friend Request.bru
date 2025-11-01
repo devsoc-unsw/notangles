@@ -1,0 +1,22 @@
+meta {
+  name: Remove Friend Request
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{HostURL}}/friendships/remove
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "otherCode": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
