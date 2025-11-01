@@ -44,4 +44,25 @@ export class GraphqlService {
     }
     return { availableTerms: Array.from(termsSet) };
   }
+
+  async getAllClassesFromCourses(
+    courseIds: string[],
+    mode: string,
+    term: string,
+  ): Promise<
+    {
+      course_id: string;
+      class_id: string;
+      activity: string;
+      times: { day: string; time: string }[];
+    }[]
+  > {
+    return (
+      await this.sdk.GetAllClassesFromCourses({
+        courseIds,
+        mode,
+        term,
+      })
+    ).classes;
+  }
 }

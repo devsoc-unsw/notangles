@@ -32,3 +32,19 @@ export const GET_AVAILABLE_TERMS = gql(`
     }
   }
 `);
+
+export const GET_ALL_CLASSES_FROM_COURSES = gql(`
+  query GetAllClassesFromCourses($courseIds: [String!]!, $mode :String!, $term: String!) {
+    classes(
+      where: { course_id: { _in: $courseIds }, term: { _ilike: $term }, mode: { _neq: $mode }, activity: { _neq: "Course Enrolment" } }
+    ) {
+      course_id
+      class_id
+      activity
+      times {
+        day
+        time
+      }
+    }
+  }
+`);
