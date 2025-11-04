@@ -33,7 +33,6 @@ export interface FriendDTO {
 }
 
 const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
-  const [kebabOpen, setKebabOpen] = useState(false);
   const { sidebarCollapsed } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

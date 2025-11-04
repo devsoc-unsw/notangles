@@ -2,8 +2,6 @@ import { Alert, Button, Dialog, Popover, Snackbar, Typography } from '@mui/mater
 import { styled } from '@mui/system';
 import { useState } from 'react';
 
-export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-
 const RemoveFriendDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     padding: theme.spacing(1),
@@ -35,25 +33,25 @@ const StyledButtonContainer = styled('div')`
   align-items: center;
 `;
 
-const CancelRemove = styled(Button)(({ theme }) => ({
+const DialogButtonBase = styled(Button)`
+  width: 50%;
+  height: 40px;
+  text-transform: none;
+  font-weight: 500;
+`;
+
+const CancelRemove = styled(DialogButtonBase)(({ theme }) => ({
   backgroundColor: theme.palette.grey[300],
   color: theme.palette.text.primary,
-  width: '50%',
-  height: '40px',
-  textTransform: 'none',
-  fontWeight: 500,
+
   '&:hover': {
     backgroundColor: theme.palette.grey[400],
   },
 }));
 
-const ConfirmRemove = styled(Button)(({ theme }) => ({
+const ConfirmRemove = styled(DialogButtonBase)(({ theme }) => ({
   backgroundColor: theme.palette.error.light,
   color: theme.palette.error.contrastText,
-  width: '50%',
-  height: '40px',
-  textTransform: 'none',
-  fontWeight: 500,
   '&:hover': {
     backgroundColor: theme.palette.error.main,
   },
@@ -103,8 +101,8 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: Remove
           <StyledDialogTitle>Remove {firstName}?</StyledDialogTitle>
           <StyledDialogText>Are you sure you want to remove {firstName} from your friends?</StyledDialogText>
           <StyledButtonContainer>
-            <CancelRemove onClick={handleDialogClose}> Cancel </CancelRemove>
-            <ConfirmRemove onClick={handleConfirmRemove}>Confirm</ConfirmRemove>
+            <CancelRemove onClick={handleDialogClose}>Cancel</CancelRemove>
+            <ConfirmRemove onClick={handleConfirmRemove}>Remove Friend</ConfirmRemove>
           </StyledButtonContainer>
         </StyledContainer>
       </RemoveFriendDialog>
