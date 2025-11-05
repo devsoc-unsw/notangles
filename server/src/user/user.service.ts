@@ -73,6 +73,28 @@ export class UserService {
     userId: string,
     profilePictureUrl: string,
   ): Promise<void> {
+    const data = await this.prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+      select: {
+        profilePictureUrl: true,
+      },
+    });
+
+    const bucketName = process.env.MINIO_BUCKET_NAME;
+
+    if (data.profilePictureUrl) {
+      try {
+        await this.minio.client.removeObject(
+          bucketName!,
+          data.profilePictureUrl,
+        );
+      } catch (err) {
+        throw new Error('Error removing object from MinIO: ' + err);
+      }
+    }
+
     if (!profilePictureUrl) {
       // empty string is passed in, set the field to null (client will show the default image)
       await this.prisma.user.update({
