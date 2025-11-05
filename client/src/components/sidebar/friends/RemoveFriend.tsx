@@ -56,11 +56,10 @@ const ConfirmRemove = styled(DialogButtonBase)(({ theme }) => ({
 
 const StyledDialogTitle = styled(Typography)`
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 `;
 
 const StyledDialogText = styled(Typography)`
-  font-size: 1.2rem;
   color: gray;
   text-align: left;
 `;
