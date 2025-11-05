@@ -22,3 +22,31 @@ export const getUserSettings = async (): Promise<UserSettings> => {
 export const setUserSettings = async (settings: Partial<UserSettings>): Promise<void> => {
   await apiClient.post('/user/settings', settings);
 };
+
+export const getFriends = async (): Promise<UserInfo[]> => {
+  return (await apiClient.get('/friendships')).data;
+};
+
+export const getFriendRequests = async (): Promise<UserInfo[]> => {
+  return (await apiClient.get('/friendships/requests')).data;
+};
+
+export const createFriendRequest = async (requesteeCode: string): Promise<void> => {
+  await apiClient.post('/friendships', { requesteeCode });
+};
+
+export const cancelFriendRequest = async (requesteeCode: string): Promise<void> => {
+  await apiClient.post('/friendships/cancel', { requesteeCode });
+};
+
+export const acceptFriendRequest = async (requestorCode: string): Promise<void> => {
+  await apiClient.post('/friendships/accept', { requestorCode });
+};
+
+export const rejectFriendRequest = async (requestorCode: string): Promise<void> => {
+  await apiClient.post('/friendships/reject', { requestorCode });
+};
+
+export const removeFriend = async (otherCode: string): Promise<void> => {
+  await apiClient.post('/friendships/remove', { otherCode });
+};
