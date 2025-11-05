@@ -44,11 +44,11 @@ export class UserService {
       throw new Error('Invalid image mime type');
     }
 
-    const temp_filename = Date.now().toString();
+    const tempFileName = Date.now().toString();
     const hash = crypto.createHash('md5');
-    hash.update(temp_filename);
+    hash.update(tempFileName);
     const hashedFileName = hash.digest('hex');
-    const filename = hashedFileName;
+    const fileName = hashedFileName;
 
     const bucketName = process.env.MINIO_BUCKET_NAME;
 
@@ -59,13 +59,13 @@ export class UserService {
     }
 
     try {
-      await this.minio.client.putObject(bucketName!, filename, image);
+      await this.minio.client.putObject(bucketName!, fileName, image);
     } catch (err) {
       throw new Error('Error uploading file to MinIO: ' + err);
     }
 
     return {
-      url: `${process.env.MINIO_PUBLIC_URL}/${bucketName}/${filename}`,
+      url: `${process.env.MINIO_PUBLIC_URL}/${bucketName}/${fileName}`,
     };
   }
 
