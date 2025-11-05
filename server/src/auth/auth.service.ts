@@ -35,7 +35,7 @@ export class AuthService {
     if (provider === undefined || subject === undefined) {
       throw new Error('Provider and subject must be defined for auth users');
     }
-    const currentYear = new Date().getFullYear().toString();
+    const currentYear = new Date().getFullYear();
     const { availableTerms } =
       await this.graphql.getAvailableTermsFrom(currentYear);
     if (availableTerms.length === 0) {
@@ -75,7 +75,7 @@ export class AuthService {
   }
 
   private async createGuest(params: OnboardParams): Promise<User> {
-    const currentYear = new Date().getFullYear().toString();
+    const currentYear = new Date().getFullYear();
     const { availableTerms } =
       await this.graphql.getAvailableTermsFrom(currentYear);
     if (availableTerms.length === 0) {
@@ -96,6 +96,7 @@ export class AuthService {
               name: this.TIMETABLE_DEFAULT_NAME,
               year,
               term,
+              primary: true,
             };
           }),
         },
