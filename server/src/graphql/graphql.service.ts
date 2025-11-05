@@ -32,7 +32,7 @@ export class GraphqlService {
     currentYear: string = new Date().getFullYear().toString(),
   ): Promise<{ availableTerms: string[] }> {
     const result = await this.sdk.GetAvailableTerms({
-      currentYear: currentYear,
+      currentYear: parseInt(currentYear, 10),
     });
     const classes = result.classes ?? [];
     const termsSet = new Set<string>();
