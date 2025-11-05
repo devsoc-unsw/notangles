@@ -83,13 +83,13 @@ export class UserService {
     });
 
     const bucketName = process.env.MINIO_BUCKET_NAME;
+    const fullUrl = data.profilePictureUrl;
+    const temp = fullUrl?.lastIndexOf('/');
+    const fileName = fullUrl?.substring(temp! + 1);
 
     if (data.profilePictureUrl) {
       try {
-        await this.minio.client.removeObject(
-          bucketName!,
-          data.profilePictureUrl,
-        );
+        await this.minio.client.removeObject(bucketName!, fileName!);
       } catch (err) {
         throw new Error('Error removing object from MinIO: ' + err);
       }
