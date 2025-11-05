@@ -2,15 +2,13 @@ import { Alert, Button, Dialog, Popover, Snackbar, Typography } from '@mui/mater
 import { styled } from '@mui/system';
 import { useState } from 'react';
 
-const RemoveFriendDialog = styled(Dialog)(({ theme }) => ({
+const RemoveFriendDialog = styled(Dialog)<{ isMobile: boolean }>(({ theme, isMobile }) => ({
   '& .MuiDialog-paper': {
-    padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    minWidth: '400px',
-    minHeight: '250px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    maxWidth: isMobile ? '100%' : '30%',
   },
 }));
 
@@ -21,7 +19,7 @@ const StyledContainer = styled('div')`
   align-items: center;
   text-align: center;
   margin: 25px;
-  gap: 15px;
+  gap: 10px;
 `;
 
 const StyledButtonContainer = styled('div')`
@@ -35,7 +33,6 @@ const StyledButtonContainer = styled('div')`
 
 const DialogButtonBase = styled(Button)`
   width: 50%;
-  height: 40px;
   text-transform: none;
   font-weight: 500;
 `;
@@ -96,7 +93,7 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: Remove
 
   return (
     <>
-      <RemoveFriendDialog open={openDialog} onClose={handleDialogClose}>
+      <RemoveFriendDialog open={openDialog} onClose={handleDialogClose} isMobile={false}>
         <StyledContainer>
           <StyledDialogTitle>Remove {firstName}?</StyledDialogTitle>
           <StyledDialogText>Are you sure you want to remove {firstName} from your friends?</StyledDialogText>
