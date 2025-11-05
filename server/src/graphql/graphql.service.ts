@@ -29,7 +29,7 @@ export class GraphqlService {
   }
 
   async getAvailableTermsFrom(
-    currentYear: string = new Date().getFullYear().toString(),
+    currentYear: number = new Date().getFullYear(),
   ): Promise<{ availableTerms: string[] }> {
     const result = await this.sdk.GetAvailableTerms({
       currentYear: currentYear,
