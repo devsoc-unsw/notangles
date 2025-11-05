@@ -74,13 +74,13 @@ export class UserService {
     profilePictureUrl: string,
   ): Promise<void> {
     if (!profilePictureUrl) {
-      // null is passed in, set the field to null (client will show the default image)
+      // empty string is passed in, set the field to null (client will show the default image)
       await this.prisma.user.update({
         where: {
           id: userId,
         },
         data: {
-          profilePictureUrl: null,
+          profilePictureUrl: '',
         },
       });
       return;
