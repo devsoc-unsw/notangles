@@ -139,6 +139,49 @@ export const useCoursesInfoQuery = (courseIds: string[]) => {
   return data.courses;
 };
 
+type CoursesClassTimesQueryType = TypedDocumentNode<
+  {
+    classes: {
+      times: {
+        day: string;
+        time: string;
+      }[];
+    }[];
+  },
+  { courseIds: string[]; year: number; term: string }
+>;
+
+export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
+  query GetCoursesClassTimes($courseIds: [String!]!, $year: Int!, $term: String!) {
+    classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
+      times {
+        day
+        start_time
+      }
+    }
+  }
+`;
+
+export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string) => {
+  const skip = courseIds.length === 0;
+
+  const { data } = useSuspenseQuery(COURSES_CLASS_TIMES_QUERY, {
+    variables: { courseIds, year, term },
+    skip,
+  });
+
+  // Data should only be undefined if skipped
+  if (skip || data === undefined)
+    return [] as {
+      times: {
+        day: string;
+        time: string;
+      }[];
+    }[];
+
+  return data.classes;
+};
+
 const COURSE_LIST_QUERY: TypedDocumentNode<
   {
     courses: {

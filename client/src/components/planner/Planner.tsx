@@ -1,23 +1,25 @@
+import { Button, styled } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 
 import { Term, useAvailableTerms } from '../../api/times/times';
 import { useTimetableIdsQuery } from '../../api/timetable/queries';
 import Controls from './controls/Controls';
+import Timetable from './timetable/Timetable';
 import TimetableTabs from './timetableTabs/TimetableTabs';
 
 const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) => {
-  // const ICSButton = styled(Button)`
-  //   && {
-  //     min-width: 250px;
-  //     margin: 2vh auto;
-  //     background-color: ${({ theme }) => theme.palette.primary.main};
-  //     color: #ffffff;
-  //     &:hover {
-  //       background-color: #598dff;
-  //     }
-  //   }
-  // `;
+  const ICSButton = styled(Button)`
+    && {
+      min-width: 250px;
+      margin: 2vh auto;
+      background-color: ${({ theme }) => theme.palette.primary.main};
+      color: #ffffff;
+      &:hover {
+        background-color: #598dff;
+      }
+    }
+  `;
 
   // useDrag(handleSelectClass, handleRemoveClass);
 
@@ -43,20 +45,25 @@ const Planner: React.FC<{ sidebarCollapsed: boolean }> = ({ sidebarCollapsed }) 
     throw new Error('No timetables found for the selected term');
   }
 
-  // TODO: Clean up social timetable handling
+  // TODO: Clean up social timetable handling - we check the pathname in a lot of places...
   const timetableView = useMemo(() => {
     const pathname = location.pathname;
     if (pathname === '/home') {
       return (
         <>
           <TimetableTabs term={term} selectedTimetableId={timetableId} selectTimetableId={setTimetableId} />
-          {/* <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-          <ICSButton onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}>
+          <Timetable timetableId={timetableId} term={term} />
+          {
+            // TODO: Implement ICS download functionality
+          }
+          <ICSButton /*onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)*/
+          >
             save to calendar
-          </ICSButton> */}
+          </ICSButton>
         </>
       );
     } else {
+      // TODO: Fill in the timetable view for social timetables
       return <>{/* <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} /> */}</>;
     }
   }, [location.pathname, term, timetableId]);

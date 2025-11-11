@@ -48,46 +48,43 @@ const Root: React.FC = () => {
   });
 
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <ApolloProvider client={client}>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<LandingPage />} path="/" />
-              <Route
-                element={
-                  <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <AuthProvider>
+          <ApolloProvider client={client}>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<LandingPage />} path="/" />
+                <Route
+                  element={
                     <Suspense fallback={<PageLoading />}>
                       <AuthGuard>
                         <App />
                       </AuthGuard>
                     </Suspense>
-                    {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                  </QueryClientProvider>
-                }
-                path="/home"
-              >
-                {/* <Route path="/home/event/:encrypted" element={<EventShareModal />} /> */}
-              </Route>
-              {/* TODO: Can this route be combined with above? */}
-              <Route
-                element={
-                  <QueryClientProvider client={queryClient}>
+                  }
+                  path="/home"
+                >
+                  {/* <Route path="/home/event/:encrypted" element={<EventShareModal />} /> */}
+                </Route>
+                {/* TODO: Can this route be combined with above? */}
+                <Route
+                  element={
                     <Suspense fallback={<PageLoading />}>
                       <AuthGuard>
                         <App />
                       </AuthGuard>
                     </Suspense>
-                    {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                  </QueryClientProvider>
-                }
-                path="/friend/:friendId"
-              />
-            </Routes>
-          </BrowserRouter>
-        </ApolloProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+                  }
+                  path="/friend/:friendId"
+                />
+              </Routes>
+            </BrowserRouter>
+          </ApolloProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+      {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   );
 };
 
