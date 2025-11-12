@@ -94,9 +94,8 @@ export const useDuplicateTimetable = (queryClient: QueryClient) =>
 
 export const useAddTimetableEvent = (queryClient: QueryClient) =>
   useMutation({
-    mutationFn: ({ event, onSuccess: _ }: { event: AddEventParams; onSuccess: () => void }) => addEvent(event),
+    mutationFn: ({ event }: { event: AddEventParams }) => addEvent(event),
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.event.timetableId] });
-      variables.onSuccess();
     },
   });

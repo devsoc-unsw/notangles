@@ -11,9 +11,6 @@ import { ExecuteButton, StyledList, StyledListItemText, StyledTabPanel } from '.
 import { areValidEventTimes, createDateWithTime } from '../../../../utils/eventHelpers';
 import DropdownOption from '../../timetable/DropdownOption';
 
-const initialStartTime = createDateWithTime(9);
-const initialEndTime = createDateWithTime(10);
-const initialDay = '';
 const daysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
 interface CustomEventsPopoverProps {
@@ -34,22 +31,32 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
   const [eventDays, setEventDays] = useState<string[]>([]);
   const [courseCode, setCourseCode] = useState<string>('');
   const [classCode, setClassCode] = useState<string>('');
-  const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
-  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
-  const [isInitialStartTime, setIsInitialStartTime] = useState<boolean>(false);
-  const [isInitialEndTime, setIsInitialEndTime] = useState<boolean>(false);
-  const [isInitialDay, setIsInitialDay] = useState<boolean>(false);
+  // const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
+  // const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleCreateEvent = () => {
-    // eventCreateMutation.mutate({ timetableId, event: {
-
-    // });
+    for (const day of eventDays) {
+      const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
+      eventCreateMutation.mutate({
+        event: {
+          timetableId,
+          colour: '000000', // TODO: Add color picker
+          dayOfWeek: daysShort.indexOf(day),
+          start: startTime.getHours() + startTime.getMinutes() / 60,
+          end: isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60,
+          type: eventType === 'General' ? 'CUSTOM' : 'TUTORING',
+          title: eventName,
+          description: eventDescription,
+          location: eventLocation,
+        },
+      });
+    }
     handlePopoverClose();
   };
 
   const handleFormat = (newFormats: string[]) => {
+    console.log(newFormats);
     setEventDays(newFormats);
-    setIsInitialDay(false);
   };
 
   const handleTabChange = (_: React.SyntheticEvent, newEventType: string) => {
@@ -126,28 +133,26 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
               <TimePicker
                 // Displays time as the time of the grid the user pressed
                 // when popover has just been opened
-                value={isInitialStartTime ? initialStartTime : startTime}
+                value={startTime}
                 onChange={(e) => {
                   if (e) setStartTime(e);
-                  setIsInitialStartTime(false);
                 }}
               />
             </StyledListItem>
             <StyledListItem>
               <StyledListItemText primary="End time" />
               <TimePicker
-                value={isInitialEndTime ? initialEndTime : endTime}
+                value={endTime}
                 label={!areValidEventTimes(startTime, endTime) ? 'End time must be after start' : ''}
                 slotProps={{ textField: { color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error' } }}
                 onChange={(e) => {
                   if (e) setEndTime(e);
-                  setIsInitialEndTime(false);
                 }}
               />
             </StyledListItem>
             <DropdownOption
               optionName="Days"
-              optionState={isInitialDay ? [initialDay] : eventDays}
+              optionState={eventDays}
               setOptionState={handleFormat}
               optionChoices={daysShort}
               multiple={true}
