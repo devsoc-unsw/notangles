@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { ColorIndicatorBox, StyledButtonContainer } from '../../../styles/ControlStyles';
 import { decodeColor, oklchToHex } from '../../../utils/colors';
+import ColorOptions from './ColorOptions';
 
 interface ColorPickerProps {
   color: string;
@@ -69,8 +70,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         }}
       >
         <ListItem alignItems="flex-start">
-          {/* <ColorOptions
-            colors={colors}
+          <ColorOptions
             showCustomColorPicker={showCustomColorPicker}
             onSelectColor={(selectedColor) => {
               setColor(selectedColor);
@@ -78,7 +78,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             onCustomColorSelect={() => {
               setShowCustomColorPicker(!showCustomColorPicker);
             }}
-          /> */}
+          />
         </ListItem>
         {showCustomColorPicker && (
           <ListItem alignItems="flex-start">
