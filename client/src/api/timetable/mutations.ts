@@ -1,6 +1,8 @@
 import { QueryClient, useMutation } from '@tanstack/react-query';
 
 import {
+  addEvent,
+  AddEventParams,
   addTimetableCourse,
   createTimetable,
   deleteTimetable,
@@ -87,5 +89,14 @@ export const useDuplicateTimetable = (queryClient: QueryClient) =>
     onSuccess: async (data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
       variables.onSuccess(data);
+    },
+  });
+
+export const useAddTimetableEvent = (queryClient: QueryClient) =>
+  useMutation({
+    mutationFn: ({ event, onSuccess: _ }: { event: AddEventParams; onSuccess: () => void }) => addEvent(event),
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.event.timetableId] });
+      variables.onSuccess();
     },
   });

@@ -31,3 +31,14 @@ export const useTimetableInfoQuery = (timetableId: string) =>
     queryKey: ['timetable', timetableId, 'info'],
     queryFn: () => getTimetableInfo(timetableId),
   }).data;
+
+// export const useTimetableEventQuery = (eventIds: string[]) => {
+//   const queries = useSuspenseQueries({
+//     queries: eventIds.map((id) => ({
+//       queryKey: ['timetable', 'event', id],
+//       queryFn: () => getEventInfo(id),
+//     })),
+//   });
+
+//   return queries.map((query) => query.data);
+// };

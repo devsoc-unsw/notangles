@@ -78,3 +78,57 @@ export const makePrimaryTimetable = async (timetableId: string): Promise<void> =
 export const duplicateTimetable = async (timetableId: string): Promise<string> => {
   return (await apiClient.post<string>(`/user/timetables/${timetableId}/duplicate`)).data;
 };
+
+interface TimetableEvent {
+  id: string;
+  timetableId: string;
+  colour: string;
+  title: string;
+  location: string | null;
+  description: string | null;
+  dayOfWeek: number;
+  start: number;
+  end: number;
+  type: 'CUSTOM' | 'TUTORING';
+}
+
+export const getEventInfo = async (eventId: string) => {
+  return (await apiClient.get<TimetableEvent>(`/user/timetables/event/${eventId}`)).data;
+};
+
+export interface AddEventParams {
+  timetableId: string;
+  colour: string;
+  dayOfWeek: number; // 0 = Monday, 6 = Sunday
+  start: number; // Mins since midnight
+  end: number; // Mins since midnight
+  type: 'CUSTOM' | 'TUTORING';
+  title: string;
+  description?: string;
+  location?: string;
+}
+export const addEvent = async ({
+  timetableId,
+  colour,
+  dayOfWeek,
+  start,
+  end,
+  type,
+  title,
+  description,
+  location,
+}: AddEventParams): Promise<void> => {
+  await apiClient.post(`/user/timetables/event/${timetableId}`, {
+    event: {
+      timetableId,
+      colour,
+      dayOfWeek,
+      start,
+      end,
+      type,
+      title,
+      description,
+      location,
+    },
+  });
+};
