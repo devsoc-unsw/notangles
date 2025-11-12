@@ -1,3 +1,5 @@
+import { oklch2hex } from 'colorizr';
+
 import { themes } from '../constants/theme';
 
 export const colors: string[] = [
@@ -34,4 +36,17 @@ export const leastUsedColor = (usedColors: string[]): string => {
   });
 
   return colors.reduce((a, b) => (colorCount[a] <= colorCount[b] ? a : b));
+};
+
+export const oklchToHex = (oklch: string): string => {
+  if (!oklch.startsWith('oklch(')) {
+    return oklch;
+  }
+
+  const [l, c, h] = oklch
+    .replace('oklch(', '')
+    .replace(')', '')
+    .split(' ')
+    .map((v) => parseFloat(v.trim()));
+  return oklch2hex([l, c, h]);
 };

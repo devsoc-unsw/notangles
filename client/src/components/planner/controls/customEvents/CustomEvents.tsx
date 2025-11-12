@@ -43,7 +43,7 @@ const CustomEvent = ({ timetableId }: CustomEventProps) => {
           horizontal: 'right',
         }}
       >
-        <CustomEventsForm handlePopoverClose={handlePopoverClose} />
+        <CustomEventsForm handlePopoverClose={handlePopoverClose} timetableId={timetableId} />
       </Popover>
     </StyledControlsButton>
   );

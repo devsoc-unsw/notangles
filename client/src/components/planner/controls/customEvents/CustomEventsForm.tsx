@@ -10,8 +10,9 @@ import { StyledListItem } from '../../../../styles/ControlStyles';
 import { ExecuteButton, StyledList, StyledListItemText, StyledTabPanel } from '../../../../styles/CustomEventStyles';
 import { areValidEventTimes, createDateWithTime } from '../../../../utils/eventHelpers';
 import DropdownOption from '../../timetable/DropdownOption';
+import ColorPicker from '../ColorPicker';
 
-const daysShort = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const DAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
 interface CustomEventsPopoverProps {
   handlePopoverClose: () => void;
@@ -29,10 +30,13 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
   const [startTime, setStartTime] = useState<Date>(createDateWithTime(9));
   const [endTime, setEndTime] = useState<Date>(createDateWithTime(10));
   const [eventDays, setEventDays] = useState<string[]>([]);
+
+  const [color, setColor] = useState<string>('default-1');
+  const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
+
   const [courseCode, setCourseCode] = useState<string>('');
   const [classCode, setClassCode] = useState<string>('');
   // const [classesCodes, setClassesCodes] = useState<Record<string, string>[]>([]);
-  // const [colorPickerAnchorEl, setColorPickerAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleCreateEvent = () => {
     for (const day of eventDays) {
@@ -41,7 +45,7 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
         event: {
           timetableId,
           colour: '000000', // TODO: Add color picker
-          dayOfWeek: daysShort.indexOf(day),
+          dayOfWeek: DAYS_SHORT.indexOf(day),
           start: startTime.getHours() + startTime.getMinutes() / 60,
           end: isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60,
           type: eventType === 'General' ? 'CUSTOM' : 'TUTORING',
@@ -154,7 +158,7 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
               optionName="Days"
               optionState={eventDays}
               setOptionState={handleFormat}
-              optionChoices={daysShort}
+              optionChoices={DAYS_SHORT}
               multiple={true}
               noOff
             />
@@ -169,13 +173,17 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
           </StyledTabPanel>
         </TabContext>
 
-        {/* <ColorPicker
-            color={color}
-            setColor={setColor}
-            colorPickerAnchorEl={colorPickerAnchorEl}
-            handleOpenColorPicker={handleOpenColorPicker}
-            handleCloseColorPicker={handleCloseColorPicker}
-          /> */}
+        <ColorPicker
+          color={color}
+          setColor={setColor}
+          colorPickerAnchorEl={colorPickerAnchorEl}
+          handleOpenColorPicker={(e) => {
+            setColorPickerAnchorEl(e.currentTarget);
+          }}
+          handleCloseColorPicker={() => {
+            setColorPickerAnchorEl(null);
+          }}
+        />
       </StyledList>
       <ExecuteButton
         variant="contained"
