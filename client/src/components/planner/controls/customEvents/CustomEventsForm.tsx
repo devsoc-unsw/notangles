@@ -3,17 +3,19 @@ import { TabContext } from '@mui/lab';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useMemo, useRef, useState } from 'react';
 
+import { Term } from '../../../../api/times/times';
 import { ExecuteButton, StyledList, StyledTabPanel } from '../../../../styles/CustomEventStyles';
 import ColorPicker from '../ColorPicker';
 import CustomEventsCustomForm from './CustomEventsCustomForm';
 import CustomEventsTutoringForm from './CustomEventsTutoringForm';
 
-interface CustomEventsPopoverProps {
+interface CustomEventsFormProps {
+  term: Term;
   handlePopoverClose: () => void;
   timetableId: string;
 }
 
-const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPopoverProps) => {
+const CustomEventsForm = ({ term, handlePopoverClose, timetableId }: CustomEventsFormProps) => {
   const customEventFormRef = useRef<{ handleCreateEvent: () => void }>(null);
   const tutoringEventFormRef = useRef<{ handleCreateEvent: () => void }>(null);
 
@@ -62,6 +64,7 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
           </StyledTabPanel>
           <StyledTabPanel value="Tutoring">
             <CustomEventsTutoringForm
+              term={term}
               ref={tutoringEventFormRef}
               setTutoringEventFormSatisfied={setTutoringEventFormSatisfied}
             />
@@ -94,4 +97,4 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
   );
 };
 
-export default CustomEventsPopover;
+export default CustomEventsForm;

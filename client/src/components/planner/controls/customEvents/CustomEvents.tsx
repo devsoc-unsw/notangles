@@ -2,15 +2,17 @@ import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Box, Popover } from '@mui/material';
 import { useMemo, useState } from 'react';
 
+import { Term } from '../../../../api/times/times';
 import { StyledControlsButton } from '../../../../styles/ControlStyles';
 import { DropdownButton } from '../../../../styles/CustomEventStyles';
 import CustomEventsForm from './CustomEventsForm';
 
-interface CustomEventProps {
+interface CustomEventsProps {
+  term: Term;
   timetableId: string;
 }
 
-const CustomEvent = ({ timetableId }: CustomEventProps) => {
+const CustomEvents = ({ term, timetableId }: CustomEventsProps) => {
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<null | HTMLElement>(null);
   const popoverId = useMemo(() => (createEventAnchorEl ? 'create-event-popover' : undefined), [createEventAnchorEl]);
 
@@ -43,10 +45,10 @@ const CustomEvent = ({ timetableId }: CustomEventProps) => {
           horizontal: 'right',
         }}
       >
-        <CustomEventsForm handlePopoverClose={handlePopoverClose} timetableId={timetableId} />
+        <CustomEventsForm term={term} handlePopoverClose={handlePopoverClose} timetableId={timetableId} />
       </Popover>
     </StyledControlsButton>
   );
 };
 
-export default CustomEvent;
+export default CustomEvents;
