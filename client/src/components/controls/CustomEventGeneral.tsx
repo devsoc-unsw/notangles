@@ -31,7 +31,6 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
   setIsInitialEndTime,
   isInitialDay,
   setIsInitialDay,
-  timePickerWidth = 180,
 }) => {
   const handleFormat = (newFormats: string[]) => {
     setEventDays(newFormats);
@@ -98,7 +97,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
           slotProps={{
             textField: {
               size: 'small',
-              sx: { width: timePickerWidth }
+              sx: { width: 180 }
             }
           }}
         />
@@ -112,7 +111,7 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
             textField: {
               size: 'small',
               color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error',
-              sx: { width: timePickerWidth }
+              sx: { width: 180 }
             }
           }}
           onChange={(e) => {
