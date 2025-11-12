@@ -243,9 +243,11 @@ const CustomEvent: React.FC = () => {
           vertical: 'top',
           horizontal: 'right',
         }}
-        PaperProps={{
-          style: {
-            minWidth: createEventAnchorEl?.clientWidth || undefined,
+        slotProps={{
+          paper: {
+            style: {
+              minWidth: createEventAnchorEl?.clientWidth,
+            },
           },
         }}
       >
