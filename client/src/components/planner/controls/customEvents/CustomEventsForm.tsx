@@ -44,7 +44,7 @@ const CustomEventsPopover = ({ handlePopoverClose, timetableId }: CustomEventsPo
       eventCreateMutation.mutate({
         event: {
           timetableId,
-          colour: '000000', // TODO: Add color picker
+          colour: color,
           dayOfWeek: DAYS_SHORT.indexOf(day),
           start: startTime.getHours() + startTime.getMinutes() / 60,
           end: isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60,
