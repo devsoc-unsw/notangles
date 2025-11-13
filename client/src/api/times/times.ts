@@ -176,19 +176,15 @@ export const useCoursesClassTimesQuery = (courseIds: string[], year: number, ter
       times: {
         day: string;
         time: string;
-        location: string;
       }[];
-      class_id: string;
-      section: string;
-      activity: string;
     }[];
 
   return data.classes;
 };
 
-export const COURSES_CLASS_TIMES_DETAILED_QUERY: CoursesClassTimesQueryType = gql`
-  query GetCoursesClassTimes($courseIds: [String!]!, $year: Int!, $term: String!) {
-    classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
+export const COURSE_CLASS_TIMES_DETAILED_QUERY: CoursesClassTimesQueryType = gql`
+  query GetCoursesClassTimes($courseId: String!, $year: Int!, $term: String!) {
+    classes(where: { course_id: { _eq: $courseId }, year: { _eq: $year }, term: { _eq: $term } }) {
       times {
         day
         time
@@ -201,11 +197,11 @@ export const COURSES_CLASS_TIMES_DETAILED_QUERY: CoursesClassTimesQueryType = gq
   }
 `;
 
-export const useCoursesClassTimesDetailedQuery = (courseIds: string[], year: number, term: string) => {
-  const skip = courseIds.length === 0;
+export const useCourseClassTimesDetailedQuery = (courseId: string, year: number, term: string) => {
+  const skip = courseId.length === 0;
 
-  const { data } = useSuspenseQuery(COURSES_CLASS_TIMES_DETAILED_QUERY, {
-    variables: { courseIds, year, term },
+  const { data } = useSuspenseQuery(COURSE_CLASS_TIMES_DETAILED_QUERY, {
+    variables: { courseId, year, term },
     skip,
   });
 

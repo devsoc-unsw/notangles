@@ -3,7 +3,7 @@ import { Autocomplete, ListItemIcon, TextField } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
-import { Term, useCourseListQuery, useCoursesClassTimesQuery } from '../../../../api/times/times';
+import { Term, useCourseClassTimesDetailedQuery, useCourseListQuery } from '../../../../api/times/times';
 import { useAddTimetableEvent } from '../../../../api/timetable/mutations';
 import { StyledListItem } from '../../../../styles/ControlStyles';
 
@@ -33,7 +33,7 @@ const CustomEventsTutoringForm = forwardRef(
     const courseSelectionRef = useRef<HTMLInputElement>(null);
 
     const courseList = useCourseListQuery(term);
-    const classList = useCoursesClassTimesQuery(selectedCourseId ? [selectedCourseId] : [], term.year, term.term);
+    const classList = useCourseClassTimesDetailedQuery(selectedCourseId, term.year, term.term);
     const queryClient = useQueryClient();
     const eventCreateMutation = useAddTimetableEvent(queryClient);
 
