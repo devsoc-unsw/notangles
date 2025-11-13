@@ -182,8 +182,24 @@ export const useCoursesClassTimesQuery = (courseIds: string[], year: number, ter
   return data.classes;
 };
 
-export const COURSE_CLASS_TIMES_DETAILED_QUERY: CoursesClassTimesQueryType = gql`
-  query GetCoursesClassTimes($courseId: String!, $year: Int!, $term: String!) {
+type CourseClassTimesDetailedQueryType = TypedDocumentNode<
+  {
+    classes: {
+      times: {
+        day: string;
+        time: string;
+        location: string;
+      }[];
+      section: string;
+      class_id: string;
+      activity: string;
+    }[];
+  },
+  { courseId: string; year: number; term: string }
+>;
+
+export const COURSE_CLASS_TIMES_DETAILED_QUERY: CourseClassTimesDetailedQueryType = gql`
+  query GetCoursesClassTimesDetailed($courseId: String!, $year: Int!, $term: String!) {
     classes(where: { course_id: { _eq: $courseId }, year: { _eq: $year }, term: { _eq: $term } }) {
       times {
         day
