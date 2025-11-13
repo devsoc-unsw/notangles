@@ -64,6 +64,8 @@ const CustomEventsForm = ({ term, handlePopoverClose, timetableId }: CustomEvent
           </StyledTabPanel>
           <StyledTabPanel value="Tutoring">
             <CustomEventsTutoringForm
+              timetableId={timetableId}
+              color={color}
               term={term}
               ref={tutoringEventFormRef}
               setTutoringEventFormSatisfied={setTutoringEventFormSatisfied}
