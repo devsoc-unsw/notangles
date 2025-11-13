@@ -318,12 +318,18 @@ export class TimetableService {
       where: { id: timetableId },
     });
 
+    const events = await this.prisma.event.findMany({
+      select: { id: true },
+      where: { timetableId },
+    });
+
     return {
       id: data.id,
       name: data.name,
       year: data.year,
       term: data.term,
       primary: data.primary,
+      events: events.map((event) => event.id),
     };
   }
 
