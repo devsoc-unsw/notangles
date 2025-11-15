@@ -1,0 +1,20 @@
+meta {
+  name: Get User Profile
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{HostURL}}/user/profile
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

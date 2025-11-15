@@ -1,0 +1,30 @@
+meta {
+  name: Rename Timetable
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{HostURL}}/user/timetables/:id/rename
+  body: json
+  auth: none
+}
+
+params:path {
+  id: ab83b07a-a1cf-4579-83a2-f9dcf71eecc4
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+      "name": "Test Rename Timetable"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,36 @@
+meta {
+  name: Add event
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{HostURL}}/user/timetables/event/:timetableId/
+  body: json
+  auth: none
+}
+
+params:path {
+  timetableId: a746de40-1030-45df-af1e-fd0eba3718e7
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+    "colour": "#fff", 
+    "dayOfWeek": 2,
+    "start": 11,
+    "end": 12,
+    "type": "CUSTOM",
+    "title": "block"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

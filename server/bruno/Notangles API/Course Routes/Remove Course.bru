@@ -1,0 +1,25 @@
+meta {
+  name: Remove Course
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{HostURL}}/user/timetables/course/:timetableId/:courseId
+  body: none
+  auth: none
+}
+
+params:path {
+  timetableId: 6f4cbeb8-0979-4ec8-95ec-b301eb054715
+  courseId: COMP2521Undergraduate
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

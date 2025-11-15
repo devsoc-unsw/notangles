@@ -1,0 +1,24 @@
+meta {
+  name: Timetable Make Primary
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{HostURL}}/user/timetables/:id/change-primary
+  body: none
+  auth: none
+}
+
+params:path {
+  id: 3b0cd623-3105-4503-9e0c-0e949134be51
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

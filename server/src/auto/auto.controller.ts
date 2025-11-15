@@ -3,7 +3,7 @@ import { Body, Controller, Param, Post, UseGuards, Req } from '@nestjs/common';
 import { AutoService } from './auto.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { ConstraintDTO } from './types';
+import { ConstraintDTO, AutoTimetableResult } from './types';
 
 @Controller('user/autotimetable')
 export class AutoController {
@@ -16,12 +16,18 @@ export class AutoController {
     @Param('id') timetableId: string,
     @Body() data: ConstraintDTO,
   ) {
-    const autoTimetable = await this.autoService.generateAutoTimetable(
-      req.user.id,
-      timetableId,
-      data,
-    );
-    return autoTimetable;
+    const autoTimetableResult: AutoTimetableResult =
+      await this.autoService.generateAutoTimetable(
+        req.user.id,
+        timetableId,
+        data,
+      );
+
     // TODO Update the timetable with the generated auto timetable on prisma
+    await this.autoService.addTimetableToPrisma(
+      autoTimetableResult,
+      timetableId,
+      req.user.id,
+    );
   }
 }

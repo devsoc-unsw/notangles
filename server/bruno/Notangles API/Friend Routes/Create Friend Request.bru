@@ -1,0 +1,23 @@
+meta {
+  name: Create Friend Request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{HostURL}}/friendships
+  body: json
+  auth: none
+
+}
+
+body:json {
+  {
+    "requesteeCode": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

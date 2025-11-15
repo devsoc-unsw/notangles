@@ -27,7 +27,7 @@ export enum Term {
 
 export class EventParametersDto {
   colour: string;
-  dayOfWeek: number; // 0 = Monday, 6 = Sunday
+  dayOfWeek: number; // 1 = Monday, 7 = Sunday
   start: number; // Mins since midnight
   end: number; // Mins since midnight
   type: EventType;

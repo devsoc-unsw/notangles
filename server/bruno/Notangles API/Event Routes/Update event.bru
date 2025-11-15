@@ -1,0 +1,37 @@
+meta {
+  name: Update event
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{HostURL}}/user/timetables/event/:eventid
+  body: json
+  auth: none
+}
+
+params:path {
+  eventid: 5
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+      "title": "Math Tute",
+      "description": "Calculus 101",
+      "start": 10,
+      "end": 100,
+      "location": "Room 301",
+      "colour": "default-7",
+      "dayOfWeek": 1
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

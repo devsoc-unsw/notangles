@@ -1,0 +1,31 @@
+meta {
+  name: Add Course
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{HostURL}}/user/timetables/course/:timetableId/:courseId
+  body: json
+  auth: none
+}
+
+params:path {
+  timetableId: 5b74bf2a-fded-4ccd-9ccd-26432b8e229a
+  courseId: COMP1511-Undergraduate-2026
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+      "colour": "default-1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

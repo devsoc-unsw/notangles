@@ -237,14 +237,10 @@ export class TimetableController {
   async addEvent(
     @Req() req: AuthenticatedRequest,
     @Param('timetableId') timetableId: string,
-    @Body() body: { event: EventParametersDto },
+    @Body() body: EventParametersDto,
   ) {
     try {
-      await this.timetableService.addEvent(
-        req.user.id,
-        body.event,
-        timetableId,
-      );
+      await this.timetableService.addEvent(req.user.id, body, timetableId);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

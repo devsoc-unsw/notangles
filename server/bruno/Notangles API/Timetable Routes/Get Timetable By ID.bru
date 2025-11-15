@@ -1,0 +1,24 @@
+meta {
+  name: Get Timetable By ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{HostURL}}/user/timetables/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: 4ed45635-90c6-44cc-b6ce-3d4622c0d0f7
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

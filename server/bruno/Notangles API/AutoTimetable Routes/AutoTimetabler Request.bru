@@ -1,0 +1,36 @@
+meta {
+  name: AutoTimetabler Request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{HostURL}}/user/autotimetable/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: 5b74bf2a-fded-4ccd-9ccd-26432b8e229a
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+    "startHour": 11,
+    "endHour": 21,
+    "selectedDaysStr": "2",
+    "breaksBetweenClasses": 0,
+    "daysAtUni": 5,
+    "mode": "in person",
+    "term": "T1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

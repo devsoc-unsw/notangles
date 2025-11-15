@@ -1,0 +1,20 @@
+meta {
+  name: Get Outgoing Requests
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{HostURL}}/friendships/requests
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

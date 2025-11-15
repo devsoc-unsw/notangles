@@ -1,0 +1,25 @@
+meta {
+  name: Remove Class for Course
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{HostURL}}/user/timetables/class/:timetableId/:courseId/:classId
+  body: json
+  auth: none
+}
+
+params:path {
+  timetableId: 1aba85cf-b2bc-41ea-acdf-008e9e335f34
+  courseId: ACTL3301Undergraduate
+  classId: ACTL3301Undergraduate-10135-T2-2025
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+}

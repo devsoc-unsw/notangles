@@ -1,0 +1,31 @@
+meta {
+  name: Update Course Colour
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{HostURL}}/user/timetables/course/:timetableId/:courseId/colour
+  body: json
+  auth: none
+}
+
+params:path {
+  timetableId: 1aba85cf-b2bc-41ea-acdf-008e9e335f34
+  courseId: ACTL3301Undergraduate
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+body:json {
+  {
+      "colour": "default-7"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

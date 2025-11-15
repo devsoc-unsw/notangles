@@ -1,0 +1,25 @@
+meta {
+  name: Get User Timetables
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{HostURL}}/user/timetables?year=2026&term=T1
+  body: none
+  auth: none
+}
+
+params:query {
+  year: 2026
+  term: T1
+}
+
+headers {
+  Cookie: {{Session_Cookie}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
