@@ -286,7 +286,6 @@ const CustomEvent: React.FC = () => {
                 setIsInitialEndTime={setIsInitialEndTime}
                 isInitialDay={isInitialDay}
                 setIsInitialDay={setIsInitialDay}
-                timePickerWidth={180}
               />
             </StyledTabPanel>
             <StyledTabPanel value="Tutoring">
