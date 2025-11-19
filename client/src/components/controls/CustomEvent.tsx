@@ -240,8 +240,15 @@ const CustomEvent: React.FC = () => {
           horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right',
+        }}
+        slotProps={{
+          paper: {
+            style: {
+              minWidth: createEventAnchorEl?.clientWidth,
+            },
+          },
         }}
       >
         <StyledList>
