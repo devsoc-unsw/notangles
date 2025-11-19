@@ -9,8 +9,8 @@ import { dbCourseToCourseData } from '../utils/DbCourse';
 import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
 const GET_COURSE_INFO = gql`
-  query GetCourseInfo($courseCode: String!, $term: String!, $year: String!) {
-    courses(where: { course_code: { _eq: $courseCode } }) {
+  query GetCourseInfo($courseCode: String!, $term: String!, $year: Int!) {
+    courses(where: { course_code: { _eq: $courseCode }, year: { _eq: $year } }) {
       course_code
       course_name
       classes(where: { term: { _eq: $term }, year: { _eq: $year }, activity: { _neq: "Course Enrolment" } }) {
@@ -105,7 +105,7 @@ const sortUnique = (arr: number[]): number[] => {
 const getCourseInfo = async (
   term: string,
   courseCode: CourseCode,
-  year: string,
+  year: number,
   isConvertToLocalTimezone: boolean,
 ): Promise<CourseData> => {
   try {

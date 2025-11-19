@@ -19,6 +19,7 @@ import Timetable from './components/timetable/Timetable';
 import { TimetableTabs } from './components/timetableTabs/TimetableTabs';
 import { contentPadding, rightContentPadding, themes } from './constants/theme';
 import {
+  convertToTermName,
   daysLong,
   getAvailableTermDetails,
   getDefaultEndTime,
@@ -180,8 +181,8 @@ const App: React.FC = () => {
     const fetchTermData = async () => {
       const { term, termName, year, firstDayOfTerm, termsData } = await getAvailableTermDetails();
       setTerm(term);
-      setTermName(termName);
       setYear(year);
+      setTermName(termName);
       setFirstDayOfTerm(firstDayOfTerm);
       const termsSortedList: TermDataList = sortTerms(termsData);
       setTermsData(termsSortedList);
@@ -212,7 +213,7 @@ const App: React.FC = () => {
      * Retrieves the list of all courses from the scraper backend
      */
     const fetchCoursesList = async () => {
-      const { courses } = await getCoursesList(term.substring(0, 2));
+      const { courses } = await getCoursesList(parseInt(year, 10), term.substring(0, 2));
       setCoursesList(courses);
     };
 
@@ -301,9 +302,11 @@ const App: React.FC = () => {
     const codes: string[] = Array.isArray(data) ? data : [data];
     Promise.all(
       codes.map((code) =>
-        getCourseInfo(term.substring(0, 2), code, term.substring(2), isConvertToLocalTimezone).catch((err) => {
-          return err;
-        }),
+        getCourseInfo(term.substring(0, 2), code, parseInt(term.substring(2), 10), isConvertToLocalTimezone).catch(
+          (err) => {
+            return err;
+          },
+        ),
       ),
     ).then((result) => {
       const addedCourses = result.filter((course) => course.code !== undefined) as CourseData[];
@@ -644,7 +647,7 @@ const App: React.FC = () => {
                   <SubcomPromotion />
                   <PromotionPopup
                     imgSrc={T3SelectGif}
-                    title="Next term's timetable has been released! 🎉"
+                    title="The 2026 Term 1 timetable has been released! 🎉"
                     subTitle="Organise, plan and schedule with newly released timetable"
                     bullets={[
                       {
