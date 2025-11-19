@@ -41,6 +41,11 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
   setCopiedEvent,
   copiedEvent,
 }) => {
+  let readOnly = false;
+  if (location.pathname !== '/home') {
+    readOnly = true;
+  }
+  
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
@@ -84,6 +89,9 @@ const DroppedEvent: React.FC<DroppedEventProps> = ({
 
     const startDrag = () => {
       timer = null;
+      if (readOnly) {
+        return;
+      } 
       setIsDrag(true);
       setDragTarget(eventPeriod, null, isSquareEdges, eventCopy, eventId);
       setInfoVisibility(false);
