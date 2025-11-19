@@ -2,8 +2,7 @@ import styled from '@emotion/styled';
 import React, { useContext } from 'react';
 
 import { AppContext } from '../../../context/AppContext';
-
-export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+import UserProfilePicture from './UserProfilePicture';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -18,7 +17,7 @@ const StyledFullname = styled('div')`
 `;
 
 const getTextWidth = (text: string, font: string): number => {
-  let canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
 
   const context = canvas.getContext('2d');
   if (!context) {
@@ -60,11 +59,7 @@ const UserProfile: React.FC<{
 
   return (
     <StyledContainer>
-      <img
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        src={profileURL || emptyProfile}
-        style={{ borderRadius: 999, backgroundColor: 'white', objectFit: 'cover', width: '34px', height: '34px' }}
-      />
+      <UserProfilePicture profileURL={profileURL} size={34} alt={`${firstName} ${lastName}`} />
       {(!sidebarCollapsed || overrideCollapse) && (
         <div>
           <StyledFullname>{getFullName(firstName, lastName)}</StyledFullname>

@@ -1,6 +1,7 @@
 import { Alert, Button, Dialog, Popover, Snackbar, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { useState } from 'react';
+import UserProfilePicture from './UserProfilePicture';
 
 const RemoveFriendDialog = styled(Dialog)<{ isMobile: boolean }>(({ theme, isMobile }) => ({
   '& .MuiDialog-paper': {
@@ -69,10 +70,11 @@ interface RemoveFriendProps {
   open: boolean;
   onClose: () => void;
   firstName: string;
+  lastName: string;
   profileURL?: string;
 }
 
-const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: RemoveFriendProps) => {
+const RemoveFriend = ({ anchorEl, open, onClose, firstName, lastName, profileURL }: RemoveFriendProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
@@ -94,7 +96,10 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, profileURL }: Remove
     <>
       <RemoveFriendDialog open={openDialog} onClose={handleDialogClose} isMobile={false}>
         <StyledContainer>
-          <StyledDialogTitle>Remove {firstName}?</StyledDialogTitle>
+          <UserProfilePicture profileURL={profileURL} size={52} alt={`${firstName} ${lastName}`} />
+          <StyledDialogTitle>
+            Remove {firstName} {lastName}?
+          </StyledDialogTitle>
           <StyledDialogText>Are you sure you want to remove {firstName} from your friends?</StyledDialogText>
           <StyledButtonContainer>
             <CancelRemove onClick={handleDialogClose}>Cancel</CancelRemove>

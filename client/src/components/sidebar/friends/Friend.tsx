@@ -62,7 +62,14 @@ const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
             <IconButton onClick={handleKebabClick}>
               <MoreVertIcon />
             </IconButton>
-            <RemoveFriend anchorEl={anchorEl} open={kebabOpen} onClose={handlePopoverClose} firstName={firstName} />
+            <RemoveFriend
+              anchorEl={anchorEl}
+              open={kebabOpen}
+              onClose={handlePopoverClose}
+              firstName={firstName}
+              lastName={lastName}
+              profileURL={profileURL}
+            />
           </>
         )}
       </StyledFriendContainer>
