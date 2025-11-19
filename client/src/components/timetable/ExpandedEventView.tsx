@@ -65,6 +65,10 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   setIsEditing,
   isEditing,
 }) => {
+  if (window.location.pathname !== '/home') {
+    // return;
+    isEditing = false;
+  }
   const { name, location, description, color } = eventPeriod.event;
   const { day, start, end } = eventPeriod.time;
   const [isChanged, setIsChanged] = useState<boolean>(false);
@@ -226,9 +230,12 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   };
 
   const handleDeleteEvent = (id: string) => {
-    const updatedEventData = { ...createdEvents };
-    delete updatedEventData[id];
-    setCreatedEvents(updatedEventData);
+    if (isEditing) {
+      const updatedEventData = { ...createdEvents };
+      delete updatedEventData[id];
+      setCreatedEvents(updatedEventData);
+    }
+
   };
 
   const handleSaveNewColor = () => {

@@ -75,6 +75,19 @@ const Root: React.FC = () => {
                   >
                     <Route path="/home/event/:encrypted" element={<EventShareModal />} />
                   </Route>
+                  <Route
+                    element={
+                      <QueryClientProvider client={queryClient}>
+                        <Suspense fallback={<PageLoading />}>
+                          <AuthGuard>
+                            <App />
+                          </AuthGuard>
+                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+                        </Suspense>
+                      </QueryClientProvider>
+                    }
+                    path="/friend/:friendId"
+                  />
                 </Routes>
               </BrowserRouter>
             </CourseContextProvider>

@@ -50,22 +50,22 @@ const getFullName = (firstName: string, lastName: string) => {
   return fullname;
 };
 
-const UserProfile: React.FC<{ firstName: string; lastName: string; profileURL?: string }> = ({
-  firstName,
-  lastName,
-  profileURL,
-}) => {
+const UserProfile: React.FC<{
+  firstName: string;
+  lastName: string;
+  profileURL?: string;
+  overrideCollapse?: boolean;
+}> = ({ firstName, lastName, profileURL, overrideCollapse }) => {
   const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <StyledContainer>
       <img
-        src={profileURL ?? emptyProfile}
-        width={34}
-        height={34}
-        style={{ borderRadius: 999, backgroundColor: 'white' }}
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        src={profileURL || emptyProfile}
+        style={{ borderRadius: 999, backgroundColor: 'white', objectFit: 'cover', width: '34px', height: '34px' }}
       />
-      {!sidebarCollapsed && (
+      {(!sidebarCollapsed || overrideCollapse) && (
         <div>
           <StyledFullname>{getFullName(firstName, lastName)}</StyledFullname>
         </div>

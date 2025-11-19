@@ -36,6 +36,11 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   setCopiedEvent,
   copiedEvent,
 }) => {
+  let readOnly = false;
+  if (location.pathname !== '/home') {
+    readOnly = true;
+  }
+
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<null | { x: number; y: number }>(null);
@@ -85,6 +90,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
     }
 
     const startDrag = () => {
+      if (readOnly) {
+        return;
+      }
       timer = null;
       setIsDrag(true);
       setDragTarget(classCard, currCourse, isSquareEdges, eventCopy);

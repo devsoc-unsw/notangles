@@ -10,6 +10,7 @@ import { TimetableProps } from '../../interfaces/PropTypes';
 import DroppedCards from './DroppedCards';
 import Dropzones from './Dropzones';
 import { TimetableLayout } from './TimetableLayout';
+import { useLocation } from 'react-router';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
