@@ -33,7 +33,7 @@ const HeroSection = () => {
               Drag and drop your university classes <br /> and events to prepare for a term.
             </p>
             <button
-              className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] hover:scale-105 cursor-pointer px-6 sm:px-8 py-2 sm:py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5"
+              className="flex justify-center items-center shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] hover:scale-105 px-6 sm:px-8 py-2 sm:py-3 bg-[#0070f3] rounded-3xl text-white font-light transition duration-200 ease-linear mt-5"
               onClick={handleStartClick}
             >
               <p className="pr-1 ml-2 text-xl sm:text-2xl md:text-3xl font-medium">Start</p>
