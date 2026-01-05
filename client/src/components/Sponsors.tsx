@@ -2,12 +2,13 @@ import { Box, Link, Stack } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useContext } from 'react';
 
+import airwallex from '../assets/sponsors/airwallex.avif';
 import aristaBlack from '../assets/sponsors/arista_black.png';
 import aristaWhite from '../assets/sponsors/arista_white.png';
 import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
 import janeStreetWhite from '../assets/sponsors/jane_street_white.svg';
-import safetyCultureBlack from '../assets/sponsors/safetyculture_black.png';
-import safetyCultureWhite from '../assets/sponsors/safetyculture_white.png';
+import lyraBlack from '../assets/sponsors/lyra_black.svg';
+import lyraWhite from '../assets/sponsors/lyra_white.svg';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
 import { AppContext } from '../context/AppContext';
@@ -45,27 +46,32 @@ const Sponsors = () => {
 
   const platinumSponsorData = [
     {
-      name: 'Arista',
-      logo: isDarkMode ? aristaWhite : aristaBlack,
-      link: 'https://www.arista.com/en/',
+      name: 'Jane Street',
+      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
+      link: 'https://www.janestreet.com/',
     },
     {
       name: 'theTradeDesk',
       logo: isDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
       link: 'https://careers.thetradedesk.com',
     },
+    {
+      name: 'Lyra',
+      logo: isDarkMode ? lyraWhite : lyraBlack,
+      link: 'https://www.lyratechnologies.com.au/',
+    },
   ];
 
   const goldSponsorData = [
     {
-      name: 'Jane Street',
-      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
-      link: 'https://www.janestreet.com/',
+      name: 'Airwallex',
+      logo: airwallex,
+      link: 'https://www.airwallex.com/au',
     },
     {
-      name: 'SafetyCulture',
-      logo: isDarkMode ? safetyCultureWhite : safetyCultureBlack,
-      link: 'https://safetyculture.com/',
+      name: 'Arista',
+      logo: isDarkMode ? aristaWhite : aristaBlack,
+      link: 'https://www.arista.com/en/',
     },
   ];
 
