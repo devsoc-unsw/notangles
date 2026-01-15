@@ -1,4 +1,4 @@
-import airwallex from '../../assets/sponsors/airwallex.avif';
+import airwallex from '../../assets/sponsors/airwallex_black.png';
 import arista from '../../assets/sponsors/arista_black.png';
 import janeStreet from '../../assets/sponsors/jane_street_black.svg';
 import lyra from '../../assets/sponsors/lyra_black.svg';
