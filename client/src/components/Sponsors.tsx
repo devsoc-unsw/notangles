@@ -2,7 +2,8 @@ import { Box, Link, Stack } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useContext } from 'react';
 
-import airwallex from '../assets/sponsors/airwallex.avif';
+import airwallexBlack from '../assets/sponsors/airwallex_black.png';
+import airwallexWhite from '../assets/sponsors/airwallex_white.png';
 import aristaBlack from '../assets/sponsors/arista_black.png';
 import aristaWhite from '../assets/sponsors/arista_white.png';
 import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
@@ -65,7 +66,7 @@ const Sponsors = () => {
   const goldSponsorData = [
     {
       name: 'Airwallex',
-      logo: airwallex,
+      logo: isDarkMode ? airwallexWhite : airwallexBlack,
       link: 'https://www.airwallex.com/au',
     },
     {
