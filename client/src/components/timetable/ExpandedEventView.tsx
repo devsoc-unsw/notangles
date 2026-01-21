@@ -421,7 +421,7 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
                         <InputAdornment position="end">
                           <IconButton
                             onClick={() => {
-                              navigator.clipboard.writeText(btoa(JSON.stringify(eventPeriod)));
+                              navigator.clipboard.writeText(url);
                               setAutoVisibility(true);
                               setAlertMsg('Copied to clipboard!');
                             }}
