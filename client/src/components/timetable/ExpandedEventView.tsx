@@ -150,10 +150,11 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       return;
     }
 
+    const endsAtMidnight: boolean = newEndTime.getHours() + newEndTime.getMinutes() / 60 === 0;
     const newEventTime = {
       day: daysShort.indexOf(newDays.toString()) + 1,
       start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
-      end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
+      end: endsAtMidnight ? 24.0 : newEndTime.getHours() + newEndTime.getMinutes() / 60,
     };
     setCreatedEvents({
       ...createdEvents,
