@@ -158,6 +158,31 @@ export const findClashes = (selectedClasses: SelectedClasses, createdEvents: Cre
 
 /**
  *
+ * @param clashGroup The clashing events, where the union of their times is contiguous
+ * @returns An object that has cardIDs as keys and the clashIndex as values, describing the slot that it should be put into to ensure no slot has clashes.
+ */
+export const getClashIndexes = (
+  clashGroup: (ClassPeriod | EventPeriod)[]
+): Record<string, number> => {
+  const clashIndexes: Record<string, number> = {};
+  const availableSlotEndTime: number[] = new Array(clashGroup.length).fill(-1);
+
+  for (const event of clashGroup) {
+    for (let i = 0; i < availableSlotEndTime.length; i++) {
+      if (availableSlotEndTime[i] <= event.time.start) {
+        // assign event to slot i
+        availableSlotEndTime[i] = event.time.end;
+        clashIndexes[getId(event)] = i;
+        break;
+      }
+    }
+  }
+  
+  return clashIndexes;
+};
+
+/**
+ *
  * @param groupedClashes The clashing periods
  * @param card The current card
  * @returns A list containing the width of the card (expressed as a number between 0 and 100),
@@ -181,7 +206,8 @@ export const getClashInfo = (
 
     if (!clashGroup) return defaultValues;
 
-    const uniqueClashIDs = Array.from(new Set(clashGroup.map((clash) => getId(clash))));
+    const clashIndexes: Record<string, number> = getClashIndexes(clashGroup);
+    const maxClashIndex = Math.max(...Object.values(clashIndexes));
 
     const nonLecturePeriods = clashGroup
       .filter((clash) => clash.type === 'class' && !clash.activity.includes('Lecture'))
@@ -207,7 +233,7 @@ export const getClashInfo = (
       clashColour = 'transparent';
     }
 
-    return [cardWidth / uniqueClashIDs.length, uniqueClashIDs.indexOf(cardID), clashColour];
+    return [cardWidth / (maxClashIndex + 1), clashIndexes[cardID], clashColour];
   }
 
   return defaultValues;
