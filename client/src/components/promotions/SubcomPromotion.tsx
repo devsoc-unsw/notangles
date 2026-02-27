@@ -18,7 +18,12 @@ const SubcomPromotion = () => {
   const [seenSubcomPromotional, setSeenSubcomPromotional] = useState<boolean>(
     storage.get(SUBCOM_PROMOTION_KEY) || false,
   );
-  const activeRecruitment = useRef(new Date().getMonth() === 1); // Subcommittee recruitment peaks in February annually
+
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const activeRecruitment = useRef(
+    today.getMonth() === 1 && today.getDate() >= 9
+  ); // Subcommittee recruitment peaks in February annually
 
   const handlePromotionClose = useCallback(() => {
     setSeenSubcomPromotional((prev) => !prev);
@@ -48,7 +53,7 @@ const SubcomPromotion = () => {
             </Typography>
             <Typography fontSize={15} textAlign={'left'}>
               Interested in working on Notangles or one of our other flagship projects? DevSoc is currently recruiting
-              members for our 2024 subcommittee!
+              members for our {currentYear} subcommittee!
               <br />
               <br />
               Find out more at <Link href="https://devsoc.app/get-involved">devsoc.app/get-involved</Link>
