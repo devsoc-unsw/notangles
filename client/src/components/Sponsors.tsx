@@ -12,6 +12,18 @@ import lyraBlack from '../assets/sponsors/lyra_black.svg';
 import lyraWhite from '../assets/sponsors/lyra_white.svg';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
+import hrt from '../assets/sponsors/hrt.png';
+import atlassian from '../assets/sponsors/atlassian.png';
+import qrt from '../assets/sponsors/qrt.svg';
+import citadel from '../assets/sponsors/citadel.png';
+import imc from '../assets/sponsors/imc.png';
+import januaryCapitalBlack from '../assets/sponsors/januarycapital_black.png';
+import januaryCapitalWhite from '../assets/sponsors/januarycapital_white.png';
+import optiverBlack from '../assets/sponsors/optiver_black.png';
+import optiverWhite from '../assets/sponsors/optiver_white.png';
+import recordpointBlack from '../assets/sponsors/recordpoint_black.png';
+import recordpointWhite from '../assets/sponsors/recordpoint_white.png';
+
 import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`
@@ -42,10 +54,23 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
   }
 `;
 
+const StyledSilverSponsorLogo = styled(StyledPlatinumSponsorLogo)`
+  width: 8em;
+
+  @media (min-width: 600px) {
+    width: 10em;
+  }
+`;
+
 const Sponsors = () => {
   const { isDarkMode } = useContext(AppContext);
 
   const platinumSponsorData = [
+    {
+      name: 'Hudson River Trading',
+      logo: hrt,
+      link: 'https://hudsonrivertrading.com',
+    },
     {
       name: 'Jane Street',
       logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
@@ -74,6 +99,49 @@ const Sponsors = () => {
       logo: isDarkMode ? aristaWhite : aristaBlack,
       link: 'https://www.arista.com/en/',
     },
+    {
+      name: 'Atlassian',
+      logo: atlassian,
+      link: 'https://atlassian.com',
+    },
+    {
+      name: 'QRT',
+      logo: qrt,
+      link: 'https://www.qube-rt.com/',
+    },
+  ];
+
+  const silverSponsorData = [
+    {
+      name: 'Citadel Securities',
+      logo: citadel,
+      link: 'https://www.citadelsecurities.com/',
+      invertOnWhite: true,
+    },
+    {
+      name: 'IMC Trading',
+      logo: imc,
+      link: 'https://www.imc.com/',
+      invertOnWhite: true,
+    },
+    {
+      name: 'January Capital',
+      logo: isDarkMode ? januaryCapitalWhite : januaryCapitalBlack,
+      link: 'https://www.january.capital/',
+      invertOnWhite: false,
+    },
+    {
+      name: 'Optiver',
+      logo: isDarkMode ? optiverWhite : optiverBlack,
+      link: 'https://optiver.com/',
+      invertOnWhite: false,
+    },
+    {
+      name: 'RecordPoint',
+      logo: isDarkMode ? recordpointWhite : recordpointBlack,
+      link: 'https://www.recordpoint.com/',
+      invertOnWhite: false,
+    },
   ];
 
   return (
@@ -82,7 +150,7 @@ const Sponsors = () => {
       <Stack
         justifyContent="center"
         alignItems="center"
-        direction={{ xs: 'column', lg: 'row' }}
+        direction={{ xs: 'column', md: 'row' }}
         marginY={3}
         spacing={{ xs: 1.5, sm: 2, lg: 8 }}
       >
@@ -97,7 +165,7 @@ const Sponsors = () => {
       <Stack
         justifyContent="center"
         alignItems="center"
-        direction={{ xs: 'column', lg: 'row' }}
+        direction={{ xs: 'column', md: 'row' }}
         marginY={3}
         spacing={{ xs: 1.5, sm: 2, lg: 14 }}
       >
@@ -105,6 +173,25 @@ const Sponsors = () => {
           return (
             <Link target="_blank" href={sponsor.link} key={index}>
               <StyledGoldSponsorLogo src={sponsor.logo} alt={sponsor.name} />
+            </Link>
+          );
+        })}
+      </Stack>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction={{ xs: 'column', md: 'row' }}
+        marginY={3}
+        spacing={{ xs: 1.5, sm: 2, lg: 8 }}
+      >
+        {silverSponsorData.map((sponsor, index) => {
+          return (
+            <Link target="_blank" href={sponsor.link} key={index}>
+              <StyledSilverSponsorLogo
+                src={sponsor.logo}
+                alt={sponsor.name}
+                className={sponsor.invertOnWhite && !isDarkMode ? 'invert' : ''}
+              />
             </Link>
           );
         })}
