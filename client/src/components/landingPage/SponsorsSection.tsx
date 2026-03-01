@@ -6,11 +6,6 @@ import janeStreet from '../../assets/sponsors/jane_street_black.svg';
 import lyra from '../../assets/sponsors/lyra_black.svg';
 import qrt from '../../assets/sponsors/qrt_black.svg';
 import theTradeDesk from '../../assets/sponsors/thetradedesk_black.png';
-import citadel from '../../assets/sponsors/citadel.png';
-import januaryCapital from '../../assets/sponsors/januarycapital_black.png';
-import imc from '../../assets/sponsors/imc.png';
-import optiver from '../../assets/sponsors/optiver_black.png';
-import recordpoint from '../../assets/sponsors/recordpoint_black.png';
 
 const SponsorsSection = () => {
   return (
@@ -31,24 +26,17 @@ const SponsorsSection = () => {
         </li>
         <li className="md:col-span-4 grid grid-cols-2 md:grid-cols-4 place-items-center gap-y-8 gap-x-4">
           <div className="w-full flex justify-center">
-            <img src={airwallex} alt="Airwallex" className="h-5 md:h-6" />
+            <img src={airwallex} alt="Airwallex" className="h-5 md:h-8" />
           </div>
           <div className="w-full flex justify-center">
-            <img src={arista} alt="Arista" className="h-5 md:h-6" />
+            <img src={arista} alt="Arista" className="h-5 md:h-8" />
           </div>
           <div className="w-full flex justify-center">
-            <img src={atlassian} alt="Atlassian" className="h-5 md:h-6" />
+            <img src={atlassian} alt="Atlassian" className="h-5 md:h-8" />
           </div>
           <div className="w-full flex justify-center">
             <img src={qrt} alt="QRT" className="h-6" />
           </div>
-        </li>
-        <li className="md:col-span-4 grid grid-cols-3 md:grid-cols- place-items-center gap-y-6">
-          <img src={citadel} alt="Citadel Securities" className="h-8 invert" />
-          <img src={imc} alt="IMC Trading" className="h-7 invert" />
-          <img src={januaryCapital} alt="January Capital" className="h-7" />
-          <img src={optiver} alt="Optiver" className="h-6" />
-          <img src={recordpoint} alt="Recordpoint" className="h-7" />
         </li>
       </ul>
     </div>
