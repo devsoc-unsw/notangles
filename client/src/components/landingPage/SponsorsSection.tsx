@@ -26,13 +26,13 @@ const SponsorsSection = () => {
         </li>
         <li className="md:col-span-4 grid grid-cols-2 md:grid-cols-4 place-items-center gap-y-8 gap-x-4">
           <div className="w-full flex justify-center">
-            <img src={airwallex} alt="Airwallex" className="h-5 md:h-8" />
+            <img src={airwallex} alt="Airwallex" className="h-5 md:h-6" />
           </div>
           <div className="w-full flex justify-center">
-            <img src={arista} alt="Arista" className="h-5 md:h-8" />
+            <img src={arista} alt="Arista" className="h-5 md:h-6" />
           </div>
           <div className="w-full flex justify-center">
-            <img src={atlassian} alt="Atlassian" className="h-5 md:h-8" />
+            <img src={atlassian} alt="Atlassian" className="h-5 md:h-6" />
           </div>
           <div className="w-full flex justify-center">
             <img src={qrt} alt="QRT" className="h-6" />
