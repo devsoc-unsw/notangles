@@ -12,7 +12,8 @@ import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
 import janeStreetWhite from '../assets/sponsors/jane_street_white.svg';
 import lyraBlack from '../assets/sponsors/lyra_black.svg';
 import lyraWhite from '../assets/sponsors/lyra_white.svg';
-import qrt from '../assets/sponsors/qrt.svg';
+import qrtWhite from '../assets/sponsors/qrt_white.svg';
+import qrtBlack from '../assets/sponsors/qrt_black.svg';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
 import { AppContext } from '../context/AppContext';
@@ -89,7 +90,7 @@ const Sponsors = () => {
     },
     {
       name: 'QRT',
-      logo: qrt,
+      logo: isDarkMode ? qrtWhite : qrtBlack,
       link: 'https://www.qube-rt.com/',
     },
   ];
