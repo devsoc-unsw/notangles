@@ -25,9 +25,13 @@ model User {
 
   firstName         String
   lastName          String
+  inviteCode        String      @unique @db.Char(7)
   profilePictureUrl String?
   timetables        Timetable[]
   settings          Settings?
+
+  friendshipsAsUser1 Friendship[] @relation("FriendshipUser1")
+  friendshipsAsUser2 Friendship[] @relation("FriendshipUser2")
 
   createdAt DateTime @default(now())
   lastLogin DateTime @default(now())
@@ -36,23 +40,24 @@ model User {
   @@map("user")
 }
 
-// model FriendRequest {
-//   id     String @id @default(uuid())
-//   fromId String
-//   toId   String
+model Friendship {
+  id      String @id @default(uuid())
+  user1Id String
+  user2Id String
+  status  Status
 
-//   @@unique([fromId, toId])
-//   @@map("friend_request")
-// }
+  user1 User @relation("FriendshipUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("FriendshipUser2", fields: [user2Id], references: [id], onDelete: Cascade)
 
-// model Friendship {
-//   id      String @id @default(uuid())
-//   user1Id String
-//   user2Id String
+  @@unique([user1Id, user2Id])
+  @@map("friendship")
+}
 
-//   @@unique([user1Id, user2Id])
-//   @@map("friendship")
-// }
+enum Status {
+  REQ_UID1
+  REQ_UID2
+  FRIEND
+}
 
 model Settings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

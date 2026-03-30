@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInfo, UserSettings } from './types';
 
@@ -25,6 +25,7 @@ export class UserService {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
+      inviteCode: data.inviteCode,
       profilePictureUrl: data.profilePictureUrl ?? undefined,
       isGuest: data.isGuest,
     };
@@ -72,5 +73,53 @@ export class UserService {
         },
       },
     });
+  }
+
+  private async isInviteCodeAlreadyUsed(inviteCode: string): Promise<boolean> {
+    const code = await this.prisma.user.findUnique({
+      where: {
+        inviteCode: inviteCode,
+      },
+      select: {
+        inviteCode: true,
+      },
+    });
+
+    return code !== null;
+  }
+
+  // Note: this does NOT guarantee uniqueness, use generateUniqueInviteCode for that.
+  private generateInviteCode(): string {
+    return new Array(7)
+      .fill(undefined)
+      .map(() =>
+        Math.floor(Math.random() * 36)
+          .toString(36)
+          .toUpperCase(),
+      )
+      .join('');
+  }
+
+  async regenerateInviteCode(userId: string): Promise<string> {
+    const code = await this.generateUniqueInviteCode();
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { inviteCode: code },
+    });
+    return code;
+  }
+
+  async generateUniqueInviteCode(): Promise<string> {
+    const maxAttempts = 10;
+    for (let i = 0; i < maxAttempts; i++) {
+      const code = this.generateInviteCode();
+      if (!(await this.isInviteCodeAlreadyUsed(code))) {
+        return code;
+      }
+    }
+    throw new HttpException(
+      'Failed to generate a unique invite code',
+      HttpStatus.SERVICE_UNAVAILABLE,
+    );
   }
 }

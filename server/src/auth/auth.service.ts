@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthProvider, Prisma, User } from 'src/generated/prisma/client';
+import { UserService } from '../user/user.service';
 import { Term } from 'src/timetable/types';
 import { GraphqlService } from 'src/graphql/graphql.service';
 
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly graphql: GraphqlService,
+    private readonly user: UserService,
   ) {}
 
   private readonly TIMETABLE_DEFAULT_NAME = 'My Timetable';
@@ -58,6 +60,7 @@ export class AuthService {
           authSubject: subject,
           firstName: params.firstName,
           lastName: params.lastName,
+          inviteCode: await this.user.generateUniqueInviteCode(),
           isGuest: params.isGuest,
           settings: { create: {} },
         },
@@ -87,6 +90,7 @@ export class AuthService {
         firstName: params.firstName,
         lastName: params.lastName,
         isGuest: params.isGuest,
+        inviteCode: await this.user.generateUniqueInviteCode(),
         settings: { create: {} },
         timetables: {
           create: availableTerms.map((availableTerm) => {

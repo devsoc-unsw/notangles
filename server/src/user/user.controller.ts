@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
+import { NonGuestGuard } from 'src/auth/non-guest.guard';
 import { UserSettings } from './types';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
@@ -29,6 +39,14 @@ export class UserController {
   async getSettings(@Req() req: AuthenticatedRequest) {
     const settings = await this.userService.getSettings(req.user.id);
     return settings;
+  }
+
+  @Post('invite-code/regenerate')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthenticatedGuard, NonGuestGuard)
+  async regenerateInviteCode(@Req() req: AuthenticatedRequest) {
+    const code = await this.userService.regenerateInviteCode(req.user.id);
+    return { inviteCode: code };
   }
 
   @Post('settings')
