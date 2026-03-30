@@ -38,6 +38,7 @@ const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleKebabClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 

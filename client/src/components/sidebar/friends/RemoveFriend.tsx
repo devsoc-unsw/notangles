@@ -136,7 +136,7 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, lastName, profileURL
 
       <Snackbar open={showBanner} autoHideDuration={3000} onClose={handleBannerClose}>
         <Alert variant="filled" severity="success" sx={{ width: '100%' }} onClose={handleBannerClose}>
-          Removed friend from friendlist
+          Removed friend from friends list
         </Alert>
       </Snackbar>
     </>
