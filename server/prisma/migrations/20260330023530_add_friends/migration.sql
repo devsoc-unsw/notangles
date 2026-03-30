@@ -22,16 +22,10 @@ CREATE TABLE "friendship" (
 );
 
 -- CreateIndex
-CREATE INDEX "friendshipId" ON "friendship"("id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "friendship_user1Id_user2Id_key" ON "friendship"("user1Id", "user2Id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_inviteCode_key" ON "user"("inviteCode");
 
 -- CreateIndex
-CREATE INDEX "friendsId" ON "user"("inviteCode");
-
--- CreateIndex
-CREATE INDEX "userId" ON "user"("id");
+CREATE INDEX "user_inviteCode_idx" ON "user"("inviteCode");

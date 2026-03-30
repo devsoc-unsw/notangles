@@ -74,7 +74,6 @@ export class OidcStrategy extends PassportStrategy(Strategy, 'oidc') {
     const userData = userInfo.userData as {
       firstName: string;
       lastName: string;
-      inviteCode: string;
       zid: string;
       department: string;
       program: number;

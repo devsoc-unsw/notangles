@@ -34,8 +34,7 @@ model User {
   lastLogin DateTime @default(now())
 
   @@unique([authProvider, authSubject])
-  @@index([inviteCode], name: "friendsId")
-  @@index([id], name: "userId")
+  @@index([inviteCode])
   @@map("user")
 }
 
@@ -46,7 +45,6 @@ model Friendship {
   status  Status
 
   @@unique([user1Id, user2Id])
-  @@index([id], name: "friendshipId")
   @@map("friendship")
 }
 

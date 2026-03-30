@@ -76,7 +76,7 @@ export class UserService {
   }
 
   private async isInviteCodeAlreadyUsed(inviteCode: string): Promise<boolean> {
-    const code = await this.prisma.user.findFirst({
+    const code = await this.prisma.user.findUnique({
       where: {
         inviteCode: inviteCode,
       },
@@ -101,10 +101,15 @@ export class UserService {
   }
 
   async generateUniqueInviteCode(): Promise<string> {
-    let code = this.generateInviteCode();
-    while (await this.isInviteCodeAlreadyUsed(code)) {
-      code = this.generateInviteCode();
+    const maxAttempts = 10;
+    for (let i = 0; i < maxAttempts; i++) {
+      const code = this.generateInviteCode();
+      if (!(await this.isInviteCodeAlreadyUsed(code))) {
+        return code;
+      }
     }
-    return code;
+    throw new Error(
+      'Failed to generate a unique invite code after maximum attempts',
+    );
   }
 }

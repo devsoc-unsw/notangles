@@ -1,7 +1,3 @@
-// todo: Should these be combined or kept explicit?
-// Im just doing this explicit but now but will combine them :D
-// Union types?
-
 export class CreateFriendRequestDto {
   requesteeCode: string;
 }
