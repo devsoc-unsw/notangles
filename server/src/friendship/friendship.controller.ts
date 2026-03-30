@@ -1,4 +1,13 @@
-import { Controller, Get, Body, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Post,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import {
   CreateFriendRequestDto,
@@ -15,6 +24,7 @@ export class FriendshipController {
   constructor(private readonly friendshipService: FriendshipService) {}
 
   @Post()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async createFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -27,15 +37,15 @@ export class FriendshipController {
   }
 
   @Post('cancel')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: CancelFriendRequestDto,
   ) {
-    await this.friendshipService.deleteRelationship(
+    await this.friendshipService.cancelFriendRequest(
       req.user.id,
       body.requesteeId,
-      true, // current user is cancelling a request they sent
     );
   }
 
@@ -58,6 +68,7 @@ export class FriendshipController {
   }
 
   @Post('accept')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
@@ -70,19 +81,20 @@ export class FriendshipController {
   }
 
   @Post('reject')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: RejectFriendRequestDto,
   ) {
-    await this.friendshipService.deleteRelationship(
+    await this.friendshipService.rejectFriendRequest(
       req.user.id,
       body.requestorId,
-      false, // current user is rejecting a request they received
     );
   }
 
   @Post('remove')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async removeFriend(
     @Req() req: AuthenticatedRequest,

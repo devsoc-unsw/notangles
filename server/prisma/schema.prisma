@@ -25,16 +25,18 @@ model User {
 
   firstName         String
   lastName          String
-  inviteCode        String      @unique @db.Char(6)
+  inviteCode        String      @unique @db.Char(7)
   profilePictureUrl String?
   timetables        Timetable[]
   settings          Settings?
+
+  friendshipsAsUser1 Friendship[] @relation("FriendshipUser1")
+  friendshipsAsUser2 Friendship[] @relation("FriendshipUser2")
 
   createdAt DateTime @default(now())
   lastLogin DateTime @default(now())
 
   @@unique([authProvider, authSubject])
-  @@index([inviteCode])
   @@map("user")
 }
 
@@ -43,6 +45,9 @@ model Friendship {
   user1Id String
   user2Id String
   status  Status
+
+  user1 User @relation("FriendshipUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("FriendshipUser2", fields: [user2Id], references: [id], onDelete: Cascade)
 
   @@unique([user1Id, user2Id])
   @@map("friendship")

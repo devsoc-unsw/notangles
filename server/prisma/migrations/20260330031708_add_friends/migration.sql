@@ -9,7 +9,7 @@
 CREATE TYPE "Status" AS ENUM ('REQ_UID1', 'REQ_UID2', 'FRIEND');
 
 -- AlterTable
-ALTER TABLE "user" ADD COLUMN     "inviteCode" CHAR(6) NOT NULL;
+ALTER TABLE "user" ADD COLUMN     "inviteCode" CHAR(7) NOT NULL;
 
 -- CreateTable
 CREATE TABLE "friendship" (
@@ -27,5 +27,8 @@ CREATE UNIQUE INDEX "friendship_user1Id_user2Id_key" ON "friendship"("user1Id", 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_inviteCode_key" ON "user"("inviteCode");
 
--- CreateIndex
-CREATE INDEX "user_inviteCode_idx" ON "user"("inviteCode");
+-- AddForeignKey
+ALTER TABLE "friendship" ADD CONSTRAINT "friendship_user1Id_fkey" FOREIGN KEY ("user1Id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "friendship" ADD CONSTRAINT "friendship_user2Id_fkey" FOREIGN KEY ("user2Id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

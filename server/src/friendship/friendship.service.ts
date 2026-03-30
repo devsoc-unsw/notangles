@@ -2,7 +2,7 @@ import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Friendship, Prisma, Status } from 'src/generated/prisma/client';
 
-@Injectable({})
+@Injectable()
 export class FriendshipService {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -60,47 +60,44 @@ export class FriendshipService {
     });
   }
 
-  async deleteRelationship(
-    userId: string,
-    otherId: string,
-    // true if the current user is the one who sent the request (cancel), false if they received it (reject)
-    requestedByUser: boolean,
-  ): Promise<void> {
-    const relationship = await this.prisma.friendship.findFirst({
+  // Cancel an outgoing friend request (called by the user who sent it)
+  async cancelFriendRequest(userId: string, otherId: string): Promise<void> {
+    await this.prisma.friendship.deleteMany({
       where: {
         OR: [
-          {
-            status: Status.REQ_UID1,
-            user1Id: requestedByUser ? userId : otherId,
-            user2Id: requestedByUser ? otherId : userId,
-          },
-          {
-            status: Status.REQ_UID2,
-            user1Id: requestedByUser ? otherId : userId,
-            user2Id: requestedByUser ? userId : otherId,
-          },
+          { status: Status.REQ_UID1, user1Id: userId, user2Id: otherId },
+          { status: Status.REQ_UID2, user1Id: otherId, user2Id: userId },
         ],
       },
     });
+  }
 
-    if (relationship === null) return;
-    await this.prisma.friendship.delete({ where: { id: relationship.id } });
+  // Reject an incoming friend request (called by the user who received it)
+  async rejectFriendRequest(
+    userId: string,
+    requestorId: string,
+  ): Promise<void> {
+    await this.prisma.friendship.deleteMany({
+      where: {
+        OR: [
+          { status: Status.REQ_UID1, user1Id: requestorId, user2Id: userId },
+          { status: Status.REQ_UID2, user1Id: userId, user2Id: requestorId },
+        ],
+      },
+    });
   }
 
   async deleteFriendship(userId: string, otherId: string): Promise<void> {
-    const relationship = await this.prisma.friendship.findFirst({
-      where: {
-        status: Status.FRIEND,
-        user1Id: userId < otherId ? userId : otherId,
-        user2Id: userId < otherId ? otherId : userId,
-      },
-    });
+    const [user1Id, user2Id] =
+      userId < otherId ? [userId, otherId] : [otherId, userId];
 
-    if (relationship === null) return;
-    await this.prisma.friendship.delete({ where: { id: relationship.id } });
+    // Note: This deletes 0 or more, meaning it will "succeed" even if there is no friendship to delete
+    await this.prisma.friendship.deleteMany({
+      where: { status: Status.FRIEND, user1Id, user2Id },
+    });
   }
 
-  async resolveInviteCode(inviteCode: string): Promise<string> {
+  private async resolveInviteCode(inviteCode: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
       where: { inviteCode },
       select: { id: true },

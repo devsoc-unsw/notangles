@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInfo, UserSettings } from './types';
 
@@ -90,7 +90,7 @@ export class UserService {
 
   // Note: this does NOT guarantee uniqueness, use generateUniqueInviteCode for that.
   private generateInviteCode(): string {
-    return new Array(6)
+    return new Array(7)
       .fill(undefined)
       .map(() =>
         Math.floor(Math.random() * 36)
@@ -108,8 +108,9 @@ export class UserService {
         return code;
       }
     }
-    throw new Error(
-      'Failed to generate a unique invite code after maximum attempts',
+    throw new HttpException(
+      'Failed to generate a unique invite code',
+      HttpStatus.SERVICE_UNAVAILABLE,
     );
   }
 }
