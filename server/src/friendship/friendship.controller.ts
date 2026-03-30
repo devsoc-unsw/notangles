@@ -17,15 +17,16 @@ import {
   RemoveFriendDto,
 } from './types';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
+import { NonGuestGuard } from 'src/auth/non-guest.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
 
 @Controller('friendship')
+@UseGuards(AuthenticatedGuard, NonGuestGuard)
 export class FriendshipController {
   constructor(private readonly friendshipService: FriendshipService) {}
 
   @Post()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthenticatedGuard)
   async createFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: CreateFriendRequestDto,
@@ -38,7 +39,6 @@ export class FriendshipController {
 
   @Post('cancel')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthenticatedGuard)
   async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: CancelFriendRequestDto,
@@ -50,26 +50,22 @@ export class FriendshipController {
   }
 
   @Get('requests/outgoing')
-  @UseGuards(AuthenticatedGuard)
   async getOutgoingFriendRequests(@Req() req: AuthenticatedRequest) {
     return await this.friendshipService.getUserFriendRequests(req.user.id);
   }
 
   @Get('requests/incoming')
-  @UseGuards(AuthenticatedGuard)
   async getIncomingFriendRequests(@Req() req: AuthenticatedRequest) {
     return await this.friendshipService.getFriendRequestsToUser(req.user.id);
   }
 
   @Get()
-  @UseGuards(AuthenticatedGuard)
   async getUserFriends(@Req() req: AuthenticatedRequest) {
     return await this.friendshipService.getUserFriendships(req.user.id);
   }
 
   @Post('accept')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthenticatedGuard)
   async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: AcceptFriendRequestDto,
@@ -82,7 +78,6 @@ export class FriendshipController {
 
   @Post('reject')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthenticatedGuard)
   async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,
     @Body() body: RejectFriendRequestDto,
@@ -95,7 +90,6 @@ export class FriendshipController {
 
   @Post('remove')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(AuthenticatedGuard)
   async removeFriend(
     @Req() req: AuthenticatedRequest,
     @Body() body: RemoveFriendDto,

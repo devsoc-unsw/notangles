@@ -100,6 +100,15 @@ export class UserService {
       .join('');
   }
 
+  async regenerateInviteCode(userId: string): Promise<string> {
+    const code = await this.generateUniqueInviteCode();
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { inviteCode: code },
+    });
+    return code;
+  }
+
   async generateUniqueInviteCode(): Promise<string> {
     const maxAttempts = 10;
     for (let i = 0; i < maxAttempts; i++) {

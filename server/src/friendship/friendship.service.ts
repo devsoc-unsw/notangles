@@ -100,10 +100,10 @@ export class FriendshipService {
   private async resolveInviteCode(inviteCode: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
       where: { inviteCode },
-      select: { id: true },
+      select: { id: true, isGuest: true },
     });
 
-    if (user === null) {
+    if (user === null || user.isGuest) {
       throw new HttpException('Invite code not found', HttpStatus.NOT_FOUND);
     }
     return user.id;
