@@ -18,15 +18,11 @@ export class FriendshipController {
   @UseGuards(AuthenticatedGuard)
   async createFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() createFriendRequest: CreateFriendRequestDto,
+    @Body() body: CreateFriendRequestDto,
   ) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
     await this.friendshipService.createRelationship(
-      userCode,
-      createFriendRequest.requesteeCode,
+      req.user.id,
+      body.requesteeCode,
     );
   }
 
@@ -34,15 +30,11 @@ export class FriendshipController {
   @UseGuards(AuthenticatedGuard)
   async cancelFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() cancelFriendRequest: CancelFriendRequestDto,
+    @Body() body: CancelFriendRequestDto,
   ) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
     await this.friendshipService.deleteRelationship(
-      userCode,
-      cancelFriendRequest.requesteeCode,
+      req.user.id,
+      body.requesteeId,
       true, // current user is cancelling a request they sent
     );
   }
@@ -50,45 +42,30 @@ export class FriendshipController {
   @Get('requests/outgoing')
   @UseGuards(AuthenticatedGuard)
   async getOutgoingFriendRequests(@Req() req: AuthenticatedRequest) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
-    return await this.friendshipService.getUserFriendRequests(userCode);
+    return await this.friendshipService.getUserFriendRequests(req.user.id);
   }
 
   @Get('requests/incoming')
   @UseGuards(AuthenticatedGuard)
   async getIncomingFriendRequests(@Req() req: AuthenticatedRequest) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-    return await this.friendshipService.getFriendRequestsToUser(userCode);
+    return await this.friendshipService.getFriendRequestsToUser(req.user.id);
   }
 
   @Get()
   @UseGuards(AuthenticatedGuard)
   async getUserFriends(@Req() req: AuthenticatedRequest) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
-    return await this.friendshipService.getUserFriendships(userCode);
+    return await this.friendshipService.getUserFriendships(req.user.id);
   }
 
   @Post('accept')
   @UseGuards(AuthenticatedGuard)
   async acceptFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() acceptFriendRequest: AcceptFriendRequestDto,
+    @Body() body: AcceptFriendRequestDto,
   ) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
+    await this.friendshipService.acceptFriendRequest(
       req.user.id,
-    );
-
-    return await this.friendshipService.acceptFriendRequest(
-      userCode,
-      acceptFriendRequest.requestorCode,
+      body.requestorId,
     );
   }
 
@@ -96,15 +73,11 @@ export class FriendshipController {
   @UseGuards(AuthenticatedGuard)
   async rejectFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() rejectFriendRequest: RejectFriendRequestDto,
+    @Body() body: RejectFriendRequestDto,
   ) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
     await this.friendshipService.deleteRelationship(
-      userCode,
-      rejectFriendRequest.requestorCode,
+      req.user.id,
+      body.requestorId,
       false, // current user is rejecting a request they received
     );
   }
@@ -113,15 +86,8 @@ export class FriendshipController {
   @UseGuards(AuthenticatedGuard)
   async removeFriend(
     @Req() req: AuthenticatedRequest,
-    @Body() removeFriendRequest: RemoveFriendDto,
+    @Body() body: RemoveFriendDto,
   ) {
-    const userCode = await this.friendshipService.fetchUserFriendCode(
-      req.user.id,
-    );
-
-    await this.friendshipService.deleteFriendship(
-      userCode,
-      removeFriendRequest.otherCode,
-    );
+    await this.friendshipService.deleteFriendship(req.user.id, body.friendId);
   }
 }

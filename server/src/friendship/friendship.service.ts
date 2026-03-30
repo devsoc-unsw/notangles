@@ -19,14 +19,8 @@ export class FriendshipService {
     return await this.prisma.friendship.findMany({
       where: {
         OR: [
-          {
-            status: Status.REQ_UID1,
-            user1Id: userId,
-          },
-          {
-            status: Status.REQ_UID2,
-            user2Id: userId,
-          },
+          { status: Status.REQ_UID1, user1Id: userId },
+          { status: Status.REQ_UID2, user2Id: userId },
         ],
       },
     });
@@ -36,33 +30,22 @@ export class FriendshipService {
     return await this.prisma.friendship.findMany({
       where: {
         OR: [
-          {
-            status: Status.REQ_UID2,
-            user1Id: userId,
-          },
-          {
-            status: Status.REQ_UID1,
-            user2Id: userId,
-          },
+          { status: Status.REQ_UID2, user1Id: userId },
+          { status: Status.REQ_UID1, user2Id: userId },
         ],
       },
     });
   }
 
-  async acceptFriendRequest(userId: string, otherId: string): Promise<void> {
+  async acceptFriendRequest(
+    userId: string,
+    requestorId: string,
+  ): Promise<void> {
     const relationship = await this.prisma.friendship.findFirst({
       where: {
         OR: [
-          {
-            status: Status.REQ_UID1,
-            user1Id: otherId,
-            user2Id: userId,
-          },
-          {
-            status: Status.REQ_UID2,
-            user1Id: userId,
-            user2Id: otherId,
-          },
+          { status: Status.REQ_UID1, user1Id: requestorId, user2Id: userId },
+          { status: Status.REQ_UID2, user1Id: userId, user2Id: requestorId },
         ],
       },
     });
@@ -80,7 +63,7 @@ export class FriendshipService {
   async deleteRelationship(
     userId: string,
     otherId: string,
-    // true if the current user initiated the action (cancel/reject from their side)
+    // true if the current user is the one who sent the request (cancel), false if they received it (reject)
     requestedByUser: boolean,
   ): Promise<void> {
     const relationship = await this.prisma.friendship.findFirst({
@@ -101,9 +84,7 @@ export class FriendshipService {
     });
 
     if (relationship === null) return;
-    await this.prisma.friendship.delete({
-      where: { id: relationship.id },
-    });
+    await this.prisma.friendship.delete({ where: { id: relationship.id } });
   }
 
   async deleteFriendship(userId: string, otherId: string): Promise<void> {
@@ -116,45 +97,55 @@ export class FriendshipService {
     });
 
     if (relationship === null) return;
-    await this.prisma.friendship.delete({
-      where: { id: relationship.id },
-    });
+    await this.prisma.friendship.delete({ where: { id: relationship.id } });
   }
 
-  async fetchUserFriendCode(userId: string): Promise<string> {
+  async resolveInviteCode(inviteCode: string): Promise<string> {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { inviteCode: true },
+      where: { inviteCode },
+      select: { id: true },
     });
 
     if (user === null) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Invite code not found', HttpStatus.NOT_FOUND);
     }
-    return user.inviteCode;
+    return user.id;
   }
 
-  async createRelationship(userId: string, otherId: string): Promise<void> {
-    const isOrdered = userId < otherId;
+  async createRelationship(
+    userId: string,
+    requesteeCode: string,
+  ): Promise<void> {
+    const requesteeId = await this.resolveInviteCode(requesteeCode);
+
+    if (userId === requesteeId) {
+      throw new HttpException(
+        'Cannot send a friend request to yourself',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const isOrdered = userId < requesteeId;
 
     try {
       await this.prisma.friendship.create({
         data: {
-          user1Id: isOrdered ? userId : otherId,
-          user2Id: isOrdered ? otherId : userId,
+          user1Id: isOrdered ? userId : requesteeId,
+          user2Id: isOrdered ? requesteeId : userId,
           status: isOrdered ? Status.REQ_UID1 : Status.REQ_UID2,
         },
       });
     } catch (e) {
-      // Prisma duplicate error is expected
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === 'P2002') {
-          throw new HttpException(
-            'A relationship already exists between these users',
-            HttpStatus.CONFLICT,
-          );
-        }
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new HttpException(
+          'A relationship already exists between these users',
+          HttpStatus.CONFLICT,
+        );
       }
-      throw e; // rethrow unexpected errors
+      throw e;
     }
   }
 }

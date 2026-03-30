@@ -3,17 +3,17 @@ export class CreateFriendRequestDto {
 }
 
 export class CancelFriendRequestDto {
-  requesteeCode: string;
+  requesteeId: string;
 }
 
 export class AcceptFriendRequestDto {
-  requestorCode: string;
+  requestorId: string;
 }
 
 export class RejectFriendRequestDto {
-  requestorCode: string;
+  requestorId: string;
 }
 
 export class RemoveFriendDto {
-  otherCode: string;
+  friendId: string;
 }
