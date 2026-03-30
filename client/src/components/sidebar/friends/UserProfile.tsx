@@ -2,8 +2,7 @@ import styled from '@emotion/styled';
 import React, { useContext } from 'react';
 
 import { AppContext } from '../../../context/AppContext';
-
-export const emptyProfile = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+import UserProfilePicture from './UserProfilePicture';
 
 const StyledContainer = styled('div')`
   display: flex;
@@ -18,7 +17,7 @@ const StyledFullname = styled('div')`
 `;
 
 const getTextWidth = (text: string, font: string): number => {
-  let canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
 
   const context = canvas.getContext('2d');
   if (!context) {
@@ -50,22 +49,18 @@ const getFullName = (firstName: string, lastName: string) => {
   return fullname;
 };
 
-const UserProfile: React.FC<{ firstName: string; lastName: string; profileURL?: string }> = ({
-  firstName,
-  lastName,
-  profileURL,
-}) => {
+const UserProfile: React.FC<{
+  firstName: string;
+  lastName: string;
+  profileURL?: string;
+  overrideCollapse?: boolean;
+}> = ({ firstName, lastName, profileURL, overrideCollapse }) => {
   const { sidebarCollapsed } = useContext(AppContext);
 
   return (
     <StyledContainer>
-      <img
-        src={profileURL ?? emptyProfile}
-        width={34}
-        height={34}
-        style={{ borderRadius: 999, backgroundColor: 'white' }}
-      />
-      {!sidebarCollapsed && (
+      <UserProfilePicture profileURL={profileURL} size={34} alt={`${firstName} ${lastName}`} />
+      {(!sidebarCollapsed || overrideCollapse) && (
         <div>
           <StyledFullname>{getFullName(firstName, lastName)}</StyledFullname>
         </div>

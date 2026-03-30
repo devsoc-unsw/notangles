@@ -6,7 +6,7 @@ import Fuse from 'fuse.js';
 import { useContext, useMemo, useState } from 'react';
 
 import { AppContext } from '../../../context/AppContext';
-import Friend from './Friend';
+import Friend, { FriendDTO } from './Friend';
 import friendList from './friends.json';
 
 const FriendsListContainer = styled(Box)`
@@ -31,12 +31,28 @@ const FriendsList = () => {
     // TODO: replace hard coded data with integration with server
     let friends = friendList;
     if (searchVal.length === 0) {
-      return friends.map((friend, index) => <Friend key={index} firstName={friend} />);
+      return friends.map(({ firstName, lastName, id, profileURL }) => (
+        <Friend
+          key={id as string}
+          firstName={firstName as string}
+          lastName={lastName as string}
+          id={id as string}
+          profileURL={profileURL as string}
+        />
+      ));
     }
 
-    const fuzzy = new Fuse<string>(friendList, { threshold: 0.4 });
+    const fuzzy = new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
     friends = fuzzy.search(searchVal).map((result) => result.item);
-    return friends.map((friend, index) => <Friend key={index} firstName={friend} />);
+    return friends.map(({ firstName, lastName, id, profileURL }) => (
+      <Friend
+        key={id as string}
+        firstName={firstName as string}
+        lastName={lastName as string}
+        id={id as string}
+        profileURL={profileURL as string}
+      />
+    ));
   }, [searchVal]);
 
   const handleClickSearchBarIcon = () => {

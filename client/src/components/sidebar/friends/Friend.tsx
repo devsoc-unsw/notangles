@@ -1,11 +1,13 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, styled, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { AppContext } from '../../../context/AppContext';
 import UserProfile from './UserProfile';
+import RemoveFriend from './RemoveFriend';
 
 const StyledFriendContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isDarkMode' && prop !== 'sidebarCollapsed',
@@ -23,27 +25,53 @@ const StyledFriendContainer = styled(Box, {
       isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light}
 `;
 
-interface FriendProps {
+export interface FriendDTO {
   firstName: string;
+  lastName: string;
+  id: string;
+  profileURL: string;
 }
 
-const Friend = ({ firstName }: FriendProps) => {
-  const [kebabOpen, setKebabOpen] = useState(false);
+const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
   const { sidebarCollapsed } = useContext(AppContext);
   const { isDarkMode } = useGetUserSettingsQuery();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleKebabClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const kebabOpen = Boolean(anchorEl);
+
+  const navigate = useNavigate();
+
+  const handleFriendClick = useCallback(() => {
+    navigate(`/friend/${id}`);
+  }, [id, navigate]);
 
   return (
-    <Tooltip title={sidebarCollapsed ? firstName : ''} placement="right">
-      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed}>
-        <UserProfile firstName={firstName} lastName="" />
+    <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
+      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
+        <UserProfile firstName={firstName} lastName={lastName} profileURL={profileURL} />
         {!sidebarCollapsed && (
-          <IconButton
-            onClick={() => {
-              setKebabOpen((prev) => !prev);
-            }}
-          >
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton onClick={handleKebabClick}>
+              <MoreVertIcon />
+            </IconButton>
+            <RemoveFriend
+              anchorEl={anchorEl}
+              open={kebabOpen}
+              onClose={handlePopoverClose}
+              firstName={firstName}
+              lastName={lastName}
+              profileURL={profileURL}
+            />
+          </>
         )}
       </StyledFriendContainer>
     </Tooltip>

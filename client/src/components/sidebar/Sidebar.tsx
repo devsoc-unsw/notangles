@@ -2,6 +2,7 @@ import { CalendarMonth, Description, Info, Security, Settings as SettingsIcon } 
 import { Divider, Drawer, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useContext, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
@@ -158,6 +159,9 @@ const Sidebar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const collapsedWidth = useMemo(() => (isMobile ? 0 : 80), [isMobile]);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [friendsListOpen, setFriendsListOpen] = useState(false);
   const { sidebarCollapsed, setSidebarCollapsed } = useContext(AppContext);
@@ -231,7 +235,10 @@ const Sidebar = () => {
                 // currently not clickable since this is our current page
                 isClickable={false}
                 // hardcoded until we move away from single page site
-                isSelected={true}
+                isSelected={location.pathname === '/home'}
+                optionalHandleClick={() => {
+                  navigate('/home');
+                }}
               />
               <FriendsButton
                 friendsListOpen={friendsListOpen}

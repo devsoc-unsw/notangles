@@ -13,6 +13,7 @@ interface CustomModalOpenerProps {
   content: ReactNode;
   isClickable: boolean;
   isSelected?: boolean;
+  optionalHandleClick?: () => void;
 }
 
 const ShowModalButton = styled(IconButton, { shouldForwardProp: (prop) => prop !== 'isSelected' })<{
@@ -40,6 +41,7 @@ const CustomModalOpener: React.FC<CustomModalOpenerProps> = ({
   content,
   isClickable,
   isSelected = false,
+  optionalHandleClick,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { sidebarCollapsed } = useContext(AppContext);
@@ -48,6 +50,7 @@ const CustomModalOpener: React.FC<CustomModalOpenerProps> = ({
     if (isClickable) {
       setIsOpen(!isOpen);
     }
+    if (optionalHandleClick) optionalHandleClick();
   };
 
   return (

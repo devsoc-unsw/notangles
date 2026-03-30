@@ -1,21 +1,22 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import { canvasPreview, centerAspectCrop } from './canvasPreview';
-import { useDebounceEffect } from '../../hooks/useDebounceEffect';
-import { postUserProfilePicture } from '../../api/user/routes';
-
-import 'react-image-crop/dist/ReactCrop.css';
-import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
+import { styled } from '@mui/material/styles';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+
+import { postUserProfilePicture } from '../../api/user/routes';
 import { useAuth } from '../../hooks/useAuth';
-import { emptyProfile } from './friends/UserProfile';
+import { useDebounceEffect } from '../../hooks/useDebounceEffect';
+import { canvasPreview, centerAspectCrop } from './canvasPreview';
+import { emptyProfile } from './friends/UserProfilePicture';
 
 const MAX_FILE_SIZE_BYTES = 2000000;
 
@@ -93,26 +94,33 @@ export default function ProfilePictureModal() {
   const { user } = useAuth();
 
   useEffect(() => {
-    setCurrentImgSrc(user?.profilePictureUrl || emptyProfile);
+    setCurrentImgSrc(user?.profilePictureUrl ?? emptyProfile);
   }, [user]);
 
-  const CustomDialog = useMemo(() => (
-    <Dialog open={isDialogOpen}>
-      <DialogTitle>Are you sure you want to reset your current avatar?</DialogTitle>
-      <DialogActions>
-        <Button autoFocus onClick={() => setIsDialogOpen(false)}>
-          Cancel
-        </Button>
-        <Button onClick={() => {
-          postUserProfilePicture('');
-          setSuccessAlertOpen(true);
-          setCurrentImgSrc(emptyProfile);
-          setNewImgSrc('');
-          setIsDialogOpen(false);
-        }}>Ok</Button>
-      </DialogActions>
-    </Dialog>
-  ), [isDialogOpen]);
+  const CustomDialog = useMemo(
+    () => (
+      <Dialog open={isDialogOpen}>
+        <DialogTitle>Are you sure you want to reset your current avatar?</DialogTitle>
+        <DialogActions>
+          <Button autoFocus onClick={() => setIsDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              postUserProfilePicture('');
+              setSuccessAlertOpen(true);
+              setCurrentImgSrc(emptyProfile);
+              setNewImgSrc('');
+              setIsDialogOpen(false);
+            }}
+          >
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+    ),
+    [isDialogOpen],
+  );
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
@@ -125,7 +133,7 @@ export default function ProfilePictureModal() {
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
       reader.addEventListener('load', () => {
-        setNewImgSrc(reader.result?.toString() || '');
+        setNewImgSrc(reader.result?.toString() ?? '');
       });
       reader.addEventListener('error', () => {
         setIsErrorAlertOpen(true);
@@ -201,20 +209,25 @@ export default function ProfilePictureModal() {
         </>
       )}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {completedCrop ?
-          <Button onClick={() => {
-            getCroppedProfile();
-            postUserProfilePicture(currentImgSrc);
+        {completedCrop ? (
+          <Button
+            onClick={() => {
+              getCroppedProfile();
+              postUserProfilePicture(currentImgSrc);
 
-            setCurrentImgSrc(blobUrlRef.current);
-            setNewImgSrc('');
-            setSuccessAlertOpen(true);
-            setCrop(undefined);
-            setCompletedCrop(undefined);
-          }} variant="contained" sx={saveButtonStyleProps} disableElevation>
+              setCurrentImgSrc(blobUrlRef.current);
+              setNewImgSrc('');
+              setSuccessAlertOpen(true);
+              setCrop(undefined);
+              setCompletedCrop(undefined);
+            }}
+            variant="contained"
+            sx={saveButtonStyleProps}
+            disableElevation
+          >
             Set new profile picture
           </Button>
-          :
+        ) : (
           <>
             <Button
               component="label"
@@ -227,11 +240,16 @@ export default function ProfilePictureModal() {
               Choose file
               <VisuallyHiddenInput type="file" onChange={onSelectFile} accept="image/*" />
             </Button>
-            <Button onClick={() => setIsDialogOpen(true)} variant="contained" sx={removeButtonStyleProps} disableElevation>
+            <Button
+              onClick={() => setIsDialogOpen(true)}
+              variant="contained"
+              sx={removeButtonStyleProps}
+              disableElevation
+            >
               Remove photo
             </Button>
           </>
-        }
+        )}
       </div>
 
       <Snackbar open={successAlertOpen} autoHideDuration={6000} onClose={() => setSuccessAlertOpen(false)}>

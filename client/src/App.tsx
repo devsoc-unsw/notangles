@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
 import React, { useContext, useEffect, useMemo } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 
 import getCourseInfo from './api/getCourseInfo';
 import getCoursesList from './api/getCoursesList';
@@ -134,6 +134,7 @@ const App: React.FC = () => {
     setAssignedColors,
   } = useContext(CourseContext);
 
+  const location = useLocation();
   const { preferredTheme, isDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
 
   const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
@@ -569,6 +570,46 @@ const App: React.FC = () => {
     },
   };
 
+  const timetableView = useMemo(() => {
+    const currentPathname = location.pathname;
+    const searchParams = location.search;
+    console.log(currentPathname);
+    if (currentPathname === '/home') {
+      return (
+        <>
+          <TimetableTabs />
+          <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
+          <ICSButton
+            onClick={() => {
+              downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)
+                .then(() => {
+                  /* do nothing */
+                })
+                .catch(() => {
+                  /* do nothing */
+                });
+            }}
+          >
+            save to calendar
+          </ICSButton>
+          <Sponsors />
+          <Footer />
+          <Alerts />
+        </>
+      );
+    } else {
+      return <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />;
+    }
+  }, [
+    location,
+    selectedClasses,
+    createdEvents,
+    selectedCourses,
+    firstDayOfTerm,
+    handleSelectClass,
+    decodedAssignedColors,
+  ]);
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={themeObject}>
@@ -586,16 +627,7 @@ const App: React.FC = () => {
                     handleRemoveCourse={handleRemoveCourse}
                   />
                   <Outlet />
-                  <TimetableTabs />
-                  <Timetable assignedColors={decodedAssignedColors} handleSelectClass={handleSelectClass} />
-                  <ICSButton
-                    onClick={() => downloadIcsFile(selectedCourses, createdEvents, selectedClasses, firstDayOfTerm)}
-                  >
-                    save to calendar
-                  </ICSButton>
-                  <Sponsors />
-                  <Footer />
-                  <Alerts />
+                  {timetableView}
                   <SubcomPromotion />
                   <PromotionPopup
                     imgSrc={T3SelectGif}
