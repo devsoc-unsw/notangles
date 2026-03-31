@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
 import type { UserSettings } from '../../interfaces/User';
-import { setUserSettings } from './routes';
+import { regenerateInviteCode, setUserSettings } from './routes';
 
 export const useSetUserSettings = () =>
   useMutation({
@@ -10,3 +10,8 @@ export const useSetUserSettings = () =>
       invalidatesQuery: ['settings'],
     },
   }).mutate;
+
+export const useRegenerateInviteCode = () =>
+  useMutation({
+    mutationFn: regenerateInviteCode,
+  });

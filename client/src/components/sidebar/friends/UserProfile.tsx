@@ -52,12 +52,12 @@ const UserProfile: React.FC<{
   sidebarCollapsed: boolean;
   firstName: string;
   lastName: string;
-  profileURL?: string;
+  profilePictureUrl?: string;
   overrideCollapse?: boolean;
-}> = ({ sidebarCollapsed, firstName, lastName, profileURL, overrideCollapse }) => {
+}> = ({ sidebarCollapsed, firstName, lastName, profilePictureUrl, overrideCollapse }) => {
   return (
     <StyledContainer>
-      <UserProfilePicture profileURL={profileURL} size={34} alt={`${firstName} ${lastName}`} />
+      <UserProfilePicture profilePictureUrl={profilePictureUrl} size={34} alt={`${firstName} ${lastName}`} />
       {(!sidebarCollapsed || overrideCollapse) && (
         <div>
           <StyledFullname>{getFullName(firstName, lastName)}</StyledFullname>

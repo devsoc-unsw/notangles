@@ -68,7 +68,7 @@ const UserAccount = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
               sidebarCollapsed={sidebarCollapsed}
               firstName={user.firstName}
               lastName={user.lastName}
-              profileURL={user.profilePictureUrl}
+              profilePictureUrl={user.profilePictureUrl}
             />
           )}
           <Tooltip title="Log out" placement="right">

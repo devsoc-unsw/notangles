@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { useMemo } from 'react';
 
+import { useIncomingRequestsQuery } from '../../api/friendship/queries';
 import PendingInvitesBadge from './PendingInvitesBadge';
 
 interface FriendsButtonProps {
@@ -56,7 +57,7 @@ const FriendsButton = ({ sidebarCollapsed, friendsListOpen, handleFriendsListTog
     if (sidebarCollapsed) return null;
     return friendsListOpen ? <ArrowDropUp /> : <ArrowDropDown />;
   }, [sidebarCollapsed, friendsListOpen]);
-  const friendInvites = 2; // Hardcoded
+  const incomingRequests = useIncomingRequestsQuery();
 
   return (
     <Tooltip title="Friends" placement="right">
@@ -67,7 +68,7 @@ const FriendsButton = ({ sidebarCollapsed, friendsListOpen, handleFriendsListTog
         </StyledFriendsContainer>
         <RightContainer>
           <BadgePositioner sidebarCollapsed={sidebarCollapsed}>
-            <PendingInvitesBadge count={friendInvites} showBadge={!friendsListOpen} />
+            <PendingInvitesBadge count={incomingRequests.length} showBadge={!friendsListOpen} />
           </BadgePositioner>
           {friendToggleArrow}
         </RightContainer>
