@@ -3,6 +3,8 @@ import {
   Get,
   Body,
   Post,
+  Delete,
+  Param,
   Req,
   UseGuards,
   HttpCode,
@@ -11,9 +13,7 @@ import {
 import { FriendshipService } from './friendship.service';
 import {
   CreateFriendRequestDto,
-  CancelFriendRequestDto,
   AcceptFriendRequestDto,
-  RejectFriendRequestDto,
   RemoveFriendDto,
 } from './types';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
@@ -37,16 +37,13 @@ export class FriendshipController {
     );
   }
 
-  @Post('cancel')
+  @Delete('requests/:userId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async cancelFriendRequest(
+  async deleteFriendRequest(
     @Req() req: AuthenticatedRequest,
-    @Body() body: CancelFriendRequestDto,
+    @Param('userId') userId: string,
   ) {
-    await this.friendshipService.cancelFriendRequest(
-      req.user.id,
-      body.requesteeId,
-    );
+    await this.friendshipService.deleteRequest(req.user.id, userId);
   }
 
   @Get('requests/outgoing')
@@ -71,18 +68,6 @@ export class FriendshipController {
     @Body() body: AcceptFriendRequestDto,
   ) {
     await this.friendshipService.acceptFriendRequest(
-      req.user.id,
-      body.requestorId,
-    );
-  }
-
-  @Post('reject')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async rejectFriendRequest(
-    @Req() req: AuthenticatedRequest,
-    @Body() body: RejectFriendRequestDto,
-  ) {
-    await this.friendshipService.rejectFriendRequest(
       req.user.id,
       body.requestorId,
     );

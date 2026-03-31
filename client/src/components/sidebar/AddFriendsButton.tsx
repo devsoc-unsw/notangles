@@ -3,6 +3,7 @@ import { IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { useState } from 'react';
 
+import { useIncomingRequestsQuery } from '../../api/friendship/queries';
 import AddFriendsMenu from './AddFriendsMenu';
 import CustomModal from './CustomModel';
 import PendingInvitesBadge from './PendingInvitesBadge';
@@ -34,9 +35,6 @@ const StyledAddIcon = styled(AddCircle)`
   color: ${({ theme }) => theme.palette.primary.main};
 `;
 
-// Hardcoded values to be replaced
-const friendInvites = 2;
-
 interface AddFriendsButtonProps {
   sidebarCollapsed: boolean;
   friendsListOpen: boolean;
@@ -44,6 +42,7 @@ interface AddFriendsButtonProps {
 
 const AddFriendsButton = ({ sidebarCollapsed, friendsListOpen }: AddFriendsButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const incomingRequests = useIncomingRequestsQuery();
 
   if (!friendsListOpen) return null;
 
@@ -56,13 +55,13 @@ const AddFriendsButton = ({ sidebarCollapsed, friendsListOpen }: AddFriendsButto
       <BadgeWrapper>
         <StyledAddButton onClick={toggleModal}>
           {!sidebarCollapsed && <Typography fontSize={15}>Add Friends</Typography>}
-            <Tooltip title="Add Friends" placement="right">
-              <StyledAddIcon />
-            </Tooltip>
+          <Tooltip title="Add Friends" placement="right">
+            <StyledAddIcon />
+          </Tooltip>
         </StyledAddButton>
-        
+
         <BadgePositioner>
-          <PendingInvitesBadge count={friendInvites} />
+          <PendingInvitesBadge count={incomingRequests.length} />
         </BadgePositioner>
       </BadgeWrapper>
       <CustomModal

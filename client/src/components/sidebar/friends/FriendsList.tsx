@@ -5,8 +5,9 @@ import { Box, styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import { useMemo, useState } from 'react';
 
-import Friend, { FriendDTO } from './Friend';
-import friendList from './friends.json';
+import { useFriendsQuery } from '../../../api/friendship/queries';
+import { FriendInfo } from '../../../interfaces/User';
+import Friend from './Friend';
 
 const FriendsListContainer = styled(Box)`
   display: flex;
@@ -30,10 +31,11 @@ const FriendsList = ({
   setSidebarCollapsed: (val: boolean) => void;
 }) => {
   const [searchVal, setSearchVal] = useState('');
+  const friendList = useFriendsQuery();
 
   const fuse = useMemo(() => {
-    return new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
-  }, []);
+    return new Fuse<FriendInfo>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
+  }, [friendList]);
 
   const friends = searchVal.length === 0 ? friendList : fuse.search(searchVal).map((result) => result.item);
 
@@ -72,10 +74,10 @@ const FriendsList = ({
         <Friend
           key={friend.id}
           sidebarCollapsed={sidebarCollapsed}
+          id={friend.id}
           firstName={friend.firstName}
           lastName={friend.lastName}
-          id={friend.id}
-          profileURL={friend.profileURL}
+          profilePictureUrl={friend.profilePictureUrl}
         />
       ))}
     </FriendsListContainer>

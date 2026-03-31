@@ -2,6 +2,7 @@ export interface UserInfo {
   id: string;
   firstName: string;
   lastName: string;
+  inviteCode: string;
   profilePictureUrl?: string;
   isGuest: boolean;
 }
@@ -16,4 +17,11 @@ export interface UserSettings {
   unscheduleClassesByDefault: boolean;
   hideExamClasses: boolean;
   convertToLocalTimezone: boolean;
+}
+
+export interface FriendInfo {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePictureUrl?: string;
 }

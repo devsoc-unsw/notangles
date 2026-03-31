@@ -16,3 +16,7 @@ export const postUserProfilePicture = async (imgSrc: string): Promise<void> => {
 export const setUserSettings = async (settings: Partial<UserSettings>): Promise<void> => {
   await apiClient.post('/user/settings', settings);
 };
+
+export const regenerateInviteCode = async (): Promise<{ inviteCode: string }> => {
+  return (await apiClient.post<{ inviteCode: string }>('/user/invite-code/regenerate')).data;
+};
