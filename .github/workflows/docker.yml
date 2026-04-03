@@ -111,36 +111,32 @@ jobs:
           private-key: ${{ secrets.IMAGE_UPDATER_APP_PRIVATE_KEY }}
           owner: devsoc-unsw
           repositories: deployment
-          permission-contents: write
+          permission-actions: write
 
-      - name: Send repository_dispatch
+      - name: Send workflow_dispatch
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
+          updates_json="$(
+            jq -cn \
+              --arg sha "${GITHUB_SHA}" \
+              '[
+                {image: "ghcr.io/devsoc-unsw/notangles-client", tag: $sha},
+                {image: "ghcr.io/devsoc-unsw/notangles-backend", tag: $sha},
+                {image: "ghcr.io/devsoc-unsw/notangles-auto-timetabler-server", tag: $sha}
+              ]'
+          )"
+          payload_json="$(
+            jq -cn \
+              --arg ref "dev" \
+              --arg updates "${updates_json}" \
+              '{ref: $ref, inputs: {updates: $updates}}'
+          )"
+
           curl --fail-with-body \
             -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
-            https://api.github.com/repos/devsoc-unsw/deployment/dispatches \
-            -d @- <<JSON
-          {
-            "event_type": "update-image-tag",
-            "client_payload": {
-              "updates": [
-                {
-                  "image": "ghcr.io/devsoc-unsw/notangles-client",
-                  "tag": "${GITHUB_SHA}"
-                },
-                {
-                  "image": "ghcr.io/devsoc-unsw/notangles-backend",
-                  "tag": "${GITHUB_SHA}"
-                },
-                {
-                  "image": "ghcr.io/devsoc-unsw/notangles-auto-timetabler-server",
-                  "tag": "${GITHUB_SHA}"
-                }
-              ]
-            }
-          }
-          JSON
+            https://api.github.com/repos/devsoc-unsw/deployment/actions/workflows/dispatch-image-update.yml/dispatches \
+            -d "${payload_json}"
