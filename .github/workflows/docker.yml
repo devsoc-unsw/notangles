@@ -158,10 +158,11 @@ jobs:
       - name: Send workflow_dispatch
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           updates_json="$(
             jq -cn \
-              --arg sha "${GITHUB_SHA}" \
+              --arg sha "${IMAGE_TAG}" \
               '[
                 {image: "ghcr.io/devsoc-unsw/notangles-client", tag: $sha},
                 {image: "ghcr.io/devsoc-unsw/notangles-backend", tag: $sha},
