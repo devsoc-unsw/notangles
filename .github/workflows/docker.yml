@@ -30,7 +30,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_TOKEN }}
+          password: ${{ github.token }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -76,7 +76,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_TOKEN }}
+          password: ${{ github.token }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -92,33 +92,19 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
   deploy:
     name: Deploy (CD)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [build-client, build]
     if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
     concurrency: production
     environment: production
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Dispatch deployment
+        uses: devsoc-unsw/deployment-dispatch-action@a115e2ad9226805cd2588dc6fa5b7775991b141a
         with:
-          repository: devsoc-unsw/deployment
-          token: ${{ secrets.GH_TOKEN }}
-          ref: dev
-      - name: Install yq - portable yaml processor
-        uses: mikefarah/yq@v4.44.2
-      - name: Update deployment
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git config user.name "CSESoc CD"
-          git config user.email "technical@csesoc.org.au"
-          git checkout -b update/${{ env.IMAGE_NAME }}/${{ github.sha }}
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-client:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-frontend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-backend.yml
-          yq -i '.items[0].spec.template.spec.containers[0].image = "ghcr.io/devsoc-unsw/${{ env.IMAGE_NAME }}-auto-timetabler-server:${{ github.sha }}"' projects/notangles/${{ env.ENVIRONMENT }}/deploy-auto-timetabler.yml
-          git add . 
-          git commit -m "feat(${{ env.IMAGE_NAME }}): update images" 
-          git push -u origin update/${{ env.IMAGE_NAME }}/${{ github.sha }}
-          gh pr create -B dev --title "feat(${{ env.IMAGE_NAME }}): update images" --body "Updates the images for the ${{ env.IMAGE_NAME }} deployment to commit devsoc-unsw/${{ env.IMAGE_NAME }}@${{ github.sha }}." > URL
-          gh pr merge $(cat URL) --squash -d
+          deployment-dispatcher-app-id: ${{ vars.DEPLOYMENT_DISPATCHER_APP_ID }}
+          deployment-dispatcher-app-private-key: ${{ secrets.DEPLOYMENT_DISPATCHER_APP_PRIVATE_KEY }}
+          updates: |
+            ghcr.io/devsoc-unsw/notangles-client=${{ github.sha }}
+            ghcr.io/devsoc-unsw/notangles-backend=${{ github.sha }}
+            ghcr.io/devsoc-unsw/notangles-auto-timetabler-server=${{ github.sha }}
