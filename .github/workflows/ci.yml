@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: '22'
           cache: 'pnpm'
           cache-dependency-path: ${{ matrix.component }}/pnpm-lock.yaml
 
