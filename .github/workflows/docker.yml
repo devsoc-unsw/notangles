@@ -100,7 +100,7 @@ jobs:
 
     steps:
       - name: Dispatch deployment
-        uses: devsoc-unsw/deployment-dispatch-action@a115e2ad9226805cd2588dc6fa5b7775991b141a
+        uses: devsoc-unsw/deployment-dispatch-action@main
         with:
           deployment-dispatcher-app-id: ${{ vars.DEPLOYMENT_DISPATCHER_APP_ID }}
           deployment-dispatcher-app-private-key: ${{ secrets.DEPLOYMENT_DISPATCHER_APP_PRIVATE_KEY }}
