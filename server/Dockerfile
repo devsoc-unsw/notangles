@@ -1,5 +1,5 @@
 # Dependency versions should be pinned
-FROM node:24.14.1-alpine AS builder
+FROM node:22.16.0-alpine AS builder
 RUN apk add --no-cache openssl
 
 RUN npm i -g pnpm
@@ -14,7 +14,7 @@ RUN pnpm i --frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-FROM node:24.14.1-alpine
+FROM node:22.16.0-alpine
 WORKDIR /server
 RUN npm i -g pnpm
 
