@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router';
 import notanglesLogoGif from '../../assets/notangles.gif';
 import notanglesLogo from '../../assets/notangles_1.png';
 import { leftContentPadding } from '../../constants/theme';
+import { useAuth } from '../../hooks/useAuth';
 import About from './About';
 import AddFriendsButton from './AddFriendsButton';
 import Changelog from './Changelog';
@@ -160,6 +161,8 @@ const Sidebar = ({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed
 
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isGuest = user?.isGuest ?? true;
 
   const [currLogo, setCurrLogo] = useState(notanglesLogo);
   const [friendsListOpen, setFriendsListOpen] = useState(false);
@@ -247,19 +250,19 @@ const Sidebar = ({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed
                   setFriendsListOpen((prev) => !prev);
                 }}
               />
-              {!friendsListOpen ? (
+              {!isGuest && friendsListOpen ? (
+                <FriendsList sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
+              ) : (
                 <>
                   <Divider />
                   {modalComponents}
                 </>
-              ) : (
-                <FriendsList sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
               )}
             </NavComponentsContainer>
           </HeaderAndControlsContainer>
 
           <SidebarFooter>
-            <AddFriendsButton sidebarCollapsed={collapsed} friendsListOpen={friendsListOpen} />
+            {!isGuest && <AddFriendsButton sidebarCollapsed={collapsed} friendsListOpen={friendsListOpen} />}
             <DarkModeButton sidebarCollapsed={collapsed} />
             <UserAccount sidebarCollapsed={collapsed} />
             {!isMobile && !collapsed ? (
