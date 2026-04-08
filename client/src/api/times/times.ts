@@ -156,7 +156,7 @@ export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
     classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
       times {
         day
-        start_time
+        time
       }
     }
   }
