@@ -19,6 +19,7 @@ interface CustomEventsTutoringFormProps {
 const CustomEventsTutoringForm = forwardRef(
   ({ term, setTutoringEventFormSatisfied, timetableId, color }: CustomEventsTutoringFormProps, ref) => {
     const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+    const [selectedCourseCode, setSelectedCourseCode] = useState<string>('');
     const [selectedClass, setSelectedClass] = useState<{
       classId: string;
       section: string;
@@ -30,8 +31,6 @@ const CustomEventsTutoringForm = forwardRef(
         location: string;
       }[];
     } | null>(null);
-
-    const courseSelectionRef = useRef<HTMLInputElement>(null);
 
     const courseList = useCourseListQuery(term);
     const classList = useCourseClassTimesDetailedQuery(selectedCourseId, term.year, term.term);
@@ -64,7 +63,8 @@ const CustomEventsTutoringForm = forwardRef(
         if (selectedClass === null) return;
 
         selectedClass.events.forEach((event) => {
-          const startMins = parseInt(event.startTime.split(':')[0], 10) * 60 + parseInt(event.startTime.split(':')[1], 10);
+          const startMins =
+            parseInt(event.startTime.split(':')[0], 10) * 60 + parseInt(event.startTime.split(':')[1], 10);
           const endMins = parseInt(event.endTime.split(':')[0], 10) * 60 + parseInt(event.endTime.split(':')[1], 10);
           const isMidnight = endMins === 0;
 
@@ -77,7 +77,7 @@ const CustomEventsTutoringForm = forwardRef(
                 start: startMins,
                 end: isMidnight ? 24 * 60 : endMins,
                 type: 'TUTORING',
-                title: `${courseSelectionRef.current?.value ?? ''} - ${selectedClass.activity}`,
+                title: `${selectedCourseCode} - ${selectedClass.activity}`,
                 description: selectedClass.section,
                 location: event.location,
               },
@@ -86,7 +86,7 @@ const CustomEventsTutoringForm = forwardRef(
           );
         });
       },
-      [selectedClass, timetableId, color, eventCreateMutation],
+      [selectedCourseCode, selectedClass, timetableId, color, eventCreateMutation],
     );
     useImperativeHandle(ref, () => ({
       handleCreateEvent,
@@ -106,6 +106,7 @@ const CustomEventsTutoringForm = forwardRef(
             autoHighlight
             noOptionsText="No Results"
             onChange={(_, value) => {
+              setSelectedCourseCode(value ? value.course_code : '');
               setSelectedCourseId(value ? value.course_id : '');
             }}
             renderOption={(props, option) => {
@@ -133,7 +134,6 @@ const CustomEventsTutoringForm = forwardRef(
           <Autocomplete
             disablePortal
             options={classListOptions}
-            ref={courseSelectionRef}
             renderInput={(params) => <TextField {...params} label="Class code *" />}
             fullWidth
             autoHighlight

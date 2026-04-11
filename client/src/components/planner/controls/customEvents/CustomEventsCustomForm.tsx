@@ -1,7 +1,7 @@
 import { Event, LocationOn, Notes } from '@mui/icons-material';
 import { ListItemIcon, TextField } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 
 import { useAddTimetableEvent } from '../../../../api/timetable/mutations';
 import { StyledListItem } from '../../../../styles/ControlStyles';
@@ -32,32 +32,35 @@ const CustomEventsCustomForm = forwardRef(
       setCustomEventFormSatisfied(!!eventName && eventDays.length > 0);
     }, [eventName, eventDays, setCustomEventFormSatisfied]);
 
-    const handleCreateEvent = (onSuccess: () => void) => {
-      for (const day of eventDays) {
-        const startMins = startTime.getHours() * 60 + startTime.getMinutes();
-        const endMins = endTime.getHours() * 60 + endTime.getMinutes();
-        const isMidnight = endMins === 0;
-        eventCreateMutation.mutate(
-          {
-            event: {
-              timetableId,
-              colour: color,
-              dayOfWeek: DAYS_SHORT.indexOf(day),
-              start: startMins,
-              end: isMidnight ? 24 * 60 : endMins,
-              type: 'CUSTOM',
-              title: eventName,
-              description: eventDescription,
-              location: eventLocation,
+    const handleCreateEvent = useCallback(
+      (onSuccess: () => void) => {
+        for (const day of eventDays) {
+          const startMins = startTime.getHours() * 60 + startTime.getMinutes();
+          const endMins = endTime.getHours() * 60 + endTime.getMinutes();
+          const isMidnight = endMins === 0;
+          eventCreateMutation.mutate(
+            {
+              event: {
+                timetableId,
+                colour: color,
+                dayOfWeek: DAYS_SHORT.indexOf(day),
+                start: startMins,
+                end: isMidnight ? 24 * 60 : endMins,
+                type: 'CUSTOM',
+                title: eventName,
+                description: eventDescription,
+                location: eventLocation,
+              },
             },
-          },
-          { onSuccess },
-        );
-      }
-    };
+            { onSuccess },
+          );
+        }
+      },
+      [eventDays, startTime, endTime, timetableId, color, eventName, eventDescription, eventLocation, eventCreateMutation],
+    );
     useImperativeHandle(ref, () => ({
       handleCreateEvent,
-    }));
+    }), [handleCreateEvent]);
 
     const handleFormat = (newFormats: string[]) => {
       setEventDays(newFormats);

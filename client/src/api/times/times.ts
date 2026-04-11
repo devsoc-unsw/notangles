@@ -1,5 +1,5 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
-import { useSuspenseQuery } from '@apollo/client/react';
+import { skipToken, useSuspenseQuery } from '@apollo/client/react';
 import { parse } from 'date-fns';
 
 export interface Term {
@@ -128,10 +128,7 @@ const COURSES_INFO_QUERY: CoursesInfoQueryType = gql`
 export const useCoursesInfoQuery = (courseIds: string[]) => {
   const skip = courseIds.length === 0;
 
-  const { data } = useSuspenseQuery(COURSES_INFO_QUERY, {
-    variables: { courseIds },
-    skip,
-  });
+  const { data } = useSuspenseQuery(COURSES_INFO_QUERY, skip ? skipToken : { variables: { courseIds } });
 
   // Data should only be undefined if skipped
   if (skip || data === undefined) return [];
@@ -165,10 +162,10 @@ export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
 export const useCoursesClassTimesQuery = (courseIds: string[], year: number, term: string) => {
   const skip = courseIds.length === 0;
 
-  const { data } = useSuspenseQuery(COURSES_CLASS_TIMES_QUERY, {
-    variables: { courseIds, year, term },
-    skip,
-  });
+  const { data } = useSuspenseQuery(
+    COURSES_CLASS_TIMES_QUERY,
+    skip ? skipToken : { variables: { courseIds, year, term } },
+  );
 
   // Data should only be undefined if skipped
   if (skip || data === undefined)
@@ -216,10 +213,10 @@ export const COURSE_CLASS_TIMES_DETAILED_QUERY: CourseClassTimesDetailedQueryTyp
 export const useCourseClassTimesDetailedQuery = (courseId: string, year: number, term: string) => {
   const skip = courseId.length === 0;
 
-  const { data } = useSuspenseQuery(COURSE_CLASS_TIMES_DETAILED_QUERY, {
-    variables: { courseId, year, term },
-    skip,
-  });
+  const { data } = useSuspenseQuery(
+    COURSE_CLASS_TIMES_DETAILED_QUERY,
+    skip ? skipToken : { variables: { courseId, year, term } },
+  );
 
   // Data should only be undefined if skipped
   if (skip || data === undefined)
