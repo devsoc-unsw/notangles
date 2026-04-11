@@ -1,4 +1,4 @@
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   addEvent,
@@ -12,24 +12,29 @@ import {
   renameTimetable,
 } from './routes';
 
-export const useRemoveTimetableCourse = (queryClient: QueryClient) =>
-  useMutation({
+export const useRemoveTimetableCourse = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: removeTimetableCourse,
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
   });
+};
 
-export const useAddTimetableCourse = (queryClient: QueryClient) =>
-  useMutation({
+export const useAddTimetableCourse = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: addTimetableCourse,
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'courses'] });
     },
   });
+};
 
-export const useCreateTimetable = (queryClient: QueryClient) =>
-  useMutation({
+export const useCreateTimetable = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({
       name,
       year,
@@ -46,9 +51,11 @@ export const useCreateTimetable = (queryClient: QueryClient) =>
       variables.onSuccess(data);
     },
   });
+};
 
-export const useDeleteTimetable = (queryClient: QueryClient) =>
-  useMutation({
+export const useDeleteTimetable = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: () => void }) =>
       deleteTimetable({ timetableId }),
     onSuccess: async (_data, variables) => {
@@ -57,17 +64,21 @@ export const useDeleteTimetable = (queryClient: QueryClient) =>
       variables.onSuccess();
     },
   });
+};
 
-export const useRenameTimetable = (queryClient: QueryClient) =>
-  useMutation({
+export const useRenameTimetable = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: renameTimetable,
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'info'] });
     },
   });
+};
 
-export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
-  useMutation({
+export const useMakePrimaryTimetable = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({
       timetableId,
       currentPrimaryTimetableId: _,
@@ -81,9 +92,11 @@ export const useMakePrimaryTimetable = (queryClient: QueryClient) =>
       await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
     },
   });
+};
 
-export const useDuplicateTimetable = (queryClient: QueryClient) =>
-  useMutation({
+export const useDuplicateTimetable = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({ timetableId, onSuccess: _ }: { timetableId: string; onSuccess: (id: string) => void }) =>
       duplicateTimetable(timetableId),
     onSuccess: async (data, variables, _context) => {
@@ -91,11 +104,14 @@ export const useDuplicateTimetable = (queryClient: QueryClient) =>
       variables.onSuccess(data);
     },
   });
+};
 
-export const useAddTimetableEvent = (queryClient: QueryClient) =>
-  useMutation({
+export const useAddTimetableEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({ event }: { event: AddEventParams }) => addEvent(event),
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.event.timetableId] });
     },
   });
+};

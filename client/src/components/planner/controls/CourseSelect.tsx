@@ -8,7 +8,6 @@ import {
 } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, debounce, InputAdornment, TextField, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import { useQueryClient } from '@tanstack/react-query';
 import Fuse from 'fuse.js';
 import {
   cloneElement,
@@ -219,12 +218,11 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
     );
   }, [courseList, faculty]);
 
-  const queryClient = useQueryClient();
   const { preferredTheme } = useGetUserSettingsQuery();
   const selectedCourses = useTimetableCoursesQuery(timetableId);
   const selectedCoursesInfo = useCoursesInfoQuery(selectedCourses.map((course) => course.courseId));
-  const removeCourseMutation = useRemoveTimetableCourse(queryClient);
-  const addCourseMutation = useAddTimetableCourse(queryClient);
+  const removeCourseMutation = useRemoveTimetableCourse();
+  const addCourseMutation = useAddTimetableCourse();
 
   const theme = useTheme();
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));

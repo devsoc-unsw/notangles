@@ -120,7 +120,6 @@ export const addEvent = async ({
 }: AddEventParams): Promise<void> => {
   await apiClient.post(`/user/timetables/event/${timetableId}`, {
     event: {
-      timetableId,
       colour,
       dayOfWeek,
       start,

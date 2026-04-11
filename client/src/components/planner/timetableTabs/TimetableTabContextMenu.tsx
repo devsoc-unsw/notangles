@@ -11,7 +11,6 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
 import { Term } from '../../../api/times/times';
@@ -52,14 +51,13 @@ const TimetableTabContextMenu = ({
   const isMacOS = navigator.userAgent.includes('Mac');
   const deleteTimetabletip = isMacOS ? 'Delete Tab (Cmd+Shift+x)' : 'Delete Tab (Ctrl+Shift+x)';
 
-  const queryClient = useQueryClient();
   const { name, primary } = useTimetableInfoQuery(selectedTimetableId);
   const timetableIds = useTimetableIdsQuery(term);
   const timetables = useTimetableInfoQueries(timetableIds);
-  const deleteTimetable = useDeleteTimetable(queryClient);
-  const renameTimetable = useRenameTimetable(queryClient);
-  const duplicateTimetable = useDuplicateTimetable(queryClient);
-  const setPrimaryTimetable = useMakePrimaryTimetable(queryClient);
+  const deleteTimetable = useDeleteTimetable();
+  const renameTimetable = useRenameTimetable();
+  const duplicateTimetable = useDuplicateTimetable();
+  const setPrimaryTimetable = useMakePrimaryTimetable();
 
   const [renameOpen, setRenameOpen] = useState<boolean>(false);
   const [renamedString, setRenamedString] = useState<string>('');

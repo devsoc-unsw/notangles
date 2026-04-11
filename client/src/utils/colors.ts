@@ -38,10 +38,18 @@ export const leastUsedColor = (usedColors: string[]): string => {
   return colors.reduce((a, b) => (colorCount[a] <= colorCount[b] ? a : b));
 };
 
-export const oklchToHex = (oklch: string): string => {
-  const match = oklch.match(/^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/);
+/**
+ * Converts an oklch() color string to a hex string.
+ * Returns the input unchanged if it is not in oklch format (e.g. already a hex string).
+ * Throws if the string looks like oklch but is malformed.
+ */
+export const oklchToHex = (color: string): string => {
+  if (!color.startsWith('oklch(')) {
+    return color;
+  }
+  const match = color.match(/^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/);
   if (!match) {
-    return oklch;
+    throw new Error(`Malformed oklch color string: "${color}"`);
   }
 
   const [, l, c, h] = match.map(parseFloat);

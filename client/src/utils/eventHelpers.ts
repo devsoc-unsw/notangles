@@ -17,5 +17,5 @@ export const areValidEventTimes = (start: Date, end: Date) => {
  * @returns Whether the start and end times represent a valid event
  */
 export const createDateWithTime = (time: number) => {
-  return new Date(2022, 0, 0, time, (time - Math.floor(time)) * 60);
+  return new Date(2022, 0, 1, time, (time - Math.floor(time)) * 60);
 };

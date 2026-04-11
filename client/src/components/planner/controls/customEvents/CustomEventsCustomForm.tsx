@@ -1,7 +1,6 @@
 import { Event, LocationOn, Notes } from '@mui/icons-material';
 import { ListItemIcon, TextField } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { useQueryClient } from '@tanstack/react-query';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 import { useAddTimetableEvent } from '../../../../api/timetable/mutations';
@@ -20,8 +19,7 @@ interface CustomEventsCustomFormProps {
 
 const CustomEventsCustomForm = forwardRef(
   ({ timetableId, color, setCustomEventFormSatisfied }: CustomEventsCustomFormProps, ref) => {
-    const queryClient = useQueryClient();
-    const eventCreateMutation = useAddTimetableEvent(queryClient);
+    const eventCreateMutation = useAddTimetableEvent();
 
     const [eventName, setEventName] = useState<string>('');
     const [eventDescription, setEventDescription] = useState<string>('');
@@ -34,22 +32,27 @@ const CustomEventsCustomForm = forwardRef(
       setCustomEventFormSatisfied(!!eventName && eventDays.length > 0);
     }, [eventName, eventDays, setCustomEventFormSatisfied]);
 
-    const handleCreateEvent = () => {
+    const handleCreateEvent = (onSuccess: () => void) => {
       for (const day of eventDays) {
-        const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
-        eventCreateMutation.mutate({
-          event: {
-            timetableId,
-            colour: color,
-            dayOfWeek: DAYS_SHORT.indexOf(day),
-            start: startTime.getHours() + startTime.getMinutes() / 60,
-            end: isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60,
-            type: 'CUSTOM',
-            title: eventName,
-            description: eventDescription,
-            location: eventLocation,
+        const startMins = startTime.getHours() * 60 + startTime.getMinutes();
+        const endMins = endTime.getHours() * 60 + endTime.getMinutes();
+        const isMidnight = endMins === 0;
+        eventCreateMutation.mutate(
+          {
+            event: {
+              timetableId,
+              colour: color,
+              dayOfWeek: DAYS_SHORT.indexOf(day),
+              start: startMins,
+              end: isMidnight ? 24 * 60 : endMins,
+              type: 'CUSTOM',
+              title: eventName,
+              description: eventDescription,
+              location: eventLocation,
+            },
           },
-        });
+          { onSuccess },
+        );
       }
     };
     useImperativeHandle(ref, () => ({

@@ -16,8 +16,8 @@ interface CustomEventsFormProps {
 }
 
 const CustomEventsForm = ({ term, handlePopoverClose, timetableId }: CustomEventsFormProps) => {
-  const customEventFormRef = useRef<{ handleCreateEvent: () => void }>(null);
-  const tutoringEventFormRef = useRef<{ handleCreateEvent: () => void }>(null);
+  const customEventFormRef = useRef<{ handleCreateEvent: (onSuccess: () => void) => void }>(null);
+  const tutoringEventFormRef = useRef<{ handleCreateEvent: (onSuccess: () => void) => void }>(null);
 
   const [eventType, setEventType] = useState<string>('General');
   const [customEventFormSatisfied, setCustomEventFormSatisfied] = useState<boolean>(false);
@@ -37,11 +37,10 @@ const CustomEventsForm = ({ term, handlePopoverClose, timetableId }: CustomEvent
 
   const handleCreateEvent = () => {
     if (eventType === 'General') {
-      customEventFormRef.current?.handleCreateEvent();
+      customEventFormRef.current?.handleCreateEvent(handlePopoverClose);
     } else if (eventType === 'Tutoring') {
-      tutoringEventFormRef.current?.handleCreateEvent();
+      tutoringEventFormRef.current?.handleCreateEvent(handlePopoverClose);
     }
-    handlePopoverClose();
   };
 
   return (

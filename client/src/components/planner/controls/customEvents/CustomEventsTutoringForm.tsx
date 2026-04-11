@@ -1,6 +1,5 @@
 import { Class, Event } from '@mui/icons-material';
 import { Autocomplete, ListItemIcon, TextField } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 import { Term, useCourseClassTimesDetailedQuery, useCourseListQuery } from '../../../../api/times/times';
@@ -36,8 +35,7 @@ const CustomEventsTutoringForm = forwardRef(
 
     const courseList = useCourseListQuery(term);
     const classList = useCourseClassTimesDetailedQuery(selectedCourseId, term.year, term.term);
-    const queryClient = useQueryClient();
-    const eventCreateMutation = useAddTimetableEvent(queryClient);
+    const eventCreateMutation = useAddTimetableEvent();
 
     const classListOptions = useMemo(
       () =>
@@ -61,34 +59,35 @@ const CustomEventsTutoringForm = forwardRef(
       setTutoringEventFormSatisfied(!!selectedCourseId && !!selectedClass);
     }, [selectedCourseId, selectedClass, setTutoringEventFormSatisfied]);
 
-    const handleCreateEvent = useCallback(() => {
-      if (selectedClass === null) return;
+    const handleCreateEvent = useCallback(
+      (onSuccess: () => void) => {
+        if (selectedClass === null) return;
 
-      selectedClass.events.forEach((event) => {
-        const startTimeHours = parseInt(event.startTime.split(':')[0], 10);
-        const startTimeMinutes = parseInt(event.startTime.split(':')[1], 10);
-        const endTimeHours = parseInt(event.endTime.split(':')[0], 10);
-        const endTimeMinutes = parseInt(event.endTime.split(':')[1], 10);
+        selectedClass.events.forEach((event) => {
+          const startMins = parseInt(event.startTime.split(':')[0], 10) * 60 + parseInt(event.startTime.split(':')[1], 10);
+          const endMins = parseInt(event.endTime.split(':')[0], 10) * 60 + parseInt(event.endTime.split(':')[1], 10);
+          const isMidnight = endMins === 0;
 
-        const startTimeVal = startTimeHours + startTimeMinutes / 60;
-        const endTimeVal = endTimeHours + endTimeMinutes / 60;
-
-        const isMidnight = endTimeHours + endTimeMinutes / 60 === 0;
-        eventCreateMutation.mutate({
-          event: {
-            timetableId,
-            colour: color,
-            dayOfWeek: DAYS_SHORT.indexOf(event.day),
-            start: startTimeVal,
-            end: isMidnight ? 24.0 : endTimeVal,
-            type: 'TUTORING',
-            title: `${courseSelectionRef.current?.value ?? ''} - ${selectedClass.activity}`,
-            description: selectedClass.section,
-            location: event.location,
-          },
+          eventCreateMutation.mutate(
+            {
+              event: {
+                timetableId,
+                colour: color,
+                dayOfWeek: DAYS_SHORT.indexOf(event.day),
+                start: startMins,
+                end: isMidnight ? 24 * 60 : endMins,
+                type: 'TUTORING',
+                title: `${courseSelectionRef.current?.value ?? ''} - ${selectedClass.activity}`,
+                description: selectedClass.section,
+                location: event.location,
+              },
+            },
+            { onSuccess },
+          );
         });
-      });
-    }, [selectedClass, timetableId, color, eventCreateMutation]);
+      },
+      [selectedClass, timetableId, color, eventCreateMutation],
+    );
     useImperativeHandle(ref, () => ({
       handleCreateEvent,
     }));
