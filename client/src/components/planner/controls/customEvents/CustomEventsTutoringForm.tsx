@@ -21,13 +21,15 @@ const CustomEventsTutoringForm = forwardRef(
   ({ term, setTutoringEventFormSatisfied, timetableId, color }: CustomEventsTutoringFormProps, ref) => {
     const [selectedCourseId, setSelectedCourseId] = useState<string>('');
     const [selectedClass, setSelectedClass] = useState<{
-      day: string;
-      startTime: string;
-      endTime: string;
       classId: string;
       section: string;
       activity: string;
-      location: string;
+      events: {
+        day: string;
+        startTime: string;
+        endTime: string;
+        location: string;
+      }[];
     } | null>(null);
 
     const courseSelectionRef = useRef<HTMLInputElement>(null);
@@ -42,13 +44,15 @@ const CustomEventsTutoringForm = forwardRef(
         classList
           .filter((cls) => cls.times.length > 0 && TUTORING_ACTIVITY_TYPES.includes(cls.activity))
           .map(({ times: cls, class_id, section, activity }) => ({
-            day: cls[0].day,
-            startTime: cls[0].time.split('-')[0].trim(),
-            endTime: cls[cls.length - 1].time.split('-')[1].trim(),
             classId: class_id,
             section,
             activity,
-            location: cls[0].location,
+            events: cls.map((time) => ({
+              day: time.day,
+              startTime: time.time.split('-')[0].trim(),
+              endTime: time.time.split('-')[1].trim(),
+              location: time.location,
+            })),
           })),
       [classList],
     );
@@ -58,28 +62,31 @@ const CustomEventsTutoringForm = forwardRef(
     }, [selectedCourseId, selectedClass, setTutoringEventFormSatisfied]);
 
     const handleCreateEvent = useCallback(() => {
-      if (!selectedClass) return;
-      const startTimeHours = parseInt(selectedClass.startTime.split(':')[0], 10);
-      const startTimeMinutes = parseInt(selectedClass.startTime.split(':')[1], 10);
-      const endTimeHours = parseInt(selectedClass.endTime.split(':')[0], 10);
-      const endTimeMinutes = parseInt(selectedClass.endTime.split(':')[1], 10);
+      if (selectedClass === null) return;
 
-      const startTimeVal = startTimeHours + startTimeMinutes / 60;
-      const endTimeVal = endTimeHours + endTimeMinutes / 60;
+      selectedClass.events.forEach((event) => {
+        const startTimeHours = parseInt(event.startTime.split(':')[0], 10);
+        const startTimeMinutes = parseInt(event.startTime.split(':')[1], 10);
+        const endTimeHours = parseInt(event.endTime.split(':')[0], 10);
+        const endTimeMinutes = parseInt(event.endTime.split(':')[1], 10);
 
-      const isMidnight = endTimeHours + endTimeMinutes / 60 === 0;
-      eventCreateMutation.mutate({
-        event: {
-          timetableId,
-          colour: color,
-          dayOfWeek: DAYS_SHORT.indexOf(selectedClass.day),
-          start: startTimeVal,
-          end: isMidnight ? 24.0 : endTimeVal,
-          type: 'TUTORING',
-          title: `${courseSelectionRef.current?.value ?? ''} - ${selectedClass.activity}`,
-          description: selectedClass.section,
-          location: selectedClass.location,
-        },
+        const startTimeVal = startTimeHours + startTimeMinutes / 60;
+        const endTimeVal = endTimeHours + endTimeMinutes / 60;
+
+        const isMidnight = endTimeHours + endTimeMinutes / 60 === 0;
+        eventCreateMutation.mutate({
+          event: {
+            timetableId,
+            colour: color,
+            dayOfWeek: DAYS_SHORT.indexOf(event.day),
+            start: startTimeVal,
+            end: isMidnight ? 24.0 : endTimeVal,
+            type: 'TUTORING',
+            title: `${courseSelectionRef.current?.value ?? ''} - ${selectedClass.activity}`,
+            description: selectedClass.section,
+            location: event.location,
+          },
+        });
       });
     }, [selectedClass, timetableId, color, eventCreateMutation]);
     useImperativeHandle(ref, () => ({
@@ -110,9 +117,7 @@ const CustomEventsTutoringForm = forwardRef(
               );
             }}
             getOptionLabel={(option) => option.course_code}
-            isOptionEqualToValue={(option, value) =>
-              option.course_id === value.course_id && option.course_code === value.course_code
-            }
+            isOptionEqualToValue={(option, value) => option.course_id === value.course_id}
             slotProps={{
               listbox: {
                 sx: {

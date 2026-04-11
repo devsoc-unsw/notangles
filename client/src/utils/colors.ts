@@ -39,14 +39,11 @@ export const leastUsedColor = (usedColors: string[]): string => {
 };
 
 export const oklchToHex = (oklch: string): string => {
-  if (!oklch.startsWith('oklch(')) {
+  const match = oklch.match(/^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/);
+  if (!match) {
     return oklch;
   }
 
-  const [l, c, h] = oklch
-    .replace('oklch(', '')
-    .replace(')', '')
-    .split(' ')
-    .map((v) => parseFloat(v.trim()));
+  const [, l, c, h] = match.map(parseFloat);
   return oklch2hex([l, c, h]);
 };

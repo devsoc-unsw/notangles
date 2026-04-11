@@ -35,7 +35,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   const textFieldValue = useMemo(() => oklchToHex(decodedColor), [decodedColor]);
 
   return (
-    <Box m={1} display="flex" justifyContent="center" alignItems="center">
+    <Box sx={{ m: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <ColorIndicatorBox backgroundColor={decodeColor(color, preferredTheme)} onClick={handleOpenColorPicker} />
       <StyledButtonContainer>
         <ButtonGroup>
@@ -69,6 +69,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           horizontal: 'left',
         }}
       >
+        {/* TODO: Should this list item be wrapped in a list? Need to check this for all ListItems... */}
         <ListItem alignItems="flex-start">
           <ColorOptions
             showCustomColorPicker={showCustomColorPicker}

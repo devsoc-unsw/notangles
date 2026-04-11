@@ -26,7 +26,13 @@ const CustomEvents = ({ term, timetableId }: CustomEventsProps) => {
   return (
     <StyledControlsButton>
       <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handlePopoverOpen}>
-        <Box ml="1px" flexGrow={1} marginTop="3px">
+        <Box
+          sx={{
+            ml: '1px',
+            flexGrow: 1,
+            marginTop: '3px',
+          }}
+        >
           Create Event
         </Box>
         {createEventAnchorEl ? <ArrowDropUp /> : <ArrowDropDown />}

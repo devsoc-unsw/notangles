@@ -16,7 +16,6 @@ export class UserTimetable {
   year: number;
   term: string;
   primary: boolean;
-  events: string[];
 }
 
 export enum Term {
