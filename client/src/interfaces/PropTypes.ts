@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 
 import { ClassCard } from '../utils/Drag';
 import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
+import { TermSelectHandle } from '../components/controls/TermSelect';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -35,6 +36,7 @@ export interface CourseSelectProps {
   assignedColors: Record<string, string>;
   handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
   handleRemove(courseCode: CourseCode): void;
+  termSelectRef?: React.RefObject<TermSelectHandle>;
 }
 
 export interface ControlsProps {
