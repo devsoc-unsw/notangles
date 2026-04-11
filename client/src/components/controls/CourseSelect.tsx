@@ -400,7 +400,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       const paddingTop = 0;
 
       const visibleCount = Math.min(itemCount, maxResultsVisible);
-      const height = Array.from({ length: visibleCount }).reduce((sum, _, i) => sum + getItemSize(i), 0);
+      const height = Array.from({ length: visibleCount }).reduce((sum: number, _, i) => sum + getItemSize(i), 0);
 
       const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
         React.cloneElement(data[index], {
@@ -468,7 +468,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       <NoOptionsText variant="body2">
         Can&apos;t find <strong>{inputValue.trim().toUpperCase()}</strong>?
       </NoOptionsText>
-      <HelperLink onClick={handleHelperClick} underline="hover" color={theme.palette.primary.light}>
+      <HelperLink onClick={handleHelperClick} underline="hover" color="primary">
         Make sure you&apos;ve picked the right term by using the &apos;Select term&apos; dropdown to the left or
         clicking here.
       </HelperLink>
@@ -485,16 +485,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         disableClearable
         disableListWrap
         selectOnFocus={false}
-        options={
-          courseNotFound
-            ? [
-                {
-                  name: 'NOTFOUND',
-                },
-                ...mergedOptions,
-              ]
-            : mergedOptions
-        }
+        options={mergedOptions}
+        noOptionsText={courseNotFound ? <NoOptions /> : 'No Results'}
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
@@ -507,9 +499,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
         renderOption={(props, option, { selected }) => {
           const { key, ...rest } = props;
-          return key === 'NOTFOUND' ? (
-            <NoOptions />
-          ) : (
+          return (
             <li key={key} {...rest}>
               <StyledOption>
                 <StyledIcon>
