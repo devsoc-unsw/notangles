@@ -1,23 +1,31 @@
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Box } from '@mui/material';
-import { useState } from 'react';
+import { Box, Popover } from '@mui/material';
+import { useMemo, useState } from 'react';
 
+import { Term } from '../../../../api/times/times';
 import { StyledControlsButton } from '../../../../styles/ControlStyles';
 import { DropdownButton } from '../../../../styles/CustomEventStyles';
+import CustomEventsForm from './CustomEventsForm';
 
-const CustomEvent: React.FC = () => {
+interface CustomEventsProps {
+  term: Term;
+  timetableId: string;
+}
+
+const CustomEvents = ({ term, timetableId }: CustomEventsProps) => {
   const [createEventAnchorEl, setCreateEventAnchorEl] = useState<null | HTMLElement>(null);
-  const openCreateEventPopover = Boolean(createEventAnchorEl);
-  const popoverId = openCreateEventPopover ? 'create-event-popover' : undefined;
+  const popoverId = useMemo(() => (createEventAnchorEl ? 'create-event-popover' : undefined), [createEventAnchorEl]);
 
-  const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setCreateEventAnchorEl(event.currentTarget);
   };
+  const handlePopoverClose = () => {
+    setCreateEventAnchorEl(null);
+  };
 
-  // TODO: Implement create event popover
   return (
     <StyledControlsButton>
-      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handleOpen}>
+      <DropdownButton disableElevation aria-describedby={popoverId} variant="contained" onClick={handlePopoverOpen}>
         <Box
           sx={{
             ml: '1px',
@@ -25,12 +33,28 @@ const CustomEvent: React.FC = () => {
             marginTop: '3px',
           }}
         >
-          CREATE EVENT
+          Create Event
         </Box>
-        {openCreateEventPopover ? <ArrowDropUp /> : <ArrowDropDown />}
+        {createEventAnchorEl ? <ArrowDropUp /> : <ArrowDropDown />}
       </DropdownButton>
+      <Popover
+        id={popoverId}
+        open={!!popoverId}
+        anchorEl={createEventAnchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <CustomEventsForm term={term} handlePopoverClose={handlePopoverClose} timetableId={timetableId} />
+      </Popover>
     </StyledControlsButton>
   );
 };
 
-export default CustomEvent;
+export default CustomEvents;

@@ -120,7 +120,7 @@ const Controls: React.FC<{
           }}
         >
           <CustomEventsWrapper>
-            <CustomEvents />
+            <CustomEvents term={term} timetableId={timetableId} />
           </CustomEventsWrapper>
           <AutotimetablerWrapper>
             <Autotimetabler />

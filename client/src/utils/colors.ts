@@ -1,3 +1,5 @@
+import { oklch2hex } from 'colorizr';
+
 import { themes } from '../constants/theme';
 
 export const colors: string[] = [
@@ -34,4 +36,22 @@ export const leastUsedColor = (usedColors: string[]): string => {
   });
 
   return colors.reduce((a, b) => (colorCount[a] <= colorCount[b] ? a : b));
+};
+
+/**
+ * Converts an oklch() color string to a hex string.
+ * Returns the input unchanged if it is not in oklch format (e.g. already a hex string).
+ * Throws if the string looks like oklch but is malformed.
+ */
+export const oklchToHex = (color: string): string => {
+  if (!color.startsWith('oklch(')) {
+    return color;
+  }
+  const match = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/.exec(color);
+  if (!match) {
+    throw new Error(`Malformed oklch color string: "${color}"`);
+  }
+
+  const [, l, c, h] = match.map(parseFloat);
+  return oklch2hex([l, c, h]);
 };

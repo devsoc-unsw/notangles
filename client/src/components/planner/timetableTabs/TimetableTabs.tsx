@@ -1,7 +1,6 @@
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { Add, MoreHoriz, Star } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { Term } from '../../../api/times/times';
@@ -49,8 +48,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
   const timetableIds = useTimetableIdsQuery(term);
   const timetables = useTimetableInfoQueries(timetableIds);
 
-  const queryClient = useQueryClient();
-  const createTimetableMutation = useCreateTimetable(queryClient);
+  const createTimetableMutation = useCreateTimetable();
 
   /**
    * Dropdown menu tab handlers
