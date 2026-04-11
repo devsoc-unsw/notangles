@@ -400,7 +400,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       const paddingTop = 0;
 
       const visibleCount = Math.min(itemCount, maxResultsVisible);
-      const height = Array.from({ length: visibleCount }).reduce((sum, _, i) => sum + getItemSize(i), 0);
+      const height: number = Array.from({ length: visibleCount }).reduce(
+        (sum: number, _, i) => sum + getItemSize(i),
+        0,
+      );
 
       const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
         React.cloneElement(data[index], {
@@ -468,7 +471,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       <NoOptionsText variant="body2">
         Can&apos;t find <strong>{inputValue.trim().toUpperCase()}</strong>?
       </NoOptionsText>
-      <HelperLink onClick={handleHelperClick} underline="hover" color={theme.palette.primary.light}>
+      <HelperLink onClick={handleHelperClick} underline="hover" color={theme.palette.primary.main}>
         Make sure you&apos;ve picked the right term by using the &apos;Select term&apos; dropdown to the left or
         clicking here.
       </HelperLink>
