@@ -47,7 +47,7 @@ export const oklchToHex = (color: string): string => {
   if (!color.startsWith('oklch(')) {
     return color;
   }
-  const match = color.match(/^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/);
+  const match = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/.exec(color);
   if (!match) {
     throw new Error(`Malformed oklch color string: "${color}"`);
   }

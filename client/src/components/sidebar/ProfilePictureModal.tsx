@@ -102,7 +102,12 @@ export default function ProfilePictureModal() {
       <Dialog open={isDialogOpen}>
         <DialogTitle>Are you sure you want to reset your current avatar?</DialogTitle>
         <DialogActions>
-          <Button autoFocus onClick={() => setIsDialogOpen(false)}>
+          <Button
+            autoFocus
+            onClick={() => {
+              setIsDialogOpen(false);
+            }}
+          >
             Cancel
           </Button>
           <Button
@@ -197,8 +202,12 @@ export default function ProfilePictureModal() {
           <StyledPromptText>Crop your new profile picture:</StyledPromptText>
           <StyledReactCrop
             crop={crop}
-            onChange={(_, percentCrop) => setCrop(percentCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
+            onChange={(_, percentCrop) => {
+              setCrop(percentCrop);
+            }}
+            onComplete={(c) => {
+              setCompletedCrop(c);
+            }}
             aspect={aspect}
             minWidth={100}
             minHeight={100}
@@ -241,7 +250,9 @@ export default function ProfilePictureModal() {
               <VisuallyHiddenInput type="file" onChange={onSelectFile} accept="image/*" />
             </Button>
             <Button
-              onClick={() => setIsDialogOpen(true)}
+              onClick={() => {
+                setIsDialogOpen(true);
+              }}
               variant="contained"
               sx={removeButtonStyleProps}
               disableElevation
@@ -252,15 +263,41 @@ export default function ProfilePictureModal() {
         )}
       </div>
 
-      <Snackbar open={successAlertOpen} autoHideDuration={6000} onClose={() => setSuccessAlertOpen(false)}>
-        <Alert onClose={() => setSuccessAlertOpen(false)} severity="success" variant="filled" sx={{ width: '100%' }}>
+      <Snackbar
+        open={successAlertOpen}
+        autoHideDuration={6000}
+        onClose={() => {
+          setSuccessAlertOpen(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setSuccessAlertOpen(false);
+          }}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
           <AlertTitle>Success</AlertTitle>
           Profile picture updated!
         </Alert>
       </Snackbar>
 
-      <Snackbar open={isErrorAlertOpen} autoHideDuration={6000} onClose={() => setIsErrorAlertOpen(false)}>
-        <Alert onClose={() => setIsErrorAlertOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
+      <Snackbar
+        open={isErrorAlertOpen}
+        autoHideDuration={6000}
+        onClose={() => {
+          setIsErrorAlertOpen(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setIsErrorAlertOpen(false);
+          }}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
           <AlertTitle>Error</AlertTitle>
           {errorMsg}
         </Alert>

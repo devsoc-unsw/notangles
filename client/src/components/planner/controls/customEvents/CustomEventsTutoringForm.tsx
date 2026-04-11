@@ -1,6 +1,6 @@
 import { Class, Event } from '@mui/icons-material';
 import { Autocomplete, ListItemIcon, TextField } from '@mui/material';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import { Term, useCourseClassTimesDetailedQuery, useCourseListQuery } from '../../../../api/times/times';
 import { useAddTimetableEvent } from '../../../../api/timetable/mutations';

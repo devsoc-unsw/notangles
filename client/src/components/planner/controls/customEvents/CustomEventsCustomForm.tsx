@@ -56,11 +56,25 @@ const CustomEventsCustomForm = forwardRef(
           );
         }
       },
-      [eventDays, startTime, endTime, timetableId, color, eventName, eventDescription, eventLocation, eventCreateMutation],
+      [
+        eventDays,
+        startTime,
+        endTime,
+        timetableId,
+        color,
+        eventName,
+        eventDescription,
+        eventLocation,
+        eventCreateMutation,
+      ],
     );
-    useImperativeHandle(ref, () => ({
-      handleCreateEvent,
-    }), [handleCreateEvent]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        handleCreateEvent,
+      }),
+      [handleCreateEvent],
+    );
 
     const handleFormat = (newFormats: string[]) => {
       setEventDays(newFormats);
