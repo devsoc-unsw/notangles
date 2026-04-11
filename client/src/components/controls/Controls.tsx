@@ -1,13 +1,13 @@
 import { Box, Grid } from '@mui/material';
 import { styled } from '@mui/system';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { ControlsProps } from '../../interfaces/PropTypes';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
-import TermSelect from './TermSelect';
+import TermSelect, { TermSelectHandle } from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
   flex: 0 0 auto;
@@ -52,11 +52,13 @@ const Controls: React.FC<ControlsProps> = ({
   handleSelectCourse,
   handleRemoveCourse,
 }) => {
+  const termSelectRef = useRef<TermSelectHandle>(null);
+
   return (
     <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
       <Grid item container xs={12} md={6.5} direction="row">
         <TermSelectWrapper>
-          <TermSelect />
+          <TermSelect ref={termSelectRef} />
         </TermSelectWrapper>
 
         <SelectWrapper minWidth={'296px'}>
@@ -64,6 +66,7 @@ const Controls: React.FC<ControlsProps> = ({
             assignedColors={assignedColors}
             handleSelect={handleSelectCourse}
             handleRemove={handleRemoveCourse}
+            termSelectRef={termSelectRef}
           />
         </SelectWrapper>
       </Grid>

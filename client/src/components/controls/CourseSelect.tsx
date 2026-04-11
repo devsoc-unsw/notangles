@@ -7,7 +7,18 @@ import {
   SearchRounded,
   VideocamOutlined,
 } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Chip, InputAdornment, TextField, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  InputAdornment,
+  Link,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -146,7 +157,7 @@ const Career = styled('div')`
 
 const FacultyButtonsContainer = styled('div')`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap;>typescri
   margin: ${({ theme }) => theme.spacing(1.5, 0)};
   width: 100%;
 `;
@@ -174,7 +185,28 @@ const FacultyTags = styled(Button, {
   }
 `;
 
-const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove }) => {
+const NoOptionsContainer = styled('div')`
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const NoOptionsText = styled(Typography)`
+  color: ${({ theme }) => theme.palette.text.secondary};
+`;
+
+const HelperLink = styled(Link)`
+  cursor: pointer;
+  font-size: 14px;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const COURSE_CODE_REGEX = /^[A-Z]{4}[0-9]{4}$/;
+
+const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove, termSelectRef }) => {
   const [options, setOptionsState] = useState<CoursesList>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
@@ -332,8 +364,21 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     const map = new Map<string, CourseOverview>();
     options.forEach((x) => map.set(keyOf(x), x));
     selectedValue.forEach((x) => map.set(keyOf(x), x));
+
     return Array.from(map.values());
   }, [options, selectedValue]);
+
+  const courseNotFound = useMemo(() => {
+    const inputValTrim = inputValue.trim().toUpperCase();
+
+    if (!COURSE_CODE_REGEX.test(inputValTrim)) return false;
+
+    const exists = mergedOptions.some(
+      (x) => x.code === inputValTrim && (x.career === 'Undergraduate' || x.career === 'Postgraduate'),
+    );
+
+    return !exists;
+  }, [inputValue, mergedOptions]);
 
   const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
 
@@ -350,10 +395,15 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       const { children, ...other } = props;
 
       const itemCount = Array.isArray(children) ? children.length : 0;
-      const getItemSize = () => 45;
+      const getItemSize = (i: number) => (i === 0 && courseNotFound ? 100 : 45);
       const maxResultsVisible = 6;
       const paddingTop = 0;
-      const height = Math.min(itemCount, maxResultsVisible) * getItemSize();
+
+      const visibleCount = Math.min(itemCount, maxResultsVisible);
+      const height: number = Array.from({ length: visibleCount }).reduce(
+        (sum: number, _, i) => sum + getItemSize(i),
+        0,
+      );
 
       const Row: React.FC<ListChildComponentProps> = ({ data, index, style }) =>
         React.cloneElement(data[index], {
@@ -404,11 +454,29 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    [selectedFaculty, theme],
+    [selectedFaculty, theme, courseNotFound],
   );
 
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));
   const isTiny = useMediaQuery(theme.breakpoints.only('xs'));
+
+  const handleHelperClick = () => {
+    if (termSelectRef?.current) {
+      termSelectRef.current.open();
+    }
+  };
+
+  const NoOptions = () => (
+    <NoOptionsContainer>
+      <NoOptionsText variant="body2">
+        Can&apos;t find <strong>{inputValue.trim().toUpperCase()}</strong>?
+      </NoOptionsText>
+      <HelperLink onClick={handleHelperClick} underline="hover" color={theme.palette.primary.main}>
+        Make sure you&apos;ve picked the right term by using the &apos;Select term&apos; dropdown to the left or
+        clicking here.
+      </HelperLink>
+    </NoOptionsContainer>
+  );
 
   return (
     <StyledSelect>
@@ -419,9 +487,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         autoHighlight
         disableClearable
         disableListWrap
-        noOptionsText="No Results"
         selectOnFocus={false}
         options={mergedOptions}
+        noOptionsText={'No Results'}
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
@@ -432,10 +500,11 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
         isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
-        renderOption={(props, option, { selected }) => {
+        renderOption={(props, option, { index }) => {
           const { key, ...rest } = props;
-
-          return (
+          return courseNotFound && index === 0 ? (
+            <NoOptions key={key} />
+          ) : (
             <li key={key} {...rest}>
               <StyledOption>
                 <StyledIcon>
