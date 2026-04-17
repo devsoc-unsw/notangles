@@ -26,10 +26,26 @@ const History: React.FC = () => {
   const [disableReset, setDisableReset] = useState({ current: true, all: true });
   const [clearOpen, setClearOpen] = useState(false);
 
-  const { selectedCourses, setSelectedCourses, selectedClasses, setSelectedClasses, createdEvents, setCreatedEvents } =
-    useContext(CourseContext);
-  const { isDrag, setIsDrag, selectedTimetable, setSelectedTimetable, displayTimetables, setDisplayTimetables, term } =
-    useContext(AppContext);
+  const {
+    selectedCourses,
+    setSelectedCourses,
+    selectedClasses,
+    setSelectedClasses,
+    createdEvents,
+    setCreatedEvents
+  } = useContext(CourseContext);
+
+  const {
+    isDrag,
+    setIsDrag,
+    selectedTimetable,
+    setSelectedTimetable,
+    displayTimetables,
+    setDisplayTimetables,
+    term,
+    termName,
+    year
+  } = useContext(AppContext);
 
   const timetableActions = useRef<TimetableActions>({});
   const actionsPointer = useRef<ActionsPointer>({});
@@ -324,7 +340,7 @@ const History: React.FC = () => {
           setClearOpen(false);
         }}
         title="Confirm Clear"
-        content="Are you sure you want to clear all timetables?"
+        content={`Are you sure you want to clear all timetables for ${termName} ${year}?`}
         confirmButtonText="Clear"
         cancelButtonText="Cancel"
         disableConfirm={disableReset.all}
