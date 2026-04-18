@@ -2,7 +2,7 @@ import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
 
 import { ClassCard } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
+import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, RoomName, Section } from './Periods';
 import { TermSelectHandle } from '../components/controls/TermSelect';
 
 export interface AppContextProviderProps {
@@ -144,7 +144,7 @@ export interface DiscardDialogProps {
 }
 
 export interface LocationDropdownProps {
-  sectionsAndLocations: [Section, Location][];
+  sectionsAndLocations: [Section, RoomName][];
   handleChange(event: SelectChangeEvent<number>): void;
   selectedIndex: number;
 }

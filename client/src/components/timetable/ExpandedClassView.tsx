@@ -20,7 +20,7 @@ import {
   ClassTime,
   CourseData,
   DuplicateClassData,
-  Location,
+  RoomName,
   Section,
 } from '../../interfaces/Periods';
 import { ExpandedClassViewProps } from '../../interfaces/PropTypes';
@@ -124,7 +124,7 @@ const ExpandedClassView: React.FC<ExpandedClassViewProps> = ({ code, classPeriod
         classData.periods.some((period, index) => index === periodIndex && areDuplicatePeriods(period, currPeriod)),
       );
 
-      const sectionsAndLocations: [Section, Location][] = duplicateClasses.map((duplicate) => [
+      const sectionsAndLocations: [Section, RoomName][] = duplicateClasses.map((duplicate) => [
         duplicate.section,
         duplicate.periods[periodIndex].locations.at(0) ?? '',
       ]);

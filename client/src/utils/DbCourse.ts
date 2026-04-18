@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getTimeZoneOffset } from '../constants/timetable';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { ClassData, ClassPeriod, CourseData } from '../interfaces/Periods';
+import { ClassData, ClassPeriod, CourseData, Location } from '../interfaces/Periods';
 import { areDuplicatePeriods } from './areDuplicatePeriods';
 import { getAllPeriods } from './getAllPeriods';
 
@@ -11,7 +11,19 @@ import { getAllPeriods } from './getAllPeriods';
  * @param location The location of the class
  * @returns The location without its room code (only the actual name of the room)
  */
-const locationShorten = (location: string): string => (location ? location.split(' (')[0] : '');
+const rawLocationToLocation = (rawLocation: string): Location => {
+  // rawLocation example - Mathews 306 (K-F23-306)
+
+  const l = /^(.+?)\s+\((([A-Z]-[A-Z]\d+)-(\d+))\)$/.exec(rawLocation);
+  if (!l || l.length != 4)
+    throw new Error('rawLocation is not of the correct form provided by Hasuragres eg. Mathews 306 (K-F23-306)');
+  return {
+    raw: rawLocation,
+    buildingId: l[3],
+    roomName: l[1],
+    roomId: l[2],
+  };
+};
 
 /**
  * @param weekDay The day of the week to convert
@@ -122,7 +134,7 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
     courseCode: classData.courseCode,
     activity: classData.activity,
     subActivity: subActivity,
-    locations: [locationShorten(dbTimes.location)],
+    locations: [rawLocationToLocation(dbTimes.location).roomName],
     time: {
       day: day,
       start: start,

@@ -2,7 +2,7 @@ export type CourseCode = string;
 export type Activity = string;
 export type InInventory = null;
 export type Section = string;
-export type Location = string;
+export type RoomName = string;
 export type EventCode = string;
 export type Status = 'Open' | 'Full' | 'On Hold';
 export type EventSubtype = 'General' | 'Tutoring';
@@ -125,7 +125,7 @@ export interface ClassPeriod {
   activity: Activity;
   subActivity: string;
   time: ClassTime;
-  locations: string[];
+  locations: RoomName[];
 }
 
 export interface InventoryPeriod {
@@ -179,8 +179,8 @@ export interface DuplicateClassData {
   // Other classes of the same course running at the same time
   duplicateClasses: ClassData[];
 
-  // sectionsAndLocations[i] is a tuple of the Section (i.e. the class's "code") and Location for duplicateClasses[i]
-  sectionsAndLocations: [Section, Location][];
+  // sectionsAndLocations[i] is a tuple of the Section (i.e. the class's "code") and RoomName for duplicateClasses[i]
+  sectionsAndLocations: [Section, RoomName][];
 
   // The relevant index of the class (as classes have multiple periods, i.e. Tut-Labs)
   periodIndex: number;
@@ -200,3 +200,20 @@ export interface CourseDataMap {
 export type Term = `${'U' | 'T'}${1 | 2 | 3}${number}` | string;
 export type TermDataList = Term[];
 export type DisplayTimetablesMap = Record<string, TimetableData[]>;
+
+/*
+  Divides up the raw room location string returned by Hasuragres
+  eg: given Mathews 306 (K-F23-306)
+  {
+    "raw": "Mathews 306 (K-F23-306)",
+    "buildingId": "K-F23",
+    "roomName": "Mathews 306",
+    "roomId": "K-F23-306"
+  }
+*/
+export interface Location {
+  raw: string;
+  buildingId: string;
+  roomName: RoomName;
+  roomId: string;
+}

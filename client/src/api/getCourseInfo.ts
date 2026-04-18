@@ -114,6 +114,8 @@ const getCourseInfo = async (
       variables: { courseCode, term, year },
     });
 
+    console.log(data);
+
     const json: DbCourse = graphQLCourseToDbCourse(data);
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
