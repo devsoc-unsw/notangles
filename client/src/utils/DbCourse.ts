@@ -128,13 +128,20 @@ const dbTimesToPeriod = (dbTimes: DbTimes, classData: ClassData, isConvertToLoca
     }
   }
 
+  let roomName;
+  try {
+    roomName = rawLocationToLocation(dbTimes.location).roomName;
+  } catch (_) {
+    roomName = '';
+  }
+
   const classPeriod: ClassPeriod = {
     type: 'class',
     classId: classData.id,
     courseCode: classData.courseCode,
     activity: classData.activity,
     subActivity: subActivity,
-    locations: [rawLocationToLocation(dbTimes.location).roomName],
+    locations: [roomName],
     time: {
       day: day,
       start: start,
