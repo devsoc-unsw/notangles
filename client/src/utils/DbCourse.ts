@@ -15,7 +15,8 @@ const rawLocationToLocation = (rawLocation: string): Location => {
   // rawLocation example - Mathews 306 (K-F23-306)
 
   const l = /^(.+?)\s+\((([A-Z]-[A-Z]\d+)-(\d+))\)$/.exec(rawLocation);
-  if (!l || l.length != 4)
+  // [fullMatch, roomName, roomId, buildingId, roomNumber (if you want that in the future)]
+  if (!l || l.length != 5)
     throw new Error('rawLocation is not of the correct form provided by Hasuragres eg. Mathews 306 (K-F23-306)');
   return {
     raw: rawLocation,
