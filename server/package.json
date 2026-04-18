@@ -27,7 +27,7 @@
     "@nestjs/config": "3.3.0",
     "@nestjs/core": "11.1.18",
     "@nestjs/mapped-types": "2.1.0",
-    "@nestjs/microservices": "10.4.17",
+    "@nestjs/microservices": "11.1.19",
     "@nestjs/passport": "10.0.3",
     "@nestjs/platform-express": "10.4.17",
     "@nestjs/swagger": "7.4.2",
