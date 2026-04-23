@@ -1,10 +1,10 @@
-import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Add, MoreHoriz, Star } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
 import { useMemo, useState } from 'react';
 
 import { Term } from '../../../api/times/times';
-import { useCreateTimetable } from '../../../api/timetable/mutations';
+import { useCreateTimetable, useReorderTimetables } from '../../../api/timetable/mutations';
 import { useTimetableIdsQuery, useTimetableInfoQueries } from '../../../api/timetable/queries';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { darkTheme, lightTheme } from '../../../constants/theme';
@@ -21,8 +21,7 @@ import {
 } from '../../../styles/TimetableTabStyles';
 import TimetableTabContextMenu from './TimetableTabContextMenu';
 
-// TODO: Enforce this in the backend
-const TIMETABLE_LIMIT = 5; // Per term
+const TIMETABLE_LIMIT = 5; // Per term, enforced on the backend too
 
 const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectTimetableId: (id: string) => void }> = ({
   term,
@@ -49,6 +48,7 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
   const timetables = useTimetableInfoQueries(timetableIds);
 
   const createTimetableMutation = useCreateTimetable();
+  const reorderTimetablesMutation = useReorderTimetables(String(term.year), term.term);
 
   /**
    * Dropdown menu tab handlers
@@ -71,53 +71,56 @@ const TimetableTabs: React.FC<{ term: Term; selectedTimetableId: string; selectT
     <TabsSection>
       <TabsWrapper tabTheme={tabTheme} id="tabs-wrapper">
         <DragDropContext
-          onDragEnd={() => {
-            // TODO: Implement
+          onDragEnd={(result: DropResult) => {
+            if (!result.destination || result.destination.index === result.source.index) return;
+            const reordered = [...timetableIds];
+            const [moved] = reordered.splice(result.source.index, 1);
+            reordered.splice(result.destination.index, 0, moved);
+            reorderTimetablesMutation.mutate(reordered);
           }}
         >
           <Droppable droppableId="tabs" direction="horizontal">
             {(props) => (
               <StyledTabs ref={props.innerRef} {...props.droppableProps}>
-                {timetables
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((timetable, index) => (
-                    <Draggable draggableId={timetable.id} key={timetable.id} index={index}>
-                      {(props) => {
-                        // TODO: What does this do?
-                        // if (props.draggableProps.style?.transform) {
-                        //   const horizShift = props.draggableProps.style?.transform.match(/(-?\d+)/g)?.map(Number)![0];
-                        //   // forcing horizontal movement
-                        //   props.draggableProps.style.transform = `translate(${horizShift ? horizShift : 0}px, 0)`;
-                        // }
-                        return (
-                          <Box
-                            onMouseDown={() => {
-                              selectTimetableId(timetable.id);
-                            }}
-                            onContextMenu={handleRightTabClick}
-                            ref={props.innerRef}
-                            {...props.draggableProps}
-                            {...props.dragHandleProps}
-                            sx={TabStyle(index, selectedTimetableId === timetable.id)}
-                          >
-                            {timetable.primary && (
-                              <Tooltip title="A primary timetable is the timetable for social features.">
-                                <Star fontSize="small" className="pr-1.5"></Star>
-                              </Tooltip>
-                            )}
-                            {timetable.name}
-                            {selectedTimetableId === timetable.id ? (
-                              <StyledSpan onClick={handleMenuClick}>
-                                <MoreHoriz />
-                              </StyledSpan>
-                            ) : (
-                              <></>
-                            )}
-                          </Box>
-                        );
-                      }}
-                    </Draggable>
-                  ))}
+                {timetables.map((timetable, index) => (
+                  <Draggable draggableId={timetable.id} key={timetable.id} index={index}>
+                    {(props) => {
+                      // TODO: What does this do?
+                      if (props.draggableProps.style?.transform) {
+                        const horizShift = props.draggableProps.style.transform.match(/(-?\d+)/g)?.map(Number)[0];
+                        // forcing horizontal movement
+                        props.draggableProps.style.transform = `translate(${String(horizShift ?? 0)}px, 0)`;
+                      }
+                      return (
+                        <Box
+                          onMouseDown={() => {
+                            selectTimetableId(timetable.id);
+                          }}
+                          onContextMenu={handleRightTabClick}
+                          ref={props.innerRef}
+                          {...props.draggableProps}
+                          {...props.dragHandleProps}
+                          sx={TabStyle(index, selectedTimetableId === timetable.id)}
+                        >
+                          {timetable.primary && (
+                            <Tooltip title="A primary timetable is the timetable for social features.">
+                              <Star fontSize="small" className="pr-1.5"></Star>
+                            </Tooltip>
+                          )}
+                          {timetable.name}
+                          {selectedTimetableId === timetable.id ? (
+                            <StyledSpan onClick={handleMenuClick}>
+                              <MoreHoriz />
+                            </StyledSpan>
+                          ) : (
+                            <></>
+                          )}
+                        </Box>
+                      );
+                    }}
+                  </Draggable>
+                ))}
+                {props.placeholder}
               </StyledTabs>
             )}
           </Droppable>

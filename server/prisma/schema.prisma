@@ -81,15 +81,17 @@ model Timetable {
   userId String
 
   // Unique ID for the timetable, need this to attach courses and events
-  id      String   @id @default(uuid())
-  name    String
-  year    Int
-  term    String
+  id       String   @id @default(uuid())
+  name     String
+  year     Int
+  term     String
   // Courses are UNSW items, events are user-defined/tutoring
-  courses Course[]
-  events  Event[]
+  courses  Course[]
+  events   Event[]
   // One timetable should be primary per term per user
-  primary Boolean  @default(false)
+  primary  Boolean  @default(false)
+  // Display order within a term (0-indexed, compacted on delete)
+  position Int
 
   @@map("timetable")
 }

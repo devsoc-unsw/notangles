@@ -101,6 +101,7 @@ export class AuthService {
               year,
               term,
               primary: true,
+              position: 0,
             };
           }),
         },
@@ -134,6 +135,7 @@ export class AuthService {
             year: year,
             term,
             primary: true,
+            position: 0,
           },
         });
       }

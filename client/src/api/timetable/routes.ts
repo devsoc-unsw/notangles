@@ -79,6 +79,10 @@ export const duplicateTimetable = async (timetableId: string): Promise<string> =
   return (await apiClient.post<string>(`/user/timetables/${timetableId}/duplicate`)).data;
 };
 
+export const reorderTimetables = async (orderedIds: string[]): Promise<void> => {
+  await apiClient.patch('/user/timetables/reorder', { ids: orderedIds });
+};
+
 interface TimetableEvent {
   id: string;
   timetableId: string;

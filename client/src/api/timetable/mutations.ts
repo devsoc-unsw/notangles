@@ -10,6 +10,7 @@ import {
   makePrimaryTimetable,
   removeTimetableCourse,
   renameTimetable,
+  reorderTimetables,
 } from './routes';
 
 export const useRemoveTimetableCourse = () => {
@@ -102,6 +103,25 @@ export const useDuplicateTimetable = () => {
     onSuccess: async (data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetableIds'] });
       variables.onSuccess(data);
+    },
+  });
+};
+
+export const useReorderTimetables = (year: string, term: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (orderedIds: string[]) => reorderTimetables(orderedIds),
+    onMutate: async (orderedIds) => {
+      await queryClient.cancelQueries({ queryKey: ['timetableIds', year, term] });
+      const previous = queryClient.getQueryData<string[]>(['timetableIds', year, term]);
+      queryClient.setQueryData(['timetableIds', year, term], orderedIds);
+      return { previous };
+    },
+    onError: (_err, _orderedIds, context) => {
+      queryClient.setQueryData(['timetableIds', year, term], context?.previous);
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds', year, term] });
     },
   });
 };

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -76,6 +77,7 @@ export class TimetableController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async deleteTimetable(
     @Req() req: AuthenticatedRequest,
@@ -84,7 +86,18 @@ export class TimetableController {
     await this.timetableService.deleteTimetable(req.user.id, timetableId);
   }
 
+  @Patch('reorder')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthenticatedGuard)
+  async reorderTimetables(
+    @Req() req: AuthenticatedRequest,
+    @Body('ids') orderedIds: string[],
+  ) {
+    await this.timetableService.reorderTimetables(req.user.id, orderedIds);
+  }
+
   @Patch(':id/rename')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async renameTimetable(
     @Req() req: AuthenticatedRequest,
@@ -99,6 +112,7 @@ export class TimetableController {
   }
 
   @Patch('clear')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async clearTimetables(
     @Req() req: AuthenticatedRequest,
@@ -109,6 +123,7 @@ export class TimetableController {
   }
 
   @Patch(':id/change-primary')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async makePrimary(
     @Req() req: AuthenticatedRequest,
@@ -144,6 +159,7 @@ export class TimetableController {
   }
 
   @Delete('course/:timetableId/:courseId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async removeCourse(
     @Req() req: AuthenticatedRequest,
@@ -158,6 +174,7 @@ export class TimetableController {
   }
 
   @Patch('course/:timetableId/:courseId/colour')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async setCourseColour(
     @Req() req: AuthenticatedRequest,
@@ -188,6 +205,7 @@ export class TimetableController {
   }
 
   @Patch('class/:timetableId/:courseId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async updateSelectedClass(
     @Req() req: AuthenticatedRequest,
@@ -204,6 +222,7 @@ export class TimetableController {
   }
 
   @Delete('class/:timetableId/:courseId/:classId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async removeSelectedClass(
     @Req() req: AuthenticatedRequest,
@@ -268,6 +287,7 @@ export class TimetableController {
   }
 
   @Delete('event/:eventId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async deleteEvent(
     @Req() req: AuthenticatedRequest,
@@ -287,6 +307,7 @@ export class TimetableController {
   }
 
   @Patch('event/:eventId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AuthenticatedGuard)
   async updateEvent(
     @Req() req: AuthenticatedRequest,

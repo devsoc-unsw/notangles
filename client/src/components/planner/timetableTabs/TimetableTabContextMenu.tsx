@@ -31,8 +31,6 @@ import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../..
 import { StyledSnackbar } from '../../../styles/TimetableTabStyles';
 import StyledDialog from '../../StyledDialog';
 
-const TIMETABLE_LIMIT = 13;
-
 interface TimetableTabContextMenuProps {
   anchorElement: null | { x: number; y: number };
   setAnchorElement: (anchorElement: null | { x: number; y: number }) => void;
