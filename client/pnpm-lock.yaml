@@ -96,8 +96,8 @@ importers:
         specifier: 3.3.1
         version: 3.3.1
       uuid:
-        specifier: 11.1.0
-        version: 11.1.0
+        specifier: 14.0.0
+        version: 14.0.0
       web-vitals:
         specifier: 4.2.4
         version: 4.2.4
@@ -3005,8 +3005,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  uuid@11.1.0:
-    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
     hasBin: true
 
   vite-bundle-visualizer@1.2.1:
@@ -6136,7 +6136,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  uuid@11.1.0: {}
+  uuid@14.0.0: {}
 
   vite-bundle-visualizer@1.2.1(rollup@4.45.0):
     dependencies:
