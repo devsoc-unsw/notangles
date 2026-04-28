@@ -45,7 +45,7 @@
     "react-transition-group": "4.4.5",
     "react-window": "1.8.11",
     "tailwind-merge": "3.3.1",
-    "uuid": "11.1.0",
+    "uuid": "14.0.0",
     "web-vitals": "4.2.4",
     "workbox-background-sync": "7.3.0",
     "workbox-broadcast-update": "7.3.0",
