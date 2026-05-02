@@ -1,15 +1,15 @@
+import { ArrowBackIos, ArrowForwardIosOutlined } from '@mui/icons-material';
 import { Switch } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FC, useMemo, useState } from 'react';
 
 import { useSetUserSettings } from '../../api/user/mutations';
 import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { useAuth } from '../../hooks/useAuth';
 import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
-import { ArrowBackIos, ArrowForwardIosOutlined } from '@mui/icons-material';
 import ProfilePictureModal from './ProfilePictureModal';
-import { useAuth } from '../../hooks/useAuth';
 
 const SettingsPadding = styled('div')`
   padding: 1vh 20px;

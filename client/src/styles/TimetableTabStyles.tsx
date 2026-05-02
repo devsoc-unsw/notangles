@@ -50,7 +50,7 @@ export const TabsSection = styled(Box)`
 export const TabsWrapper = styled(Box, { shouldForwardProp: (prop) => prop !== 'tabTheme' })<
   BoxProps & { tabTheme: TabTheme }
 >`
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+  background-color: ${(props) => props.tabTheme.containerBackground};
   border-radius: 10px 10px 0 0;
   display: flex;
   width: max-content;
@@ -76,10 +76,10 @@ export const StyledIconButton = styled(IconButton, { shouldForwardProp: (prop) =
   transition: background - color 0.1s;
   border-radius: 50;
   z-index: 100;
-  background-color: ${(props) => props.tabTheme.containerBackground.toString()};
+  background-color: ${(props) => props.tabTheme.containerBackground};
   opacity: 0.75;
   &:hover {
-    background-color: ${(props) => props.tabTheme.tabHoverColor.toString()};
+    background-color: ${(props) => props.tabTheme.tabHoverColor};
   }
 `;
 
@@ -90,7 +90,7 @@ export const StyledModalButton = styled(Button)`
 `;
 
 export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
-  const TabStyle = (index: number, selectedTimetableIndex: number) => {
+  const TabStyle = (index: number, selected: boolean) => {
     const style = {
       boxShadow: '',
       maxWidth: '360px',
@@ -130,7 +130,7 @@ export const createTimetableStyle = (tabTheme: TabTheme, theme: Theme) => {
       style.marginLeft = '0px';
     }
 
-    if (index === selectedTimetableIndex) {
+    if (selected) {
       style.color = `#3a76f8`;
       style.backgroundColor = `${tabTheme.tabBackgroundColor} `;
       style.borderWidth = '1px';

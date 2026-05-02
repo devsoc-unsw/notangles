@@ -3,11 +3,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import Fuse from 'fuse.js';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { AppContext } from '../../../context/AppContext';
-import Friend, { FriendDTO } from './Friend';
-import friendList from './friends.json';
+import { useFriendsQuery } from '../../../api/friendship/queries';
+import { FriendInfo } from '../../../interfaces/User';
+import Friend from './Friend';
 
 const FriendsListContainer = styled(Box)`
   display: flex;
@@ -23,37 +23,21 @@ const StyledSearchButton = styled(IconButton)`
   padding: 12px;
 `;
 
-const FriendsList = () => {
+const FriendsList = ({
+  sidebarCollapsed,
+  setSidebarCollapsed,
+}: {
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (val: boolean) => void;
+}) => {
   const [searchVal, setSearchVal] = useState('');
-  const { sidebarCollapsed, setSidebarCollapsed } = useContext(AppContext);
+  const friendList = useFriendsQuery();
 
-  const renderedFriends = useMemo(() => {
-    // TODO: replace hard coded data with integration with server
-    let friends = friendList;
-    if (searchVal.length === 0) {
-      return friends.map(({ firstName, lastName, id, profileURL }) => (
-        <Friend
-          key={id as string}
-          firstName={firstName as string}
-          lastName={lastName as string}
-          id={id as string}
-          profileURL={profileURL as string}
-        />
-      ));
-    }
+  const fuse = useMemo(() => {
+    return new Fuse<FriendInfo>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
+  }, [friendList]);
 
-    const fuzzy = new Fuse<FriendDTO>(friendList, { threshold: 0.4, keys: ['firstName', 'lastName'] });
-    friends = fuzzy.search(searchVal).map((result) => result.item);
-    return friends.map(({ firstName, lastName, id, profileURL }) => (
-      <Friend
-        key={id as string}
-        firstName={firstName as string}
-        lastName={lastName as string}
-        id={id as string}
-        profileURL={profileURL as string}
-      />
-    ));
-  }, [searchVal]);
+  const friends = searchVal.length === 0 ? friendList : fuse.search(searchVal).map((result) => result.item);
 
   const handleClickSearchBarIcon = () => {
     if (sidebarCollapsed) {
@@ -86,7 +70,16 @@ const FriendsList = () => {
           />
         </FormControl>
       )}
-      {renderedFriends}
+      {friends.map((friend) => (
+        <Friend
+          key={friend.id}
+          sidebarCollapsed={sidebarCollapsed}
+          id={friend.id}
+          firstName={friend.firstName}
+          lastName={friend.lastName}
+          profilePictureUrl={friend.profilePictureUrl}
+        />
+      ))}
     </FriendsListContainer>
   );
 };

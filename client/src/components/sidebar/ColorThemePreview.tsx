@@ -2,8 +2,7 @@ import { List, ListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useMemo } from 'react';
 
-import { colors } from '../../constants/timetable';
-import { useColorDecoder } from '../../hooks/useColorDecoder';
+import { colors, decodeColor } from '../../utils/colors';
 
 const StyledPreviewContainer = styled(List)`
   display: flex;
@@ -29,13 +28,14 @@ interface ColorThemePreviewProps {
 export const ColorThemePreview = ({ previewTheme }: ColorThemePreviewProps) => {
   const decodedColors = Object.fromEntries(
     Object.entries(colors).map(([key, color]) => {
-      const decodedColor = useColorDecoder(color, previewTheme);
+      const decodedColor = decodeColor(color, previewTheme);
       return [key, decodedColor];
     }),
   );
+
   const colorPreview = useMemo(() => {
     return Object.values(decodedColors).map((color) => <StyledListItem key={color} backgroundColor={color} />);
-  }, [colors, previewTheme]);
+  }, [decodedColors]);
 
   return <StyledPreviewContainer>{colorPreview}</StyledPreviewContainer>;
 };

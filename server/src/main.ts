@@ -9,6 +9,15 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
 
+  // TODO: Add validation pipes to validate incoming requests
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //     transform: true,
+  //   }),
+  // );
+
   app.enableCors({
     origin: [
       'http://localhost:5173',

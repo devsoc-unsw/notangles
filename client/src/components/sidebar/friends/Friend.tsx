@@ -1,13 +1,13 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { IconButton, styled, Tooltip } from '@mui/material';
+import { Alert, IconButton, Snackbar, styled, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
-import { AppContext } from '../../../context/AppContext';
-import UserProfile from './UserProfile';
+import { FriendInfo } from '../../../interfaces/User';
 import RemoveFriend from './RemoveFriend';
+import UserProfile from './UserProfile';
 
 const StyledFriendContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isDarkMode' && prop !== 'sidebarCollapsed',
@@ -22,20 +22,18 @@ const StyledFriendContainer = styled(Box, {
 
   &:hover {
     background-color: ${({ theme, isDarkMode }) =>
-      isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light}
+      isDarkMode ? theme.palette.secondary.dark : theme.palette.secondary.light};
+  }
 `;
 
-export interface FriendDTO {
-  firstName: string;
-  lastName: string;
-  id: string;
-  profileURL: string;
+interface FriendProps extends FriendInfo {
+  sidebarCollapsed: boolean;
 }
 
-const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
-  const { sidebarCollapsed } = useContext(AppContext);
+const Friend = ({ sidebarCollapsed, firstName, lastName, id, profilePictureUrl }: FriendProps) => {
   const { isDarkMode } = useGetUserSettingsQuery();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showRemovedBanner, setShowRemovedBanner] = useState(false);
 
   const handleKebabClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -54,27 +52,48 @@ const Friend = ({ firstName, lastName, id, profileURL }: FriendDTO) => {
     navigate(`/friend/${id}`);
   }, [id, navigate]);
 
+  const handleBannerClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setShowRemovedBanner(false);
+  };
+
   return (
-    <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
-      <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
-        <UserProfile firstName={firstName} lastName={lastName} profileURL={profileURL} />
-        {!sidebarCollapsed && (
-          <>
-            <IconButton onClick={handleKebabClick}>
-              <MoreVertIcon />
-            </IconButton>
-            <RemoveFriend
-              anchorEl={anchorEl}
-              open={kebabOpen}
-              onClose={handlePopoverClose}
-              firstName={firstName}
-              lastName={lastName}
-              profileURL={profileURL}
-            />
-          </>
-        )}
-      </StyledFriendContainer>
-    </Tooltip>
+    <>
+      <Tooltip title={sidebarCollapsed ? `${firstName} ${lastName}` : ''} placement="right">
+        <StyledFriendContainer isDarkMode={isDarkMode} sidebarCollapsed={sidebarCollapsed} onClick={handleFriendClick}>
+          <UserProfile
+            sidebarCollapsed={sidebarCollapsed}
+            firstName={firstName}
+            lastName={lastName}
+            profilePictureUrl={profilePictureUrl}
+          />
+          {!sidebarCollapsed && (
+            <>
+              <IconButton onClick={handleKebabClick}>
+                <MoreVertIcon />
+              </IconButton>
+              <RemoveFriend
+                anchorEl={anchorEl}
+                open={kebabOpen}
+                onClose={handlePopoverClose}
+                id={id}
+                firstName={firstName}
+                lastName={lastName}
+                profilePictureUrl={profilePictureUrl}
+                onRemoveSuccess={() => {
+                  setShowRemovedBanner(true);
+                }}
+              />
+            </>
+          )}
+        </StyledFriendContainer>
+      </Tooltip>
+      <Snackbar open={showRemovedBanner} autoHideDuration={3000} onClose={handleBannerClose}>
+        <Alert variant="filled" severity="success" sx={{ width: '100%' }} onClose={handleBannerClose}>
+          Removed friend from friends list
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

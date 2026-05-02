@@ -54,7 +54,7 @@ export const ColorThemeOptions: React.FC<ColorThemeOptionsProps> = ({ currentThe
         <StyledFormControlLabel value={theme} control={<Radio />} label={<ControlLabelContent theme={theme} />} />
       </SettingsItem>
     ));
-  }, [themes]);
+  }, []);
 
   return (
     <FormControl>

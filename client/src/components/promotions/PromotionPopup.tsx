@@ -4,8 +4,6 @@ import { Box, useMediaQuery } from '@mui/system';
 import { useMemo, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
-import { PromotionPopupProps } from '../../interfaces/PropTypes';
-import storage from '../../utils/storage';
 
 const StyledModal = styled(Modal)`
   display: flex;
@@ -53,13 +51,28 @@ const StyledMedia = styled('img')`
 const CURRENT_PROMO_VERSION = 1;
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 
-const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopupProps) => {
-  const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(storage.get(NEW_FEATURE_PROMOTION_KEY) || 0);
+const NewFeaturePromotion = ({
+  imgSrc,
+  title,
+  subTitle,
+  bullets,
+}: {
+  imgSrc: string;
+  title: string;
+  subTitle: string;
+  bullets: {
+    main: string;
+    description?: string;
+  }[];
+}) => {
+  const [lastSeenPromoVersion, setLastSeenPromoVersion] = useState<number>(
+    parseInt(localStorage.getItem(NEW_FEATURE_PROMOTION_KEY) ?? '0', 10),
+  );
   const theme = useTheme<ThemeType>();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const handlePromoDismiss = () => {
     setLastSeenPromoVersion(CURRENT_PROMO_VERSION);
-    storage.set(NEW_FEATURE_PROMOTION_KEY, CURRENT_PROMO_VERSION);
+    localStorage.setItem(NEW_FEATURE_PROMOTION_KEY, String(CURRENT_PROMO_VERSION));
   };
 
   const seenCurrentPromo = lastSeenPromoVersion >= CURRENT_PROMO_VERSION;

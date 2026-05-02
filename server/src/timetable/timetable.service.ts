@@ -45,7 +45,10 @@ export class TimetableService {
     return hexCodeRegex.test(colour) || defaultColoursRegex.test(colour);
   }
 
-  async getCourseIds(userId: string, timetableId: string): Promise<string[]> {
+  async getCourses(
+    userId: string,
+    timetableId: string,
+  ): Promise<{ courseId: string; colour: string }[]> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
       timetableId,
@@ -54,9 +57,9 @@ export class TimetableService {
 
     const courses = await this.prisma.course.findMany({
       where: { timetableId },
-      select: { courseId: true },
+      select: { courseId: true, colour: true },
     });
-    return courses.map((course) => course.courseId);
+    return courses;
   }
 
   async getCourseIfExists(
@@ -185,7 +188,7 @@ export class TimetableService {
         }),
       );
       const differentTimeSlotsExist = existingClassDetails.filter(
-        (classDetails: ClassDetails & { class_id: string }) =>
+        (classDetails) =>
           classDetails.activity === classData.activity &&
           classDetails.section !== classData.section,
       );
@@ -332,31 +335,95 @@ export class TimetableService {
     const timetables = await this.prisma.timetable.findMany({
       where: { userId, year, term },
       select: { id: true },
+      orderBy: { position: 'asc' },
     });
 
     return timetables.map((t) => t.id);
   }
 
+  private readonly TIMETABLE_LIMIT = 5;
+
   async createTimetable(
     userId: string,
     data: { name: string; year: number; term: string },
   ): Promise<string> {
-    const numTimetables = await this.prisma.timetable.count({
-      where: { userId, year: data.year, term: data.term },
-    });
+    return this.prisma.$transaction(
+      async (tx) => {
+        const numTimetables = await tx.timetable.count({
+          where: { userId, year: data.year, term: data.term },
+        });
 
-    const timetable = await this.prisma.timetable.create({
-      data: {
-        userId,
-        name: data.name,
-        year: data.year,
-        term: data.term,
-        primary: numTimetables === 0,
+        if (numTimetables >= this.TIMETABLE_LIMIT) {
+          throw new HttpException(
+            `You have reached the limit of ${String(this.TIMETABLE_LIMIT)} timetables per term.`,
+            HttpStatus.CONFLICT,
+          );
+        }
+
+        const timetable = await tx.timetable.create({
+          data: {
+            userId,
+            name: data.name,
+            year: data.year,
+            term: data.term,
+            primary: numTimetables === 0,
+            position: numTimetables,
+          },
+          select: { id: true },
+        });
+
+        return timetable.id;
       },
-      select: { id: true },
+      { isolationLevel: 'Serializable' },
+    );
+  }
+
+  async duplicateTimetable(
+    userId: string,
+    timetableId: string,
+  ): Promise<string> {
+    const timetable = await this.prisma.timetable.findUniqueOrThrow({
+      where: { id: timetableId, userId },
+      include: { courses: true, events: true },
     });
 
-    return timetable.id;
+    return this.prisma.$transaction(
+      async (tx) => {
+        const numTimetables = await tx.timetable.count({
+          where: { userId, year: timetable.year, term: timetable.term },
+        });
+
+        if (numTimetables >= this.TIMETABLE_LIMIT) {
+          throw new HttpException(
+            `You have reached the limit of ${String(this.TIMETABLE_LIMIT)} timetables per term.`,
+            HttpStatus.CONFLICT,
+          );
+        }
+
+        const newTimetable = await tx.timetable.create({
+          data: {
+            userId,
+            name: `Copy of ${timetable.name}`,
+            year: timetable.year,
+            term: timetable.term,
+            primary: false,
+            position: numTimetables,
+            courses: {
+              create: timetable.courses.map((course) => ({
+                courseId: course.courseId,
+                colour: course.colour,
+                selectedClasses: course.selectedClasses,
+              })),
+            },
+            // TODO: Duplicate events as well
+          },
+          select: { id: true },
+        });
+
+        return newTimetable.id;
+      },
+      { isolationLevel: 'Serializable' },
+    );
   }
 
   async deleteTimetable(userId: string, timetableId: string): Promise<void> {
@@ -390,7 +457,75 @@ export class TimetableService {
       );
     }
 
-    await this.prisma.timetable.delete({ where: { id: timetableId } });
+    // Delete and compact positions atomically so a crash between the two
+    // cannot leave gaps that corrupt the next createTimetable position assignment
+    await this.prisma.$transaction(async (tx) => {
+      await tx.timetable.delete({ where: { id: timetableId } });
+
+      const remaining = await tx.timetable.findMany({
+        where: { userId, year: timetable.year, term: timetable.term },
+        select: { id: true },
+        orderBy: { position: 'asc' },
+      });
+      await Promise.all(
+        remaining.map((t, index) =>
+          tx.timetable.update({
+            where: { id: t.id, userId },
+            data: { position: index },
+          }),
+        ),
+      );
+    });
+  }
+
+  async reorderTimetables(userId: string, orderedIds: string[]): Promise<void> {
+    // Verify all IDs belong to this user and are from the same term
+    const timetables = await this.prisma.timetable.findMany({
+      where: { id: { in: orderedIds }, userId },
+      select: { id: true, year: true, term: true },
+    });
+
+    if (timetables.length !== orderedIds.length) {
+      throw new HttpException(
+        'One or more timetable IDs are invalid.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (timetables.length === 0) {
+      return; // Nothing to reorder
+    }
+
+    const years = new Set(timetables.map((t) => t.year));
+    const terms = new Set(timetables.map((t) => t.term));
+    if (years.size !== 1 || terms.size !== 1) {
+      throw new HttpException(
+        'All timetables must belong to the same term.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Verify the provided IDs cover all timetables for this term (no partial reorders)
+    const { year, term } = timetables[0];
+    const totalCount = await this.prisma.timetable.count({
+      where: { userId, year, term },
+    });
+
+    if (orderedIds.length !== totalCount) {
+      throw new HttpException(
+        'Reorder must include all timetables for the term.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.prisma.$transaction(
+      orderedIds.map((id, index) =>
+        this.prisma.timetable.update({
+          where: { id, userId },
+          data: { position: index },
+        }),
+      ),
+    );
   }
 
   async renameTimetable(
@@ -420,6 +555,7 @@ export class TimetableService {
           year: Number(year),
           term: term,
           primary: true,
+          position: 0,
         },
         select: { id: true },
       }),

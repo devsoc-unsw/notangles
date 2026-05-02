@@ -1,9 +1,15 @@
-import { ArrowRight, Cached, ContentCopy } from '@mui/icons-material';
+import { ArrowBackIos, ArrowRight, Cached, ContentCopy } from '@mui/icons-material';
 import { Button, ButtonGroup, CircularProgress, Grid, InputBase, Paper, Snackbar, styled } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { SettingButton, SettingsItem, SettingsText } from './Settings';
+import { useSendFriendRequest } from '../../api/friendship/mutations';
+import { useIncomingRequestsQuery } from '../../api/friendship/queries';
+import { useRegenerateInviteCode } from '../../api/user/mutations';
+import { useAuth } from '../../hooks/useAuth';
+import FriendRequestsMenu from './FriendRequestsMenu';
 import PendingInvitesBadge from './PendingInvitesBadge';
+import { SettingButton, SettingsItem, SettingsText } from './Settings';
 
 const RightContainer = styled('div')`
   display: flex;
@@ -14,6 +20,15 @@ const RightContainer = styled('div')`
 const AddFriendText = styled(SettingsText)`
   font-weight: 500;
 `;
+
+const ReturnText = styled(SettingsText)`
+  padding: 0;
+`;
+
+const StyledArrowBackIosIcon = styled(ArrowBackIos)`
+  height: 16px;
+`;
+
 const MenuSubContainer = styled('div')`
   display: flex;
   flex-direction: column;
@@ -58,20 +73,26 @@ enum State {
   Error,
 }
 
-// TODO: replace hard code with server implementation
-const code = 'MQ7T2';
-const link = 'http://notangles.devsoc.app/invite?code=MQ7T2';
-const friendInvites = 2;
-
 const AddFriendsMenu = () => {
+  const { user } = useAuth();
+  const [inviteCode, setInviteCode] = useState(user?.inviteCode ?? '');
+  const [friendCode, setFriendCode] = useState('');
   const [codeCopyState, setCodeCopyState] = useState<State>(State.Ready);
   const [linkCopyState, setLinkCopyState] = useState<State>(State.Ready);
   const [hasSentRequest, setHasSentRequest] = useState(false);
-  const [isCodeRefreshing, setIsCodeRefreshing] = useState(false);
+  const [sendError, setSendError] = useState(false);
+  const [showRequests, setShowRequests] = useState(false);
+
+  const incomingRequests = useIncomingRequestsQuery();
+  const queryClient = useQueryClient();
+  const sendRequest = useSendFriendRequest(queryClient);
+  const regenerate = useRegenerateInviteCode();
+
+  const link = `https://notangles.devsoc.app/invite?code=${inviteCode}`;
 
   const handleCodeCopy = (isCopyingCode: boolean) => {
     navigator.clipboard
-      .writeText(isCopyingCode ? code : link)
+      .writeText(isCopyingCode ? inviteCode : link)
       .then(() => {
         if (isCopyingCode) {
           setCodeCopyState(State.Success);
@@ -90,7 +111,23 @@ const AddFriendsMenu = () => {
 
   const handleSendRequest = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setHasSentRequest(true);
+    sendRequest.mutate(friendCode, {
+      onSuccess: () => {
+        setHasSentRequest(true);
+        setFriendCode('');
+      },
+      onError: () => {
+        setSendError(true);
+      },
+    });
+  };
+
+  const handleRefreshCode = () => {
+    regenerate.mutate(undefined, {
+      onSuccess: (data) => {
+        setInviteCode(data.inviteCode);
+      },
+    });
   };
 
   const snackbarMessage = useMemo(() => {
@@ -100,96 +137,120 @@ const AddFriendsMenu = () => {
       return linkCopyState === State.Success ? 'Link copied!' : 'Failed to copy link. Please try again.';
     } else if (hasSentRequest) {
       return 'Request has been sent!';
+    } else if (sendError) {
+      return 'Failed to send request. Please check the code and try again.';
     } else {
       return '';
     }
-  }, [codeCopyState, linkCopyState, hasSentRequest]);
+  }, [codeCopyState, linkCopyState, hasSentRequest, sendError]);
 
   return (
     <>
-      <SettingButton>
-        <AddFriendText>Friend Requests</AddFriendText>
-        <RightContainer>
-          <PendingInvitesBadge count={friendInvites}/>
-          <ArrowRight />
-        </RightContainer>
-        
+      <SettingButton
+        onClick={() => {
+          setShowRequests((prev) => !prev);
+        }}
+      >
+        {showRequests ? (
+          <ReturnText>
+            <StyledArrowBackIosIcon />
+            Return
+          </ReturnText>
+        ) : (
+          <>
+            <AddFriendText>Friend Requests</AddFriendText>
+            <RightContainer>
+              <PendingInvitesBadge count={incomingRequests.length} />
+              <ArrowRight />
+            </RightContainer>
+          </>
+        )}
       </SettingButton>
-      <SettingsItem>
-        <MenuSubContainer>
-          <AddFriendText>Your invite code:</AddFriendText>
-          <Grid container direction={'row'} spacing={1}>
-            <Grid size={9} container justifyContent="flex-end">
-              <Grid justifyContent="flex-end">
-                <InviteCodeButtonGroup
-                  variant="outlined"
-                  color="inherit"
-                  onClick={() => {
-                    handleCodeCopy(true);
-                  }}
-                >
-                  <InviteCodeButton size="large">{code}</InviteCodeButton>
-                  <InviteCodeButton>
-                    <StyledCopyIcon />
-                  </InviteCodeButton>
-                </InviteCodeButtonGroup>
-              </Grid>
-            </Grid>
-            <Grid size={3} container justifyContent="flex-start">
-              <Grid>
-                <InviteCodeButtonGroup
-                  variant="outlined"
-                  color="inherit"
-                  onClick={() => {
-                    // TODO: actually have it refresh
-                    setIsCodeRefreshing((prev) => !prev);
-                  }}
-                >
-                  <InviteCodeButton size="large">
-                    {isCodeRefreshing ? <CircularProgress size={24} disableShrink /> : <StyledRefreshIcon />}
-                  </InviteCodeButton>
-                </InviteCodeButtonGroup>
-              </Grid>
-            </Grid>
-          </Grid>
-        </MenuSubContainer>
-      </SettingsItem>
 
-      <SettingsItem>
-        <MenuSubContainer>
-          <AddFriendText>Enter friend code:</AddFriendText>
-          <Paper
-            component="form"
-            elevation={0}
-            onSubmit={handleSendRequest}
-            sx={{
-              border: '0.75px solid',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-            }}
-          >
-            <InputBase placeholder="Add a friend with their friend code." sx={{ width: '60%', marginRight: '10px' }} />
-            <SendRequestButton variant="contained" disableElevation type="submit">
-              Send Friend Request
-            </SendRequestButton>
-          </Paper>
-        </MenuSubContainer>
-      </SettingsItem>
+      {showRequests ? (
+        <SettingsItem>
+          <FriendRequestsMenu />
+        </SettingsItem>
+      ) : (
+        <>
+          <SettingsItem>
+            <MenuSubContainer>
+              <AddFriendText>Your invite code:</AddFriendText>
+              <Grid container direction={'row'} spacing={1}>
+                <Grid size={9} container justifyContent="flex-end">
+                  <Grid justifyContent="flex-end">
+                    <InviteCodeButtonGroup
+                      variant="outlined"
+                      color="inherit"
+                      onClick={() => {
+                        handleCodeCopy(true);
+                      }}
+                    >
+                      <InviteCodeButton size="large">{inviteCode}</InviteCodeButton>
+                      <InviteCodeButton>
+                        <StyledCopyIcon />
+                      </InviteCodeButton>
+                    </InviteCodeButtonGroup>
+                  </Grid>
+                </Grid>
+                <Grid size={3} container justifyContent="flex-start">
+                  <Grid>
+                    <InviteCodeButtonGroup variant="outlined" color="inherit" onClick={handleRefreshCode}>
+                      <InviteCodeButton size="large">
+                        {regenerate.isPending ? <CircularProgress size={24} disableShrink /> : <StyledRefreshIcon />}
+                      </InviteCodeButton>
+                    </InviteCodeButtonGroup>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </MenuSubContainer>
+          </SettingsItem>
 
-      <SettingsItem>
-        <CopyLinkButton
-          variant="contained"
-          disableElevation
-          onClick={() => {
-            handleCodeCopy(false);
-          }}
-        >
-          Copy Invite Link
-        </CopyLinkButton>
-      </SettingsItem>
+          <SettingsItem>
+            <MenuSubContainer>
+              <AddFriendText>Enter friend code:</AddFriendText>
+              <Paper
+                component="form"
+                elevation={0}
+                onSubmit={handleSendRequest}
+                sx={{
+                  border: '0.75px solid',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '6px 12px',
+                  fontSize: '0.75rem',
+                }}
+              >
+                <InputBase
+                  placeholder="Add a friend with their friend code."
+                  sx={{ width: '60%', marginRight: '10px' }}
+                  value={friendCode}
+                  onChange={(e) => {
+                    setFriendCode(e.target.value);
+                  }}
+                />
+                <SendRequestButton variant="contained" disableElevation type="submit" disabled={sendRequest.isPending}>
+                  Send Friend Request
+                </SendRequestButton>
+              </Paper>
+            </MenuSubContainer>
+          </SettingsItem>
+
+          <SettingsItem>
+            <CopyLinkButton
+              variant="contained"
+              disableElevation
+              onClick={() => {
+                handleCodeCopy(false);
+              }}
+            >
+              Copy Invite Link
+            </CopyLinkButton>
+          </SettingsItem>
+        </>
+      )}
+
       <Snackbar
         sx={{ position: 'absolute' }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -199,6 +260,7 @@ const AddFriendsMenu = () => {
           setCodeCopyState(State.Ready);
           setLinkCopyState(State.Ready);
           setHasSentRequest(false);
+          setSendError(false);
         }}
         message={snackbarMessage}
       />

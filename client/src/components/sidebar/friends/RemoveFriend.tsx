@@ -1,6 +1,9 @@
-import { Alert, Button, Dialog, Popover, Snackbar, Typography } from '@mui/material';
+import { Button, Dialog, Popover, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+
+import { useRemoveFriend } from '../../../api/friendship/mutations';
 import UserProfilePicture from './UserProfilePicture';
 
 const RemoveFriendDialog = styled(Dialog)<{ isMobile: boolean }>(({ theme, isMobile }) => ({
@@ -69,14 +72,27 @@ interface RemoveFriendProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
+  id: string;
   firstName: string;
   lastName: string;
-  profileURL?: string;
+  profilePictureUrl?: string;
+  onRemoveSuccess: () => void;
 }
 
-const RemoveFriend = ({ anchorEl, open, onClose, firstName, lastName, profileURL }: RemoveFriendProps) => {
+const RemoveFriend = ({
+  anchorEl,
+  open,
+  onClose,
+  id,
+  firstName,
+  lastName,
+  profilePictureUrl,
+  onRemoveSuccess,
+}: RemoveFriendProps) => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [showBanner, setShowBanner] = useState(false);
+
+  const queryClient = useQueryClient();
+  const removeFriend = useRemoveFriend(queryClient);
 
   const handleDialogClose = () => {
     setOpenDialog(false);
@@ -84,19 +100,14 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, lastName, profileURL
 
   const handleConfirmRemove = () => {
     setOpenDialog(false);
-    setShowBanner(true);
-  };
-
-  const handleBannerClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') return;
-    setShowBanner(false);
+    removeFriend.mutate(id, { onSuccess: onRemoveSuccess });
   };
 
   return (
     <>
       <RemoveFriendDialog open={openDialog} onClose={handleDialogClose} isMobile={false}>
         <StyledContainer>
-          <UserProfilePicture profileURL={profileURL} size={52} alt={`${firstName} ${lastName}`} />
+          <UserProfilePicture profilePictureUrl={profilePictureUrl} size={52} alt={`${firstName} ${lastName}`} />
           <StyledDialogTitle>
             Remove {firstName} {lastName}?
           </StyledDialogTitle>
@@ -133,12 +144,6 @@ const RemoveFriend = ({ anchorEl, open, onClose, firstName, lastName, profileURL
           Remove Friend
         </Button>
       </Popover>
-
-      <Snackbar open={showBanner} autoHideDuration={3000} onClose={handleBannerClose}>
-        <Alert variant="filled" severity="success" sx={{ width: '100%' }} onClose={handleBannerClose}>
-          Removed friend from friends list
-        </Alert>
-      </Snackbar>
     </>
   );
 };

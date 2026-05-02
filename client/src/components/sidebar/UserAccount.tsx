@@ -1,10 +1,9 @@
 import { LogoutRounded } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import { API_URL } from '../../api/config';
-import { AppContext } from '../../context/AppContext';
 import { useAuth } from '../../hooks/useAuth';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './friends/UserProfile';
@@ -34,10 +33,9 @@ const ExpandedContainer = styled('div', {
   padding: '10px 6px',
 }));
 
-const UserAccount = () => {
+const UserAccount = ({ sidebarCollapsed }: { sidebarCollapsed: boolean }) => {
   const [logoutDialog, setLogoutDialog] = useState(false);
   const { user } = useAuth();
-  const { sidebarCollapsed } = useContext(AppContext);
 
   const onLogout = () => {
     window.location.href = `${API_URL.server}/auth/logout`;
@@ -66,7 +64,12 @@ const UserAccount = () => {
       <UserAuth>
         <ExpandedContainer sidebarCollapsed={sidebarCollapsed}>
           {!sidebarCollapsed && (
-            <UserProfile firstName={user.firstName} lastName={user.lastName} profileURL={user.profilePictureUrl} />
+            <UserProfile
+              sidebarCollapsed={sidebarCollapsed}
+              firstName={user.firstName}
+              lastName={user.lastName}
+              profilePictureUrl={user.profilePictureUrl}
+            />
           )}
           <Tooltip title="Log out" placement="right">
             <StyledIconButton

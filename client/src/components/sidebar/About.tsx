@@ -30,10 +30,10 @@ const About: React.FC = () => {
   return (
     <>
       <Typography gutterBottom variant="body2">
-        Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy-to-use drag-and-drop tool that
-        allows you to plan your course classes and add them to your calendar, even before term class registration opens!
-        We have many features including support for custom events, auto-timetabling, creation of multiple timetables,
-        and sharing events with friends.
+        Notangles is a UNSW timetable planner, brought to you by DevSoc. It&apos;s an easy-to-use drag-and-drop tool
+        that allows you to plan your course classes and add them to your calendar, even before term class registration
+        opens! We have many features including support for custom events, auto-timetabling, creation of multiple
+        timetables, and sharing events with friends.
       </Typography>
       <Typography gutterBottom variant="body2">
         Inspired by&nbsp;
@@ -57,13 +57,13 @@ const About: React.FC = () => {
       <StyledTypography variant="h6">How it works</StyledTypography>
       <Typography gutterBottom variant="body2">
         Select your courses, then drag-and-drop classes to customise your timetable. You can drag clutter (like lectures
-        which you aren’t going to watch live) to the unscheduled column. Struggling to find an ideal timetable? Try out
-        our auto-timetabling feature!
+        which you aren&apos;t going to watch live) to the unscheduled column. Struggling to find an ideal timetable? Try
+        out our auto-timetabling feature!
       </Typography>
       <HowToUseImg src={useGif} alt="how to use gif" />
       <Typography gutterBottom variant="body2">
-        Note: Notangles does not enroll in your classes. It’s a tool for planning your timetable, but you’ll still need
-        to officially enroll at&nbsp;
+        Note: Notangles does not enroll in your classes. It&apos;s a tool for planning your timetable, but you&apos;ll
+        still need to officially enroll at&nbsp;
         <Link href="https://my.unsw.edu.au/" target="_blank">
           myUNSW
         </Link>

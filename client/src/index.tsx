@@ -6,21 +6,17 @@ import { browserTracingIntegration } from '@sentry/browser';
 import * as Sentry from '@sentry/react';
 import { MutationCache, QueryClient, QueryClientProvider, QueryKey } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import React, { Suspense } from 'react';
+import React, { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
 import { client } from './api/config';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
-import EventShareModal from './components/EventShareModal';
 import LandingPage from './components/landingPage/LandingPage';
 import { AuthGuard } from './components/login/AuthGuard';
 import PageLoading from './components/pageLoading/PageLoading';
-import AppContextProvider from './context/AppContext';
-import CourseContextProvider from './context/CourseContext';
 import { AuthProvider } from './hooks/useAuth';
-import * as swRegistration from './serviceWorkerRegistration';
 
 declare module '@tanstack/react-query' {
   interface Register {
@@ -52,49 +48,43 @@ const Root: React.FC = () => {
   });
 
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <ApolloProvider client={client}>
-          <AppContextProvider>
-            <CourseContextProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<LandingPage />} path="/" />
-                  <Route
-                    element={
-                      <QueryClientProvider client={queryClient}>
-                        <Suspense fallback={<PageLoading />}>
-                          <AuthGuard>
-                            <App />
-                          </AuthGuard>
-                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                        </Suspense>
-                      </QueryClientProvider>
-                    }
-                    path="/home"
-                  >
-                    <Route path="/home/event/:encrypted" element={<EventShareModal />} />
-                  </Route>
-                  <Route
-                    element={
-                      <QueryClientProvider client={queryClient}>
-                        <Suspense fallback={<PageLoading />}>
-                          <AuthGuard>
-                            <App />
-                          </AuthGuard>
-                          {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-                        </Suspense>
-                      </QueryClientProvider>
-                    }
-                    path="/friend/:friendId"
-                  />
-                </Routes>
-              </BrowserRouter>
-            </CourseContextProvider>
-          </AppContextProvider>
-        </ApolloProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <AuthProvider>
+          <ApolloProvider client={client}>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<LandingPage />} path="/" />
+                <Route
+                  element={
+                    <Suspense fallback={<PageLoading />}>
+                      <AuthGuard>
+                        <App />
+                      </AuthGuard>
+                    </Suspense>
+                  }
+                  path="/home"
+                >
+                  {/* <Route path="/home/event/:encrypted" element={<EventShareModal />} /> */}
+                </Route>
+                {/* TODO: Can this route be combined with above? */}
+                <Route
+                  element={
+                    <Suspense fallback={<PageLoading />}>
+                      <AuthGuard>
+                        <App />
+                      </AuthGuard>
+                    </Suspense>
+                  }
+                  path="/friend/:friendId"
+                />
+              </Routes>
+            </BrowserRouter>
+          </ApolloProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+      {import.meta.env.MODE === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   );
 };
 
@@ -103,9 +93,8 @@ if (!rootContainer) {
   throw new Error('Root container not found');
 }
 const root = createRoot(rootContainer);
-root.render(<Root />);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-swRegistration.unregister();
+root.render(
+  <StrictMode>
+    <Root />
+  </StrictMode>,
+);

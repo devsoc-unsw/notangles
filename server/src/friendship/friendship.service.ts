@@ -1,40 +1,79 @@
 import { HttpStatus, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Friendship, Prisma, Status } from 'src/generated/prisma/client';
+import { Prisma, Status } from 'src/generated/prisma/client';
+import { FriendInfo } from './types';
+
+const friendSelect = {
+  select: {
+    id: true,
+    firstName: true,
+    lastName: true,
+    profilePictureUrl: true,
+  },
+} as const;
+
+function toFriendInfo(user: {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profilePictureUrl: string | null;
+}): FriendInfo {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    profilePictureUrl: user.profilePictureUrl ?? undefined,
+  };
+}
 
 @Injectable()
 export class FriendshipService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserFriendships(userId: string): Promise<Friendship[]> {
-    return await this.prisma.friendship.findMany({
+  async getUserFriendships(userId: string): Promise<FriendInfo[]> {
+    const friendships = await this.prisma.friendship.findMany({
       where: {
         status: Status.FRIEND,
         OR: [{ user1Id: userId }, { user2Id: userId }],
       },
+      include: { user1: friendSelect, user2: friendSelect },
     });
+
+    return friendships.map((f) =>
+      toFriendInfo(f.user1Id === userId ? f.user2 : f.user1),
+    );
   }
 
-  async getUserFriendRequests(userId: string): Promise<Friendship[]> {
-    return await this.prisma.friendship.findMany({
+  async getUserFriendRequests(userId: string): Promise<FriendInfo[]> {
+    const requests = await this.prisma.friendship.findMany({
       where: {
         OR: [
           { status: Status.REQ_UID1, user1Id: userId },
           { status: Status.REQ_UID2, user2Id: userId },
         ],
       },
+      include: { user1: friendSelect, user2: friendSelect },
     });
+
+    return requests.map((r) =>
+      toFriendInfo(r.user1Id === userId ? r.user2 : r.user1),
+    );
   }
 
-  async getFriendRequestsToUser(userId: string): Promise<Friendship[]> {
-    return await this.prisma.friendship.findMany({
+  async getFriendRequestsToUser(userId: string): Promise<FriendInfo[]> {
+    const requests = await this.prisma.friendship.findMany({
       where: {
         OR: [
           { status: Status.REQ_UID2, user1Id: userId },
           { status: Status.REQ_UID1, user2Id: userId },
         ],
       },
+      include: { user1: friendSelect, user2: friendSelect },
     });
+
+    return requests.map((r) =>
+      toFriendInfo(r.user1Id === userId ? r.user2 : r.user1),
+    );
   }
 
   async acceptFriendRequest(
@@ -60,29 +99,14 @@ export class FriendshipService {
     });
   }
 
-  // Cancel an outgoing friend request (called by the user who sent it)
-  async cancelFriendRequest(userId: string, otherId: string): Promise<void> {
+  async deleteRequest(userId: string, otherId: string): Promise<void> {
     await this.prisma.friendship.deleteMany({
       where: {
         OR: [
-          { status: Status.REQ_UID1, user1Id: userId, user2Id: otherId },
-          { status: Status.REQ_UID2, user1Id: otherId, user2Id: userId },
+          { user1Id: userId, user2Id: otherId },
+          { user1Id: otherId, user2Id: userId },
         ],
-      },
-    });
-  }
-
-  // Reject an incoming friend request (called by the user who received it)
-  async rejectFriendRequest(
-    userId: string,
-    requestorId: string,
-  ): Promise<void> {
-    await this.prisma.friendship.deleteMany({
-      where: {
-        OR: [
-          { status: Status.REQ_UID1, user1Id: requestorId, user2Id: userId },
-          { status: Status.REQ_UID2, user1Id: userId, user2Id: requestorId },
-        ],
+        status: { in: [Status.REQ_UID1, Status.REQ_UID2] },
       },
     });
   }
@@ -91,7 +115,6 @@ export class FriendshipService {
     const [user1Id, user2Id] =
       userId < otherId ? [userId, otherId] : [otherId, userId];
 
-    // Note: This deletes 0 or more, meaning it will "succeed" even if there is no friendship to delete
     await this.prisma.friendship.deleteMany({
       where: { status: Status.FRIEND, user1Id, user2Id },
     });

@@ -5,10 +5,6 @@ import React, { useState } from 'react';
 import NotanglesLogoGif from '../../assets/notangles.gif';
 import NotanglesLogo from '../../assets/notangles_1.png';
 
-interface TitleTextProps {
-  isLarge?: boolean;
-}
-
 const NotanglesLogoImg = styled('img')`
   height: 45px;
   margin-left: -11.5px;
@@ -84,10 +80,10 @@ const FooterInfo: React.FC = () => {
             </NotanglesFooterInfoContainer>
           </Stack>
           <BodyText>
-            Notangles is a UNSW timetable planner, brought to you by DevSoc. It's an easy-to-use drag-and-drop tool that
-            allows you to plan your course classes and add them to your calendar, even before term class registration
-            opens! We have many features including support for custom events, auto-timetabling, creation of multiple
-            timetables, and sharing events with friends.
+            Notangles is a UNSW timetable planner, brought to you by DevSoc. It&apos;s an easy-to-use drag-and-drop tool
+            that allows you to plan your course classes and add them to your calendar, even before term class
+            registration opens! We have many features including support for custom events, auto-timetabling, creation of
+            multiple timetables, and sharing events with friends.
           </BodyText>
         </Stack>
       </Grid>
