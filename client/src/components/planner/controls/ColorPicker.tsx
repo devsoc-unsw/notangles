@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, ListItem, Popover, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, List, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
 import { useMemo, useState } from 'react';
 
@@ -69,44 +69,45 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
           horizontal: 'left',
         }}
       >
-        {/* TODO: Should this list item be wrapped in a list? Need to check this for all ListItems... */}
-        <ListItem alignItems="flex-start">
-          <ColorOptions
-            showCustomColorPicker={showCustomColorPicker}
-            onSelectColor={(selectedColor) => {
-              setColor(selectedColor);
-            }}
-            onCustomColorSelect={() => {
-              setShowCustomColorPicker(!showCustomColorPicker);
-            }}
-          />
-        </ListItem>
-        {showCustomColorPicker && (
+        <List>
           <ListItem alignItems="flex-start">
-            <Colorful
-              onChange={(e) => {
-                setColor(e.hex);
+            <ColorOptions
+              showCustomColorPicker={showCustomColorPicker}
+              onSelectColor={(selectedColor) => {
+                setColor(selectedColor);
               }}
-              color={color}
-              disableAlpha
+              onCustomColorSelect={() => {
+                setShowCustomColorPicker(!showCustomColorPicker);
+              }}
             />
           </ListItem>
-        )}
-        <ListItem alignItems="flex-start">
-          <TextField
-            id="outlined-required"
-            label="Hex"
-            variant="outlined"
-            value={textFieldValue}
-            onChange={(e) => {
-              let newColor = e.target.value;
-              if (newColor !== '' && !newColor.startsWith('#')) {
-                newColor = `#${newColor}`;
-              }
-              setColor(newColor);
-            }}
-          />
-        </ListItem>
+          {showCustomColorPicker && (
+            <ListItem alignItems="flex-start">
+              <Colorful
+                onChange={(e) => {
+                  setColor(e.hex);
+                }}
+                color={color}
+                disableAlpha
+              />
+            </ListItem>
+          )}
+          <ListItem alignItems="flex-start">
+            <TextField
+              id="outlined-required"
+              label="Hex"
+              variant="outlined"
+              value={textFieldValue}
+              onChange={(e) => {
+                let newColor = e.target.value;
+                if (newColor !== '' && !newColor.startsWith('#')) {
+                  newColor = `#${newColor}`;
+                }
+                setColor(newColor);
+              }}
+            />
+          </ListItem>
+        </List>
       </Popover>
     </Box>
   );

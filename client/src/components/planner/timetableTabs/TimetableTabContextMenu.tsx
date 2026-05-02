@@ -66,6 +66,9 @@ const TimetableTabContextMenu = ({
 
   const primaryTimetableId = timetables.find((t) => t.primary)?.id;
 
+  // TODO: Reimplement hotkey for creating a timetable
+  // TODO: Reimplement hotkey for deleting a timetable
+
   // Hotkey to confirm delete prompt by pressing enter button
   useEffect(() => {
     const handleDeleteEnterShortcut = (event: KeyboardEvent) => {
@@ -84,6 +87,9 @@ const TimetableTabContextMenu = ({
     };
   }, [deleteOpen]);
 
+  // TODO: Reimplement hotkey for confirming rename prompt
+
+  // TODO: Implement restore logic
   // Action button for the restore deleted timetable snackbar
   const restoreTimetable = (
     <>

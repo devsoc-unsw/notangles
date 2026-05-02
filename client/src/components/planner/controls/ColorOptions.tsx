@@ -44,7 +44,7 @@ const ColorOptions = ({
       // so we intentionally render one fewer default colour swatch.
       colorItems.push(
         colors.slice(i, isLastChunk ? i + maxDefaultColors - 1 : i + maxDefaultColors).map((color, j) => (
-          <ListItem component="div" disablePadding key={color}>
+          <ListItem key={color} disablePadding>
             <StyledColorIconButton
               border={theme.palette.secondary.main}
               bgColor={decodedColors[i + j]}
@@ -67,9 +67,9 @@ const ColorOptions = ({
     );
 
     return colorItems.map((item, index) => (
-      <ListItem key={index} sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
+      <List key={index} sx={{ display: 'flex', flexDirection: 'row', gap: 1.2 }} disablePadding>
         {item}
-      </ListItem>
+      </List>
     ));
   }, [
     maxDefaultColors,

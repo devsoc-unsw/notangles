@@ -1,4 +1,5 @@
-import { Box, styled } from '@mui/material';
+import { Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useTimetableCoursesQuery } from '../../../api/timetable/queries';
