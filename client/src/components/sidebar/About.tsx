@@ -25,6 +25,7 @@ const FeatList = styled('ul')`
 `;
 
 const About: React.FC = () => {
+  const currentYear = new Date().getFullYear();
   const currDirectors = team.directors.sort().map((director) => <li key={director}>{director}</li>);
   const currSubcommittee = team.subcommittee.sort().map((subcommittee) => <li key={subcommittee}>{subcommittee}</li>);
   return (
@@ -75,7 +76,7 @@ const About: React.FC = () => {
       </FeatList>
       <StyledTypography variant="h6">About the team</StyledTypography>
       <Typography gutterBottom variant="body2">
-        The current 2026 development team consists of two directors and seven members.
+        The current {currentYear} development team consists of two directors and seven members.
       </Typography>
       <Typography gutterBottom variant="body2">
         <strong>Team Directors:</strong>
