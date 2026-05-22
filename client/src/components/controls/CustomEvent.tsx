@@ -13,7 +13,13 @@ import { StyledControlsButton } from '../../styles/ControlStyles';
 import { DropdownButton, ExecuteButton, StyledTabPanel } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
-import { areValidEventTimes, createDateWithTime, resizeWeekArray } from '../../utils/eventTimes';
+import {
+  areValidEventTimes,
+  createDateWithTime,
+  getEventEndTimeValue,
+  getTimeValue,
+  resizeWeekArray,
+} from '../../utils/eventTimes';
 import ColorPicker from './ColorPicker';
 import CustomEventGeneral from './CustomEventGeneral';
 import CustomEventTutoring from './CustomEventTutoring';
@@ -209,10 +215,8 @@ const CustomEvent: React.FC = () => {
       [newEvent.event.id]: newEvent,
     });
 
-    setEarliestStartTime(
-      Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
-    );
-    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(getTimeValue(startTime))));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(getEventEndTimeValue(endTime))));
 
     // Update displayed days on timetable if new event time out of current displayed days
     if (daysShort.indexOf(day) === 5 || daysShort.indexOf(day) === 6) {
