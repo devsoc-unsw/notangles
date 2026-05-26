@@ -1,4 +1,6 @@
-onlyBuiltDependencies:
-  - '@swc/core'
-  - '@tailwindcss/oxide'
-  - esbuild
+autoInstallPeers: true
+saveExact: true
+allowBuilds:
+  '@swc/core': true
+  '@tailwindcss/oxide': true
+  esbuild: true
