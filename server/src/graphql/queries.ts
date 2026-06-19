@@ -32,3 +32,27 @@ export const GET_AVAILABLE_TERMS = gql(`
     }
   }
 `);
+
+export const GET_FREE_ROOMS = gql(`
+  query GetFreeRooms($buildingIds: [String!]!, $start: timestamptz!, $end: timestamptz!) {
+    buildings(
+      where: { id: { _in: $buildingIds } }
+    ) {
+      id
+      name
+      lat
+      long
+      aliases
+      rooms(
+        where: { _not: { bookings: { start: { _lt: $end }, end: { _gt: $start }  } } }
+        order_by: { id: asc }
+      ) {
+        id
+        name
+        abbr
+        usage
+        capacity
+      }
+    }
+  }
+`);
