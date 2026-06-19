@@ -34,7 +34,6 @@ const parseURLParams = (search: string): CirclesParams | null => {
     return null
   }
 
-  // ...
   const year = parseInt(rawYear, 10);
 
   if (isNaN(year)) {
@@ -50,6 +49,48 @@ const parseURLParams = (search: string): CirclesParams | null => {
   return { term, year, courses, source: params.get("source") }
 }
 
-export const circlesIntegration = () => {
-
+/**
+ * Prevents URL from being re-imported after a page refresh
+ */
+const stripParseURLParam = (): void => {
+  const url = new URL(window.location.search);
+  ["term", "year", "courses", "source"].forEach((key) => url.searchParams.delete(key));
+  window.history.replaceState({}, "", url.toString());
 }
+
+export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Promise<CirclesDataImport | null> => {
+  const parsed = parseURLParams(window.location.search);
+
+  if (!parsed) {
+    return null
+  }
+
+  const { term, year, courses } = parsed;
+
+  const result = await Promise.allSettled(
+    courses.map((course) => getCourseInfo(term, course, year, isConvertToLocalTimezone))
+  );
+
+  const data: CirclesDataImport = {
+    courses: [],
+    failedCourses: [],
+    term,
+    year
+  }
+
+  // const courseData: CourseData[] = [];
+  // const failedCourses: { code: string, error: string }[] = [];
+
+  result.forEach((res, index) => {
+    if (res.status === "fulfilled") {
+      data.courses.push(res.value);
+    } else {
+      data.failedCourses.push({ code: courses[index], error: res.reason });
+    }
+  });
+
+  stripParseURLParam();
+
+  return data;
+}
+
