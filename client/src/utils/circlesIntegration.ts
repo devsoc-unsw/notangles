@@ -9,7 +9,12 @@ interface CirclesParams {
   source: string | null
 }
 
-
+export interface CirclesDataImport {
+  courses: CourseData[];
+  failedCourses: { code: string, error: string }[];
+  term: string;
+  year: number;
+}
 
 /**
  * Parses Circles import format with the following URL and search
@@ -23,9 +28,9 @@ const parseURLParams = (search: string): CirclesParams | null => {
 
   const term = params.get("term");
   const rawYear = params.get("year");
-  const courses = params.get("courses");
+  const rawCourses = params.get("courses");
 
-  if (!term || !rawYear || !courses) {
+  if (!term || !rawYear || !rawCourses) {
     return null
   }
 
@@ -33,6 +38,12 @@ const parseURLParams = (search: string): CirclesParams | null => {
   const year = parseInt(rawYear, 10);
 
   if (isNaN(year)) {
+    return null
+  }
+
+  const courses = rawCourses?.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
+
+  if (courses.length <= 0) {
     return null
   }
 
