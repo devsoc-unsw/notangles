@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
-import type { ClassDetails } from './types';
+import type { ClassDetails, FreeRoomsResponse, FreeRooms } from './types';
 
 const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 
@@ -42,5 +42,18 @@ export class GraphqlService {
       }
     }
     return { availableTerms: Array.from(termsSet) };
+  }
+
+  async getFreeRooms(
+    buildingIds: string[],
+    startTime: Date,
+    endTime: Date
+  ): Promise<{ freeRooms: FreeRooms[] }> {
+    const result: FreeRoomsResponse = await this.sdk.GetFreeRooms({
+      buildingIds,
+      startTime,
+      endTime
+    });
+    return { freeRooms: result.buildings.flatMap(building => building.rooms) };
   }
 }

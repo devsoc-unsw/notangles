@@ -38,11 +38,6 @@ export const GET_FREE_ROOMS = gql(`
     buildings(
       where: { id: { _in: $buildingIds } }
     ) {
-      id
-      name
-      lat
-      long
-      aliases
       rooms(
         where: { _not: { bookings: { start: { _lt: $end }, end: { _gt: $start }  } } }
         order_by: { id: asc }
@@ -50,7 +45,6 @@ export const GET_FREE_ROOMS = gql(`
         id
         name
         abbr
-        usage
         capacity
       }
     }
