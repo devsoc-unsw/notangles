@@ -1,6 +1,7 @@
 // This is the file for the Circles integration page
 import { CourseData } from "../interfaces/Periods";
 import getCourseInfo from "../api/getCourseInfo";
+import storage from "./storage";
 
 interface CirclesParams {
   term: string;
@@ -14,7 +15,11 @@ export interface CirclesDataImport {
   failedCourses: { code: string, error: string }[];
   term: string;
   year: number;
+  hasConflict: boolean;
 }
+
+// using a key for the user's local browser data
+// const CIRCLES_INTEGRATION_KEY = "not_circles_int"
 
 /**
  * Parses Circles import format with the following URL and search
@@ -53,10 +58,29 @@ const parseURLParams = (search: string): CirclesParams | null => {
  * Prevents URL from being re-imported after a page refresh
  */
 const stripParseURLParam = (): void => {
-  const url = new URL(window.location.search);
+  const url = new URL(window.location.href);
   ["term", "year", "courses", "source"].forEach((key) => url.searchParams.delete(key));
   window.history.replaceState({}, "", url.toString());
 }
+
+/**
+ * Checks for conflicting timetable data
+ */
+export const hasConflictingTimetable = (): boolean => {
+  const timetable = storage.get("timetables");
+
+  if (!timetable || typeof timetable !== "object") {
+    return false
+  }
+
+  return Object.values(timetable).some((t) => {
+    if (!Array.isArray(t)) {
+      return false
+    }
+    return timetable.some((entry: object) => entry && typeof entry === "object" && Object.keys(entry).length > 0);
+  })
+
+} 
 
 export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Promise<CirclesDataImport | null> => {
   const parsed = parseURLParams(window.location.search);
@@ -75,7 +99,8 @@ export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Pro
     courses: [],
     failedCourses: [],
     term,
-    year
+    year,
+    hasConflict: hasConflictingTimetable(),
   }
 
   // const courseData: CourseData[] = [];
@@ -85,7 +110,10 @@ export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Pro
     if (res.status === "fulfilled") {
       data.courses.push(res.value);
     } else {
-      data.failedCourses.push({ code: courses[index], error: res.reason });
+      data.failedCourses.push({ 
+        code: courses[index], 
+        error: res.reason instanceof Error ? res.reason.message : "Unknown Error"
+      });
     }
   });
 
@@ -93,4 +121,3 @@ export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Pro
 
   return data;
 }
-
