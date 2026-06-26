@@ -45,6 +45,9 @@ const parseURLParams = (search: string): CirclesParams | null => {
     return null
   }
 
+  // implementing checks for valid course codes here...
+  
+
   const courses = rawCourses?.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
 
   if (courses.length <= 0) {
