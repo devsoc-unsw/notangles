@@ -29,6 +29,7 @@
     "@mui/system": "5.17.1",
     "@mui/x-date-pickers": "6.20.2",
     "@uiw/react-color": "2.7.1",
+    "axios": "1.18.1",
     "clsx": "2.1.1",
     "colorizr": "3.0.8",
     "date-fns": "2.30.0",

@@ -34,7 +34,8 @@ $ cd server
 
 # installation
 $ pnpm install
-$ pnpx prisma generate
+# Must use pnpm, as pnpx does not work with outdated schema.prisma
+$ pnpm prisma generate
 ```
 
 ## Running the app

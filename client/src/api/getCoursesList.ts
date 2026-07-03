@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-
 import { client } from '../api/config';
 import { CoursesList, CoursesListWithDate, FetchedCourse } from '../interfaces/Courses';
 import NetworkError from '../interfaces/NetworkError';
@@ -45,7 +44,6 @@ const GET_COURSE_LIST = gql`
  */
 const getCoursesList = async (year: number, term: string): Promise<CoursesListWithDate> => {
   try {
-    const termWithWildcard = `%${term}%`;
     const { data } = await client.query({ query: GET_COURSE_LIST });
     const courses = data.courses.filter((course: any) => course.terms.includes(term) && course.year === year);
 
