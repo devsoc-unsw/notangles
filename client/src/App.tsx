@@ -647,7 +647,7 @@ const App: React.FC = () => {
                   <SubcomPromotion />
                   <PromotionPopup
                     imgSrc={T3SelectGif}
-                    title={`The ${year} Term 2 timetable has been released! 🎉`}
+                    title={`The ${year} Term 3 timetable has been released! 🎉`}
                     subTitle="Organise, plan and schedule with newly released timetable"
                     bullets={[
                       {
