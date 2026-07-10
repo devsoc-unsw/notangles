@@ -49,6 +49,7 @@ import { setDropzoneRange, useDrag } from './utils/Drag';
 import { downloadIcsFile } from './utils/generateICS';
 import storage from './utils/storage';
 import { createDefaultTimetable } from './utils/timetableHelpers';
+import { CirclesDataImport, circlesIntegration } from './utils/circlesIntegration';
 
 const StyledApp = styled(Box)`
   height: 100%;
@@ -140,6 +141,8 @@ const App: React.FC = () => {
   const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
+
+  
 
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
@@ -536,6 +539,34 @@ const App: React.FC = () => {
       ),
     );
   };
+
+  // used for verifying course data from Circles
+  useEffect(() => {
+
+    const runningCirclesIntegration = async () => {
+      const runCirclesInt = await circlesIntegration(convertToLocalTimezone);
+
+      if (!runCirclesInt) {
+        return;
+      }
+      handleCirclesImport(runCirclesInt);
+    }
+
+    runningCirclesIntegration();
+
+  }, []);
+
+  const handleCirclesImport = (res: CirclesDataImport) => {
+    handleSelectCourse(res.courses.map((course) => course.code));
+
+    setTerm(`${res.term}${res.year}`);
+    setYear(res.year.toString());
+
+    if (res.failedCourses.length > 0) {
+      setAlertMsg(`Cannot run for ${res.failedCourses.map((r) => r.code).join(',')}`);
+      setErrorVisibility(true);
+    }
+  }
 
   useUpdateEffect(() => {
     updateTimetableDaysAndTimes();
