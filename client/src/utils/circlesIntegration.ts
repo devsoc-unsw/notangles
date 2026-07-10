@@ -26,7 +26,7 @@ export interface CirclesDataImport {
  * Returns null if the URL does not contain a valid Circles import payload
  * 
  * Example format:
- * https://notangles.app/import?term=T1&year=2026&courses=COMP1511,COMP1521,MATH1131&source=circles
+ * https://notangles.app/?term=T1&year=2026&courses=COMP1511,COMP1521,MATH1131&source=circles
  */
 const parseURLParams = (search: string): CirclesParams | null => {
   const params = new URLSearchParams(search);
@@ -95,7 +95,7 @@ export const circlesIntegration = async (isConvertToLocalTimezone: boolean): Pro
   const { term, year, courses } = parsed;
 
   const result = await Promise.allSettled(
-    courses.map((course) => getCourseInfo(term, course, year, isConvertToLocalTimezone))
+    courses.map((course) => getCourseInfo(term, course, year.toString(), isConvertToLocalTimezone))
   );
 
   const data: CirclesDataImport = {

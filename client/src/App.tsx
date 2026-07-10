@@ -3,7 +3,7 @@ import { styled, StyledEngineProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import * as Sentry from '@sentry/react';
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router';
 
 import getCourseInfo from './api/getCourseInfo';
@@ -142,7 +142,8 @@ const App: React.FC = () => {
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 
-  
+  // Effect doesn't re-render when term/year changes
+  const circlesImport = useRef(false);
 
   /**
    * Attempts callback() several times before raising error. Intended for unreliable fetches
@@ -542,6 +543,14 @@ const App: React.FC = () => {
 
   // used for verifying course data from Circles
   useEffect(() => {
+    if (!term || year === invalidYearFormat) {
+      return;
+    }
+
+    if (circlesImport.current) {
+      return
+    }
+    circlesImport.current = true;
 
     const runningCirclesIntegration = async () => {
       const runCirclesInt = await circlesIntegration(convertToLocalTimezone);
@@ -554,7 +563,7 @@ const App: React.FC = () => {
 
     runningCirclesIntegration();
 
-  }, []);
+  }, [term, year]);
 
   const handleCirclesImport = (res: CirclesDataImport) => {
     handleSelectCourse(res.courses.map((course) => course.code));
