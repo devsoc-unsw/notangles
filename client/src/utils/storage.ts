@@ -5,6 +5,11 @@ import { createDefaultTimetable } from './timetableHelpers';
 
 const STORAGE_KEY = 'data';
 
+// Something is not playing nice and causing local storage to corrupt across signing in/out
+// We are in the process of migrating data to the backend, so this fix should catch people
+// for now and prevent them from seeing a blank page.
+let hasRunArrayCheck = false;
+
 const storage = {
   get: (key: string): any => {
     const data: Record<string, any> = storage.load();
@@ -64,7 +69,7 @@ const storage = {
     }
 
     // Un-break an existing issue with migrated data
-    if (migrated.version == null || migrated.version < 2) {
+    if (!hasRunArrayCheck) {
       Object.entries(migrated.timetables).forEach(([term, timetables]) => {
         if (
           !Array.isArray(timetables) ||
@@ -73,6 +78,9 @@ const storage = {
           migrated.timetables[term] = createDefaultTimetable('');
         }
       });
+
+      storage.save(migrated);
+      hasRunArrayCheck = true;
     }
 
     // only do this if version does not exist
