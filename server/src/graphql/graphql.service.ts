@@ -47,13 +47,15 @@ export class GraphqlService {
   async getFreeRooms(
     buildingIds: string[],
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ): Promise<{ freeRooms: FreeRooms[] }> {
     const result: FreeRoomsResponse = await this.sdk.GetFreeRooms({
       buildingIds,
       start: startTime,
-      end: endTime
+      end: endTime,
     });
-    return { freeRooms: result.buildings.flatMap(building => building.rooms) };
+    return {
+      freeRooms: result.buildings.flatMap((building) => building.rooms),
+    };
   }
 }

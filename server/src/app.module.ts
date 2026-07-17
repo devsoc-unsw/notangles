@@ -20,7 +20,7 @@ import { FreeroomModule } from './freeroom/freeroom.module';
     FriendshipModule,
     TimetableModule,
     AuthModule,
-    FreeroomModule
+    FreeroomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
