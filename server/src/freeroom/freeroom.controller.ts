@@ -12,10 +12,10 @@ export class FreeroomController {
   // @Get()
 
   @Get('by-buildings')
-  @UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
   async getFreeRoomsInBuildings(
-    @Req() req: AuthenticatedRequest,
-    @Query('buildingIds', new ParseArrayPipe({ items: String, separator: ',' })) buildingIds: string[],
+    // @Req() req: AuthenticatedRequest,
+    @Query('buildingIds', new ParseArrayPipe({ items: String, separator: ',', optional: false })) buildingIds: string[],
     @Query('startTime') startTime: string,
     @Query('endTime') endTime: string,
   ) {
@@ -23,17 +23,17 @@ export class FreeroomController {
     const end = new Date(endTime);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        throw new HttpException(
-            'Invalid date format',
-            HttpStatus.BAD_REQUEST
-        );
+      throw new HttpException(
+        'Invalid date format',
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     if (!buildingIds.length || buildingIds[0] == '') {
-        throw new HttpException(
-            'buildingIds cannot be empty',
-            HttpStatus.BAD_REQUEST
-        );
+      throw new HttpException(
+        'buildingIds cannot be empty',
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     const freerooms = await this.freeroomService.getFreeRoomsInBuildings(
