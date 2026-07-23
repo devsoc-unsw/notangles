@@ -1,0 +1,1 @@
+"""Autotimetabler tests."""

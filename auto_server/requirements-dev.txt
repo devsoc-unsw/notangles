@@ -1,0 +1,4 @@
+-r requirements.txt
+grpcio-tools==1.65.1
+hypothesis==6.135.26
+ortools==9.10.4067

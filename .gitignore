@@ -76,3 +76,4 @@ typings/
 .DS_Store
 
 */venv/*
+.hypothesis/
