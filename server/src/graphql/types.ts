@@ -15,3 +15,10 @@ export class FreeRoom {
   abbr: string;
   capacity: number;
 }
+
+export class Building {
+  id: string;
+  name: string;
+  lat: number;
+  long: number;
+}

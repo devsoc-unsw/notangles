@@ -50,3 +50,14 @@ export const GET_FREE_ROOMS = gql(`
     }
   }
 `);
+
+export const GET_ALL_BUILDINGS = gql(`
+  query GetAllBuildings {
+    buildings {
+      id
+      name
+      lat
+      long
+    }
+  }
+`);
