@@ -1,10 +1,10 @@
 // excerpts from [https://codesandbox.io/s/material-demo-33l5y]
 import {
   AddRounded,
+  ArrowDropDownRounded,
   CheckRounded,
   CloseRounded,
   PersonOutline,
-  SearchRounded,
   VideocamOutlined,
 } from '@mui/icons-material';
 import {
@@ -14,6 +14,8 @@ import {
   Chip,
   InputAdornment,
   Link,
+  Menu,
+  MenuItem,
   TextField,
   Typography,
   useMediaQuery,
@@ -24,13 +26,19 @@ import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 
+import { getAllEvents } from '../../api/getEvents';
 import { ThemeType } from '../../constants/theme';
 import { maxAddedCourses } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import { CourseOverview, CoursesList } from '../../interfaces/Courses';
-import { CourseCode, CourseData } from '../../interfaces/Periods';
+import { CourseCode, CourseData, EventDTO } from '../../interfaces/Periods';
 import { CourseSelectProps } from '../../interfaces/PropTypes';
+
+type SearchMode = 'Courses' | 'Events';
+type SearchOption = CourseOverview | EventDTO;
+
+const isCourseOption = (option: SearchOption): option is CourseOverview => 'code' in option;
 
 const SEARCH_DELAY = 300;
 
@@ -96,8 +104,55 @@ const StyledTextField = styled(TextField, {
 
 const StyledInputAdornment = styled(InputAdornment)`
   margin-left: 7px;
+  margin-right: 0px;
   min-height: 30px;
   color: ${({ theme }) => theme.palette.secondary.dark};
+`;
+
+const StyledModeToggle = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  margin-right: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.palette.secondary.dark};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.palette.secondary.light};
+  }
+`;
+
+const StyledEventOption = styled('span')`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+
+const EventSocietyName = styled('span')`
+  margin-left: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+`;
+
+const EventDescription = styled('span')`
+  margin-left: 8px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+`;
+
+const EventDateLabel = styled('span')`
+  margin-left: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  opacity: 0.6;
 `;
 
 const StyledChip = styled(Chip, {
@@ -157,7 +212,7 @@ const Career = styled('div')`
 
 const FacultyButtonsContainer = styled('div')`
   display: flex;
-  flex-wrap: wrap;>typescri
+  flex-wrap: wrap;
   margin: ${({ theme }) => theme.spacing(1.5, 0)};
   width: 100%;
 `;
@@ -211,6 +266,48 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const [inputValue, setInputValue] = useState<string>('');
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
+
+  const [searchMode, setSearchMode] = useState<SearchMode>('Courses');
+  const [modeMenuAnchor, setModeMenuAnchor] = useState<HTMLElement | null>(null);
+
+  const [eventsList, setEventsList] = useState<EventDTO[]>([]);
+  const [selectedSociety, setSelectedSociety] = useState<string>('');
+
+  useEffect(() => {
+    getAllEvents()
+      .then(setEventsList)
+      .catch(() => {
+        setEventsList([]);
+      });
+  }, []);
+
+  const societies = useMemo(() => Array.from(new Set(eventsList.map((event) => event.name))), [eventsList]);
+
+  const filteredEvents = useMemo(
+    () => (selectedSociety ? eventsList.filter((event) => event.name === selectedSociety) : eventsList),
+    [eventsList, selectedSociety],
+  );
+
+  /**
+   * @param society The name of the society to filter events by
+   */
+  const handleSocietyClick = (society: string) => {
+    setSelectedSociety(selectedSociety === society ? '' : society);
+  };
+
+  const formatEventDate = (date: Date) => date.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' });
+
+  /**
+   * Switches between 'Courses' and 'Events' search mode, clearing any active filters from the other mode
+   */
+  const handleModeSwitch = () => {
+    setSearchMode(searchMode === 'Courses' ? 'Events' : 'Courses');
+    setModeMenuAnchor(null);
+    setInputValue('');
+    setSelectedFaculty('');
+    setSelectedSociety('');
+  };
+
   const faculties = [
     'Art, Design & Architecture',
     'Law & Justice',
@@ -234,6 +331,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const { coursesList } = useContext(AppContext);
   const { selectedCourses } = useContext(CourseContext);
+
+  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
+  // Horizontal offset of the resting label, clearing the Courses/Events toggle.
+  const restingLabelOffset = searchMode === 'Courses' ? 96 : 86;
 
   useEffect(() => {
     fuzzy = new Fuse(coursesList, searchOptions);
@@ -349,10 +450,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }, SEARCH_DELAY);
   }, [inputValue, coursesList]);
 
-  const onChange = (_: any, value: CoursesList) => {
-    if (value.length > selectedValue.length) {
-      handleSelect(value[value.length - 1].code);
-      setSelectedValue([...value]);
+  const onChange = (_: any, value: SearchOption[]) => {
+    // Selecting an event from the results is visual only
+    if (searchMode === 'Events') return;
+
+    const courseValue = value as CoursesList;
+    if (courseValue.length > selectedValue.length) {
+      handleSelect(courseValue[courseValue.length - 1].code);
+      setSelectedValue([...courseValue]);
     }
     setOptions(defaultOptions);
     setInputValue('');
@@ -380,8 +485,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     return !exists;
   }, [inputValue, mergedOptions]);
 
-  const shrinkLabel = inputValue.length > 0 || selectedValue.length > 0;
-
   const OuterElementContext = React.createContext({});
 
   const OuterElementType = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
@@ -395,7 +498,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       const { children, ...other } = props;
 
       const itemCount = Array.isArray(children) ? children.length : 0;
-      const getItemSize = (i: number) => (i === 0 && courseNotFound ? 100 : 45);
+      const getItemSize = (i: number) => (i === 0 && courseNotFound && searchMode === 'Courses' ? 100 : 45);
       const maxResultsVisible = 6;
       const paddingTop = 0;
 
@@ -420,18 +523,22 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               event.preventDefault();
             }}
           >
-            {faculties.map((faculty, index) => (
+            {(searchMode === 'Events' ? societies : faculties).map((label, index) => (
               <FacultyTags
                 key={index}
-                selectedFaculty={selectedFaculty}
-                faculty={faculty}
+                selectedFaculty={searchMode === 'Events' ? selectedSociety : selectedFaculty}
+                faculty={label}
                 onClick={() => {
-                  handleFacultyClick(faculty);
+                  if (searchMode === 'Events') {
+                    handleSocietyClick(label);
+                  } else {
+                    handleFacultyClick(label);
+                  }
                 }}
                 variant="contained"
                 disableElevation
               >
-                {faculty}
+                {label}
               </FacultyTags>
             ))}
           </FacultyButtonsContainer>
@@ -454,7 +561,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         </ListboxContainer>
       );
     }),
-    [selectedFaculty, theme, courseNotFound],
+    [selectedFaculty, selectedSociety, searchMode, societies, theme, courseNotFound],
   );
 
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));
@@ -480,28 +587,50 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   return (
     <StyledSelect>
-      <Autocomplete
-        getOptionDisabled={() => selectedCourses.length >= maxAddedCourses}
+      <Autocomplete<SearchOption, true, true, false>
+        getOptionDisabled={() => searchMode === 'Courses' && selectedCourses.length >= maxAddedCourses}
         getOptionLabel={(option) => option.name}
         multiple
         autoHighlight
         disableClearable
         disableListWrap
         selectOnFocus={false}
-        options={mergedOptions}
+        options={searchMode === 'Events' ? filteredEvents : mergedOptions}
         noOptionsText={'No Results'}
         value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
         onBlur={() => {
           setSelectedFaculty('');
+          setSelectedSociety('');
         }}
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) => option.code === value.code && option.career === value.career}
+        isOptionEqualToValue={(option, value) =>
+          isCourseOption(option) &&
+          isCourseOption(value) &&
+          option.code === value.code &&
+          option.career === value.career
+        }
         renderOption={(props, option, { index }) => {
           const { key, ...rest } = props;
+
+          if (!isCourseOption(option)) {
+            return (
+              <li key={key} {...rest}>
+                <StyledEventOption>
+                  <StyledIcon>
+                    <AddRounded />
+                  </StyledIcon>
+                  <EventSocietyName>{option.name}</EventSocietyName>
+                  <EventDescription>{option.description}</EventDescription>
+                  <EventDateLabel>{formatEventDate(option.start)}</EventDateLabel>
+                </StyledEventOption>
+              </li>
+            );
+          }
+
           return courseNotFound && index === 0 ? (
             <NoOptions key={key} />
           ) : (
@@ -539,7 +668,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             autoFocus
             selectedCourses={selectedCourses}
             variant="outlined"
-            label={selectedCourses.length < maxAddedCourses ? 'Select your courses' : 'Maximum courses selected'}
+            label={
+              searchMode === 'Courses'
+                ? selectedCourses.length < maxAddedCourses
+                  ? 'Select your courses'
+                  : 'Maximum courses selected'
+                : 'Select your Events'
+            }
             onChange={(event) => {
               setInputValue(event.target.value);
             }}
@@ -555,7 +690,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               ...params.InputLabelProps,
               shrink: shrinkLabel,
               style: {
-                marginLeft: shrinkLabel ? 2 : 38,
+                marginLeft: shrinkLabel ? 2 : restingLabelOffset,
               },
             }}
             InputProps={{
@@ -563,7 +698,30 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               startAdornment: (
                 <>
                   <StyledInputAdornment position="start">
-                    <SearchRounded />
+                    <StyledModeToggle
+                      onMouseDown={(event) => {
+                        event.stopPropagation();
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setModeMenuAnchor(event.currentTarget);
+                      }}
+                    >
+                      {searchMode}
+                      <ArrowDropDownRounded fontSize="small" />
+                    </StyledModeToggle>
+                    <Menu
+                      anchorEl={modeMenuAnchor}
+                      open={Boolean(modeMenuAnchor)}
+                      onClose={() => {
+                        setModeMenuAnchor(null);
+                      }}
+                      MenuListProps={{ dense: true, style: { paddingTop: 4, paddingBottom: 4 } }}
+                    >
+                      <MenuItem dense onClick={handleModeSwitch}>
+                        {searchMode === 'Courses' ? 'Events' : 'Courses'}
+                      </MenuItem>
+                    </Menu>
                   </StyledInputAdornment>
                   {params.InputProps.startAdornment}
                 </>
@@ -571,8 +729,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             }}
           />
         )}
-        renderTags={(value: CoursesList, getTagProps) =>
-          value.map((option: CourseOverview, index: number) => {
+        renderTags={(value, getTagProps) =>
+          (value as CoursesList).map((option: CourseOverview, index: number) => {
             const { key, ...rest } = getTagProps({ index });
 
             return (
