@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   ParseArrayPipe,
+  ParseIntPipe,
   Query,
   Req,
   UseGuards,
@@ -16,9 +17,34 @@ import { AuthenticatedRequest } from 'src/auth/auth.controller';
 export class FreeroomController {
   constructor(private freeroomService: FreeroomService) {}
 
-  // TODO: This is just for testing, remove later, only the main route should be here
-  // i.e. GET /freerooms
-  // @Get()
+  @Get()
+  // @UseGuards(AuthenticatedGuard)
+  async getFreeRoom(
+    // @Req() req: AuthenticatedRequest,
+    @Query('startTime') startTime: string,
+    @Query('endTime') endTime: string,
+    @Query('startBuildingId') startBuildingId: string,
+    @Query('endBuildingId') endBuildingId: string,
+    @Query('maxOffsetDistance', ParseIntPipe)
+    maxOffsetDistance: number,
+  ) {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      throw new HttpException('Invalid date format', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.freeroomService.getFreeRoom(
+      start,
+      end,
+      startBuildingId,
+      endBuildingId,
+      maxOffsetDistance,
+    );
+  }
+
+  // For Testing
 
   @Get('by-buildings')
   // @UseGuards(AuthenticatedGuard)
@@ -51,6 +77,7 @@ export class FreeroomController {
       start,
       end,
     );
+
     return freerooms;
   }
 }
