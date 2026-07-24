@@ -216,8 +216,8 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     setSelectedValue(
       selectedCourses
-        .map((x) => x.code) // Get the course code of each course
-        .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
+        // Get the corresponding CourseOverview for each CourseData object
+        .map((x) => coursesList.find((course) => course.code === x.code && course.career === x.career))
         .filter((overview): overview is CourseOverview => overview !== undefined),
     );
   }, [selectedCourses, coursesList]);
@@ -319,8 +319,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const onChange = (_: any, value: CoursesList) => {
     if (value.length > selectedValue.length) {
-      handleSelect(value[value.length - 1].code);
-      setSelectedValue([...value]);
+      const added = value[value.length - 1];
+      handleSelect({ code: added.code, career: added.career });
+      setSelectedValue(value.filter((course, index) => index === value.length - 1 || course.code !== added.code));
     }
     setOptions(defaultOptions);
     setInputValue('');
@@ -439,7 +440,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <li key={key} {...rest}>
               <StyledOption>
                 <StyledIcon>
-                  {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                  {selectedValue.find(
+                    (course: CourseOverview) => course.code === option.code && course.career === option.career,
+                  ) ? (
                     <CheckRounded />
                   ) : (
                     <AddRounded />

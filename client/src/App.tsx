@@ -40,6 +40,7 @@ import {
   ClassData,
   CourseCode,
   CourseData,
+  CourseSelection,
   DisplayTimetablesMap,
   InInventory,
   SelectedClasses,
@@ -288,14 +289,20 @@ const App: React.FC = () => {
    * @param callback An optional callback function to be executed using the course data
    */
   const handleSelectCourse = async (
-    data: string | string[],
+    data: CourseSelection | CourseSelection[],
     noInit?: boolean,
     callback?: (_selectedCourses: CourseData[]) => void,
   ) => {
-    const codes: string[] = Array.isArray(data) ? data : [data];
+    const selections: CourseSelection[] = Array.isArray(data) ? data : [data];
     Promise.all(
-      codes.map((code) =>
-        getCourseInfo(term.substring(0, 2), code, term.substring(2), convertToLocalTimezone).catch((err) => {
+      selections.map((selection) =>
+        getCourseInfo(
+          term.substring(0, 2),
+          selection.code,
+          term.substring(2),
+          convertToLocalTimezone,
+          selection.career,
+        ).catch((err) => {
           return err;
         }),
       ),
@@ -383,8 +390,9 @@ const App: React.FC = () => {
     }
 
     if (!storage.get('timetables')?.[term][selectedTimetable]) return;
+    const savedCourses: CourseData[] = storage.get('timetables')[term][selectedTimetable].selectedCourses;
     handleSelectCourse(
-      storage.get('timetables')[term][selectedTimetable].selectedCourses.map((course: CourseData) => course.code),
+      savedCourses.map((course) => ({ code: course.code, career: course.career })),
       true,
       (newSelectedCourses) => {
         const timetableSelectedClasses: SelectedClasses =
