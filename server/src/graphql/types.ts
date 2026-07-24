@@ -5,8 +5,8 @@ export class ClassDetails {
 
 export class FreeRoomsResponse {
   buildings: {
-    rooms: FreeRooms[]
-  }[]
+    rooms: FreeRooms[];
+  }[];
 }
 
 export class FreeRooms {

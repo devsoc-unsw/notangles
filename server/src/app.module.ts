@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendshipModule } from './friendship/friendship.module';
 import { TimetableModule } from './timetable/timetable.module';
+import { FreeroomModule } from './freeroom/freeroom.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TimetableModule } from './timetable/timetable.module';
     FriendshipModule,
     TimetableModule,
     AuthModule,
+    FreeroomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

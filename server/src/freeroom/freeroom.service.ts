@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { GraphqlService } from "src/graphql/graphql.service";
@@ -5,31 +6,39 @@ import { validate } from "src/utils/validate";
 import { FreeRooms } from "src/graphql/types";
 import { toLocalXY, pointToSegmentDistance } from 'src/utils/geometry';
 import { start } from "repl";
+=======
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { GraphqlService } from 'src/graphql/graphql.service';
+import { validate } from 'src/utils/validate';
+import { FreeRooms } from 'src/graphql/types';
+>>>>>>> feat/best_match_free_rooms_1143
 
 @Injectable()
 export class FreeroomService {
-    constructor(
-        private readonly prisma: PrismaService,
-        private readonly graphqlService: GraphqlService,
-    ) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly graphqlService: GraphqlService,
+  ) {}
 
-    async getFreeRoomsInBuildings(
-        buildingIds: string[],
-        startTime: Date,
-        endTime: Date
-    ): Promise<FreeRooms[]> {
-        const result = await this.graphqlService.getFreeRooms(
-            buildingIds,
-            startTime,
-            endTime
-        );
+  async getFreeRoomsInBuildings(
+    buildingIds: string[],
+    startTime: Date,
+    endTime: Date,
+  ): Promise<FreeRooms[]> {
+    const result = await this.graphqlService.getFreeRooms(
+      buildingIds,
+      startTime,
+      endTime,
+    );
 
-        validate(
-            result.freeRooms.length > 0,
-            'No free rooms found in these buildings',
-            HttpStatus.NOT_FOUND,
-        );
+    validate(
+      result.freeRooms.length > 0,
+      'No free rooms found in these buildings',
+      HttpStatus.NOT_FOUND,
+    );
 
+<<<<<<< HEAD
         return result.freeRooms;
     }
 
@@ -75,3 +84,8 @@ async getBuildingsAlongRoute(
   return buildingsWithinRange.map((building) => building.id);
 }
 }
+=======
+    return result.freeRooms;
+  }
+}
+>>>>>>> feat/best_match_free_rooms_1143
