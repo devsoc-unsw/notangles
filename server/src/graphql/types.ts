@@ -5,11 +5,11 @@ export class ClassDetails {
 
 export class FreeRoomsResponse {
   buildings: {
-    rooms: FreeRooms[];
+    rooms: FreeRoom[];
   }[];
 }
 
-export class FreeRooms {
+export class FreeRoom {
   id: string;
   name: string;
   abbr: string;
