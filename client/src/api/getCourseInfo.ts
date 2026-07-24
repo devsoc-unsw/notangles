@@ -9,8 +9,8 @@ import { dbCourseToCourseData } from '../utils/DbCourse';
 import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
 const GET_COURSE_INFO: TypedDocumentNode<CoursesData, GetCourseInfoVars> = gql`
-  query GetCourseInfo($courseCode: String!, $term: String!, $year: String!) {
-    courses(where: { course_code: { _eq: $courseCode } }) {
+  query GetCourseInfo($courseCode: String!, $term: String!, $year: Int!) {
+    courses(where: { course_code: { _eq: $courseCode }, year: { _eq: $year } }) {
       course_code
       course_name
       classes(where: { term: { _eq: $term }, year: { _eq: $year }, activity: { _neq: "Course Enrolment" } }) {
@@ -111,7 +111,7 @@ const getCourseInfo = async (
   try {
     const { data } = await client.query({
       query: GET_COURSE_INFO,
-      variables: { courseCode, term, year },
+      variables: { courseCode, term, year: Number(year) },
     });
     if (data === undefined) throw new NetworkError('Internal server error');
 

@@ -8,15 +8,15 @@ const toCoursesList = (data: FetchedCourse[]): CoursesList =>
   data.map((course) => ({
     code: course.course_code,
     name: course.course_name,
-    online: course.online,
-    inPerson: course.inPerson,
+    online: course.modes.includes('Online'),
+    inPerson: course.modes.includes('In Person'),
     career: course.career,
     faculty: course.faculty,
   }));
 
 const GET_COURSE_LIST: TypedDocumentNode<{ courses: FetchedCourse[] }, { term: string }> = gql`
   query GetCoursesByTerm($term: String!) {
-    courses(where: { terms: { _ilike: $term } }) {
+    courses(where: { classes: { term: { _eq: $term } } }) {
       campus
       career
       faculty
@@ -44,8 +44,7 @@ const GET_COURSE_LIST: TypedDocumentNode<{ courses: FetchedCourse[] }, { term: s
  */
 const getCoursesList = async (term: string): Promise<CoursesListWithDate> => {
   try {
-    const termWithWildcard = `%${term}%`;
-    const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term: termWithWildcard } });
+    const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term } });
     if (data === undefined) throw new NetworkError('Internal server error');
 
     return {

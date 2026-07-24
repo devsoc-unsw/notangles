@@ -31,5 +31,5 @@ export interface CoursesData {
 export interface GetCourseInfoVars {
   courseCode: string;
   term: string;
-  year: string;
+  year: number;
 }
