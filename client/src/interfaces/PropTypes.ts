@@ -2,7 +2,17 @@ import { PopoverOrigin, SelectChangeEvent } from '@mui/material';
 import { ReactNode } from 'react';
 
 import { ClassCard } from '../utils/Drag';
-import { ClassData, ClassPeriod, CourseCode, CourseData, EventPeriod, InInventory, Location, Section } from './Periods';
+import {
+  ClassData,
+  ClassPeriod,
+  CourseCode,
+  CourseData,
+  CourseSelection,
+  EventPeriod,
+  InInventory,
+  Location,
+  Section,
+} from './Periods';
 
 export interface AppContextProviderProps {
   children: ReactNode;
@@ -18,14 +28,22 @@ export interface UserContextProviderProps {
 
 export interface CourseSelectProps {
   assignedColors: Record<string, string>;
-  handleSelect(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
+  handleSelect(
+    data: CourseSelection | CourseSelection[],
+    a?: boolean,
+    callback?: (_selectedCourses: CourseData[]) => void,
+  ): void;
   handleRemove(courseCode: CourseCode): void;
 }
 
 export interface ControlsProps {
   assignedColors: Record<string, string>;
   handleSelectClass(classData: ClassData): void;
-  handleSelectCourse(data: string | string[], a?: boolean, callback?: (_selectedCourses: CourseData[]) => void): void;
+  handleSelectCourse(
+    data: CourseSelection | CourseSelection[],
+    a?: boolean,
+    callback?: (_selectedCourses: CourseData[]) => void,
+  ): void;
   handleRemoveCourse(courseCode: CourseCode): void;
 }
 

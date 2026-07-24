@@ -3,6 +3,7 @@ import { Activity, CourseCode, Section, Status } from './Periods';
 export interface DbCourse {
   courseCode: CourseCode;
   name: string;
+  career: string;
   classes: DbClass[];
 }
 

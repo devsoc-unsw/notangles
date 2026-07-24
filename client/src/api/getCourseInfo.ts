@@ -96,17 +96,19 @@ const sortUnique = (arr: number[]): number[] => {
  * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
  * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
+ * @param career The career of the course to fetch ("Undergraduate" or "Postgraduate")
  * @return A promise containing the information of the course that is offered in the
  * current year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', true)
+ * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', '2025', true, 'Undergraduate')
  */
 const getCourseInfo = async (
   term: string,
   courseCode: CourseCode,
   year: string,
   isConvertToLocalTimezone: boolean,
+  career?: string,
 ): Promise<CourseData> => {
   try {
     const { data } = await client.query({
@@ -115,7 +117,7 @@ const getCourseInfo = async (
     });
     if (data === undefined) throw new NetworkError('Internal server error');
 
-    const json: DbCourse = graphQLCourseToDbCourse(data);
+    const json: DbCourse = graphQLCourseToDbCourse(data, career);
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.

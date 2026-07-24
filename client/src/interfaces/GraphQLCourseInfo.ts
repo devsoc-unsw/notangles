@@ -17,7 +17,7 @@ interface Class {
   class_id: string;
 }
 
-interface Course {
+export interface Course {
   __typename: 'courses';
   course_code: string;
   course_name: string;
