@@ -15,5 +15,23 @@ describe("app booting", () => {
     cy.contains("Get Started").should("be.visible");
   });
 
-  
+  it("serves the right document name", () => {
+    cy.visit("/");
+    cy.title().should("eq", "Notangles - Timetable Planner");
+  });
+
+  it("mounting the React tree", () => {
+    cy.visit("/");
+    cy.get("#root").children().should("have.length.greaterThan", 0);
+  });
+
+  it("should have no console errors or crashes", () => {
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        cy.spy(win.console, "error").as("consoleError");
+      },
+    });
+    cy.contains("Get Started").should("be.visible");
+    cy.get("@consoleError").should("not.have.been.called");
+  });
 });
