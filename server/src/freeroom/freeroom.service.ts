@@ -96,7 +96,10 @@ export class FreeroomService {
 
     const origin = { lat: startBuilding.lat, long: startBuilding.long };
     const a = toLocalXY(origin, origin);
-    const b = toLocalXY(origin, { lat: endBuilding.lat, long: endBuilding.long });
+    const b = toLocalXY(origin, {
+      lat: endBuilding.lat,
+      long: endBuilding.long,
+    });
 
     const buildingsWithinRange = allBuildings.filter((building) => {
       const p = toLocalXY(origin, { lat: building.lat, long: building.long });

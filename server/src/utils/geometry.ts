@@ -1,20 +1,20 @@
 export interface Location {
-        lat: number;
-        long: number;
+  lat: number;
+  long: number;
 }
 const EARTH_RADIUS_METERS = 6371000;
 
-export function toLocalXY(origin: Location, point: Location): { x: number; y: number } {
+export function toLocalXY(
+  origin: Location,
+  point: Location,
+): { x: number; y: number } {
   const latRad = (origin.lat * Math.PI) / 180;
 
   const x =
-    EARTH_RADIUS_METERS *
-    ((point.long - origin.long) * Math.PI) / 180 *
+    ((EARTH_RADIUS_METERS * ((point.long - origin.long) * Math.PI)) / 180) *
     Math.cos(latRad);
 
-  const y =
-    EARTH_RADIUS_METERS *
-    ((point.lat - origin.lat) * Math.PI) / 180;
+  const y = (EARTH_RADIUS_METERS * ((point.lat - origin.lat) * Math.PI)) / 180;
 
   return { x, y };
 }
