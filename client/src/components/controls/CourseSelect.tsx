@@ -66,7 +66,22 @@ const searchOptions: SearchOptions = {
   ],
 };
 
+const eventSearchOptions: SearchOptions = {
+  threshold: 0.4,
+  keys: [
+    {
+      name: 'name',
+      weight: 0.7,
+    },
+    {
+      name: 'description',
+      weight: 0.3,
+    },
+  ],
+};
+
 let fuzzy = new Fuse<CourseOverview>([], searchOptions);
+let fuzzyEvents = new Fuse<EventDTO>([], eventSearchOptions);
 
 const ListboxContainer = styled('div')`
   overflow: hidden;
@@ -262,8 +277,9 @@ const HelperLink = styled(Link)`
 const COURSE_CODE_REGEX = /^[A-Z]{4}[0-9]{4}$/;
 
 const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelect, handleRemove, termSelectRef }) => {
-  const [options, setOptionsState] = useState<CoursesList>([]);
+  const [options, setOptionsState] = useState<SearchOption[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
+  const [selectedEvents, setSelectedEvents] = useState<EventDTO[]>([]);
   const [selectedValue, setSelectedValue] = useState<CoursesList>([]);
   const [selectedFaculty, setSelectedFaculty] = useState<string>('');
 
@@ -340,8 +356,20 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     fuzzy = new Fuse(coursesList, searchOptions);
   }, [coursesList]);
 
+  useEffect(() => {
+    fuzzyEvents = new Fuse(eventsList, eventSearchOptions);
+  }, [eventsList]);
+
   // Generate a list of the user's selected courses
   useEffect(() => {
+    // Skips this if searching for events
+    if (searchMode === 'Events') return;
+
+    if (!selectedCourses.length) {
+      setSelectedValue([]);
+      return;
+    }
+
     if (!selectedCourses.length) {
       setSelectedValue([]);
       return;
@@ -353,7 +381,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
         .filter((overview): overview is CourseOverview => overview !== undefined),
     );
-  }, [selectedCourses, coursesList]);
+  }, [selectedCourses, coursesList, searchMode]);
 
   /**
    * @param courseCode A course code
@@ -385,34 +413,40 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }
   };
 
-  // The courses shown when a user clicks on the search bar
-  let defaultOptions = coursesList;
+  // Recalculates default options, memoized.
+  const defaultOptions = useMemo<SearchOption[]>(() => {
+    if (searchMode === 'Courses') {
+      let courseOptions = coursesList;
 
-  if (selectedFaculty) {
-    defaultOptions = defaultOptions.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-  }
+      if (selectedFaculty) {
+        const mappedFaculty = facultyNameMap[selectedFaculty];
+        courseOptions = courseOptions.filter((course) => course.faculty === mappedFaculty);
+      } else if (selectedValue.length > 0) {
+        const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
+        courseOptions = courseOptions.filter(
+          (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course),
+        );
+      }
 
-  if (selectedValue.length && !selectedFaculty) {
-    const courseAreas = selectedValue.map((course) => getCourseArea(course.code));
-
-    // If there are courses selected, filter the default options to include courses in the same area of study
-    defaultOptions = defaultOptions.filter(
-      (course) => courseAreas.includes(getCourseArea(course.code)) && !selectedValue.includes(course),
-    );
-  }
+      return courseOptions;
+    } else {
+      if (!selectedSociety) return eventsList;
+      return eventsList.filter((event) => event.name === selectedSociety);
+    }
+  }, [searchMode, coursesList, eventsList, selectedFaculty, selectedSociety, selectedValue]);
 
   /**
    * Refresh the list of courses to choose from
    * @param newOptions The new list of courses to choose from
    */
-  const setOptions = (newOptions: CoursesList) => {
+  const setOptions = (newOptions: SearchOption[]) => {
     listRef?.current?.scrollTo(0);
     setOptionsState(newOptions);
   };
 
   useEffect(() => {
     setOptions(defaultOptions);
-  }, [coursesList, selectedFaculty]);
+  }, [coursesList, eventsList, selectedFaculty, selectedSociety, searchMode]);
 
   /**
    * Filters the list of courses to only include the ones matching the search term
@@ -421,24 +455,41 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
   const search = (query: string) => {
     query = query.trim();
 
-    if (query.length === 0) {
-      setOptions(defaultOptions);
-      return defaultOptions;
+    if (searchMode === 'Events') {
+      let searchOptionsList = eventsList;
+      if (selectedSociety) {
+        searchOptionsList = searchOptionsList.filter((event) => event.name === selectedSociety);
+      }
+
+      if (query.length === 0) {
+        setOptions(searchOptionsList);
+        return;
+      }
+
+      const fuzzyInst = new Fuse<EventDTO>(searchOptionsList, eventSearchOptions);
+      const fuzzyResults = fuzzyInst.search(query).map((result) => result.item);
+      setOptions(fuzzyResults);
+      return;
+    } else {
+      if (query.length === 0) {
+        setOptions(defaultOptions);
+        return defaultOptions;
+      }
+
+      let searchOptionsList = coursesList;
+
+      if (selectedFaculty) {
+        searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
+      }
+
+      // create a new fuse instance with the searchOptionsList after filtering by faculty
+      // so that it allows for searching within the faculty's options
+      const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
+
+      const fuzzyResults = fuzzy.search(query).map((result) => result.item);
+
+      setOptions(fuzzyResults);
     }
-
-    let searchOptionsList = coursesList;
-
-    if (selectedFaculty) {
-      searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
-    }
-
-    // create a new fuse instance with the searchOptionsList after filtering by faculty
-    // so that it allows for searching within the faculty's options
-    const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
-
-    const fuzzyResults = fuzzy.search(query).map((result) => result.item);
-
-    setOptions(fuzzyResults);
   };
 
   // Add a delay between the search query changing and updating the search results
@@ -464,14 +515,22 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     setSelectedFaculty('');
   };
 
-  const keyOf = (x: { code: string; career: string }) => `${x.code}|${x.career}`;
+  const keyOf = (x: SearchOption) => {
+    if (isCourseOption(x)) {
+      return `${x.code}|${x.career}`;
+    }
+    return `${x.name}|${x.description}|${x.start.toISOString()}`;
+  };
+
   const mergedOptions = useMemo(() => {
-    const map = new Map<string, CourseOverview>();
+    const map = new Map<string, SearchOption>();
     options.forEach((x) => map.set(keyOf(x), x));
-    selectedValue.forEach((x) => map.set(keyOf(x), x));
+    if (searchMode === 'Courses') {
+      selectedValue.forEach((x) => map.set(keyOf(x), x));
+    }
 
     return Array.from(map.values());
-  }, [options, selectedValue]);
+  }, [options, selectedValue, searchMode]);
 
   const courseNotFound = useMemo(() => {
     const inputValTrim = inputValue.trim().toUpperCase();
@@ -597,7 +656,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         selectOnFocus={false}
         options={searchMode === 'Events' ? filteredEvents : mergedOptions}
         noOptionsText={'No Results'}
-        value={selectedValue}
+        value={searchMode === 'Events' ? selectedEvents : selectedValue}
         onChange={onChange}
         inputValue={inputValue}
         onBlur={() => {
@@ -607,12 +666,19 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         // Prevent built-in option filtering
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
-        isOptionEqualToValue={(option, value) =>
-          isCourseOption(option) &&
-          isCourseOption(value) &&
-          option.code === value.code &&
-          option.career === value.career
-        }
+        isOptionEqualToValue={(option, value) => {
+          // If both are courses, compare by code and career
+          if (isCourseOption(option) && isCourseOption(value)) {
+            return option.code === value.code && option.career === value.career;
+          }
+
+          // If both are events, compare by name and start time
+          if (!isCourseOption(option) && !isCourseOption(value)) {
+            return option.name === value.name && option.start.getTime() === value.start.getTime();
+          }
+
+          return false;
+        }}
         renderOption={(props, option, { index }) => {
           const { key, ...rest } = props;
 
@@ -679,7 +745,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
               setInputValue(event.target.value);
             }}
             onKeyDown={(event) => {
-              // Delete the latest selected course if backspace is pressed
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
                 setSelectedValue(selectedValue.slice(selectedValue.length - 1));
@@ -731,6 +796,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         )}
         renderTags={(value, getTagProps) =>
           (value as CoursesList).map((option: CourseOverview, index: number) => {
+            if (searchMode === 'Events') return null;
             const { key, ...rest } = getTagProps({ index });
 
             return (
