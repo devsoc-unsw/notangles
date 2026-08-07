@@ -50,7 +50,7 @@ const StyledMedia = styled('img')`
 `;
 
 // Note: this hard-coded value must be incremented for each new release of a promotional banner
-const CURRENT_PROMO_VERSION = 1;
+const CURRENT_PROMO_VERSION = 2;
 const NEW_FEATURE_PROMOTION_KEY = 'newfeatpromo';
 
 const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopupProps) => {

@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { daysShort } from '../constants/timetable';
 import { EventPeriod, EventSubtype } from '../interfaces/Periods';
+import { getEventEndTimeValue, getTimeValue } from './eventTimes';
 
 /**
  * Returns an event object with all the event info
@@ -67,10 +68,9 @@ export const parseAndCreateEventObj = (
   endTime: Date,
   subtype: EventSubtype,
 ): EventPeriod => {
-  const isMidnight = endTime.getHours() + endTime.getMinutes() / 60 === 0;
   const eventDay = daysShort.indexOf(day) + 1;
-  const eventStart = startTime.getHours() + startTime.getMinutes() / 60;
-  const eventEnd = isMidnight ? 24.0 : endTime.getHours() + endTime.getMinutes() / 60;
+  const eventStart = getTimeValue(startTime);
+  const eventEnd = getEventEndTimeValue(endTime);
 
   return createEventObj(name, location, description, color, eventDay, eventStart, eventEnd, subtype);
 };

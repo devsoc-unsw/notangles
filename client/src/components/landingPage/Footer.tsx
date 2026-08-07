@@ -1,12 +1,13 @@
 import DevSocLogo from '../../assets/devsoc_white.svg';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <div className="relative bottom-0 flex justify-center items-center w-full h-[250px] bg-blue-500">
       <div className="flex w-5/6 h-4/5 p-[10px] space-x-3">
         <div className="flex-col w-[670px] p-[5px]">
           <img src={DevSocLogo} alt="Devsoc Logo" />
-          <p className="text-white text-sm object-bottom">© 2025 — UNSW Software Development Society</p>
+          <p className="text-white text-sm object-bottom">© {currentYear} — UNSW Software Development Society</p>
         </div>
         <div className="p-[10px] hidden sm:flex">
           <p className="text-white">

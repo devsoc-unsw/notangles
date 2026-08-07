@@ -128,7 +128,15 @@ export const getAvailableTermDetails = async () => {
     firstDayOfTerm =
       termMapInfo.get(currTermId)?.startDate?.toLocaleDateString().split('/').reverse().join('-') || 'default-date';
 
-    const termsSortedList: TermDataList = sortTerms(Array.from(termMapInfo.keys()));
+    const termsSortedList: TermDataList = sortTerms(Array.from(termMapInfo.keys())).filter((termId) => {
+      const term = termId.substring(0, 2);
+      const termYear = parseInt(termId.substring(2), 10);
+      if (termYear > parseInt(currTermId.substring(2), 10) && term !== 'U1' && term !== 'T1') {
+        return false;
+      }
+      return true;
+    });
+
     // Store the term details in local storage.
     localStorage.setItem(
       'termData',
