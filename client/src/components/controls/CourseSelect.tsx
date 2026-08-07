@@ -299,11 +299,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   const societies = useMemo(() => Array.from(new Set(eventsList.map((event) => event.name))), [eventsList]);
 
-  const filteredEvents = useMemo(
-    () => (selectedSociety ? eventsList.filter((event) => event.name === selectedSociety) : eventsList),
-    [eventsList, selectedSociety],
-  );
-
   /**
    * @param society The name of the society to filter events by
    */
@@ -499,16 +494,23 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       search(inputValue);
       searchTimer.current = undefined;
     }, SEARCH_DELAY);
-  }, [inputValue, coursesList]);
+  }, [inputValue, coursesList, searchMode, eventsList, selectedFaculty, selectedSociety]);
 
+  // Handles selecting an event
   const onChange = (_: any, value: SearchOption[]) => {
-    // Selecting an event from the results is visual only
-    if (searchMode === 'Events') return;
+    // Selecting an event
+    if (searchMode === 'Events') {
+      setSelectedEvents(value as EventDTO[]);
+      return;
+    }
 
     const courseValue = value as CoursesList;
     if (courseValue.length > selectedValue.length) {
       handleSelect(courseValue[courseValue.length - 1].code);
       setSelectedValue([...courseValue]);
+    } else if (courseValue.length < selectedValue.length) {
+      const removed = selectedValue.find((s) => !courseValue.some((c) => c.code === s.code));
+      if (removed) handleRemove(removed.code);
     }
     setOptions(defaultOptions);
     setInputValue('');
@@ -536,9 +538,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     const inputValTrim = inputValue.trim().toUpperCase();
 
     if (!COURSE_CODE_REGEX.test(inputValTrim)) return false;
-
     const exists = mergedOptions.some(
-      (x) => x.code === inputValTrim && (x.career === 'Undergraduate' || x.career === 'Postgraduate'),
+      (x) =>
+        isCourseOption(x) && x.code === inputValTrim && (x.career === 'Undergraduate' || x.career === 'Postgraduate'),
     );
 
     return !exists;
@@ -654,7 +656,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         disableClearable
         disableListWrap
         selectOnFocus={false}
-        options={searchMode === 'Events' ? filteredEvents : mergedOptions}
+        options={searchMode === 'Events' ? options : mergedOptions}
         noOptionsText={'No Results'}
         value={searchMode === 'Events' ? selectedEvents : selectedValue}
         onChange={onChange}
@@ -683,12 +685,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           const { key, ...rest } = props;
 
           if (!isCourseOption(option)) {
+            const isSelected = selectedEvents.some(
+              (e) => e.name === option.name && e.start.getTime() === option.start.getTime(),
+            );
             return (
               <li key={key} {...rest}>
                 <StyledEventOption>
-                  <StyledIcon>
-                    <AddRounded />
-                  </StyledIcon>
+                  <StyledIcon>{isSelected ? <CheckRounded /> : <AddRounded />}</StyledIcon>
                   <EventSocietyName>{option.name}</EventSocietyName>
                   <EventDescription>{option.description}</EventDescription>
                   <EventDateLabel>{formatEventDate(option.start)}</EventDateLabel>
@@ -795,24 +798,36 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           />
         )}
         renderTags={(value, getTagProps) =>
-          (value as CoursesList).map((option: CourseOverview, index: number) => {
-            if (searchMode === 'Events') return null;
+          (value as SearchOption[]).map((option: SearchOption, index: number) => {
             const { key, ...rest } = getTagProps({ index });
-
-            return (
-              <StyledChip
-                key={key}
-                {...rest}
-                label={option.code}
-                color="primary"
-                backgroundColor={assignedColors[option.code]}
-                deleteIcon={<CloseRounded />}
-                onDelete={() => {
-                  setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
-                  handleRemove(option.code);
-                }}
-              />
-            );
+            if (searchMode === 'Events') {
+              // Return event
+              return (
+                <StyledChip
+                  key={key}
+                  {...rest}
+                  label={option.name}
+                  color="primary"
+                  backgroundColor={'green'}
+                  deleteIcon={<CloseRounded />}
+                />
+              );
+            } else if (isCourseOption(option)) {
+              return (
+                <StyledChip
+                  key={key}
+                  {...rest}
+                  label={option.code}
+                  color="primary"
+                  backgroundColor={assignedColors[option.code]}
+                  deleteIcon={<CloseRounded />}
+                  onDelete={() => {
+                    setSelectedValue(selectedValue.filter((course) => course.code !== option.code));
+                    handleRemove(option.code);
+                  }}
+                />
+              );
+            }
           })
         }
       />
