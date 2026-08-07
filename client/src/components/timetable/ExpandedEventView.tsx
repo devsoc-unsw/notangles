@@ -43,7 +43,7 @@ import { ColorDivider } from '../../styles/ExpandedViewStyles';
 import { to24Hour } from '../../utils/convertTo24Hour';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
 import { useEventDrag } from '../../utils/Drag';
-import { areValidEventTimes, createDateWithTime } from '../../utils/eventTimes';
+import { areValidEventTimes, createDateWithTime, getEventEndTimeValue, getTimeValue } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import DiscardDialog from './DiscardDialog';
 import DropdownOption from './DropdownOption';
@@ -154,8 +154,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
 
     const newEventTime = {
       day: daysShort.indexOf(newDays.toString()) + 1,
-      start: newStartTime.getHours() + newStartTime.getMinutes() / 60,
-      end: newEndTime.getHours() + newEndTime.getMinutes() / 60,
+      start: getTimeValue(newStartTime),
+      end: getEventEndTimeValue(newEndTime),
     };
     setCreatedEvents({
       ...createdEvents,
