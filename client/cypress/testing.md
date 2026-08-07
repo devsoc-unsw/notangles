@@ -14,7 +14,9 @@ Run `pnpm start`
 ## For the database
 In my device, but this can vary across different devices. Open Docker and run `docker compose up database-new`
 
-TBD
+First run `pnpm prisma generate` for the prisma and SQL DB
+
+To install GraphQL, `pnpm run graphql`
 
 ## For the actual test terminal
 Switch to the server directory by `cd client`
