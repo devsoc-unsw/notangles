@@ -498,9 +498,14 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
   // Handles selecting an event
   const onChange = (_: any, value: SearchOption[]) => {
-    // Selecting an event
+    // TODO: Selecting an event
     if (searchMode === 'Events') {
-      setSelectedEvents(value as EventDTO[]);
+      const eventValue = value as EventDTO[];
+      if (eventValue.length > selectedEvents.length) {
+      }
+      setSelectedEvents([...eventValue]);
+      setInputValue('');
+      setSelectedSociety('');
       return;
     }
 
@@ -658,7 +663,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         selectOnFocus={false}
         options={searchMode === 'Events' ? options : mergedOptions}
         noOptionsText={'No Results'}
-        value={searchMode === 'Events' ? selectedEvents : selectedValue}
+        value={selectedValue}
         onChange={onChange}
         inputValue={inputValue}
         onBlur={() => {
