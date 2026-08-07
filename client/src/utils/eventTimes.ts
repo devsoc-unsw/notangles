@@ -1,14 +1,32 @@
 /**
+ * @param time The time to convert
+ * @returns The time as a decimal hour in the range 0-23.99
+ */
+export const getTimeValue = (time: Date) => time.getHours() + time.getMinutes() / 60;
+
+/**
+ * @param time The event end time to convert
+ * @returns The event end time as a decimal hour, using 24 for midnight
+ */
+export const getEventEndTimeValue = (time: Date) => {
+  const timeValue = getTimeValue(time);
+  return timeValue === 0 ? 24 : timeValue;
+};
+
+/**
  * @param start The starting time of the event
  * @param end The ending time of the event
  * @returns Whether the start and end times represent a valid event
  */
 export const areValidEventTimes = (start: Date, end: Date) => {
+  const startTime = getTimeValue(start);
+  const endTime = getTimeValue(end);
+
   // Return true if the event ends at midnight
-  if (end.getHours() + end.getMinutes() / 60 === 0) {
+  if (endTime === 0) {
     return true;
   } else {
-    return start.getHours() + start.getMinutes() / 60 < end.getHours() + end.getMinutes() / 60;
+    return startTime < endTime;
   }
 };
 

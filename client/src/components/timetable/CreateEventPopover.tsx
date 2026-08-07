@@ -10,7 +10,7 @@ import { CreateEventPopoverProps } from '../../interfaces/PropTypes';
 import { ExecuteButton } from '../../styles/CustomEventStyles';
 import { StyledList } from '../../styles/DroppedCardStyles';
 import { parseAndCreateEventObj } from '../../utils/createEvent';
-import { areValidEventTimes } from '../../utils/eventTimes';
+import { areValidEventTimes, getEventEndTimeValue, getTimeValue } from '../../utils/eventTimes';
 import ColorPicker from '../controls/ColorPicker';
 import CustomEventGeneral from '../controls/CustomEventGeneral';
 
@@ -51,10 +51,8 @@ const CreateEventPopover: React.FC<CreateEventPopoverProps> = ({
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
 
   const createEvent = (day: string) => {
-    setEarliestStartTime(
-      Math.min(Math.floor(earliestStartTime), Math.floor(startTime.getHours() + startTime.getMinutes() / 60)),
-    );
-    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(endTime.getHours() + endTime.getMinutes() / 60)));
+    setEarliestStartTime(Math.min(Math.floor(earliestStartTime), Math.floor(getTimeValue(startTime))));
+    setLatestEndTime(Math.max(Math.ceil(latestEndTime), Math.ceil(getEventEndTimeValue(endTime))));
 
     // Updating the days of the week must be handled here otherwise
     // DroppedCards will not have the updated days and it will crash
