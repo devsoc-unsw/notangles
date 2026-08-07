@@ -24,7 +24,6 @@ const GET_COURSE_LIST: TypedDocumentNode<{ courses: FetchedCourse[] }, { term: s
       school
       course_code
       course_name
-      year
       terms
       uoc
     }
@@ -37,22 +36,19 @@ const GET_COURSE_LIST: TypedDocumentNode<{ courses: FetchedCourse[] }, { term: s
  *
  * Expected response format: {courses: [...]};
  *
- * @param year The year that the courses are offered in
  * @param term The term that the courses are offered in
  * @return A promise containing the list of course objects offered in the specified term
  *
  * @example
- * const coursesList = await getCoursesList(2026, 'T1')
+ * const coursesList = await getCoursesList('T1')
  */
-const getCoursesList = async (year: number, term: string): Promise<CoursesListWithDate> => {
+const getCoursesList = async (term: string): Promise<CoursesListWithDate> => {
   try {
     const { data } = await client.query({ query: GET_COURSE_LIST, variables: { term } });
     if (data === undefined) throw new NetworkError('Internal server error');
 
-    const courses = data.courses.filter((course: any) => course.terms.includes(term) && course.year === year);
-
     return {
-      courses: toCoursesList(courses),
+      courses: toCoursesList(data.courses),
     };
   } catch (error) {
     throw new NetworkError('Could not connect to server');
