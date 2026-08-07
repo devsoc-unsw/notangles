@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 
 export enum Env {
   DEV = 'development',
@@ -16,8 +16,11 @@ const HASURAGRES_GRAPHQL_API = 'https://graphql.csesoc.app/v1/graphql';
 const LOCAL = 'http://localhost:3001';
 
 export const client = new ApolloClient({
-  uri: HASURAGRES_GRAPHQL_API,
   cache: new InMemoryCache(),
+
+  link: new HttpLink({
+    uri: HASURAGRES_GRAPHQL_API,
+  }),
 });
 
 const API_CONFIG: Record<string, Config> = Object.freeze({

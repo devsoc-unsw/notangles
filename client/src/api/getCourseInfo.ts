@@ -1,14 +1,14 @@
-import { gql } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { client } from '../api/config';
 import { DbCourse, DbTimes } from '../interfaces/Database';
-import { GraphQLCourse } from '../interfaces/GraphQLCourseInfo';
+import { CoursesData, GetCourseInfoVars } from '../interfaces/GraphQLCourseInfo';
 import NetworkError from '../interfaces/NetworkError';
 import { CourseCode, CourseData } from '../interfaces/Periods';
 import { dbCourseToCourseData } from '../utils/DbCourse';
 import { graphQLCourseToDbCourse } from '../utils/graphQLCourseToDbCourse';
 
-const GET_COURSE_INFO = gql`
+const GET_COURSE_INFO: TypedDocumentNode<CoursesData, GetCourseInfoVars> = gql`
   query GetCourseInfo($courseCode: String!, $term: String!, $year: Int!) {
     courses(where: { course_code: { _eq: $courseCode }, year: { _eq: $year } }) {
       course_code
@@ -96,25 +96,28 @@ const sortUnique = (arr: number[]): number[] => {
  * @param term The term that the course is offered in
  * @param courseCode The code of the course to fetch
  * @param isConvertToLocalTimezone Whether the user wants to convert the course periods into their local timezone
+ * @param career The career of the course to fetch ("Undergraduate" or "Postgraduate")
  * @return A promise containing the information of the course that is offered in the
  * current year and term
  *
  * @example
- * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', true)
+ * const selectedCourseClasses = await getCourseInfo('T1', 'COMP1511', '2025', true, 'Undergraduate')
  */
 const getCourseInfo = async (
   term: string,
   courseCode: CourseCode,
-  year: number,
+  year: string,
   isConvertToLocalTimezone: boolean,
+  career?: string,
 ): Promise<CourseData> => {
   try {
-    const data: GraphQLCourse = await client.query({
+    const { data } = await client.query({
       query: GET_COURSE_INFO,
-      variables: { courseCode, term, year },
+      variables: { courseCode, term, year: Number(year) },
     });
+    if (data === undefined) throw new NetworkError('Internal server error');
 
-    const json: DbCourse = graphQLCourseToDbCourse(data);
+    const json: DbCourse = graphQLCourseToDbCourse(data, career);
     json.classes.forEach((dbClass) => {
       // Some courses split up a single class into two separate classes. e.g. CHEM1011 does it (as of 22T3)
       // because one half of the course is taught by one lecturer and the other half is taught by another.
@@ -140,10 +143,10 @@ const getCourseInfo = async (
             // Convert the numerical representation of the weeks the classes are running back to a string
             for (let k = 0; k < dbClassTimesList.length; k++) {
               if (k == 0 || k == dbClassTimesList.length - 1) {
-                newWeeks += dbClassTimesList[k];
+                newWeeks += String(dbClassTimesList[k]);
               } else if (isEndOfRange) {
                 // Add the start of the range
-                newWeeks += dbClassTimesList[k];
+                newWeeks += String(dbClassTimesList[k]);
                 isEndOfRange = false;
               }
 
@@ -154,7 +157,7 @@ const getCourseInfo = async (
 
               if (!isEndOfRange) {
                 // Add the end of the range (last consecutive number)
-                newWeeks += '-' + dbClassTimesList[k];
+                newWeeks += '-' + String(dbClassTimesList[k]);
 
                 // If this isn't the last week, we will need to add more weeks
                 if (k !== dbClassTimesList.length - 1) {
@@ -173,7 +176,6 @@ const getCourseInfo = async (
       }
     });
 
-    if (!json) throw new NetworkError('Internal server error');
     return dbCourseToCourseData(json, isConvertToLocalTimezone);
   } catch (error) {
     console.log(error);

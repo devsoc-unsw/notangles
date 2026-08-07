@@ -1,5 +1,5 @@
 import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useEffect, useRef } from 'react';
 
 import { borderRadius } from '../../constants/theme';

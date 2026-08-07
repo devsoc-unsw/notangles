@@ -1,5 +1,5 @@
 import { Box, Divider, Stack } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import FooterInfo from './FooterInfo';

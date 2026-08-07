@@ -1,6 +1,6 @@
 import { LocationOn, PeopleAlt, Warning } from '@mui/icons-material';
 import { yellow } from '@mui/material/colors';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React, { useContext } from 'react';
 
 import { unknownErrorMessage } from '../../constants/timetable';

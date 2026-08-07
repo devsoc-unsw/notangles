@@ -21,7 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import Fuse from 'fuse.js';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
@@ -337,7 +337,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     Science: 'Faculty of Science',
   };
 
-  const searchTimer = useRef<number | undefined>();
+  const searchTimer = useRef<number | undefined>(undefined);
   const listRef = useRef<VariableSizeList | null>(null);
 
   const { coursesList } = useContext(AppContext);
@@ -365,15 +365,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
       return;
     }
 
-    if (!selectedCourses.length) {
-      setSelectedValue([]);
-      return;
-    }
-
     setSelectedValue(
       selectedCourses
-        .map((x) => x.code) // Get the course code of each course
-        .map((code) => coursesList.find((course) => course.code === code)) // Get the corresponding CourseOverview for each CourseData object
+        // Get the corresponding CourseOverview for each CourseData object
+        .map((x) => coursesList.find((course) => course.code === x.code && course.career === x.career))
         .filter((overview): overview is CourseOverview => overview !== undefined),
     );
   }, [selectedCourses, coursesList, searchMode]);
@@ -468,7 +463,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     } else {
       if (query.length === 0) {
         setOptions(defaultOptions);
-        return defaultOptions;
+        return;
       }
 
       let searchOptionsList = coursesList;
@@ -477,10 +472,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         searchOptionsList = searchOptionsList.filter((course) => course.faculty === facultyNameMap[selectedFaculty]);
       }
 
-      // create a new fuse instance with the searchOptionsList after filtering by faculty
-      // so that it allows for searching within the faculty's options
       const fuzzy = new Fuse<CourseOverview>(searchOptionsList, searchOptions);
-
       const fuzzyResults = fuzzy.search(query).map((result) => result.item);
 
       setOptions(fuzzyResults);
@@ -496,13 +488,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     }, SEARCH_DELAY);
   }, [inputValue, coursesList, searchMode, eventsList, selectedFaculty, selectedSociety]);
 
-  // Handles selecting an event
+  // Handles selecting an event or course
   const onChange = (_: any, value: SearchOption[]) => {
-    // TODO: Selecting an event
     if (searchMode === 'Events') {
       const eventValue = value as EventDTO[];
-      if (eventValue.length > selectedEvents.length) {
-      }
       setSelectedEvents([...eventValue]);
       setInputValue('');
       setSelectedSociety('');
@@ -511,11 +500,13 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
 
     const courseValue = value as CoursesList;
     if (courseValue.length > selectedValue.length) {
-      handleSelect(courseValue[courseValue.length - 1].code);
-      setSelectedValue([...courseValue]);
+      const added = courseValue[courseValue.length - 1];
+      handleSelect({ code: added.code, career: added.career });
+      setSelectedValue(courseValue);
     } else if (courseValue.length < selectedValue.length) {
-      const removed = selectedValue.find((s) => !courseValue.some((c) => c.code === s.code));
+      const removed = selectedValue.find((s) => !courseValue.some((c) => c.code === s.code && c.career === s.career));
       if (removed) handleRemove(removed.code);
+      setSelectedValue(courseValue);
     }
     setOptions(defaultOptions);
     setInputValue('');
@@ -674,12 +665,10 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
         filterOptions={(o) => o}
         ListboxComponent={ListboxComponent}
         isOptionEqualToValue={(option, value) => {
-          // If both are courses, compare by code and career
           if (isCourseOption(option) && isCourseOption(value)) {
             return option.code === value.code && option.career === value.career;
           }
 
-          // If both are events, compare by name and start time
           if (!isCourseOption(option) && !isCourseOption(value)) {
             return option.name === value.name && option.start.getTime() === value.start.getTime();
           }
@@ -711,7 +700,9 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             <li key={key} {...rest}>
               <StyledOption>
                 <StyledIcon>
-                  {selectedValue.find((course: CourseOverview) => course.code === option.code) ? (
+                  {selectedValue.find(
+                    (course: CourseOverview) => course.code === option.code && course.career === option.career,
+                  ) ? (
                     <CheckRounded />
                   ) : (
                     <AddRounded />
@@ -755,7 +746,7 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
             onKeyDown={(event) => {
               if (event.key === 'Backspace' && inputValue === '' && selectedValue.length > 0) {
                 event.stopPropagation();
-                setSelectedValue(selectedValue.slice(selectedValue.length - 1));
+                setSelectedValue(selectedValue.slice(0, selectedValue.length - 1));
                 handleRemove(selectedValue[selectedValue.length - 1].code);
               }
             }}
@@ -806,7 +797,6 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
           (value as SearchOption[]).map((option: SearchOption, index: number) => {
             const { key, ...rest } = getTagProps({ index });
             if (searchMode === 'Events') {
-              // Return event
               return (
                 <StyledChip
                   key={key}

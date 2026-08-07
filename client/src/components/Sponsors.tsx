@@ -1,22 +1,15 @@
 import { Box, Link, Stack } from '@mui/material';
 import styled from '@mui/system/styled';
-import { useContext } from 'react';
 
-import airwallexBlack from '../assets/sponsors/airwallex_black.png';
-import airwallexWhite from '../assets/sponsors/airwallex_white.png';
+import { useGetUserSettingsQuery } from '../api/user/queries';
 import aristaBlack from '../assets/sponsors/arista_black.png';
 import aristaWhite from '../assets/sponsors/arista_white.png';
-import atlassian from '../assets/sponsors/atlassian.png';
-import hrt from '../assets/sponsors/hrt.png';
 import janeStreetBlack from '../assets/sponsors/jane_street_black.svg';
 import janeStreetWhite from '../assets/sponsors/jane_street_white.svg';
-import lyraBlack from '../assets/sponsors/lyra_black.svg';
-import lyraWhite from '../assets/sponsors/lyra_white.svg';
-import qrtWhite from '../assets/sponsors/qrt_white.svg';
-import qrtBlack from '../assets/sponsors/qrt_black.svg';
+import safetyCultureBlack from '../assets/sponsors/safetyculture_black.png';
+import safetyCultureWhite from '../assets/sponsors/safetyculture_white.png';
 import theTradeDeskBlack from '../assets/sponsors/thetradedesk_black.png';
 import theTradeDeskWhite from '../assets/sponsors/thetradedesk_white.png';
-import { AppContext } from '../context/AppContext';
 
 const SponsorBox = styled(Box)`
   padding-top: 10px;
@@ -47,51 +40,31 @@ const StyledGoldSponsorLogo = styled(StyledPlatinumSponsorLogo)`
 `;
 
 const Sponsors = () => {
-  const { isDarkMode } = useContext(AppContext);
+  const { isDarkMode } = useGetUserSettingsQuery();
 
   const platinumSponsorData = [
-    {
-      name: 'Hudson River Trading',
-      logo: hrt,
-      link: 'https://hudsonrivertrading.com',
-    },
-    {
-      name: 'Jane Street',
-      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
-      link: 'https://www.janestreet.com/',
-    },
-    {
-      name: 'theTradeDesk',
-      logo: isDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
-      link: 'https://careers.thetradedesk.com',
-    },
-    {
-      name: 'Lyra',
-      logo: isDarkMode ? lyraWhite : lyraBlack,
-      link: 'https://www.lyratechnologies.com.au/',
-    },
-  ];
-
-  const goldSponsorData = [
-    {
-      name: 'Airwallex',
-      logo: isDarkMode ? airwallexWhite : airwallexBlack,
-      link: 'https://www.airwallex.com/au',
-    },
     {
       name: 'Arista',
       logo: isDarkMode ? aristaWhite : aristaBlack,
       link: 'https://www.arista.com/en/',
     },
     {
-      name: 'Atlassian',
-      logo: atlassian,
-      link: 'https://atlassian.com',
+      name: 'theTradeDesk',
+      logo: isDarkMode ? theTradeDeskWhite : theTradeDeskBlack,
+      link: 'https://careers.thetradedesk.com',
+    },
+  ];
+
+  const goldSponsorData = [
+    {
+      name: 'Jane Street',
+      logo: isDarkMode ? janeStreetWhite : janeStreetBlack,
+      link: 'https://www.janestreet.com/',
     },
     {
-      name: 'QRT',
-      logo: isDarkMode ? qrtWhite : qrtBlack,
-      link: 'https://www.qube-rt.com/',
+      name: 'SafetyCulture',
+      logo: isDarkMode ? safetyCultureWhite : safetyCultureBlack,
+      link: 'https://safetyculture.com/',
     },
   ];
 
@@ -99,11 +72,13 @@ const Sponsors = () => {
     <SponsorBox>
       <h1 className="text-lg font-bold">Our Sponsors</h1>
       <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction={{ xs: 'column', md: 'row' }}
-        marginY={3}
+        direction={{ xs: 'column', lg: 'row' }}
         spacing={{ xs: 1.5, sm: 2, lg: 8 }}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginY: 3,
+        }}
       >
         {platinumSponsorData.map((sponsor, index) => {
           return (
@@ -114,11 +89,13 @@ const Sponsors = () => {
         })}
       </Stack>
       <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction={{ xs: 'column', md: 'row' }}
-        marginY={3}
+        direction={{ xs: 'column', lg: 'row' }}
         spacing={{ xs: 1.5, sm: 2, lg: 14 }}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginY: 3,
+        }}
       >
         {goldSponsorData.map((sponsor, index) => {
           return (

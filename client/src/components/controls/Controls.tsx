@@ -1,13 +1,15 @@
 import { Box, Grid } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useRef } from 'react';
+import { styled } from '@mui/material/styles';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router';
 
 import { ControlsProps } from '../../interfaces/PropTypes';
+import UserProfile from '../sidebar/friends/UserProfile';
 import Autotimetabler from './Autotimetabler';
 import CourseSelect from './CourseSelect';
 import CustomEvents from './CustomEvent';
 import History from './History';
-import TermSelect, { TermSelectHandle } from './TermSelect';
+import TermSelect from './TermSelect';
 
 const TermSelectWrapper = styled(Box)`
   flex: 0 0 auto;
@@ -16,6 +18,20 @@ const TermSelectWrapper = styled(Box)`
   min-width: 140px;
   display: flex;
   align-items: flex-start;
+`;
+
+const FriendTimetableLabelContainer = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: ${({ theme }) => theme.palette.secondary.light};
+  border: 0.75px solid;
+  border-color: ${({ theme }) => theme.palette.text.primary};
+  padding: 10px 0;
+  border-top-left-radius: ${({ theme }) => theme.shape.borderRadius}px;
+  border-top-right-radius: ${({ theme }) => theme.shape.borderRadius}px;
+  font-weight: 700;
 `;
 
 const SelectWrapper = styled(Box)`
@@ -52,35 +68,71 @@ const Controls: React.FC<ControlsProps> = ({
   handleSelectCourse,
   handleRemoveCourse,
 }) => {
-  const termSelectRef = useRef<TermSelectHandle>(null);
+  const location = useLocation();
+  const additionalControlsDisplay = useMemo(() => {
+    if (location.pathname !== '/home') {
+      return (
+        <>
+          <TermSelectWrapper>
+            <TermSelect />
+          </TermSelectWrapper>
+          <FriendTimetableLabelContainer>
+            <UserProfile firstName="Sunny" lastName="Chen" overrideCollapse={true} />
+          </FriendTimetableLabelContainer>
+        </>
+      );
+    }
+    return (
+      <>
+        <Grid
+          container
+          direction="row"
+          size={{
+            xs: 12,
+            md: 6.5,
+          }}
+        >
+          <TermSelectWrapper>
+            <TermSelect />
+          </TermSelectWrapper>
+
+          <SelectWrapper minWidth={'296px'}>
+            <CourseSelect
+              assignedColors={assignedColors}
+              handleSelect={handleSelectCourse}
+              handleRemove={handleRemoveCourse}
+            />
+          </SelectWrapper>
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+          size={{
+            xs: 12,
+            md: 5.5,
+          }}
+        >
+          <CustomEventsWrapper>
+            <CustomEvents />
+          </CustomEventsWrapper>
+          <AutotimetablerWrapper>
+            <Autotimetabler handleSelectClass={handleSelectClass} />
+          </AutotimetablerWrapper>
+          <HistoryWrapper>
+            <History />
+          </HistoryWrapper>
+        </Grid>
+      </>
+    );
+  }, [location.pathname, assignedColors, handleSelectCourse, handleRemoveCourse, handleSelectClass]);
 
   return (
     <Grid container sx={{ paddingLeft: '66px' }} spacing={2}>
-      <Grid item container xs={12} md={6.5} direction="row">
-        <TermSelectWrapper>
-          <TermSelect ref={termSelectRef} />
-        </TermSelectWrapper>
-
-        <SelectWrapper minWidth={'296px'}>
-          <CourseSelect
-            assignedColors={assignedColors}
-            handleSelect={handleSelectCourse}
-            handleRemove={handleRemoveCourse}
-            termSelectRef={termSelectRef}
-          />
-        </SelectWrapper>
-      </Grid>
-      <Grid item container direction="row" alignItems="center" justifyContent="space-between" xs={12} md={5.5}>
-        <CustomEventsWrapper>
-          <CustomEvents />
-        </CustomEventsWrapper>
-        <AutotimetablerWrapper>
-          <Autotimetabler handleSelectClass={handleSelectClass} />
-        </AutotimetablerWrapper>
-        <HistoryWrapper>
-          <History />
-        </HistoryWrapper>
-      </Grid>
+      {additionalControlsDisplay}
     </Grid>
   );
 };

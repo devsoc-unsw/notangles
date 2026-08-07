@@ -1,5 +1,6 @@
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import React, { type JSX, useContext, useLayoutEffect, useRef, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { unknownErrorMessage } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -19,7 +20,8 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   const [cardKeys] = useState<Map<ClassCard, number>>(new Map<ClassCard, number>());
   const [cellWidth, setCellWidth] = useState(0);
 
-  const { isHideExamClasses, days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
+  const { hideExamClasses } = useGetUserSettingsQuery();
+  const { days, setErrorVisibility, setAlertMsg } = useContext(AppContext);
   const { selectedCourses, selectedClasses, createdEvents } = useContext(CourseContext);
 
   const droppedClasses: JSX.Element[] = [];
@@ -44,7 +46,7 @@ const DroppedCards: React.FC<DroppedCardsProps> = ({
   // Get all scheduled and unscheduled periods
   Object.entries(selectedClasses).forEach(([courseCode, activities]) => {
     Object.entries(activities).forEach(([activity, classData]) => {
-      if (isHideExamClasses && activity === 'Exam') return;
+      if (hideExamClasses && activity === 'Exam') return;
 
       if (classData) {
         // The current period is a scheduled

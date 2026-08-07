@@ -1,6 +1,6 @@
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Link, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 const privacyQuestions = [
@@ -199,14 +199,12 @@ const StyledAccordion = styled(Accordion)`
 `;
 
 const StyledAccordionSummary = styled(AccordionSummary)`
-  backgroundColor: ${({ theme }) => theme.palette.background.default};,
-  color: ${({ theme }) => theme.palette.primary.main};,
+  color: ${({ theme }) => theme.palette.text.primary};
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
 const StyledAccordionDetails = styled(AccordionDetails)`
-  backgroundColor: ${({ theme }) => theme.palette.background.default};,
-  color: ${({ theme }) => theme.palette.primary.main};,
+  color: ${({ theme }) => theme.palette.text.primary};
   border-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
@@ -223,8 +221,8 @@ const Privacy: React.FC = () => {
       <StyledAccordion key={index}>
         <StyledAccordionSummary
           expandIcon={<ExpandMore />}
-          aria-controls={`privacyPanel${index}-content`}
-          id={`privacyPanel${index}-header`}
+          aria-controls={`privacyPanel${String(index)}-content`}
+          id={`privacyPanel${String(index)}-header`}
         >
           <StyledTitle gutterBottom variant="body2">
             {title}

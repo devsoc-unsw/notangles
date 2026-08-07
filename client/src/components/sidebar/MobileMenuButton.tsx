@@ -27,7 +27,10 @@ const StyledMobileMenu = styled('button')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 
   '&:hover': {
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.dark : theme.palette.secondary.light,
+    backgroundColor: theme.palette.secondary.light,
+    ...theme.applyStyles('dark', {
+      backgroundColor: theme.palette.secondary.dark,
+    }),
   },
 
   boxShadow: `

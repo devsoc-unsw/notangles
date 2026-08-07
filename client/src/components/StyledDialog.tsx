@@ -1,6 +1,6 @@
 import { Close as CloseIcon } from '@mui/icons-material';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 const ContentContainer = styled('div')`
