@@ -7,5 +7,7 @@ export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:5173/",
     blockHosts: ['*.clarity.ms'],
+    viewportHeight: 900,
+    viewportWidth: 1280
   },
 });
