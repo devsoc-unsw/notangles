@@ -138,7 +138,15 @@ const App: React.FC = () => {
   const location = useLocation();
   const { preferredTheme, isDarkMode, unscheduleClassesByDefault, convertToLocalTimezone } = useGetUserSettingsQuery();
 
-  const decodedAssignedColors = useColorsDecoder(assignedColors, preferredTheme);
+  const decodedColors = useColorsDecoder(Object.values(assignedColors), preferredTheme);
+  const decodedAssignedColors = useMemo(
+    () =>
+      Object.keys(assignedColors).reduce<Record<string, string>>((object, key, index) => {
+        object[key] = decodedColors[index];
+        return object;
+      }, {}),
+    [assignedColors, decodedColors],
+  );
 
   setDropzoneRange(days.length, earliestStartTime, latestEndTime);
 

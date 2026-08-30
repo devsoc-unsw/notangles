@@ -40,10 +40,7 @@ const ColorOptions: FC<ColorOptionsProps> = ({
     [isDarkMode, preferredTheme],
   );
 
-  const decodedColors = useColorsDecoder(
-    colors.reduce((obj, color, index) => ({ ...obj, [index]: color }), {}),
-    preferredTheme,
-  );
+  const decodedColors = useColorsDecoder(colors, preferredTheme);
 
   return (
     <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
