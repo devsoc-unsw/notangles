@@ -10,6 +10,7 @@ import { daysLong, shortDayToIndex, timetableWidth } from '../../../constants/ti
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
 import DroppedCards from './DroppedCards';
 import TimetableLayout from './TimetableLayout';
+import { DAY_TO_INDEX, parseClassTimeRange } from './timetableTime';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -81,14 +82,15 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
       cls.times.forEach((time) => {
-        const dayIndex = shortDayToIndex[time.day];
-        if (dayIndex > acc.latestDay) {
+        const dayIndex = DAY_TO_INDEX[time.day];
+        if (dayIndex !== undefined && dayIndex > acc.latestDay) {
           acc.latestDay = dayIndex;
         }
-        // time field is "09:00 - 10:00"
-        const [startTime, endTime] = time.time.split(' - ');
-        const startHour = parseInt(startTime.split(':')[0], 10);
-        const endHour = parseInt(endTime.split(':')[0], 10);
+        const timeRange = parseClassTimeRange(time.time);
+        if (!timeRange) return;
+
+        const startHour = Math.floor(timeRange.startMinutes / 60);
+        const endHour = Math.ceil(timeRange.endMinutes / 60);
         if (startHour < acc.earliestStartHour) {
           acc.earliestStartHour = startHour;
         }
