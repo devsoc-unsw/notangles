@@ -53,7 +53,7 @@ export class TimetableService {
   async getCourses(
     userId: string,
     timetableId: string,
-  ): Promise<{ courseId: string; colour: string }[]> {
+  ): Promise<TimetableCourse[]> {
     const timetableExists = await this.isTimetableOwnedByUser(
       userId,
       timetableId,
@@ -62,7 +62,7 @@ export class TimetableService {
 
     const courses = await this.prisma.course.findMany({
       where: { timetableId },
-      select: { courseId: true, colour: true },
+      select: { courseId: true, colour: true, selectedClasses: true },
     });
     return courses;
   }
@@ -230,7 +230,7 @@ export class TimetableService {
     );
     validate(
       classDetails!.activity !== undefined &&
-        classDetails!.activity !== 'Course Enrollment',
+        classDetails!.activity !== 'Course Enrolment',
       'Class is not a valid course class',
       HttpStatus.BAD_REQUEST,
     );
