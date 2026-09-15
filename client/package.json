@@ -34,7 +34,7 @@
     "date-fns": "2.30.0",
     "dayjs": "1.11.13",
     "file-saver": "2.0.5",
-    "framer-motion": "12.23.3",
+    "motion": "12.23.3",
     "fuse.js": "7.1.0",
     "ics": "3.8.1",
     "is-base64": "1.1.0",
