@@ -6,12 +6,12 @@ import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
 import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery } from '../../../api/timetable/queries';
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
-import { daysLong, timetableWidth } from '../../../constants/timetable';
+import { daysLong, gridGap, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
+import { parseClassTimeRange } from '../../../utils/time';
 import DroppedCards from './DroppedCards';
 import TimetableClasses from './TimetableClasses';
 import TimetableLayout from './TimetableLayout';
-import { DAY_TO_INDEX, parseClassTimeRange } from './timetableTime';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -24,7 +24,7 @@ const StyledTimetable = styled(Box, {
   padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
-  grid-gap: 1px;
+  grid-gap: ${gridGap}px;
   grid-template:
     auto repeat(${({ rows }) => rows}, 1fr)
     / auto repeat(${({ cols }) => cols}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
@@ -83,7 +83,7 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
       cls.times.forEach((time) => {
-        const dayIndex = DAY_TO_INDEX[time.day];
+        const dayIndex = shortDayToIndex[time.day];
         if (dayIndex !== undefined && dayIndex > acc.latestDay) {
           acc.latestDay = dayIndex;
         }

@@ -1,8 +1,21 @@
+import { MoreHoriz } from '@mui/icons-material';
 import { Card } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import type { CSSProperties, PointerEventHandler } from 'react';
 
-import { rowHeight } from '../../../constants/timetable';
+import { gridGap, rowHeight } from '../../../constants/timetable';
+import { ExpandButton, getTimeSlotStyle } from '../../../styles/DroppedCardStyles';
+
+const ClassExpandButton = styled(ExpandButton)`
+  color: #f5f5f5;
+  opacity: 0;
+  pointer-events: none;
+
+  @media (hover: none) {
+    opacity: 0.4;
+    pointer-events: auto;
+  }
+`;
 
 interface StyledClassCardProps {
   gridColumn?: number;
@@ -18,25 +31,37 @@ const StyledClassCard = styled(Card, {
     !['gridColumn', 'inventoryIndex', 'offsetMinutes', 'durationMinutes', 'backgroundColour', 'squareEdges'].includes(
       prop.toString(),
     ),
-})<StyledClassCardProps>(
-  ({ theme, gridColumn, inventoryIndex, offsetMinutes = 0, durationMinutes, backgroundColour, squareEdges }) => ({
+})<StyledClassCardProps>(({
+  theme,
+  gridColumn,
+  inventoryIndex,
+  offsetMinutes = 0,
+  durationMinutes,
+  backgroundColour,
+  squareEdges,
+}) => {
+  const timeSlotStyle = getTimeSlotStyle(offsetMinutes, durationMinutes ?? 0);
+  return {
     ...(gridColumn === undefined
       ? {}
       : {
           gridColumn,
           gridRow: '2 / -1',
           alignSelf: 'start',
-          transform: `translateY(${theme.spacing(
-            (inventoryIndex === undefined ? (offsetMinutes / 60) * rowHeight : inventoryIndex * (rowHeight + 1)) / 8,
-          )})`,
-          height: inventoryIndex === undefined ? Math.max(((durationMinutes ?? 0) / 60) * rowHeight, 28) : rowHeight,
+          ...(inventoryIndex === undefined
+            ? { ...timeSlotStyle, height: Math.max(0, timeSlotStyle.height - 1) }
+            : {
+                transform: `translateY(${(inventoryIndex * (rowHeight + gridGap)).toString()}px)`,
+                height: rowHeight - 1,
+              }),
         }),
     boxSizing: 'border-box',
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    width: '100%',
-    minHeight: 28,
+    width: 'calc(100% - 1px)',
+    minHeight: inventoryIndex === undefined ? 0 : 28,
     padding: '6px 8px',
     overflow: 'hidden',
     zIndex: 20,
@@ -44,8 +69,15 @@ const StyledClassCard = styled(Card, {
     backgroundColor: backgroundColour,
     borderRadius: squareEdges ? 0 : theme.shape.borderRadius,
     boxShadow: '0 1px 3px rgb(0 0 0 / 20%)',
-  }),
-);
+    '&:hover .class-expand-button, &:focus-within .class-expand-button': {
+      opacity: 0.4,
+      pointerEvents: 'auto',
+    },
+    '& .class-expand-button:hover, & .class-expand-button:focus-visible': {
+      opacity: 1,
+    },
+  };
+});
 
 const CardHeader = styled('div')`
   display: flex;
@@ -74,11 +106,12 @@ interface ClassCardProps extends StyledClassCardProps {
   title: string;
   details?: string;
   onPointerDown?: PointerEventHandler<HTMLDivElement>;
+  onExpand?: () => void;
   isDragSource?: boolean;
   style?: CSSProperties;
 }
 
-const ClassCard = ({ title, details, onPointerDown, isDragSource, style, ...styleProps }: ClassCardProps) => (
+const ClassCard = ({ title, details, onPointerDown, onExpand, isDragSource, style, ...styleProps }: ClassCardProps) => (
   <StyledClassCard
     {...styleProps}
     title={[title, details].filter(Boolean).join(' — ')}
@@ -89,6 +122,23 @@ const ClassCard = ({ title, details, onPointerDown, isDragSource, style, ...styl
       <CardTitle>{title}</CardTitle>
     </CardHeader>
     {details && <CardDetails>{details}</CardDetails>}
+    {onExpand && !isDragSource && (
+      <ClassExpandButton
+        className="class-expand-button"
+        aria-label={`Show details for ${title}`}
+        aria-haspopup="dialog"
+        disableRipple
+        onPointerDown={(event) => {
+          event.stopPropagation();
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          onExpand();
+        }}
+      >
+        <MoreHoriz fontSize="large" />
+      </ClassExpandButton>
+    )}
   </StyledClassCard>
 );
 
