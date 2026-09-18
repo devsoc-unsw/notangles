@@ -47,9 +47,12 @@ export interface UpdateSelectedClassParams {
   previousClassId: string | null;
 }
 
+export const selectedClassMutationKey = ['selectedClass'] as const;
+
 export const useUpdateSelectedClass = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    mutationKey: selectedClassMutationKey,
     mutationFn: ({ timetableId, courseId, classId }: UpdateSelectedClassParams) =>
       updateSelectedClass({ timetableId, courseId, classId }),
     onMutate: async ({ timetableId, courseId, classId, previousClassId }) => {
@@ -86,6 +89,7 @@ export const useUpdateSelectedClass = () => {
 export const useRemoveSelectedClass = () => {
   const queryClient = useQueryClient();
   return useMutation({
+    mutationKey: selectedClassMutationKey,
     mutationFn: removeSelectedClass,
     onMutate: async ({ timetableId, courseId, classId }) => {
       const queryKey = ['timetable', timetableId, 'courses'];

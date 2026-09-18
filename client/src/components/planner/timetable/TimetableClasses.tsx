@@ -1,13 +1,23 @@
+import { Alert, Snackbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useIsMutating, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import type { TimetableClass } from '../../../api/times/times';
+import {
+  selectedClassMutationKey,
+  useRemoveSelectedClass,
+  useUpdateSelectedClass,
+} from '../../../api/timetable/mutations';
 import type { TimetableCourse } from '../../../api/timetable/routes';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
+import { shortDayToIndex } from '../../../constants/timetable';
 import { decodeColor } from '../../../utils/colors';
+import { parseClassTimeRange } from '../../../utils/time';
 import ClassCard from './ClassCard';
 import ClassDropzone from './ClassDropzone';
-import { DAY_TO_INDEX, parseClassTimeRange } from './timetableTime';
+import ExpandedClassView from './ExpandedClassView';
 import { type ClassDragSource, getClassDropSlots, useClassDrag } from './useClassDrag';
 import { useTimetableClasses } from './useTimetableClasses';
 
@@ -26,7 +36,35 @@ interface TimetableClassesProps {
 const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestStartHour }: TimetableClassesProps) => {
   const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
   const { scheduledClasses, unscheduledActivities, unresolvedSelectedClassIds } = useTimetableClasses(courses, classes);
-  const { drag, startDrag, registerDropzone } = useClassDrag(timetableId);
+  const queryClient = useQueryClient();
+  const updateClass = useUpdateSelectedClass();
+  const removeClass = useRemoveSelectedClass();
+  const isSaving = useIsMutating({ mutationKey: selectedClassMutationKey }) > 0;
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [expandedClass, setExpandedClass] = useState<{ classId: string; timeIndex: number | null } | null>(null);
+  const expandedClassData = scheduledClasses.find(
+    ({ classData }) => classData.class_id === expandedClass?.classId,
+  )?.classData;
+
+  const canDrag = () => queryClient.isMutating({ mutationKey: selectedClassMutationKey }) === 0;
+  const { drag, startDrag, registerDropzone } = useClassDrag(timetableId, {
+    canDrag,
+    onDrop: (source, target) => {
+      if (!canDrag()) return;
+      setSaveFailed(false);
+      const options = {
+        onError: () => {
+          setSaveFailed(true);
+        },
+      };
+      const params = { timetableId, courseId: source.courseId };
+      if (target.type === 'class') {
+        updateClass.mutate({ ...params, classId: target.classId, previousClassId: source.classId }, options);
+      } else if (source.classId !== null) {
+        removeClass.mutate({ ...params, classId: source.classId }, options);
+      }
+    },
+  });
   const dropSlots = drag ? getClassDropSlots(drag.source, classes) : [];
   const isDragSource = (courseId: string, activity: string) =>
     drag?.source.courseId === courseId && drag.source.activity === activity;
@@ -80,7 +118,7 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
     <>
       {scheduledClasses.flatMap(({ course, classData }) =>
         classData.times.flatMap((classTime, index) => {
-          const dayIndex = DAY_TO_INDEX[classTime.day];
+          const dayIndex = shortDayToIndex[classTime.day];
           const timeRange = parseClassTimeRange(classTime.time);
           if (dayIndex === undefined || dayIndex >= dayCount || !timeRange) return [];
 
@@ -95,12 +133,23 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
               title={`${classData.course.course_code} ${classData.activity}`}
               details={hideClassInfo ? undefined : `${classData.section} · ${classTime.location}`}
               isDragSource={isDragSource(course.courseId, classData.activity)}
-              onPointerDown={(event) => {
-                startDrag(event, {
-                  ...makeSource(course, classData, classData.class_id, index),
-                  details: hideClassInfo ? undefined : `${classData.section} · ${classTime.location}`,
-                });
-              }}
+              onExpand={
+                drag
+                  ? undefined
+                  : () => {
+                      setExpandedClass({ classId: classData.class_id, timeIndex: index });
+                    }
+              }
+              onPointerDown={
+                isSaving
+                  ? undefined
+                  : (event) => {
+                      startDrag(event, {
+                        ...makeSource(course, classData, classData.class_id, index),
+                        details: hideClassInfo ? undefined : `${classData.section} · ${classTime.location}`,
+                      });
+                    }
+              }
             />
           );
         }),
@@ -115,8 +164,15 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
             inventoryIndex={inventoryIndex}
             squareEdges={isSquareEdges}
             isDragSource={source ? isDragSource(source.courseId, source.activity) : false}
+            onExpand={
+              source?.classId && !drag
+                ? () => {
+                    if (source.classId !== null) setExpandedClass({ classId: source.classId, timeIndex: null });
+                  }
+                : undefined
+            }
             onPointerDown={
-              source
+              source && !isSaving
                 ? (event) => {
                     startDrag(event, { ...source, details: cardProps.details });
                   }
@@ -178,6 +234,31 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
           )}
         </>
       )}
+      {expandedClass && expandedClassData && (
+        <ExpandedClassView
+          classData={expandedClassData}
+          timeIndex={expandedClass.timeIndex}
+          handleClose={() => {
+            setExpandedClass(null);
+          }}
+        />
+      )}
+      <Snackbar
+        open={saveFailed}
+        autoHideDuration={6000}
+        onClose={(_event, reason) => {
+          if (reason !== 'clickaway') setSaveFailed(false);
+        }}
+      >
+        <Alert
+          severity="error"
+          onClose={() => {
+            setSaveFailed(false);
+          }}
+        >
+          Could not save your class selection. Please try again.
+        </Alert>
+      </Snackbar>
     </>
   );
 };
