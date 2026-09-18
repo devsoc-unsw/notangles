@@ -4,6 +4,7 @@ import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
 import {
   CourseDetails,
+  TimetableCourse,
   UserTimetable,
   EventParametersDto,
   EditEventParametersDto,

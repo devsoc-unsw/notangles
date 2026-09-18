@@ -1,7 +1,8 @@
 import { Card } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import type { CSSProperties, PointerEventHandler } from 'react';
 
-import { TIMETABLE_ROW_HEIGHT } from './TimetableLayout';
+import { rowHeight } from '../../../constants/timetable';
 
 interface StyledClassCardProps {
   gridColumn?: number;
@@ -26,14 +27,9 @@ const StyledClassCard = styled(Card, {
           gridRow: '2 / -1',
           alignSelf: 'start',
           transform: `translateY(${theme.spacing(
-            (inventoryIndex === undefined
-              ? (offsetMinutes / 60) * TIMETABLE_ROW_HEIGHT
-              : inventoryIndex * (TIMETABLE_ROW_HEIGHT + 1)) / 8,
+            (inventoryIndex === undefined ? (offsetMinutes / 60) * rowHeight : inventoryIndex * (rowHeight + 1)) / 8,
           )})`,
-          height:
-            inventoryIndex === undefined
-              ? Math.max(((durationMinutes ?? 0) / 60) * TIMETABLE_ROW_HEIGHT, 28)
-              : TIMETABLE_ROW_HEIGHT,
+          height: inventoryIndex === undefined ? Math.max(((durationMinutes ?? 0) / 60) * rowHeight, 28) : rowHeight,
         }),
     boxSizing: 'border-box',
     display: 'flex',
@@ -77,10 +73,18 @@ const CardDetails = styled('div')`
 interface ClassCardProps extends StyledClassCardProps {
   title: string;
   details?: string;
+  onPointerDown?: PointerEventHandler<HTMLDivElement>;
+  isDragSource?: boolean;
+  style?: CSSProperties;
 }
 
-const ClassCard = ({ title, details, ...styleProps }: ClassCardProps) => (
-  <StyledClassCard {...styleProps} title={[title, details].filter(Boolean).join(' — ')}>
+const ClassCard = ({ title, details, onPointerDown, isDragSource, style, ...styleProps }: ClassCardProps) => (
+  <StyledClassCard
+    {...styleProps}
+    title={[title, details].filter(Boolean).join(' — ')}
+    onPointerDown={onPointerDown}
+    style={{ cursor: onPointerDown ? 'grab' : undefined, opacity: isDragSource ? 0.35 : 1, ...style }}
+  >
     <CardHeader>
       <CardTitle>{title}</CardTitle>
     </CardHeader>
