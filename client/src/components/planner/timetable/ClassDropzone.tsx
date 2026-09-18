@@ -2,7 +2,7 @@ import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import type { RefCallback } from 'react';
 
-import { TIMETABLE_ROW_HEIGHT } from './TimetableLayout';
+import { rowHeight } from '../../../constants/timetable';
 
 interface ClassDropzoneProps {
   gridColumn: number;
@@ -10,7 +10,7 @@ interface ClassDropzoneProps {
   durationMinutes?: number;
   backgroundColour: string;
   highlighted: boolean;
-  isScheduled?: boolean;
+  isUnscheduled?: boolean;
   squareEdges: boolean;
   location?: string;
   label: string;
@@ -25,7 +25,7 @@ const StyledDropzone = styled('div', {
       'durationMinutes',
       'backgroundColour',
       'highlighted',
-      'isScheduled',
+      'isUnscheduled',
       'squareEdges',
     ].includes(prop.toString()),
 })<Omit<ClassDropzoneProps, 'elementRef' | 'label' | 'location'>>(
@@ -36,19 +36,19 @@ const StyledDropzone = styled('div', {
     durationMinutes = 0,
     backgroundColour,
     highlighted,
-    isScheduled,
+    isUnscheduled,
     squareEdges,
   }) => ({
     gridColumn,
     gridRow: '2 / -1',
-    alignSelf: isScheduled ? 'stretch' : 'start',
-    transform: `translateY(${theme.spacing(((offsetMinutes / 60) * TIMETABLE_ROW_HEIGHT) / 8)})`,
-    height: isScheduled ? undefined : Math.max((durationMinutes / 60) * TIMETABLE_ROW_HEIGHT, 28),
+    alignSelf: isUnscheduled ? 'stretch' : 'start',
+    transform: `translateY(${theme.spacing(((offsetMinutes / 60) * rowHeight) / 8)})`,
+    height: isUnscheduled ? undefined : Math.max((durationMinutes / 60) * rowHeight, 28),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     pointerEvents: 'none',
-    zIndex: 30,
+    zIndex: 200,
     color: '#fff',
     backgroundColor: backgroundColour,
     opacity: highlighted ? 0.85 : 0.4,
@@ -59,7 +59,7 @@ const StyledDropzone = styled('div', {
 
 const ClassDropzone = ({ elementRef, label, location, ...props }: ClassDropzoneProps) => (
   <StyledDropzone ref={elementRef} {...props} aria-label={label} data-drop-highlighted={props.highlighted}>
-    {props.isScheduled ? 'Unscheduled' : location?.includes('Online') ? <VideocamOutlined /> : <PersonOutline />}
+    {props.isUnscheduled ? 'Unscheduled' : location?.includes('Online') ? <VideocamOutlined /> : <PersonOutline />}
   </StyledDropzone>
 );
 

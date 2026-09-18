@@ -35,6 +35,30 @@ export const addTimetableCourse = async ({
   await apiClient.post(`/user/timetables/course/${timetableId}/${courseId}`, { colour });
 };
 
+export const updateSelectedClass = async ({
+  timetableId,
+  courseId,
+  classId,
+}: {
+  timetableId: string;
+  courseId: string;
+  classId: string;
+}): Promise<void> => {
+  await apiClient.patch(`/user/timetables/class/${timetableId}/${courseId}`, { classId });
+};
+
+export const removeSelectedClass = async ({
+  timetableId,
+  courseId,
+  classId,
+}: {
+  timetableId: string;
+  courseId: string;
+  classId: string;
+}): Promise<void> => {
+  await apiClient.delete(`/user/timetables/class/${timetableId}/${courseId}/${classId}`);
+};
+
 interface TimetableInfo {
   id: string;
   name: string;

@@ -33,7 +33,7 @@ const BaseCell = styled('div', {
 `;
 
 const GridCell = styled(BaseCell)`
-  height: ${TIMETABLE_ROW_HEIGHT}px;
+  height: ${rowHeight}px;
 `;
 
 const HourCell = styled(GridCell, {
@@ -42,7 +42,7 @@ const HourCell = styled(GridCell, {
   padding: 0 ${headerPadding}px;
   display: grid;
   justify-content: ${({ is12HourMode }) => (is12HourMode ? 'end' : 'center')};
-  margin-top: -${TIMETABLE_ROW_HEIGHT / 2 + 1}px;
+  margin-top: -${rowHeight / 2 + 1}px;
   outline: none;
 `;
 

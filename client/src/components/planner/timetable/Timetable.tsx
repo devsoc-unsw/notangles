@@ -6,9 +6,10 @@ import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
 import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery } from '../../../api/timetable/queries';
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
-import { daysLong, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
+import { daysLong, timetableWidth } from '../../../constants/timetable';
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
 import DroppedCards from './DroppedCards';
+import TimetableClasses from './TimetableClasses';
 import TimetableLayout from './TimetableLayout';
 import { DAY_TO_INDEX, parseClassTimeRange } from './timetableTime';
 
@@ -163,7 +164,6 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
           earliestStartHour={earliestStartHour}
           latestEndHour={latestEndHour}
         />
-        {/* <Dropzones assignedColors={assignedColors} /> */}
         <DroppedCards
           timetableId={timetableId}
           numberOfDays={cols}
@@ -172,6 +172,14 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
           eventCopied={copiedEvent !== undefined}
           setCopiedEvent={setCopiedEvent}
           handlePasteEvent={handlePasteEvent}
+        />
+        <TimetableClasses
+          key={[timetableId, term.year, term.term].join('-')}
+          timetableId={timetableId}
+          courses={courses}
+          classes={classTimes}
+          dayCount={cols}
+          earliestStartHour={earliestStartHour}
         />
       </StyledTimetable>
     </StyledTimetableScroll>
