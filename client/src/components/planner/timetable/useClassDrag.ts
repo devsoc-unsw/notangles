@@ -1,7 +1,8 @@
 import { type PointerEvent as ReactPointerEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
-import { DAY_TO_INDEX, parseClassTimeRange } from './timetableTime';
+import { shortDayToIndex } from '../../../constants/timetable';
+import { parseClassTimeRange } from '../../../utils/time';
 
 export interface ClassDragSource {
   courseId: string;
@@ -37,7 +38,7 @@ export const getClassDropSlots = (source: ClassDragSource, classes: TimetableCla
     .filter((cls) => cls.course_id === source.courseId && cls.activity === source.activity)
     .flatMap((classData) =>
       classData.times.flatMap((time, timeIndex) => {
-        const dayIndex = DAY_TO_INDEX[time.day];
+        const dayIndex = shortDayToIndex[time.day];
         const range = parseClassTimeRange(time.time);
         if (dayIndex === undefined || !range) return [];
         if (
@@ -93,7 +94,12 @@ interface ClassDragState {
   height: number;
 }
 
-export const useClassDrag = (timetableId: string) => {
+interface ClassDragOptions {
+  canDrag: () => boolean;
+  onDrop: (source: ClassDragSource, target: ClassDropTarget) => void;
+}
+
+export const useClassDrag = (timetableId: string, { canDrag, onDrop }: ClassDragOptions) => {
   const [drag, setDrag] = useState<ClassDragState | null>(null);
   const dropzones = useRef(new Map<string, Dropzone>());
   const cleanup = useRef<(() => void) | null>(null);
@@ -111,7 +117,7 @@ export const useClassDrag = (timetableId: string) => {
   }, []);
 
   const startDrag = (event: ReactPointerEvent<HTMLDivElement>, source: ClassDragSource) => {
-    if (!event.isPrimary || event.button !== 0 || cleanup.current) return;
+    if (!event.isPrimary || event.button !== 0 || cleanup.current || !canDrag()) return;
     if (event.target instanceof Element && event.target.closest('button, a, input, [role="button"]')) return;
 
     const element = event.currentTarget;
@@ -124,17 +130,23 @@ export const useClassDrag = (timetableId: string) => {
     let active = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    const getRect = () => ({
+      left: bounds.left + x - startX,
+      top: bounds.top + y - startY,
+      width: bounds.width,
+      height: bounds.height,
+    });
+
     const update = () => {
-      const rect = {
-        left: bounds.left + x - startX,
-        top: bounds.top + y - startY,
-        width: bounds.width,
-        height: bounds.height,
-      };
+      const rect = getRect();
       setDrag({ timetableId, source, ...rect, target: findClassDropTarget(rect, dropzones.current.values()) });
     };
 
     const begin = () => {
+      if (!canDrag()) {
+        cancel();
+        return;
+      }
       active = true;
       element.setPointerCapture(pointerId);
       update();
@@ -173,7 +185,18 @@ export const useClassDrag = (timetableId: string) => {
     };
 
     const end = (endEvent: PointerEvent) => {
-      if (endEvent.pointerId === pointerId) cancel();
+      if (endEvent.pointerId !== pointerId) return;
+      x = endEvent.clientX;
+      y = endEvent.clientY;
+      const hasMoved = Math.hypot(x - startX, y - startY) > 4;
+      const target =
+        active && hasMoved && endEvent.type === 'pointerup' && canDrag()
+          ? findClassDropTarget(getRect(), dropzones.current.values())
+          : null;
+      cancel();
+      if (!target) return;
+      if (target.type === 'class' ? target.classId === source.classId : source.classId === null) return;
+      onDrop(source, target);
     };
     const keydown = (keyEvent: KeyboardEvent) => {
       if (keyEvent.key === 'Escape') cancel();

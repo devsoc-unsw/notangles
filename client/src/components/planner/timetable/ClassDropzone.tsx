@@ -2,7 +2,7 @@ import { PersonOutline, VideocamOutlined } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import type { RefCallback } from 'react';
 
-import { rowHeight } from '../../../constants/timetable';
+import { getTimeSlotStyle } from '../../../styles/DroppedCardStyles';
 
 interface ClassDropzoneProps {
   gridColumn: number;
@@ -42,8 +42,7 @@ const StyledDropzone = styled('div', {
     gridColumn,
     gridRow: '2 / -1',
     alignSelf: isUnscheduled ? 'stretch' : 'start',
-    transform: `translateY(${theme.spacing(((offsetMinutes / 60) * rowHeight) / 8)})`,
-    height: isUnscheduled ? undefined : Math.max((durationMinutes / 60) * rowHeight, 28),
+    ...(isUnscheduled ? {} : getTimeSlotStyle(offsetMinutes, durationMinutes)),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
