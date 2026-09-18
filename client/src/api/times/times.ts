@@ -139,21 +139,45 @@ export const useCoursesInfoQuery = (courseIds: string[]) => {
 type CoursesClassTimesQueryType = TypedDocumentNode<
   {
     classes: {
+      activity: string;
+      course_enrolment: string;
       times: {
         day: string;
         time: string;
+        weeks: string;
+        location: string;
       }[];
     }[];
   },
   { courseIds: string[]; year: number; term: string }
 >;
 
+const weeksStringToArray = (weeks: string): number[] => {
+  // Converts from "1-5,7,9-12" to [1,2,3,4,5,7,9,10,11,12]
+  const result: number[] = [];
+  for (const part of weeks.split(',')) {
+    if (part.includes('-')) {
+      const [start, end] = part.split('-').map(Number);
+      for (let i = start; i <= end; i++) {
+        result.push(i);
+      }
+    } else {
+      result.push(Number(part));
+    }
+  }
+  return result;
+};
+
 export const COURSES_CLASS_TIMES_QUERY: CoursesClassTimesQueryType = gql`
   query GetCoursesClassTimes($courseIds: [String!]!, $year: Int!, $term: String!) {
     classes(where: { course_id: { _in: $courseIds }, year: { _eq: $year }, term: { _eq: $term } }) {
+      activity
+      course_enrolment
       times {
         day
         time
+        weeks
+        location
       }
     }
   }

@@ -83,6 +83,10 @@ export const reorderTimetables = async (orderedIds: string[]): Promise<void> => 
   await apiClient.patch('/user/timetables/reorder', { ids: orderedIds });
 };
 
+export const getTimetableEvents = async (timetableId: string): Promise<string[]> => {
+  return (await apiClient.get<string[]>(`/user/timetables/events/${timetableId}`)).data;
+};
+
 interface TimetableEvent {
   id: string;
   timetableId: string;
@@ -134,4 +138,23 @@ export const addEvent = async ({
       location,
     },
   });
+};
+
+export interface EditEventParams {
+  eventId: string;
+  colour: string;
+  dayOfWeek: number; // 0 = Monday, 6 = Sunday
+  start: number; // Mins since midnight
+  end: number; // Mins since midnight
+  title: string;
+  description?: string;
+  location?: string;
+}
+
+export const updateEvent = async ({ eventId, ...event }: EditEventParams): Promise<void> => {
+  await apiClient.patch(`/user/timetables/event/${eventId}`, event);
+};
+
+export const deleteEvent = async ({ eventId }: { eventId: string }): Promise<void> => {
+  await apiClient.delete(`/user/timetables/event/${eventId}`);
 };

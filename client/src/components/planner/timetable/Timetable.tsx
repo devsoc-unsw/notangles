@@ -1,23 +1,15 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 
 import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
-import { useTimetableCoursesQuery } from '../../../api/timetable/queries';
+import { useAddTimetableEvent } from '../../../api/timetable/mutations';
+import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery } from '../../../api/timetable/queries';
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
+import { daysLong, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
+import { EventCard, EventTime } from '../../../interfaces/Timetable';
+import DroppedCards from './DroppedCards';
 import TimetableLayout from './TimetableLayout';
-
-// TODO: Organise timetable constants better
-const timetableWidth = 1100;
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const shortDayToIndex: Record<string, number> = {
-  Mon: 0,
-  Tue: 1,
-  Wed: 2,
-  Thu: 3,
-  Fri: 4,
-  Sat: 5,
-  Sun: 6,
-};
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -57,7 +49,35 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
     term.term,
   );
 
-  // TODO: Integrate events into timetable sizing
+  const eventIds = useTimetableEventsQuery(timetableId);
+  const events = useEventInfoQueries(eventIds);
+
+  const [copiedEvent, setCopiedEvent] = useState<EventCard | undefined>(undefined);
+
+  const eventCreateMutation = useAddTimetableEvent();
+  const handlePasteEvent = (
+    pasteTime: EventTime,
+    setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>,
+  ) => {
+    if (copiedEvent === undefined) return;
+
+    // TODO: Consider events that go over the day boundary
+    // Currently not possible as we restrict events to be within a single day, but could break in the future...
+    eventCreateMutation.mutate({
+      event: {
+        timetableId,
+        colour: copiedEvent.color,
+        title: copiedEvent.name,
+        location: copiedEvent.location,
+        type: copiedEvent.eventType,
+        start: pasteTime.start,
+        end: pasteTime.start + (copiedEvent.time.end - copiedEvent.time.start),
+        dayOfWeek: pasteTime.day,
+      },
+    });
+    setContextMenu(null);
+  };
+
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
       cls.times.forEach((time) => {
@@ -78,26 +98,79 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
       });
       return acc;
     },
-    {
-      latestDay: 4, // Friday
-      earliestStartHour: 9,
-      latestEndHour: 18,
-    },
+    events.reduce(
+      (acc, event) => {
+        if (event.dayOfWeek > acc.latestDay) {
+          acc.latestDay = event.dayOfWeek;
+        }
+        const hour = Math.floor(event.start / 60);
+        if (hour < acc.earliestStartHour) {
+          acc.earliestStartHour = hour;
+        }
+        const endHour = Math.ceil(event.end / 60);
+        if (endHour > acc.latestEndHour) {
+          acc.latestEndHour = endHour;
+        }
+        return acc;
+      },
+      {
+        latestDay: 4, // Friday
+        earliestStartHour: 9,
+        latestEndHour: 18,
+      },
+    ),
   );
 
   const cols = Math.max(5, latestDay + 1); // At least Monday to Friday
   const rows = latestEndHour - earliestStartHour; // Each hour is a row
 
+  const eventCards: EventCard[] = events
+    .map((event) => ({
+      type: 'event' as const,
+      name: event.title,
+      location: event.location ?? undefined,
+      color: event.colour,
+      eventType: event.type,
+      eventId: event.id,
+      description: event.description ?? undefined,
+      time: {
+        day: event.dayOfWeek,
+        start: event.start,
+        end: event.end,
+      },
+    }))
+    .sort((a, b) => {
+      // Sorting keeps events in a consistent order (good for transitions)
+      if (a.time.day !== b.time.day) {
+        return a.time.day - b.time.day;
+      }
+      if (a.time.start !== b.time.start) {
+        return a.time.start - b.time.start;
+      }
+      if (a.time.end !== b.time.end) {
+        return a.time.end - b.time.end;
+      }
+      return a.name.localeCompare(b.name);
+    });
+
   return (
     <StyledTimetableScroll id="StyledTimetableScroll">
       <StyledTimetable cols={cols} rows={rows}>
         <TimetableLayout
-          days={days.slice(0, cols)}
+          days={daysLong.slice(0, cols)}
           earliestStartHour={earliestStartHour}
           latestEndHour={latestEndHour}
         />
         {/* <Dropzones assignedColors={assignedColors} /> */}
-        {/* <DroppedCards days={days.slice(0, cols)/> */}
+        <DroppedCards
+          timetableId={timetableId}
+          numberOfDays={cols}
+          earliestStartHour={earliestStartHour}
+          events={eventCards}
+          eventCopied={copiedEvent !== undefined}
+          setCopiedEvent={setCopiedEvent}
+          handlePasteEvent={handlePasteEvent}
+        />
       </StyledTimetable>
     </StyledTimetableScroll>
   );

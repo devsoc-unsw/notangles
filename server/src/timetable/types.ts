@@ -25,13 +25,16 @@ export enum Term {
   T3 = 'T3',
 }
 
-export class EventParametersDto {
+export class EditEventParametersDto {
   colour: string;
   dayOfWeek: number; // 0 = Monday, 6 = Sunday
   start: number; // Mins since midnight
   end: number; // Mins since midnight
-  type: EventType;
   title: string;
   description?: string;
   location?: string;
+}
+
+export class EventParametersDto extends EditEventParametersDto {
+  type: EventType;
 }

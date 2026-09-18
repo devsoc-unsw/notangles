@@ -5,12 +5,15 @@ import {
   AddEventParams,
   addTimetableCourse,
   createTimetable,
+  deleteEvent,
   deleteTimetable,
   duplicateTimetable,
+  EditEventParams,
   makePrimaryTimetable,
   removeTimetableCourse,
   renameTimetable,
   reorderTimetables,
+  updateEvent,
 } from './routes';
 
 export const useRemoveTimetableCourse = () => {
@@ -133,6 +136,64 @@ export const useAddTimetableEvent = () => {
     mutationFn: ({ event }: { event: AddEventParams }) => addEvent(event),
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.event.timetableId] });
+    },
+  });
+};
+
+export const useDeleteTimetableEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ eventId }: { timetableId: string; eventId: string }) => deleteEvent({ eventId }),
+    onSuccess: async (_data, variables, _context) => {
+      await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId] });
+    },
+  });
+};
+
+export const useUpdateTimetableEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (event: EditEventParams) => updateEvent(event),
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['event', variables.eventId] });
+    },
+  });
+};
+
+export const useSaveTimetableEvent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      timetableId,
+      event,
+      eventType,
+      additionalDays,
+    }: {
+      timetableId: string;
+      event: EditEventParams;
+      eventType: AddEventParams['type'];
+      additionalDays: number[];
+    }) => {
+      await updateEvent(event);
+      for (const dayOfWeek of additionalDays) {
+        await addEvent({
+          timetableId,
+          colour: event.colour,
+          dayOfWeek,
+          start: event.start,
+          end: event.end,
+          type: eventType,
+          title: event.title,
+          description: event.description,
+          location: event.location,
+        });
+      }
+    },
+    onSettled: async (_data, _error, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['event', variables.event.eventId] });
+      if (variables.additionalDays.length > 0) {
+        await queryClient.invalidateQueries({ queryKey: ['timetable', variables.timetableId, 'events'] });
+      }
     },
   });
 };

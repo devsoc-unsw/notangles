@@ -16,7 +16,7 @@ import {
 import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
-import { EventParametersDto } from './types';
+import { EditEventParametersDto, EventParametersDto } from './types';
 
 @Controller('user/timetables')
 export class TimetableController {
@@ -238,6 +238,15 @@ export class TimetableController {
     );
   }
 
+  @Get('events/:timetableId')
+  @UseGuards(AuthenticatedGuard)
+  async getEvents(
+    @Req() req: AuthenticatedRequest,
+    @Param('timetableId') timetableId: string,
+  ) {
+    return await this.timetableService.getEvents(req.user.id, timetableId);
+  }
+
   @Get('event/:eventId')
   @UseGuards(AuthenticatedGuard)
   async getEventById(
@@ -312,7 +321,7 @@ export class TimetableController {
   async updateEvent(
     @Req() req: AuthenticatedRequest,
     @Param('eventId') eventId: string,
-    @Body() body: EventParametersDto,
+    @Body() body: EditEventParametersDto,
   ) {
     try {
       await this.timetableService.updateEvent(req.user.id, eventId, body);

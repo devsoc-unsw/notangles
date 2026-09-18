@@ -1,7 +1,13 @@
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 
 import { Term } from '../times/times';
-import { getTimetableCourses, getTimetableIds, getTimetableInfo } from '../timetable/routes';
+import {
+  getEventInfo,
+  getTimetableCourses,
+  getTimetableEvents,
+  getTimetableIds,
+  getTimetableInfo,
+} from '../timetable/routes';
 
 export const useTimetableIdsQuery = (term: Term) =>
   useSuspenseQuery({
@@ -15,6 +21,12 @@ export const useTimetableCoursesQuery = (timetableId: string) =>
     queryFn: () => getTimetableCourses(timetableId),
   }).data;
 
+export const useTimetableInfoQuery = (timetableId: string) =>
+  useSuspenseQuery({
+    queryKey: ['timetable', timetableId, 'info'],
+    queryFn: () => getTimetableInfo(timetableId),
+  }).data;
+
 export const useTimetableInfoQueries = (timetableIds: string[]) => {
   const queries = useSuspenseQueries({
     queries: timetableIds.map((id) => ({
@@ -26,8 +38,25 @@ export const useTimetableInfoQueries = (timetableIds: string[]) => {
   return queries.map((query) => query.data);
 };
 
-export const useTimetableInfoQuery = (timetableId: string) =>
+export const useTimetableEventsQuery = (timetableId: string) =>
   useSuspenseQuery({
-    queryKey: ['timetable', timetableId, 'info'],
-    queryFn: () => getTimetableInfo(timetableId),
+    queryKey: ['timetable', timetableId, 'events'],
+    queryFn: () => getTimetableEvents(timetableId),
   }).data;
+
+export const useEventInfoQuery = (eventId: string) =>
+  useSuspenseQuery({
+    queryKey: ['event', eventId],
+    queryFn: () => getEventInfo(eventId),
+  }).data;
+
+export const useEventInfoQueries = (eventIds: string[]) => {
+  const queries = useSuspenseQueries({
+    queries: eventIds.map((id) => ({
+      queryKey: ['event', id],
+      queryFn: () => getEventInfo(id),
+    })),
+  });
+
+  return queries.map((query) => query.data);
+};

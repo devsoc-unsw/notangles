@@ -2,7 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GraphqlService } from 'src/graphql/graphql.service';
 import { validate } from 'src/utils/validate';
-import { CourseDetails, UserTimetable, EventParametersDto } from './types';
+import {
+  CourseDetails,
+  UserTimetable,
+  EventParametersDto,
+  EditEventParametersDto,
+} from './types';
 import type { ClassDetails } from 'src/graphql/types';
 import { EventType } from '../generated/prisma/enums';
 import { EventMinAggregateOutputType } from '../generated/prisma/models/Event';
@@ -594,6 +599,21 @@ export class TimetableService {
     ]);
   }
 
+  async getEvents(userId: string, timetableId: string): Promise<string[]> {
+    const timetableExists = await this.isTimetableOwnedByUser(
+      userId,
+      timetableId,
+    );
+    validate(timetableExists, 'Timetable does not exist', HttpStatus.NOT_FOUND);
+
+    const events = await this.prisma.event.findMany({
+      where: { timetableId },
+      select: { id: true },
+    });
+
+    return events.map((e) => e.id);
+  }
+
   async getEvent(userId: string, eventId: string): Promise<Event> {
     try {
       const event = await this.prisma.event.findUnique({
@@ -700,7 +720,7 @@ export class TimetableService {
   async updateEvent(
     userId: string,
     eventId: string,
-    eventDetails: EventParametersDto,
+    eventDetails: EditEventParametersDto,
   ): Promise<void> {
     if (!(await this.isEventOwnedByUser(userId, eventId))) {
       throw new HttpException('Event could not be found', HttpStatus.NOT_FOUND);

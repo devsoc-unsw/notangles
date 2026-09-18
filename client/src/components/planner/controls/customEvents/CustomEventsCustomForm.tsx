@@ -4,12 +4,11 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 
 import { useAddTimetableEvent } from '../../../../api/timetable/mutations';
+import { daysShort } from '../../../../constants/timetable';
 import { StyledListItem } from '../../../../styles/ControlStyles';
 import { StyledListItemText } from '../../../../styles/CustomEventStyles';
 import { areValidEventTimes, createDateWithTime } from '../../../../utils/eventHelpers';
 import DropdownOption from '../../timetable/DropdownOption';
-
-const DAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
 interface CustomEventsCustomFormProps {
   timetableId: string;
@@ -43,7 +42,7 @@ const CustomEventsCustomForm = forwardRef(
               event: {
                 timetableId,
                 colour: color,
-                dayOfWeek: DAYS_SHORT.indexOf(day),
+                dayOfWeek: daysShort.indexOf(day),
                 start: startMins,
                 end: isMidnight ? 24 * 60 : endMins,
                 type: 'CUSTOM',
@@ -75,10 +74,6 @@ const CustomEventsCustomForm = forwardRef(
       }),
       [handleCreateEvent],
     );
-
-    const handleFormat = (newFormats: string[]) => {
-      setEventDays(newFormats);
-    };
 
     return (
       <>
@@ -154,8 +149,10 @@ const CustomEventsCustomForm = forwardRef(
         <DropdownOption
           optionName="Days"
           optionState={eventDays}
-          setOptionState={handleFormat}
-          optionChoices={DAYS_SHORT}
+          setOptionState={(newDays: string[]) => {
+            setEventDays(newDays);
+          }}
+          optionChoices={daysShort}
           multiple={true}
           noOff
         />

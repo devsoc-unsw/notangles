@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, List, ListItem, Popover, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, CircularProgress, List, ListItem, Popover, TextField } from '@mui/material';
 import { Colorful } from '@uiw/react-color';
 import { useMemo, useState } from 'react';
 
@@ -14,6 +14,8 @@ interface ColorPickerProps {
   handleOpenColorPicker: (event: React.MouseEvent<HTMLElement>) => void;
   handleCloseColorPicker: () => void;
   handleSaveNewColor?: () => void;
+  saveDisabled?: boolean;
+  saveLoading?: boolean;
 }
 
 const ColorPicker: React.FC<ColorPickerProps> = ({
@@ -23,6 +25,8 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   handleOpenColorPicker,
   handleCloseColorPicker,
   handleSaveNewColor,
+  saveDisabled,
+  saveLoading,
 }) => {
   // Whether the colour picker popover is shown
   const openColorPickerPopover = Boolean(colorPickerAnchorEl);
@@ -49,8 +53,21 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             Choose Colour
           </Button>
           {handleSaveNewColor && (
-            <Button variant="contained" size="small" onClick={handleSaveNewColor} disableElevation>
-              Save
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleSaveNewColor}
+              disabled={saveDisabled}
+              disableElevation
+            >
+              {saveLoading ? (
+                <>
+                  <CircularProgress size={14} color="inherit" sx={{ mr: 1 }} />
+                  Saving...
+                </>
+              ) : (
+                'Save'
+              )}
             </Button>
           )}
         </ButtonGroup>

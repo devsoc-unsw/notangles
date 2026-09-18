@@ -68,6 +68,20 @@ const CustomEventsTutoringForm = forwardRef(
           const endMins = parseInt(event.endTime.split(':')[0], 10) * 60 + parseInt(event.endTime.split(':')[1], 10);
           const isMidnight = endMins === 0;
 
+          let activity = selectedClass.activity;
+          if (activity === 'Tutorial-Laboratory') {
+            // Measure duration of an event in minutes across a date boundary
+            const duration = isMidnight
+              ? 24 * 60 - startMins
+              : endMins >= startMins
+                ? endMins - startMins
+                : 24 * 60 - startMins + endMins;
+
+            activity = duration <= 60 ? 'Tutorial' : 'Laboratory';
+          }
+
+          console.log(selectedClass);
+
           eventCreateMutation.mutate(
             {
               event: {
@@ -77,7 +91,7 @@ const CustomEventsTutoringForm = forwardRef(
                 start: startMins,
                 end: isMidnight ? 24 * 60 : endMins,
                 type: 'TUTORING',
-                title: `${selectedCourseCode} - ${selectedClass.activity}`,
+                title: `${selectedCourseCode} ${activity}`,
                 description: selectedClass.section,
                 location: event.location,
               },
