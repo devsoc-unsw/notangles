@@ -3,6 +3,7 @@ import { type PointerEvent as ReactPointerEvent, useCallback, useEffect, useRef,
 import type { TimetableClass } from '../../../api/times/times';
 import { shortDayToIndex } from '../../../constants/timetable';
 import { parseClassTimeRange } from '../../../utils/time';
+import type { ClassCardMetadata } from './useTimetableClasses';
 
 export interface ClassDragSource {
   courseId: string;
@@ -11,6 +12,7 @@ export interface ClassDragSource {
   timeIndex: number | null;
   title: string;
   details?: string;
+  metadata?: ClassCardMetadata;
   backgroundColour: string;
 }
 
