@@ -1,10 +1,12 @@
-import { MoreHoriz } from '@mui/icons-material';
+import { LocationOn, MoreHoriz, PeopleAlt, Warning } from '@mui/icons-material';
 import { Card } from '@mui/material';
+import { yellow } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import type { CSSProperties, PointerEventHandler } from 'react';
 
 import { gridGap, rowHeight } from '../../../constants/timetable';
 import { ExpandButton, getTimeSlotStyle } from '../../../styles/DroppedCardStyles';
+import type { ClassCardMetadata } from './useTimetableClasses';
 
 const ClassExpandButton = styled(ExpandButton)`
   color: #f5f5f5;
@@ -60,9 +62,13 @@ const StyledClassCard = styled(Card, {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    fontSize: '0.9rem',
+    lineHeight: 1.25,
     width: 'calc(100% - 1px)',
     minHeight: inventoryIndex === undefined ? 0 : 28,
-    padding: '6px 8px',
+    padding: '2px 8px',
     overflow: 'hidden',
     zIndex: 20,
     color: theme.palette.in_text.primary,
@@ -84,6 +90,7 @@ const CardHeader = styled('div')`
   align-items: center;
   justify-content: center;
   min-width: 0;
+  width: 100%;
 `;
 
 const CardTitle = styled('strong')`
@@ -92,36 +99,77 @@ const CardTitle = styled('strong')`
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: inherit;
 `;
 
 const CardDetails = styled('div')`
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.72rem;
+  font-size: 85%;
+
+  & .MuiSvgIcon-root {
+    font-size: inherit;
+    vertical-align: -0.125em;
+  }
 `;
 
 interface ClassCardProps extends StyledClassCardProps {
   title: string;
   details?: string;
+  metadata?: ClassCardMetadata;
   onPointerDown?: PointerEventHandler<HTMLDivElement>;
   onExpand?: () => void;
   isDragSource?: boolean;
   style?: CSSProperties;
 }
 
-const ClassCard = ({ title, details, onPointerDown, onExpand, isDragSource, style, ...styleProps }: ClassCardProps) => (
+const ClassCard = ({
+  title,
+  details,
+  metadata,
+  onPointerDown,
+  onExpand,
+  isDragSource,
+  style,
+  ...styleProps
+}: ClassCardProps) => (
   <StyledClassCard
     {...styleProps}
-    title={[title, details].filter(Boolean).join(' — ')}
+    title={[title, details, metadata?.enrolment, metadata?.weeks, metadata?.locations.join(', ')]
+      .filter(Boolean)
+      .join(' — ')}
     onPointerDown={onPointerDown}
     style={{ cursor: onPointerDown ? 'grab' : undefined, opacity: isDragSource ? 0.35 : 1, ...style }}
   >
     <CardHeader>
       <CardTitle>{title}</CardTitle>
     </CardHeader>
-    {details && <CardDetails>{details}</CardDetails>}
+    {metadata ? (
+      <>
+        <CardDetails>
+          <span style={{ fontWeight: metadata.warning ? 'bolder' : undefined }}>
+            {metadata.warning ? (
+              <Warning sx={{ color: yellow[400], mr: '0.2rem' }} />
+            ) : (
+              <PeopleAlt sx={{ mr: '0.2rem' }} />
+            )}
+            {metadata.enrolment}
+          </span>
+          {metadata.weeks && ` (${metadata.weeks})`}
+        </CardDetails>
+        {metadata.locations.length > 0 && (
+          <CardDetails>
+            <LocationOn />
+            {metadata.locations[0]}
+            {metadata.locations.length > 1 && ` + ${(metadata.locations.length - 1).toString()}`}
+          </CardDetails>
+        )}
+      </>
+    ) : (
+      details && <CardDetails>{details}</CardDetails>
+    )}
     {onExpand && !isDragSource && (
       <ClassExpandButton
         className="class-expand-button"

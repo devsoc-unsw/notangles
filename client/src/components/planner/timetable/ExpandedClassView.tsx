@@ -1,7 +1,7 @@
-import { AccessTime, Close, DesktopMac, InfoOutlined, LocationOn, School } from '@mui/icons-material';
-import { Dialog, IconButton, List, ListItemIcon, Typography } from '@mui/material';
+import { AccessTime, Close, DesktopMac, LocationOn, PeopleAlt } from '@mui/icons-material';
+import { Dialog, FormControl, IconButton, List, ListItemIcon, MenuItem, Select, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
 import { daysLong, shortDayToIndex } from '../../../constants/timetable';
@@ -12,29 +12,37 @@ import {
   StyledTitleContainer,
   StyledTopIcons,
 } from '../../../styles/ControlStyles';
+import { getClassCardMetadata, getClassLocationOptions } from './useTimetableClasses';
 
 const DetailIcon = styled(ListItemIcon)(({ theme }) => ({ color: theme.palette.text.primary }));
 
-const careerNames: Partial<Record<string, string>> = {
-  UGRD: 'Undergraduate',
-  PGRD: 'Postgraduate',
-};
-
 interface ExpandedClassViewProps {
   classData: TimetableClass;
+  classes: TimetableClass[];
   timeIndex: number | null;
-  handleClose: () => void;
+  isSaving: boolean;
+  handleClose: (classId: string) => void;
 }
 
-const ExpandedClassView = ({ classData, timeIndex, handleClose }: ExpandedClassViewProps) => {
+const ExpandedClassView = ({ classData, classes, timeIndex, isSaving, handleClose }: ExpandedClassViewProps) => {
   const titleId = useId();
-  const time = timeIndex === null ? undefined : classData.times[timeIndex];
+  const [selectedClassId, setSelectedClassId] = useState(classData.class_id);
+  const options = timeIndex === null ? [] : getClassLocationOptions(classData, timeIndex, classes);
+  const selectedOption = options.find((option) => option.classData.class_id === selectedClassId);
+  const currentClass = selectedOption?.classData ?? classData;
+  const currentTimeIndex = selectedOption?.timeIndex ?? timeIndex;
+  const time = currentTimeIndex === null ? undefined : currentClass.times.at(currentTimeIndex);
+  const metadata =
+    currentTimeIndex === null ? undefined : getClassCardMetadata(currentClass, currentTimeIndex, classes);
   const dayIndex = time ? shortDayToIndex[time.day] : undefined;
+  const close = () => {
+    if (!isSaving) handleClose(currentClass.class_id);
+  };
 
   return (
-    <Dialog maxWidth="sm" open onClose={handleClose} aria-labelledby={titleId}>
+    <Dialog maxWidth="sm" open onClose={close} aria-labelledby={titleId}>
       <StyledTopIcons>
-        <IconButton aria-label="Close class details" onClick={handleClose}>
+        <IconButton aria-label="Close class details" onClick={close} disabled={isSaving}>
           <Close />
         </IconButton>
       </StyledTopIcons>
@@ -50,7 +58,7 @@ const ExpandedClassView = ({ classData, timeIndex, handleClose }: ExpandedClassV
               <DesktopMac />
             </DetailIcon>
             <Typography>
-              {classData.activity} ({classData.section})
+              {currentClass.activity} ({currentClass.section})
             </Typography>
           </StyledListItem>
           <StyledListItem>
@@ -61,7 +69,7 @@ const ExpandedClassView = ({ classData, timeIndex, handleClose }: ExpandedClassV
               {time ? (
                 <>
                   {dayIndex === undefined ? time.day : daysLong[dayIndex]} {time.time}
-                  {time.weeks && ` (Weeks ${time.weeks})`}
+                  {metadata?.weeks && ` (${metadata.weeks})`}
                 </>
               ) : (
                 'No scheduled time'
@@ -73,23 +81,37 @@ const ExpandedClassView = ({ classData, timeIndex, handleClose }: ExpandedClassV
               <DetailIcon>
                 <LocationOn />
               </DetailIcon>
-              <Typography>{time.location || 'Location unavailable'}</Typography>
+              {options.length > 1 ? (
+                <FormControl fullWidth>
+                  <Select
+                    value={currentClass.class_id}
+                    variant="outlined"
+                    disabled={isSaving}
+                    inputProps={{ 'aria-label': 'Class location' }}
+                    onChange={(event) => {
+                      setSelectedClassId(event.target.value);
+                    }}
+                  >
+                    {options.map((option) => (
+                      <MenuItem key={option.classData.class_id} value={option.classData.class_id}>
+                        {option.location || 'Location unavailable'}
+                        {options.filter((other) => other.location === option.location).length > 1 &&
+                          ` (${option.classData.section})`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <Typography>{(selectedOption?.location ?? time.location) || 'Location unavailable'}</Typography>
+              )}
             </StyledListItem>
           )}
-          {classData.career && (
+          {metadata && (
             <StyledListItem>
               <DetailIcon>
-                <School />
+                <PeopleAlt />
               </DetailIcon>
-              <Typography>{careerNames[classData.career] ?? classData.career}</Typography>
-            </StyledListItem>
-          )}
-          {classData.status && (
-            <StyledListItem>
-              <DetailIcon>
-                <InfoOutlined />
-              </DetailIcon>
-              <Typography>Status: {classData.status}</Typography>
+              <Typography>Capacity {metadata.enrolment}</Typography>
             </StyledListItem>
           )}
         </List>
