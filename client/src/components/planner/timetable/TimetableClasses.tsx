@@ -19,7 +19,7 @@ import ClassCard from './ClassCard';
 import ClassDropzone from './ClassDropzone';
 import ExpandedClassView from './ExpandedClassView';
 import { type ClassDragSource, getClassDropSlots, useClassDrag } from './useClassDrag';
-import { useTimetableClasses } from './useTimetableClasses';
+import { getClassCardMetadata, useTimetableClasses } from './useTimetableClasses';
 
 const UnscheduledColumn = styled('div')`
   display: contents;
@@ -79,6 +79,7 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
     classId,
     timeIndex,
     title: `${cls.course.course_code} ${cls.activity}`,
+    metadata: hideClassInfo || timeIndex === null ? undefined : getClassCardMetadata(cls, timeIndex, classes),
     backgroundColour: decodeColor(course.colour, preferredTheme),
   });
 
@@ -131,7 +132,7 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
               backgroundColour={decodeColor(course.colour, preferredTheme)}
               squareEdges={isSquareEdges}
               title={`${classData.course.course_code} ${classData.activity}`}
-              details={hideClassInfo ? undefined : `${classData.section} · ${classTime.location}`}
+              metadata={hideClassInfo ? undefined : getClassCardMetadata(classData, index, classes)}
               isDragSource={isDragSource(course.courseId, classData.activity)}
               onExpand={
                 drag
@@ -144,10 +145,7 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
                 isSaving
                   ? undefined
                   : (event) => {
-                      startDrag(event, {
-                        ...makeSource(course, classData, classData.class_id, index),
-                        details: hideClassInfo ? undefined : `${classData.section} · ${classTime.location}`,
-                      });
+                      startDrag(event, makeSource(course, classData, classData.class_id, index));
                     }
               }
             />
@@ -216,6 +214,7 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
             <ClassCard
               title={drag.source.title}
               details={drag.source.details}
+              metadata={drag.source.metadata}
               backgroundColour={drag.source.backgroundColour}
               squareEdges={isSquareEdges}
               style={{
@@ -236,9 +235,29 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
       )}
       {expandedClass && expandedClassData && (
         <ExpandedClassView
+          key={[expandedClass.classId, expandedClass.timeIndex].join('-')}
           classData={expandedClassData}
+          classes={classes}
           timeIndex={expandedClass.timeIndex}
-          handleClose={() => {
+          isSaving={isSaving}
+          handleClose={(classId) => {
+            if (classId !== expandedClassData.class_id) {
+              if (!canDrag()) return;
+              setSaveFailed(false);
+              updateClass.mutate(
+                {
+                  timetableId,
+                  courseId: expandedClassData.course_id,
+                  classId,
+                  previousClassId: expandedClassData.class_id,
+                },
+                {
+                  onError: () => {
+                    setSaveFailed(true);
+                  },
+                },
+              );
+            }
             setExpandedClass(null);
           }}
         />
