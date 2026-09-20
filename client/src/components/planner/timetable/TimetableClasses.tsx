@@ -1,29 +1,21 @@
 import { Alert, Snackbar } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useIsMutating, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
-import {
-  selectedClassMutationKey,
-  useRemoveSelectedClass,
-  useUpdateSelectedClass,
-} from '../../../api/timetable/mutations';
+import { useUpdateSelectedClass } from '../../../api/timetable/mutations';
 import type { TimetableCourse } from '../../../api/timetable/routes';
+import { enqueueSelectedClassChange } from '../../../api/timetable/selectedClassQueue';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { shortDayToIndex } from '../../../constants/timetable';
 import { decodeColor } from '../../../utils/colors';
 import { parseClassTimeRange } from '../../../utils/time';
 import ClassCard from './ClassCard';
+import { type ClassCardIdentity, type ClassCardKeyAnchor, reconcileClassCardKeys } from './classCardLayout';
 import ClassDropzone from './ClassDropzone';
 import ExpandedClassView from './ExpandedClassView';
-import { type ClassDragSource, getClassDropSlots, useClassDrag } from './useClassDrag';
-import { getClassCardMetadata, useTimetableClasses } from './useTimetableClasses';
-
-const UnscheduledColumn = styled('div')`
-  display: contents;
-`;
+import { getClassDropSlots, useClassDrag } from './useClassDrag';
+import { type ClassCardMetadata, getClassCardMetadata, useTimetableClasses } from './useTimetableClasses';
 
 interface TimetableClassesProps {
   timetableId: string;
@@ -33,153 +25,219 @@ interface TimetableClassesProps {
   earliestStartHour: number;
 }
 
-const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestStartHour }: TimetableClassesProps) => {
-  const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
-  const { scheduledClasses, unscheduledActivities, unresolvedSelectedClassIds } = useTimetableClasses(courses, classes);
-  const queryClient = useQueryClient();
-  const updateClass = useUpdateSelectedClass();
-  const removeClass = useRemoveSelectedClass();
-  const isSaving = useIsMutating({ mutationKey: selectedClassMutationKey }) > 0;
-  const [saveFailed, setSaveFailed] = useState(false);
-  const [expandedClass, setExpandedClass] = useState<{ classId: string; timeIndex: number | null } | null>(null);
-  const expandedClassData = scheduledClasses.find(
-    ({ classData }) => classData.class_id === expandedClass?.classId,
-  )?.classData;
+interface CardView extends ClassCardIdentity {
+  title: string;
+  backgroundColour: string;
+  details?: string;
+  metadata?: ClassCardMetadata;
+  gridColumn: number;
+  offsetMinutes?: number;
+  durationMinutes?: number;
+  inventoryIndex?: number;
+  draggable: boolean;
+}
 
-  const canDrag = () => queryClient.isMutating({ mutationKey: selectedClassMutationKey }) === 0;
+const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestStartHour }: TimetableClassesProps) => {
+  const queryClient = useQueryClient();
+  const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
+  const [saveFailed, setSaveFailed] = useState(false);
+  const updateClass = useUpdateSelectedClass(() => {
+    setSaveFailed(true);
+  });
+  const [expandedClass, setExpandedClass] = useState<{ classId: string; timeIndex: number | null } | null>(null);
+  const expandedClassData = classes.find((cls) => cls.class_id === expandedClass?.classId);
+  const selectionGroup = (courseId: string, activity: string) => ({
+    timetableId,
+    courseId,
+    activity,
+    activityClassIds: classes
+      .filter((cls) => cls.course_id === courseId && cls.activity === activity)
+      .map((cls) => cls.class_id),
+  });
+
   const { drag, startDrag, registerDropzone } = useClassDrag(timetableId, {
-    canDrag,
     onDrop: (source, target) => {
-      if (!canDrag()) return;
       setSaveFailed(false);
-      const options = {
-        onError: () => {
-          setSaveFailed(true);
-        },
-      };
-      const params = { timetableId, courseId: source.courseId };
-      if (target.type === 'class') {
-        updateClass.mutate({ ...params, classId: target.classId, previousClassId: source.classId }, options);
-      } else if (source.classId !== null) {
-        removeClass.mutate({ ...params, classId: source.classId }, options);
-      }
+      void enqueueSelectedClassChange(queryClient, {
+        ...selectionGroup(source.courseId, source.activity),
+        selectedClassId: target.type === 'class' ? target.classId : null,
+      }).catch(() => {
+        setSaveFailed(true);
+      });
     },
   });
-  const dropSlots = drag ? getClassDropSlots(drag.source, classes) : [];
-  const isDragSource = (courseId: string, activity: string) =>
-    drag?.source.courseId === courseId && drag.source.activity === activity;
-  const makeSource = (
-    course: TimetableCourse,
-    cls: TimetableClass,
-    classId: string | null,
-    timeIndex: number | null,
-  ): ClassDragSource => ({
-    courseId: course.courseId,
-    activity: cls.activity,
-    classId,
-    timeIndex,
-    title: `${cls.course.course_code} ${cls.activity}`,
-    metadata: hideClassInfo || timeIndex === null ? undefined : getClassCardMetadata(cls, timeIndex, classes),
-    backgroundColour: decodeColor(course.colour, preferredTheme),
-  });
 
-  const noTimeClasses = scheduledClasses.filter(({ classData }) => classData.times.length === 0);
-  const unscheduledCards = [
-    ...unscheduledActivities.map(({ course, activity, availableClasses }) => {
-      const firstClass = availableClasses[0];
-      return {
-        key: `${course.courseId}-${activity}`,
-        source: makeSource(course, firstClass, null, null),
+  const dragSource = drag?.source;
+  const dragTarget = drag?.target;
+  const dropSlots = useMemo(() => (dragSource ? getClassDropSlots(dragSource, classes) : []), [dragSource, classes]);
+  const previewCourses = useMemo(() => {
+    if (!dragSource) return courses;
+    const selectedClassId =
+      dragTarget?.type === 'class'
+        ? dragTarget.classId
+        : dragTarget?.type === 'unscheduled'
+          ? null
+          : dragSource.classId;
+    const activityIds = new Set(
+      classes
+        .filter((cls) => cls.course_id === dragSource.courseId && cls.activity === dragSource.activity)
+        .map((cls) => cls.class_id),
+    );
+    return courses.map((course) => {
+      if (course.courseId !== dragSource.courseId) return course;
+      const selectedClasses = course.selectedClasses.filter((id) => !activityIds.has(id));
+      if (selectedClassId !== null) selectedClasses.push(selectedClassId);
+      return { ...course, selectedClasses };
+    });
+  }, [courses, classes, dragSource, dragTarget]);
+
+  const { scheduledClasses, unscheduledActivities, unresolvedSelectedClassIds } = useTimetableClasses(
+    previewCourses,
+    classes,
+  );
+
+  const cards = useMemo(() => {
+    const views: CardView[] = [];
+    const unscheduled: CardView[] = [];
+    for (const { course, classData } of scheduledClasses) {
+      const base = {
+        courseId: course.courseId,
+        activity: classData.activity,
+        classId: classData.class_id,
+        title: `${classData.course.course_code} ${classData.activity}`,
         backgroundColour: decodeColor(course.colour, preferredTheme),
-        title: `${firstClass.course.course_code} ${activity}`,
+        draggable: true,
+      };
+      if (classData.times.length === 0) {
+        unscheduled.push({
+          ...base,
+          timeIndex: null,
+          gridColumn: dayCount + 3,
+          details: hideClassInfo ? undefined : `${classData.section} · No scheduled time`,
+        });
+      }
+      classData.times.forEach((time, timeIndex) => {
+        const dayIndex = shortDayToIndex[time.day];
+        const range = parseClassTimeRange(time.time);
+        if (dayIndex === undefined || dayIndex >= dayCount || !range) return;
+        views.push({
+          ...base,
+          timeIndex,
+          dayIndex,
+          startMinutes: range.startMinutes,
+          gridColumn: dayIndex + 2,
+          offsetMinutes: range.startMinutes - earliestStartHour * 60,
+          durationMinutes: range.endMinutes - range.startMinutes,
+          metadata: hideClassInfo ? undefined : getClassCardMetadata(classData, timeIndex, classes),
+        });
+      });
+    }
+
+    for (const { course, activity, availableClasses } of unscheduledActivities) {
+      unscheduled.push({
+        courseId: course.courseId,
+        activity,
+        classId: null,
+        timeIndex: null,
+        title: `${availableClasses[0].course.course_code} ${activity}`,
+        backgroundColour: decodeColor(course.colour, preferredTheme),
+        gridColumn: dayCount + 3,
+        draggable: true,
         details: hideClassInfo
           ? undefined
-          : [availableClasses.length, `available class${availableClasses.length === 1 ? '' : 'es'}`].join(' '),
-      };
-    }),
+          : `${availableClasses.length.toString()} available class${availableClasses.length === 1 ? '' : 'es'}`,
+      });
+    }
 
-    ...noTimeClasses.map(({ course, classData }) => ({
-      key: `${classData.class_id}-no-time`,
-      source: makeSource(course, classData, classData.class_id, null),
-      backgroundColour: decodeColor(course.colour, preferredTheme),
-      title: `${classData.course.course_code} ${classData.activity}`,
-      details: hideClassInfo ? undefined : `${classData.section} · No scheduled time`,
-    })),
+    for (const classId of unresolvedSelectedClassIds) {
+      unscheduled.push({
+        courseId: '',
+        activity: classId,
+        classId,
+        timeIndex: null,
+        title: 'Selected class unavailable',
+        backgroundColour: '#777777',
+        gridColumn: dayCount + 3,
+        details: hideClassInfo ? undefined : classId,
+        draggable: false,
+      });
+    }
+    return [...views, ...unscheduled.map((card, inventoryIndex) => ({ ...card, inventoryIndex }))];
+  }, [
+    scheduledClasses,
+    unscheduledActivities,
+    unresolvedSelectedClassIds,
+    classes,
+    dayCount,
+    earliestStartHour,
+    preferredTheme,
+    hideClassInfo,
+  ]);
 
-    ...unresolvedSelectedClassIds.map((classId) => ({
-      key: classId,
-      source: null,
-      backgroundColour: '#777777',
-      title: 'Selected class unavailable',
-      details: hideClassInfo ? undefined : classId,
-    })),
-  ];
+  const anchor = useMemo<ClassCardKeyAnchor | undefined>(
+    () =>
+      dragSource
+        ? {
+            sourceKey: dragSource.cardKey,
+            targetClassId:
+              dragTarget?.type === 'class'
+                ? dragTarget.classId
+                : dragTarget?.type === 'unscheduled'
+                  ? null
+                  : dragSource.classId,
+            targetTimeIndex:
+              dragTarget?.type === 'class'
+                ? dragTarget.timeIndex
+                : dragTarget?.type === 'unscheduled'
+                  ? null
+                  : dragSource.timeIndex,
+          }
+        : undefined,
+    [dragSource, dragTarget],
+  );
+
+  const [layout, setLayout] = useState(() => ({ cards, anchor, keyed: reconcileClassCardKeys([], cards, anchor) }));
+  let keyed = layout.keyed;
+  if (layout.cards !== cards || layout.anchor !== anchor) {
+    keyed = reconcileClassCardKeys(layout.keyed, cards, anchor);
+    setLayout({ cards, anchor, keyed });
+  }
+  const dragging = drag?.phase === 'dragging';
+  const dragColour =
+    cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)
+      ?.backgroundColour ?? '#777777';
 
   return (
     <>
-      {scheduledClasses.flatMap(({ course, classData }) =>
-        classData.times.flatMap((classTime, index) => {
-          const dayIndex = shortDayToIndex[classTime.day];
-          const timeRange = parseClassTimeRange(classTime.time);
-          if (dayIndex === undefined || dayIndex >= dayCount || !timeRange) return [];
-
-          return (
+      {[...keyed]
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .map(
+          ({ key, courseId, activity, classId, timeIndex, draggable, dayIndex: _, startMinutes: __, ...cardProps }) => (
             <ClassCard
-              key={[classData.class_id, classTime.day, classTime.time, index].join('-')}
-              gridColumn={dayIndex + 2}
-              offsetMinutes={timeRange.startMinutes - earliestStartHour * 60}
-              durationMinutes={timeRange.endMinutes - timeRange.startMinutes}
-              backgroundColour={decodeColor(course.colour, preferredTheme)}
+              key={key}
+              cardKey={key}
+              {...cardProps}
+              dayCount={dayCount}
               squareEdges={isSquareEdges}
-              title={`${classData.course.course_code} ${classData.activity}`}
-              metadata={hideClassInfo ? undefined : getClassCardMetadata(classData, index, classes)}
-              isDragSource={isDragSource(course.courseId, classData.activity)}
-              onExpand={
-                drag
-                  ? undefined
-                  : () => {
-                      setExpandedClass({ classId: classData.class_id, timeIndex: index });
-                    }
-              }
+              isElevated={dragging && dragSource?.courseId === courseId && dragSource.activity === activity}
               onPointerDown={
-                isSaving
-                  ? undefined
-                  : (event) => {
-                      startDrag(event, makeSource(course, classData, classData.class_id, index));
+                draggable
+                  ? (event) => {
+                      startDrag(event, { cardKey: key, courseId, activity, classId, timeIndex });
                     }
+                  : undefined
+              }
+              onExpand={
+                classId && !drag
+                  ? () => {
+                      setExpandedClass({ classId, timeIndex });
+                    }
+                  : undefined
               }
             />
-          );
-        }),
-      )}
-
-      <UnscheduledColumn>
-        {unscheduledCards.map(({ key, source, ...cardProps }, inventoryIndex) => (
-          <ClassCard
-            key={key}
-            {...cardProps}
-            gridColumn={dayCount + 3}
-            inventoryIndex={inventoryIndex}
-            squareEdges={isSquareEdges}
-            isDragSource={source ? isDragSource(source.courseId, source.activity) : false}
-            onExpand={
-              source?.classId && !drag
-                ? () => {
-                    if (source.classId !== null) setExpandedClass({ classId: source.classId, timeIndex: null });
-                  }
-                : undefined
-            }
-            onPointerDown={
-              source && !isSaving
-                ? (event) => {
-                    startDrag(event, { ...source, details: cardProps.details });
-                  }
-                : undefined
-            }
-          />
-        ))}
-      </UnscheduledColumn>
-      {drag && (
+          ),
+        )}
+      {dragging && (
         <>
           {dropSlots
             .filter((slot) => slot.dayIndex < dayCount)
@@ -189,48 +247,36 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
                 gridColumn={slot.dayIndex + 2}
                 offsetMinutes={slot.startMinutes - earliestStartHour * 60}
                 durationMinutes={slot.endMinutes - slot.startMinutes}
-                backgroundColour={drag.source.backgroundColour}
+                backgroundColour={dragColour}
                 squareEdges={isSquareEdges}
-                highlighted={drag.target?.type === 'class' && drag.target.classId === slot.classData.class_id}
+                highlighted={
+                  dragTarget?.type === 'class' &&
+                  dragTarget.classId === slot.classData.class_id &&
+                  dragTarget.timeIndex === slot.timeIndex
+                }
                 location={slot.classData.times[slot.timeIndex].location}
                 label={`${slot.classData.course.course_code} ${slot.classData.activity} ${slot.classData.section}`}
                 elementRef={(element) => {
-                  registerDropzone(slot.id, element, { type: 'class', classId: slot.classData.class_id });
+                  registerDropzone(slot.id, element, {
+                    type: 'class',
+                    classId: slot.classData.class_id,
+                    timeIndex: slot.timeIndex,
+                    slotId: slot.id,
+                  });
                 }}
               />
             ))}
           <ClassDropzone
             gridColumn={dayCount + 3}
-            backgroundColour={drag.source.backgroundColour}
+            backgroundColour={dragColour}
             squareEdges={isSquareEdges}
-            highlighted={drag.target?.type === 'unscheduled'}
+            highlighted={dragTarget?.type === 'unscheduled'}
             isUnscheduled
             label="Unscheduled drop target"
             elementRef={(element) => {
               registerDropzone('unscheduled', element, { type: 'unscheduled' });
             }}
           />
-          {createPortal(
-            <ClassCard
-              title={drag.source.title}
-              details={drag.source.details}
-              metadata={drag.source.metadata}
-              backgroundColour={drag.source.backgroundColour}
-              squareEdges={isSquareEdges}
-              style={{
-                position: 'fixed',
-                left: drag.left,
-                top: drag.top,
-                width: drag.width,
-                height: drag.height,
-                pointerEvents: 'none',
-                zIndex: 1500,
-                transform: 'scale(1.1)',
-                boxShadow: '0 8px 24px rgb(0 0 0 / 30%)',
-              }}
-            />,
-            document.body,
-          )}
         </>
       )}
       {expandedClass && expandedClassData && (
@@ -239,24 +285,13 @@ const TimetableClasses = ({ timetableId, courses, classes, dayCount, earliestSta
           classData={expandedClassData}
           classes={classes}
           timeIndex={expandedClass.timeIndex}
-          isSaving={isSaving}
           handleClose={(classId) => {
             if (classId !== expandedClassData.class_id) {
-              if (!canDrag()) return;
               setSaveFailed(false);
-              updateClass.mutate(
-                {
-                  timetableId,
-                  courseId: expandedClassData.course_id,
-                  classId,
-                  previousClassId: expandedClassData.class_id,
-                },
-                {
-                  onError: () => {
-                    setSaveFailed(true);
-                  },
-                },
-              );
+              updateClass.mutate({
+                ...selectionGroup(expandedClassData.course_id, expandedClassData.activity),
+                classId,
+              });
             }
             setExpandedClass(null);
           }}

@@ -52,7 +52,6 @@ const StyledDropzone = styled('div', {
     backgroundColor: backgroundColour,
     opacity: highlighted ? 0.85 : 0.4,
     borderRadius: squareEdges ? 0 : theme.shape.borderRadius,
-    transition: 'opacity 150ms',
   }),
 );
 
