@@ -20,11 +20,10 @@ interface ExpandedClassViewProps {
   classData: TimetableClass;
   classes: TimetableClass[];
   timeIndex: number | null;
-  isSaving: boolean;
   handleClose: (classId: string) => void;
 }
 
-const ExpandedClassView = ({ classData, classes, timeIndex, isSaving, handleClose }: ExpandedClassViewProps) => {
+const ExpandedClassView = ({ classData, classes, timeIndex, handleClose }: ExpandedClassViewProps) => {
   const titleId = useId();
   const [selectedClassId, setSelectedClassId] = useState(classData.class_id);
   const options = timeIndex === null ? [] : getClassLocationOptions(classData, timeIndex, classes);
@@ -36,13 +35,13 @@ const ExpandedClassView = ({ classData, classes, timeIndex, isSaving, handleClos
     currentTimeIndex === null ? undefined : getClassCardMetadata(currentClass, currentTimeIndex, classes);
   const dayIndex = time ? shortDayToIndex[time.day] : undefined;
   const close = () => {
-    if (!isSaving) handleClose(currentClass.class_id);
+    handleClose(currentClass.class_id);
   };
 
   return (
     <Dialog maxWidth="sm" open onClose={close} aria-labelledby={titleId}>
       <StyledTopIcons>
-        <IconButton aria-label="Close class details" onClick={close} disabled={isSaving}>
+        <IconButton aria-label="Close class details" onClick={close}>
           <Close />
         </IconButton>
       </StyledTopIcons>
@@ -86,7 +85,6 @@ const ExpandedClassView = ({ classData, classes, timeIndex, isSaving, handleClos
                   <Select
                     value={currentClass.class_id}
                     variant="outlined"
-                    disabled={isSaving}
                     inputProps={{ 'aria-label': 'Class location' }}
                     onChange={(event) => {
                       setSelectedClassId(event.target.value);
