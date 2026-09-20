@@ -10,14 +10,12 @@ import {
   duplicateTimetable,
   EditEventParams,
   makePrimaryTimetable,
-  removeSelectedClass,
   removeTimetableCourse,
   renameTimetable,
   reorderTimetables,
-  type TimetableCourse,
   updateEvent,
-  updateSelectedClass,
 } from './routes';
+import { enqueueSelectedClassChange, type SelectedClassGroup } from './selectedClassQueue';
 
 export const useRemoveTimetableCourse = () => {
   const queryClient = useQueryClient();
@@ -39,80 +37,20 @@ export const useAddTimetableCourse = () => {
   });
 };
 
-export interface UpdateSelectedClassParams {
-  timetableId: string;
-  courseId: string;
+export interface UpdateSelectedClassParams extends SelectedClassGroup {
   classId: string;
-  // null means this activity is currently unscheduled.
-  previousClassId: string | null;
 }
 
 export const selectedClassMutationKey = ['selectedClass'] as const;
 
-export const useUpdateSelectedClass = () => {
+export const useUpdateSelectedClass = (onError?: () => void) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: selectedClassMutationKey,
-    mutationFn: ({ timetableId, courseId, classId }: UpdateSelectedClassParams) =>
-      updateSelectedClass({ timetableId, courseId, classId }),
-    onMutate: async ({ timetableId, courseId, classId, previousClassId }) => {
-      const queryKey = ['timetable', timetableId, 'courses'];
-      await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<TimetableCourse[]>(queryKey);
-
-      queryClient.setQueryData<TimetableCourse[]>(queryKey, (courses) =>
-        courses?.map((course) =>
-          course.courseId === courseId
-            ? {
-                ...course,
-                selectedClasses: [
-                  ...course.selectedClasses.filter((id) => id !== previousClassId && id !== classId),
-                  classId,
-                ],
-              }
-            : course,
-        ),
-      );
-      return { previous };
-    },
-    onError: (_error, { timetableId }, context) => {
-      if (context?.previous !== undefined) {
-        queryClient.setQueryData(['timetable', timetableId, 'courses'], context.previous);
-      }
-    },
-    onSettled: async (_data, _error, { timetableId }) => {
-      await queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'courses'] });
-    },
-  });
-};
-
-export const useRemoveSelectedClass = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationKey: selectedClassMutationKey,
-    mutationFn: removeSelectedClass,
-    onMutate: async ({ timetableId, courseId, classId }) => {
-      const queryKey = ['timetable', timetableId, 'courses'];
-      await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<TimetableCourse[]>(queryKey);
-
-      queryClient.setQueryData<TimetableCourse[]>(queryKey, (courses) =>
-        courses?.map((course) =>
-          course.courseId === courseId
-            ? { ...course, selectedClasses: course.selectedClasses.filter((id) => id !== classId) }
-            : course,
-        ),
-      );
-      return { previous };
-    },
-    onError: (_error, { timetableId }, context) => {
-      if (context?.previous !== undefined) {
-        queryClient.setQueryData(['timetable', timetableId, 'courses'], context.previous);
-      }
-    },
-    onSettled: async (_data, _error, { timetableId }) => {
-      await queryClient.invalidateQueries({ queryKey: ['timetable', timetableId, 'courses'] });
-    },
+    mutationFn: ({ classId, ...group }: UpdateSelectedClassParams) =>
+      enqueueSelectedClassChange(queryClient, { ...group, selectedClassId: classId }),
+    retry: false,
+    onError,
   });
 };
 
