@@ -27,6 +27,7 @@ import { useAddTimetableCourse, useRemoveTimetableCourse } from '../../../api/ti
 import { useTimetableCoursesQuery } from '../../../api/timetable/queries';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { decodeColor, leastUsedColor } from '../../../utils/colors';
+import { useTimetableHistory } from '../timetableTabs/TimetableTabContextMenu';
 
 const MAX_COURSES = 10;
 
@@ -223,6 +224,22 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
   const selectedCoursesInfo = useCoursesInfoQuery(selectedCourses.map((course) => course.courseId));
   const removeCourseMutation = useRemoveTimetableCourse();
   const addCourseMutation = useAddTimetableCourse();
+  const { recordAction } = useTimetableHistory();
+
+  // Adds a course and records it so it can be undone. The colour is chosen here
+  // rather than inside the history stack so that a redo reuses the original one.
+  const addCourse = (courseId: string, colour: string) => {
+    addCourseMutation.mutate({ timetableId, courseId, colour });
+    recordAction({ type: 'ADD_COURSE', courseId, colour });
+  };
+
+  // Resolves the course's colour here so that undoing restores it unchanged,
+  // sparing every call site the join against `selectedCourses`.
+  const removeCourse = (courseId: string) => {
+    const colour = selectedCourses.find((course) => course.courseId === courseId)?.colour ?? '';
+    removeCourseMutation.mutate({ timetableId, courseId });
+    recordAction({ type: 'REMOVE_COURSE', courseId, colour });
+  };
 
   const theme = useTheme();
   const isMedium = useMediaQuery(theme.breakpoints.only('md'));
@@ -323,14 +340,10 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
           const removedCourses = selectedCourses.filter((c) => !value.some((v) => v.course_id === c.courseId));
 
           for (const course of removedCourses) {
-            removeCourseMutation.mutate({ timetableId, courseId: course.courseId });
+            removeCourse(course.courseId);
           }
           for (const course of addedCourses) {
-            addCourseMutation.mutate({
-              timetableId,
-              courseId: course.course_id,
-              colour: leastUsedColor(selectedCourses.map((c) => c.colour)),
-            });
+            addCourse(course.course_id, leastUsedColor(selectedCourses.map((c) => c.colour)));
           }
         }}
         onBlur={() => {
@@ -390,7 +403,7 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
               if (event.key === 'Backspace' && inputValue === '' && selectedCourses.length > 0) {
                 event.stopPropagation();
                 const lastCourse = selectedCourses[selectedCourses.length - 1];
-                removeCourseMutation.mutate({ timetableId, courseId: lastCourse.courseId });
+                removeCourse(lastCourse.courseId);
               }
             }}
             slotProps={{
@@ -429,7 +442,7 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
                 )}
                 deleteIcon={<CloseRounded />}
                 onDelete={() => {
-                  removeCourseMutation.mutate({ timetableId, courseId: option.course_id });
+                  removeCourse(option.course_id);
                 }}
               />
             );

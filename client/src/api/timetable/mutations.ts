@@ -4,6 +4,7 @@ import {
   addEvent,
   AddEventParams,
   addTimetableCourse,
+  clearTimetables,
   createTimetable,
   deleteTimetable,
   duplicateTimetable,
@@ -133,6 +134,25 @@ export const useAddTimetableEvent = () => {
     mutationFn: ({ event }: { event: AddEventParams }) => addEvent(event),
     onSuccess: async (_data, variables, _context) => {
       await queryClient.invalidateQueries({ queryKey: ['timetable', variables.event.timetableId] });
+    },
+  });
+};
+
+/**
+ * Deletes every timetable for the given term and replaces them with a single
+ * empty default one. The new timetable's id is not returned, so callers should
+ * rely on the refreshed `timetableIds` query to pick a valid selection.
+ */
+export const useClearTimetables = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: clearTimetables,
+    onSuccess: async (_data, { year, term }) => {
+      // The cleared term's timetables no longer exist, so mark their cached
+      // queries stale *without* refetching - the components observing them
+      // unmount as soon as the refreshed id list renders.
+      await queryClient.invalidateQueries({ queryKey: ['timetable'], refetchType: 'none' });
+      await queryClient.invalidateQueries({ queryKey: ['timetableIds', String(year), term] });
     },
   });
 };
