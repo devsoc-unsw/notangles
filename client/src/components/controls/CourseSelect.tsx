@@ -501,7 +501,16 @@ const CourseSelect: React.FC<CourseSelectProps> = ({ assignedColors, handleSelec
     // TODO: Selecting an event
     if (searchMode === 'Events') {
       const eventValue = value as EventDTO[];
+
       if (eventValue.length > selectedEvents.length) {
+        const added = eventValue[eventValue.length - 1];
+      } else if (eventValue.length < selectedEvents.length) {
+        const removed = selectedEvents.find(
+          (s) => !eventValue.some((e) => e.name === s.name && e.start.getTime() === s.start.getTime())
+        );
+        if (removed) {
+          // Execute event remove action here if needed
+        }
       }
       setSelectedEvents([...eventValue]);
       setInputValue('');

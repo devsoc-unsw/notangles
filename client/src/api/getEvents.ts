@@ -33,7 +33,7 @@ const events = [
     start: '2026-03-02T09:00:00.000Z',
     end: '2026-03-02T11:00:00.000Z',
     timetableId: 'timetableId',
-    groupIds: [],
+    groupIds: [''],
   },
   {
     id: 'event-2',
