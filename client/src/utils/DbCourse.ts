@@ -150,6 +150,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
   const courseData: CourseData = {
     code: dbCourse.courseCode,
     name: dbCourse.name,
+    career: dbCourse.career,
     activities: {},
     inventoryData: {},
     earliestStartTime: 24,
@@ -161,6 +162,7 @@ export const dbCourseToCourseData = (dbCourse: DbCourse, isConvertToLocalTimezon
       id: uuidv4(),
       courseCode: dbCourse.courseCode,
       courseName: dbCourse.name,
+      career: dbCourse.career,
       activity: dbClass.activity,
       status: dbClass.status,
       enrolments: dbClass.courseEnrolment.enrolments,

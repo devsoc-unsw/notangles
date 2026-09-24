@@ -1,9 +1,11 @@
-import { ExecutionContext, Injectable, CanActivate } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
-  async canActivate(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest();
-    return request.isAuthenticated();
+  canActivate(context: ExecutionContext): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const req = context.switchToHttp().getRequest();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    return req.isAuthenticated?.() === true;
   }
 }

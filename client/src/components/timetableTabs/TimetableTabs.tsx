@@ -1,9 +1,11 @@
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Add, MoreHoriz, Star } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { darkTheme, lightTheme } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 import {
@@ -31,8 +33,6 @@ const TimetableTabs: React.FC = () => {
   const TIMETABLE_LIMIT = 13;
 
   const {
-    isDarkMode,
-    themeObject,
     selectedTimetable,
     setSelectedTimetable,
     displayTimetables,
@@ -42,6 +42,8 @@ const TimetableTabs: React.FC = () => {
     term,
   } = useContext(AppContext);
 
+  const { isDarkMode, preferredTheme } = useGetUserSettingsQuery();
+
   const { setSelectedCourses, setSelectedClasses, setCreatedEvents, setAssignedColors } = useContext(CourseContext);
   const [anchorElement, setAnchorElement] = useState<null | { x: number; y: number }>(null);
 
@@ -49,13 +51,16 @@ const TimetableTabs: React.FC = () => {
 
   const addTimetabletip = isMacOS ? 'New Tab (Cmd+Enter)' : 'New Tab (Ctrl+Enter)';
 
-  const [tabTheme, setTabTheme] = useState<TabTheme>(isDarkMode ? tabThemeDark : tabThemeLight);
+  const themeObject = useMemo(
+    () => (isDarkMode ? darkTheme(preferredTheme) : lightTheme(preferredTheme)),
+    [isDarkMode, preferredTheme],
+  );
 
-  const { TabStyle } = createTimetableStyle(tabTheme, themeObject);
-
-  useEffect(() => {
-    setTabTheme(isDarkMode ? tabThemeDark : tabThemeLight);
+  const tabTheme: TabTheme = useMemo(() => {
+    return isDarkMode ? tabThemeDark : tabThemeLight;
   }, [isDarkMode]);
+
+  const { TabStyle } = useMemo(() => createTimetableStyle(tabTheme, themeObject), [tabTheme, themeObject]);
 
   // Helper function to set the timetable state
   const setTimetableState = (

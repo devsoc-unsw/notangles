@@ -17,8 +17,7 @@ export interface CoursesListWithDate {
 export interface FetchedCourse {
   course_code: CourseCode;
   course_name: string;
-  online: boolean;
-  inPerson: boolean;
+  modes: string[];
   career: string;
   faculty: string;
 }

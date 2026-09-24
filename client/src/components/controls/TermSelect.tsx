@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectProps, useMediaQuery, useTheme } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useContext, useImperativeHandle, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import React, { useContext, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
 import { convertToTermName } from '../../constants/timetable';
@@ -8,43 +8,41 @@ import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-  color: '#ffffff',
+  color: theme.palette.primary.main,
 }));
 
 const StyledSelect = styled(Select)(({ theme }) => ({
-  color: '#ffffff',
+  color: theme.palette.primary.main,
   height: '55px',
   width: '100%',
-  backgroundColor: theme.palette.primary.main,
   transition: 'background-color 0.1s ease-in',
   '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'transparent',
+    borderColor: theme.palette.primary.main,
   },
   '.MuiSelect-icon': {
-    color: '#ffffff',
+    color: theme.palette.primary.main,
   },
   '&.Mui-focused .MuiSelect-icon': {
-    color: '#ffffff',
+    color: theme.palette.primary.main,
   },
   '&:hover .MuiSelect-icon': {
-    color: '#ffffff',
+    color: theme.palette.primary.main,
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'transparent',
+    borderColor: theme.palette.primary.main,
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'transparent',
+    borderColor: theme.palette.primary.main,
   },
   '&:hover': {
-    backgroundColor: '#598dff',
+    backgroundColor: 'rgba(157, 157, 157, 0.15)',
   },
 }));
 
-const CustomStyledSelect = React.forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
+const CustomStyledSelect = (props: SelectProps) => {
   return (
     <StyledSelect
       {...props}
-      ref={ref}
       MenuProps={{
         PaperProps: {
           style: {
@@ -54,15 +52,11 @@ const CustomStyledSelect = React.forwardRef<HTMLButtonElement, SelectProps>((pro
       }}
     />
   );
-});
+};
 
 export interface TermSelectProps {}
 
-export interface TermSelectHandle {
-  open: () => void;
-}
-
-const TermSelect = React.forwardRef<TermSelectHandle, TermSelectProps>((props, ref) => {
+const TermSelect: React.FC<TermSelectProps> = () => {
   const { term, termName, setTermName, year, setTerm, setYear, setSelectedTimetable, displayTimetables, termsData } =
     useContext(AppContext);
 
@@ -76,10 +70,6 @@ const TermSelect = React.forwardRef<TermSelectHandle, TermSelectProps>((props, r
   const termDataStrList = termsData.map((val) => {
     return `${convertToTermName(val)}, ${val?.substring(2)}`;
   });
-
-  useImperativeHandle(ref, () => ({
-    open: () => setOpen(true),
-  }));
 
   const selectTerm = (e: any) => {
     const defaultStartTimetable = 0;
@@ -116,6 +106,7 @@ const TermSelect = React.forwardRef<TermSelectHandle, TermSelectProps>((props, r
   };
   return (
     <FormControl>
+      <StyledInputLabel id="select-term-label">Select term</StyledInputLabel>
       <CustomStyledSelect
         size="small"
         labelId="select-term-label"
@@ -137,6 +128,6 @@ const TermSelect = React.forwardRef<TermSelectHandle, TermSelectProps>((props, r
       </CustomStyledSelect>
     </FormControl>
   );
-});
+};
 
 export default TermSelect;

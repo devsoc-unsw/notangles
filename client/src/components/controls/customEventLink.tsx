@@ -1,6 +1,6 @@
 import { Link, LocationOn } from '@mui/icons-material';
 import { Card, CardProps, ListItemIcon, TextField } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import isBase64 from 'is-base64';
 import { useState } from 'react';
 

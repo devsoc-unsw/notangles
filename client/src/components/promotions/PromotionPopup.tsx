@@ -1,5 +1,6 @@
 import { Button, Divider, Fade, Grid, List, ListItem, Modal, Typography, useTheme } from '@mui/material';
-import { Box, styled, useMediaQuery } from '@mui/system';
+import { styled } from '@mui/material/styles';
+import { Box, useMediaQuery } from '@mui/system';
 import { useMemo, useState } from 'react';
 
 import { ThemeType } from '../../constants/theme';
@@ -87,7 +88,7 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopu
       <Fade in={!seenCurrentPromo}>
         <StyledModalBody>
           <Grid container spacing={2}>
-            <Grid item xs={isMobile ? 12 : 6} container>
+            <Grid container size={isMobile ? 12 : 6}>
               <StyledTextWrapper>
                 <NewLabel>New</NewLabel>
                 <Typography variant="h4" component="h4" sx={{ margin: '20px 0 10px 0' }}>
@@ -110,7 +111,7 @@ const NewFeaturePromotion = ({ imgSrc, title, subTitle, bullets }: PromotionPopu
               </StyledTextWrapper>
             </Grid>
             {!isMobile && (
-              <StyledMediaGridWrapper item xs={6}>
+              <StyledMediaGridWrapper size={6}>
                 <StyledMedia src={imgSrc} />
               </StyledMediaGridWrapper>
             )}

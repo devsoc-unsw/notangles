@@ -1,0 +1,25 @@
+# This should will be redone when the server is ready to replace the old one
+# Currently it uses different names and ports to avoid conflicts with the old server
+services:
+  database-new:
+    container_name: notangles-database-new
+    hostname: notangles_database_new
+    restart: always
+    image: postgres:17-alpine
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - notangles_network_new
+
+volumes:
+  postgres:
+    name: server-new
+networks:
+  notangles_network_new:
+    driver: bridge

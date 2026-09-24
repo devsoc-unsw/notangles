@@ -8,11 +8,24 @@ import React from 'react';
 import DiscordIcon from '../../assets/DiscordIcon';
 
 const FooterLinks: React.FC = () => {
-  const currentYear = new Date().getFullYear();
   return (
-    <Stack direction="row" spacing={6} justifyContent="space-between" alignItems="center">
-      <p>&copy; UNSW Software Development Society {currentYear}</p>
-      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+    <Stack
+      direction="row"
+      spacing={6}
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <p>&copy; UNSW Software Development Society 2025</p>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Link target="_blank" href="mailto:notangles@devsoc.app">
           <EmailIcon />
         </Link>

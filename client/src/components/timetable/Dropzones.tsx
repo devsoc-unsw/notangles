@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { inventoryDropzoneOpacity } from '../../constants/theme';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -10,7 +11,7 @@ import { getAllPeriods } from '../../utils/getAllPeriods';
 import Dropzone from './Dropzone';
 
 const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestStartTime }) => {
-  const { isShowOnlyOpenClasses, isHideExamClasses } = useContext(AppContext);
+  const { hideFullClasses, hideExamClasses } = useGetUserSettingsQuery();
 
   // Deep-ish copy of activities (so we can combine duplicates without affecting original)
   let newActivities: Record<Activity, ClassData[]> = {};
@@ -27,14 +28,14 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
   });
 
   // Show only open classes if setting is toggled on
-  if (isShowOnlyOpenClasses) {
+  if (hideFullClasses) {
     Object.keys(newActivities).forEach((activity) => {
       newActivities[activity] = newActivities[activity].filter((classData) => classData.status === 'Open');
     });
   }
 
   // Hide exam classes dropzones if isHideExamClasses setting is toggled on
-  if (isHideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
+  if (hideExamClasses && 'Exam' in newActivities) delete newActivities.Exam;
 
   // Filter out duplicate class periods
   Object.keys(newActivities).forEach((activity) => {
@@ -61,7 +62,7 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
     classDatas.flatMap((classData) =>
       classData.periods.flatMap((period, i) => (
         <Dropzone
-          key={`${classData.id}-${i}`}
+          key={`${classData.id}-${String(i)}`}
           classPeriod={period}
           x={period.time.day + 1}
           color={color}
@@ -75,7 +76,8 @@ const DropzoneGroup: React.FC<DropzoneGroupProps> = ({ course, color, earliestSt
 };
 
 const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
-  const { isDarkMode, earliestStartTime } = useContext(AppContext);
+  const { earliestStartTime } = useContext(AppContext);
+  const { isDarkMode } = useGetUserSettingsQuery();
   const { selectedCourses } = useContext(CourseContext);
 
   const dropzones = selectedCourses.map((course) => (
@@ -96,7 +98,7 @@ const Dropzones: React.FC<DropzonesProps> = ({ assignedColors }) => {
       key="inventory"
       classPeriod={null} // inventory has no corresponding class period
       x={-2}
-      color={`rgba(${inventoryColor}, ${inventoryDropzoneOpacity})`}
+      color={`rgba(${inventoryColor}, ${String(inventoryDropzoneOpacity)})`}
       earliestStartTime={earliestStartTime}
     />,
   );

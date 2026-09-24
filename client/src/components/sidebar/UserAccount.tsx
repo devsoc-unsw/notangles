@@ -1,17 +1,13 @@
-import { LoginRounded, LogoutRounded } from '@mui/icons-material';
-import { Button, IconButton, Tooltip } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useState } from 'react';
+import { LogoutRounded } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useContext, useState } from 'react';
 
 import { API_URL } from '../../api/config';
-import storage from '../../utils/storage';
-import { createDefaultTimetable } from '../../utils/timetableHelpers';
+import { AppContext } from '../../context/AppContext';
+import { useAuth } from '../../hooks/useAuth';
 import StyledDialog from '../StyledDialog';
 import UserProfile from './friends/UserProfile';
-
-interface UserAccountProps {
-  collapsed: boolean;
-}
 
 const UserAuth = styled('div')`
   display: flex;
@@ -28,65 +24,29 @@ const StyledIconButton = styled(IconButton)`
   color: ${({ theme }) => theme.palette.text.primary};
 `;
 
-const StyledButton = styled(Button)`
-  min-width: 200px;
-  min-height: 40px;
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  border: 1px solid ${({ theme }) => theme.palette.primary.main};
-`;
+const ExpandedContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'sidebarCollapsed',
+})<{ sidebarCollapsed: boolean }>(({ sidebarCollapsed }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: sidebarCollapsed ? 'center' : 'space-between',
+  width: '100%',
+  padding: '10px 6px',
+}));
 
-const ExpandedContainer = styled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 10px 12px;
-`;
-
-const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
-  const [windowLocation, setWindowLocation] = useState('');
+const UserAccount = () => {
   const [logoutDialog, setLogoutDialog] = useState(false);
+  const { user } = useAuth();
+  const { sidebarCollapsed } = useContext(AppContext);
 
-  const loginCall = async () => {
-    setWindowLocation(window.location.href);
-    try {
-      window.location.href = `${API_URL.server}/auth/login`;
-    } catch (error) {
-      console.log(error);
-    }
+  const onLogout = () => {
+    window.location.href = `${API_URL.server}/auth/logout`;
   };
 
-  const user = {
-    userID: '',
-    firstname: 'First',
-    lastname: 'Last',
-    email: 'example@user.com',
-    profileURL: '',
-  };
-
-  const logoutCall = async () => {
-    try {
-      await fetch(`${API_URL.server}/auth/logout`, {
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    window.location.replace(windowLocation);
-    storage.set('timetables', createDefaultTimetable(undefined));
-  };
-
-  return (
-    <Tooltip title="Improved login and social functionality releasing late 2025!" placement="right">
-      {collapsed ? (
-        <StyledIconButton onClick={() => {}}>
-          <LoginRounded />
-        </StyledIconButton>
-      ) : (
-        <StyledButton onClick={() => {}}>Log in - releasing soon</StyledButton>
-      )}
-    </Tooltip>
-  );
+  // Shouldn't be possible;
+  if (!user) {
+    return <></>;
+  }
 
   return (
     <>
@@ -96,7 +56,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
           setLogoutDialog(false);
         }}
         onConfirm={() => {
-          logoutCall();
+          onLogout();
           setLogoutDialog(false);
         }}
         title="Confirm Log out"
@@ -104,7 +64,10 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
         confirmButtonText="Log out"
       />
       <UserAuth>
-        {collapsed ? (
+        <ExpandedContainer sidebarCollapsed={sidebarCollapsed}>
+          {!sidebarCollapsed && (
+            <UserProfile firstName={user.firstName} lastName={user.lastName} profileURL={user.profilePictureUrl} />
+          )}
           <Tooltip title="Log out" placement="right">
             <StyledIconButton
               onClick={() => {
@@ -114,22 +77,7 @@ const UserAccount: React.FC<UserAccountProps> = ({ collapsed }) => {
               <LogoutRounded />
             </StyledIconButton>
           </Tooltip>
-        ) : (
-          <ExpandedContainer>
-            <UserProfile
-              firstname={user.firstname}
-              lastname={user.lastname}
-              email={user.email}
-              profileURL={user.profileURL}
-            />
-            <Tooltip title="Log out" placement="right">
-              {/* TODO: error handling for when logging out */}
-              <StyledIconButton color="inherit" onClick={logoutCall}>
-                <LogoutRounded />
-              </StyledIconButton>
-            </Tooltip>
-          </ExpandedContainer>
-        )}
+        </ExpandedContainer>
       </UserAuth>
     </>
   );

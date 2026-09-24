@@ -21,10 +21,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { TimePicker } from '@mui/x-date-pickers';
 import React, { useContext, useState } from 'react';
 
+import { useGetUserSettingsQuery } from '../../api/user/queries';
 import { daysLong, daysShort } from '../../constants/timetable';
 import { AppContext } from '../../context/AppContext';
 import { CourseContext } from '../../context/CourseContext';
@@ -80,7 +81,8 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
   const [newColor, setNewColor] = useState<string>(color);
 
   const { createdEvents, setCreatedEvents } = useContext(CourseContext);
-  const { isDarkMode, setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { setErrorVisibility, setAutoVisibility, setAlertMsg } = useContext(AppContext);
+  const { isDarkMode } = useGetUserSettingsQuery();
 
   const handleOpenColorPicker = (event: React.MouseEvent<HTMLElement>) => {
     setColorPickerAnchorEl(event.currentTarget);
@@ -241,7 +243,13 @@ const ExpandedEventView: React.FC<ExpandedEventViewProps> = ({
       {isEditing ? (
         <>
           <StyledTopIcons>
-            <Grid container justifyContent="flex-end" alignItems="center">
+            <Grid
+              container
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+              }}
+            >
               <IconButton aria-label="close" onClick={handleCloseDialog}>
                 <Close />
               </IconButton>

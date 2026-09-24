@@ -1,28 +1,48 @@
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Switch } from '@mui/material';
-import { styled } from '@mui/system';
-import { FC, useContext, useMemo, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import { FC, useMemo, useState } from 'react';
 
-import { AppContext } from '../../context/AppContext';
+import { useSetUserSettings } from '../../api/user/mutations';
+import { useGetUserSettingsQuery } from '../../api/user/queries';
+import { UserSettings } from '../../interfaces/User';
 import { ColorThemeOptions } from './ColorThemeOptions';
 import { ColorThemePreview } from './ColorThemePreview';
+import { ArrowBackIos, ArrowForwardIosOutlined } from '@mui/icons-material';
+import ProfilePictureModal from './ProfilePictureModal';
+import { useAuth } from '../../hooks/useAuth';
 
-const SettingsItem = styled('div')`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const SettingsPadding = styled('div')`
   padding: 1vh 20px;
 `;
 
-const SettingText = styled('div')`
+export const SettingsItem = styled(SettingsPadding)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SettingsText = styled('div')`
   padding: 1vh 0;
+  display: flex;
+  align-items: center;
 `;
 
-const SettingButton = styled('div')`
+const ReturnText = styled(SettingsText)`
+  padding: 0;
+`;
+
+const StyledArrowBackIosIcon = styled(ArrowBackIos)`
+  height: 16px;
+`;
+
+const StyledArrowForwardIcon = styled(ArrowForwardIosOutlined)`
+  height: 16px;
+`;
+
+export const SettingButton = styled(SettingsPadding)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1vh 20px;
   border-radius: 1rem;
   cursor: pointer;
   &:hover {
@@ -36,87 +56,127 @@ const ColorThemeOptionsContainer = styled('div')`
   height: 100%;
 `;
 
-const Settings: FC = () => {
-  const {
-    currentTheme,
-    setCurrentTheme,
-    isSquareEdges,
-    setIsSquareEdges,
-    is12HourMode,
-    setIs12HourMode,
-    isShowOnlyOpenClasses,
-    setisShowOnlyOpenClasses,
-    isDefaultUnscheduled,
-    setIsDefaultUnscheduled,
-    isHideClassInfo,
-    setIsHideClassInfo,
-    isHideExamClasses,
-    setIsHideExamClasses,
-    isConvertToLocalTimezone,
-    setIsConvertToLocalTimezone,
-  } = useContext(AppContext);
+const settingsDescriptions: Record<keyof UserSettings, string> = {
+  isSquareEdges: 'Square corners on classes',
+  is12HourMode: '12-hour time',
+  hideFullClasses: 'Show only open classes',
+  unscheduleClassesByDefault: 'Unschedule classes by default',
+  hideClassInfo: 'Hide class details',
+  hideExamClasses: 'Hide exam classes',
+  convertToLocalTimezone: 'Convert to local timezone',
+  preferredTheme: '',
+  isDarkMode: '',
+};
 
-  const settingsToggles: { state: boolean; setter: (mode: boolean) => void; desc: string }[] = [
-    { state: isSquareEdges, setter: setIsSquareEdges, desc: 'Square corners on classes' },
-    { state: is12HourMode, setter: setIs12HourMode, desc: '12-hour time' },
-    { state: isShowOnlyOpenClasses, setter: setisShowOnlyOpenClasses, desc: 'Show only open classes' },
-    { state: isDefaultUnscheduled, setter: setIsDefaultUnscheduled, desc: 'Unschedule classes by default' },
-    { state: isHideClassInfo, setter: setIsHideClassInfo, desc: 'Hide class details' },
-    { state: isHideExamClasses, setter: setIsHideExamClasses, desc: 'Hide exam classes' },
-    { state: isConvertToLocalTimezone, setter: setIsConvertToLocalTimezone, desc: 'Convert to local timezone' },
-  ];
+const Settings: FC = () => {
+  const settings = useGetUserSettingsQuery();
+  const { preferredTheme } = settings;
+  const updateUserSettings = useSetUserSettings();
+  const { user } = useAuth();
+
+  const nonTogglableSet = new Set<keyof UserSettings>(['preferredTheme', 'isDarkMode']);
+
+  const settingsToggles = (Object.keys(settingsDescriptions) as (keyof UserSettings)[])
+    .filter((key) => !nonTogglableSet.has(key))
+    .map((key) => ({
+      id: key,
+      state: Boolean(settings[key]),
+      desc: settingsDescriptions[key],
+    }));
 
   const [isPreferredThemeOpen, setIsPreferredThemeOpen] = useState(false);
+  const [isChangeProfilePicOpen, setIsChangeProfilePicOpen] = useState(false);
 
-  const settingButtonContent = isPreferredThemeOpen ? (
-    <>
-      <SettingText>
-        <ArrowBackIosIcon />
-        Return
-      </SettingText>
-    </>
-  ) : (
-    <>
-      <SettingText>Preferred Theme</SettingText>
-      <ColorThemePreview previewTheme={currentTheme} />
-    </>
+  const mainContent = useMemo(
+    () => (
+      <>
+        {isPreferredThemeOpen && (
+          <ColorThemeOptionsContainer>
+            <ColorThemeOptions currentTheme={preferredTheme} />
+          </ColorThemeOptionsContainer>
+        )}
+        {isChangeProfilePicOpen && <ProfilePictureModal />}
+        {!isPreferredThemeOpen &&
+          !isChangeProfilePicOpen &&
+          settingsToggles.map((setting) => (
+            <div key={setting.desc}>
+              <SettingsItem>
+                <SettingsText>{setting.desc}</SettingsText>
+                <Switch
+                  value={setting.state}
+                  checked={setting.state}
+                  color="primary"
+                  onChange={(e) => {
+                    updateUserSettings({
+                      [setting.id]: e.target.checked,
+                    });
+                  }}
+                />
+              </SettingsItem>
+            </div>
+          ))}
+      </>
+    ),
+    [isPreferredThemeOpen, isChangeProfilePicOpen, settingsToggles],
   );
 
-  const mainContent = useMemo(() => {
-    return isPreferredThemeOpen ? (
-      <ColorThemeOptionsContainer>
-        <ColorThemeOptions currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
-      </ColorThemeOptionsContainer>
-    ) : (
+  const flatMenuButtons = useMemo(() => {
+    const isHomepageOpen = !isPreferredThemeOpen && !isChangeProfilePicOpen;
+
+    return (
       <>
-        {settingsToggles.map((setting) => (
-          <div key={setting.desc}>
-            <SettingsItem>
-              <SettingText>{setting.desc}</SettingText>
-              <Switch
-                value={setting.state}
-                checked={setting.state}
-                color="primary"
-                onChange={() => {
-                  setting.setter(!setting.state);
-                }}
-              />
-            </SettingsItem>
-          </div>
-        ))}
+        {/* Only show option to change profile pic when user is logged in */}
+        {isHomepageOpen && user?.id && !user.isGuest && (
+          <SettingButton
+            onClick={() => {
+              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+            }}
+          >
+            <SettingsText>Change Profile Picture</SettingsText>
+            <StyledArrowForwardIcon />
+          </SettingButton>
+        )}
+        {isHomepageOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsPreferredThemeOpen(!isPreferredThemeOpen);
+            }}
+          >
+            <SettingsText>Preferred Theme</SettingsText>
+            <ColorThemePreview previewTheme={preferredTheme} />
+          </SettingButton>
+        )}
+        {isPreferredThemeOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsPreferredThemeOpen(!isPreferredThemeOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+        )}
+        {isChangeProfilePicOpen && (
+          <SettingButton
+            onClick={() => {
+              setIsChangeProfilePicOpen(!isChangeProfilePicOpen);
+            }}
+          >
+            <ReturnText>
+              <StyledArrowBackIosIcon />
+              Return
+            </ReturnText>
+          </SettingButton>
+        )}
       </>
     );
-  }, [isPreferredThemeOpen, settingsToggles, currentTheme, setCurrentTheme]);
+  }, [isChangeProfilePicOpen, isPreferredThemeOpen, user]);
 
   return (
     <>
-      <SettingButton
-        onClick={() => {
-          setIsPreferredThemeOpen(!isPreferredThemeOpen);
-        }}
-      >
-        {settingButtonContent}
-      </SettingButton>
+      {flatMenuButtons}
       {mainContent}
     </>
   );

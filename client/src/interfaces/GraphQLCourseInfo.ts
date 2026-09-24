@@ -17,19 +17,19 @@ interface Class {
   class_id: string;
 }
 
-interface Course {
+export interface Course {
   __typename: 'courses';
   course_code: string;
   course_name: string;
   classes: Class[];
 }
 
-interface CoursesData {
+export interface CoursesData {
   courses: Course[];
 }
 
-export interface GraphQLCourse {
-  data: CoursesData;
-  loading: boolean;
-  networkStatus: number;
+export interface GetCourseInfoVars {
+  courseCode: string;
+  term: string;
+  year: number;
 }

@@ -1,7 +1,10 @@
 import { Delete, LocationOn } from '@mui/icons-material';
 import { TabPanel } from '@mui/lab';
 import { Button, ListItemText, Menu, MenuProps } from '@mui/material';
-import { alpha, styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
+import { alpha } from '@mui/system';
+
+import { notanglesHoverBlue } from '../constants/theme';
 
 export const DropdownButton = styled(Button)`
   && {
@@ -11,7 +14,7 @@ export const DropdownButton = styled(Button)`
     margin-right: 10px;
     text-align: left;
     &:hover {
-      background-color: #598dff;
+      background-color: ${notanglesHoverBlue};
     }
   }
 `;

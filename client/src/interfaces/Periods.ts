@@ -11,9 +11,17 @@ export type SelectedClasses = Record<CourseCode, Record<Activity, ClassData | In
 export type CreatedEvents = Record<EventCode, EventPeriod>;
 export type EventMetadata = EventData & EventTime;
 
+// A course code (e.g. COMP4511) can be offered to both undergraduates and postgraduates
+// with different classes, so the career is needed to determine which course to fetch.
+export interface CourseSelection {
+  code: CourseCode;
+  career: string;
+}
+
 export interface CourseData {
   code: CourseCode;
   name: string;
+  career: string;
   earliestStartTime: number;
   latestFinishTime: number;
   activities: Record<Activity, ClassData[]>;
@@ -30,6 +38,7 @@ export interface ClassData {
   classNo: string;
   courseCode: CourseCode;
   courseName: string;
+  career: string;
   activity: Activity;
   status: Status;
   enrolments: number;
