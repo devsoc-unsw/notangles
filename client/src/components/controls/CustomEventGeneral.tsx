@@ -89,12 +89,16 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
       <StyledListItem>
         <StyledListItemText primary="Start time" />
         <TimePicker
-          // Displays time as the time of the grid the user pressed
-          // when popover has just been opened
           value={isInitialStartTime ? initialStartTime : startTime}
           onChange={(e) => {
             if (e) setStartTime(e);
             setIsInitialStartTime(false);
+          }}
+          slotProps={{
+            textField: {
+              size: 'small',
+              sx: { width: 180 }
+            }
           }}
         />
       </StyledListItem>
@@ -103,7 +107,13 @@ const CustomEventGeneral: React.FC<CustomEventGeneralProps> = ({
         <TimePicker
           value={isInitialEndTime ? initialEndTime : endTime}
           label={!areValidEventTimes(startTime, endTime) ? 'End time must be after start' : ''}
-          slotProps={{ textField: { color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error' } }}
+          slotProps={{
+            textField: {
+              size: 'small',
+              color: areValidEventTimes(startTime, endTime) ? 'primary' : 'error',
+              sx: { width: 180 }
+            }
+          }}
           onChange={(e) => {
             if (e) setEndTime(e);
             setIsInitialEndTime(false);
