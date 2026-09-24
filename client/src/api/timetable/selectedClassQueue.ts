@@ -21,7 +21,8 @@ interface Selection {
   confirmedClassId: string | null;
 }
 
-// PendingChange represents a pending change of class, which is in the queue
+// PendingChange represents a pending change of class, which is in the queue and
+// waiting to be processed
 interface PendingChange {
   change: SelectionChange;
   selection: Selection;
@@ -32,6 +33,7 @@ interface PendingChange {
 
 // The queue storing all pending classes
 interface SelectionQueue {
+  // The key is a string consists of courseId and activity
   selections: Map<string, Selection>;
   pending: PendingChange[];
   needsReconcile: boolean;
@@ -41,7 +43,7 @@ interface SelectionQueue {
 const queues = new WeakMap<QueryClient, Map<string, SelectionQueue>>();
 const coursesKey = (timetableId: string) => ['timetable', timetableId, 'courses'];
 
-export const projectSelectedClasses = (
+export const applySelectedClasses = (
   queryClient: QueryClient,
   timetableId: string,
   courses: TimetableCourse[],
@@ -49,13 +51,17 @@ export const projectSelectedClasses = (
   const queue = queues.get(queryClient)?.get(timetableId);
   if (!queue) return courses;
 
-  const desired = new Map<Selection, string | null>();
-  for (const selection of queue.selections.values()) desired.set(selection, selection.confirmedClassId);
-  for (const operation of queue.pending) desired.set(operation.selection, operation.change.selectedClassId);
+  const chosen = new Map<Selection, string | null>();
+  for (const selection of queue.selections.values()) {
+    chosen.set(selection, selection.confirmedClassId);
+  }
+  for (const operation of queue.pending) {
+    chosen.set(operation.selection, operation.change.selectedClassId);
+  }
 
   return courses.map((course) => {
     let selectedClasses = course.selectedClasses;
-    for (const [selection, classId] of desired) {
+    for (const [selection, classId] of chosen) {
       if (selection.courseId !== course.courseId) continue;
       selectedClasses = selectedClasses.filter((id) => !selection.classIds.has(id));
       if (classId !== null) selectedClasses = [...selectedClasses, classId];
@@ -66,10 +72,11 @@ export const projectSelectedClasses = (
 
 const publish = (queryClient: QueryClient, timetableId: string) => {
   queryClient.setQueryData<TimetableCourse[]>(coursesKey(timetableId), (courses) =>
-    courses ? projectSelectedClasses(queryClient, timetableId, courses) : courses,
+    courses ? applySelectedClasses(queryClient, timetableId, courses) : courses,
   );
 };
 
+// Correct the confirmedClassId of all courses according to the backend data
 const reconcile = async (timetableId: string, queue: SelectionQueue) => {
   const courses = await getTimetableCourses(timetableId);
   for (const selection of queue.selections.values()) {
@@ -98,14 +105,14 @@ const drain = async (queryClient: QueryClient, timetableId: string, queue: Selec
       }
       selection.confirmedClassId = change.selectedClassId;
       operation.resolve();
-    } catch (error) {
+    } catch (err) {
       queue.needsReconcile = true;
       try {
         await reconcile(timetableId, queue);
         if (selection.confirmedClassId === change.selectedClassId) operation.resolve();
-        else operation.reject(error);
+        else operation.reject(err);
       } catch {
-        operation.reject(error);
+        operation.reject(err);
       }
     }
     queue.pending.shift();
@@ -122,6 +129,7 @@ export const enqueueSelectedClassChange = (queryClient: QueryClient, change: Sel
     clientQueues = new Map();
     queues.set(queryClient, clientQueues);
   }
+
   let queue = clientQueues.get(change.timetableId);
   if (!queue) {
     queue = { selections: new Map(), pending: [], needsReconcile: false };
@@ -141,7 +149,9 @@ export const enqueueSelectedClassChange = (queryClient: QueryClient, change: Sel
     };
     queue.selections.set(groupKey, selection);
   }
-  for (const id of change.activityClassIds) selection.classIds.add(id);
+  for (const id of change.activityClassIds) {
+    selection.classIds.add(id);
+  }
 
   const ready = queryClient.cancelQueries({ queryKey: coursesKey(change.timetableId), exact: true });
   const shouldStart = queue.pending.length === 0;

@@ -8,7 +8,7 @@ import {
   getTimetableIds,
   getTimetableInfo,
 } from '../timetable/routes';
-import { projectSelectedClasses } from './selectedClassQueue';
+import { applySelectedClasses } from './selectedClassQueue';
 
 export const useTimetableIdsQuery = (term: Term) =>
   useSuspenseQuery({
@@ -19,7 +19,7 @@ export const useTimetableIdsQuery = (term: Term) =>
 export const useTimetableCoursesQuery = (timetableId: string) =>
   useSuspenseQuery({
     queryKey: ['timetable', timetableId, 'courses'],
-    queryFn: async ({ client }) => projectSelectedClasses(client, timetableId, await getTimetableCourses(timetableId)),
+    queryFn: async ({ client }) => applySelectedClasses(client, timetableId, await getTimetableCourses(timetableId)),
   }).data;
 
 export const useTimetableInfoQuery = (timetableId: string) =>

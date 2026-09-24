@@ -1,10 +1,18 @@
+import { Alert, Snackbar } from '@mui/material';
 import { useLayoutEffect, useRef, useState } from 'react';
 
+import type { TimetableClass } from '../../../api/times/times';
+import type { TimetableCourse } from '../../../api/timetable/routes';
 import { EventCard } from '../../../interfaces/Timetable';
+import ClassDropzones from './ClassDropzones';
+import DroppedClass from './DroppedClass';
 import DroppedEvent from './DroppedEvent';
+import { useDroppedClasses } from './useDroppedClasses';
 
 const DroppedCards: React.FC<{
   timetableId: string;
+  courses: TimetableCourse[];
+  classes: TimetableClass[];
   numberOfDays: number;
   earliestStartHour: number;
   events: EventCard[];
@@ -14,7 +22,17 @@ const DroppedCards: React.FC<{
     pasteTime: { day: number; start: number; end: number },
     setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>,
   ) => void;
-}> = ({ timetableId, numberOfDays, earliestStartHour, events, eventCopied, setCopiedEvent, handlePasteEvent }) => {
+}> = ({
+  timetableId,
+  courses,
+  classes,
+  numberOfDays,
+  earliestStartHour,
+  events,
+  eventCopied,
+  setCopiedEvent,
+  handlePasteEvent,
+}) => {
   const droppedCardsRef = useRef<HTMLDivElement>(null);
   const [cellWidth, setCellWidth] = useState<number>(0);
 
@@ -48,6 +66,46 @@ const DroppedCards: React.FC<{
     };
   }, [numberOfDays]);
 
+  const {
+    cards,
+    drag,
+    dragging,
+    dragColour,
+    dropSlots,
+    isSquareEdges,
+    startDrag,
+    registerDropzone,
+    handleSelectClass,
+    saveFailed,
+    dismissSaveError,
+  } = useDroppedClasses({ timetableId, courses, classes, numberOfDays, earliestStartHour });
+
+  const droppedClasses = cards.map((card) => (
+    <DroppedClass
+      key={card.key}
+      card={card}
+      classes={classes}
+      numberOfDays={numberOfDays}
+      isSquareEdges={isSquareEdges}
+      isElevated={dragging && drag?.source.courseId === card.courseId && drag.source.activity === card.activity}
+      canExpand={!drag}
+      handleSelectClass={handleSelectClass}
+      onPointerDown={
+        card.draggable
+          ? (event) => {
+              startDrag(event, {
+                cardKey: card.key,
+                courseId: card.courseId,
+                activity: card.activity,
+                classId: card.classId,
+                timeIndex: card.timeIndex,
+              });
+            }
+          : undefined
+      }
+    />
+  ));
+
   const droppedEvents = events.map((event) => (
     <DroppedEvent
       timetableId={timetableId}
@@ -69,8 +127,37 @@ const DroppedCards: React.FC<{
     // <CSSTransition style={{ display: 'contents' }} transitionName={transitionName} timeout={transitionTime}>
     // </CSSTransition>
     <div style={{ display: 'contents' }} ref={droppedCardsRef}>
-      {/* TODO: droppedClasses */}
+      {droppedClasses}
       {droppedEvents}
+
+      {dragging && (
+        <ClassDropzones
+          slots={dropSlots}
+          target={drag?.target ?? null}
+          numberOfDays={numberOfDays}
+          earliestStartHour={earliestStartHour}
+          backgroundColour={dragColour}
+          isSquareEdges={isSquareEdges}
+          registerDropzone={registerDropzone}
+        />
+      )}
+
+      <Snackbar
+        open={saveFailed}
+        autoHideDuration={6000}
+        onClose={(_event, reason) => {
+          if (reason !== 'clickaway') dismissSaveError();
+        }}
+      >
+        <Alert
+          severity="error"
+          onClose={() => {
+            dismissSaveError();
+          }}
+        >
+          Could not save your class selection. Please try again.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
