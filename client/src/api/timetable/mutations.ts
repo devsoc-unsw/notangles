@@ -41,12 +41,10 @@ export interface UpdateSelectedClassParams extends SelectedClassGroup {
   classId: string;
 }
 
-export const selectedClassMutationKey = ['selectedClass'] as const;
-
 export const useUpdateSelectedClass = (onError?: () => void) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: selectedClassMutationKey,
+    mutationKey: ['selectedClass'],
     mutationFn: ({ classId, ...group }: UpdateSelectedClassParams) =>
       enqueueSelectedClassChange(queryClient, { ...group, selectedClassId: classId }),
     retry: false,

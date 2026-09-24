@@ -9,7 +9,7 @@ export interface ClassCardIdentity {
 
 export type KeyedClassCard<T extends ClassCardIdentity = ClassCardIdentity> = T & { key: string };
 
-export interface ClassCardKeyAnchor {
+export interface DraggedCardMapping {
   sourceKey: string;
   targetClassId: string | null;
   targetTimeIndex: number | null;
@@ -48,7 +48,7 @@ interface CardMatch {
 export const reconcileClassCardKeys = <T extends ClassCardIdentity>(
   previousCards: readonly KeyedClassCard[],
   nextCards: readonly T[],
-  anchor?: ClassCardKeyAnchor,
+  draggedCardMapping?: DraggedCardMapping,
 ): KeyedClassCard<T>[] => {
   const assignedKeys: (string | undefined)[] = Array.from({ length: nextCards.length });
   const matchedPreviousIndices = new Set<number>();
@@ -61,15 +61,15 @@ export const reconcileClassCardKeys = <T extends ClassCardIdentity>(
   const needsKey = (index: number) => assignedKeys[index] === undefined;
 
   // Keep the dragged DOM node attached to the target meeting
-  if (anchor) {
-    const sourceIndex = previousCards.findIndex((card) => card.key === anchor.sourceKey);
+  if (draggedCardMapping) {
+    const sourceIndex = previousCards.findIndex((card) => card.key === draggedCardMapping.sourceKey);
     if (sourceIndex !== -1) {
       const sourceCard = previousCards[sourceIndex];
       const targetIndex = nextCards.findIndex(
         (card) =>
           hasSameActivity(sourceCard, card) &&
-          card.classId === anchor.targetClassId &&
-          card.timeIndex === anchor.targetTimeIndex,
+          card.classId === draggedCardMapping.targetClassId &&
+          card.timeIndex === draggedCardMapping.targetTimeIndex,
       );
       if (targetIndex !== -1) reuseKey(sourceIndex, targetIndex);
     }

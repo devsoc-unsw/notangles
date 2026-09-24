@@ -10,7 +10,6 @@ import { daysLong, gridGap, shortDayToIndex, timetableWidth } from '../../../con
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
 import { parseClassTimeRange } from '../../../utils/time';
 import DroppedCards from './DroppedCards';
-import TimetableClasses from './TimetableClasses';
 import TimetableLayout from './TimetableLayout';
 
 const StyledTimetable = styled(Box, {
@@ -165,21 +164,16 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
           latestEndHour={latestEndHour}
         />
         <DroppedCards
+          key={[timetableId, term.year, term.term].join('-')}
           timetableId={timetableId}
+          courses={courses}
+          classes={classTimes}
           numberOfDays={cols}
           earliestStartHour={earliestStartHour}
           events={eventCards}
           eventCopied={copiedEvent !== undefined}
           setCopiedEvent={setCopiedEvent}
           handlePasteEvent={handlePasteEvent}
-        />
-        <TimetableClasses
-          key={[timetableId, term.year, term.term].join('-')}
-          timetableId={timetableId}
-          courses={courses}
-          classes={classTimes}
-          dayCount={cols}
-          earliestStartHour={earliestStartHour}
         />
       </StyledTimetable>
     </StyledTimetableScroll>
