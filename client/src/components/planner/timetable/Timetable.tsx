@@ -79,6 +79,8 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
     setContextMenu(null);
   };
 
+  // TODO: try to implement the exam setting func here
+
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
       cls.times.forEach((time) => {
