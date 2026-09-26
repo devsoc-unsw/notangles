@@ -1,5 +1,5 @@
 # Grab the latest Node base image
-FROM node:24.15.0-alpine AS builder
+FROM node:24.21.0-alpine AS builder
 RUN npm i -g pnpm
 
 # Set the current working directory inside the container
@@ -20,6 +20,6 @@ ARG GIT_COMMIT
 RUN if [ -n "$GIT_COMMIT" ]; then export VITE_COMMIT=$GIT_COMMIT; fi && \
     pnpm run build
 
-FROM caddy:2.10.0-alpine
+FROM caddy:2.11.4-alpine
 COPY ./Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv 
