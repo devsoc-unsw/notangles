@@ -10,4 +10,4 @@ python-dateutil==2.9.0.post0
 pytz==2025.2
 six==1.16.0
 tzdata==2025.2
-urllib3==2.2.2
+urllib3==2.7.0
