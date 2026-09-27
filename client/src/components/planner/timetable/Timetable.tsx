@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
+import { convertClassToLocalTimezone, Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
 import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery } from '../../../api/timetable/queries';
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
@@ -45,7 +45,7 @@ const StyledTimetableScroll = styled(Box)`
 
 const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId, term }) => {
   const courses = useTimetableCoursesQuery(timetableId);
-  const classTimes = useCoursesClassTimesQuery(
+  const rawClassTimes = useCoursesClassTimesQuery(
     courses.map((c) => c.courseId),
     term.year,
     term.term,
@@ -80,13 +80,12 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
     setContextMenu(null);
   };
 
-  // TODO: try to implement the exam setting func here
-  
-  // const { hideExamClasses } = useGetUserSettingsQuery();
+  // the local timezone setting function here
+  const { convertToLocalTimezone } = useGetUserSettingsQuery();
 
-  // const classTimes = useMemo(
-  //   () => hideExamClasses ? rawClassTimes.filter((c) => !c.activity.includes('Exam')) : rawClassTimes,
-  //   [rawClassTimes, hideExamClasses])
+  const classTimes = useMemo(
+    () => convertToLocalTimezone ? rawClassTimes.map(convertClassToLocalTimezone) : rawClassTimes,
+    [rawClassTimes, convertToLocalTimezone])
 
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {

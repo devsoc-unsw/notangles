@@ -1,6 +1,7 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
 import { skipToken, useSuspenseQuery } from '@apollo/client/react';
 import { parse } from 'date-fns';
+import { parseClassTimeRange } from '../../utils/time';
 
 export interface Term {
   year: number;
@@ -318,3 +319,58 @@ export const useCourseListQuery = (term: Term) => {
 
   return data.courses.filter((c) => c.terms.includes(term.term));
 };
+
+export const getTimeZoneOffset = (): number => {
+  const localDate = new Date();
+  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
+
+  // Get the date and time of the Sydney timezone.
+  const [date, time] = sydDate.split(', ');
+
+  // Get the specific day, month and year of the Sydney timezone to convert the string
+  // to a YYYY-MM-DD format to be created into a Date object.
+  const [day, month, year] = date.split('/');
+  const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
+
+  const offset =
+    (formattedSydDate.getHours() * 60 +
+      formattedSydDate.getMinutes() -
+      (localDate.getHours() * 60 + localDate.getMinutes())) /
+    60;
+
+  return offset;
+};
+
+const minutesToHHMM = (min: number) => {
+  const wrapper = ((min % 1440) + 1440) % 1440;
+  return `${String(Math.floor(wrapper / 60)).padStart(2, '0')}:${String(wrapper % 60).padStart(2, '0')}`
+}
+
+export const convertClassToLocalTimezone = (classes: TimetableClass): TimetableClass => {
+  const shift = -getTimeZoneOffset() * 60
+  // console.log('offset hours:', getTimeZoneOffset(), 'shift minutes:', shift);
+
+  return {
+  ...classes,
+    times: classes.times.map(t => {
+      const range = parseClassTimeRange(t.time);
+
+      if (!range) {
+        return t;
+      }
+
+      const shiftedTime = `${minutesToHHMM(range.startMinutes + shift)} - ${minutesToHHMM(range.endMinutes + shift)}`;
+
+      // console.log('original:', t.time, '→ shifted:', shifted, '| reparse:', parseClassTimeRange(shifted));
+
+      return {...t, time: shiftedTime }
+    })
+  }
+};
+
+// times: {
+//     day: string;
+//     time: string;
+//     location: string;
+//     weeks: string;
+//   }[];
