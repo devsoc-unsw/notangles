@@ -41,7 +41,7 @@ export const useDroppedClasses = ({
   earliestStartHour,
 }: DroppedClassesOptions) => {
   const queryClient = useQueryClient();
-  const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
+  const { preferredTheme, isSquareEdges, hideClassInfo, hideExamClasses } = useGetUserSettingsQuery();
   const [saveFailed, setSaveFailed] = useState(false);
   const updateClass = useUpdateSelectedClass(() => {
     setSaveFailed(true);
@@ -111,6 +111,9 @@ export const useDroppedClasses = ({
         backgroundColour: decodeColor(course.colour, preferredTheme),
         draggable: true,
       };
+      if (hideExamClasses && classData.activity === 'Exam') {
+        continue;
+      }
       if (classData.times.length === 0) {
         unscheduled.push({
           ...base,
@@ -154,6 +157,7 @@ export const useDroppedClasses = ({
     }
 
     for (const classId of unresolvedSelectedClassIds) {
+      // console.log('unresolved:', classId);
       unscheduled.push({
         courseId: '',
         activity: classId,
@@ -176,6 +180,7 @@ export const useDroppedClasses = ({
     earliestStartHour,
     preferredTheme,
     hideClassInfo,
+    hideExamClasses
   ]);
 
   const draggedCardMapping = useMemo<DraggedCardMapping | undefined>(

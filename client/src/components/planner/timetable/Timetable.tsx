@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
@@ -45,7 +45,7 @@ const StyledTimetableScroll = styled(Box)`
 
 const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId, term }) => {
   const courses = useTimetableCoursesQuery(timetableId);
-  const rawClassTimes = useCoursesClassTimesQuery(
+  const classTimes = useCoursesClassTimesQuery(
     courses.map((c) => c.courseId),
     term.year,
     term.term,
@@ -82,11 +82,11 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
 
   // TODO: try to implement the exam setting func here
   
-  const { hideExamClasses } = useGetUserSettingsQuery();
+  // const { hideExamClasses } = useGetUserSettingsQuery();
 
-  const classTimes = useMemo(
-    () => hideExamClasses ? rawClassTimes.filter((c) => !c.activity.includes('Exam')) : rawClassTimes,
-    [rawClassTimes, hideExamClasses])
+  // const classTimes = useMemo(
+  //   () => hideExamClasses ? rawClassTimes.filter((c) => !c.activity.includes('Exam')) : rawClassTimes,
+  //   [rawClassTimes, hideExamClasses])
 
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
