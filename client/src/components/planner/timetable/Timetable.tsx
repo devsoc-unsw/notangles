@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
@@ -11,6 +11,7 @@ import { EventCard, EventTime } from '../../../interfaces/Timetable';
 import { parseClassTimeRange } from '../../../utils/time';
 import DroppedCards from './DroppedCards';
 import TimetableLayout from './TimetableLayout';
+import { useGetUserSettingsQuery } from '../../../api/user/queries';
 
 const StyledTimetable = styled(Box, {
   shouldForwardProp: (prop) => !['rows', 'cols'].includes(prop.toString()),
@@ -44,7 +45,7 @@ const StyledTimetableScroll = styled(Box)`
 
 const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId, term }) => {
   const courses = useTimetableCoursesQuery(timetableId);
-  const classTimes = useCoursesClassTimesQuery(
+  const rawClassTimes = useCoursesClassTimesQuery(
     courses.map((c) => c.courseId),
     term.year,
     term.term,
@@ -80,6 +81,12 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
   };
 
   // TODO: try to implement the exam setting func here
+  
+  const { hideExamClasses } = useGetUserSettingsQuery();
+
+  const classTimes = useMemo(
+    () => hideExamClasses ? rawClassTimes.filter((c) => !c.activity.includes('Exam')) : rawClassTimes,
+    [rawClassTimes, hideExamClasses])
 
   const { latestDay, earliestStartHour, latestEndHour } = classTimes.reduce(
     (acc, cls) => {
