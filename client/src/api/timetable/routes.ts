@@ -140,6 +140,11 @@ export const addEvent = async ({
   });
 };
 
+export const clearTimetables = async ({ year, term }: { year: number; term: string }): Promise<void> => {
+  // Body must be `undefined`, not `null` - the API's strict JSON parser rejects a top-level `null`.
+  await apiClient.patch('/user/timetables/clear', undefined, { params: { year, term } });
+};
+
 export interface EditEventParams {
   eventId: string;
   colour: string;
