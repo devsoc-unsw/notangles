@@ -43,7 +43,7 @@ const HeroSection = ({ openModal }: { openModal: () => void }) => {
               onClick={loggedIn ? handleStartClick : openModal}
             >
               <p className="pr-1 ml-2 text-xl sm:text-2xl md:text-3xl font-medium">
-                {loggedIn ? 'Goto Timetable' : 'Get Started'}
+                {loggedIn ? 'Go to Timetable' : 'Get Started'}
               </p>
               <NavigateNext fontSize="large" />
             </button>
