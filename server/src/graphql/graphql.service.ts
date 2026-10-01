@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
 import type { ClassDetails } from './types';
-
-const HASURAGRES_GRAPHQL_API = 'https://graphql.devsoc.app/v1/graphql';
 
 @Injectable()
 export class GraphqlService {
   private readonly sdk: ReturnType<typeof getSdk>;
 
-  constructor() {
-    const client = new GraphQLClient(HASURAGRES_GRAPHQL_API);
+  constructor(configService: ConfigService) {
+    const client = new GraphQLClient(
+      configService.getOrThrow<string>('HASURAGRES_GRAPHQL_API'),
+    );
     this.sdk = getSdk(client);
   }
 

@@ -3,9 +3,14 @@ import { styled } from '@mui/material/styles';
 import { ReactNode, Ref } from 'react';
 
 import { borderRadius, borderWidth } from '../constants/theme';
-import { defaultTransition } from '../constants/timetable';
+import { defaultTransition, gridGap, rowHeight } from '../constants/timetable';
 import { Card as TimetableCard } from '../interfaces/Timetable';
 import { classTranslateX, classTranslateY, getClassHeight } from '../utils/card';
+
+export const getTimeSlotStyle = (offsetMinutes: number, durationMinutes: number) => ({
+  transform: `translateY(${((offsetMinutes / 60) * (rowHeight + gridGap)).toString()}px)`,
+  height: Math.max(0, (durationMinutes / 60) * (rowHeight + gridGap) - gridGap),
+});
 
 // TODO: These fields can probably be named better
 const classTransformStyle = (
