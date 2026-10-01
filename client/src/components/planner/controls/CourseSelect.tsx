@@ -226,15 +226,13 @@ const CourseSelect: React.FC<{ term: Term; timetableId: string }> = ({ term, tim
   const addCourseMutation = useAddTimetableCourse();
   const { recordAction } = useTimetableHistory();
 
-  // Adds a course and records it so it can be undone. The colour is chosen here
-  // rather than inside the history stack so that a redo reuses the original one.
+  // Colour is recorded so redo reuses the original.
   const addCourse = (courseId: string, colour: string) => {
     addCourseMutation.mutate({ timetableId, courseId, colour });
     recordAction({ type: 'ADD_COURSE', courseId, colour });
   };
 
-  // Resolves the course's colour here so that undoing restores it unchanged,
-  // sparing every call site the join against `selectedCourses`.
+  // Colour is recorded so undo restores it unchanged.
   const removeCourse = (courseId: string) => {
     const colour = selectedCourses.find((course) => course.courseId === courseId)?.colour ?? '';
     removeCourseMutation.mutate({ timetableId, courseId });

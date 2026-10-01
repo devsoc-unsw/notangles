@@ -199,19 +199,13 @@ export const useSaveTimetableEvent = () => {
   });
 };
 
-/**
- * Deletes every timetable for the given term and replaces them with a single
- * empty default one. The new timetable's id is not returned, so callers should
- * rely on the refreshed `timetableIds` query to pick a valid selection.
- */
+/** Replaces a term's timetables with one empty default. The new id isn't returned - use the refreshed `timetableIds` query. */
 export const useClearTimetables = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: clearTimetables,
     onSuccess: async (_data, { year, term }) => {
-      // The cleared term's timetables no longer exist, so mark their cached
-      // queries stale *without* refetching - the components observing them
-      // unmount as soon as the refreshed id list renders.
+      // Mark stale without refetching - these timetables are gone and their observers unmount on the new id list.
       await queryClient.invalidateQueries({ queryKey: ['timetable'], refetchType: 'none' });
       await queryClient.invalidateQueries({ queryKey: ['timetableIds', String(year), term] });
     },

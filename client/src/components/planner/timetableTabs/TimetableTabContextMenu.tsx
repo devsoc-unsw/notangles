@@ -39,25 +39,13 @@ import { ExecuteButton, RedDeleteIcon, RedListItemText, StyledMenu } from '../..
 import { StyledSnackbar } from '../../../styles/TimetableTabStyles';
 import StyledDialog from '../../StyledDialog';
 
-/* -------------------------------------------------------------------------- */
-/*  Timetable history (clear / undo / redo)                                    */
-/*                                                                            */
-/*  Server state is read through React Query, so there is no local object to   */
-/*  snapshot. Instead each change is recorded as an action that can be applied  */
-/*  and inverted on demand; undo replays the inverse, redo replays it again.    */
-/*                                                                            */
-/*  The provider is mounted in Planner (context flows down, and both the       */
-/*  toolbar buttons and the course picker need it), but the logic lives here.  */
-/* -------------------------------------------------------------------------- */
-
-/**
- * A single undoable change to a timetable.
- *
- * Every action must carry enough information to be applied *and* inverted
- * without reading the current timetable state, so that a stale entry deep in
- * the stack still replays correctly. `colour` is stored on removals for exactly
- * this reason - undoing a removal has to restore the original colour.
+/*
+ * Timetable history (clear/undo/redo). State lives in React Query, so there's
+ * nothing to snapshot - each change is recorded as an invertible action.
+ * Undo replays the inverse; redo replays the action. Mounted in Planner.
  */
+
+/** An undoable change. Must be self-contained so old entries replay correctly (hence `colour` on removals). */
 export type TimetableAction =
   | { type: 'ADD_COURSE'; courseId: string; colour: string }
   | { type: 'REMOVE_COURSE'; courseId: string; colour: string };
@@ -67,22 +55,22 @@ interface HistoryStack {
   future: TimetableAction[];
 }
 
-// Caps memory usage on long sessions - older actions are dropped from the bottom.
+// Oldest actions are dropped beyond this.
 const MAX_STACK_SIZE = 50;
 
 const invert = (action: TimetableAction): TimetableAction =>
   action.type === 'ADD_COURSE' ? { ...action, type: 'REMOVE_COURSE' } : { ...action, type: 'ADD_COURSE' };
 
 interface TimetableHistoryContextType {
-  /** Records an action that has just been performed, discarding any pending redos. */
+  /** Records a performed action and clears the redo stack. */
   recordAction: (action: TimetableAction) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  /** True while an undo/redo is being replayed against the backend. */
+  /** True while an undo/redo is in flight. */
   isReplaying: boolean;
-  /** Deletes every timetable in the term, leaving one empty default. */
+  /** Replaces the term's timetables with one empty default. */
   clear: () => void;
   canClear: boolean;
   isClearing: boolean;
@@ -100,11 +88,7 @@ const TimetableHistoryContext = createContext<TimetableHistoryContextType>({
   isClearing: false,
 });
 
-/**
- * Holds undo/redo stacks per timetable, so switching tabs preserves each tab's
- * history, while exposing an API bound to the currently selected timetable so
- * consumers cannot address the wrong one.
- */
+/** Keeps per-timetable undo/redo stacks; the exposed API targets the selected timetable. */
 export function TimetableHistoryProvider({
   term,
   timetableId,
@@ -124,13 +108,10 @@ export function TimetableHistoryProvider({
   const timetableIds = useTimetableIdsQuery(term);
   const courses = useTimetableCoursesQuery(timetableId);
 
-  // Guards against a second undo/redo being kicked off while one is in flight,
-  // which would otherwise read a stale stack and replay the same action twice.
+  // Prevents overlapping replays from applying the same action twice.
   const replaying = useRef(false);
 
-  // `step` reads the stacks through a ref rather than closing over the state, so
-  // that undo/redo keep a stable identity. Otherwise every recorded action would
-  // publish a new context value and re-render every consumer.
+  // Read via ref so undo/redo stay stable and don't re-render consumers.
   const stacksRef = useRef(stacks);
   useEffect(() => {
     stacksRef.current = stacks;
@@ -149,15 +130,13 @@ export function TimetableHistoryProvider({
 
   const recordAction = useCallback(
     (action: TimetableAction) => {
-      // An undo/redo re-applies an action that is already on the stack, so the
-      // resulting mutation must not be recorded as a fresh user action.
+      // Replays aren't new user actions.
       if (replaying.current) return;
 
       setStacks((prev) => {
         const { past = [] } = prev[timetableId] ?? {};
         return {
           ...prev,
-          // Branching off the current position discards the redo stack.
           [timetableId]: { past: [...past, action].slice(-MAX_STACK_SIZE), future: [] },
         };
       });
@@ -174,8 +153,6 @@ export function TimetableHistoryProvider({
       if (!source || source.length === 0) return;
 
       const action = source[source.length - 1];
-      // Undoing performs the opposite of what was originally done; redoing
-      // performs it again as-is.
       const toApply = direction === 'undo' ? invert(action) : action;
 
       replaying.current = true;
@@ -195,9 +172,7 @@ export function TimetableHistoryProvider({
           });
         })
         .catch(() => {
-          // The backend rejected the replay, so the stack no longer describes
-          // reality. Drop this timetable's history rather than let the user
-          // walk further back through entries that can't be trusted.
+          // The stack no longer matches the backend, so drop it.
           setStacks((prev) => ({ ...prev, [timetableId]: { past: [], future: [] } }));
         })
         .finally(() => {
@@ -216,24 +191,20 @@ export function TimetableHistoryProvider({
     step('redo');
   }, [step]);
 
-  // `mutate` is stable, so binding it here keeps `clear` stable across the
-  // mutation's idle -> pending -> settled transitions.
+  // `mutate` is stable, unlike the mutation object.
   const { mutate: mutateClear } = clearTimetables;
 
   const clear = useCallback(() => {
-    // Stacks are keyed by timetable id, and every id they refer to is about to
-    // be deleted, so the stale entries become unreachable on their own.
+    // Old stacks are keyed by deleted ids, so they become unreachable.
     mutateClear({ year: term.year, term: term.term });
   }, [mutateClear, term.year, term.term]);
 
   const canUndo = (stacks[timetableId]?.past.length ?? 0) > 0;
   const canRedo = (stacks[timetableId]?.future.length ?? 0) > 0;
-  // Nothing to clear when a single, empty timetable is all that exists.
+  // Nothing to clear with a single empty timetable.
   const canClear = timetableIds.length > 1 || courses.length > 0;
 
-  // Every dependency here is a primitive or a stable callback - deliberately not
-  // `stacks` itself, so pushing an action that doesn't flip canUndo/canRedo does
-  // not republish the context to every consumer.
+  // Excludes `stacks` so only canUndo/canRedo changes republish the context.
   const value = useMemo(
     () => ({
       recordAction,

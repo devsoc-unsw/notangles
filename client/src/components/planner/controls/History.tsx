@@ -11,10 +11,7 @@ const clearTooltip = isMacOS ? 'Clear (Cmd+D)' : 'Clear (Ctrl+D)';
 const undoTooltip = isMacOS ? 'Undo (Cmd+Z)' : 'Undo (Ctrl+Z)';
 const redoTooltip = isMacOS ? 'Redo (Cmd+Shift+Z)' : 'Redo (Ctrl+Y)';
 
-/**
- * Toolbar buttons and hotkeys for clear/undo/redo. The behaviour itself lives in
- * TimetableTabContextMenu's history provider - this component only renders it.
- */
+/** Toolbar buttons and hotkeys for clear/undo/redo. Logic lives in TimetableHistoryProvider. */
 const History: React.FC<{ term: Term }> = ({ term }) => {
   const [clearOpen, setClearOpen] = useState(false);
 
@@ -31,7 +28,6 @@ const History: React.FC<{ term: Term }> = ({ term }) => {
 
       const key = event.key.toLowerCase();
 
-      // Mac redo is Cmd+Shift+Z, Windows/Linux redo is Ctrl+Y.
       const isUndo = key === 'z' && !event.shiftKey;
       const isRedo = isMacOS ? key === 'z' && event.shiftKey : key === 'y';
       const isClear = key === 'd';
@@ -39,8 +35,7 @@ const History: React.FC<{ term: Term }> = ({ term }) => {
       if (!isUndo && !isRedo && !isClear) return;
       event.preventDefault();
 
-      // undo/redo already no-op on an empty stack or mid-replay, so they need no
-      // guard here - which keeps this listener off the history state entirely.
+      // undo/redo no-op when unavailable, so no guard needed.
       if (isUndo) undo();
       if (isRedo) redo();
       if (isClear && !disableClear) setClearOpen(true);
