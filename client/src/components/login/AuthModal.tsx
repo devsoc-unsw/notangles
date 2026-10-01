@@ -92,7 +92,6 @@ export default function LoginDialog({ open, onClose, onSignIn, loading = false }
             pb: { xs: 10, sm: 14 },
           }}
         >
-          {/* Todo: Replace skeleton layout with standard ui, disable all buttons and show spinner on button user clicked */}
           {loading ? (
             <>
               {/* Header skeletons */}
