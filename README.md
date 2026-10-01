@@ -30,3 +30,33 @@ Clone the repository:
 ## Documentation
 
 For more information, see our [Confluence space](https://devsoc.atlassian.net/wiki/spaces/N/overview?homepageId=1572869).
+
+## Quick Start
+
+### Server (`/server`)
+
+1. Configure environment & authentication:
+   - Copy the template and fill in the values: `cp .env.example .env`
+   - (Optional) To enable real OAuth login, create an OAuth app with a provider
+     (GitHub or Google) and set its Client ID / Secret and redirect
+     URI in `.env`. Guest login works without any OAuth setup.
+
+2. Install and run:
+
+   ```bash
+   cd server
+   pnpm i
+   docker compose up -d      # start the Postgres container
+   pnpm prisma generate      # generate the Prisma client
+   pnpm prisma migrate dev   # apply migrations (create tables)
+   pnpm run graphql          # generate GraphQL types
+   pnpm run start
+   ```
+
+### Client (`/client`)
+
+```bash
+cd client
+pnpm i
+pnpm run start
+```
