@@ -14,7 +14,7 @@ interface ClassDropzoneProps {
   highlighted: boolean;
   isUnscheduled?: boolean;
   isSquareEdges: boolean;
-  location?: string;
+  locations?: string[];
   label: string;
   elementRef: RefCallback<HTMLDivElement>;
   visible: boolean;
@@ -24,7 +24,7 @@ interface ClassDropzoneProps {
 const ClassDropzone = ({
   elementRef,
   label,
-  location,
+  locations = [],
   visible,
   fadeDuration,
   backgroundColour,
@@ -33,7 +33,14 @@ const ClassDropzone = ({
   <StyledDropzone ref={elementRef} {...props} aria-label={label} data-drop-highlighted={props.highlighted}>
     <Fade in={visible} timeout={fadeDuration} easing="ease">
       <DropzoneSurface style={{ backgroundColor: backgroundColour }}>
-        {props.isUnscheduled ? 'Unscheduled' : location?.includes('Online') ? <VideocamOutlined /> : <PersonOutline />}
+        {props.isUnscheduled ? (
+          'Unscheduled'
+        ) : (
+          <>
+            {locations.some((location) => location.includes('Online')) && <VideocamOutlined />}
+            {locations.some((location) => !location.includes('Online')) && <PersonOutline />}
+          </>
+        )}
       </DropzoneSurface>
     </Fade>
   </StyledDropzone>
@@ -82,7 +89,7 @@ const ClassDropzones = ({
               target.classId === slot.classData.class_id &&
               target.timeIndex === slot.timeIndex
             }
-            location={slot.classData.times[slot.timeIndex].location}
+            locations={slot.locations}
             label={`${slot.classData.course.course_code} ${slot.classData.activity} ${slot.classData.section}`}
             elementRef={(element) => {
               registerDropzone(slot.id, element, {

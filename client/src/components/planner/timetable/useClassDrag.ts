@@ -31,7 +31,12 @@ export interface ClassDropSlot {
   dayIndex: number;
   startMinutes: number;
   endMinutes: number;
+  locations: string[];
 }
+
+type Period = Pick<ClassDropSlot, 'dayIndex' | 'startMinutes' | 'endMinutes'>;
+const areDuplicatePeriods = (a: Period, b: Period) =>
+  a.dayIndex === b.dayIndex && a.startMinutes === b.startMinutes && a.endMinutes === b.endMinutes;
 
 export const getClassDropSlots = (source: ClassDragSource, classes: TimetableClass[]): ClassDropSlot[] => {
   const sourceClass = classes.find((cls) => cls.class_id === source.classId);
@@ -41,7 +46,7 @@ export const getClassDropSlots = (source: ClassDragSource, classes: TimetableCla
   });
   const sourceDuration = source.timeIndex === null ? undefined : durations?.[source.timeIndex];
   const equalDurations = durations?.every((duration) => duration !== undefined && duration === durations[0]);
-  const slots = new Map<string, ClassDropSlot>();
+  const slots: ClassDropSlot[] = [];
   const candidates = classes
     .filter((cls) => cls.course_id === source.courseId && cls.activity === source.activity)
     .sort(
@@ -53,20 +58,27 @@ export const getClassDropSlots = (source: ClassDragSource, classes: TimetableCla
   for (const classData of candidates) {
     classData.times.forEach((time, timeIndex) => {
       const dayIndex = shortDayToIndex[time.day];
-      const range = parseClassTimeRange(time.time);
-      if (dayIndex === undefined || !range) return;
+      const classRange = parseClassTimeRange(time.time);
+      if (dayIndex === undefined || !classRange) return;
       if (
         source.timeIndex !== null &&
-        sourceDuration !== range.endMinutes - range.startMinutes &&
+        sourceDuration !== classRange.endMinutes - classRange.startMinutes &&
         source.timeIndex !== timeIndex &&
         !equalDurations
       )
         return;
-      const id = `${dayIndex.toString()}-${range.startMinutes.toString()}-${range.endMinutes.toString()}`;
-      if (!slots.has(id)) slots.set(id, { id, classData, timeIndex, dayIndex, ...range });
+
+      const period = { dayIndex, ...classRange };
+      const duplicate = slots.find((slot) => areDuplicatePeriods(slot, period));
+      if (duplicate) {
+        duplicate.locations.push(time.location);
+        return;
+      }
+      const id = `${dayIndex.toString()}-${classRange.startMinutes.toString()}-${classRange.endMinutes.toString()}`;
+      slots.push({ id, classData, timeIndex, ...period, locations: [time.location] });
     });
   }
-  return [...slots.values()];
+  return slots;
 };
 
 type DragRect = Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
