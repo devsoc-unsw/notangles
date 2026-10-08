@@ -56,7 +56,11 @@ export const useDroppedClasses = ({
       .map((cls) => cls.class_id),
   });
 
-  const { drag, startDrag, registerDropzone } = useClassDrag(timetableId, {
+  const {
+    drag: dragPeriod,
+    startDrag,
+    registerDropzone,
+  } = useClassDrag(timetableId, {
     onDrop: (source, target) => {
       setSaveFailed(false);
       void enqueueSelectedClassChange(queryClient, {
@@ -68,8 +72,8 @@ export const useDroppedClasses = ({
     },
   });
 
-  const dragSource = drag?.source;
-  const dragTarget = drag?.target;
+  const dragSource = dragPeriod?.source;
+  const dragTarget = dragPeriod?.target;
   const dropSlots = useMemo(() => (dragSource ? getClassDropSlots(dragSource, classes) : []), [dragSource, classes]);
   // The class options being shown if the current class is dropped
   const previewCourses = useMemo(() => {
@@ -210,7 +214,7 @@ export const useDroppedClasses = ({
     keyed = reconcileClassCardKeys(layout.keyed, cards, draggedCardMapping);
     setLayout({ cards, draggedCardMapping, keyed });
   }
-  const dragging = drag?.phase === 'dragging';
+  const isPointerDragging = dragPeriod?.phase === 'dragging';
   const dragColour =
     cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)
       ?.backgroundColour ?? '#777777';
@@ -225,8 +229,8 @@ export const useDroppedClasses = ({
 
   return {
     cards: [...keyed].sort((a, b) => a.key.localeCompare(b.key)),
-    drag,
-    dragging,
+    dragPeriod,
+    isPointerDragging,
     dragColour,
     dropSlots,
     isSquareEdges,

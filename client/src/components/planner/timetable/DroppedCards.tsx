@@ -68,8 +68,8 @@ const DroppedCards: React.FC<{
 
   const {
     cards,
-    drag,
-    dragging,
+    dragPeriod,
+    isPointerDragging,
     dragColour,
     dropSlots,
     isSquareEdges,
@@ -87,8 +87,12 @@ const DroppedCards: React.FC<{
       classes={classes}
       numberOfDays={numberOfDays}
       isSquareEdges={isSquareEdges}
-      isElevated={dragging && drag?.source.courseId === card.courseId && drag.source.activity === card.activity}
-      canExpand={!drag}
+      isElevated={
+        isPointerDragging &&
+        dragPeriod?.source.courseId === card.courseId &&
+        dragPeriod.source.activity === card.activity
+      }
+      canExpand={!dragPeriod}
       handleSelectClass={handleSelectClass}
       onPointerDown={
         card.draggable
@@ -130,10 +134,11 @@ const DroppedCards: React.FC<{
       {droppedClasses}
       {droppedEvents}
 
-      {dragging && (
+      {dragPeriod && (
         <ClassDropzones
+          visible={isPointerDragging}
           slots={dropSlots}
-          target={drag?.target ?? null}
+          target={dragPeriod.target}
           numberOfDays={numberOfDays}
           earliestStartHour={earliestStartHour}
           backgroundColour={dragColour}
