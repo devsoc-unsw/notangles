@@ -6,8 +6,9 @@ import { Term, useCoursesClassTimesQuery } from '../../../api/times/times';
 import { useAddTimetableEvent } from '../../../api/timetable/mutations';
 import { useEventInfoQueries, useTimetableCoursesQuery, useTimetableEventsQuery } from '../../../api/timetable/queries';
 import { contentPadding, inventoryMargin } from '../../../constants/theme';
-import { daysLong, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
+import { daysLong, gridGap, shortDayToIndex, timetableWidth } from '../../../constants/timetable';
 import { EventCard, EventTime } from '../../../interfaces/Timetable';
+import { parseClassTimeRange } from '../../../utils/time';
 import DroppedCards from './DroppedCards';
 import TimetableLayout from './TimetableLayout';
 
@@ -22,7 +23,7 @@ const StyledTimetable = styled(Box, {
   padding: 0px ${contentPadding}px ${contentPadding}px ${contentPadding}px;
   box-sizing: content-box;
   user-select: none;
-  grid-gap: 1px;
+  grid-gap: ${gridGap}px;
   grid-template:
     auto repeat(${({ rows }) => rows}, 1fr)
     / auto repeat(${({ cols }) => cols}, minmax(0, 1fr)) ${inventoryMargin}px minmax(0, 1fr);
@@ -82,13 +83,14 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
     (acc, cls) => {
       cls.times.forEach((time) => {
         const dayIndex = shortDayToIndex[time.day];
-        if (dayIndex > acc.latestDay) {
+        if (dayIndex !== undefined && dayIndex > acc.latestDay) {
           acc.latestDay = dayIndex;
         }
-        // time field is "09:00 - 10:00"
-        const [startTime, endTime] = time.time.split(' - ');
-        const startHour = parseInt(startTime.split(':')[0], 10);
-        const endHour = parseInt(endTime.split(':')[0], 10);
+        const timeRange = parseClassTimeRange(time.time);
+        if (!timeRange) return;
+
+        const startHour = Math.floor(timeRange.startMinutes / 60);
+        const endHour = Math.ceil(timeRange.endMinutes / 60);
         if (startHour < acc.earliestStartHour) {
           acc.earliestStartHour = startHour;
         }
@@ -161,9 +163,11 @@ const Timetable: React.FC<{ timetableId: string; term: Term }> = ({ timetableId,
           earliestStartHour={earliestStartHour}
           latestEndHour={latestEndHour}
         />
-        {/* <Dropzones assignedColors={assignedColors} /> */}
         <DroppedCards
+          key={[timetableId, term.year, term.term].join('-')}
           timetableId={timetableId}
+          courses={courses}
+          classes={classTimes}
           numberOfDays={cols}
           earliestStartHour={earliestStartHour}
           events={eventCards}
