@@ -322,21 +322,17 @@ export const useCourseListQuery = (term: Term) => {
 
 export const getTimeZoneOffset = (): number => {
   const localDate = new Date();
-  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
 
   // Get the date and time of the Sydney timezone.
-  const [date, time] = sydDate.split(', ');
-
+  const sydDate = localDate.toLocaleString('en-UK', { timeZone: 'Australia/Sydney' });
+  const locDate = localDate.toLocaleString('en-UK', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+  
   // Get the specific day, month and year of the Sydney timezone to convert the string
   // to a YYYY-MM-DD format to be created into a Date object.
-  const [day, month, year] = date.split('/');
-  const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
+  // const [day, month, year] = date.split('/');
+  // const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
 
-  const offset =
-    (formattedSydDate.getHours() * 60 +
-      formattedSydDate.getMinutes() -
-      (localDate.getHours() * 60 + localDate.getMinutes())) /
-    60;
+  const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
 
   return offset;
 };
@@ -348,7 +344,7 @@ const minutesToHHMM = (min: number) => {
 
 export const convertClassToLocalTimezone = (classes: TimetableClass): TimetableClass => {
   const shift = -getTimeZoneOffset() * 60
-  // console.log('offset hours:', getTimeZoneOffset(), 'shift minutes:', shift);
+  console.log('offset hours:', getTimeZoneOffset(), 'shift minutes:', shift);
 
   return {
   ...classes,
