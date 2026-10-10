@@ -12,6 +12,7 @@ import { parseClassTimeRange } from '../../../utils/time';
 import { type ClassCardIdentity, type DraggedCardMapping, reconcileClassCardKeys } from './classCardLayout';
 import { getClassDropSlots, useClassDrag } from './useClassDrag';
 import { type ClassCardMetadata, getClassCardMetadata, useTimetableClasses } from './useTimetableClasses';
+import { findClashes, getClashInfo } from '../../../utils/clashes';
 
 interface DroppedClassesOptions {
   timetableId: string;
@@ -31,6 +32,9 @@ export interface ClassCardView extends ClassCardIdentity {
   durationMinutes?: number;
   inventoryIndex?: number;
   draggable: boolean;
+  cardWidth?: number;
+  clashIndex?: number;
+  clashColour?: string;
 }
 
 export const useDroppedClasses = ({
@@ -182,6 +186,13 @@ export const useDroppedClasses = ({
     hideClassInfo,
     hideExamClasses
   ]);
+
+  // handles card clashing to resonate with course clashing
+  const clashingCards = useMemo(() => {
+    const scheduled = cards.filter((c) => c.dayIndex !== undefined);
+    const clashes = findClashes(scheduled)
+    const cardReturn = cards.map((card) => ({...card, ...getClashInfo(clashes, card)}));
+  }, [cards]) 
 
   const draggedCardMapping = useMemo<DraggedCardMapping | undefined>(
     () =>
