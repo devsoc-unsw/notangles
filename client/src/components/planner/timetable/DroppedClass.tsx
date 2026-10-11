@@ -24,6 +24,9 @@ interface DroppedClassProps {
   canExpand: boolean;
   onPointerDown?: PointerEventHandler<HTMLDivElement>;
   handleSelectClass: (classData: TimetableClass, classId: string) => void;
+  cardWidth?: number;
+  clashIndex?: number;
+  clashColour?: string;
 }
 
 const DroppedClass: React.FC<DroppedClassProps> = ({
@@ -35,6 +38,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   canExpand,
   onPointerDown,
   handleSelectClass,
+  cardWidth,
+  clashIndex,
+  clashColour
 }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const classData = classes.find((candidate) => candidate.class_id === card.classId);
@@ -67,6 +73,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           backgroundColour={card.backgroundColour}
           isSquareEdges={isSquareEdges}
           isElevated={isElevated}
+          cardWidth={cardWidth}
+          clashIndex={clashIndex}
+          clashColour={clashColour}
         >
           <StyledClassCardHeader>
             <StyledClassCardName as="strong">{title}</StyledClassCardName>

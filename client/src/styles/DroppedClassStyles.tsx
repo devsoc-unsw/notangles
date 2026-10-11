@@ -86,9 +86,12 @@ export const StyledClassCard = styled('div', {
 });
 
 export const StyledClassCardInner = styled(Card, {
-  shouldForwardProp: (prop) => !['backgroundColour', 'isSquareEdges', 'isElevated'].includes(prop.toString()),
-})<Pick<StyledClassCardProps, 'backgroundColour' | 'isSquareEdges' | 'isElevated'>>(
-  ({ theme, backgroundColour, isSquareEdges, isElevated = false }) => ({
+  shouldForwardProp: (prop) => !['backgroundColour', 'isSquareEdges', 'isElevated', 'cardWidth', 'clashIndex', 'clashColour'].includes(prop.toString()),
+})<Pick<StyledClassCardProps, 'backgroundColour' | 'isSquareEdges' | 'isElevated'> & {
+  cardWidth?: number;
+  clashIndex?: number;
+  clashColour?: string;
+}>(({ theme, backgroundColour, isSquareEdges, isElevated = false, cardWidth = 100, clashIndex = 0, clashColour }) => ({
     boxSizing: 'border-box',
     position: 'relative',
     display: 'flex',
@@ -98,7 +101,8 @@ export const StyledClassCardInner = styled(Card, {
     textAlign: 'center',
     fontSize: '0.9rem',
     lineHeight: 1.25,
-    width: '100%',
+    marginLeft: `${clashIndex * cardWidth}%`, ...(clashColour && clashColour !== 'transparent' ? { border: `2px solid ${clashColour}` }: {}),
+    width: `${cardWidth}%`,
     height: '100%',
     minHeight: 0,
     padding: '2px 8px',

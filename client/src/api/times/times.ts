@@ -320,6 +320,7 @@ export const useCourseListQuery = (term: Term) => {
   return data.courses.filter((c) => c.terms.includes(term.term));
 };
 
+// Recently implemented for Localtimezone
 export const getTimeZoneOffset = (): number => {
   const localDate = new Date();
 
@@ -332,6 +333,7 @@ export const getTimeZoneOffset = (): number => {
   // const [day, month, year] = date.split('/');
   // const formattedSydDate = new Date(`${year}-${month}-${day}T${time}`);
 
+  // factored by hour (in seconds)
   const offset = (new Date(sydDate).getTime() - new Date(locDate).getTime()) / 3_600_000;
 
   return offset;

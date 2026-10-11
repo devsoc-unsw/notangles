@@ -192,6 +192,8 @@ export const useDroppedClasses = ({
     const scheduled = cards.filter((c) => c.dayIndex !== undefined);
     const clashes = findClashes(scheduled)
     const cardReturn = cards.map((card) => ({...card, ...getClashInfo(clashes, card)}));
+
+    return cardReturn;
   }, [cards]) 
 
   const draggedCardMapping = useMemo<DraggedCardMapping | undefined>(
@@ -217,14 +219,14 @@ export const useDroppedClasses = ({
   );
 
   const [layout, setLayout] = useState(() => ({
-    cards,
+    cards: clashingCards,
     draggedCardMapping,
     keyed: reconcileClassCardKeys([], cards, draggedCardMapping),
   }));
   let keyed = layout.keyed;
-  if (layout.cards !== cards || layout.draggedCardMapping !== draggedCardMapping) {
-    keyed = reconcileClassCardKeys(layout.keyed, cards, draggedCardMapping);
-    setLayout({ cards, draggedCardMapping, keyed });
+  if (layout.cards !== clashingCards || layout.draggedCardMapping !== draggedCardMapping) {
+    keyed = reconcileClassCardKeys(layout.keyed, clashingCards, draggedCardMapping);
+    setLayout({ cards: clashingCards, draggedCardMapping, keyed });
   }
   const dragging = drag?.phase === 'dragging';
   const dragColour =
@@ -252,6 +254,6 @@ export const useDroppedClasses = ({
     saveFailed,
     dismissSaveError: () => {
       setSaveFailed(false);
-    },
+    }
   };
 };

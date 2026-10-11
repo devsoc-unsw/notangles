@@ -90,6 +90,9 @@ const DroppedCards: React.FC<{
       isElevated={dragging && drag?.source.courseId === card.courseId && drag.source.activity === card.activity}
       canExpand={!drag}
       handleSelectClass={handleSelectClass}
+      cardWidth={card.cardWidth}
+      clashIndex={card.clashIndex}
+      clashColour={card.clashColour}
       onPointerDown={
         card.draggable
           ? (event) => {
