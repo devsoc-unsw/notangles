@@ -1,10 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import type { TimetableClass } from '../../../api/times/times';
 import { useUpdateSelectedClass } from '../../../api/timetable/mutations';
 import type { TimetableCourse } from '../../../api/timetable/routes';
-import { enqueueSelectedClassChange } from '../../../api/timetable/selectedClassQueue';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
 import { shortDayToIndex } from '../../../constants/timetable';
 import { decodeColor } from '../../../utils/colors';
@@ -40,7 +38,6 @@ export const useDroppedClasses = ({
   numberOfDays,
   earliestStartHour,
 }: DroppedClassesOptions) => {
-  const queryClient = useQueryClient();
   const { preferredTheme, isSquareEdges, hideClassInfo } = useGetUserSettingsQuery();
   const [saveFailed, setSaveFailed] = useState(false);
   const updateClass = useUpdateSelectedClass(() => {
@@ -56,19 +53,18 @@ export const useDroppedClasses = ({
       .map((cls) => cls.class_id),
   });
 
+  const selectClass = (courseId: string, activity: string, classId: string | null) => {
+    setSaveFailed(false);
+    updateClass.mutate({ ...selectionGroup(courseId, activity), classId });
+  };
+
   const {
     drag: dragPeriod,
     startDrag,
     registerDropzone,
   } = useClassDrag(timetableId, {
     onDrop: (source, target) => {
-      setSaveFailed(false);
-      void enqueueSelectedClassChange(queryClient, {
-        ...selectionGroup(source.courseId, source.activity),
-        selectedClassId: target.type === 'class' ? target.classId : null,
-      }).catch(() => {
-        setSaveFailed(true);
-      });
+      selectClass(source.courseId, source.activity, target.type === 'class' ? target.classId : null);
     },
   });
 
@@ -220,11 +216,7 @@ export const useDroppedClasses = ({
       ?.backgroundColour ?? '#777777';
 
   const handleSelectClass = (classData: TimetableClass, classId: string) => {
-    setSaveFailed(false);
-    updateClass.mutate({
-      ...selectionGroup(classData.course_id, classData.activity),
-      classId,
-    });
+    selectClass(classData.course_id, classData.activity, classId);
   };
 
   return {

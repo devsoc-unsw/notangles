@@ -63,7 +63,6 @@ export const getClassDropSlots = (source: ClassDragSource, classes: TimetableCla
       if (
         source.timeIndex !== null &&
         sourceDuration !== classRange.endMinutes - classRange.startMinutes &&
-        source.timeIndex !== timeIndex &&
         !equalDurations
       )
         return;

@@ -38,7 +38,7 @@ export const useAddTimetableCourse = () => {
 };
 
 export interface UpdateSelectedClassParams extends SelectedClassGroup {
-  classId: string;
+  classId: string | null;
 }
 
 export const useUpdateSelectedClass = (onError?: () => void) => {
