@@ -45,4 +45,9 @@ export class GraphqlService {
     }
     return { availableTerms: Array.from(termsSet) };
   }
+
+  async getTermPeriods(currentYear: number = new Date().getFullYear()) {
+    const { classes } = await this.sdk.GetTerms({ years: currentYear });
+    return classes ?? undefined;
+  }
 }

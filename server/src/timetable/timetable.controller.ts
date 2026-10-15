@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -17,10 +18,14 @@ import { TimetableService } from './timetable.service';
 import { AuthenticatedGuard } from 'src/auth/authenticated.guard';
 import { AuthenticatedRequest } from 'src/auth/auth.controller';
 import { EditEventParametersDto, EventParametersDto } from './types';
+import { CalendarService } from './calendar.service';
 
 @Controller('user/timetables')
 export class TimetableController {
-  constructor(private timetableService: TimetableService) {}
+  constructor(
+    private timetableService: TimetableService,
+    private calendarService: CalendarService,
+  ) {}
 
   @Get(':id')
   @UseGuards(AuthenticatedGuard)
@@ -33,6 +38,21 @@ export class TimetableController {
       timetableId,
     );
     return timetable;
+  }
+
+  @Get('ics/:id')
+  @Header('Content-Type', 'text/calendar; charset=utf-8')
+  @Header('Content-Disposition', 'attachment; filename="notangles.ics"')
+  @UseGuards(AuthenticatedGuard)
+  async getIcs(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') timetableId: string,
+  ) {
+    const icsContent = await this.calendarService.generateIcs(
+      req.user.id,
+      timetableId,
+    );
+    return icsContent;
   }
 
   @Get()
