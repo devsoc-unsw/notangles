@@ -8,17 +8,17 @@ interface StyledDropzoneProps {
   gridColumn: number;
   offsetMinutes?: number;
   durationMinutes?: number;
-  highlighted: boolean;
+  isHighlighted: boolean;
   isUnscheduled?: boolean;
   isSquareEdges: boolean;
 }
 
 export const StyledDropzone = styled('div', {
   shouldForwardProp: (prop) =>
-    !['gridColumn', 'offsetMinutes', 'durationMinutes', 'highlighted', 'isUnscheduled', 'isSquareEdges'].includes(
+    !['gridColumn', 'offsetMinutes', 'durationMinutes', 'isHighlighted', 'isUnscheduled', 'isSquareEdges'].includes(
       prop.toString(),
     ),
-})<StyledDropzoneProps>(({ gridColumn, offsetMinutes = 0, durationMinutes = 0, highlighted, isUnscheduled }) => ({
+})<StyledDropzoneProps>(({ gridColumn, offsetMinutes = 0, durationMinutes = 0, isHighlighted, isUnscheduled }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -28,7 +28,7 @@ export const StyledDropzone = styled('div', {
   gridRow: '2 / -1',
   ...(isUnscheduled ? { height: '100%' } : getTimeSlotStyle(offsetMinutes, durationMinutes)),
   marginBottom: 1 / devicePixelRatio,
-  opacity: highlighted ? 0.85 : isUnscheduled ? 0 : 0.4,
+  opacity: isHighlighted ? 0.85 : isUnscheduled ? 0 : 0.4,
   transition: `${defaultTransition}, z-index 0s`,
   borderBottomRightRadius: isUnscheduled ? borderRadius : 0,
 }));

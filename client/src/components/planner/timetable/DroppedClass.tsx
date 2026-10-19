@@ -11,11 +11,12 @@ import {
   StyledClassCardInner,
   StyledClassCardName,
 } from '../../../styles/DroppedClassStyles';
-import type { KeyedClassCard } from './classCardLayout';
+import type { CardTransitionChildProps } from './CardTransition';
+import type { KeyedClassCard } from './classCardKeys';
+import type { ClassCardView } from './classCardViews';
 import ExpandedClassView from './ExpandedClassView';
-import type { ClassCardView } from './useDroppedClasses';
 
-interface DroppedClassProps {
+interface DroppedClassProps extends CardTransitionChildProps {
   card: KeyedClassCard<ClassCardView>;
   classes: TimetableClass[];
   numberOfDays: number;
@@ -35,6 +36,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   canExpand,
   onPointerDown,
   handleSelectClass,
+  cardRef,
+  className,
+  isExiting = false,
 }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const classData = classes.find((candidate) => candidate.class_id === card.classId);
@@ -48,12 +52,17 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
   return (
     <>
       <StyledClassCard
+        ref={cardRef}
+        className={className}
+        data-card-exiting={isExiting}
+        inert={isExiting}
+        aria-hidden={isExiting || undefined}
         gridColumn={card.gridColumn}
         numberOfDays={numberOfDays}
         inventoryIndex={card.inventoryIndex}
         offsetMinutes={card.offsetMinutes}
         durationMinutes={card.durationMinutes}
-        backgroundColour={card.backgroundColour}
+        backgroundColour={card.backgroundColor}
         isSquareEdges={isSquareEdges}
         isElevated={isElevated}
         data-class-card={card.key}
@@ -64,13 +73,15 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
         style={{ cursor: onPointerDown ? 'grab' : undefined }}
       >
         <StyledClassCardInner
-          backgroundColour={card.backgroundColour}
+          backgroundColour={card.backgroundColor}
           isSquareEdges={isSquareEdges}
           isElevated={isElevated}
         >
           <StyledClassCardHeader>
             <StyledClassCardName as="strong">{title}</StyledClassCardName>
           </StyledClassCardHeader>
+
+          {/* If metadata exists, student number, weeks with class and the first position are shown */}
           {metadata ? (
             <>
               <StyledClassCardInfo as="div">
@@ -95,6 +106,8 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           ) : (
             details && <StyledClassCardInfo as="div">{details}</StyledClassCardInfo>
           )}
+
+          {/* If classData exists, the details button is shown */}
           {canExpand && classData && (
             <ClassExpandButton
               className="class-expand-button"
@@ -114,7 +127,9 @@ const DroppedClass: React.FC<DroppedClassProps> = ({
           )}
         </StyledClassCardInner>
       </StyledClassCard>
-      {popupOpen && classData && (
+
+      {/* Once the button is clicked, the ExpandedClassView with details will be shown */}
+      {popupOpen && classData && !isExiting && (
         <ExpandedClassView
           key={[classData.class_id, card.timeIndex].join('-')}
           classData={classData}

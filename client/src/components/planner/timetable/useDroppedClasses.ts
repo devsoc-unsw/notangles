@@ -4,12 +4,11 @@ import type { TimetableClass } from '../../../api/times/times';
 import { useUpdateSelectedClass } from '../../../api/timetable/mutations';
 import type { TimetableCourse } from '../../../api/timetable/routes';
 import { useGetUserSettingsQuery } from '../../../api/user/queries';
-import { shortDayToIndex } from '../../../constants/timetable';
-import { decodeColor } from '../../../utils/colors';
-import { parseClassTimeRange } from '../../../utils/time';
-import { type ClassCardIdentity, type DraggedCardMapping, reconcileClassCardKeys } from './classCardLayout';
-import { getClassDropSlots, useClassDrag } from './useClassDrag';
-import { type ClassCardMetadata, getClassCardMetadata, useTimetableClasses } from './useTimetableClasses';
+import { assignClassCardKeys, type DraggedCardMapping } from './classCardKeys';
+import { buildClassCardViews } from './classCardViews';
+import { getClassDropSlots } from './classDropSlots';
+import { useClassDrag } from './useClassDrag';
+import { useTimetableClasses } from './useTimetableClasses';
 
 interface DroppedClassesOptions {
   timetableId: string;
@@ -17,18 +16,6 @@ interface DroppedClassesOptions {
   classes: TimetableClass[];
   numberOfDays: number;
   earliestStartHour: number;
-}
-
-export interface ClassCardView extends ClassCardIdentity {
-  title: string;
-  backgroundColour: string;
-  details?: string;
-  metadata?: ClassCardMetadata;
-  gridColumn: number;
-  offsetMinutes?: number;
-  durationMinutes?: number;
-  inventoryIndex?: number;
-  draggable: boolean;
 }
 
 export const useDroppedClasses = ({
@@ -55,9 +42,10 @@ export const useDroppedClasses = ({
 
   const selectClass = (courseId: string, activity: string, classId: string | null) => {
     setSaveFailed(false);
-    updateClass.mutate({ ...selectionGroup(courseId, activity), classId });
+    updateClass.mutate({ ...selectionGroup(courseId, activity), selectedClassId: classId });
   };
 
+  // Connect to the dragging controller and generate candidate slots
   const {
     drag: dragPeriod,
     startDrag,
@@ -93,90 +81,35 @@ export const useDroppedClasses = ({
     });
   }, [courses, classes, dragSource, dragTarget]);
 
+  // Transfer preview data to class cards
   const { scheduledClasses, unscheduledActivities, unresolvedSelectedClassIds } = useTimetableClasses(
     previewCourses,
     classes,
   );
 
-  const cards = useMemo(() => {
-    const views: ClassCardView[] = [];
-    const unscheduled: ClassCardView[] = [];
-    // Generate a dropped class card for each class option
-    for (const { course, classData } of scheduledClasses) {
-      const base = {
-        courseId: course.courseId,
-        activity: classData.activity,
-        classId: classData.class_id,
-        title: `${classData.course.course_code} ${classData.activity}`,
-        backgroundColour: decodeColor(course.colour, preferredTheme),
-        draggable: true,
-      };
-      if (classData.times.length === 0) {
-        unscheduled.push({
-          ...base,
-          timeIndex: null,
-          gridColumn: numberOfDays + 3,
-          details: hideClassInfo ? undefined : `${classData.section} · No scheduled time`,
-        });
-      }
-      classData.times.forEach((time, timeIndex) => {
-        const dayIndex = shortDayToIndex[time.day];
-        const range = parseClassTimeRange(time.time);
-        if (dayIndex === undefined || dayIndex >= numberOfDays || !range) return;
-        views.push({
-          ...base,
-          timeIndex,
-          dayIndex,
-          startMinutes: range.startMinutes,
-          gridColumn: dayIndex + 2,
-          offsetMinutes: range.startMinutes - earliestStartHour * 60,
-          durationMinutes: range.endMinutes - range.startMinutes,
-          metadata: hideClassInfo ? undefined : getClassCardMetadata(classData, timeIndex, classes),
-        });
-      });
-    }
-
-    // If no class is scheduled, a class card should be added to the unscheduled area
-    for (const { course, activity, availableClasses } of unscheduledActivities) {
-      unscheduled.push({
-        courseId: course.courseId,
-        activity,
-        classId: null,
-        timeIndex: null,
-        title: `${availableClasses[0].course.course_code} ${activity}`,
-        backgroundColour: decodeColor(course.colour, preferredTheme),
-        gridColumn: numberOfDays + 3,
-        draggable: true,
-        details: hideClassInfo
-          ? undefined
-          : `${availableClasses.length.toString()} available class${availableClasses.length === 1 ? '' : 'es'}`,
-      });
-    }
-
-    for (const classId of unresolvedSelectedClassIds) {
-      unscheduled.push({
-        courseId: '',
-        activity: classId,
-        classId,
-        timeIndex: null,
-        title: 'Selected class unavailable',
-        backgroundColour: '#777777',
-        gridColumn: numberOfDays + 3,
-        details: hideClassInfo ? undefined : classId,
-        draggable: false,
-      });
-    }
-    return [...views, ...unscheduled.map((card, inventoryIndex) => ({ ...card, inventoryIndex }))];
-  }, [
-    scheduledClasses,
-    unscheduledActivities,
-    unresolvedSelectedClassIds,
-    classes,
-    numberOfDays,
-    earliestStartHour,
-    preferredTheme,
-    hideClassInfo,
-  ]);
+  const cards = useMemo(
+    () =>
+      buildClassCardViews({
+        scheduledClasses,
+        unscheduledActivities,
+        unresolvedSelectedClassIds,
+        classes,
+        numberOfDays,
+        earliestStartHour,
+        preferredTheme,
+        hideClassInfo,
+      }),
+    [
+      scheduledClasses,
+      unscheduledActivities,
+      unresolvedSelectedClassIds,
+      classes,
+      numberOfDays,
+      earliestStartHour,
+      preferredTheme,
+      hideClassInfo,
+    ],
+  );
 
   const draggedCardMapping = useMemo<DraggedCardMapping | undefined>(
     () =>
@@ -200,20 +133,25 @@ export const useDroppedClasses = ({
     [dragSource, dragTarget],
   );
 
+  // layout stores the previous batch of cards and their keys
   const [layout, setLayout] = useState(() => ({
     cards,
     draggedCardMapping,
-    keyed: reconcileClassCardKeys([], cards, draggedCardMapping),
+    keyGeneration: 0,
+    keyed: assignClassCardKeys([], cards, draggedCardMapping),
   }));
+
   let keyed = layout.keyed;
   if (layout.cards !== cards || layout.draggedCardMapping !== draggedCardMapping) {
-    keyed = reconcileClassCardKeys(layout.keyed, cards, draggedCardMapping);
-    setLayout({ cards, draggedCardMapping, keyed });
+    const keyGeneration = layout.keyGeneration + 1;
+    keyed = assignClassCardKeys(layout.keyed, cards, draggedCardMapping, keyGeneration);
+    setLayout({ cards, draggedCardMapping, keyGeneration, keyed });
   }
+
   const isPointerDragging = dragPeriod?.phase === 'dragging';
   const dragColour =
     cards.find((card) => card.courseId === dragSource?.courseId && card.activity === dragSource.activity)
-      ?.backgroundColour ?? '#777777';
+      ?.backgroundColor ?? '#777777';
 
   const handleSelectClass = (classData: TimetableClass, classId: string) => {
     selectClass(classData.course_id, classData.activity, classId);
